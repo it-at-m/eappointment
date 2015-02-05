@@ -18,7 +18,7 @@ $name = filter_input(INPUT_GET, 'name', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 Using Mellon, it looks like this:
 
 ```php
-$validator = new \BO\Mellon($_GET);
+$validator = new \BO\Mellon\Validator($_GET);
 $name = $validator->getParameter('name')->isString()->getValue();
 ```
 
