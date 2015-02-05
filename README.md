@@ -27,7 +27,7 @@ With a shortcut for all $_REQUEST variables, you could use:
 ```php
 use \BO\Mellon\Validator;
 
-$name = Validator::param('name)
+$name = Validator::param('name')
     ->isString()
     ->maxLength(32)
     ->default('John Doe')
