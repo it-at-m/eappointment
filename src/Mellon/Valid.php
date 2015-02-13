@@ -9,6 +9,7 @@ namespace BO\Mellon;
 /**
   * Parameter validation
   *
+  * @SuppressWarnings(TooManyMethods)
   */
 class Valid extends \BO\Mellon\Parameter
 {
@@ -42,6 +43,12 @@ class Valid extends \BO\Mellon\Parameter
     protected $default = null;
 
     /**
+     * validate a value using PHP builtin function filter_var()
+     *
+     * @param String $message error message in case of failure
+     * @param Const $filter see documentation for filter_var()
+     * @param Array|Const $options see documentation for filter_var()
+     *
      * @return self
      */
     protected function validate($message, $filter, $options = null)
@@ -49,7 +56,7 @@ class Valid extends \BO\Mellon\Parameter
         if (null !== $this->value) {
             $this->validated = true;
             $filtered = filter_var($this->value, $filter, $options);
-            if ($filtered === false && $this->value !== false) {
+            if (($filtered === false && $filter !== FILTER_VALIDATE_BOOLEAN) || $filtered === null) {
                 $this->failure($message);
             } else {
                 $this->value = $filtered;
@@ -59,25 +66,46 @@ class Valid extends \BO\Mellon\Parameter
     }
 
     /**
+     * Set state to failed and add a message
+     *
+     * @param String $message error message in case of failure
+     *
      * @return self
      */
     protected function failure($message)
     {
         $this->failed = true;
-        $this->value = $this->default;
         $this->messages[] = $message;
         return $this;
     }
 
     /**
+     * Allow only boolean values like
+     * Allowed values are:
+     *   true
+     *   false
+     *   yes
+     *   no
+     *   on
+     *   off
+     *   1
+     *   0
+     *   ''
+     *
+     * @param String $message error message in case of failure
+     *
      * @return self
      */
     public function isBool($message = 'not a boolean value')
     {
-        return $this->validate($message, FILTER_VALIDATE_BOOLEAN);
+        return $this->validate($message, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
     }
 
     /**
+     * Allow only integer numbers
+     *
+     * @param String $message error message in case of failure
+     *
      * @return self
      */
     public function isNumber($message = 'no valid number')
@@ -86,28 +114,102 @@ class Valid extends \BO\Mellon\Parameter
     }
 
     /**
+     * Allow strings smaller than 64kb and do htmlspecialchars()
+     *
+     * @param String $message error message in case of failure
+     *
      * @return self
      */
     public function isString($message = 'no valid string')
     {
-        if (strlen($this->value) > 65536) {
-            $this->failure($message);
-        }
+        $this->isSmallerThan(65536, $message);
         return $this->validate($message, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     }
 
     /**
+     * Allow only strings which do not match a given regular expression
+     *
+     * @param String $regex Regular expression including delimiter and modifier
+     * @param String $message error message in case of failure
+     *
      * @return self
      */
-    public function getValue()
+    public function isFreeOf($regex, $message = 'value contains undesired content')
     {
-        if ($this->validated) {
-            return $this->value;
+        $this->validated = true;
+        if (preg_match($regex, $this->value)) {
+            $this->failure($message);
         }
-        return $this->default;
+        return $this;
     }
 
     /**
+     * Allow only strings which match a given regular expression
+     *
+     * @param String $regex Regular expression including delimiter and modifier
+     * @param String $message error message in case of failure
+     *
+     * @return self
+     */
+    public function isMatchTo($regex, $message = 'not a valid matching value')
+    {
+        return $this->validate($message, FILTER_VALIDATE_REGEXP, array(
+            'options' => array(
+                'regexp' => $regex,
+            ),
+        ));
+    }
+
+    /**
+     * Allow only strings with a length bigger than the given value
+     *
+     * @param Int $size value to compare length of the string
+     * @param String $message error message in case of failure
+     *
+     * @return self
+     */
+    public function isBiggerThan($size, $message = 'too small')
+    {
+        $this->validated = true;
+        if (strlen($this->value) < $size) {
+            $this->failure($message);
+        }
+        return $this;
+    }
+
+    /**
+     * Allow only strings with a length smaller than the given value
+     *
+     * @param Int $size value to compare length of the string
+     * @param String $message error message in case of failure
+     *
+     * @return self
+     */
+    public function isSmallerThan($size, $message = 'too big')
+    {
+        $this->validated = true;
+        if (strlen($this->value) > $size) {
+            $this->failure($message);
+        }
+        return $this;
+    }
+
+    /**
+     * Get the validated value or the default value
+     *
+     * @return Mixed
+     */
+    public function getValue()
+    {
+        if ($this->hasFailed() || !$this->validated) {
+            return $this->default;
+        }
+        return $this->value;
+    }
+
+    /**
+     * Get the validated valie or the default value as string
+     *
      * @return String
      */
     public function __toString()
@@ -120,11 +222,54 @@ class Valid extends \BO\Mellon\Parameter
     }
 
     /**
+     * Set a default value to return if a string does not validate
+     *
+     * @param Mixed $value
+     *
      * @return self
      */
     public function setDefault($value)
     {
             $this->default = $value;
             return $this;
+    }
+
+    /**
+     * True if validation has failed
+     *
+     * @return Bool
+     */
+    public function hasFailed()
+    {
+        return $this->failed;
+    }
+
+    /**
+     * Returns a list of error messages
+     *
+     * @return Array
+     */
+    public function getMessages()
+    {
+        return $this->messages;
+    }
+
+    /**
+     * Returns a hash for usage in templates engines
+     * Contains the following keys:
+     *     failed - True if validation has failed
+     *     messages - A list of error messages in case the validation has failed
+     *     value - Value, might be the default value if validation has failed
+     *
+     * @return Array
+     */
+    public function getStatus()
+    {
+        $status = array(
+            'failed' => $this->failed,
+            'value' => $this->getValue(),
+            'messages' => $this->getMessages(),
+        );
+        return $status;
     }
 }
