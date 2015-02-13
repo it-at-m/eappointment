@@ -27,6 +27,6 @@ class Unvalidated extends \BO\Mellon\Parameter
             throw new Exception("parameters should validate first");
         }
         $valid = new \BO\Mellon\Valid($this->value, $this->name);
-        return call_user_func(array($valid, $name), $arguments);
+        return call_user_func_array(array($valid, $name), $arguments);
     }
 }
