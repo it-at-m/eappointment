@@ -115,4 +115,13 @@ class Validator
     {
         return new \BO\Mellon\Unvalidated($mixed);
     }
+
+    /**
+     * @return self
+     */
+    public static function collection($validatorList)
+    {
+        $collection = new Collection($validatorList);
+        return $collection;
+    }
 }
