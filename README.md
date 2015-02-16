@@ -44,7 +44,7 @@ Mellon allow to add error messages for custom validations:
 
 ```php
 $size = Validator::param('size')
-    ->isMatchTo('/(px|em|%)/', 'Do include some valid units like px, em or % for a size')
+    ->isMatchOf('/(px|em|%)/', 'Do include some valid units like px, em or % for a size')
     ->isFreeOf('/important/', 'The css statement "!important" is not allowed')
     ->isBiggerThan(2, 'The size should contain some value')
     ->isSmallerThan(10, 'You should enter a size, no short story expected')

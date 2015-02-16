@@ -87,11 +87,11 @@ class ValidationTest extends \PHPUnit_Framework_TestCase
     public function testRegex()
     {
         $this->assertTrue(
-            Validator::value("123456789")->isMatchTo('/abc/')->hasFailed(),
+            Validator::value("123456789")->isMatchOf('/abc/')->hasFailed(),
             "'abc' should not match 123456789"
         );
         $this->assertFalse(
-            Validator::value("123456789")->isMatchTo('/456/')->hasFailed(),
+            Validator::value("123456789")->isMatchOf('/456/')->hasFailed(),
             "'456' should not match 123456789"
         );
         $this->assertFalse(

@@ -151,7 +151,7 @@ class Valid extends \BO\Mellon\Parameter
      *
      * @return self
      */
-    public function isMatchTo($regex, $message = 'not a valid matching value')
+    public function isMatchOf($regex, $message = 'not a valid matching value')
     {
         return $this->validate($message, FILTER_VALIDATE_REGEXP, array(
             'options' => array(
