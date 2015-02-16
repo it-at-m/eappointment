@@ -1,6 +1,6 @@
 <?php
 /**
- * @package 115Mandant
+ * @package Mellon
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
