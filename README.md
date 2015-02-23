@@ -12,7 +12,7 @@ Format definitions
 Locations
 +++++++++
 
-```json
+```javascript
 {
     "created": "2014-04-25T13:55:31+02:00", // Erstellungsdatum des Exports
     "datacount": 1, // Anzahl der Datensätze im Export
@@ -110,7 +110,7 @@ Locations
 Services
 ++++++++
 
-```json
+```javascript
 {
    "created" : "2014-04-25T14:40:38+02:00",  // Zeitpunkt der Erstellung des Exports
    "locale" : "de_DE", // Sprachversion des Exports
