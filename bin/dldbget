@@ -1,0 +1,56 @@
+#!/usr/bin/env php
+<?php
+/**
+ * Download and validate json files
+ */
+require(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR .  'vendor' . DIRECTORY_SEPARATOR . 'autoload.php');
+
+use Garden\Cli\Cli;
+
+$cli = new Cli();
+
+$cli->description("Downloads json files from the official site and validates them and replaces the old files.")
+    ->opt('output:o', 'Path to save files', true)
+    ->opt('proxy:p', 'Proxy server', false)
+    ;
+$args = $cli->parse($argv, true);
+
+$destinationPath = realpath($args->getOpt('output'));
+
+if (!is_writeable($destinationPath) || !is_dir($destinationPath)) {
+    echo $cli->red("$destinationPath should be a writeable directory\n");
+    exit(1);
+}
+
+$baseDomain = "http://example.com/";
+
+$client = new \Guzzle\Http\Client($baseDomain, array(
+    'request.options' => array(
+        'timeout' => 10,
+        'proxy' => $args->getOpt('proxy'),
+    ),
+));
+
+$downloads = array(
+    array(
+        'url' => '/standorte/export/simple/json',
+        'file' => 'locations_de.json',
+    ),
+    array(
+        'url' => '/dienstleistungen/export/simple/json',
+        'file' => 'services_de.json',
+    ),
+);
+foreach ($downloads as $download) {
+    $json = $client->get($download['url'])->send()->getBody();
+    $tmp = $destinationPath . DIRECTORY_SEPARATOR . 'tmp.' . $download['file'];
+    file_put_contents($tmp, $json);
+    $data = json_decode($json, true);
+    if (array_key_exists('error', $data) && $data['error'] === false) {
+        $dest = $destinationPath . DIRECTORY_SEPARATOR . $download['file'];
+        rename($tmp, $dest);
+    } else {
+        echo $cli->red($download['url'] . " did not validate, see temp file $tmp \n");
+        exit(1);
+    }
+}
