@@ -1,0 +1,6 @@
+config.php
+**.swp
+tags
+
+/vendor/
+composer.lock
