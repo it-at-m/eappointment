@@ -31,9 +31,15 @@ class FileAccess
      */
     public function __construct($locationJson, $serviceJson)
     {
+        if (!is_readable($locationJson)) {
+            throw new Exception("Cannot read $locationJson");
+        }
         $locationlist = json_decode(file_get_contents($locationJson), true);
         if (!$locationlist) {
             throw new Exception("Could not load locations");
+        }
+        if (!is_readable($serviceJson)) {
+            throw new Exception("Cannot read $serviceJson");
         }
         $servicelist = json_decode(file_get_contents($serviceJson), true);
         if (!$servicelist) {

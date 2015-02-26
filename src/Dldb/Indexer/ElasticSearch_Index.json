@@ -1,0 +1,256 @@
+{
+   "mappings" : {
+      "location" : {
+         "properties" : {
+            "meta" : {
+               "properties" : {
+                  "lastupdate" : {
+                     "type" : "date",
+                     "format" : "dateOptionalTime"
+                  },
+                  "keywords" : {
+                     "type" : "string"
+                  }
+               }
+            },
+            "geo" : {
+               "properties" : {
+                  "lon" : {
+                     "type" : "string"
+                  },
+                  "lat" : {
+                     "type" : "string"
+                  }
+               }
+            },
+            "contact" : {
+               "properties" : {
+                  "email" : {
+                     "type" : "string"
+                  },
+                  "phone" : {
+                     "type" : "string"
+                  },
+                  "webinfo" : {
+                     "type" : "string"
+                  },
+                  "fax" : {
+                     "type" : "string"
+                  }
+               }
+            },
+            "id" : {
+               "type" : "string"
+            },
+            "note" : {
+               "type" : "string"
+            },
+            "address" : {
+               "properties" : {
+                  "street" : {
+                     "type" : "string"
+                  },
+                  "city" : {
+                     "type" : "string"
+                  },
+                  "postal_code" : {
+                     "type" : "string"
+                  },
+                  "house_number" : {
+                     "type" : "string"
+                  }
+               }
+            },
+            "name" : {
+               "type" : "string"
+            },
+            "paymentcode" : {
+               "type" : "string"
+            },
+            "services" : {
+               "properties" : {
+                  "appointment" : {
+                     "properties" : {
+                        "external" : {
+                           "type" : "boolean"
+                        },
+                        "slots" : {
+                           "type" : "string"
+                        },
+                        "allowed" : {
+                           "type" : "boolean"
+                        },
+                        "link" : {
+                           "type" : "string"
+                        }
+                     }
+                  },
+                  "service" : {
+                     "type" : "string"
+                  },
+                  "hint" : {
+                     "type" : "string"
+                  },
+                  "contact" : {
+                      "properties" : {
+                          "name": {
+                              "type": "string"
+                          },
+                          "phone": {
+                              "type": "string"
+                          },
+                          "fax": {
+                              "type": "string"
+                          },
+                          "email": {
+                              "type": "string"
+                          }
+                      }
+                  }
+               }
+            },
+            "transit" : {
+               "properties" : {
+                  "ubahn" : {
+                     "type" : "string"
+                  },
+                  "tram" : {
+                     "type" : "string"
+                  },
+                  "bus" : {
+                     "type" : "string"
+                  },
+                  "sbahn" : {
+                     "type" : "string"
+                  }
+               }
+            },
+            "authority" : {
+               "properties" : {
+                  "name" : {
+                     "type" : "string"
+                  },
+                  "id" : {
+                     "type" : "string"
+                  }
+               }
+            },
+            "opening_times" : {
+               "properties" : {
+                  "thursday" : {
+                     "type" : "string"
+                  },
+                  "saturday" : {
+                     "type" : "boolean"
+                  },
+                  "sunday" : {
+                     "type" : "boolean"
+                  },
+                  "monday" : {
+                     "type" : "string"
+                  },
+                  "tuesday" : {
+                     "type" : "string"
+                  },
+                  "special" : {
+                     "type" : "boolean"
+                  },
+                  "friday" : {
+                     "type" : "string"
+                  },
+                  "wednesday" : {
+                     "type" : "string"
+                  }
+               }
+            },
+            "payment" : {
+               "type" : "string"
+            },
+            "appointment" : {
+               "properties" : {
+                  "note" : {
+                     "type" : "string"
+                  }
+               }
+            },
+            "accessibility" : {
+               "properties" : {
+                  "note" : {
+                     "type" : "boolean"
+                  },
+                  "access" : {
+                     "type" : "string"
+                  },
+                  "wc" : {
+                     "type" : "string"
+                  },
+                  "parking" : {
+                     "type" : "string"
+                  },
+                  "elevator" : {
+                     "type" : "string"
+                  }
+               }
+            }
+         }
+      }
+   },
+   "settings" : {
+      "analysis" : {
+         "analyzer" : {
+            "azSortLower" : {
+               "filter" : [
+                  "asciifolding",
+                  "lowercase"
+               ],
+               "tokenizer" : "keyword",
+               "type" : "custom"
+            },
+            "boid" : {
+               "char_filter" : [
+                  "boid_mapping"
+               ],
+               "tokenizer" : "keyword",
+               "type" : "custom",
+               "filter" : [
+                  "asciifolding",
+                  "lowercase"
+               ]
+            },
+            "german2" : {
+               "filter" : [
+                  "icu_normalizer",
+                  "icu_folding",
+                  "lowercase",
+                  "snowball_german2"
+               ],
+               "type" : "custom",
+               "tokenizer" : "standard"
+            }
+         },
+         "char_filter" : {
+            "boid_mapping" : {
+               "type" : "mapping",
+               "mappings" : [
+                  "ä=>ae",
+                  "ü=>ue",
+                  "ö=>oe",
+                  "Ä=>ae",
+                  "Ü=>ue",
+                  "Ö=>oe",
+                  "ß=>ss"
+               ]
+            }
+         },
+         "filter" : {
+            "snowball_german2" : {
+               "language" : "German2",
+               "type" : "snowball"
+            }
+         }
+      },
+      "number_of_replicas" : "1",
+      "number_of_shards" : "1"
+   }
+}
+
