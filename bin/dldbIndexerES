@@ -19,6 +19,7 @@ $cli->description("Load DLDB exports into ElasticSearch")
     ->opt('host:h', 'host to connect to ES, default to localhost', false)
     ->opt('transport:t', 'transport to connect to ES, default to http', false)
     ->opt('alias:a', 'use the following alias after successful indexing', false)
+    ->opt('drop:d', 'drop old indice, only in combination with alias', false)
     ;
 $args = $cli->parse($argv, true);
 
@@ -33,10 +34,17 @@ try {
     if ($args->getOpt('transport')) {
         $indexer->setTransport($args->getOpt('transport'));
     }
+    $indexer->run();
     if ($args->getOpt('alias')) {
         $indexer->setAlias($args->getOpt('alias'));
+        if ($args->getOpt('drop')) {
+            $indexer->dropOldIndex();
+        }
+    } elseif ($args->getOpt('drop')) {
+        echo $cli->red("dropping old indice is only supported with alias setting");
+        exit(1);
     }
-    $indexer->run();
+
 } catch (Exception $e) {
     $message = 'Exception: ' . $e->getMessage();
     $message .= " (" . $e->getFile() . ' +' . $e->getLine() . ')';
