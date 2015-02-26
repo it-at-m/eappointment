@@ -15,7 +15,7 @@ use BO\Dldb\FileAccess;
 class ElasticSearch
 {
     const ES_INDEX_PREFIX = 'dldb-';
-    const ES_INDEX_DATE = 'Ymd-H';
+    const ES_INDEX_DATE = 'Ymd-His';
 
     /**
       * Access to DLDB files
@@ -173,6 +173,23 @@ class ElasticSearch
     public function setAlias($alias)
     {
         $this->getIndex()->addAlias($alias, true);
+        return $this;
+    }
+
+    /**
+     * @return self
+     */
+    public function dropOldIndex()
+    {
+        $client = $this->getConnection();
+        $status = $client->getStatus();
+        $indexList = $status->getIndexNames();
+        $currentIndex = $this->getIndex()->getName();
+        foreach ($indexList as $index) {
+            if ($currentIndex != $index && 0 === strpos($index, self::ES_INDEX_PREFIX)) {
+                $client->getIndex($index)->delete();
+            }
+        }
         return $this;
     }
 }
