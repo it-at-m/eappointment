@@ -38,7 +38,7 @@ class ElasticAccess extends FileAccess
                 'transport' => $transport
             )
         );
-        $this->index = $this->connection->getIndex($index);
+        $this->index = $this->getConnection()->getIndex($index);
     }
 
     /**
@@ -63,6 +63,7 @@ class ElasticAccess extends FileAccess
     public function fetchLocationList($service_csv = '')
     {
         $filter = new \Elastica\Filter\Terms('services.service', explode(',', $service_csv));
+        $filter->setExecution('and');
         $query = \Elastica\Query::create($filter);
         $resultList = $this->getIndex()->getType('location')->search($query, 10000);
         $locationList = array();
@@ -112,6 +113,7 @@ class ElasticAccess extends FileAccess
     public function fetchServiceList($location_csv = false)
     {
         $filter = new \Elastica\Filter\Terms('locations.location', explode(',', $location_csv));
+        $filter->setExecution('and');
         $query = \Elastica\Query::create($filter);
         $resultList = $this->getIndex()->getType('service')->search($query, 10000);
         $serviceList = array();
@@ -179,5 +181,39 @@ class ElasticAccess extends FileAccess
         }
         ksort($authoritylist);
         return $authoritylist;
+    }
+
+    /**
+     * @return Array
+     */
+    public function searchLocation($query, $service_csv = '')
+    {
+        $searchquery = new \Elastica\Query\QueryString($query);
+        $filter = new \Elastica\Filter\Terms('services.service', explode(',', $service_csv));
+        $query = new \Elastica\Query\Filtered($searchquery, $filter);
+        $resultList = $this->getIndex()->getType('location')->search($query, 100);
+        $locationList = array();
+        foreach ($resultList as $result) {
+            $location = $result->getData();
+            $locationList[$location['id']] = $location;
+        }
+        return $locationList;
+    }
+
+    /**
+     * @return Array
+     */
+    public function searchService($query, $location_csv = '')
+    {
+        $searchquery = new \Elastica\Query\QueryString($query);
+        $filter = new \Elastica\Filter\Terms('locations.location', explode(',', $location_csv));
+        $query = new \Elastica\Query\Filtered($searchquery, $filter);
+        $resultList = $this->getIndex()->getType('service')->search($query, 100);
+        $serviceList = array();
+        foreach ($resultList as $result) {
+            $service = $result->getData();
+            $serviceList[$service['id']] = $service;
+        }
+        return $serviceList;
     }
 }

@@ -14,21 +14,25 @@ class FileTest extends \PHPUnit_Framework_TestCase
     public function testIds()
     {
         $access = new FileAccess(LOCATION_JSON, SERVICE_JSON);
-        $location = $access->fetchLocation(122281);
+        $location = $access->fetchLocation(LOCATION_SINGLE);
         $this->assertNotFalse($location);
         $this->assertArrayHasKey('name', $location);
-        $service = $access->fetchService(120703);
+        $service = $access->fetchService(SERVICE_SINGLE);
         $this->assertNotFalse($service);
-        $locationList = $access->fetchLocationList(120703);
-        $this->assertArrayHasKey(122281, $locationList);
-        $serviceList = $access->fetchServiceList(122281);
-        $this->assertArrayHasKey(120703, $serviceList);
-        $authorityList = $access->fetchAuthorityList([120703]);
+        $locationList = $access->fetchLocationList(SERVICE_CSV);
+        $this->assertArrayHasKey(LOCATION_SINGLE, $locationList);
+        $serviceList = $access->fetchServiceList(LOCATION_CSV);
+        $this->assertArrayHasKey(SERVICE_SINGLE, $serviceList);
+        $authorityList = $access->fetchAuthorityList([SERVICE_SINGLE]);
         $this->assertArrayHasKey(12675, $authorityList);
-        $serviceList = $access->fetchServiceFromCsv(120703);
-        $this->assertArrayHasKey(120703, $serviceList);
-        $locationList = $access->fetchLocationFromCsv(122281);
-        $this->assertArrayHasKey(122281, $locationList);
+        $serviceList = $access->fetchServiceFromCsv(SERVICE_CSV);
+        $this->assertArrayHasKey(SERVICE_SINGLE, $serviceList);
+        $locationList = $access->fetchLocationFromCsv(LOCATION_CSV);
+        $this->assertArrayHasKey(LOCATION_SINGLE, $locationList);
+        $results = $access->searchLocation('Spandau', SERVICE_CSV);
+        $this->assertTrue($results > 0, "No locations found");
+        $results = $access->searchService('Pass', LOCATION_CSV);
+        $this->assertTrue($results > 0, "No services found");
     }
 
     public function testFail()

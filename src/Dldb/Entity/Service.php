@@ -14,17 +14,24 @@ class Service extends Base
 {
 
     /**
+     * Checks, if it contains _all_ locations
+     * Necessary, cause service A might be in location C but not location D,
+     * but service B is in location C and D. On partial check, service a
+     * would be valid for location D.
+     *
      * @return Bool
      */
     public function containsLocation($location_csv)
     {
         $service = $this->getData();
         $locationcompare = explode(',', $location_csv);
+        $locationsfound = array();
         foreach ($service['locations'] as $locationinfo) {
-            if (in_array($locationinfo['location'], $locationcompare)) {
-                return true;
+            $location_id = $locationinfo['location'];
+            if (in_array($location_id, $locationcompare)) {
+                $locationsfound[$location_id] = $location_id;
             }
         }
-        return false;
+        return count($locationcompare) == count($locationsfound);
     }
 }
