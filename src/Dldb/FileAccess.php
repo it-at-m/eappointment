@@ -114,6 +114,42 @@ class FileAccess
     }
 
     /**
+     * @return Array
+     */
+    public function fetchLocationFromCsv($location_csv)
+    {
+        $locationlist = array();
+        foreach (explode(',', $location_csv) as $location_id) {
+            $location = $this->fetchLocation($location_id);
+            if ($location) {
+                $locationlist[$location_id] = $location;
+            };
+        }
+        uasort($locationlist, function ($left, $right) {
+            return strcmp($left['name'], $right['name']);
+        });
+        return $locationlist;
+    }
+
+    /**
+     * @return Array
+     */
+    public function fetchServiceFromCsv($service_csv)
+    {
+        $servicelist = array();
+        foreach (explode(',', $service_csv) as $service_id) {
+            $service = $this->fetchService($service_id);
+            if ($service) {
+                $servicelist[$service_id] = $service;
+            }
+        }
+        uasort($servicelist, function ($left, $right) {
+            return strcmp($left['name'], $right['name']);
+        });
+        return $servicelist;
+    }
+
+    /**
      * fetch locations for a list of service and group by authority
      * @return Array
      */
