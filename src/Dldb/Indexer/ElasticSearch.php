@@ -122,19 +122,15 @@ class ElasticSearch
     /**
      * @return \Elastica\Index
      */
-    protected function getIndex($indexname = null)
+    protected function getIndex()
     {
         if (null === $this->index) {
             $connection = $this->getConnection();
-            if (null === $indexname) {
-                $this->index = $connection->getIndex(self::ES_INDEX_PREFIX . date(self::ES_INDEX_DATE));
-                if (!$this->index->exists()) {
-                    $indexSettings = file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . 'ElasticSearch_Index.json');
-                    $indexSettings = json_decode($indexSettings, true);
-                    $this->index->create($indexSettings);
-                }
-            } else {
-                $this->index = $connection->getIndex($indexname);
+            $this->index = $connection->getIndex(self::ES_INDEX_PREFIX . date(self::ES_INDEX_DATE));
+            if (!$this->index->exists()) {
+                $indexSettings = file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . 'ElasticSearch_Index.json');
+                $indexSettings = json_decode($indexSettings, true);
+                $this->index->create($indexSettings);
             }
         }
         return $this->index;
@@ -168,15 +164,20 @@ class ElasticSearch
     }
 
     /**
+     * refresh index and add alias
+     *
      * @return self
      */
     public function setAlias($alias)
     {
+        $this->getIndex()->refresh();
         $this->getIndex()->addAlias($alias, true);
         return $this;
     }
 
     /**
+     * Drop all old indice with the prefix ES_INDEX_PREFIX and no alias
+     *
      * @return self
      */
     public function dropOldIndex()
@@ -187,7 +188,10 @@ class ElasticSearch
         $currentIndex = $this->getIndex()->getName();
         foreach ($indexList as $index) {
             if ($currentIndex != $index && 0 === strpos($index, self::ES_INDEX_PREFIX)) {
-                $client->getIndex($index)->delete();
+                $candidateIndex = $client->getIndex($index);
+                if (!$candidateIndex->getStatus()->getAliases()) {
+                    $candidateIndex->delete();
+                }
             }
         }
         return $this;

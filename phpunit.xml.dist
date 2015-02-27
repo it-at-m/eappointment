@@ -12,11 +12,8 @@
          bootstrap="tests/bootstrap.php"
 >
     <testsuites>
-        <testsuite name="D115 Test Suite">
-            <directory>./tests/D115Mandant/</directory>
-        </testsuite>
-        <testsuite name="Mellon Test Suite">
-            <directory>./tests/Mellon/</directory>
+        <testsuite name="Dldb">
+            <directory>./tests/Dldb/</directory>
         </testsuite>
     </testsuites>
     <filter>
