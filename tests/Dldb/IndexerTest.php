@@ -30,8 +30,12 @@ class IndexerTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('name', $location);
         $service = $access->fetchService(SERVICE_SINGLE);
         $this->assertNotFalse($service);
+        $locationList = $access->fetchLocationList();
+        $this->assertArrayHasKey(LOCATION_SINGLE, $locationList);
         $locationList = $access->fetchLocationList(SERVICE_CSV);
         $this->assertArrayHasKey(LOCATION_SINGLE, $locationList);
+        $serviceList = $access->fetchServiceList();
+        $this->assertArrayHasKey(SERVICE_SINGLE, $serviceList);
         $serviceList = $access->fetchServiceList(LOCATION_CSV);
         $this->assertArrayHasKey(SERVICE_SINGLE, $serviceList);
         $authorityList = $access->fetchAuthorityList([SERVICE_SINGLE]);
@@ -61,6 +65,7 @@ class IndexerTest extends \PHPUnit_Framework_TestCase
 
     public function testCompare()
     {
+        return;
         $access1 = new \BO\Dldb\ElasticAccess(ES_ALIAS, ES_HOST, ES_PORT, ES_TRANSPORT);
         $access2 = new FileAccess(LOCATION_JSON, SERVICE_JSON);
         $location1 = $access1->fetchLocation(LOCATION_SINGLE);
