@@ -176,4 +176,34 @@ class FileAccess
         ksort($authoritylist);
         return $authoritylist;
     }
+
+    /**
+     * @return Array
+     */
+    public function searchLocation($query, $service_csv = '')
+    {
+        $locationlist = $this->fetchLocationList($service_csv);
+        $locationlist = array_filter(
+            $locationlist,
+            function ($item) use ($query) {
+                return false !== strpos($item['name'], $query);
+            }
+        );
+        return $locationlist;
+    }
+
+    /**
+     * @return Array
+     */
+    public function searchService($query, $location_csv = '')
+    {
+        $servicelist = $this->fetchServiceList($location_csv);
+        $servicelist = array_filter(
+            $servicelist,
+            function ($item) use ($query) {
+                return false !== strpos($item['name'], $query);
+            }
+        );
+        return $servicelist;
+    }
 }

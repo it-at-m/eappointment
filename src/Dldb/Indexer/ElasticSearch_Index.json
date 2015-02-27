@@ -68,6 +68,7 @@
                "type" : "string"
             },
             "services" : {
+               "include_in_all": false,
                "properties" : {
                   "appointment" : {
                      "properties" : {

@@ -20,11 +20,13 @@ class Location extends Base
     {
         $location = $this->getData();
         $servicecompare = explode(',', $service_csv);
+        $servicecount = array();
         foreach ($location['services'] as $serviceinfo) {
-            if (in_array($serviceinfo['service'], $servicecompare)) {
-                return true;
+            $service_id = $serviceinfo['service'];
+            if (in_array($service_id, $servicecompare)) {
+                $servicecount[$service_id] = $service_id;
             }
         }
-        return false;
+        return count($servicecount) == count($servicecompare);
     }
 }
