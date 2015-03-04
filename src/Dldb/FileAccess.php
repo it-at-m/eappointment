@@ -9,7 +9,7 @@ namespace BO\Dldb;
 /**
  *
  */
-class FileAccess
+class FileAccess extends AbstractAccess
 {
 
     /**
@@ -195,9 +195,9 @@ class FileAccess
     /**
      * @return Array
      */
-    public function searchService($query, $location_csv = '')
+    public function searchService($query, $service_csv = '')
     {
-        $servicelist = $this->fetchServiceList($location_csv);
+        $servicelist = $this->fetchServiceCombinations($service_csv);
         $servicelist = array_filter(
             $servicelist,
             function ($item) use ($query) {

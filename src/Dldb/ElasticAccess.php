@@ -194,6 +194,9 @@ class ElasticAccess extends FileAccess
      */
     public function searchLocation($query, $service_csv = '')
     {
+        if ('' === trim($query)) {
+            $query = '*';
+        }
         $searchquery = new \Elastica\Query\QueryString($query);
         $filter = null;
         if ($service_csv) {
@@ -212,8 +215,12 @@ class ElasticAccess extends FileAccess
     /**
      * @return Array
      */
-    public function searchService($query, $location_csv = '')
+    public function searchService($query, $service_csv = '')
     {
+        $location_csv = $this->fetchServiceLocationCsv($service_csv);
+        if ('' === trim($query)) {
+            $query = '*';
+        }
         $searchquery = new \Elastica\Query\QueryString($query);
         $filter = null;
         if ($location_csv) {
