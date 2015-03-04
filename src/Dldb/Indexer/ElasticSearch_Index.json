@@ -62,7 +62,16 @@
                }
             },
             "name" : {
-               "type" : "string"
+               "type" : "multi_field",
+               "fields" : {
+                   "name": {
+                       "type": "string"
+                   },
+                   "az": {
+                       "type": "string",
+                       "index": "not_analyzed"
+                   }
+               }
             },
             "paymentcode" : {
                "type" : "string"
