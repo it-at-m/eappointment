@@ -2,6 +2,93 @@
    "mappings" : {
       "location" : {
          "properties" : {
+            "opening_times" : {
+               "properties" : {
+                  "friday" : {
+                     "type" : "string"
+                  },
+                  "monday" : {
+                     "type" : "string"
+                  },
+                  "tuesday" : {
+                     "type" : "string"
+                  },
+                  "sunday" : {
+                     "type" : "boolean"
+                  },
+                  "wednesday" : {
+                     "type" : "string"
+                  },
+                  "special" : {
+                     "type" : "boolean"
+                  },
+                  "saturday" : {
+                     "type" : "boolean"
+                  },
+                  "thursday" : {
+                     "type" : "string"
+                  }
+               }
+            },
+            "transit" : {
+               "properties" : {
+                  "sbahn" : {
+                     "type" : "string"
+                  },
+                  "tram" : {
+                     "type" : "string"
+                  },
+                  "ubahn" : {
+                     "type" : "string"
+                  },
+                  "bus" : {
+                     "type" : "string"
+                  }
+               }
+            },
+            "services" : {
+               "include_in_all" : false,
+               "properties" : {
+                  "contact" : {
+                     "properties" : {
+                        "email" : {
+                           "type" : "string"
+                        },
+                        "phone" : {
+                           "type" : "string"
+                        },
+                        "fax" : {
+                           "type" : "string"
+                        },
+                        "name" : {
+                           "type" : "string"
+                        }
+                     }
+                  },
+                  "service" : {
+                     "type" : "string"
+                  },
+                  "appointment" : {
+                     "properties" : {
+                        "link" : {
+                           "type" : "string"
+                        },
+                        "external" : {
+                           "type" : "boolean"
+                        },
+                        "allowed" : {
+                           "type" : "boolean"
+                        },
+                        "slots" : {
+                           "type" : "string"
+                        }
+                     }
+                  },
+                  "hint" : {
+                     "type" : "string"
+                  }
+               }
+            },
             "meta" : {
                "properties" : {
                   "lastupdate" : {
@@ -13,6 +100,28 @@
                   }
                }
             },
+            "address" : {
+               "properties" : {
+                  "city" : {
+                     "type" : "string"
+                  },
+                  "postal_code" : {
+                     "type" : "string"
+                  },
+                  "house_number" : {
+                     "type" : "string"
+                  },
+                  "street" : {
+                     "type" : "string"
+                  }
+               }
+            },
+            "payment" : {
+               "type" : "string"
+            },
+            "paymentcode" : {
+               "type" : "string"
+            },
             "geo" : {
                "properties" : {
                   "lon" : {
@@ -23,12 +132,66 @@
                   }
                }
             },
-            "contact" : {
+            "accessibility" : {
                "properties" : {
-                  "email" : {
+                  "parking" : {
                      "type" : "string"
                   },
+                  "note" : {
+                     "type" : "boolean"
+                  },
+                  "elevator" : {
+                     "type" : "string"
+                  },
+                  "access" : {
+                     "type" : "string"
+                  },
+                  "wc" : {
+                     "type" : "string"
+                  }
+               }
+            },
+            "appointment" : {
+               "properties" : {
+                  "note" : {
+                     "type" : "string"
+                  }
+               }
+            },
+            "id" : {
+               "type" : "string"
+            },
+            "authority" : {
+               "properties" : {
+                  "id" : {
+                     "type" : "string"
+                  },
+                  "name" : {
+                     "type" : "string"
+                  }
+               }
+            },
+            "note" : {
+               "type" : "string"
+            },
+            "name" : {
+               "type" : "multi_field",
+               "fields" : {
+                  "az" : {
+                     "index" : "not_analyzed",
+                     "type" : "string"
+                  },
+                  "name" : {
+                     "type" : "string"
+                  }
+               }
+            },
+            "contact" : {
+               "properties" : {
                   "phone" : {
+                     "type" : "string"
+                  },
+                  "email" : {
                      "type" : "string"
                   },
                   "webinfo" : {
@@ -38,206 +201,158 @@
                      "type" : "string"
                   }
                }
+            }
+         }
+      },
+      "service" : {
+         "properties" : {
+            "requirements" : {
+               "properties" : {
+                  "link" : {
+                     "type" : "string"
+                  },
+                  "description" : {
+                     "type" : "boolean"
+                  },
+                  "name" : {
+                     "type" : "string"
+                  }
+               }
+            },
+            "forms" : {
+               "properties" : {
+                  "name" : {
+                     "type" : "string"
+                  },
+                  "description" : {
+                     "type" : "boolean"
+                  },
+                  "link" : {
+                     "type" : "string"
+                  }
+               }
+            },
+            "prerequisites" : {
+               "properties" : {
+                  "link" : {
+                     "type" : "string"
+                  },
+                  "description" : {
+                     "type" : "boolean"
+                  },
+                  "name" : {
+                     "type" : "string"
+                  }
+               }
+            },
+            "leika" : {
+               "type" : "string"
+            },
+            "fees" : {
+               "type" : "string"
+            },
+            "links" : {
+               "properties" : {
+                  "link" : {
+                     "type" : "string"
+                  },
+                  "description" : {
+                     "type" : "boolean"
+                  },
+                  "name" : {
+                     "type" : "string"
+                  }
+               }
+            },
+            "responsibility_all" : {
+               "type" : "string"
+            },
+            "description" : {
+               "type" : "string"
+            },
+            "locations" : {
+               "properties" : {
+                  "hint" : {
+                     "type" : "string"
+                  },
+                  "location" : {
+                     "type" : "string"
+                  }
+               }
             },
             "id" : {
                "type" : "string"
             },
-            "note" : {
+            "process_time" : {
                "type" : "string"
             },
-            "address" : {
+            "legal" : {
                "properties" : {
-                  "street" : {
+                  "link" : {
                      "type" : "string"
                   },
-                  "city" : {
+                  "description" : {
+                     "type" : "boolean"
+                  },
+                  "name" : {
+                     "type" : "string"
+                  }
+               }
+            },
+            "publications" : {
+               "properties" : {
+                  "name" : {
                      "type" : "string"
                   },
-                  "postal_code" : {
+                  "link" : {
                      "type" : "string"
                   },
-                  "house_number" : {
-                     "type" : "string"
+                  "description" : {
+                     "type" : "boolean"
                   }
                }
             },
             "name" : {
                "type" : "multi_field",
                "fields" : {
-                   "name": {
-                       "type": "string"
-                   },
-                   "az": {
-                       "type": "string",
-                       "index": "not_analyzed"
-                   }
-               }
-            },
-            "paymentcode" : {
-               "type" : "string"
-            },
-            "services" : {
-               "include_in_all": false,
-               "properties" : {
-                  "appointment" : {
-                     "properties" : {
-                        "external" : {
-                           "type" : "boolean"
-                        },
-                        "slots" : {
-                           "type" : "string"
-                        },
-                        "allowed" : {
-                           "type" : "boolean"
-                        },
-                        "link" : {
-                           "type" : "string"
-                        }
-                     }
-                  },
-                  "service" : {
+                  "az" : {
+                     "index" : "not_analyzed",
                      "type" : "string"
                   },
-                  "hint" : {
-                     "type" : "string"
-                  },
-                  "contact" : {
-                      "properties" : {
-                          "name": {
-                              "type": "string"
-                          },
-                          "phone": {
-                              "type": "string"
-                          },
-                          "fax": {
-                              "type": "string"
-                          },
-                          "email": {
-                              "type": "string"
-                          }
-                      }
-                  }
-               }
-            },
-            "transit" : {
-               "properties" : {
-                  "ubahn" : {
-                     "type" : "string"
-                  },
-                  "tram" : {
-                     "type" : "string"
-                  },
-                  "bus" : {
-                     "type" : "string"
-                  },
-                  "sbahn" : {
-                     "type" : "string"
-                  }
-               }
-            },
-            "authority" : {
-               "properties" : {
                   "name" : {
                      "type" : "string"
-                  },
-                  "id" : {
-                     "type" : "string"
                   }
                }
             },
-            "opening_times" : {
+            "meta" : {
                "properties" : {
-                  "thursday" : {
-                     "type" : "string"
+                  "lastupdate" : {
+                     "format" : "dateOptionalTime",
+                     "type" : "date"
                   },
-                  "saturday" : {
-                     "type" : "boolean"
-                  },
-                  "sunday" : {
-                     "type" : "boolean"
-                  },
-                  "monday" : {
-                     "type" : "string"
-                  },
-                  "tuesday" : {
-                     "type" : "string"
-                  },
-                  "special" : {
-                     "type" : "boolean"
-                  },
-                  "friday" : {
-                     "type" : "string"
-                  },
-                  "wednesday" : {
+                  "keywords" : {
                      "type" : "string"
                   }
                }
             },
-            "payment" : {
-               "type" : "string"
-            },
-            "appointment" : {
+            "onlineprocessing" : {
                "properties" : {
-                  "note" : {
+                  "link" : {
                      "type" : "string"
+                  },
+                  "description" : {
+                     "type" : "boolean"
                   }
                }
             },
-            "accessibility" : {
-               "properties" : {
-                  "note" : {
-                     "type" : "boolean"
-                  },
-                  "access" : {
-                     "type" : "string"
-                  },
-                  "wc" : {
-                     "type" : "string"
-                  },
-                  "parking" : {
-                     "type" : "string"
-                  },
-                  "elevator" : {
-                     "type" : "string"
-                  }
-               }
+            "responsibility" : {
+               "type" : "boolean"
             }
          }
       }
    },
    "settings" : {
       "analysis" : {
-         "analyzer" : {
-            "azSortLower" : {
-               "filter" : [
-                  "asciifolding",
-                  "lowercase"
-               ],
-               "tokenizer" : "keyword",
-               "type" : "custom"
-            },
-            "boid" : {
-               "char_filter" : [
-                  "boid_mapping"
-               ],
-               "tokenizer" : "keyword",
-               "type" : "custom",
-               "filter" : [
-                  "asciifolding",
-                  "lowercase"
-               ]
-            },
-            "german2" : {
-               "filter" : [
-                  "icu_normalizer",
-                  "icu_folding",
-                  "lowercase",
-                  "snowball_german2"
-               ],
-               "type" : "custom",
-               "tokenizer" : "standard"
-            }
-         },
          "char_filter" : {
             "boid_mapping" : {
                "type" : "mapping",
@@ -252,6 +367,37 @@
                ]
             }
          },
+         "analyzer" : {
+            "azSortLower" : {
+               "tokenizer" : "keyword",
+               "type" : "custom",
+               "filter" : [
+                  "asciifolding",
+                  "lowercase"
+               ]
+            },
+            "german2" : {
+               "tokenizer" : "standard",
+               "type" : "custom",
+               "filter" : [
+                  "icu_normalizer",
+                  "icu_folding",
+                  "lowercase",
+                  "snowball_german2"
+               ]
+            },
+            "boid" : {
+               "filter" : [
+                  "asciifolding",
+                  "lowercase"
+               ],
+               "char_filter" : [
+                  "boid_mapping"
+               ],
+               "tokenizer" : "keyword",
+               "type" : "custom"
+            }
+         },
          "filter" : {
             "snowball_german2" : {
                "language" : "German2",
@@ -259,8 +405,7 @@
             }
          }
       },
-      "number_of_replicas" : "1",
-      "number_of_shards" : "1"
+      "number_of_shards" : "1",
+      "number_of_replicas" : "1"
    }
 }
-
