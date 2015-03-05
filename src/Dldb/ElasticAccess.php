@@ -221,6 +221,8 @@ class ElasticAccess extends FileAccess
             $query = '*';
         }
         $searchquery = new \Elastica\Query\QueryString($query);
+        $searchquery->setFields(['name^9','keywords^5']);
+        $searchquery->setLowercaseExpandedTerms(false);
         $filter = null;
         if ($location_csv) {
             $filter = new \Elastica\Filter\Terms('locations.location', explode(',', $location_csv));
