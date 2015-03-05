@@ -377,7 +377,7 @@
                ]
             },
             "german2" : {
-               "tokenizer" : "standard",
+               "tokenizer" : "nGram",
                "type" : "custom",
                "filter" : [
                   "icu_normalizer",
