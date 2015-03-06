@@ -202,7 +202,7 @@ class ElasticAccess extends FileAccess
             $filter = new \Elastica\Filter\Terms('services.service', explode(',', $service_csv));
         }
         $query = new \Elastica\Query\Filtered($searchquery, $filter);
-        $resultList = $this->getIndex()->getType('location')->search($query, 100);
+        $resultList = $this->getIndex()->getType('location')->search($query, 1000);
         $locationList = array();
         foreach ($resultList as $result) {
             $location = $result->getData();
@@ -228,7 +228,7 @@ class ElasticAccess extends FileAccess
             $filter = new \Elastica\Filter\Terms('locations.location', explode(',', $location_csv));
         }
         $query = new \Elastica\Query\Filtered($searchquery, $filter);
-        $resultList = $this->getIndex()->getType('service')->search($query, 100);
+        $resultList = $this->getIndex()->getType('service')->search($query, 1000);
         $serviceList = array();
         foreach ($resultList as $result) {
             $service = $result->getData();
