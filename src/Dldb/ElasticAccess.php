@@ -201,18 +201,28 @@ class ElasticAccess extends FileAccess
             $query = '*';
         }
         $searchquery = new \Elastica\Query\QueryString($query);
+        $searchquery->setFields(['name^9','authority.name^5']);
+        $searchquery->setLowercaseExpandedTerms(false);
         $filter = null;
         if ($service_csv) {
             $filter = new \Elastica\Filter\Terms('services.service', explode(',', $service_csv));
         }
         $query = new \Elastica\Query\Filtered($searchquery, $filter);
         $resultList = $this->getIndex()->getType('location')->search($query, 1000);
-        $locationList = array();
+        $authoritylist = array();
         foreach ($resultList as $result) {
             $location = $result->getData();
-            $locationList[$location['id']] = $location;
+            if (array_key_exists('authority', $location)) {
+                if (!array_key_exists($location['authority']['id'], $authoritylist)) {
+                    $authoritylist[$location['authority']['id']] = array(
+                        "name"          => $location['authority']['name'],
+                        "locations"     => array()
+                    );
+                }
+                $authoritylist[$location['authority']['id']]['locations'][] = $location;
+            }
         }
-        return $locationList;
+        return $authoritylist;
     }
 
     /**
