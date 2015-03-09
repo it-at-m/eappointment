@@ -82,13 +82,15 @@ class ElasticAccess extends FileAccess
      */
     public function fetchLocation($location_id)
     {
-        $filter = new \Elastica\Filter\Ids();
-        $filter->setIds($location_id);
-        $query = \Elastica\Query::create($filter);
-        $result = $this->getIndex()->getType('location')->search($query);
-        if ($result->count() == 1) {
-            $locationList = $result->getResults();
-            return $locationList[0]->getData();
+        if ($location_id) {
+            $filter = new \Elastica\Filter\Ids();
+            $filter->setIds($location_id);
+            $query = \Elastica\Query::create($filter);
+            $result = $this->getIndex()->getType('location')->search($query);
+            if ($result->count() == 1) {
+                $locationList = $result->getResults();
+                return $locationList[0]->getData();
+            }
         }
         return false;
     }
@@ -134,13 +136,15 @@ class ElasticAccess extends FileAccess
      */
     public function fetchService($service_id)
     {
-        $filter = new \Elastica\Filter\Ids();
-        $filter->setIds($service_id);
-        $query = \Elastica\Query::create($filter);
-        $result = $this->getIndex()->getType('service')->search($query);
-        if ($result->count() == 1) {
-            $locationList = $result->getResults();
-            return $locationList[0]->getData();
+        if ($service_id) {
+            $filter = new \Elastica\Filter\Ids();
+            $filter->setIds($service_id);
+            $query = \Elastica\Query::create($filter);
+            $result = $this->getIndex()->getType('service')->search($query);
+            if ($result->count() == 1) {
+                $locationList = $result->getResults();
+                return $locationList[0]->getData();
+            }
         }
         return false;
     }
