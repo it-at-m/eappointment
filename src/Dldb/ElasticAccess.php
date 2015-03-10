@@ -206,6 +206,7 @@ class ElasticAccess extends FileAccess
         $filter = null;
         if ($service_csv) {
             $filter = new \Elastica\Filter\Terms('services.service', explode(',', $service_csv));
+            $filter->setExecution('and');
         }
         $query = new \Elastica\Query\Filtered($searchquery, $filter);
         $resultList = $this->getIndex()->getType('location')->search($query, 1000);
@@ -240,6 +241,7 @@ class ElasticAccess extends FileAccess
         $filter = null;
         if ($location_csv) {
             $filter = new \Elastica\Filter\Terms('locations.location', explode(',', $location_csv));
+            $filter->setExecution('and');
         }
         $query = new \Elastica\Query\Filtered($searchquery, $filter);
         $resultList = $this->getIndex()->getType('service')->search($query, 1000);
