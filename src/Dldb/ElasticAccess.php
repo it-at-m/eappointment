@@ -173,7 +173,10 @@ class ElasticAccess extends FileAccess
     public function fetchAuthorityList(Array $servicelist)
     {
         $authoritylist = array();
-        $filter = new \Elastica\Filter\Terms('services.service', $servicelist);
+        $filter = null;
+        if (count($servicelist)) {
+            $filter = new \Elastica\Filter\Terms('services.service', $servicelist);
+        }
         $query = \Elastica\Query::create($filter);
         $resultList = $this->getIndex()->getType('location')->search($query, 10000);
         foreach ($resultList as $result) {
@@ -223,15 +226,20 @@ class ElasticAccess extends FileAccess
                 $authoritylist[$location['authority']['id']]['locations'][] = $location;
             }
         }
+        uasort($authoritylist, function ($left, $right) {
+            return strcmp($left['name'], $right['name']);
+        });
         return $authoritylist;
     }
 
     /**
      * @return Array
      */
-    public function searchService($query, $service_csv = '')
+    public function searchService($query, $service_csv = '', $location_csv = '')
     {
-        $location_csv = $this->fetchServiceLocationCsv($service_csv);
+        if (!$location_csv) {
+            $location_csv = $this->fetchServiceLocationCsv($service_csv);
+        }
         if ('' === trim($query)) {
             $query = '*';
         }
