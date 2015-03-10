@@ -353,20 +353,6 @@
    },
    "settings" : {
       "analysis" : {
-         "char_filter" : {
-            "boid_mapping" : {
-               "type" : "mapping",
-               "mappings" : [
-                  "ä=>ae",
-                  "ü=>ue",
-                  "ö=>oe",
-                  "Ä=>ae",
-                  "Ü=>ue",
-                  "Ö=>oe",
-                  "ß=>ss"
-               ]
-            }
-         },
          "analyzer" : {
             "azSortLower" : {
                "tokenizer" : "keyword",
@@ -385,17 +371,6 @@
                   "lowercase",
                   "snowball_german2"
                ]
-            },
-            "boid" : {
-               "filter" : [
-                  "asciifolding",
-                  "lowercase"
-               ],
-               "char_filter" : [
-                  "boid_mapping"
-               ],
-               "tokenizer" : "keyword",
-               "type" : "custom"
             }
          },
          "filter" : {
