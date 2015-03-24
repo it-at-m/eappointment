@@ -201,18 +201,25 @@ class ElasticAccess extends FileAccess
      */
     public function searchLocation($query, $service_csv = '')
     {
+        $boolquery = new \Elastica\Query\Bool();
+        $searchquery = new \Elastica\Query\QueryString();
         if ('' === trim($query)) {
-            $query = '*';
+            $searchquery->setQuery('*');
+        } else {
+            $searchquery->setQuery($query);
         }
-        $searchquery = new \Elastica\Query\QueryString($query);
         $searchquery->setFields(['name^9','authority.name^5']);
         $searchquery->setLowercaseExpandedTerms(false);
+        $boolquery->addShould($searchquery);
+        $prefixquery = new \Elastica\Query\Prefix();
+        $prefixquery->setPrefix('az', preg_replace('#~\d$#', '', $query), 10);
+        $boolquery->addShould($prefixquery);
         $filter = null;
         if ($service_csv) {
             $filter = new \Elastica\Filter\Terms('services.service', explode(',', $service_csv));
             $filter->setExecution('and');
         }
-        $query = new \Elastica\Query\Filtered($searchquery, $filter);
+        $query = new \Elastica\Query\Filtered($boolquery, $filter);
         $resultList = $this->getIndex()->getType('location')->search($query, 1000);
         $authoritylist = array();
         foreach ($resultList as $result) {
@@ -241,17 +248,24 @@ class ElasticAccess extends FileAccess
         if (!$location_csv) {
             $location_csv = $this->fetchServiceLocationCsv($service_csv);
         }
+        $boolquery = new \Elastica\Query\Bool();
+        $searchquery = new \Elastica\Query\QueryString();
         if ('' === trim($query)) {
-            $query = '*';
+            $searchquery->setQuery('*');
+        } else {
+            $searchquery->setQuery($query);
         }
-        $searchquery = new \Elastica\Query\QueryString($query);
         $searchquery->setFields(['name^9','keywords^5']);
         $searchquery->setLowercaseExpandedTerms(false);
+        $boolquery->addShould($searchquery);
+        $prefixquery = new \Elastica\Query\Prefix();
+        $prefixquery->setPrefix('az', preg_replace('#~\d$#', '', $query), 10);
+        $boolquery->addShould($prefixquery);
         $filter = null;
         if ($location_csv) {
             $filter = new \Elastica\Filter\Terms('locations.location', explode(',', $location_csv));
         }
-        $query = new \Elastica\Query\Filtered($searchquery, $filter);
+        $query = new \Elastica\Query\Filtered($boolquery, $filter);
         $resultList = $this->getIndex()->getType('service')->search($query, 1000);
         $serviceList = array();
         foreach ($resultList as $result) {
