@@ -120,6 +120,7 @@ class ElasticAccess extends FileAccess
         $filter = null;
         if ($location_csv) {
             $filter = new \Elastica\Filter\Terms('locations.location', explode(',', $location_csv));
+            $filter->setExecution('and');
         }
         $query = \Elastica\Query::create($filter);
         $resultList = $this->getIndex()->getType('service')->search($query, 10000);
