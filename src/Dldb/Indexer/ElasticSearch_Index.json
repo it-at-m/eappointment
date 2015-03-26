@@ -123,14 +123,7 @@
                "type" : "string"
             },
             "geo" : {
-               "properties" : {
-                  "lon" : {
-                     "type" : "string"
-                  },
-                  "lat" : {
-                     "type" : "string"
-                  }
-               }
+               "type" : "geo_point"
             },
             "accessibility" : {
                "properties" : {
@@ -178,7 +171,7 @@
                "type" : "multi_field",
                "fields" : {
                   "az" : {
-                     "index" : "not_analyzed",
+                     "analyzer" : "az",
                      "type" : "string"
                   },
                   "name" : {
@@ -316,7 +309,7 @@
                "type" : "multi_field",
                "fields" : {
                   "az" : {
-                     "index" : "not_analyzed",
+                     "analyzer" : "az",
                      "type" : "string"
                   },
                   "name" : {
@@ -354,31 +347,33 @@
    "settings" : {
       "analysis" : {
          "analyzer" : {
-            "azSortLower" : {
+            "az" : {
                "tokenizer" : "keyword",
                "type" : "custom",
                "filter" : [
-                  "asciifolding",
-                  "lowercase"
+                  "lowercase",
+                  "azfilter"
                ]
             },
-            "german2" : {
+            "default_index" : {
                "tokenizer" : "standard",
                "type" : "custom",
                "filter" : [
                   "icu_normalizer",
                   "icu_folding",
                   "lowercase",
-                  "snowball_german2"
+                  "de_DE",
+                  "prefix"
                ]
             },
-            "ngram" : {
-               "tokenizer" : "nGram",
+            "default_search" : {
+               "tokenizer" : "standard",
                "type" : "custom",
                "filter" : [
                   "icu_normalizer",
                   "icu_folding",
-                  "lowercase"
+                  "lowercase",
+                  "de_DE"
                ]
             }
          },
@@ -387,9 +382,21 @@
                "language" : "German2",
                "type" : "snowball"
             },
-            "stemmer" : {
-                "type" : "stemmer",
-                "name" : "light_german"
+            "de_DE" : {
+                "type" : "hunspell",
+                "locale" : "de_DE"
+            },
+            "prefix" : {
+                "type": "edgeNGram",
+                "min_gram": 3,
+                "max_gram": 100,
+                "side": "front"
+            },
+            "azfilter" : {
+                "type": "edgeNGram",
+                "min_gram": 1,
+                "max_gram": 1,
+                "side": "front"
             }
          }
       },

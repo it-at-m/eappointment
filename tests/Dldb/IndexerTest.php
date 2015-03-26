@@ -67,7 +67,7 @@ class IndexerTest extends \PHPUnit_Framework_TestCase
 
     public function testCompare()
     {
-        if (!getenv('FASTTEST')) {
+        if (!getenv('FASTTEST') && !getenv('NOCOMPARE')) {
             $access1 = new \BO\Dldb\ElasticAccess(ES_ALIAS, ES_HOST, ES_PORT, ES_TRANSPORT);
             $access2 = new FileAccess(LOCATION_JSON, SERVICE_JSON);
             $location1 = $access1->fetchLocation(LOCATION_SINGLE);
@@ -99,34 +99,51 @@ class IndexerTest extends \PHPUnit_Framework_TestCase
     {
         $access = new \BO\Dldb\ElasticAccess(ES_ALIAS, ES_HOST, ES_PORT, ES_TRANSPORT);
         $serviceList = $access->searchService('');
-        $this->assertTrue($this->listContains($serviceList, 'Personalausweis'), 'Did not find "Personalausweis"');
+        $this->assertTrue(
+            $this->listContains($serviceList, 'Personalausweis'),
+            'Did not find "Personalausweis" in * search'
+        );
         $serviceList = $access->searchService('', SERVICE_SINGLE);
-        $this->assertTrue($this->listContains($serviceList, 'Reisepass'), 'Did not find "Reisepass"');
+        $this->assertTrue(
+            $this->listContains($serviceList, 'Reisepass'),
+            'Did not find "Reisepass" filtered * search'
+        );
         $serviceList = $access->searchService('', SERVICE_SINGLE, LOCATION_CSV);
-        $this->assertTrue($this->listContains($serviceList, 'Reisepass'), 'Did not find "Reisepass"');
+        $this->assertTrue(
+            $this->listContains($serviceList, 'Reisepass'),
+            'Did not find "Reisepass" in filtered search by location'
+        );
         $serviceList = $access->searchService('Personalausweis');
-        $this->assertArrayHasKey(SERVICE_SINGLE, $serviceList, 'Did not find ID for "Personalausweis"');
+        $this->assertArrayHasKey(
+            SERVICE_SINGLE,
+            $serviceList,
+            'Did not find ID for "Personalausweis" in full keyword search'
+        );
         $serviceList = $access->searchService('Perso');
-        $this->assertArrayHasKey(SERVICE_SINGLE, $serviceList, 'Did not find ID for "Personalausweis"');
+        $this->assertArrayHasKey(
+            SERVICE_SINGLE,
+            $serviceList,
+            'Did not find ID for "Personalausweis" in prefix search'
+        );
         $locationList = $access->searchLocation('');
         $this->assertTrue(
             $this->listContains($locationList, 'Bürgeramt Rathaus Spandau'),
-            'Did not find "Bürgeramt Rathaus Spandau"'
+            'Did not find "Bürgeramt Rathaus Spandau" in * search'
         );
         $locationList = $access->searchLocation('', SERVICE_SINGLE);
         $this->assertTrue(
             $this->listContains($locationList, 'Bürgeramt Rathaus Spandau'),
-            'Did not find "Bürgeramt Rathaus Spandau"'
+            'Did not find "Bürgeramt Rathaus Spandau" in filtered search'
         );
         $locationList = $access->searchLocation('Spandau', SERVICE_SINGLE);
         $this->assertTrue(
             $this->listContains($locationList, 'Bürgeramt Rathaus Spandau'),
-            'Did not find "Bürgeramt Rathaus Spandau"'
+            'Did not find "Bürgeramt Rathaus Spandau" in full keyword search'
         );
         $locationList = $access->searchLocation('Bürgeramt', SERVICE_SINGLE);
         $this->assertTrue(
             $this->listContains($locationList, 'Bürgeramt Rathaus Spandau'),
-            'Did not find "Bürgeramt Rathaus Spandau"'
+            'Did not find "Bürgeramt Rathaus Spandau" in search with special german characters'
         );
         //$this->listNames($locationList);
     }

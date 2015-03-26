@@ -208,12 +208,12 @@ class ElasticAccess extends FileAccess
         } else {
             $searchquery->setQuery($query);
         }
-        $searchquery->setFields(['name^9','authority.name^5']);
+        $searchquery->setFields(['name^9','authority.name^5', 'address.street', 'address.postal_code']);
         $searchquery->setLowercaseExpandedTerms(false);
         $boolquery->addShould($searchquery);
-        $prefixquery = new \Elastica\Query\Prefix();
-        $prefixquery->setPrefix('az', preg_replace('#~\d$#', '', $query), 10);
-        $boolquery->addShould($prefixquery);
+        //$prefixquery = new \Elastica\Query\Prefix();
+        //$prefixquery->setPrefix('name', preg_replace('#~\d$#', '', $query), 10);
+        //$boolquery->addShould($prefixquery);
         $filter = null;
         if ($service_csv) {
             $filter = new \Elastica\Filter\Terms('services.service', explode(',', $service_csv));
@@ -258,9 +258,9 @@ class ElasticAccess extends FileAccess
         $searchquery->setFields(['name^9','keywords^5']);
         $searchquery->setLowercaseExpandedTerms(false);
         $boolquery->addShould($searchquery);
-        $prefixquery = new \Elastica\Query\Prefix();
-        $prefixquery->setPrefix('az', preg_replace('#~\d$#', '', $query), 10);
-        $boolquery->addShould($prefixquery);
+        //$prefixquery = new \Elastica\Query\Prefix();
+        //$prefixquery->setPrefix('az', preg_replace('#~\d$#', '', $query), 10);
+        //$boolquery->addShould($prefixquery);
         $filter = null;
         if ($location_csv) {
             $filter = new \Elastica\Filter\Terms('locations.location', explode(',', $location_csv));
