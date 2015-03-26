@@ -55,7 +55,10 @@ try {
             //echo $item['name'] . ' (' . $item['meta']['keywords'] . ')' . "\n";
             echo $key . ' => ' . $item['name'] . "\n";
             foreach ($item['locations'] as $id => $location) {
-                echo '  ' . $id . ' => ' . $location['name'] . "\n";
+                $name = $location['name'];
+                $authority = $location['authority']['name'];
+                $street = $location['address']['street'];
+                echo "$id => $name ($street)\n";
             }
         }
     } else {
