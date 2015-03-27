@@ -1,0 +1,52 @@
+#!/usr/bin/env php
+<?php
+/**
+ * Convert a tabbed CSV to JSON using the GeoDB standard for german zip codes
+ */
+$localInclude = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR .  'vendor';
+$modulInclude = __DIR__ . str_repeat(DIRECTORY_SEPARATOR . '..', 3);
+set_include_path(get_include_path() . PATH_SEPARATOR . $localInclude . PATH_SEPARATOR . $modulInclude);
+require('autoload.php');
+
+use Garden\Cli\Cli;
+
+$cli = new Cli();
+
+$cli->description("Convert a tabbed CSV to JSON using the GeoDB standard for german zip codes")
+    ->opt('file:f', 'Path to file', true)
+    ;
+$args = $cli->parse($argv, true);
+
+$file = realpath($args->getOpt('file'));
+
+if (!is_readable($file) || is_dir($file)) {
+    echo $cli->red("$file should be a readable file\n");
+    exit(1);
+}
+
+$fieldlist = null;
+$elements = [];
+$first = true;
+echo "{\n";
+if (($handle = fopen($file, "r")) !== false) {
+    while (($data = fgetcsv($handle, 1000, "\t")) !== false) {
+        if (null === $fieldlist) {
+            $fieldlist = $data;
+        } else {
+            $plzinfo = array_combine($fieldlist, $data);
+            if ($first) {
+                $first = false;
+            } else {
+                echo ",\n";
+            }
+            printf(
+                '  "%s": { "lat": "%.8f", "lon": "%.8f" }',
+                $plzinfo['plz'],
+                $plzinfo['lat'],
+                $plzinfo['lon']
+            );
+        }
+    }
+    fclose($handle);
+}
+echo "\n}\n";

@@ -58,7 +58,8 @@ try {
                 $name = $location['name'];
                 $authority = $location['authority']['name'];
                 $street = $location['address']['street'];
-                echo "$id => $name ($street)\n";
+                $plz = $location['address']['postal_code'];
+                echo "$id => $name ($street, $plz Berlin)\n";
             }
         }
     } else {

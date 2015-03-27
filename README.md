@@ -24,7 +24,7 @@ Locations
         {
             "service": "120335", // ID der Dienstleistung
             "contact" : { // Ansprechpartner, falls vorhanden, ansonsten false
-                "name" : "Max Muster", // Name Ansprechpartners oder Bezeichnung des Ansprechpunktes/-teams 
+                "name" : "Max Muster", // Name Ansprechpartners oder Bezeichnung des Ansprechpunktes/-teams
                 "phone" : "(030) 1234-5678",
                 "fax" : "(030) 1234-5678",
                 "email" : "test@example.com"
@@ -100,7 +100,7 @@ Locations
             },
             "meta": {
                 "lastupdate": "2014-04-25T13:55:31+02:00", // Letzte Aktualisierung
-                "keywords": "Amt für Bürgerdienste,Bürgeramt,Bürgerberatung,Meldestelle,Bürgerbüro,Info,Information,Informationsmaterial,Informationsstelle,Rathaus,Rathaus-Information,Rathaus-Info,Bürger-Service,Abt. Bürgerdienste,Bürgerservice,Beratungen,Beratungsbüro,Beratungsstelle,BüA,BÜB,Büb,büb,Bürgerbüros,Bürgerämter,Bürgerbüro Reinickendorf,bübs,Bübs,Bürgerdienste,Bürgerdienste und Soziales,Bürgerhaus,Bürgerinformation,Bürger,Lohnsteuerersatzkarte,Lohnsteuerkartenersatz,Lohnsteuerkartenerstausstellung,Lohnsteuerkartenlöschung,Lohnsteuerkartenrückgabe,Lohnsteuerkartenstelle" // Schlüsselwörter, welche für die Suche verwendet werden 
+                "keywords": "Amt für Bürgerdienste,Bürgeramt,Bürgerberatung,Meldestelle,Bürgerbüro,Info,Information,Informationsmaterial,Informationsstelle,Rathaus,Rathaus-Information,Rathaus-Info,Bürger-Service,Abt. Bürgerdienste,Bürgerservice,Beratungen,Beratungsbüro,Beratungsstelle,BüA,BÜB,Büb,büb,Bürgerbüros,Bürgerämter,Bürgerbüro Reinickendorf,bübs,Bübs,Bürgerdienste,Bürgerdienste und Soziales,Bürgerhaus,Bürgerinformation,Bürger,Lohnsteuerersatzkarte,Lohnsteuerkartenersatz,Lohnsteuerkartenerstausstellung,Lohnsteuerkartenlöschung,Lohnsteuerkartenrückgabe,Lohnsteuerkartenstelle" // Schlüsselwörter, welche für die Suche verwendet werden
             },
     }]
 }
@@ -246,10 +246,24 @@ Services
          },
          "meta" : {
             "lastupdate" : "2013-11-25T11:12:04+02:00", // letzte Aktualisierung der Dienstleistung
-            "keywords" : "Unterhaltsvorschuss, Kind, alleinerziehend, Sozialleistung" 
+            "keywords" : "Unterhaltsvorschuss, Kind, alleinerziehend, Sozialleistung"
          },
          "description" : "Der Unterhaltsvorschuss soll übergangsweise eine besondere Hilfe für alleinerziehende Eltern sein. Der ausfallende Unterhalt soll zumindest zum Teil ausgeglichen werden, ohne den unterhaltspflichtigen Elternteil aus der Verantwortung zu entlassen.\r\nSie können Unterhaltsvorschussleistungen beantragen, wenn Sie alleinerziehend sind und für Ihr noch nicht zwölf Jahre altes Kind keinen Unterhalt vom anderen Elternteil und keine Waisenbezüge mindestens in Höhe der Unterhaltsvorschussleistungen erhalten.\r\nUnterhaltsvorschussleistungen werden für längstens 72 Monate erbracht. Die Vorschussleistung ist grundsätzlich vom anderen Elternteil zu erstatten.\r\n" // Beschreibung der Dienstleistung
       }
    ]
 }
 ```
+---------------------
+Usage of postal codes
+---------------------
+
+The used postal codes were fetched from http://opengeodb.org/wiki/OpenGeoDB_Downloads
+
+To update the list:
+
+* wget http://www.fa-technik.adfc.de/code/opengeodb/PLZ.tab
+* grep BERLIN PLZ.tab > src/Dldb/Plz/PLZ_Berlin.tab
+* bin/geoDbPlz2Json -f src/Dldb/Plz/PLZ_Berlin.tab > src/Dldb/Plz/plz_geodb.json
+* rm PLZ.tab
+
+

@@ -173,54 +173,16 @@ class ElasticAccess extends FileAccess
      */
     public function fetchAuthorityList(Array $servicelist)
     {
-        $authoritylist = array();
         $filter = null;
         if (count($servicelist)) {
             $filter = new \Elastica\Filter\Terms('services.service', $servicelist);
         }
         $query = \Elastica\Query::create($filter);
         $resultList = $this->getIndex()->getType('location')->search($query, 10000);
-        foreach ($resultList as $result) {
-            $location = $result->getData();
-            if (array_key_exists('authority', $location)) {
-                if (!array_key_exists($location['authority']['id'], $authoritylist)) {
-                    $authoritylist[$location['authority']['id']] = array(
-                        "name"          => $location['authority']['name'],
-                        "locations"     => array()
-                    );
-                }
-                $authoritylist[$location['authority']['id']]['locations'][] = $location;
-            }
-        }
-        ksort($authoritylist);
-        return $authoritylist;
+        return $this->authorityListFromLocationResults($resultList);
     }
 
-    /**
-     * @return Array
-     */
-    public function searchLocation($query, $service_csv = '')
-    {
-        $boolquery = new \Elastica\Query\Bool();
-        $searchquery = new \Elastica\Query\QueryString();
-        if ('' === trim($query)) {
-            $searchquery->setQuery('*');
-        } else {
-            $searchquery->setQuery($query);
-        }
-        $searchquery->setFields(['name^9','authority.name^5', 'address.street', 'address.postal_code']);
-        $searchquery->setLowercaseExpandedTerms(false);
-        $boolquery->addShould($searchquery);
-        //$prefixquery = new \Elastica\Query\Prefix();
-        //$prefixquery->setPrefix('name', preg_replace('#~\d$#', '', $query), 10);
-        //$boolquery->addShould($prefixquery);
-        $filter = null;
-        if ($service_csv) {
-            $filter = new \Elastica\Filter\Terms('services.service', explode(',', $service_csv));
-            $filter->setExecution('and');
-        }
-        $query = new \Elastica\Query\Filtered($boolquery, $filter);
-        $resultList = $this->getIndex()->getType('location')->search($query, 1000);
+    protected function authorityListFromLocationResults($resultList, $sort = true) {
         $authoritylist = array();
         foreach ($resultList as $result) {
             $location = $result->getData();
@@ -234,10 +196,60 @@ class ElasticAccess extends FileAccess
                 $authoritylist[$location['authority']['id']]['locations'][] = $location;
             }
         }
-        uasort($authoritylist, function ($left, $right) {
-            return strcmp($left['name'], $right['name']);
-        });
+        if ($sort) {
+            uasort($authoritylist, function ($left, $right) {
+                return strcmp($left['name'], $right['name']);
+            });
+        }
         return $authoritylist;
+    }
+
+    /**
+     * @return Array
+     */
+    public function searchLocation($querystring, $service_csv = '')
+    {
+        $query = new \Elastica\Query();
+        $limit = 1000;
+        $sort = true;
+        $boolquery = new \Elastica\Query\Bool();
+        $searchquery = new \Elastica\Query\QueryString();
+        if ($querystring > 10000 && $querystring < 15000) {
+            // if it is a postal code, sort by distance and limit results
+            $coordinates = \BO\Dldb\Plz\Coordinates::zip2LatLon($querystring);
+            if (false !== $coordinates) {
+                $searchquery->setQuery('*');
+                $query->addSort([
+                    "_geo_distance" => [
+                        "geo" => [
+                            "lat" => $coordinates['lat'],
+                            "lon" => $coordinates['lon']
+                        ],
+                        "order" => "asc",
+                        "unit" => "km"
+                    ]
+                ]);
+                $limit = 5;
+                $sort = false;
+            }
+        } elseif ('' === trim($querystring)) {
+            // if empty, find all and trust in the filter
+            $searchquery->setQuery('*');
+        } else {
+            $searchquery->setQuery($querystring);
+        }
+        $searchquery->setFields(['name^9','authority.name^5', 'address.street', 'address.postal_code^9']);
+        $searchquery->setLowercaseExpandedTerms(false);
+        $boolquery->addShould($searchquery);
+        $filter = null;
+        if ($service_csv) {
+            $filter = new \Elastica\Filter\Terms('services.service', explode(',', $service_csv));
+            $filter->setExecution('and');
+        }
+        $filteredQuery = new \Elastica\Query\Filtered($boolquery, $filter);
+        $query->setQuery($filteredQuery);
+        $resultList = $this->getIndex()->getType('location')->search($query, $limit);
+        return $this->authorityListFromLocationResults($resultList, $sort);
     }
 
     /**
