@@ -6,37 +6,6 @@
 
 namespace BO\Dldb\Entity;
 
-class Base
+class Base extends \ArrayObject
 {
-    /**
-      * date for entity
-      *
-      * @var Array $data
-      */
-    protected $data;
-
-    /**
-     * @return self
-     */
-    public function __construct($data)
-    {
-        $this->setData($data);
-    }
-
-    /**
-     * @return self
-     */
-    protected function setData($data)
-    {
-        $this->data = $data;
-        return $this;
-    }
-
-    /**
-     * @return Array
-     */
-    protected function getData()
-    {
-        return $this->data;
-    }
 }
