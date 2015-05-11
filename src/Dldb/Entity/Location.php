@@ -18,7 +18,7 @@ class Location extends Base
      */
     public function containsService($service_csv)
     {
-        $location = $this->getData();
+        $location = $this->getArrayCopy();
         $servicecompare = explode(',', $service_csv);
         $servicecount = array();
         foreach ($location['services'] as $serviceinfo) {

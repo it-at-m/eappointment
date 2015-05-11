@@ -182,7 +182,8 @@ class ElasticAccess extends FileAccess
         return $this->authorityListFromLocationResults($resultList);
     }
 
-    protected function authorityListFromLocationResults($resultList, $sort = true) {
+    protected function authorityListFromLocationResults($resultList, $sort = true)
+    {
         $authoritylist = array();
         foreach ($resultList as $result) {
             $location = $result->getData();

@@ -23,7 +23,7 @@ class Service extends Base
      */
     public function containsLocation($location_csv)
     {
-        $service = $this->getData();
+        $service = $this->getArrayCopy();
         $locationcompare = explode(',', $location_csv);
         $locationsfound = array();
         foreach ($service['locations'] as $locationinfo) {
