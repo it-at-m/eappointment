@@ -45,34 +45,36 @@ class FileAccess extends AbstractAccess
         if (!$servicelist) {
             throw new Exception("Could not load services");
         }
+        $this->services = new Collection\Services();
+        $this->locations = new Collection\Locations();
         foreach ($locationlist['data'] as $location) {
-            $this->locations[$location['id']] = $location;
+            $this->locations[$location['id']] = new Entity\Location($location);
         }
         foreach ($servicelist['data'] as $service) {
-            $this->services[$service['id']] = $service;
+            $this->services[$service['id']] = new Entity\Service($service);
         }
     }
 
     /**
-     * @return Array
+     * @return Collection\Locations
      */
     public function fetchLocationList($service_csv = false)
     {
         $locationlist = $this->locations;
         if ($service_csv) {
-            $locationlist = array_filter(
-                $locationlist,
+            $locationlist = new Collection\Locations(array_filter(
+                (array)$locationlist,
                 function ($item) use ($service_csv) {
                     $location = new \BO\Dldb\Entity\Location($item);
                     return $location->containsService($service_csv);
                 }
-            );
+            ));
         }
         return $locationlist;
     }
 
     /**
-     * @return Array
+     * @return Entity\Location
      */
     public function fetchLocation($location_id)
     {
@@ -84,25 +86,25 @@ class FileAccess extends AbstractAccess
     }
 
     /**
-     * @return Array
+     * @return Collection\Services
      */
     public function fetchServiceList($location_csv = false)
     {
         $servicelist = $this->services;
         if ($location_csv) {
-            $servicelist = array_filter(
-                $servicelist,
+            $servicelist = new Collection\Services(array_filter(
+                (array)$servicelist,
                 function ($item) use ($location_csv) {
                     $service = new \BO\Dldb\Entity\Service($item);
                     return $service->containsLocation($location_csv);
                 }
-            );
+            ));
         }
         return $servicelist;
     }
 
     /**
-     * @return Array
+     * @return Entity\Service
      */
     public function fetchService($service_id)
     {
@@ -114,96 +116,86 @@ class FileAccess extends AbstractAccess
     }
 
     /**
-     * @return Array
+     * @return Collection\Locations
      */
     public function fetchLocationFromCsv($location_csv)
     {
-        $locationlist = array();
+        $locationlist = new Collection\Locations();
         foreach (explode(',', $location_csv) as $location_id) {
             $location = $this->fetchLocation($location_id);
             if ($location) {
                 $locationlist[$location_id] = $location;
             };
         }
-        uasort($locationlist, function ($left, $right) {
-            return strcmp($left['name'], $right['name']);
-        });
+        $locationlist->sortByName();
         return $locationlist;
     }
 
     /**
-     * @return Array
+     * @return Collection\Services
      */
     public function fetchServiceFromCsv($service_csv)
     {
-        $servicelist = array();
+        $servicelist = new Collection\Services();
         foreach (explode(',', $service_csv) as $service_id) {
             $service = $this->fetchService($service_id);
             if ($service) {
                 $servicelist[$service_id] = $service;
             }
         }
-        uasort($servicelist, function ($left, $right) {
-            return strcmp($left['name'], $right['name']);
-        });
+        $servicelist->sortByName();
         return $servicelist;
     }
 
     /**
      * fetch locations for a list of service and group by authority
-     * @return Array
+     * @return Collection\Authorities
      */
     public function fetchAuthorityList(Array $servicelist)
     {
-        $authoritylist = array();
+        $authoritylist = new Collection\Authorities();
         foreach ($servicelist as $service_id) {
             $service = $this->fetchService($service_id);
             if ($service) {
                 foreach ($service['locations'] as $locationinfo) {
                     $location = $this->fetchLocation($locationinfo['location']);
-                    if ($location && array_key_exists('authority', $location)) {
-                        if (!array_key_exists($location['authority']['id'], $authoritylist)) {
-                            $authoritylist[$location['authority']['id']] = array(
-                                "name"          => $location['authority']['name'],
-                                "locations"     => array()
-                            );
-                        }
-                        $authoritylist[$location['authority']['id']]['locations'][] = $location;
+                    if ($location) {
+                        $authoritylist->addLocation($location);
                     }
                 }
             }
         }
-        ksort($authoritylist);
+        $authoritylist->sortByName();
         return $authoritylist;
     }
 
     /**
-     * @return Array
+     * @return Collection\Locations
      */
     public function searchLocation($query, $service_csv = '')
     {
         $locationlist = $this->fetchLocationList($service_csv);
-        $locationlist = array_filter(
-            $locationlist,
+        $locationlist = new Collection\Locations(array_filter(
+            (array)$locationlist,
             function ($item) use ($query) {
                 return false !== strpos($item['name'], $query);
             }
-        );
+        ));
         return $locationlist;
     }
 
     /**
-     * @return Array
+     * @return Collection\Services
      */
     public function searchService($query, $service_csv = '')
     {
         $servicelist = $this->fetchServiceCombinations($service_csv);
-        $servicelist = array_filter(
-            $servicelist,
+        $servicelist = new Collection\Services(array_filter(
+            (array)$servicelist,
             function ($item) use ($query) {
                 return false !== strpos($item['name'], $query);
             }
-        );
+        ));
         return $servicelist;
     }
 }

@@ -29,4 +29,30 @@ class Location extends Base
         }
         return count($servicecount) == count($servicecompare);
     }
+
+    /**
+     * Check if appointments are available
+     *
+     * @param Int $service_id only check for this service_id
+     * @param Bool $external allow external links, default false
+     *
+     * @return Bool
+     */
+    public function hasAppointments($service_id = null, $external = false)
+    {
+        foreach ($this['services'] as $service) {
+            if (array_key_exists('appointment', $service)
+                && (null === $service_id || $service['service'] == $service_id)
+            ) {
+                if ($service['appointment']['allowed']) {
+                    if ($external) {
+                        return true;
+                    } elseif ($service['appointment']['external'] === false) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
 }

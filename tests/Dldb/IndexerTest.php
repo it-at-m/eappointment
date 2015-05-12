@@ -47,13 +47,13 @@ class IndexerTest extends \PHPUnit_Framework_TestCase
         $locationList = $access->fetchLocationFromCsv(LOCATION_CSV);
         $this->assertArrayHasKey(LOCATION_SINGLE, $locationList);
         $results = $access->searchLocation('Spandau', SERVICE_CSV);
-        $this->assertTrue($results > 0, "No locations found");
+        $this->assertTrue(count($results) > 0, "No locations found");
         $results = $access->searchService('Pass', LOCATION_CSV);
-        $this->assertTrue($results > 0, "No services found");
+        $this->assertTrue(count($results) > 0, "No services found");
         $results = $access->searchLocation('Spandau');
-        $this->assertTrue($results > 0, "No locations found");
+        $this->assertTrue(count($results) > 0, "No locations found");
         $results = $access->searchService('Pass');
-        $this->assertTrue($results > 0, "No services found");
+        $this->assertTrue(count($results) > 0, "No services found");
     }
 
     public function testFail()
@@ -144,6 +144,11 @@ class IndexerTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(
             $this->listContains($locationList, 'Bürgeramt Rathaus Spandau'),
             'Did not find "Bürgeramt Rathaus Spandau" in search with special german characters'
+        );
+        $locationList = $access->searchLocation('13589', SERVICE_SINGLE);
+        $this->assertTrue(
+            $this->listContains($locationList, 'Bürgeramt Rathaus Spandau'),
+            'Did not find "Bürgeramt Rathaus Spandau" in search with postal code'
         );
         //$this->listNames($locationList);
     }
