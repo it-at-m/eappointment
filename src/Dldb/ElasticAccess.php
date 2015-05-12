@@ -7,7 +7,10 @@
 namespace BO\Dldb;
 
 /**
+ * @SuppressWarnings(TooManyMethods)
  *
+ * Using elastica query classes increases object dependencies dramatically
+ * @SuppressWarnings(CouplingBetweenObjects)
  */
 class ElasticAccess extends FileAccess
 {
@@ -58,7 +61,7 @@ class ElasticAccess extends FileAccess
     }
 
     /**
-     * @return Array
+     * @return Collection\Locations
      */
     public function fetchLocationList($service_csv = '')
     {
@@ -69,16 +72,16 @@ class ElasticAccess extends FileAccess
         }
         $query = \Elastica\Query::create($filter);
         $resultList = $this->getIndex()->getType('location')->search($query, 10000);
-        $locationList = array();
+        $locationList = new Collection\Locations();
         foreach ($resultList as $result) {
-            $location = $result->getData();
+            $location = new Entity\Location($result->getData());
             $locationList[$location['id']] = $location;
         }
         return $locationList;
     }
 
     /**
-     * @return Array
+     * @return Entity\Location
      */
     public function fetchLocation($location_id)
     {
@@ -89,14 +92,14 @@ class ElasticAccess extends FileAccess
             $result = $this->getIndex()->getType('location')->search($query);
             if ($result->count() == 1) {
                 $locationList = $result->getResults();
-                return $locationList[0]->getData();
+                return new Entity\Location($locationList[0]->getData());
             }
         }
         return false;
     }
 
     /**
-     * @return Array
+     * @return Collection\Locations
      */
     public function fetchLocationFromCsv($location_csv)
     {
@@ -104,16 +107,16 @@ class ElasticAccess extends FileAccess
         $filter->setIds(explode(',', $location_csv));
         $query = \Elastica\Query::create($filter);
         $resultList = $this->getIndex()->getType('location')->search($query, 10000);
-        $locationList = array();
+        $locationList = new Collection\Locations();
         foreach ($resultList as $result) {
-            $location = $result->getData();
+            $location = new Entity\Location($result->getData());
             $locationList[$location['id']] = $location;
         }
         return $locationList;
     }
 
     /**
-     * @return Array
+     * @return Collection\Services
      */
     public function fetchServiceList($location_csv = false)
     {
@@ -124,16 +127,16 @@ class ElasticAccess extends FileAccess
         }
         $query = \Elastica\Query::create($filter);
         $resultList = $this->getIndex()->getType('service')->search($query, 10000);
-        $serviceList = array();
+        $serviceList = new Collection\Services();
         foreach ($resultList as $result) {
-            $service = $result->getData();
+            $service = new Entity\Service($result->getData());
             $serviceList[$service['id']] = $service;
         }
         return $serviceList;
     }
 
     /**
-     * @return Array
+     * @return Entity\Service
      */
     public function fetchService($service_id)
     {
@@ -144,14 +147,14 @@ class ElasticAccess extends FileAccess
             $result = $this->getIndex()->getType('service')->search($query);
             if ($result->count() == 1) {
                 $locationList = $result->getResults();
-                return $locationList[0]->getData();
+                return new Entity\Service($locationList[0]->getData());
             }
         }
         return false;
     }
 
     /**
-     * @return Array
+     * @return Collection\Services
      */
     public function fetchServiceFromCsv($service_csv)
     {
@@ -159,9 +162,9 @@ class ElasticAccess extends FileAccess
         $filter->setIds(explode(',', $service_csv));
         $query = \Elastica\Query::create($filter);
         $resultList = $this->getIndex()->getType('service')->search($query, 10000);
-        $serviceList = array();
+        $serviceList = new Collection\Services();
         foreach ($resultList as $result) {
-            $service = $result->getData();
+            $service = new Entity\Service($result->getData());
             $serviceList[$service['id']] = $service;
         }
         return $serviceList;
@@ -169,7 +172,7 @@ class ElasticAccess extends FileAccess
 
     /**
      * fetch locations for a list of service and group by authority
-     * @return Array
+     * @return Collection\Authorities
      */
     public function fetchAuthorityList(Array $servicelist)
     {
@@ -182,25 +185,20 @@ class ElasticAccess extends FileAccess
         return $this->authorityListFromLocationResults($resultList);
     }
 
+    /**
+     * Take an elasticsearch result and return a authority list
+     *
+     * @return Collection\Authorities
+     */
     protected function authorityListFromLocationResults($resultList, $sort = true)
     {
-        $authoritylist = array();
+        $authoritylist = new Collection\Authorities();
         foreach ($resultList as $result) {
-            $location = $result->getData();
-            if (array_key_exists('authority', $location)) {
-                if (!array_key_exists($location['authority']['id'], $authoritylist)) {
-                    $authoritylist[$location['authority']['id']] = array(
-                        "name"          => $location['authority']['name'],
-                        "locations"     => array()
-                    );
-                }
-                $authoritylist[$location['authority']['id']]['locations'][] = $location;
-            }
+            $location = new Entity\Location($result->getData());
+            $authoritylist->addLocation($location);
         }
         if ($sort) {
-            uasort($authoritylist, function ($left, $right) {
-                return strcmp($left['name'], $right['name']);
-            });
+            $authoritylist->sortByName();
         }
         return $authoritylist;
     }
@@ -254,7 +252,7 @@ class ElasticAccess extends FileAccess
     }
 
     /**
-     * @return Array
+     * @return Collection\Services
      */
     public function searchService($query, $service_csv = '', $location_csv = '')
     {
@@ -280,9 +278,9 @@ class ElasticAccess extends FileAccess
         }
         $query = new \Elastica\Query\Filtered($boolquery, $filter);
         $resultList = $this->getIndex()->getType('service')->search($query, 1000);
-        $serviceList = array();
+        $serviceList = new Collection\Services();
         foreach ($resultList as $result) {
-            $service = $result->getData();
+            $service = new Entity\Service($result->getData());
             $serviceList[$service['id']] = $service;
         }
         return $serviceList;

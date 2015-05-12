@@ -30,9 +30,9 @@ class FileTest extends \PHPUnit_Framework_TestCase
         $locationList = $access->fetchLocationFromCsv(LOCATION_CSV);
         $this->assertArrayHasKey(LOCATION_SINGLE, $locationList);
         $results = $access->searchLocation('Spandau', SERVICE_CSV);
-        $this->assertTrue($results > 0, "No locations found");
+        $this->assertTrue(count($results) > 0, "No locations found");
         $results = $access->searchService('Pass', LOCATION_CSV);
-        $this->assertTrue($results > 0, "No services found");
+        $this->assertTrue(count($results) > 0, "No services found");
     }
 
     public function testFail()
