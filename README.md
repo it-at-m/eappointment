@@ -224,19 +224,14 @@ Services
          "locations" : [ // Standorte, an denen die Dienstleistung angeboten wird
             {
                "location" : "326065", // ID des Standortes
+               "appointment" : {
+                  "link" : "/terminvereinbarung/termin/tag.php?termin=1&amp;dienstleister=121649&amp;anliegen[]=326423", // Link zur Terminvereinbarung
+                  "allowed" : true, // TRUE wenn eine Terminbuchung erlaubt ist
+                  "slots" : "0", // Anzahl der Slots
+                  "external" : false, // TRUE wenn die Terminbuchung nicht über den Default-Weg geht
+                  "multiple" : "0" // 1 wenn mehrere Dienstleistungen für einen Termin erlaubt sind
+               },
                "hint" : "" // Hinweis zur Zuständigkeit des Standortes
-            },
-            {
-               "location" : "123593",
-               "hint" : ""
-            },
-            {
-               "location" : "123597",
-               "hint" : ""
-            },
-            {
-               "location" : "123612",
-               "hint" : ""
             }
          ],
          "fees" : "gebührenfrei", // Gebühren zur Erbringung der Dienstleistung
