@@ -34,4 +34,20 @@ class Service extends Base
         }
         return count($locationcompare) == count($locationsfound);
     }
+
+    public function hasAppointments($external = false)
+    {
+        foreach ($this['locations'] as $location) {
+            if (array_key_exists('appointment', $location)) {
+                if ($location['appointment']['allowed']) {
+                    if ($external) {
+                        return true;
+                    } elseif ($location['appointment']['external'] === false) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
 }
