@@ -80,6 +80,21 @@ class Valid extends \BO\Mellon\Parameter
     }
 
     /**
+     * Do not allow NULL as value
+     *
+     * @param String $message error message in case of failure
+     *
+     * @return self
+     */
+    public function isDeclared($message = 'value is not declared')
+    {
+        if (null === $this->value) {
+            $this->failure($message);
+        }
+        return $this;
+    }
+
+    /**
      * Allow only boolean values like
      * Allowed values are:
      *   true
@@ -153,6 +168,7 @@ class Valid extends \BO\Mellon\Parameter
      */
     public function isMatchOf($regex, $message = 'not a valid matching value')
     {
+        $this->isDeclared();
         return $this->validate($message, FILTER_VALIDATE_REGEXP, array(
             'options' => array(
                 'regexp' => $regex,
