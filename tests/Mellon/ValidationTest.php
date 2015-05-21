@@ -92,7 +92,7 @@ class ValidationTest extends \PHPUnit_Framework_TestCase
         );
         $this->assertFalse(
             Validator::value("123456789")->isMatchOf('/456/')->hasFailed(),
-            "'456' should not match 123456789"
+            "'456' should match 123456789"
         );
         $this->assertFalse(
             Validator::value("123456789")->isFreeOf('/abc/')->hasFailed(),
@@ -100,7 +100,15 @@ class ValidationTest extends \PHPUnit_Framework_TestCase
         );
         $this->assertTrue(
             Validator::value("123456789")->isFreeOf('/456/')->hasFailed(),
-            "'456' should not match 123456789"
+            "'456' should match 123456789"
+        );
+        $this->assertFalse(
+            Validator::value(1)->isMatchOf('/^(0|1)$/')->hasFailed(),
+            "'(0|1)' should match 1"
+        );
+        $this->assertTrue(
+            Validator::value(null)->isMatchOf('/^(0|1)$/')->hasFailed(),
+            "'(0|1)' should not match NULL"
         );
     }
 }

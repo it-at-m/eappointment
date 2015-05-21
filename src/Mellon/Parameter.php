@@ -31,7 +31,7 @@ abstract class Parameter
       *
       */
     public function __construct($value, $name = '')
-     {
+    {
         $this->setValue($value);
         $this->setName($name);
     }
