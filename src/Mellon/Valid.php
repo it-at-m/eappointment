@@ -168,7 +168,7 @@ class Valid extends \BO\Mellon\Parameter
      */
     public function isMatchOf($regex, $message = 'not a valid matching value')
     {
-        $this->isDeclared();
+        $this->isDeclared($message);
         return $this->validate($message, FILTER_VALIDATE_REGEXP, array(
             'options' => array(
                 'regexp' => $regex,
@@ -287,5 +287,20 @@ class Valid extends \BO\Mellon\Parameter
             'messages' => $this->getMessages(),
         );
         return $status;
+    }
+
+    /**
+     * Throw an exception with a descriptive warning
+     *
+     * @throws \Exception
+     */
+    public function __call($name, $arguments)
+    {
+        if (0 === strpos($name, 'is')) {
+            throw new \Exception(
+                "the validation $name() is not defined in class " . get_class($this) . ". Read the manual."
+            );
+        }
+        throw new \Exception("function $name is not defined in " . get_class($this));
     }
 }
