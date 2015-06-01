@@ -25,15 +25,15 @@ class Authority extends Base
     /**
      * Check if appointments are available
      *
-     * @param Int $service_id only check for this service_id
+     * @param String $serviceCsv only check for this serviceCsv
      * @param Bool $external allow external links, default false
      *
      * @return Bool
      */
-    public function hasAppointments($service_id = null, $external = false)
+    public function hasAppointments($serviceCsv = null, $external = false)
     {
         foreach ($this['locations'] as $location) {
-            if ($location->hasAppointments($service_id, $external)) {
+            if ($location->hasAppointments($serviceCsv, $external)) {
                 return true;
             }
         }
