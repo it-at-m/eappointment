@@ -46,6 +46,28 @@ class Location extends Base
     }
 
     /**
+     * @param String $serviceCsv only check for this serviceCsv
+     *
+     * @return Array
+     */
+    public function getServiceInfoList($serviceCsv = null)
+    {
+        if (null === $serviceCsv) {
+            return $this['services'];
+        }
+        $location = $this->getArrayCopy();
+        $servicecompare = explode(',', $service_csv);
+        $serviceList = array();
+        foreach ($location['services'] as $serviceinfo) {
+            $service_id = $serviceinfo['service'];
+            if (in_array($service_id, $servicecompare)) {
+                $serviceList[$service_id] = $serviceinfo;
+            }
+        }
+        return $serviceList;
+    }
+
+    /**
      * Check if appointments are available
      *
      * @param String $serviceCsv only check for this serviceCsv
@@ -55,22 +77,26 @@ class Location extends Base
      */
     public function hasAppointments($serviceCsv = null, $external = false)
     {
-        if ($this->containsService($serviceCsv)) {
-            $serviceList = explode(',', $serviceCsv);
+        if (null === $serviceCsv || $this->containsService($serviceCsv)) {
+            $serviceList = $this->getServiceInfoList($serviceCsv);
             $servicecount = array();
-            foreach ($serviceList as $service_id) {
-                $service = $this->getServiceInfo($service_id);
-                if (array_key_exists('appointment', $service)) {
-                    if ($service['appointment']['allowed']) {
+            foreach ($serviceList as $serviceinfo) {
+                if (array_key_exists('appointment', $serviceinfo)) {
+                    $service_id = $serviceinfo['service'];
+                    if ($serviceinfo['appointment']['allowed']) {
                         if ($external) {
                             $servicecount[$service_id] = $service_id;
-                        } elseif ($service['appointment']['external'] === false) {
+                        } elseif ($serviceinfo['appointment']['external'] === false) {
                             $servicecount[$service_id] = $service_id;
                         }
                     }
                 }
             }
-            return count($servicecount) == count($serviceList);
+            if (null === $serviceCsv) {
+                return count($servicecount) ? true : false;
+            } else {
+                return count($servicecount) == count($serviceList);
+            }
         }
         return false;
     }
