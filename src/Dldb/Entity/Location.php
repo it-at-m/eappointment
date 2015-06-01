@@ -56,7 +56,7 @@ class Location extends Base
             return $this['services'];
         }
         $location = $this->getArrayCopy();
-        $servicecompare = explode(',', $service_csv);
+        $servicecompare = explode(',', $serviceCsv);
         $serviceList = array();
         foreach ($location['services'] as $serviceinfo) {
             $service_id = $serviceinfo['service'];
@@ -77,27 +77,21 @@ class Location extends Base
      */
     public function hasAppointments($serviceCsv = null, $external = false)
     {
-        if (null === $serviceCsv || $this->containsService($serviceCsv)) {
-            $serviceList = $this->getServiceInfoList($serviceCsv);
-            $servicecount = array();
-            foreach ($serviceList as $serviceinfo) {
-                if (array_key_exists('appointment', $serviceinfo)) {
-                    $service_id = $serviceinfo['service'];
-                    if ($serviceinfo['appointment']['allowed']) {
-                        if ($external) {
-                            $servicecount[$service_id] = $service_id;
-                        } elseif ($serviceinfo['appointment']['external'] === false) {
-                            $servicecount[$service_id] = $service_id;
-                        }
-                    }
-                }
-            }
-            if (null === $serviceCsv) {
-                return count($servicecount) ? true : false;
-            } else {
-                return count($servicecount) == count($serviceList);
+        $serviceList = $this->getServiceInfoList($serviceCsv);
+        $servicecount = array();
+        foreach ($serviceList as $serviceinfo) {
+            if (array_key_exists('appointment', $serviceinfo)
+                && $serviceinfo['appointment']['allowed']
+                && ($external || $serviceinfo['appointment']['external'] === false)
+            ) {
+                $service_id = $serviceinfo['service'];
+                $servicecount[$service_id] = $service_id;
             }
         }
-        return false;
+        if (null === $serviceCsv) {
+            return count($servicecount) ? true : false;
+        } else {
+            return count($serviceList) > 0 && count($servicecount) == count($serviceList);
+        }
     }
 }
