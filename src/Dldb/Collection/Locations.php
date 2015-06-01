@@ -11,12 +11,14 @@ class Locations extends Base
     /**
      * find locations with appointments
      *
+     * @param String $serviceCsv only check for this serviceCsv
+     * @param Bool $external allow external links, default false
      */
-    public function getLocationsWithAppointmentsFor($service_id = null, $external = false)
+    public function getLocationsWithAppointmentsFor($serviceCsv = null, $external = false)
     {
         $list = new self();
         foreach ($this as $location) {
-            if ($location->hasAppointments($service_id, $external)) {
+            if ($location->hasAppointments($serviceCsv, $external)) {
                 $list[] = $location;
             }
         }

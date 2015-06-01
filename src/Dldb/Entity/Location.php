@@ -31,27 +31,46 @@ class Location extends Base
     }
 
     /**
+     * @var Int $service_id
+     *
+     * @return FALSE or Array
+     */
+    public function getServiceInfo($service_id)
+    {
+        foreach ($this['services'] as $service) {
+            if ($service['service'] == $service_id) {
+                return $service;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Check if appointments are available
      *
-     * @param Int $service_id only check for this service_id
+     * @param String $serviceCsv only check for this serviceCsv
      * @param Bool $external allow external links, default false
      *
      * @return Bool
      */
-    public function hasAppointments($service_id = null, $external = false)
+    public function hasAppointments($serviceCsv = null, $external = false)
     {
-        foreach ($this['services'] as $service) {
-            if (array_key_exists('appointment', $service)
-                && (null === $service_id || $service['service'] == $service_id)
-            ) {
-                if ($service['appointment']['allowed']) {
-                    if ($external) {
-                        return true;
-                    } elseif ($service['appointment']['external'] === false) {
-                        return true;
+        if ($this->containsService($serviceCsv)) {
+            $serviceList = explode(',', $serviceCsv);
+            $servicecount = array();
+            foreach ($serviceList as $service_id) {
+                $service = $this->getServiceInfo($service_id);
+                if (array_key_exists('appointment', $service)) {
+                    if ($service['appointment']['allowed']) {
+                        if ($external) {
+                            $servicecount[$service_id] = $service_id;
+                        } elseif ($service['appointment']['external'] === false) {
+                            $servicecount[$service_id] = $service_id;
+                        }
                     }
                 }
             }
+            return count($servicecount) == count($serviceList);
         }
         return false;
     }
