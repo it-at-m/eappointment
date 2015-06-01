@@ -49,4 +49,31 @@ class Authorities extends Base
         }
         return false;
     }
+
+    /**
+     * remove locations if no appointment is available
+     *
+     * @param String $serviceCsv only check for this serviceCsv
+     * @param Bool $external allow external links, default false
+     *
+     * @return self
+     */
+    public function removeLocationsWithoutAppointments($serviceCsv = null, $external = false)
+    {
+        $authorityIterator = $this->getIterator();
+        foreach ($authorityIterator as $key => $authority) {
+            if ($authority->hasAppointments($serviceCsv, $external)) {
+                $locationIterator = $authority['locations']->getIterator();
+                foreach ($locationIterator as $subkey => $location) {
+                    if (!$location->hasAppointments($serviceCsv, $external)) {
+                        $locationIterator->offsetUnset($subkey);
+                    }
+                }
+            } else {
+                var_dump($authority['name']);
+                $authorityIterator->offsetUnset($key);
+            }
+        }
+        return $this;
+    }
 }
