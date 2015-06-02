@@ -85,7 +85,6 @@ class TwigExtension extends \Slim\Views\TwigExtension
         } elseif ($code == 4) {
             $result = 'subscribecash';
         }
-       
         return $result;
     }
 
@@ -93,7 +92,7 @@ class TwigExtension extends \Slim\Views\TwigExtension
     {
         $propertylist = array();
         foreach ($list as $item) {
-            if (is_array($item) && array_key_exists('services', $item)) {
+            if (!is_scalar($item) && array_key_exists('services', $item)) {
                 $appointment = self::getAppointmentForService($item, $service_id);
                 if (false === $appointment['external'] && true === $appointment['allowed']) {
                     $propertylist[] = $item['id'];
@@ -121,7 +120,7 @@ class TwigExtension extends \Slim\Views\TwigExtension
         }
         return $appointment;
     }
-    
+
     public function dayIsBookable($dateList, $day)
     {
         $result = false;
