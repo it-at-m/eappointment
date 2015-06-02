@@ -179,6 +179,7 @@ class ElasticAccess extends FileAccess
         $filter = null;
         if (count($servicelist)) {
             $filter = new \Elastica\Filter\Terms('services.service', $servicelist);
+            $filter->setExecution('and');
         }
         $query = \Elastica\Query::create($filter);
         $resultList = $this->getIndex()->getType('location')->search($query, 10000);
