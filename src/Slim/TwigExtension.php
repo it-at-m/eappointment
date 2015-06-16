@@ -91,8 +91,8 @@ class TwigExtension extends \Slim\Views\TwigExtension
         $prepend = '';
         $append = '';
         if (\App::SLIM_DEBUG) {
-            $prepend = "<!-- include($uri) -->";
-            $append = "<!-- /include($uri) -->";
+            $prepend = "<!-- include($uri) -->\n";
+            $append = "\n<!-- /include($uri) -->";
         }
         if (\App::ESI_ENABLED) {
             return $prepend . '<esi:include src="' . $uri . '" />' . $append;
