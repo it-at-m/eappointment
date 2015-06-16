@@ -37,7 +37,7 @@ class Application
     /**
       * Define the path for the templates relative to APP_PATH
       */
-    const TEMPLATE_PATH = '/templates/default/';
+    const TEMPLATE_PATH = '/templates/';
 
     /**
      * Define path for Twig template cache
