@@ -1,6 +1,6 @@
 <?php
 /**
- * @package 115Mandant
+ * @package Slimproject
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -12,6 +12,21 @@ class Application
       * Root directory for the project
       */
     const APP_PATH = '.';
+
+    /**
+     * Name of the application
+     *
+     */
+    const IDENTIFIER = 'unnamed slim project';
+
+    /**
+     * Settings for region
+     *
+     */
+    const LOCALE = 'de';
+    const LOCALE_VARIANT = 'de_DE';
+    const CHARSET = 'utf8';
+    const TIMEZONE = 'Europe/Berlin';
 
     /* -----------------------------------------------------------------------
      * Slim
