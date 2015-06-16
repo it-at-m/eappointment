@@ -46,7 +46,7 @@ class Bootstrap
             'log.enabled' => \App::SLIM_DEBUG,
             'log.level' => \App::SLIM_LOGLEVEL,
             'view' => new \Slim\Views\Twig(),
-            'templates.path' => \App::APP_PATH 
+            'templates.path' => \App::APP_PATH  . \App::TEMPLATE_PATH
         ));
 
         // configure slim views with twig
@@ -58,7 +58,7 @@ class Bootstrap
         self::addTwigExtension(new \BO\Slim\TwigExtension());
         self::addTwigExtension(new \Twig_Extension_Debug());
 
-        self::addTwigTemplateDirectory('default', \App::APP_PATH . \App::TEMPLATE_PATH);
+        //self::addTwigTemplateDirectory('default', \App::APP_PATH . \App::TEMPLATE_PATH);
     }
 
     public static function addTwigExtension($extension)

@@ -59,6 +59,10 @@ class Application
      */
     const TWIG_CACHE = false;
 
+    /**
+     * Set this option, if ESI should be used
+     */
+    const ESI_ENABLED = false;
 
     /* -----------------------------------------------------------------------
      * Logging PSR3 compatible
