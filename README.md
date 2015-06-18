@@ -6,8 +6,8 @@ The provided functions help implementing some common practices.
 The philosophy behind this modul is to implement Slim in a way to ensure you can change your router implementation later.
 
 At first you need some configuration. 
-The implementations of this modul need a global class \App to offer the behaviour.
-At first you should implement you own class Application like this:
+The implementations of this modul need a global class `\App` to offer the behaviour.
+At first you should implement you own `class Application` like this:
 
 `src/MyApp/Application.php`:
 ```php
@@ -88,7 +88,7 @@ Do not implement (much) behaviour in your routing, use references to existing cl
     ->name("healthcheck");
 
 \App::$slim->notfound(function () {
-    \BO\Serviceportal\Controller\Helper\Render::html('404.twig');
+    \BO\Slim\Render::html('404.twig');
 });
 
 \App::$slim->error(function (\Exception $exception) {
@@ -124,7 +124,7 @@ RewriteRule ^ /index.php [QSA,L]
 ## Twig integration
 
 Our implementation of Slim uses Twig as templating engine.
-There are two options of configuration in the bootsrap, that might be helpful:
+There are two options for configuration in the bootsrap file:
 
 ```php
 <?php
@@ -134,7 +134,7 @@ There are two options of configuration in the bootsrap, that might be helpful:
 ```
 
 Twig allows to use multiple template directories. 
-To add an template directory, you can use the function `addTwigTemplateDirectory`.
+To add a template directory, you can use the function `addTwigTemplateDirectory`.
 The first argument is a namespace, the second argument a path to a directory.
 To access a template in another path, use a syntax like this:
 
@@ -146,7 +146,7 @@ To extend the possibilities with Twig, you can define custom function.
 Use the function `addTwigExtension()` to add an extension.
 The first argument should be of the type `\Slim\Views\TwigExtension`.
 
-We implement a few own functions to use in the templates:
+We implement a few predefined functions available in the twig templates:
 
 ### urlGet
 ```php
