@@ -17,6 +17,45 @@ The philosophy behind this modul is to implement Slim in a way to ensure you can
 
 At first you need some configuration. 
 The implementations of this modul need a global class `\App` to offer the behaviour.
+
+### Accessing Slim
+
+It is possible to access Slim via `\App::$slim`. We do not recommend this direct access, if possible.
+For simple operations, use the `\BO\Slim\Render` class.
+
+To render a common route: 
+
+```php
+<?php 
+use \BO\Slim\Render;
+
+class MyController
+{
+  public function render()
+  {
+    $data = fetchMyData();
+    if (myTest($data)) {
+      Render::error404();
+    }
+    if (amIWrongHere($data)) {
+      Render::redirect('myotherroute');
+    }
+    Render::lastModified(time(), '+10 minutes'); // expires in 10 minutes
+    Render::html('templatename', $data);
+  }
+}
+```
+
+### Logging
+
+We use Monolog for logging. This logger implements the [PSR3 Standard](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-3-logger-interface.md).
+
+```php
+<?php \App::$log->debug("My message", array($var1, $var2));
+```
+
+### Bootstrap and Configuration
+
 At first you should implement you own `class Application` like this:
 
 `src/MyApp/Application.php`:
