@@ -1,6 +1,16 @@
 This modul is intended to help building a slim application.
 The provided functions help implementing some common practices.
 
+## Installation
+
+Add these lines to your `composer.json` and run `composer.phar update`:
+
+```json
+    "require": {
+        "bo/slimproject": "dev-master"
+    }
+```
+
 ## Usage
 
 The philosophy behind this modul is to implement Slim in a way to ensure you can change your router implementation later.
