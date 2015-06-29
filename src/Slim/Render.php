@@ -4,7 +4,7 @@
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
-namespace BO\Slim\Helper;
+namespace BO\Slim;
 
 class Render
 {
@@ -53,6 +53,7 @@ class Render
     public static function redirect($route_name, $arguments, $parameter, $statuscode = 302)
     {
         $url = \App::$slim->urlFor($route_name, $arguments);
+        $url = Helper::proxySanitizeUri($url);
         $url = preg_replace('#^.*?(https?://)#', '\1', $url); // allow http:// routes
         if ($parameter) {
             $url .= '?' . http_build_query($parameter);

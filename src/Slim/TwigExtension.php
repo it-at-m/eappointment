@@ -26,6 +26,7 @@ class TwigExtension extends \Slim\Views\TwigExtension
             new \Twig_SimpleFunction('azPrefixList', array($this, 'azPrefixList')),
             new \Twig_SimpleFunction('isValueInArray', array($this, 'isValueInArray')),
             new \Twig_SimpleFunction('remoteInclude', array($this, 'remoteInclude'), $safe),
+            new \Twig_SimpleFunction('includeUrl', array($this, 'includeUrl')),
         );
     }
 
@@ -37,7 +38,7 @@ class TwigExtension extends \Slim\Views\TwigExtension
             $url .= '?' . http_build_query($getparams);
         }
         //\App::$log->info("urlGet", [$name, $url, $params, $getparams]);
-        return $url;
+        return Helper::proxySanitizeUri($url);
     }
 
     public function csvProperty($list, $property)
@@ -99,5 +100,16 @@ class TwigExtension extends \Slim\Views\TwigExtension
         } else {
             return $prepend . file_get_contents($uri) . $append;
         }
+    }
+
+    public static function includeUrl($withUri = true, $appName = 'default')
+    {
+        $req = \App::$slim->request();
+        $uri = $req->getUrl();
+
+        if ($withUri) {
+            $uri .= $req->getRootUri();
+        }
+        return Helper::proxySanitizeUri($uri);
     }
 }
