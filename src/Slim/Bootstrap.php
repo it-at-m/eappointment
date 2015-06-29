@@ -17,12 +17,11 @@ class Bootstrap
 
     public static function configureLocale(
         $locale = \App::LOCALE,
-        $variant = \App::LOCALE_VARIANT,
         $charset = \App::CHARSET,
         $timezone = \App::TIMEZONE
     ) {
         ini_set('default_charset', $charset);
-        setlocale(LC_ALL, $variant . $charset, $variant, $locale);
+        setlocale(LC_ALL, $locale);
         date_default_timezone_set($timezone);
         mb_internal_encoding($charset);
     }

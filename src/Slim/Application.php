@@ -23,9 +23,8 @@ class Application
      * Settings for region
      *
      */
-    const LOCALE = 'de';
-    const LOCALE_VARIANT = 'de_DE';
-    const CHARSET = 'utf8';
+    const LOCALE = 'de_DE.utf8';
+    const CHARSET = 'utf-8';
     const TIMEZONE = 'Europe/Berlin';
 
     /* -----------------------------------------------------------------------
