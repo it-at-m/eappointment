@@ -1,4 +1,3 @@
-
 Client for DLDB API
 ===================
 
@@ -62,7 +61,8 @@ Locations
             },
             "note": "Terminkunden werden über die Aufrufanlage aufgerufen.", // Sonstige Hinweise zum Standort
             "appointment" : {
-                "note" : null // Hinweis für die Terminvereinbarung
+                "note" : null, // Hinweis für die Terminvereinbarung
+                "multiple" : false // 0 - Nur eine Dienstleistung pro Termin machbar, 1 - Mehrere Dienstleistungen pro Termin sind erlaubt
             },
             "accessibility": { // Barrierefreier Zugang, siehe http://service.berlin.de/hinweise/artikel.2699.php
                 "elevator": "2", // Fahrstuhl: 0 - Fehlt, 1 - beding rollstuhl geeignet, 2 - rollstuhl geeignet, 3 - rollstuhlgerecht
@@ -260,5 +260,3 @@ To update the list:
 * grep BERLIN PLZ.tab > src/Dldb/Plz/PLZ_Berlin.tab
 * bin/geoDbPlz2Json -f src/Dldb/Plz/PLZ_Berlin.tab > src/Dldb/Plz/plz_geodb.json
 * rm PLZ.tab
-
-
