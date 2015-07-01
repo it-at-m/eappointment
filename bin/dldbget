@@ -26,13 +26,11 @@ if (!is_writeable($destinationPath) || !is_dir($destinationPath)) {
 }
 
 $baseDomain = "http://example.com/";
-
-$client = new \Guzzle\Http\Client($baseDomain, array(
-    'request.options' => array(
-        'timeout' => 10,
-        'proxy' => $args->getOpt('proxy'),
-    ),
-));
+$client = new GuzzleHttp\Client([
+	'base_uri' => baseDomain, 
+	'timeout' => 10, 
+	'proxy' => $args->getOpt('proxy')
+]);
 
 $downloads = array(
     array(
