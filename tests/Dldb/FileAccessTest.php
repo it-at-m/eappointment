@@ -13,7 +13,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
 
     public function testIds()
     {
-        $access = new FileAccess(LOCATION_JSON, SERVICE_JSON);
+        $access = new FileAccess(LOCATION_JSON, SERVICE_JSON, TOPICS_JSON);
         $location = $access->fetchLocation(LOCATION_SINGLE);
         $this->assertNotFalse($location);
         $this->assertArrayHasKey('name', $location);
@@ -33,6 +33,11 @@ class FileTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(count($results) > 0, "No locations found");
         $results = $access->searchService('Pass', LOCATION_CSV);
         $this->assertTrue(count($results) > 0, "No services found");
+
+        $topicList = $access->fetchTopicList();
+        $this->assertTrue(count($topicList) > 0, "No topics found");
+        $topic = $access->fetchTopic(TOPIC_SINGLE);
+        $this->assertNotFalse($topic);
     }
 
     public function testFail()

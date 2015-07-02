@@ -27,9 +27,35 @@ class FileAccess extends AbstractAccess
     protected $locations = array();
 
     /**
+      * Locations
+      *
+      * @var Array $locations
+      */
+    protected $topics = array();
+
+    /**
      * @return self
      */
-    public function __construct($locationJson, $serviceJson)
+    public function __construct($locationJson = null, $serviceJson = null, $topicsJson = null)
+    {
+        $this->services = new Collection\Services();
+        $this->locations = new Collection\Locations();
+        $this->topics = new Collection\Topics();
+        if (null !== $locationJson) {
+            $this->loadLocations($locationJson);
+        }
+        if (null !== $serviceJson) {
+            $this->loadServices($serviceJson);
+        }
+        if (null !== $topicsJson) {
+            $this->loadTopics($topicsJson);
+        }
+    }
+
+    /**
+     * @return self
+     */
+    public function loadLocations($locationJson)
     {
         if (!is_readable($locationJson)) {
             throw new Exception("Cannot read $locationJson");
@@ -38,6 +64,17 @@ class FileAccess extends AbstractAccess
         if (!$locationlist) {
             throw new Exception("Could not load locations");
         }
+        foreach ($locationlist['data'] as $location) {
+            $this->locations[$location['id']] = new Entity\Location($location);
+        }
+        return $this;
+    }
+
+    /**
+     * @return self
+     */
+    public function loadServices($serviceJson)
+    {
         if (!is_readable($serviceJson)) {
             throw new Exception("Cannot read $serviceJson");
         }
@@ -45,14 +82,46 @@ class FileAccess extends AbstractAccess
         if (!$servicelist) {
             throw new Exception("Could not load services");
         }
-        $this->services = new Collection\Services();
-        $this->locations = new Collection\Locations();
-        foreach ($locationlist['data'] as $location) {
-            $this->locations[$location['id']] = new Entity\Location($location);
-        }
         foreach ($servicelist['data'] as $service) {
             $this->services[$service['id']] = new Entity\Service($service);
         }
+    }
+
+    /**
+     * @return self
+     */
+    public function loadTopics($topicJson)
+    {
+        if (!is_readable($topicJson)) {
+            throw new Exception("Cannot read $topicJson");
+        }
+        $topiclist = json_decode(file_get_contents($topicJson), true);
+        if (!$topiclist) {
+            throw new Exception("Could not load services");
+        }
+        foreach ($topiclist['data'] as $topic) {
+            $this->topics[$topic['id']] = new Entity\Topic($topic);
+        }
+    }
+
+    /**
+     * @return Entity\Topic
+     */
+    public function fetchTopic($topic_id)
+    {
+        $topiclist = $this->fetchTopicList();
+        if (array_key_exists($topic_id, $topiclist)) {
+            return $topiclist[$topic_id];
+        }
+        return false;
+    }
+
+    /**
+     * @return Collection\Topics
+     */
+    public function fetchTopicList()
+    {
+        return $this->topics;
     }
 
     /**
