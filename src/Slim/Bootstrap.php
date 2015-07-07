@@ -65,6 +65,12 @@ class Bootstrap
         $twig = \App::$slim->view->getInstance();
         $twig->addExtension($extension);
     }
+    
+    public static function addTwigFilter($filter)
+    {
+    	$twig = \App::$slim->view->getInstance();
+    	$twig->addFilter($filter);
+    }
 
     public static function addTwigTemplateDirectory($namespace, $path)
     {
