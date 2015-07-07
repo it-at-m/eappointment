@@ -4,7 +4,7 @@
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
-namespace BO\Dldb;
+namespace BO\Slim;
 
 /**
   * Extension for Twig and Slim
