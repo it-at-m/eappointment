@@ -117,6 +117,20 @@ class FileAccess extends AbstractAccess
     }
 
     /**
+     * @return Entity\Topic
+     */
+    public function fetchTopicPath($topic_path)
+    {
+        $topiclist = $this->fetchTopicList();
+        foreach ($topiclist as $topic) {
+            if ($topic['path'] == $topic_path) {
+                return $topic;
+            }
+        }
+        return false;
+    }
+
+    /**
      * @return Collection\Topics
      */
     public function fetchTopicList()
