@@ -38,6 +38,8 @@ class FileTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(count($topicList) > 0, "No topics found");
         $topic = $access->fetchTopic(TOPIC_SINGLE);
         $this->assertNotFalse($topic);
+        $topic = $access->fetchTopicPath('wirtschaft');
+        $this->assertNotFalse($topic);
     }
 
     public function testFail()
