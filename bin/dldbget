@@ -16,6 +16,7 @@ $cli = new Cli();
 $cli->description("Downloads json files from the official site and validates them and replaces the old files.")
     ->opt('output:o', 'Path to save files', true)
     ->opt('proxy:p', 'Proxy server like "proxy:3128"', false)
+    ->opt('base:b', 'Base download url', false)
     ;
 $args = $cli->parse($argv, true);
 
@@ -26,7 +27,7 @@ if (!is_writeable($destinationPath) || !is_dir($destinationPath)) {
     exit(1);
 }
 
-$baseDomain = "http://example.com/";
+$baseDomain = $args->getOpt("base");
 $client = Request::init()
     ->withoutAutoParsing()
     ->followRedirects()
@@ -61,15 +62,31 @@ $downloads = array(
     ),
 );
 foreach ($downloads as $download) {
-    $json = Request::get($baseDomain . $download['url'])
+    $dest = $destinationPath . DIRECTORY_SEPARATOR . $download['file'];
+    
+    $oldContentJson = file_get_contents($dest);
+    $oldContent = json_decode($oldContentJson, true);
+    
+    $request = Request::get($baseDomain . $download['url']);
+    
+    if (isset($oldContent['hash']) && !empty($oldContent['hash'])) {
+        $request->addHeader('If-None-Match', $oldContent['hash']);
+    }
+    
+    $respronse = $request
         //->followRedirects()
         ->send()
-        ->body;
+    ;
+
+    if (304 == $respronse->code) {
+        continue;
+    }
+    
+    $json = $respronse->body;
     $tmp = $destinationPath . DIRECTORY_SEPARATOR . 'tmp.' . $download['file'];
     file_put_contents($tmp, $json);
     $data = json_decode($json, true);
     if (array_key_exists('error', $data) && $data['error'] === false) {
-        $dest = $destinationPath . DIRECTORY_SEPARATOR . $download['file'];
         rename($tmp, $dest);
     } else {
         echo $cli->red($baseDomain . $download['url'] . " did not validate, see temp file $tmp \n");
