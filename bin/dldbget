@@ -9,12 +9,13 @@ set_include_path(get_include_path() . PATH_SEPARATOR . $localInclude . PATH_SEPA
 require('autoload.php');
 
 use Garden\Cli\Cli;
+use \Httpful\Request;
 
 $cli = new Cli();
 
 $cli->description("Downloads json files from the official site and validates them and replaces the old files.")
     ->opt('output:o', 'Path to save files', true)
-    ->opt('proxy:p', 'Proxy server', false)
+    ->opt('proxy:p', 'Proxy server like "proxy:3128"', false)
     ;
 $args = $cli->parse($argv, true);
 
@@ -26,11 +27,28 @@ if (!is_writeable($destinationPath) || !is_dir($destinationPath)) {
 }
 
 $baseDomain = "http://example.com/";
-$client = new GuzzleHttp\Client([
-	'base_uri' => baseDomain, 
-	'timeout' => 10, 
-	'proxy' => $args->getOpt('proxy')
-]);
+$client = Request::init()
+    ->withoutAutoParsing()
+    ->followRedirects()
+    ->timeout(30);
+Request::ini($client);
+$proxy = $args->getOpt('proxy');
+if ($proxy) {
+    $proxyconf = array();
+    preg_match('#^(?:(?P<user>[^:]+):(?P<pass>[^@]+)@)?(?P<host>[^:]+):?(?P<port>\d+)?$#', $proxy, $proxyconf);
+    $proxyconf = array_merge($proxyconf, array('host' => '','port' => '80','user' => false,'pass' => false));
+    if ($proxyconf['user']) {
+        $client->useProxy(
+            $proxyconf['host'],
+            $proxyconf['port'],
+            CURLAUTH_BASIC,
+            $proxyconf['user'],
+            $proxyconf['pass']
+        );
+    } else {
+        $client->useProxy($proxyconf['host'], $proxyconf['port']);
+    }
+}
 
 $downloads = array(
     array(
@@ -43,7 +61,10 @@ $downloads = array(
     ),
 );
 foreach ($downloads as $download) {
-    $json = $client->get($download['url'])->send()->getBody();
+    $json = Request::get($baseDomain . $download['url'])
+        //->followRedirects()
+        ->send()
+        ->body;
     $tmp = $destinationPath . DIRECTORY_SEPARATOR . 'tmp.' . $download['file'];
     file_put_contents($tmp, $json);
     $data = json_decode($json, true);
@@ -51,7 +72,7 @@ foreach ($downloads as $download) {
         $dest = $destinationPath . DIRECTORY_SEPARATOR . $download['file'];
         rename($tmp, $dest);
     } else {
-        echo $cli->red($download['url'] . " did not validate, see temp file $tmp \n");
+        echo $cli->red($baseDomain . $download['url'] . " did not validate, see temp file $tmp \n");
         exit(1);
     }
 }
