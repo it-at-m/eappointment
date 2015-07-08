@@ -129,6 +129,36 @@ class FileAccess extends AbstractAccess
         }
         return false;
     }
+    
+    /**
+     * @return Entity\Topic\Services
+     */
+    public function getTopicServicesIds($topic)
+    {  	
+    	if (isset($topic['relation']['services'])) {    		
+    		return $this->services->getIds($topic['relation']['services']);
+    	}     	
+    	return false;
+    }
+    
+    public function fetchTopicServicesList($topic_path)
+    {
+    	$serviceIds = array();
+    	$topic = $this->fetchTopicPath($topic_path);
+    	$serviceIds = $this->getTopicServicesIds($topic); 
+    	if (isset($topic['relation']['childs'])) {    		
+    		foreach ($topic['relation']['childs'] as $child) {
+    			$childtopic = $this->fetchTopicPath($child['path']);
+    			$serviceIds = array_merge($serviceIds, $this->getTopicServicesIds($childtopic));
+    		}
+    	}
+    	if(count($serviceIds)){
+    		$servicelistCSV = implode(',', $serviceIds);
+    		$servicelist = $this->fetchServiceFromCsv($servicelistCSV);
+    		return $servicelist;
+    	}
+    	return false;
+    }
 
     /**
      * @return Collection\Topics
