@@ -173,10 +173,16 @@ class FileAccess extends AbstractAccess
 
     public function fetchOfficePath($office_path)
     {
-        if (isset($this->offices[$office_path])) {
-            return $this->offices[$office_path];
+        $offices = $this->fetchOfficeList();
+        if (isset($offices[$office_path])) {
+            return $offices[$office_path];
         }
         return null;
+    }
+
+    public function fetchOfficeList()
+    {
+        return $this->offices;
     }
 
     /**
