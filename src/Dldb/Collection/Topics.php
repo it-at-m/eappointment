@@ -8,11 +8,13 @@ namespace BO\Dldb\Collection;
 
 class Topics extends Base
 {
-	public function getSidebarTopics()
+	public static function setSidebar()
 	{
-		foreach($this as $key => $topic){			
+		$list = \App::$repository->fetchTopicList();
+		$sidebar = array();
+		foreach($list as $key => $topic){			
         	if($topic['relation']['navi'] == 1){   
-        		$list[] = array(
+        		$sidebar[] = array(
         			'id' => $topic['id'],
         			'name' => $topic['name'],
         			'path' => $topic['path'],
@@ -21,6 +23,6 @@ class Topics extends Base
         		);
         	}
         }       
-		return $list;
+		return $sidebar;
 	}
 }

@@ -281,6 +281,20 @@ class FileAccess extends AbstractAccess
         $authoritylist->sortByName();
         return $authoritylist;
     }
+    
+    /**
+     * @return Collection\Location\Category
+     */
+    public function fetchCategoryPath($category_path)
+    {
+    	$categorylist = $this->fetchCategoryList();
+    	foreach ($categorylist as $category) {
+    		if ($category['path'] == $category_path) {
+    			return $category;
+    		}
+    	}
+    	return false;
+    }
 
     /**
      * @return Collection\Locations
