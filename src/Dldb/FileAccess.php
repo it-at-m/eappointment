@@ -27,11 +27,39 @@ class FileAccess extends AbstractAccess
     protected $locations = array();
 
     /**
-      * Locations
+      * Topics
       *
-      * @var Array $locations
+      * @var Array $topics
       */
     protected $topics = array();
+
+    /**
+      * Settings
+      *
+      * @var Array $settings
+      */
+    protected $settings = array();
+
+    /**
+      * Authorities
+      *
+      * @var Array $authorities
+      */
+    protected $authorities = array();
+
+    /**
+      * Authorities
+      *
+      * @var Array $authorities
+      */
+    protected $offices = array();
+
+    /**
+      * Authorities
+      *
+      * @var Array $authorities
+      */
+    protected $boroughs = array();
 
     /**
      * @return self
@@ -41,6 +69,9 @@ class FileAccess extends AbstractAccess
         $this->services = new Collection\Services();
         $this->locations = new Collection\Locations();
         $this->topics = new Collection\Topics();
+        $this->authorities = new Collection\Authorities();
+        $this->offices = new Collection\Offices();
+        $this->boroughs = new Collection\Boroughs();
         if (null !== $locationJson) {
             $this->loadLocations($locationJson);
         }
@@ -57,13 +88,7 @@ class FileAccess extends AbstractAccess
      */
     public function loadLocations($locationJson)
     {
-        if (!is_readable($locationJson)) {
-            throw new Exception("Cannot read $locationJson");
-        }
-        $locationlist = json_decode(file_get_contents($locationJson), true);
-        if (!$locationlist) {
-            throw new Exception("Could not load locations");
-        }
+        $locationlist = self::readJson($locationJson);
         foreach ($locationlist['data'] as $location) {
             $this->locations[$location['id']] = new Entity\Location($location);
         }
@@ -75,13 +100,7 @@ class FileAccess extends AbstractAccess
      */
     public function loadServices($serviceJson)
     {
-        if (!is_readable($serviceJson)) {
-            throw new Exception("Cannot read $serviceJson");
-        }
-        $servicelist = json_decode(file_get_contents($serviceJson), true);
-        if (!$servicelist) {
-            throw new Exception("Could not load services");
-        }
+        $servicelist = self::readJson($serviceJson);
         foreach ($servicelist['data'] as $service) {
             $this->services[$service['id']] = new Entity\Service($service);
         }
@@ -92,16 +111,72 @@ class FileAccess extends AbstractAccess
      */
     public function loadTopics($topicJson)
     {
-        if (!is_readable($topicJson)) {
-            throw new Exception("Cannot read $topicJson");
-        }
-        $topiclist = json_decode(file_get_contents($topicJson), true);
-        if (!$topiclist) {
-            throw new Exception("Could not load services");
-        }
+        $topiclist = self::readJson($topicJson);
         foreach ($topiclist['data'] as $topic) {
             $this->topics[$topic['id']] = new Entity\Topic($topic);
         }
+    }
+
+    /**
+     * @return self
+     */
+    public function loadSettings($settingsJson)
+    {
+        $settinglist = self::readJson($settingsJson);
+        $this->settings = $settinglist['data']['settings'];
+        foreach ($settinglist['data']['office'] as $office) {
+            $this->offices[$office['path']] = new Entity\Office($office);
+        }
+        foreach ($settinglist['data']['boroughs'] as $borough) {
+            $this->boroughs[$borough['id']] = new Entity\Borough($borough);
+        }
+    }
+
+    /**
+     * @return self
+     */
+    public function loadAuthorities($authorityJson)
+    {
+        $authoritylist = self::readJson($authorityJson);
+        foreach ($authoritylist['data'] as $authority) {
+            $this->authorities[$authority['id']] = new Entity\Authority($authority);
+        }
+    }
+
+    protected static function readJson($jsonFile)
+    {
+        if (!is_readable($jsonFile)) {
+            throw new Exception("Cannot read $jsonFile");
+        }
+        $list = json_decode(file_get_contents($jsonFile), true);
+        if (!$list) {
+            throw new Exception("Could not decide $jsonFile");
+        }
+        return $list;
+    }
+
+    public function fetchSettingName($name)
+    {
+        if (isset($this->settings[$name])) {
+            return $this->settings[$name];
+        }
+        return null;
+    }
+
+    public function fetchBoroughId($borough_id)
+    {
+        if (isset($this->boroughs[$borough_id])) {
+            return $this->boroughs[$borough_id];
+        }
+        return null;
+    }
+
+    public function fetchOfficePath($office_path)
+    {
+        if (isset($this->offices[$office_path])) {
+            return $this->offices[$office_path];
+        }
+        return null;
     }
 
     /**
@@ -129,35 +204,35 @@ class FileAccess extends AbstractAccess
         }
         return false;
     }
-    
+
     /**
      * @return Entity\Topic\Services
      */
     public function getTopicServicesIds($topic)
-    {  	
-    	if (isset($topic['relation']['services'])) {    		
-    		return $this->services->getIds($topic['relation']['services']);
-    	}     	
-    	return false;
+    {
+        if (isset($topic['relation']['services'])) {
+            return $this->services->getIds($topic['relation']['services']);
+        }
+        return false;
     }
-    
+
     public function fetchTopicServicesList($topic_path)
     {
-    	$serviceIds = array();
-    	$topic = $this->fetchTopicPath($topic_path);
-    	$serviceIds = $this->getTopicServicesIds($topic); 
-    	if (isset($topic['relation']['childs'])) {    		
-    		foreach ($topic['relation']['childs'] as $child) {
-    			$childtopic = $this->fetchTopicPath($child['path']);
-    			$serviceIds = array_merge($serviceIds, $this->getTopicServicesIds($childtopic));
-    		}
-    	}
-    	if(count($serviceIds)){
-    		$servicelistCSV = implode(',', $serviceIds);
-    		$servicelist = $this->fetchServiceFromCsv($servicelistCSV);
-    		return $servicelist;
-    	}
-    	return false;
+        $serviceIds = array();
+        $topic = $this->fetchTopicPath($topic_path);
+        $serviceIds = $this->getTopicServicesIds($topic);
+        if (isset($topic['relation']['childs'])) {
+            foreach ($topic['relation']['childs'] as $child) {
+                $childtopic = $this->fetchTopicPath($child['path']);
+                $serviceIds = array_merge($serviceIds, $this->getTopicServicesIds($childtopic));
+            }
+        }
+        if (count($serviceIds)) {
+            $servicelistCSV = implode(',', $serviceIds);
+            $servicelist = $this->fetchServiceFromCsv($servicelistCSV);
+            return $servicelist;
+        }
+        return false;
     }
 
     /**
@@ -264,36 +339,40 @@ class FileAccess extends AbstractAccess
      * fetch locations for a list of service and group by authority
      * @return Collection\Authorities
      */
-    public function fetchAuthorityList(Array $servicelist)
+    public function fetchAuthorityList(Array $servicelist = array())
     {
-        $authoritylist = new Collection\Authorities();
-        foreach ($servicelist as $service_id) {
-            $service = $this->fetchService($service_id);
-            if ($service) {
-                foreach ($service['locations'] as $locationinfo) {
-                    $location = $this->fetchLocation($locationinfo['location']);
-                    if ($location) {
-                        $authoritylist->addLocation($location);
+        if (count($servicelist)) {
+            $authoritylist = new Collection\Authorities();
+            foreach ($servicelist as $service_id) {
+                $service = $this->fetchService($service_id);
+                if ($service) {
+                    foreach ($service['locations'] as $locationinfo) {
+                        $location = $this->fetchLocation($locationinfo['location']);
+                        if ($location) {
+                            $authoritylist->addLocation($location);
+                        }
                     }
                 }
             }
+            $authoritylist->sortByName();
+        } else {
+            $authoritylist = $this->authorities;
         }
-        $authoritylist->sortByName();
         return $authoritylist;
     }
-    
+
     /**
      * @return Collection\Location\Category
      */
     public function fetchCategoryPath($category_path)
     {
-    	$categorylist = $this->fetchCategoryList();
-    	foreach ($categorylist as $category) {
-    		if ($category['path'] == $category_path) {
-    			return $category;
-    		}
-    	}
-    	return false;
+        $categorylist = $this->fetchCategoryList();
+        foreach ($categorylist as $category) {
+            if ($category['path'] == $category_path) {
+                return $category;
+            }
+        }
+        return false;
     }
 
     /**

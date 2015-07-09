@@ -14,6 +14,8 @@ class FileTest extends \PHPUnit_Framework_TestCase
     public function testIds()
     {
         $access = new FileAccess(LOCATION_JSON, SERVICE_JSON, TOPICS_JSON);
+        $access->loadAuthorities(AUTHORITY_JSON);
+        $access->loadSettings(SETTINGS_JSON);
         $location = $access->fetchLocation(LOCATION_SINGLE);
         $this->assertNotFalse($location);
         $this->assertArrayHasKey('name', $location);
@@ -40,6 +42,15 @@ class FileTest extends \PHPUnit_Framework_TestCase
         $this->assertNotFalse($topic);
         $topic = $access->fetchTopicPath('wirtschaft');
         $this->assertNotFalse($topic);
+
+        $borough = $access->fetchBoroughId(13);
+        $this->assertEquals('Berlin Gesamt', $borough['name']);
+
+        $eaid = $access->fetchSettingName('ea_id');
+        $this->assertTrue($eaid > 100000);
+
+        $authorityList = $access->fetchAuthorityList();
+        $this->assertArrayHasKey('contact', $authorityList[AUTHORITY_SINGLE]);
     }
 
     public function testFail()
