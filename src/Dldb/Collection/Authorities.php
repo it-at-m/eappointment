@@ -59,13 +59,13 @@ class Authorities extends Base
      */
     public function hasEaId($ea_id)
     {
-    	foreach ($this as $key => $authority) {
-    		if ($authority->hasEaId($ea_id)) {
-    			unset($this[$key]);
-    			return true;
-    		}
-    	}
-    	return false;
+        foreach ($this as $key => $authority) {
+            if ($authority->hasEaId($ea_id)) {
+                unset($this[$key]);
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -94,5 +94,4 @@ class Authorities extends Base
         }
         return $this;
     }
-
 }
