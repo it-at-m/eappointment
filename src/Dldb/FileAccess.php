@@ -15,13 +15,8 @@ class FileAccess extends AbstractAccess
 {
 
     /**
-      * Authorities
-      *
-      * @var Array $authorities
-      */
-    protected $authorities = array();
-
-    /**
+     * Parameters for json files are deprecated, try using loadFromPath() instead
+     *
      * @return self
      */
     public function __construct(
@@ -31,7 +26,6 @@ class FileAccess extends AbstractAccess
         $authoritiesJson = null,
         $settingsJson = null
     ) {
-        $this->authorities = new Collection\Authorities();
         if (null !== $locationJson) {
             $this->loadLocations($locationJson);
         }
@@ -47,6 +41,24 @@ class FileAccess extends AbstractAccess
         if (null !== $settingsJson) {
             $this->loadSettings($settingsJson);
         }
+    }
+
+    /**
+     * Parameters for json files are deprecated, try using loadFromPath() instead
+     *
+     * @return self
+     */
+    public function loadFromPath($path, $locale = 'de')
+    {
+        if (!is_dir($path)) {
+            throw new Exception("Could not read directory $path");
+        }
+        $this->loadSettings($path . '/settings.json');
+        $this->loadAuthorities($path . DIRECTORY_SEPARATOR . 'authorities_' . $locale . '.json');
+        $this->loadLocations($path . DIRECTORY_SEPARATOR . 'locations_' . $locale . '.json');
+        $this->loadServices($path . DIRECTORY_SEPARATOR . 'services_' . $locale . '.json');
+        $this->loadTopics($path . DIRECTORY_SEPARATOR . 'topics_' . $locale . '.json');
+        return $this;
     }
 
     /**
@@ -103,19 +115,8 @@ class FileAccess extends AbstractAccess
         return $this;
     }
 
-    protected static function readJson($jsonFile)
-    {
-        if (!is_readable($jsonFile)) {
-            throw new Exception("Cannot read $jsonFile");
-        }
-        $list = json_decode(file_get_contents($jsonFile), true);
-        if (!$list) {
-            throw new Exception("Could not decide $jsonFile");
-        }
-        return $list;
-    }
-
     /**
+     * @todo refactor: returns services not return topics; argument of type Entity\Topic; must this function be public?
      * @return Entity\Topic\Services
      */
     public function getTopicServicesIds($topic)
@@ -126,6 +127,9 @@ class FileAccess extends AbstractAccess
         return false;
     }
 
+    /**
+     * @todo refactor: returns services, not topics.
+     */
     public function fetchTopicServicesList($topic_path)
     {
         $serviceIds = array();
@@ -146,27 +150,7 @@ class FileAccess extends AbstractAccess
     }
 
     /**
-     * @return Array
-     */
-    public function fetchServiceCombinations($service_csv)
-    {
-        return $this->fetchServiceList($this->fetchServiceLocationCsv($service_csv));
-    }
-
-    /**
-     * @return String
-     */
-    protected function fetchServiceLocationCsv($service_csv)
-    {
-        $locationlist = $this->fetchLocationList($service_csv);
-        $locationIdList = array();
-        foreach ($locationlist as $location) {
-            $locationIdList[] = $location['id'];
-        }
-        return implode(',', $locationIdList);
-    }
-
-    /**
+     * @todo will not work in every edge case, cause authority export does not contain officeinformations
      * @return Collection\Locations
      */
     public function fetchLocationListByOffice($officepath = false)
@@ -182,50 +166,6 @@ class FileAccess extends AbstractAccess
             ));
         }
         return $authoritylist;
-    }
-
-    /**
-     * @return Entity\Location
-     */
-    public function fetchLocation($location_id)
-    {
-        $locationlist = $this->fetchLocationList();
-        if (array_key_exists($location_id, $locationlist)) {
-            return $locationlist[$location_id];
-        }
-        return false;
-    }
-
-    /**
-     * @return Collection\Locations
-     */
-    public function fetchLocationFromCsv($location_csv)
-    {
-        $locationlist = new Collection\Locations();
-        foreach (explode(',', $location_csv) as $location_id) {
-            $location = $this->fetchLocation($location_id);
-            if ($location) {
-                $locationlist[$location_id] = $location;
-            };
-        }
-        $locationlist->sortByName();
-        return $locationlist;
-    }
-
-    /**
-     * @return Collection\Services
-     */
-    public function fetchServiceFromCsv($service_csv)
-    {
-        $servicelist = new Collection\Services();
-        foreach (explode(',', $service_csv) as $service_id) {
-            $service = $this->fetchService($service_id);
-            if ($service) {
-                $servicelist[$service_id] = $service;
-            }
-        }
-        $servicelist->sortByName();
-        return $servicelist;
     }
 
     /**

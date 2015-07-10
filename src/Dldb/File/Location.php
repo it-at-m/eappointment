@@ -26,7 +26,7 @@ class Location extends Base
     }
 
     /**
-     * @return Collection\Locations
+     * @return Collection
      */
     public function fetchList($service_csv = false)
     {
@@ -40,6 +40,22 @@ class Location extends Base
                 }
             ));
         }
+        return $locationlist;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function fetchFromCsv($location_csv)
+    {
+        $locationlist = new Collection();
+        foreach (explode(',', $location_csv) as $location_id) {
+            $location = $this->fetchId($location_id);
+            if ($location) {
+                $locationlist[$location_id] = $location;
+            };
+        }
+        $locationlist->sortByName();
         return $locationlist;
     }
 }

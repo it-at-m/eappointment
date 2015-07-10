@@ -26,7 +26,7 @@ class Service extends Base
     }
 
     /**
-     * @return Collection\Services
+     * @return Collection
      */
     public function fetchList($location_csv = false)
     {
@@ -40,6 +40,43 @@ class Service extends Base
                 }
             ));
         }
+        return $servicelist;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function fetchCombinations($service_csv)
+    {
+        return $this->fetchList($this->fetchLocationCsv($service_csv));
+    }
+
+    /**
+     * @return String
+     */
+    protected function fetchLocationCsv($service_csv)
+    {
+        $locationlist = $this->access()->fromLocation()->fetchList($service_csv);
+        $locationIdList = array();
+        foreach ($locationlist as $location) {
+            $locationIdList[] = $location['id'];
+        }
+        return implode(',', $locationIdList);
+    }
+
+    /**
+     * @return Collection
+     */
+    public function fetchFromCsv($service_csv)
+    {
+        $servicelist = new Collection();
+        foreach (explode(',', $service_csv) as $service_id) {
+            $service = $this->fetchId($service_id);
+            if ($service) {
+                $servicelist[$service_id] = $service;
+            }
+        }
+        $servicelist->sortByName();
         return $servicelist;
     }
 }

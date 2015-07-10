@@ -27,6 +27,7 @@ class IndexerTest extends \PHPUnit_Framework_TestCase
     public function testAccess()
     {
         $access = new \BO\Dldb\ElasticAccess(ES_ALIAS, ES_HOST, ES_PORT, ES_TRANSPORT);
+        $access->loadFromPath(FIXTURES);
         $location = $access->fetchLocation(LOCATION_SINGLE);
         $this->assertNotFalse($location);
         $this->assertArrayHasKey('name', $location);
@@ -69,7 +70,8 @@ class IndexerTest extends \PHPUnit_Framework_TestCase
     {
         if (!getenv('FASTTEST') && !getenv('NOCOMPARE')) {
             $access1 = new \BO\Dldb\ElasticAccess(ES_ALIAS, ES_HOST, ES_PORT, ES_TRANSPORT);
-            $access2 = new FileAccess(LOCATION_JSON, SERVICE_JSON);
+            $access2 = new FileAccess();
+            $access2->loadFromPath(FIXTURES);
             $location1 = $access1->fetchLocation(LOCATION_SINGLE);
             $location2 = $access2->fetchLocation(LOCATION_SINGLE);
             $this->assertEquals($location1, $location2);
@@ -98,6 +100,7 @@ class IndexerTest extends \PHPUnit_Framework_TestCase
     public function testSearch()
     {
         $access = new \BO\Dldb\ElasticAccess(ES_ALIAS, ES_HOST, ES_PORT, ES_TRANSPORT);
+        $access->loadFromPath(FIXTURES);
         $serviceList = $access->searchService('');
         $this->assertTrue(
             $this->listContains($serviceList, 'Personalausweis'),
