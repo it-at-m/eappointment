@@ -64,7 +64,7 @@ class FileAccess extends AbstractAccess
     /**
      * @return self
      */
-    public function __construct($locationJson = null, $serviceJson = null, $topicsJson = null)
+    public function __construct($locationJson = null, $serviceJson = null, $topicsJson = null, $authoritiesJson = null, $settingsJson = null)
     {
         $this->services = new Collection\Services();
         $this->locations = new Collection\Locations();
@@ -80,6 +80,12 @@ class FileAccess extends AbstractAccess
         }
         if (null !== $topicsJson) {
             $this->loadTopics($topicsJson);
+        }
+        if (null !== $authoritiesJson) {
+        	$this->loadAuthorities($authoritiesJson);
+        }
+        if (null !== $settingsJson) {
+        	$this->loadSettings($settingsJson);
         }
     }
 
@@ -266,6 +272,25 @@ class FileAccess extends AbstractAccess
         }
         return $locationlist;
     }
+    
+    /**
+     * @return Collection\Locations
+     */
+    public function fetchLocationListByOffice($officepath = false)
+    {
+    	$authoritylist = $this->authorities;
+    	$locationslist = array();
+    	if ($officepath) {
+    		$authoritylist = new Collection\Authorities(array_filter(
+    			(array)$authoritylist,
+    			function ($item) use ($officepath) {
+    				$authority = new \BO\Dldb\Entity\Authority($item);
+    				return $authority->matchOfficePath($officepath);
+    			}
+    		));
+    	}    
+    	return $authoritylist;
+    }
 
     /**
      * @return Entity\Location
@@ -365,20 +390,6 @@ class FileAccess extends AbstractAccess
             $authoritylist = $this->authorities;
         }
         return $authoritylist;
-    }
-
-    /**
-     * @return Collection\Location\Category
-     */
-    public function fetchCategoryPath($category_path)
-    {
-        $categorylist = $this->fetchCategoryList();
-        foreach ($categorylist as $category) {
-            if ($category['path'] == $category_path) {
-                return $category;
-            }
-        }
-        return false;
     }
 
     /**

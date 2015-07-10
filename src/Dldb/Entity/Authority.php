@@ -39,4 +39,27 @@ class Authority extends Base
         }
         return false;
     }
+    
+    /**
+     * Check if locations are available for defined office
+     *
+     * @param String $officepath only check for this office
+     *
+     * @return Bool
+     */
+    public function matchOfficePath($officepath = null)
+    {
+    	foreach ($this['locations'] as $key => $location) {   	
+    		if ($location['office'] != $officepath) { 
+    			unset($this['locations'][$key]);
+    		}
+    	}
+    	$data = array(
+    		'name' => $this['name'],
+    		'locations' => $this['locations']   		
+    	);
+    	if(count($data['locations'])){
+    		return new self($data);
+    	}    	
+    }
 }
