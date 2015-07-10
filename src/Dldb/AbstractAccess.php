@@ -81,24 +81,53 @@ class AbstractAccess
         return null;
     }
 
-    /**
-     * @return Array
-     */
-    public function fetchServiceCombinations($service_csv)
+    protected function from($instanceName)
     {
-        return $this->fetchServiceList($this->fetchServiceLocationCsv($service_csv));
+        if (array_key_exists($instanceName, $this->accessInstance)) {
+            $instance = $this->accessInstance[$instanceName];
+            if (null === $instance) {
+                throw new Exception("Instance for accessing $instanceName is not initialized");
+            }
+            if ($instance instanceof \BO\Dldb\File\Base) {
+                return $instance;
+            }
+            throw new Exception("Instance for accessing $instanceName failed");
+        }
+        throw new Exception("Instance for accessing $instanceName does not exists");
     }
 
-    /**
-     * @return String
-     */
-    protected function fetchServiceLocationCsv($service_csv)
+    public function fromAuthority()
     {
-        $locationlist = $this->fetchLocationList($service_csv);
-        $locationIdList = array();
-        foreach ($locationlist as $location) {
-            $locationIdList[] = $location['id'];
-        }
-        return implode(',', $locationIdList);
+        return $this->from('Authority');
+    }
+
+    public function fromBorough()
+    {
+        return $this->from('Borough');
+    }
+
+    public function fromLocation()
+    {
+        return $this->from('Location');
+    }
+
+    public function fromOffice()
+    {
+        return $this->from('Office');
+    }
+
+    public function fromService()
+    {
+        return $this->from('Service');
+    }
+
+    public function fromSetting()
+    {
+        return $this->from('Setting');
+    }
+
+    public function fromTopic()
+    {
+        return $this->from('Topic');
     }
 }

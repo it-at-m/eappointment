@@ -24,4 +24,22 @@ class Location extends Base
         }
         return $itemList;
     }
+
+    /**
+     * @return Collection\Locations
+     */
+    public function fetchList($service_csv = false)
+    {
+        $locationlist = $this->getItemList();
+        if ($service_csv) {
+            $locationlist = new Collection(array_filter(
+                (array)$locationlist,
+                function ($item) use ($service_csv) {
+                    $location = new Entity($item);
+                    return $location->containsService($service_csv);
+                }
+            ));
+        }
+        return $locationlist;
+    }
 }

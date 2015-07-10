@@ -42,6 +42,7 @@ class Authority extends Base
     
     /**
      * Check if locations are available for defined office
+     * @todo Remove this function, this is a data query and self manipulation, extreme bug probability
      *
      * @param String $officepath only check for this office
      *
@@ -65,6 +66,7 @@ class Authority extends Base
     
     /**
      * Check if locations are available for defined office
+     * @todo this should be renamed to hasLocationId()
      *
      * @param String $officepath only check for this office
      *
@@ -72,7 +74,7 @@ class Authority extends Base
      */
     public function hasEaId($ea_id = null)
     {
-        foreach ($this['locations'] as $key => $location) {
+        foreach ($this['locations'] as $location) {
             if ($location['id'] == $ea_id) {
                 return true;
             }

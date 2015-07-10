@@ -24,4 +24,30 @@ class Authority extends Base
         }
         return $itemList;
     }
+
+    /**
+     * fetch locations for a list of service and group by authority
+     * @return Collection\Authorities
+     */
+    public function fetchList(Array $servicelist = array())
+    {
+        if (count($servicelist)) {
+            $authoritylist = new Collection();
+            foreach ($servicelist as $service_id) {
+                $service = $this->access()->fromService()->fetchId($service_id);
+                if ($service) {
+                    foreach ($service['locations'] as $locationinfo) {
+                        $location = $this->access()->fromLocation()->fetchId($locationinfo['location']);
+                        if ($location) {
+                            $authoritylist->addLocation($location);
+                        }
+                    }
+                }
+            }
+            $authoritylist->sortByName();
+        } else {
+            $authoritylist = $this->getItemList();
+        }
+        return $authoritylist;
+    }
 }

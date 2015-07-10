@@ -24,4 +24,22 @@ class Service extends Base
         }
         return $itemList;
     }
+
+    /**
+     * @return Collection\Services
+     */
+    public function fetchList($location_csv = false)
+    {
+        $servicelist = $this->getItemList();
+        if ($location_csv) {
+            $servicelist = new Collection(array_filter(
+                (array)$servicelist,
+                function ($item) use ($location_csv) {
+                    $service = new Entity($item);
+                    return $service->containsLocation($location_csv);
+                }
+            ));
+        }
+        return $servicelist;
+    }
 }

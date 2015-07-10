@@ -15,20 +15,6 @@ class FileAccess extends AbstractAccess
 {
 
     /**
-      * Services
-      *
-      * @var Array $services
-      */
-    protected $services = array();
-
-    /**
-      * Locations
-      *
-      * @var Array $locations
-      */
-    protected $locations = array();
-
-    /**
       * Authorities
       *
       * @var Array $authorities
@@ -45,8 +31,6 @@ class FileAccess extends AbstractAccess
         $authoritiesJson = null,
         $settingsJson = null
     ) {
-        $this->services = new Collection\Services();
-        $this->locations = new Collection\Locations();
         $this->authorities = new Collection\Authorities();
         if (null !== $locationJson) {
             $this->loadLocations($locationJson);
@@ -70,10 +54,8 @@ class FileAccess extends AbstractAccess
      */
     public function loadLocations($locationJson)
     {
-        $locationlist = self::readJson($locationJson);
-        foreach ($locationlist['data'] as $location) {
-            $this->locations[$location['id']] = new Entity\Location($location);
-        }
+        $this->accessInstance['Location'] = new File\Location($locationJson);
+        $this->accessInstance['Location']->setAccessInstance($this);
         return $this;
     }
 
@@ -82,10 +64,9 @@ class FileAccess extends AbstractAccess
      */
     public function loadServices($serviceJson)
     {
-        $servicelist = self::readJson($serviceJson);
-        foreach ($servicelist['data'] as $service) {
-            $this->services[$service['id']] = new Entity\Service($service);
-        }
+        $this->accessInstance['Service'] = new File\Service($serviceJson);
+        $this->accessInstance['Service']->setAccessInstance($this);
+        return $this;
     }
 
     /**
@@ -94,6 +75,8 @@ class FileAccess extends AbstractAccess
     public function loadTopics($topicJson)
     {
         $this->accessInstance['Topic'] = new File\Topic($topicJson);
+        $this->accessInstance['Topic']->setAccessInstance($this);
+        return $this;
     }
 
     /**
@@ -102,8 +85,12 @@ class FileAccess extends AbstractAccess
     public function loadSettings($settingsJson)
     {
         $this->accessInstance['Setting'] = new File\Setting($settingsJson);
+        $this->accessInstance['Setting']->setAccessInstance($this);
         $this->accessInstance['Office'] = new File\Office($settingsJson);
+        $this->accessInstance['Office']->setAccessInstance($this);
         $this->accessInstance['Borough'] = new File\Borough($settingsJson);
+        $this->accessInstance['Borough']->setAccessInstance($this);
+        return $this;
     }
 
     /**
@@ -111,10 +98,9 @@ class FileAccess extends AbstractAccess
      */
     public function loadAuthorities($authorityJson)
     {
-        $authoritylist = self::readJson($authorityJson);
-        foreach ($authoritylist['data'] as $authority) {
-            $this->authorities[$authority['id']] = new Entity\Authority($authority);
-        }
+        $this->accessInstance['Authority'] = new File\Authority($authorityJson);
+        $this->accessInstance['Authority']->setAccessInstance($this);
+        return $this;
     }
 
     protected static function readJson($jsonFile)
@@ -160,23 +146,26 @@ class FileAccess extends AbstractAccess
     }
 
     /**
-     * @return Collection\Locations
+     * @return Array
      */
-    public function fetchLocationList($service_csv = false)
+    public function fetchServiceCombinations($service_csv)
     {
-        $locationlist = $this->locations;
-        if ($service_csv) {
-            $locationlist = new Collection\Locations(array_filter(
-                (array)$locationlist,
-                function ($item) use ($service_csv) {
-                    $location = new \BO\Dldb\Entity\Location($item);
-                    return $location->containsService($service_csv);
-                }
-            ));
-        }
-        return $locationlist;
+        return $this->fetchServiceList($this->fetchServiceLocationCsv($service_csv));
     }
-    
+
+    /**
+     * @return String
+     */
+    protected function fetchServiceLocationCsv($service_csv)
+    {
+        $locationlist = $this->fetchLocationList($service_csv);
+        $locationIdList = array();
+        foreach ($locationlist as $location) {
+            $locationIdList[] = $location['id'];
+        }
+        return implode(',', $locationIdList);
+    }
+
     /**
      * @return Collection\Locations
      */
@@ -203,36 +192,6 @@ class FileAccess extends AbstractAccess
         $locationlist = $this->fetchLocationList();
         if (array_key_exists($location_id, $locationlist)) {
             return $locationlist[$location_id];
-        }
-        return false;
-    }
-
-    /**
-     * @return Collection\Services
-     */
-    public function fetchServiceList($location_csv = false)
-    {
-        $servicelist = $this->services;
-        if ($location_csv) {
-            $servicelist = new Collection\Services(array_filter(
-                (array)$servicelist,
-                function ($item) use ($location_csv) {
-                    $service = new \BO\Dldb\Entity\Service($item);
-                    return $service->containsLocation($location_csv);
-                }
-            ));
-        }
-        return $servicelist;
-    }
-
-    /**
-     * @return Entity\Service
-     */
-    public function fetchService($service_id)
-    {
-        $servicelist = $this->fetchServiceList();
-        if (array_key_exists($service_id, $servicelist)) {
-            return $servicelist[$service_id];
         }
         return false;
     }
@@ -267,32 +226,6 @@ class FileAccess extends AbstractAccess
         }
         $servicelist->sortByName();
         return $servicelist;
-    }
-
-    /**
-     * fetch locations for a list of service and group by authority
-     * @return Collection\Authorities
-     */
-    public function fetchAuthorityList(Array $servicelist = array())
-    {
-        if (count($servicelist)) {
-            $authoritylist = new Collection\Authorities();
-            foreach ($servicelist as $service_id) {
-                $service = $this->fetchService($service_id);
-                if ($service) {
-                    foreach ($service['locations'] as $locationinfo) {
-                        $location = $this->fetchLocation($locationinfo['location']);
-                        if ($location) {
-                            $authoritylist->addLocation($location);
-                        }
-                    }
-                }
-            }
-            $authoritylist->sortByName();
-        } else {
-            $authoritylist = $this->authorities;
-        }
-        return $authoritylist;
     }
 
     /**
