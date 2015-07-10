@@ -32,7 +32,14 @@ class ElasticAccess extends FileAccess
     /**
      * @return self
      */
-    public function __construct($index, $host = 'localhost', $port = '9200', $transport = 'Http')
+    public function __construct($index = null, $host = 'localhost', $port = '9200', $transport = 'Http')
+    {
+        if ($index) {
+            $this->connectElasticSearch($index, $host, $port, $transport);
+        }
+    }
+
+    public function connectElasticSearch($index, $host = 'localhost', $port = '9200', $transport = 'Http')
     {
         $this->connection = new \Elastica\Client(
             array(
