@@ -76,4 +76,5 @@ class Authorities extends Base
         }
         return $this;
     }
+
 }

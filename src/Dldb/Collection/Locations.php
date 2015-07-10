@@ -38,24 +38,6 @@ class Locations extends Base
     public function getCSV($locationList = null)
     {
         return implode(',', $this->getIds($locationList));
-    }
+    }   
     
-    public static function setSidebar()
-    {
-    	$menu = array(
-    		array('path' => 'authoritylist', 'name' => 'Behörden A-Z'),    	
-    		array('path' => 'serviceatlas', 'name' => 'Serviceatlas'),
-    		array('category' => 'auslandsamt', 'name' => 'Ausländerbehörde'),
-    		array('category' => 'buergeraemter', 'name' => 'Bürgerämter'),
-    		array('category' => 'finanzaemter', 'name' => 'Finanzaemter'),
-    		array('category' => 'gesundheitsaemter', 'name' => 'Gesundheitsämter'),
-    		array('category' => 'kfz-zulassungsstellen', 'name' => 'KFZ-Zulassungsstellen'),
-    		array('category' => 'jugendaemter', 'name' => 'Jugendämter'),
-    		array('category' => 'ordungsaemter', 'name' => 'Ordungsämter'),
-    		array('category' => 'sozialaemter', 'name' => 'Sozialämter'),
-    		array('category' => 'standesaemter', 'name' => 'Standesämter'),
-    		array('category' => 'weitere', 'name' => 'Weitere Standorte')
-    	);    	
-    	return $menu;
-    }
 }
