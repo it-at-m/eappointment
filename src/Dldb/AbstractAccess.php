@@ -25,6 +25,19 @@ class AbstractAccess
         'Topic' => null,
     );
 
+    private function getInstanceCompatibilities()
+    {
+        $accessInstance = $this->accessInstance;
+        $accessInstance['Authorities'] = $accessInstance['Authority'];
+        $accessInstance['Boroughs'] = $accessInstance['Borough'];
+        $accessInstance['Locations'] = $accessInstance['Location'];
+        $accessInstance['Offices'] = $accessInstance['Office'];
+        $accessInstance['Services'] = $accessInstance['Service'];
+        $accessInstance['Settings'] = $accessInstance['Setting'];
+        $accessInstance['Topics'] = $accessInstance['Topic'];
+        return $accessInstance;
+    }
+
     /**
      * find matching function in instance
      *
@@ -39,10 +52,16 @@ class AbstractAccess
             $actionType = 'fetch';
             $instanceName = $this->getInstanceOnName($functionName, 5);
             $actionName = substr($functionName, 5 + strlen($instanceName));
+            if (!$actionName) {
+                $actionName = 'Id';
+            }
         }
-        if (method_exists($this->accessInstance[$instanceName], $actionType . $actionName)) {
+        $accessInstance = $this->getInstanceCompatibilities();
+        if ($instanceName
+            && method_exists($accessInstance[$instanceName], $actionType . $actionName)) {
+            $accessInstance[$instanceName]->setAccessInstance($this);
             return call_user_func_array(
-                array($this->accessInstance[$instanceName], $actionType . $actionName),
+                array($accessInstance[$instanceName], $actionType . $actionName),
                 $functionArguments
             );
         }
@@ -54,7 +73,7 @@ class AbstractAccess
      */
     protected function getInstanceOnName($name, $position = 0)
     {
-        foreach (array_keys($this->accessInstance) as $instanceName) {
+        foreach (array_keys($this->getInstanceCompatibilities()) as $instanceName) {
             if ($position === strpos($name, $instanceName)) {
                 return $instanceName;
             }

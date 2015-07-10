@@ -29,39 +29,11 @@ class FileAccess extends AbstractAccess
     protected $locations = array();
 
     /**
-      * Topics
-      *
-      * @var Array $topics
-      */
-    protected $topics = array();
-
-    /**
-      * Settings
-      *
-      * @var Array $settings
-      */
-    protected $settings = array();
-
-    /**
       * Authorities
       *
       * @var Array $authorities
       */
     protected $authorities = array();
-
-    /**
-      * Authorities
-      *
-      * @var Array $authorities
-      */
-    protected $offices = array();
-
-    /**
-      * Authorities
-      *
-      * @var Array $authorities
-      */
-    protected $boroughs = array();
 
     /**
      * @return self
@@ -75,10 +47,7 @@ class FileAccess extends AbstractAccess
     ) {
         $this->services = new Collection\Services();
         $this->locations = new Collection\Locations();
-        $this->topics = new Collection\Topics();
         $this->authorities = new Collection\Authorities();
-        $this->offices = new Collection\Offices();
-        $this->boroughs = new Collection\Boroughs();
         if (null !== $locationJson) {
             $this->loadLocations($locationJson);
         }
@@ -132,14 +101,9 @@ class FileAccess extends AbstractAccess
      */
     public function loadSettings($settingsJson)
     {
-        $settinglist = self::readJson($settingsJson);
-        $this->settings = $settinglist['data']['settings'];
-        foreach ($settinglist['data']['office'] as $office) {
-            $this->offices[$office['path']] = new Entity\Office($office);
-        }
-        foreach ($settinglist['data']['boroughs'] as $borough) {
-            $this->boroughs[$borough['id']] = new Entity\Borough($borough);
-        }
+        $this->accessInstance['Setting'] = new File\Setting($settingsJson);
+        $this->accessInstance['Office'] = new File\Office($settingsJson);
+        $this->accessInstance['Borough'] = new File\Borough($settingsJson);
     }
 
     /**
@@ -163,62 +127,6 @@ class FileAccess extends AbstractAccess
             throw new Exception("Could not decide $jsonFile");
         }
         return $list;
-    }
-
-    public function fetchSettingName($name)
-    {
-        if (isset($this->settings[$name])) {
-            return $this->settings[$name];
-        }
-        return null;
-    }
-
-    public function fetchBoroughId($borough_id)
-    {
-        if (isset($this->boroughs[$borough_id])) {
-            return $this->boroughs[$borough_id];
-        }
-        return null;
-    }
-
-    public function fetchOfficePath($office_path)
-    {
-        $offices = $this->fetchOfficeList();
-        if (isset($offices[$office_path])) {
-            return $offices[$office_path];
-        }
-        return null;
-    }
-
-    public function fetchOfficeList()
-    {
-        return $this->offices;
-    }
-
-    /**
-     * @return Entity\Topic
-     */
-    public function fetchTopic($topic_id)
-    {
-        $topiclist = $this->fetchTopicList();
-        if (array_key_exists($topic_id, $topiclist)) {
-            return $topiclist[$topic_id];
-        }
-        return false;
-    }
-
-    /**
-     * @return Entity\Topic
-     */
-    public function fetchTopicPath($topic_path)
-    {
-        $topiclist = $this->fetchTopicList();
-        foreach ($topiclist as $topic) {
-            if ($topic['path'] == $topic_path) {
-                return $topic;
-            }
-        }
-        return false;
     }
 
     /**

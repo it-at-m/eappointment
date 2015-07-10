@@ -24,6 +24,11 @@ abstract class Base
      */
     protected $dataFile = '';
 
+    /**
+     * @var \BO\Dldb\AbstractAccess $accessInstance
+     */
+    private $accessInstance = null;
+
     abstract protected function parseData($data);
 
     public function __construct($dataFile)
@@ -50,5 +55,24 @@ abstract class Base
             $this->loadData();
         }
         return $this->itemList;
+    }
+
+    public function fetchId($itemId)
+    {
+        $itemList = $this->getItemList();
+        if (array_key_exists($itemId, $itemList)) {
+            return $itemList[$itemId];
+        }
+        return null;
+    }
+
+    public function setAccessInstance(\BO\Dldb\AbstractAccess $accessInstance)
+    {
+        $this->accessInstance = $accessInstance;
+    }
+
+    public function access()
+    {
+        return $this->accessInstance;
     }
 }

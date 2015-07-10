@@ -7,6 +7,7 @@
 namespace BO\Dldb\File;
 
 use \BO\Dldb\Entity\Topic as Entity;
+use \BO\Dldb\Collection\Topics as Collection;
 
 /**
   * Common methods shared by access classes
@@ -17,7 +18,7 @@ class Topic extends Base
 
     protected function parseData($data)
     {
-        $itemList = array();
+        $itemList = new Collection();
         foreach ($data['data'] as $item) {
             $itemList[$item['id']] = new Entity($item);
         }
@@ -25,7 +26,7 @@ class Topic extends Base
     }
 
     /**
-     * @return Collection\Topics
+     * @return Collection
      */
     public function fetchList()
     {
@@ -33,11 +34,11 @@ class Topic extends Base
     }
 
     /**
-     * @return Entity\Topic
+     * @return Entity
      */
     public function fetchPath($topic_path)
     {
-        $topiclist = $this->fetchTopicList();
+        $topiclist = $this->fetchList();
         foreach ($topiclist as $topic) {
             if ($topic['path'] == $topic_path) {
                 return $topic;
