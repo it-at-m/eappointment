@@ -47,7 +47,7 @@ class Authority extends Base
      *
      * @return new self
      */
-    public function matchOfficePath($officepath = null)
+    public function matchLocationWithOffice($officepath = null)
     {
     	foreach ($this['locations'] as $key => $location) {   	
     		if ($location['office'] != $officepath) { 

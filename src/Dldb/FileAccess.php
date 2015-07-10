@@ -276,7 +276,7 @@ class FileAccess extends AbstractAccess
     			(array)$authoritylist,
     			function ($item) use ($officepath) {
     				$authority = new \BO\Dldb\Entity\Authority($item);
-    				return $authority->matchOfficePath($officepath);
+    				return $authority->matchLocationWithOffice($officepath);
     			}
     		));
     	}    
