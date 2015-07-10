@@ -38,6 +38,5 @@ class Locations extends Base
     public function getCSV($locationList = null)
     {
         return implode(',', $this->getIds($locationList));
-    }   
-    
+    }
 }

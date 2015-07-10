@@ -49,18 +49,18 @@ class Authority extends Base
      */
     public function matchLocationWithOffice($officepath = null)
     {
-    	foreach ($this['locations'] as $key => $location) {   	
-    		if ($location['office'] != $officepath) { 
-    			unset($this['locations'][$key]);
-    		}
-    	}
-    	$data = array(
-    		'name' => $this['name'],
-    		'locations' => $this['locations']   		
-    	);
-    	if(count($data['locations'])){
-    		return new self($data);
-    	}    	
+        foreach ($this['locations'] as $key => $location) {
+            if ($location['office'] != $officepath) {
+                unset($this['locations'][$key]);
+            }
+        }
+        $data = array(
+            'name' => $this['name'],
+            'locations' => $this['locations']
+        );
+        if (count($data['locations'])) {
+            return new self($data);
+        }
     }
     
     /**
@@ -72,11 +72,11 @@ class Authority extends Base
      */
     public function hasEaId($ea_id = null)
     {
-    	foreach ($this['locations'] as $key => $location) {
-    		if ($location['id'] == $ea_id) {    			
-    			return true;
-    		}
-    	}
-    	return false;
+        foreach ($this['locations'] as $key => $location) {
+            if ($location['id'] == $ea_id) {
+                return true;
+            }
+        }
+        return false;
     }
 }
