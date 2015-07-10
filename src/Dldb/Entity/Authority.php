@@ -45,7 +45,7 @@ class Authority extends Base
      *
      * @param String $officepath only check for this office
      *
-     * @return Bool
+     * @return new self
      */
     public function matchOfficePath($officepath = null)
     {
