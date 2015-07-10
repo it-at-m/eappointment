@@ -55,6 +55,13 @@ class AbstractAccess
             if (!$actionName) {
                 $actionName = 'Id';
             }
+        } elseif (0 === strpos($functionName, 'search')) {
+            $actionType = 'search';
+            $instanceName = $this->getInstanceOnName($functionName, 5);
+            $actionName = substr($functionName, 6 + strlen($instanceName));
+            if (!$actionName) {
+                $actionName = 'All';
+            }
         }
         $accessInstance = $this->getInstanceCompatibilities();
         if ($instanceName
@@ -65,7 +72,9 @@ class AbstractAccess
                 $functionArguments
             );
         }
-        throw new Exception("Unknown access function or instance");
+        throw new Exception(
+            "Unknown access function or instance: $functionName ($instanceName::$actionType$actionName)"
+        );
     }
 
     /**

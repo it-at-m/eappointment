@@ -12,7 +12,8 @@ class AuthoritiesTest extends Base
 {
     public function testHasAppointments()
     {
-        $access = new FileAccess(LOCATION_JSON, SERVICE_JSON);
+        $access = new FileAccess();
+        $access->loadFromPath(FIXTURES);
         $authorityList = $access->fetchAuthorityList([SERVICE_SINGLE]);
         $this->assertTrue($authorityList->hasAppointments());
         $authorityList = $access->fetchAuthorityList([SERVICE_SINGLE, 305303]); //Aufenthaltserlaubnis Praktikum
