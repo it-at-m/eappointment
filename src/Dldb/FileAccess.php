@@ -7,6 +7,8 @@
 namespace BO\Dldb;
 
 /**
+ * @SuppressWarnings(TooManyMethods)
+ * @SuppressWarnings(CouplingBetweenObjects)
  *
  */
 class FileAccess extends AbstractAccess
@@ -117,10 +119,7 @@ class FileAccess extends AbstractAccess
      */
     public function loadTopics($topicJson)
     {
-        $topiclist = self::readJson($topicJson);
-        foreach ($topiclist['data'] as $topic) {
-            $this->topics[$topic['id']] = new Entity\Topic($topic);
-        }
+        $this->accessInstance['Topic'] = new File\Topic($topicJson);
     }
 
     /**
@@ -245,14 +244,6 @@ class FileAccess extends AbstractAccess
             return $servicelist;
         }
         return false;
-    }
-
-    /**
-     * @return Collection\Topics
-     */
-    public function fetchTopicList()
-    {
-        return $this->topics;
     }
 
     /**
