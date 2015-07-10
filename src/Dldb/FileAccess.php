@@ -66,8 +66,13 @@ class FileAccess extends AbstractAccess
     /**
      * @return self
      */
-    public function __construct($locationJson = null, $serviceJson = null, $topicsJson = null, $authoritiesJson = null, $settingsJson = null)
-    {
+    public function __construct(
+        $locationJson = null,
+        $serviceJson = null,
+        $topicsJson = null,
+        $authoritiesJson = null,
+        $settingsJson = null
+    ) {
         $this->services = new Collection\Services();
         $this->locations = new Collection\Locations();
         $this->topics = new Collection\Topics();
@@ -84,10 +89,10 @@ class FileAccess extends AbstractAccess
             $this->loadTopics($topicsJson);
         }
         if (null !== $authoritiesJson) {
-        	$this->loadAuthorities($authoritiesJson);
+            $this->loadAuthorities($authoritiesJson);
         }
         if (null !== $settingsJson) {
-        	$this->loadSettings($settingsJson);
+            $this->loadSettings($settingsJson);
         }
     }
 
@@ -269,18 +274,17 @@ class FileAccess extends AbstractAccess
      */
     public function fetchLocationListByOffice($officepath = false)
     {
-    	$authoritylist = $this->authorities;
-    	$locationslist = array();
-    	if ($officepath) {
-    		$authoritylist = new Collection\Authorities(array_filter(
-    			(array)$authoritylist,
-    			function ($item) use ($officepath) {
-    				$authority = new \BO\Dldb\Entity\Authority($item);
-    				return $authority->matchLocationWithOffice($officepath);
-    			}
-    		));
-    	}    
-    	return $authoritylist;
+        $authoritylist = $this->authorities;
+        if ($officepath) {
+            $authoritylist = new Collection\Authorities(array_filter(
+                (array)$authoritylist,
+                function ($item) use ($officepath) {
+                    $authority = new \BO\Dldb\Entity\Authority($item);
+                    return $authority->matchLocationWithOffice($officepath);
+                }
+            ));
+        }
+        return $authoritylist;
     }
 
     /**
