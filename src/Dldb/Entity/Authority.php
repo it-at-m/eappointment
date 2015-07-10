@@ -62,4 +62,21 @@ class Authority extends Base
     		return new self($data);
     	}    	
     }
+    
+    /**
+     * Check if locations are available for defined office
+     *
+     * @param String $officepath only check for this office
+     *
+     * @return Bool
+     */
+    public function hasEaId($ea_id = null)
+    {
+    	foreach ($this['locations'] as $key => $location) {
+    		if ($location['id'] == $ea_id) {    			
+    			return true;
+    		}
+    	}
+    	return false;
+    }
 }
