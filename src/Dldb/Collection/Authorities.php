@@ -49,6 +49,24 @@ class Authorities extends Base
         }
         return false;
     }
+    
+    /**
+     * Check if ea_id location exists
+     *
+     * @param Int ea_id is location.id
+     *
+     * @return Bool
+     */
+    public function hasEaId($ea_id)
+    {
+    	foreach ($this as $key => $authority) {
+    		if ($authority->hasEaId($ea_id)) {
+    			unset($this[$key]);
+    			return true;
+    		}
+    	}
+    	return false;
+    }
 
     /**
      * remove locations if no appointment is available
