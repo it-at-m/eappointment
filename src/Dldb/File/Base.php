@@ -6,6 +6,8 @@
 
 namespace BO\Dldb\File;
 
+use \BO\Dldb\Exception;
+
 /**
   * Common methods shared by access classes
   *
@@ -63,7 +65,7 @@ abstract class Base
         if (array_key_exists($itemId, $itemList)) {
             return $itemList[$itemId];
         }
-        return null;
+        return false;
     }
 
     public function setAccessInstance(\BO\Dldb\AbstractAccess $accessInstance)

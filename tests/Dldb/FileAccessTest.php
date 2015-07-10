@@ -65,24 +65,28 @@ class FileTest extends \PHPUnit_Framework_TestCase
     public function testFailLocation()
     {
         $this->setExpectedException("\BO\Dldb\Exception");
-        new FileAccess('dummy', 'dummy');
+        $access = new FileAccess('dummy', 'dummy');
+        $access->fromLocation()->loadData();
     }
 
     public function testFailService()
     {
         $this->setExpectedException("\BO\Dldb\Exception");
-        new FileAccess(LOCATION_JSON, 'dummy');
+        $access = new FileAccess(LOCATION_JSON, 'dummy');
+        $access->fromService()->loadData();
     }
 
     public function testFailJsonLocation()
     {
         $this->setExpectedException("\BO\Dldb\Exception");
-        new FileAccess(__FILE__, 'dummy');
+        $access = new FileAccess(__FILE__, 'dummy');
+        $access->fromLocation()->loadData();
     }
 
     public function testFailJsonService()
     {
         $this->setExpectedException("\BO\Dldb\Exception");
-        new FileAccess(LOCATION_JSON, __FILE__);
+        $access = new FileAccess(LOCATION_JSON, __FILE__);
+        $access->fromService()->loadData();
     }
 }
