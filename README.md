@@ -57,7 +57,8 @@ Locations
                 "ubahn" : "", // Anbindung per U-Bahn
                 "bus" : "", // Anbindung per Bus
                 "sbahn" : "Prenzlauer Allee : S41, S42, S 8, S 85", // Anbindung per S-Bahn
-                "tram" : "Fröbelstr. : M 2" // Anbindung per Tram
+                "tram" : "Fröbelstr. : M 2", // Anbindung per Tram
+                "use_api": false // 0 - Benutzerdefinierte Fahrverbindungen anzeigen, 1 - Fahrverbindungen vom VBB anzeigen
             },
             "note": "Terminkunden werden über die Aufrufanlage aufgerufen.", // Sonstige Hinweise zum Standort
             "appointment" : {
