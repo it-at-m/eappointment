@@ -119,7 +119,7 @@ class FileAccess extends AbstractAccess
     public function fetchTopicServicesList($topic_path)
     {
         trigger_error("Deprecated function fetchTopicServicesList, use fromService()->fetchTopic()");
-        return $this->fromService()->fetchTopic($topic_path);
+        return $this->fromService()->fetchTopicPath($topic_path);
     }
 
     /**
@@ -129,16 +129,7 @@ class FileAccess extends AbstractAccess
      */
     public function fetchLocationListByOffice($officepath = false)
     {
-        $authoritylist = $this->authorities;
-        if ($officepath) {
-            $authoritylist = new Collection\Authorities(array_filter(
-                (array)$authoritylist,
-                function ($item) use ($officepath) {
-                    $authority = new \BO\Dldb\Entity\Authority($item);
-                    return $authority->matchLocationWithOffice($officepath);
-                }
-            ));
-        }
-        return $authoritylist;
+        trigger_error("Deprecated function fetchLocationListByOffice, use fromAuthority()->fetchOffice()");
+        return $this->fromAuthority()->fetchOffice($officepath);
     }
 }

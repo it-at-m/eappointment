@@ -24,13 +24,4 @@ class Borough extends Base
         }
         return $itemList;
     }
-
-    public function fetchId($itemId)
-    {
-        $itemList = $this->getItemList();
-        if (isset($itemList[$itemId])) {
-            return $itemList[$itemId];
-        }
-        return null;
-    }
 }

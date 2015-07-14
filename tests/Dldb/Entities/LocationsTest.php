@@ -12,7 +12,8 @@ class LocationsTest extends Base
 {
     public function testFilter()
     {
-        $access = new FileAccess(LOCATION_JSON, SERVICE_JSON);
+        $access = new FileAccess();
+        $access->loadFromPath(FIXTURES);
         $locationList = $access->fetchLocationList(SERVICE_SINGLE);
         $this->assertTrue($locationList instanceof \BO\Dldb\Collection\Locations);
         $this->assertContains(LOCATION_SINGLE, $locationList->getIds());
@@ -21,7 +22,7 @@ class LocationsTest extends Base
             LOCATION_SINGLE,
             $locationList->getLocationsWithAppointmentsFor(SERVICE_SINGLE)->getIds()
         );
-        $locationList = $access->fetchLocationList(305303); //Aufenthaltserlaubnis Praktikum
+        $locationList = $access->fromLocation()->fetchList(305303); //Aufenthaltserlaubnis Praktikum
         $this->assertContains(121885, $locationList->getIds());
         $this->assertContains(121885, $locationList->getLocationsWithAppointmentsFor(305303, true)->getIds());
         $this->assertNotContains(121885, $locationList->getLocationsWithAppointmentsFor(305303)->getIds());

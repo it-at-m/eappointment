@@ -14,6 +14,9 @@ class AuthoritiesTest extends Base
     {
         $access = new FileAccess();
         $access->loadFromPath(FIXTURES);
+        $authorityList = $access->fetchAuthorityList();
+        $this->assertTrue($authorityList->hasLocationId(LOCATION_SINGLE));
+        $this->assertFalse($authorityList->removeLocation(LOCATION_SINGLE)->hasLocationId(LOCATION_SINGLE));
         $authorityList = $access->fetchAuthorityList([SERVICE_SINGLE]);
         $this->assertTrue($authorityList->hasAppointments());
         $authorityList = $access->fetchAuthorityList([SERVICE_SINGLE, 305303]); //Aufenthaltserlaubnis Praktikum
@@ -21,5 +24,7 @@ class AuthoritiesTest extends Base
         $this->assertFalse($authorityList->hasAppointments(305303));
         $this->assertTrue($authorityList->hasAppointments(305303, true));
 
+        $authorityList = $authorityList->removeLocationsWithoutAppointments();
+        $this->assertFalse($authorityList->hasAppointments(305303, true));
     }
 }

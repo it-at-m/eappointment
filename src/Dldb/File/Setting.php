@@ -22,10 +22,6 @@ class Setting extends Base
 
     public function fetchName($name)
     {
-        $itemList = $this->getItemList();
-        if (isset($itemList[$name])) {
-            return $itemList[$name];
-        }
-        return null;
+        return $this->fetchId($name);
     }
 }

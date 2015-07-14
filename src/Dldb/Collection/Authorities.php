@@ -9,11 +9,18 @@ namespace BO\Dldb\Collection;
 class Authorities extends Base
 {
 
+    public function __clone()
+    {
+        foreach ($this as $key => $authority) {
+            $this[$key] = clone $authority;
+        }
+    }
+
     public function addLocation(\BO\Dldb\Entity\Location $location)
     {
         if (array_key_exists('authority', $location)) {
             $this->addAuthority($location['authority']['id'], $location['authority']['name']);
-            $this[$location['authority']['id']]['locations'][] = $location;
+            $this[$location['authority']['id']]['locations'][$location['id']] = $location;
         }
         return $this;
     }
@@ -53,19 +60,34 @@ class Authorities extends Base
     /**
      * Check if ea_id location exists
      *
-     * @param Int ea_id is location.id
+     * @param Int $locationId
      *
      * @return Bool
      */
-    public function hasEaId($ea_id)
+    public function hasLocationId($locationId)
     {
-        foreach ($this as $key => $authority) {
-            if ($authority->hasEaId($ea_id)) {
-                unset($this[$key]);
+        foreach ($this as $authority) {
+            if ($authority->hasLocationId($locationId)) {
                 return true;
             }
         }
         return false;
+    }
+
+    /**
+     * Remove a location
+     *
+     * @param Int $locationId
+     *
+     * @return clone self
+     */
+    public function removeLocation($locationId)
+    {
+        $authorityList = clone $this;
+        foreach ($authorityList as $key => $authority) {
+            $authorityList[$key] = $authority->removeLocation($locationId);
+        }
+        return $authorityList;
     }
 
     /**
@@ -88,10 +110,38 @@ class Authorities extends Base
                     }
                 }
             } else {
-                var_dump($authority['name']);
                 $authorityIterator->offsetUnset($key);
             }
         }
         return $this;
+    }
+
+    public function removeEmptyAuthorities()
+    {
+        $authoritylist = new self();
+        foreach ($this as $key => $authority) {
+            if ($authority->hasLocations()) {
+                $authoritylist[$key] = clone $authority;
+            }
+        }
+        return $authoritylist;
+    }
+
+    public function removeLocations()
+    {
+        $authoritylist = clone $this;
+        foreach ($authoritylist as $authority) {
+            $authority['locations'] = new Locations();
+        }
+        return $authoritylist;
+    }
+
+    public function getWithOffice($officepath)
+    {
+        $authoritylist = clone $this;
+        foreach ($authoritylist as $key => $authority) {
+            $authoritylist[$key] = $authority->getWithOffice($officepath);
+        }
+        return $authoritylist->removeEmptyAuthorities();
     }
 }
