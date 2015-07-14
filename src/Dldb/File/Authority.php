@@ -50,4 +50,26 @@ class Authority extends Base
         }
         return $authoritylist;
     }
+
+    /**
+     * @todo will not work in every edge case, cause authority export does not contain officeinformations
+     * @todo returns Collection\Authorities and not locations
+     * @return Collection\Locations
+     */
+    public function fetchOffice($officepath)
+    {
+        $authoritylist = $this->getItemList();
+        if ($officepath) {
+            $authoritylist = new Collection(array_filter(
+                (array)$authoritylist,
+                function ($item) use ($officepath) {
+                    // Only works, cause ArrayObject(ArrayObject) initialisation
+                    // only returns a value, if it contains a office location
+                    $authority = new Entity($item);
+                    return $authority->getOffice($officepath);
+                }
+            ));
+        }
+        return $authoritylist;
+    }
 }

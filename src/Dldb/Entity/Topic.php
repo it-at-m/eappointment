@@ -13,4 +13,12 @@ namespace BO\Dldb\Entity;
 class Topic extends Base
 {
 
+    public function getServiceIds()
+    {
+        $serviceIds = array();
+        foreach ($this['relation']['services'] as $service) {
+            $serviceIds[] = $service['id'];
+        }
+        return $serviceIds;
+    }
 }

@@ -79,4 +79,44 @@ class Service extends Base
         $servicelist->sortByName();
         return $servicelist;
     }
+
+    /**
+     * Return services by topic
+     * If topic is root, include sub-services
+     *
+     * @return Collection
+     */
+    public function fetchTopic($topic_path)
+    {
+        $serviceIds = array();
+        $topic = $this->access()->fromTopic()->fetchPath($topic_path);
+        $serviceIds = $topic->getServicesIds();
+        if ($topic['relation']['navigation']  && isset($topic['relation']['childs'])) {
+            foreach ($topic['relation']['childs'] as $child) {
+                $childtopic = $this->access()->fromTopic()->fetchPath($child['path']);
+                $serviceIds = array_merge($serviceIds, $childtopic->getServicesIds());
+            }
+        }
+        if (count($serviceIds)) {
+            $servicelistCSV = implode(',', $serviceIds);
+            $servicelist = $this->fetchFromCsv($servicelistCSV);
+            return $servicelist;
+        }
+        return false;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function searchAll($query, $service_csv = '')
+    {
+        $servicelist = $this->fetchCombinations($service_csv);
+        $servicelist = new Collection(array_filter(
+            (array)$servicelist,
+            function ($item) use ($query) {
+                return false !== strpos($item['name'], $query);
+            }
+        ));
+        return $servicelist;
+    }
 }

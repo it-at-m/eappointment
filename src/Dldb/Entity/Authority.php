@@ -46,13 +46,14 @@ class Authority extends Base
      *
      * @param String $officepath only check for this office
      *
-     * @return new self
+     * @return Authority
      */
-    public function matchLocationWithOffice($officepath = null)
+    public function getOffice($officepath = null)
     {
         foreach ($this['locations'] as $key => $location) {
+            // better: Entity\Location::isOffice($officepath)
             if ($location['office'] != $officepath) {
-                unset($this['locations'][$key]);
+                unset($this['locations'][$key]); // help :-/
             }
         }
         $data = array(
