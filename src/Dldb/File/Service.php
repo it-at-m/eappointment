@@ -86,15 +86,17 @@ class Service extends Base
      *
      * @return Collection
      */
-    public function fetchTopic($topic_path)
+    public function fetchTopicPath($topic_path)
     {
         $serviceIds = array();
         $topic = $this->access()->fromTopic()->fetchPath($topic_path);
-        $serviceIds = $topic->getServicesIds();
-        if ($topic['relation']['navigation']  && isset($topic['relation']['childs'])) {
+        if ($topic) {
+            $serviceIds = $topic->getServiceIds();
+        }
+        if ($topic['relation']['navi']  && isset($topic['relation']['childs'])) {
             foreach ($topic['relation']['childs'] as $child) {
                 $childtopic = $this->access()->fromTopic()->fetchPath($child['path']);
-                $serviceIds = array_merge($serviceIds, $childtopic->getServicesIds());
+                $serviceIds = array_merge($serviceIds, $childtopic->getServiceIds());
             }
         }
         if (count($serviceIds)) {
@@ -102,7 +104,7 @@ class Service extends Base
             $servicelist = $this->fetchFromCsv($servicelistCSV);
             return $servicelist;
         }
-        return false;
+        return new Collection();
     }
 
     /**

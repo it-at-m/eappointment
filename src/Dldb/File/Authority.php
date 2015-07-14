@@ -46,7 +46,11 @@ class Authority extends Base
             }
             $authoritylist->sortByName();
         } else {
-            $authoritylist = $this->getItemList();
+            $authoritylist = $this->getItemList()->removeLocations();
+            $locationlist = $this->access()->fromLocation()->fetchList();
+            foreach ($locationlist as $location) {
+                $authoritylist->addLocation($location);
+            }
         }
         return $authoritylist;
     }
@@ -58,17 +62,9 @@ class Authority extends Base
      */
     public function fetchOffice($officepath)
     {
-        $authoritylist = $this->getItemList();
+        $authoritylist = $this->fetchList();
         if ($officepath) {
-            $authoritylist = new Collection(array_filter(
-                (array)$authoritylist,
-                function ($item) use ($officepath) {
-                    // Only works, cause ArrayObject(ArrayObject) initialisation
-                    // only returns a value, if it contains a office location
-                    $authority = new Entity($item);
-                    return $authority->getOffice($officepath);
-                }
-            ));
+            $authoritylist = $authoritylist->getWithOffice($officepath);
         }
         return $authoritylist;
     }

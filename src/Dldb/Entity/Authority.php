@@ -13,6 +13,13 @@ namespace BO\Dldb\Entity;
 class Authority extends Base
 {
 
+    public function __clone()
+    {
+        if ($this['locations'] instanceof \BO\Dldb\Collection\Locations) {
+            $this['locations'] = clone $this['locations'];
+        }
+    }
+
     public static function create($name)
     {
         $data = array(
@@ -39,7 +46,17 @@ class Authority extends Base
         }
         return false;
     }
-    
+
+    /**
+     * Check if locations are available
+     *
+     * @return Bool
+     */
+    public function hasLocations()
+    {
+        return count($this['locations']) > 0 ? true : false;
+    }
+
     /**
      * Check if locations are available for defined office
      * @todo Remove this function, this is a data query and self manipulation, extreme bug probability
@@ -64,22 +81,35 @@ class Authority extends Base
             return new self($data);
         }
     }
-    
+
+    public function getWithOffice($officepath)
+    {
+        $authority= new self($this->getArrayCopy());
+        $authority['locations'] = $authority['locations']->getWithOffice($officepath);
+        return $authority;
+    }
+
     /**
-     * Check if locations are available for defined office
-     * @todo this should be renamed to hasLocationId()
-     *
-     * @param String $officepath only check for this office
+     * @param Int $locationId
      *
      * @return Bool
      */
-    public function hasEaId($ea_id = null)
+    public function hasLocationId($locationId)
     {
-        foreach ($this['locations'] as $location) {
-            if ($location['id'] == $ea_id) {
-                return true;
-            }
-        }
-        return false;
+        return $this['locations']->hasLocationId($locationId);
+    }
+
+    /**
+     * Remove a location
+     *
+     * @param Int $locationId
+     *
+     * @return clone self
+     */
+    public function removeLocation($locationId)
+    {
+        $authority = clone $this;
+        $authority['locations'] = $authority['locations']->removeLocation($locationId);
+        return $authority;
     }
 }

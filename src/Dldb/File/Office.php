@@ -7,7 +7,7 @@
 namespace BO\Dldb\File;
 
 use \BO\Dldb\Entity\Office as Entity;
-use \BO\Dldb\Collection\Office as Collection;
+use \BO\Dldb\Collection\Offices as Collection;
 
 /**
   * Common methods shared by access classes
@@ -32,10 +32,6 @@ class Office extends Base
 
     public function fetchPath($itemId)
     {
-        $itemList = $this->getItemList();
-        if (isset($itemList[$itemId])) {
-            return $itemList[$itemId];
-        }
-        return null;
+        return $this->fetchId($itemId);
     }
 }
