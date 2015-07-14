@@ -51,7 +51,8 @@ Locations
             "address": { // Adresse des Standortes
                 "house_number": "142 C",
                 "city": "Berlin",
-                "street": "Wilhelmsruher Damm "
+                "street": "Wilhelmsruher Damm ",
+                "postal_code" : "13439"
             },
             "transit" : {
                 "ubahn" : "", // Anbindung per U-Bahn
