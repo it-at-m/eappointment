@@ -48,6 +48,9 @@ class AbstractAccess
         if (self::$showDeprecated) {
             trigger_error("Deprecated access function: $functionName");
         }
+        $actionType = 'none';
+        $instanceName = 'Missing';
+        $actionName = 'Nothing';
         if (0 === strpos($functionName, 'fetch')) {
             $actionType = 'fetch';
             $instanceName = $this->getInstanceOnName($functionName, 5);
@@ -57,7 +60,7 @@ class AbstractAccess
             }
         } elseif (0 === strpos($functionName, 'search')) {
             $actionType = 'search';
-            $instanceName = $this->getInstanceOnName($functionName, 5);
+            $instanceName = $this->getInstanceOnName($functionName, 6);
             $actionName = substr($functionName, 6 + strlen($instanceName));
             if (!$actionName) {
                 $actionName = 'All';
@@ -65,6 +68,7 @@ class AbstractAccess
         }
         $accessInstance = $this->getInstanceCompatibilities();
         if ($instanceName
+            && $instanceName != 'Missing'
             && method_exists($accessInstance[$instanceName], $actionType . $actionName)) {
             $accessInstance[$instanceName]->setAccessInstance($this);
             return call_user_func_array(
@@ -72,8 +76,9 @@ class AbstractAccess
                 $functionArguments
             );
         }
+        $classname = get_class($this);
         throw new Exception(
-            "Unknown access function or instance: $functionName ($instanceName::$actionType$actionName)"
+            "Unknown access function or instance: $classname::$functionName ($instanceName::$actionType$actionName)"
         );
     }
 

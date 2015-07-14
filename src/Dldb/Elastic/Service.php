@@ -1,0 +1,109 @@
+<?php
+/**
+ * @package ClientDldb
+ * @copyright BerlinOnline Stadtportal GmbH & Co. KG
+ **/
+
+namespace BO\Dldb\Elastic;
+
+use \BO\Dldb\Entity\Service as Entity;
+use \BO\Dldb\Collection\Services as Collection;
+use \BO\Dldb\File\Service as Base;
+
+/**
+  *
+  */
+class Service extends Base
+{
+
+
+    /**
+     * @return Entity\Service
+     */
+    public function fetchId($service_id)
+    {
+        if ($service_id) {
+            $filter = new \Elastica\Filter\Ids();
+            $filter->setIds($service_id);
+            $query = \Elastica\Query::create($filter);
+            $result = $this->access()->getIndex()->getType('service')->search($query);
+            if ($result->count() == 1) {
+                $locationList = $result->getResults();
+                return new Entity($locationList[0]->getData());
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @return Collection\Services
+     */
+    public function fetchList($location_csv = false)
+    {
+        $filter = null;
+        if ($location_csv) {
+            $filter = new \Elastica\Filter\Terms('locations.location', explode(',', $location_csv));
+            $filter->setExecution('and');
+        }
+        $query = \Elastica\Query::create($filter);
+        $resultList = $this->access()->getIndex()->getType('service')->search($query, 10000);
+        $serviceList = new Collection();
+        foreach ($resultList as $result) {
+            $service = new Entity($result->getData());
+            $serviceList[$service['id']] = $service;
+        }
+        return $serviceList;
+    }
+
+    /**
+     * @return Collection\Services
+     */
+    public function fetchFromCsv($service_csv)
+    {
+        $filter = new \Elastica\Filter\Ids();
+        $filter->setIds(explode(',', $service_csv));
+        $query = \Elastica\Query::create($filter);
+        $resultList = $this->access()->getIndex()->getType('service')->search($query, 10000);
+        $serviceList = new Collection();
+        foreach ($resultList as $result) {
+            $service = new Entity($result->getData());
+            $serviceList[$service['id']] = $service;
+        }
+        return $serviceList;
+    }
+
+    /**
+     * @return Collection\Services
+     */
+    public function searchAll($query, $service_csv = '', $location_csv = '')
+    {
+        if (!$location_csv) {
+            $location_csv = $this->fetchLocationCsv($service_csv);
+        }
+        $boolquery = new \Elastica\Query\Bool();
+        $searchquery = new \Elastica\Query\QueryString();
+        if ('' === trim($query)) {
+            $searchquery->setQuery('*');
+        } else {
+            $searchquery->setQuery($query);
+        }
+        $searchquery->setFields(['name^9','keywords^5']);
+        $searchquery->setLowercaseExpandedTerms(false);
+        $boolquery->addShould($searchquery);
+        //$prefixquery = new \Elastica\Query\Prefix();
+        //$prefixquery->setPrefix('az', preg_replace('#~\d$#', '', $query), 10);
+        //$boolquery->addShould($prefixquery);
+        $filter = null;
+        if ($location_csv) {
+            $filter = new \Elastica\Filter\Terms('locations.location', explode(',', $location_csv));
+        }
+        $query = new \Elastica\Query\Filtered($boolquery, $filter);
+        $resultList = $this->access()->getIndex()->getType('service')->search($query, 1000);
+        $serviceList = new Collection();
+        foreach ($resultList as $result) {
+            $service = new Entity($result->getData());
+            $serviceList[$service['id']] = $service;
+        }
+        return $serviceList;
+    }
+}

@@ -60,6 +60,7 @@ class IndexerTest extends \PHPUnit_Framework_TestCase
     public function testFail()
     {
         $access = new \BO\Dldb\ElasticAccess(ES_ALIAS, ES_HOST, ES_PORT, ES_TRANSPORT);
+        $access->loadFromPath(FIXTURES);
         $location = $access->fetchLocation(1);
         $this->assertFalse($location);
         $service = $access->fetchService(1);
@@ -70,6 +71,7 @@ class IndexerTest extends \PHPUnit_Framework_TestCase
     {
         if (!getenv('FASTTEST') && !getenv('NOCOMPARE')) {
             $access1 = new \BO\Dldb\ElasticAccess(ES_ALIAS, ES_HOST, ES_PORT, ES_TRANSPORT);
+            $access1->loadFromPath(FIXTURES);
             $access2 = new FileAccess();
             $access2->loadFromPath(FIXTURES);
             $location1 = $access1->fetchLocation(LOCATION_SINGLE);

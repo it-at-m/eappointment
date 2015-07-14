@@ -58,4 +58,19 @@ class Location extends Base
         $locationlist->sortByName();
         return $locationlist;
     }
+
+    /**
+     * @return Collection\Locations
+     */
+    public function searchAll($query, $service_csv = '')
+    {
+        $locationlist = $this->fetchList($service_csv);
+        $locationlist = new Collection(array_filter(
+            (array)$locationlist,
+            function ($item) use ($query) {
+                return false !== strpos($item['name'], $query);
+            }
+        ));
+        return $locationlist;
+    }
 }

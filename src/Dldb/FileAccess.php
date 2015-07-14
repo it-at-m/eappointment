@@ -7,8 +7,6 @@
 namespace BO\Dldb;
 
 /**
- * @SuppressWarnings(TooManyMethods)
- * @SuppressWarnings(CouplingBetweenObjects)
  *
  */
 class FileAccess extends AbstractAccess
@@ -116,41 +114,17 @@ class FileAccess extends AbstractAccess
     }
 
     /**
-     * @todo refactor: returns services not return topics; argument of type Entity\Topic; must this function be public?
-     * @return Entity\Topic\Services
-     */
-    public function getTopicServicesIds($topic)
-    {
-        if (isset($topic['relation']['services'])) {
-            return $this->services->getIds($topic['relation']['services']);
-        }
-        return false;
-    }
-
-    /**
      * @todo refactor: returns services, not topics.
      */
     public function fetchTopicServicesList($topic_path)
     {
-        $serviceIds = array();
-        $topic = $this->fetchTopicPath($topic_path);
-        $serviceIds = $this->getTopicServicesIds($topic);
-        if (isset($topic['relation']['childs'])) {
-            foreach ($topic['relation']['childs'] as $child) {
-                $childtopic = $this->fetchTopicPath($child['path']);
-                $serviceIds = array_merge($serviceIds, $this->getTopicServicesIds($childtopic));
-            }
-        }
-        if (count($serviceIds)) {
-            $servicelistCSV = implode(',', $serviceIds);
-            $servicelist = $this->fetchServiceFromCsv($servicelistCSV);
-            return $servicelist;
-        }
-        return false;
+        trigger_error("Deprecated function fetchTopicServicesList, use fromService()->fetchTopic()");
+        return $this->fromService()->fetchTopic($topic_path);
     }
 
     /**
      * @todo will not work in every edge case, cause authority export does not contain officeinformations
+     * @todo returns Collection\Authorities and not locations
      * @return Collection\Locations
      */
     public function fetchLocationListByOffice($officepath = false)
@@ -166,35 +140,5 @@ class FileAccess extends AbstractAccess
             ));
         }
         return $authoritylist;
-    }
-
-    /**
-     * @return Collection\Locations
-     */
-    public function searchLocation($query, $service_csv = '')
-    {
-        $locationlist = $this->fetchLocationList($service_csv);
-        $locationlist = new Collection\Locations(array_filter(
-            (array)$locationlist,
-            function ($item) use ($query) {
-                return false !== strpos($item['name'], $query);
-            }
-        ));
-        return $locationlist;
-    }
-
-    /**
-     * @return Collection\Services
-     */
-    public function searchService($query, $service_csv = '')
-    {
-        $servicelist = $this->fetchServiceCombinations($service_csv);
-        $servicelist = new Collection\Services(array_filter(
-            (array)$servicelist,
-            function ($item) use ($query) {
-                return false !== strpos($item['name'], $query);
-            }
-        ));
-        return $servicelist;
     }
 }
