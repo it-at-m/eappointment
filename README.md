@@ -76,8 +76,9 @@ Locations
             "contact": { // Kontaktdaten
                 "email": "test@example.com", // Allgemeine E-Mail-Adresse des Standortes
                 "webinfo" : "http://www.berlin.de/ba-mitte/org/sozialamt/index.html", // Homepage des Standortes
-                "fax": "(030) 1234-5678",
-                "phone": "(030) 115"
+                "fax": "(030) 90294-3888",
+                "phone": "(030) 115",
+                "competence": "http://www.berlin.de/meine/zustaendigkeit/" // Link zu detaillierten Zuständigkeitsinformationen
             },
             "payment": "Am Standort kann bar und mit Lastschrift per girocard (ehemals EC-Karte) mit Unterschrift bezahlt werden.", // Zahlungsmöglichkeiten am Standort
             "id": "122314", // ID des Standortes
@@ -90,6 +91,7 @@ Locations
                 "name" : "Bezirksamt Mitte", // Name der Behörde
                 "id" : "12671" // ID der Behörde
             },
+            "office": "buergeramt", // Kategorie des Standores
             "opening_times": { // Öffnungszeiten
                 "tuesday": "11.00-18.00 Uhr 09.00-11.00 Uhr nur Termine 16.00-18.00 Uhr nur Termine ",
                 "thursday": "11.00-18.00 Uhr 09.00-11.00 Uhr nur Termine 16.00-18.00 Uhr nur Termine ",
@@ -244,6 +246,9 @@ Services
          "meta" : {
             "lastupdate" : "2013-11-25T11:12:04+02:00", // letzte Aktualisierung der Dienstleistung
             "keywords" : "Unterhaltsvorschuss, Kind, alleinerziehend, Sozialleistung"
+         },
+         "relation": {
+            "root_topic": "12345" // ID des Themas in der Navigation
          },
          "description" : "Der Unterhaltsvorschuss soll übergangsweise eine besondere Hilfe für alleinerziehende Eltern sein. Der ausfallende Unterhalt soll zumindest zum Teil ausgeglichen werden, ohne den unterhaltspflichtigen Elternteil aus der Verantwortung zu entlassen.\r\nSie können Unterhaltsvorschussleistungen beantragen, wenn Sie alleinerziehend sind und für Ihr noch nicht zwölf Jahre altes Kind keinen Unterhalt vom anderen Elternteil und keine Waisenbezüge mindestens in Höhe der Unterhaltsvorschussleistungen erhalten.\r\nUnterhaltsvorschussleistungen werden für längstens 72 Monate erbracht. Die Vorschussleistung ist grundsätzlich vom anderen Elternteil zu erstatten.\r\n" // Beschreibung der Dienstleistung
       }
