@@ -32,7 +32,6 @@ $client = Request::init()
     ->withoutAutoParsing()
     ->followRedirects()
     ->timeout(30);
-Request::ini($client);
 $proxy = $args->getOpt('proxy');
 if ($proxy) {
     $proxyconf = array();
@@ -50,6 +49,7 @@ if ($proxy) {
         $client->useProxy($proxyconf['host'], $proxyconf['port']);
     }
 }
+Request::ini($client);
 
 $downloads = array(
     array(
@@ -57,22 +57,42 @@ $downloads = array(
         'file' => 'locations_de.json',
     ),
     array(
+        'url' => '/standorte/export/simple/json/en',
+        'file' => 'locations_en.json',
+    ),
+    array(
         'url' => '/dienstleistungen/export/simple/json',
         'file' => 'services_de.json',
+    ),
+    array(
+        'url' => '/dienstleistungen/export/simple/json/en',
+        'file' => 'services_en.json',
+    ),
+    array(
+        'url' => '/themen/export/simple/json',
+        'file' => 'topic_de.json',
+    ),
+    array(
+        'url' => '/behoerden/export/simple/json',
+        'file' => 'authority_de.json',
+    ),
+    array(
+        'url' => '/settings/export/simple/json',
+        'file' => 'settings.json',
     ),
 );
 foreach ($downloads as $download) {
     $dest = $destinationPath . DIRECTORY_SEPARATOR . $download['file'];
-    
+
     $oldContentJson = file_get_contents($dest);
     $oldContent = json_decode($oldContentJson, true);
-    
+
     $request = Request::get($baseDomain . $download['url']);
-    
+
     if (isset($oldContent['hash']) && !empty($oldContent['hash'])) {
         $request->addHeader('If-None-Match', $oldContent['hash']);
     }
-    
+
     $respronse = $request
         //->followRedirects()
         ->send()
@@ -81,7 +101,7 @@ foreach ($downloads as $download) {
     if (304 == $respronse->code) {
         continue;
     }
-    
+
     $json = $respronse->body;
     $tmp = $destinationPath . DIRECTORY_SEPARATOR . 'tmp.' . $download['file'];
     file_put_contents($tmp, $json);

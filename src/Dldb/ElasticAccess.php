@@ -70,20 +70,20 @@ class ElasticAccess extends FileAccess
     /**
      * @return self
      */
-    public function loadLocations($locationJson)
+    public function loadLocations($locationJson, $locale = 'de')
     {
-        $this->accessInstance['Location'] = new Elastic\Location($locationJson);
-        $this->accessInstance['Location']->setAccessInstance($this);
+        $this->accessInstance[$locale]['Location'] = new Elastic\Location($locationJson);
+        $this->accessInstance[$locale]['Location']->setAccessInstance($this);
         return $this;
     }
 
     /**
      * @return self
      */
-    public function loadServices($serviceJson)
+    public function loadServices($serviceJson, $locale = 'de')
     {
-        $this->accessInstance['Service'] = new Elastic\Service($serviceJson);
-        $this->accessInstance['Service']->setAccessInstance($this);
+        $this->accessInstance[$locale]['Service'] = new Elastic\Service($serviceJson);
+        $this->accessInstance[$locale]['Service']->setAccessInstance($this);
         return $this;
     }
 
@@ -92,8 +92,8 @@ class ElasticAccess extends FileAccess
      */
     public function loadTopics($topicJson)
     {
-        $this->accessInstance['Topic'] = new Elastic\Topic($topicJson);
-        $this->accessInstance['Topic']->setAccessInstance($this);
+        $this->accessInstance['de']['Topic'] = new Elastic\Topic($topicJson);
+        $this->accessInstance['de']['Topic']->setAccessInstance($this);
         return $this;
     }
 
@@ -102,12 +102,12 @@ class ElasticAccess extends FileAccess
      */
     public function loadSettings($settingsJson)
     {
-        $this->accessInstance['Setting'] = new Elastic\Setting($settingsJson);
-        $this->accessInstance['Setting']->setAccessInstance($this);
-        $this->accessInstance['Office'] = new Elastic\Office($settingsJson);
-        $this->accessInstance['Office']->setAccessInstance($this);
-        $this->accessInstance['Borough'] = new Elastic\Borough($settingsJson);
-        $this->accessInstance['Borough']->setAccessInstance($this);
+        $this->accessInstance['de']['Setting'] = new Elastic\Setting($settingsJson);
+        $this->accessInstance['de']['Setting']->setAccessInstance($this);
+        $this->accessInstance['de']['Office'] = new Elastic\Office($settingsJson);
+        $this->accessInstance['de']['Office']->setAccessInstance($this);
+        $this->accessInstance['de']['Borough'] = new Elastic\Borough($settingsJson);
+        $this->accessInstance['de']['Borough']->setAccessInstance($this);
         return $this;
     }
 
@@ -116,8 +116,8 @@ class ElasticAccess extends FileAccess
      */
     public function loadAuthorities($authorityJson)
     {
-        $this->accessInstance['Authority'] = new Elastic\Authority($authorityJson);
-        $this->accessInstance['Authority']->setAccessInstance($this);
+        $this->accessInstance['de']['Authority'] = new Elastic\Authority($authorityJson);
+        $this->accessInstance['de']['Authority']->setAccessInstance($this);
         return $this;
     }
 }
