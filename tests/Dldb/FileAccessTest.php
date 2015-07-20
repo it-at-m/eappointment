@@ -59,6 +59,9 @@ class FileTest extends \PHPUnit_Framework_TestCase
 
         $authorityList = $access->fromAuthority()->fetchOffice('auslandsamt');
         $this->assertArrayHasKey(12760, $authorityList);
+
+        $translatedLocation = $access->fromLocation('en')->fetchId(121885);
+        $this->assertEquals('en', $translatedLocation['meta']['locale']);
     }
 
     public function testCompatibility()

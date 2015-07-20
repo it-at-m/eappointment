@@ -16,25 +16,33 @@ class AbstractAccess
     protected static $showDeprecated = false;
 
     protected $accessInstance = array(
-        'Authority' => null,
-        'Borough' => null,
-        'Location' => null,
-        'Office' => null,
-        'Service' => null,
-        'Setting' => null,
-        'Topic' => null,
+        'de' => array(
+            'Authority' => null,
+            'Borough' => null,
+            'Location' => null,
+            'Office' => null,
+            'Service' => null,
+            'Setting' => null,
+            'Topic' => null,
+        ),
+        'en' => array(
+            'Location' => null,
+            'Service' => null,
+        ),
     );
 
-    private function getInstanceCompatibilities()
+    private function getInstanceCompatibilities($locale = 'de')
     {
-        $accessInstance = $this->accessInstance;
-        $accessInstance['Authorities'] = $accessInstance['Authority'];
-        $accessInstance['Boroughs'] = $accessInstance['Borough'];
+        $accessInstance = $this->accessInstance[$locale];
+        if ($locale == 'de') {
+            $accessInstance['Authorities'] = $accessInstance['Authority'];
+            $accessInstance['Boroughs'] = $accessInstance['Borough'];
+            $accessInstance['Offices'] = $accessInstance['Office'];
+            $accessInstance['Settings'] = $accessInstance['Setting'];
+            $accessInstance['Topics'] = $accessInstance['Topic'];
+        }
         $accessInstance['Locations'] = $accessInstance['Location'];
-        $accessInstance['Offices'] = $accessInstance['Office'];
         $accessInstance['Services'] = $accessInstance['Service'];
-        $accessInstance['Settings'] = $accessInstance['Setting'];
-        $accessInstance['Topics'] = $accessInstance['Topic'];
         return $accessInstance;
     }
 
@@ -95,10 +103,10 @@ class AbstractAccess
         return null;
     }
 
-    protected function from($instanceName)
+    protected function from($instanceName, $locale = 'de')
     {
-        if (array_key_exists($instanceName, $this->accessInstance)) {
-            $instance = $this->accessInstance[$instanceName];
+        if (array_key_exists($instanceName, $this->accessInstance[$locale])) {
+            $instance = $this->accessInstance[$locale][$instanceName];
             if (null === $instance) {
                 throw new Exception("Instance for accessing $instanceName is not initialized");
             }
@@ -120,9 +128,9 @@ class AbstractAccess
         return $this->from('Borough');
     }
 
-    public function fromLocation()
+    public function fromLocation($locale = 'de')
     {
-        return $this->from('Location');
+        return $this->from('Location', $locale);
     }
 
     public function fromOffice()
@@ -130,9 +138,9 @@ class AbstractAccess
         return $this->from('Office');
     }
 
-    public function fromService()
+    public function fromService($locale = 'de')
     {
-        return $this->from('Service');
+        return $this->from('Service', $locale);
     }
 
     public function fromSetting()

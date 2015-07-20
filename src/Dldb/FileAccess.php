@@ -46,36 +46,38 @@ class FileAccess extends AbstractAccess
      *
      * @return self
      */
-    public function loadFromPath($path, $locale = 'de')
+    public function loadFromPath($path)
     {
         if (!is_dir($path)) {
             throw new Exception("Could not read directory $path");
         }
-        $this->loadSettings($path . '/settings.json');
-        $this->loadAuthorities($path . DIRECTORY_SEPARATOR . 'authorities_' . $locale . '.json');
-        $this->loadLocations($path . DIRECTORY_SEPARATOR . 'locations_' . $locale . '.json');
-        $this->loadServices($path . DIRECTORY_SEPARATOR . 'services_' . $locale . '.json');
-        $this->loadTopics($path . DIRECTORY_SEPARATOR . 'topics_' . $locale . '.json');
+        $this->loadLocations($path . DIRECTORY_SEPARATOR . 'locations_de.json', 'de');
+        $this->loadServices($path . DIRECTORY_SEPARATOR . 'services_de.json', 'de');
+        $this->loadLocations($path . DIRECTORY_SEPARATOR . 'locations_en.json', 'en');
+        $this->loadServices($path . DIRECTORY_SEPARATOR . 'services_en.json', 'en');
+        $this->loadSettings($path . DIRECTORY_SEPARATOR . 'settings.json');
+        $this->loadAuthorities($path . DIRECTORY_SEPARATOR . 'authorities_de.json');
+        $this->loadTopics($path . DIRECTORY_SEPARATOR . 'topics_de.json');
         return $this;
     }
 
     /**
      * @return self
      */
-    public function loadLocations($locationJson)
+    public function loadLocations($locationJson, $locale = 'de')
     {
-        $this->accessInstance['Location'] = new File\Location($locationJson);
-        $this->accessInstance['Location']->setAccessInstance($this);
+        $this->accessInstance[$locale]['Location'] = new File\Location($locationJson);
+        $this->accessInstance[$locale]['Location']->setAccessInstance($this);
         return $this;
     }
 
     /**
      * @return self
      */
-    public function loadServices($serviceJson)
+    public function loadServices($serviceJson, $locale = 'de')
     {
-        $this->accessInstance['Service'] = new File\Service($serviceJson);
-        $this->accessInstance['Service']->setAccessInstance($this);
+        $this->accessInstance[$locale]['Service'] = new File\Service($serviceJson);
+        $this->accessInstance[$locale]['Service']->setAccessInstance($this);
         return $this;
     }
 
@@ -84,8 +86,8 @@ class FileAccess extends AbstractAccess
      */
     public function loadTopics($topicJson)
     {
-        $this->accessInstance['Topic'] = new File\Topic($topicJson);
-        $this->accessInstance['Topic']->setAccessInstance($this);
+        $this->accessInstance['de']['Topic'] = new File\Topic($topicJson);
+        $this->accessInstance['de']['Topic']->setAccessInstance($this);
         return $this;
     }
 
@@ -94,12 +96,12 @@ class FileAccess extends AbstractAccess
      */
     public function loadSettings($settingsJson)
     {
-        $this->accessInstance['Setting'] = new File\Setting($settingsJson);
-        $this->accessInstance['Setting']->setAccessInstance($this);
-        $this->accessInstance['Office'] = new File\Office($settingsJson);
-        $this->accessInstance['Office']->setAccessInstance($this);
-        $this->accessInstance['Borough'] = new File\Borough($settingsJson);
-        $this->accessInstance['Borough']->setAccessInstance($this);
+        $this->accessInstance['de']['Setting'] = new File\Setting($settingsJson);
+        $this->accessInstance['de']['Setting']->setAccessInstance($this);
+        $this->accessInstance['de']['Office'] = new File\Office($settingsJson);
+        $this->accessInstance['de']['Office']->setAccessInstance($this);
+        $this->accessInstance['de']['Borough'] = new File\Borough($settingsJson);
+        $this->accessInstance['de']['Borough']->setAccessInstance($this);
         return $this;
     }
 
@@ -108,8 +110,8 @@ class FileAccess extends AbstractAccess
      */
     public function loadAuthorities($authorityJson)
     {
-        $this->accessInstance['Authority'] = new File\Authority($authorityJson);
-        $this->accessInstance['Authority']->setAccessInstance($this);
+        $this->accessInstance['de']['Authority'] = new File\Authority($authorityJson);
+        $this->accessInstance['de']['Authority']->setAccessInstance($this);
         return $this;
     }
 
