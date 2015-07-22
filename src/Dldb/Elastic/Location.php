@@ -23,10 +23,11 @@ class Location extends Base
     public function fetchId($location_id)
     {
         if ($location_id) {
+            $query = Helper::boolFilteredQuery();
             $filter = new \Elastica\Filter\Ids();
-            $filter->setIds($location_id);
-            $query = \Elastica\Query::create($filter);
-            $result = $this->access()->getIndex()->getType('location')->search($query);
+            $filter->setIds($this->locale . $location_id);
+            $query->getFilter()->addMust($filter);
+            $result = $this->access()->getIndex()->getType('location')->search($query, 1);
             if ($result->count() == 1) {
                 $locationList = $result->getResults();
                 return new Entity($locationList[0]->getData());
@@ -40,12 +41,14 @@ class Location extends Base
      */
     public function fetchList($service_csv = '')
     {
-        $filter = null;
+        $query = Helper::boolFilteredQuery();
+        $query->getFilter()->addMust(Helper::localeFilter($this->locale));
         if ($service_csv) {
-            $filter = new \Elastica\Filter\Terms('services.service', explode(',', $service_csv));
-            $filter->setExecution('and');
+            foreach (explode(',', $service_csv) as $service_id) {
+                $filter = new \Elastica\Filter\Term(array('services.service' => $service_id));
+                $query->getFilter()->addMust($filter);
+            }
         }
-        $query = \Elastica\Query::create($filter);
         $resultList = $this->access()->getIndex()->getType('location')->search($query, 10000);
         $locationList = new Collection();
         foreach ($resultList as $result) {
@@ -60,9 +63,14 @@ class Location extends Base
      */
     public function fetchFromCsv($location_csv)
     {
+        $query = Helper::boolFilteredQuery();
         $filter = new \Elastica\Filter\Ids();
-        $filter->setIds(explode(',', $location_csv));
-        $query = \Elastica\Query::create($filter);
+        $ids = explode(',', $location_csv);
+        $ids = array_map(function ($value) {
+            return $this->locale . $value;
+        }, $ids);
+        $filter->setIds($ids);
+        $query->getFilter()->addMust($filter);
         $resultList = $this->access()->getIndex()->getType('location')->search($query, 10000);
         $locationList = new Collection();
         foreach ($resultList as $result) {
@@ -77,17 +85,17 @@ class Location extends Base
      */
     public function searchAll($querystring, $service_csv = '')
     {
-        $query = new \Elastica\Query();
+        $query = Helper::boolFilteredQuery();
+        $mainquery = new \Elastica\Query();
         $limit = 1000;
         $sort = true;
-        $boolquery = new \Elastica\Query\Bool();
         $searchquery = new \Elastica\Query\QueryString();
         if ($querystring > 10000 && $querystring < 15000) {
             // if it is a postal code, sort by distance and limit results
             $coordinates = \BO\Dldb\Plz\Coordinates::zip2LatLon($querystring);
             if (false !== $coordinates) {
                 $searchquery->setQuery('*');
-                $query->addSort([
+                $mainquery->addSort([
                     "_geo_distance" => [
                         "geo" => [
                             "lat" => $coordinates['lat'],
@@ -108,15 +116,16 @@ class Location extends Base
         }
         $searchquery->setFields(['name^9','authority.name^5', 'address.street', 'address.postal_code^9']);
         $searchquery->setLowercaseExpandedTerms(false);
-        $boolquery->addShould($searchquery);
+        $query->getQuery()->addShould($searchquery);
         $filter = null;
         if ($service_csv) {
-            $filter = new \Elastica\Filter\Terms('services.service', explode(',', $service_csv));
-            $filter->setExecution('and');
+            foreach (explode(',', $service_csv) as $service_id) {
+                $filter = new \Elastica\Filter\Term(array('services.service' => $service_id));
+                $query->getFilter()->addMust($filter);
+            }
         }
-        $filteredQuery = new \Elastica\Query\Filtered($boolquery, $filter);
-        $query->setQuery($filteredQuery);
-        $resultList = $this->access()->getIndex()->getType('location')->search($query, $limit);
+        $mainquery->setQuery($query);
+        $resultList = $this->access()->getIndex()->getType('location')->search($mainquery, $limit);
         return $this->access()->fromAuthority()->fromLocationResults($resultList, $sort);
     }
 }

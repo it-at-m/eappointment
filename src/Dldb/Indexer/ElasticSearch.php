@@ -59,9 +59,22 @@ class ElasticSearch
       */
     protected $index;
 
-    public function __construct($locationsFile, $servicesFile)
+    /**
+     * Due to backward compatibility, the first parameter has two possible meanings
+     *
+     * @param String $importDirOrLocationFile
+     * @param String $servicesFile (optional)
+     */
+    public function __construct($importOrLocationFile, $servicesFile = null)
     {
-        $this->dldb = new FileAccess($locationsFile, $servicesFile);
+        if (is_dir($importOrLocationFile)) {
+            $this->dldb = new FileAccess();
+            $this->dldb->loadFromPath($importOrLocationFile);
+        } elseif (is_file($importOrLocationFile)) {
+            $this->dldb = new FileAccess($importOrLocationFile, $servicesFile);
+        } else {
+            throw new Exception("Invalid import parameters for ElasticSearch indexer");
+        }
     }
 
     /**
@@ -82,7 +95,8 @@ class ElasticSearch
         $esType = $this->getIndex()->getType('service');
         $docs = array();
         foreach ($this->dldb->fetchServiceList() as $service) {
-            $docs[] = new \Elastica\Document($service['id'], $service);
+            $id = $service['meta']['locale'] . $service['id'];
+            $docs[] = new \Elastica\Document($id, $service);
         }
         $esType->addDocuments($docs);
         return $this;
@@ -96,7 +110,8 @@ class ElasticSearch
         $esType = $this->getIndex()->getType('location');
         $docs = array();
         foreach ($this->dldb->fetchLocationList() as $location) {
-            $docs[] = new \Elastica\Document($location['id'], $location);
+            $id = $location['meta']['locale'] . $location['id'];
+            $docs[] = new \Elastica\Document($id, $location);
         }
         $esType->addDocuments($docs);
         return $this;

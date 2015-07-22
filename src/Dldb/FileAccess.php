@@ -66,7 +66,7 @@ class FileAccess extends AbstractAccess
      */
     public function loadLocations($locationJson, $locale = 'de')
     {
-        $this->accessInstance[$locale]['Location'] = new File\Location($locationJson);
+        $this->accessInstance[$locale]['Location'] = new File\Location($locationJson, $locale);
         $this->accessInstance[$locale]['Location']->setAccessInstance($this);
         return $this;
     }
@@ -76,7 +76,7 @@ class FileAccess extends AbstractAccess
      */
     public function loadServices($serviceJson, $locale = 'de')
     {
-        $this->accessInstance[$locale]['Service'] = new File\Service($serviceJson);
+        $this->accessInstance[$locale]['Service'] = new File\Service($serviceJson, $locale);
         $this->accessInstance[$locale]['Service']->setAccessInstance($this);
         return $this;
     }

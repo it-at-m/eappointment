@@ -24,28 +24,36 @@ class IndexerTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    public function testBasicQuery()
+    {
+        $access = new \BO\Dldb\ElasticAccess(ES_ALIAS, ES_HOST, ES_PORT, ES_TRANSPORT);
+        $access->loadFromPath(FIXTURES);
+        $location = $access->fromLocation()->fetchId(LOCATION_SINGLE);
+        $this->assertNotFalse($location);
+    }
+
     public function testAccess()
     {
         $access = new \BO\Dldb\ElasticAccess(ES_ALIAS, ES_HOST, ES_PORT, ES_TRANSPORT);
         $access->loadFromPath(FIXTURES);
-        $location = $access->fetchLocation(LOCATION_SINGLE);
+        $location = $access->fromLocation()->fetchId(LOCATION_SINGLE);
         $this->assertNotFalse($location);
         $this->assertArrayHasKey('name', $location);
-        $service = $access->fetchService(SERVICE_SINGLE);
+        $service = $access->fromService()->fetchId(SERVICE_SINGLE);
         $this->assertNotFalse($service);
-        $locationList = $access->fetchLocationList();
+        $locationList = $access->fromLocation()->fetchList();
         $this->assertArrayHasKey(LOCATION_SINGLE, $locationList);
-        $locationList = $access->fetchLocationList(SERVICE_CSV);
+        $locationList = $access->fromLocation()->fetchList(SERVICE_CSV);
         $this->assertArrayHasKey(LOCATION_SINGLE, $locationList);
-        $serviceList = $access->fetchServiceList();
+        $serviceList = $access->fromService()->fetchList();
         $this->assertArrayHasKey(SERVICE_SINGLE, $serviceList);
-        $serviceList = $access->fetchServiceList(LOCATION_CSV);
+        $serviceList = $access->fromService()->fetchList(LOCATION_CSV);
         $this->assertArrayHasKey(SERVICE_SINGLE, $serviceList);
-        $authorityList = $access->fetchAuthorityList([SERVICE_SINGLE]);
+        $authorityList = $access->fromAuthority()->fetchList([SERVICE_SINGLE]);
         $this->assertArrayHasKey(12675, $authorityList);
-        $serviceList = $access->fetchServiceFromCsv(SERVICE_CSV);
+        $serviceList = $access->fromService()->fetchFromCsv(SERVICE_CSV);
         $this->assertArrayHasKey(SERVICE_SINGLE, $serviceList);
-        $locationList = $access->fetchLocationFromCsv(LOCATION_CSV);
+        $locationList = $access->fromLocation()->fetchFromCsv(LOCATION_CSV);
         $this->assertArrayHasKey(LOCATION_SINGLE, $locationList);
         $results = $access->searchLocation('Spandau', SERVICE_CSV);
         $this->assertTrue(count($results) > 0, "No locations found");
@@ -55,15 +63,18 @@ class IndexerTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(count($results) > 0, "No locations found");
         $results = $access->searchService('Pass');
         $this->assertTrue(count($results) > 0, "No services found");
+
+        //$translatedLocation = $access->fromLocation('en')->fetchId(121885);
+        //$this->assertEquals('en', $translatedLocation['meta']['locale']);
     }
 
     public function testFail()
     {
         $access = new \BO\Dldb\ElasticAccess(ES_ALIAS, ES_HOST, ES_PORT, ES_TRANSPORT);
         $access->loadFromPath(FIXTURES);
-        $location = $access->fetchLocation(1);
+        $location = $access->fromLocation()->fetchId(1);
         $this->assertFalse($location);
-        $service = $access->fetchService(1);
+        $service = $access->fromService()->fetchId(1);
         $this->assertFalse($service);
     }
 
@@ -74,26 +85,26 @@ class IndexerTest extends \PHPUnit_Framework_TestCase
             $access1->loadFromPath(FIXTURES);
             $access2 = new FileAccess();
             $access2->loadFromPath(FIXTURES);
-            $location1 = $access1->fetchLocation(LOCATION_SINGLE);
-            $location2 = $access2->fetchLocation(LOCATION_SINGLE);
+            $location1 = $access1->fromLocation()->fetchId(LOCATION_SINGLE);
+            $location2 = $access2->fromLocation()->fetchId(LOCATION_SINGLE);
             $this->assertEquals($location1, $location2);
-            $service1 = $access1->fetchService(SERVICE_SINGLE);
-            $service2 = $access2->fetchService(SERVICE_SINGLE);
+            $service1 = $access1->fromService()->fetchId(SERVICE_SINGLE);
+            $service2 = $access2->fromService()->fetchId(SERVICE_SINGLE);
             $this->assertEquals($service1, $service2);
-            $locationList1 = $access1->fetchLocationList(SERVICE_CSV);
-            $locationList2 = $access2->fetchLocationList(SERVICE_CSV);
+            $locationList1 = $access1->fromLocation()->fetchList(SERVICE_CSV);
+            $locationList2 = $access2->fromLocation()->fetchList(SERVICE_CSV);
             $this->assertEquals($locationList1, $locationList2);
-            $serviceList1 = $access1->fetchServiceList(LOCATION_CSV);
-            $serviceList2 = $access2->fetchServiceList(LOCATION_CSV);
+            $serviceList1 = $access1->fromService()->fetchList(LOCATION_CSV);
+            $serviceList2 = $access2->fromService()->fetchList(LOCATION_CSV);
             $this->assertEquals($serviceList1, $serviceList2);
-            $authorityList1 = $access1->fetchAuthorityList([SERVICE_SINGLE]);
-            $authorityList2 = $access2->fetchAuthorityList([SERVICE_SINGLE]);
+            $authorityList1 = $access1->fromAuthority()->fetchList([SERVICE_SINGLE]);
+            $authorityList2 = $access2->fromAuthority()->fetchList([SERVICE_SINGLE]);
             $this->assertEquals($authorityList1, $authorityList2);
-            $serviceList1 = $access1->fetchServiceFromCsv(SERVICE_CSV);
-            $serviceList2 = $access2->fetchServiceFromCsv(SERVICE_CSV);
+            $serviceList1 = $access1->fromService()->fetchFromCsv(SERVICE_CSV);
+            $serviceList2 = $access2->fromService()->fetchFromCsv(SERVICE_CSV);
             $this->assertEquals($serviceList1, $serviceList2);
-            $locationList1 = $access1->fetchLocationFromCsv(LOCATION_CSV);
-            $locationList2 = $access2->fetchLocationFromCsv(LOCATION_CSV);
+            $locationList1 = $access1->fromLocation()->fetchFromCsv(LOCATION_CSV);
+            $locationList2 = $access2->fromLocation()->fetchFromCsv(LOCATION_CSV);
             $this->assertEquals($locationList1, $locationList2);
             // search results might differ and are not compared
         }

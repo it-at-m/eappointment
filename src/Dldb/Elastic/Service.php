@@ -23,9 +23,10 @@ class Service extends Base
     public function fetchId($service_id)
     {
         if ($service_id) {
+            $query = Helper::boolFilteredQuery();
             $filter = new \Elastica\Filter\Ids();
-            $filter->setIds($service_id);
-            $query = \Elastica\Query::create($filter);
+            $filter->setIds($this->locale . $service_id);
+            $query->getFilter()->addMust($filter);
             $result = $this->access()->getIndex()->getType('service')->search($query);
             if ($result->count() == 1) {
                 $locationList = $result->getResults();
@@ -60,9 +61,14 @@ class Service extends Base
      */
     public function fetchFromCsv($service_csv)
     {
+        $query = Helper::boolFilteredQuery();
         $filter = new \Elastica\Filter\Ids();
-        $filter->setIds(explode(',', $service_csv));
-        $query = \Elastica\Query::create($filter);
+        $ids = explode(',', $service_csv);
+        $ids = array_map(function ($value) {
+            return $this->locale . $value;
+        }, $ids);
+        $filter->setIds($ids);
+        $query->getFilter()->addMust($filter);
         $resultList = $this->access()->getIndex()->getType('service')->search($query, 10000);
         $serviceList = new Collection();
         foreach ($resultList as $result) {

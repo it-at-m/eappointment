@@ -95,6 +95,10 @@
                      "type" : "date",
                      "format" : "dateOptionalTime"
                   },
+                  "locale": {
+                     "type" : "string",
+                     "index": "not_analyzed"
+                  },
                   "keywords" : {
                      "type" : "string"
                   }
@@ -322,6 +326,10 @@
                   "lastupdate" : {
                      "format" : "dateOptionalTime",
                      "type" : "date"
+                  },
+                  "locale": {
+                     "type" : "string",
+                     "index": "not_analyzed"
                   },
                   "keywords" : {
                      "type" : "string"
