@@ -72,7 +72,7 @@ class ElasticAccess extends FileAccess
      */
     public function loadLocations($locationJson, $locale = 'de')
     {
-        $this->accessInstance[$locale]['Location'] = new Elastic\Location($locationJson);
+        $this->accessInstance[$locale]['Location'] = new Elastic\Location($locationJson, $locale);
         $this->accessInstance[$locale]['Location']->setAccessInstance($this);
         return $this;
     }
@@ -82,7 +82,7 @@ class ElasticAccess extends FileAccess
      */
     public function loadServices($serviceJson, $locale = 'de')
     {
-        $this->accessInstance[$locale]['Service'] = new Elastic\Service($serviceJson);
+        $this->accessInstance[$locale]['Service'] = new Elastic\Service($serviceJson, $locale);
         $this->accessInstance[$locale]['Service']->setAccessInstance($this);
         return $this;
     }

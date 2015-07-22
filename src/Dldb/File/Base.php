@@ -27,15 +27,22 @@ abstract class Base
     protected $dataFile = '';
 
     /**
+     * @var String $locale Format like 'en'
+     *
+     */
+    protected $locale = 'de';
+
+    /**
      * @var \BO\Dldb\AbstractAccess $accessInstance
      */
     private $accessInstance = null;
 
     abstract protected function parseData($data);
 
-    public function __construct($dataFile)
+    public function __construct($dataFile, $locale = "de")
     {
         $this->dataFile = $dataFile;
+        $this->locale = $locale;
     }
 
     public function loadData()
