@@ -16,7 +16,7 @@ class Topics extends Base
             if ($topic['relation']['navi'] == 1) {
                 $sidebar[] = array(
                     'id' => $topic['id'],
-                    'name' => $topic['name'],
+                    'name' => _($topic['name']),
                     'path' => $topic['path'],
                     'rank' => $topic['relation']['rank'],
                     'root' => $topic['relation']['root']
