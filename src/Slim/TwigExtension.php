@@ -27,12 +27,32 @@ class TwigExtension extends \Slim\Views\TwigExtension
             new \Twig_SimpleFunction('isValueInArray', array($this, 'isValueInArray')),
             new \Twig_SimpleFunction('remoteInclude', array($this, 'remoteInclude'), $safe),
             new \Twig_SimpleFunction('includeUrl', array($this, 'includeUrl')),
+        	new \Twig_SimpleFunction('currentLang', array($this, 'currentLang')),
+        	new \Twig_SimpleFunction('currentRoute', array($this, 'currentRoute')),
         );
+    }
+    
+    public function currentRoute($lang = null)
+    {
+    	$routeParams = \App::$slim->router()->getCurrentRoute()->getParams();
+    	$routeParams['lang'] = ($lang !== null) ? $lang : self::currentLang();
+    	$route = array(
+    		'name' => \App::$slim->router()->getCurrentRoute()->getName(),
+    		'params' => $routeParams
+    	);
+    	return $route;
+    }
+    
+    public function currentLang()
+    {
+    	return \App::$slim->config('lang');
     }
 
     public function urlGet($name, $params = array(), $getparams = array(), $appName = 'default')
     {
-        $url = \Slim\Slim::getInstance($appName)->urlFor($name, $params);
+        //$url = \Slim\Slim::getInstance($appName)->urlFor($name, $params);
+    	$lang = (isset($params['lang'])) ? $params['lang'] : null;
+    	$url = i18nSlim::getInstance($appName)->urlFor($name, $params, $lang);    	
         $url = preg_replace('#^.*?(https?://)#', '\1', $url); // allow http:// routes
         if ($getparams) {
             $url .= '?' . http_build_query($getparams);
@@ -43,9 +63,10 @@ class TwigExtension extends \Slim\Views\TwigExtension
 
     public function csvProperty($list, $property)
     {
-        $propertylist = array();
-        foreach ($list as $item) {
-            if (!is_scalar($item) && array_key_exists($property, $item)) {
+        $propertylist = array();       
+        foreach ($list as $item) {     
+        	var_dump($item);exit;
+            if (!is_scalar($item) && array_key_exists($property, $item)) {            	
                 $propertylist[] = $item[$property];
             }
         }
