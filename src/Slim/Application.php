@@ -20,12 +20,24 @@ class Application
     const IDENTIFIER = 'unnamed slim project';
 
     /**
+     * Settings for language
+     *
+     */
+    const LANGS = array('en','fr');
+    const DEFAULT_LANG = '';
+    
+    /**
      * Settings for region
      *
      */
-    const LOCALE = 'de_DE.utf8';
+   
     const CHARSET = 'utf-8';
     const TIMEZONE = 'Europe/Berlin';
+    
+    public static $locale = array(
+    		'de' => 'de_DE',
+    		'en' => 'en_GB'
+    );
 
     /* -----------------------------------------------------------------------
      * Slim
