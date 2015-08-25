@@ -19,7 +19,7 @@ class Bootstrap
         $charset = \App::CHARSET,
         $timezone = \App::TIMEZONE
     ) {
-        //ini_set('default_charset', $charset);
+        ini_set('default_charset', $charset);
         date_default_timezone_set($timezone);
         mb_internal_encoding($charset);
         
@@ -72,10 +72,10 @@ class Bootstrap
 	public static function getLanguage()
     {
     	\Slim\Route::setDefaultConditions(array(
-    			'lang'=> implode('|', \App::LANGS)
+    			'lang'=> implode('|', array_keys(\App::$locale))
     	));    	
     	$lang = substr(\App::$slim->request()->getResourceUri(), 1, 2);
-    	$lang = in_array($lang, \App::LANGS)? $lang : \App::DEFAULT_LANG;
+    	$lang = in_array($lang, array_keys(\App::$locale))? $lang : \App::DEFAULT_LANG;
     	$lang = ($lang == '') ? $lang = 'de' : $lang;
     	\App::$slim->config('lang', $lang);
     	return $lang;
