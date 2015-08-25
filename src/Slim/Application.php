@@ -20,18 +20,11 @@ class Application
     const IDENTIFIER = 'unnamed slim project';
 
     /**
-     * Settings for language
-     *
-     */
-    const LANGS = array('en','fr');
-    const DEFAULT_LANG = '';
-    
-    /**
      * Settings for region
      *
      */
-   
-    const CHARSET = 'utf-8';
+    const DEFAULT_LANG = '';   
+    const CHARSET = 'UTF-8';
     const TIMEZONE = 'Europe/Berlin';
     
     public static $locale = array(
