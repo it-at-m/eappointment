@@ -21,7 +21,6 @@ class Bootstrap
         $timezone = \App::TIMEZONE
     ) {
         ini_set('default_charset', $charset);
-        setlocale(LC_ALL, $locale);
         date_default_timezone_set($timezone);
         mb_internal_encoding($charset);
     }
@@ -58,6 +57,18 @@ class Bootstrap
         self::addTwigExtension(new \Twig_Extension_Debug());
 
         //self::addTwigTemplateDirectory('default', \App::APP_PATH . \App::TEMPLATE_PATH);
+    }
+    
+	public static function getLanguage()
+    {
+    	\Slim\Route::setDefaultConditions(array(
+    			'lang'=> implode('|', array_keys(\App::$locale))
+    	));    	
+    	$lang = substr(\App::$slim->request()->getResourceUri(), 1, 2);
+    	$lang = in_array($lang, array_keys(\App::$locale))? $lang : \App::DEFAULT_LANG;
+    	$lang = ($lang == '') ? $lang = 'de' : $lang;
+    	\App::$slim->config('lang', $lang);
+    	return $lang;
     }
 
     public static function addTwigExtension($extension)
