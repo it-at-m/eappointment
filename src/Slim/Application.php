@@ -23,14 +23,9 @@ class Application
      * Settings for region
      *
      */
-    const DEFAULT_LANG = '';   
-    const CHARSET = 'UTF-8';
+    const LOCALE = 'de_DE.utf8';
+    const CHARSET = 'utf-8';
     const TIMEZONE = 'Europe/Berlin';
-    
-    public static $locale = array(
-    		'de' => 'de_DE',
-    		'en' => 'en_GB'
-    );
 
     /* -----------------------------------------------------------------------
      * Slim
