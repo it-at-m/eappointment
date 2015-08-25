@@ -9,30 +9,21 @@ namespace BO\Slim;
 class Bootstrap
 {
     public static function init()
-    {       
-    	self::configureSlim();
-    	self::configureLocale();
-    	self::configureLogger();              
+    {
+        self::configureLocale();
+        self::configureLogger();
+        self::configureSlim();
     }
 
     public static function configureLocale(
+        $locale = \App::LOCALE,
         $charset = \App::CHARSET,
         $timezone = \App::TIMEZONE
     ) {
         ini_set('default_charset', $charset);
+        setlocale(LC_ALL, $locale);
         date_default_timezone_set($timezone);
         mb_internal_encoding($charset);
-        
-        $language = \App::$locale[self::getLanguage()];
-        putenv('LC_ALL='. $language);
-        $locale = setlocale(LC_ALL, $language);
-        
-        // Specify the location of the translation tables
-        bindtextdomain('dldb-'.$language, \App::APP_PATH. '/locale');
-        bind_textdomain_codeset('dldb-'.$language, 'UTF-8');
-        
-        // Choose domain
-        textdomain('dldb-'.$language);       
     }
 
     public static function configureLogger(
@@ -49,7 +40,7 @@ class Bootstrap
     public static function configureSlim()
     {
         // configure slim
-        \App::$slim = new i18nSlim(array(
+        \App::$slim = new \Slim\Slim(array(
             'debug' => \App::SLIM_DEBUG,
             'log.enabled' => \App::SLIM_DEBUG,
             'log.level' => \App::SLIM_LOGLEVEL,
@@ -67,18 +58,6 @@ class Bootstrap
         self::addTwigExtension(new \Twig_Extension_Debug());
 
         //self::addTwigTemplateDirectory('default', \App::APP_PATH . \App::TEMPLATE_PATH);
-    }
-    
-	public static function getLanguage()
-    {
-    	\Slim\Route::setDefaultConditions(array(
-    			'lang'=> implode('|', array_keys(\App::$locale))
-    	));    	
-    	$lang = substr(\App::$slim->request()->getResourceUri(), 1, 2);
-    	$lang = in_array($lang, array_keys(\App::$locale))? $lang : \App::DEFAULT_LANG;
-    	$lang = ($lang == '') ? $lang = 'de' : $lang;
-    	\App::$slim->config('lang', $lang);
-    	return $lang;
     }
 
     public static function addTwigExtension($extension)
