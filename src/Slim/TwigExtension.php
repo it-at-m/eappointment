@@ -27,12 +27,33 @@ class TwigExtension extends \Slim\Views\TwigExtension
             new \Twig_SimpleFunction('isValueInArray', array($this, 'isValueInArray')),
             new \Twig_SimpleFunction('remoteInclude', array($this, 'remoteInclude'), $safe),
             new \Twig_SimpleFunction('includeUrl', array($this, 'includeUrl')),
+            new \Twig_SimpleFunction('currentLang', array($this, 'currentLang')),
+            new \Twig_SimpleFunction('currentRoute', array($this, 'currentRoute')),
         );
+    }
+    
+    public function currentRoute($lang = null)
+    {
+        $routeInstance = \App::$slim->router()->getCurrentRoute();
+        $routeParams = $routeInstance->getParams();
+        $routeParams['lang'] = ($lang !== null) ? $lang : self::currentLang();
+        $route = array(
+            'name' => \App::$slim->router()->getCurrentRoute()->getName(),
+            'params' => $routeParams
+        );
+        return $route;
+    }
+
+    public function currentLang()
+    {
+        return \App::$slim->config('lang');
     }
 
     public function urlGet($name, $params = array(), $getparams = array(), $appName = 'default')
     {
-        $url = \Slim\Slim::getInstance($appName)->urlFor($name, $params);
+        //$url = \Slim\Slim::getInstance($appName)->urlFor($name, $params);
+        $lang = (isset($params['lang'])) ? $params['lang'] : null;
+        $url = I18nSlim::getInstance($appName)->urlFor($name, $params, $lang);
         $url = preg_replace('#^.*?(https?://)#', '\1', $url); // allow http:// routes
         if ($getparams) {
             $url .= '?' . http_build_query($getparams);
@@ -102,7 +123,7 @@ class TwigExtension extends \Slim\Views\TwigExtension
         }
     }
 
-    public static function includeUrl($withUri = true, $appName = 'default')
+    public static function includeUrl($withUri = true)
     {
         $req = \App::$slim->request();
         $uri = $req->getUrl();
