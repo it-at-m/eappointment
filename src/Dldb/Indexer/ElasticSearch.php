@@ -17,6 +17,8 @@ class ElasticSearch
     const ES_INDEX_PREFIX = 'dldb-';
     const ES_INDEX_DATE = 'Ymd-His';
 
+    protected $localeList = array('de','en');
+
     /**
       * Access to DLDB files
       *
@@ -94,9 +96,11 @@ class ElasticSearch
     {
         $esType = $this->getIndex()->getType('service');
         $docs = array();
-        foreach ($this->dldb->fetchServiceList() as $service) {
-            $id = $service['meta']['locale'] . $service['id'];
-            $docs[] = new \Elastica\Document($id, $service);
+        foreach ($this->localeList as $locale) {
+            foreach ($this->dldb->fromService($locale)->fetchList() as $service) {
+                $id = $locale . $service['id'];
+                $docs[] = new \Elastica\Document($id, $service);
+            }
         }
         $esType->addDocuments($docs);
         return $this;
@@ -109,9 +113,11 @@ class ElasticSearch
     {
         $esType = $this->getIndex()->getType('location');
         $docs = array();
-        foreach ($this->dldb->fetchLocationList() as $location) {
-            $id = $location['meta']['locale'] . $location['id'];
-            $docs[] = new \Elastica\Document($id, $location);
+        foreach ($this->localeList as $locale) {
+            foreach ($this->dldb->fromLocation($locale)->fetchList() as $location) {
+                $id = $locale . $location['id'];
+                $docs[] = new \Elastica\Document($id, $location);
+            }
         }
         $esType->addDocuments($docs);
         return $this;
