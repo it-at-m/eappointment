@@ -64,8 +64,10 @@ class IndexerTest extends \PHPUnit_Framework_TestCase
         $results = $access->searchService('Pass');
         $this->assertTrue(count($results) > 0, "No services found");
 
-        //$translatedLocation = $access->fromLocation('en')->fetchId(121885);
-        //$this->assertEquals('en', $translatedLocation['meta']['locale']);
+        $translatedLocation = $access->fromLocation('en')->fetchId(121885);
+        $this->assertEquals('en', $translatedLocation['meta']['locale']);
+        $translatedService = $access->fromService('en')->fetchId(305244); //Aufenthaltserlaubnis zum Studium
+        $this->assertEquals('en', $translatedService['meta']['locale']);
     }
 
     public function testFail()

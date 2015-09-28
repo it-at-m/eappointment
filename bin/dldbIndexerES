@@ -13,8 +13,7 @@ use Garden\Cli\Cli;
 $cli = new Cli();
 
 $cli->description("Load DLDB exports into ElasticSearch")
-    ->opt('locations:l', 'path to json file with location data', true)
-    ->opt('services:s', 'path to json file with location data', true)
+    ->opt('exports:e', 'path to json files with data', true)
     ->opt('port:p', 'port to connect to ES, default to 9200', false)
     ->opt('host:h', 'host to connect to ES, default to localhost', false)
     ->opt('transport:t', 'transport to connect to ES, default to http', false)
@@ -24,7 +23,7 @@ $cli->description("Load DLDB exports into ElasticSearch")
 $args = $cli->parse($argv, true);
 
 try {
-    $indexer = new \BO\Dldb\Indexer\ElasticSearch($args->getOpt('locations'), $args->getOpt('services'));
+    $indexer = new \BO\Dldb\Indexer\ElasticSearch($args->getOpt('exports'));
     if ($args->getOpt('host')) {
         $indexer->setHost($args->getOpt('host'));
     }
@@ -37,10 +36,10 @@ try {
     $indexer->run();
     if ($args->getOpt('alias')) {
         $indexer->setAlias($args->getOpt('alias'));
-        if ($args->getOpt('drop')) {
+        if (null !== $args->getOpt('drop')) {
             $indexer->dropOldIndex();
         }
-    } elseif ($args->getOpt('drop')) {
+    } elseif (null !== $args->getOpt('drop')) {
         echo $cli->red("dropping old indice is only supported with alias setting");
         exit(1);
     }
