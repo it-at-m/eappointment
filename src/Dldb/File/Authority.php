@@ -30,14 +30,14 @@ class Authority extends Base
      * @return Collection\Authorities
      */
     public function fetchList(Array $servicelist = array())
-    {
+    {       
         if (count($servicelist)) {
             $authoritylist = new Collection();
             foreach ($servicelist as $service_id) {
-                $service = $this->access()->fromService()->fetchId($service_id);
+                $service = $this->access()->fromService($this->locale)->fetchId($service_id);
                 if ($service) {
-                    foreach ($service['locations'] as $locationinfo) {
-                        $location = $this->access()->fromLocation()->fetchId($locationinfo['location']);
+                    foreach ($service['locations'] as $locationinfo) {                        
+                        $location = $this->access()->fromLocation($this->locale)->fetchId($locationinfo['location']);
                         if ($location) {
                             $authoritylist->addLocation($location);
                         }
@@ -47,7 +47,7 @@ class Authority extends Base
             $authoritylist->sortByName();
         } else {
             $authoritylist = $this->getItemList()->removeLocations();
-            $locationlist = $this->access()->fromLocation()->fetchList();
+            $locationlist = $this->access()->fromLocation($this->locale)->fetchList();
             foreach ($locationlist as $location) {
                 $authoritylist->addLocation($location);
             }

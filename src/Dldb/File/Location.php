@@ -20,7 +20,10 @@ class Location extends Base
     {
         $itemList = new Collection();
         foreach ($data['data'] as $item) {
-            $itemList[$item['id']] = new Entity($item);
+            $location = new Entity($item);
+            if($location->hasEqualLocale( $this->locale)){
+                $itemList[$item['id']] = $location;
+            }            
         }
         return $itemList;
     }
@@ -29,8 +32,8 @@ class Location extends Base
      * @return Collection
      */
     public function fetchList($service_csv = false)
-    {
-        $locationlist = $this->getItemList();
+    {        
+        $locationlist = $this->getItemList();        
         if ($service_csv) {
             $locationlist = new Collection(array_filter(
                 (array)$locationlist,
