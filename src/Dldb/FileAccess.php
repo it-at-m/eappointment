@@ -87,6 +87,8 @@ class FileAccess extends AbstractAccess
     {
         $this->accessInstance['de']['Topic'] = new File\Topic($topicJson);
         $this->accessInstance['de']['Topic']->setAccessInstance($this);
+        $this->accessInstance['de']['Link'] = new File\Link();
+        $this->accessInstance['de']['Link']->setAccessInstance($this);
         return $this;
     }
 
