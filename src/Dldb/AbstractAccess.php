@@ -19,6 +19,7 @@ class AbstractAccess
         'de' => array(
             'Authority' => null,
             'Borough' => null,
+            'Link' => null,
             'Location' => null,
             'Office' => null,
             'Service' => null,
@@ -34,8 +35,8 @@ class AbstractAccess
 
     private function getInstanceCompatibilities($locale = 'de')
     {
-        $accessInstance = $this->accessInstance[$locale];        
-        if ($locale == 'de') {            
+        $accessInstance = $this->accessInstance[$locale];
+        if ($locale == 'de') {
             $accessInstance['Boroughs'] = $accessInstance['Borough'];
             $accessInstance['Offices'] = $accessInstance['Office'];
             $accessInstance['Settings'] = $accessInstance['Setting'];
@@ -43,7 +44,7 @@ class AbstractAccess
         }
         $accessInstance['Authorities'] = $accessInstance['Authority'];
         $accessInstance['Locations'] = $accessInstance['Location'];
-        $accessInstance['Services'] = $accessInstance['Service'];         
+        $accessInstance['Services'] = $accessInstance['Service'];
         return $accessInstance;
     }
 
@@ -53,17 +54,17 @@ class AbstractAccess
      * @return Mixed
      */
     public function __call($functionName, $functionArguments)
-    {        
+    {
         if (self::$showDeprecated) {
             trigger_error("Deprecated access function: $functionName");
         }
         $actionType = 'none';
         $instanceName = 'Missing';
         $actionName = 'Nothing';
-        if (0 === strpos($functionName, 'fetch')) {           
+        if (0 === strpos($functionName, 'fetch')) {
             $actionType = 'fetch';
-            $instanceName = $this->getInstanceOnName($functionName, 5);            
-            $actionName = substr($functionName, 5 + strlen($instanceName));           
+            $instanceName = $this->getInstanceOnName($functionName, 5);
+            $actionName = substr($functionName, 5 + strlen($instanceName));
             if (!$actionName) {
                 $actionName = 'Id';
             }
@@ -75,15 +76,15 @@ class AbstractAccess
                 $actionName = 'All';
             }
         }
-        $accessInstance = $this->getInstanceCompatibilities();        
+        $accessInstance = $this->getInstanceCompatibilities($this->locale);
         if ($instanceName
             && $instanceName != 'Missing'
             && method_exists($accessInstance[$instanceName], $actionType . $actionName)) {
-            $accessInstance[$instanceName]->setAccessInstance($this);            
-            return call_user_func_array(                
+            $accessInstance[$instanceName]->setAccessInstance($this);
+            return call_user_func_array(
                 array($accessInstance[$instanceName], $actionType . $actionName),
                 $functionArguments
-            );            
+            );
         }
         $classname = get_class($this);
         throw new Exception(
@@ -107,7 +108,7 @@ class AbstractAccess
     protected function from($instanceName, $locale = 'de')
     {
         if (array_key_exists($instanceName, $this->accessInstance[$locale])) {
-            $instance = $this->accessInstance[$locale][$instanceName];            
+            $instance = $this->accessInstance[$locale][$instanceName];
             if (null === $instance) {
                 throw new Exception("Instance for accessing $instanceName is not initialized");
             }
@@ -140,7 +141,7 @@ class AbstractAccess
     }
 
     public function fromService($locale = 'de')
-    {       
+    {
         return $this->from('Service', $locale);
     }
 
