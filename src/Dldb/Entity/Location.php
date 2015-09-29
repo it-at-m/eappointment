@@ -29,6 +29,15 @@ class Location extends Base
         }
         return count($servicecount) == count($servicecompare);
     }
+    
+    /**
+     * @return Bool
+     */
+    public function hasEqualLocale($locale)
+    {
+        $location = $this->getArrayCopy();
+        return $location['meta']['locale'] == $locale;
+    }
 
     /**
      * @var Int $service_id

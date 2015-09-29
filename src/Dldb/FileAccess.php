@@ -46,18 +46,17 @@ class FileAccess extends AbstractAccess
      *
      * @return self
      */
-    public function loadFromPath($path)
-    {
+    public function loadFromPath($path, $locale = 'de')
+    {        
         if (!is_dir($path)) {
             throw new Exception("Could not read directory $path");
         }
-        $this->loadLocations($path . DIRECTORY_SEPARATOR . 'locations_de.json', 'de');
-        $this->loadServices($path . DIRECTORY_SEPARATOR . 'services_de.json', 'de');
-        $this->loadLocations($path . DIRECTORY_SEPARATOR . 'locations_en.json', 'en');
-        $this->loadServices($path . DIRECTORY_SEPARATOR . 'services_en.json', 'en');
+        $this->loadLocations($path . DIRECTORY_SEPARATOR . 'locations_'. $locale .'.json', $locale);
+        $this->loadServices($path . DIRECTORY_SEPARATOR . 'services_'. $locale .'.json', $locale);
         $this->loadSettings($path . DIRECTORY_SEPARATOR . 'settings.json');
-        $this->loadAuthorities($path . DIRECTORY_SEPARATOR . 'authorities_de.json');
-        $this->loadTopics($path . DIRECTORY_SEPARATOR . 'topics_de.json');
+        $this->loadAuthorities($path . DIRECTORY_SEPARATOR . 'authorities_de.json', $locale);
+        $this->loadTopics($path . DIRECTORY_SEPARATOR . 'topics_de.json');    
+        
         return $this;
     }
 
@@ -108,10 +107,10 @@ class FileAccess extends AbstractAccess
     /**
      * @return self
      */
-    public function loadAuthorities($authorityJson)
+    public function loadAuthorities($authorityJson, $locale = 'de')
     {
-        $this->accessInstance['de']['Authority'] = new File\Authority($authorityJson);
-        $this->accessInstance['de']['Authority']->setAccessInstance($this);
+        $this->accessInstance[$locale]['Authority'] = new File\Authority($authorityJson, $locale);
+        $this->accessInstance[$locale]['Authority']->setAccessInstance($this);
         return $this;
     }
 
