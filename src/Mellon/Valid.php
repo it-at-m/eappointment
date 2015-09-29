@@ -138,7 +138,7 @@ class Valid extends \BO\Mellon\Parameter
     public function isString($message = 'no valid string')
     {
         $this->isSmallerThan(65536, $message);
-        return $this->validate($message, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        return $this->validate($message, FILTER_SANITIZE_SPECIAL_CHARS);
     }
 
     /**
