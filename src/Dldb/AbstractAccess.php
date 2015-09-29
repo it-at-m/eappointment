@@ -75,7 +75,7 @@ class AbstractAccess
                 $actionName = 'All';
             }
         }
-        $accessInstance = $this->getInstanceCompatibilities($this->locale);        
+        $accessInstance = $this->getInstanceCompatibilities();        
         if ($instanceName
             && $instanceName != 'Missing'
             && method_exists($accessInstance[$instanceName], $actionType . $actionName)) {
@@ -96,7 +96,7 @@ class AbstractAccess
      */
     protected function getInstanceOnName($name, $position = 0)
     {
-        foreach (array_keys($this->getInstanceCompatibilities($this->locale)) as $instanceName) {
+        foreach (array_keys($this->getInstanceCompatibilities()) as $instanceName) {
             if ($position === strpos($name, $instanceName)) {
                 return $instanceName;
             }
