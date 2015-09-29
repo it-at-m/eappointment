@@ -84,15 +84,49 @@ class ElasticSearch
      */
     public function run()
     {
-        $this->indexServices();
-        $this->indexLocations();
+        $this->readTopics();
+        $this->readServices();
+        $this->readLocations();
         return $this;
     }
 
     /**
      * @return self
      */
-    protected function indexServices()
+    protected function readTopics()
+    {
+        $esTypeTopic = $this->getIndex()->getType('topic');
+        $esTypeLinks = $this->getIndex()->getType('links');
+        $docs = array();
+        $links = array();
+        foreach ($this->dldb->fromTopic()->fetchList() as $topic) {
+            $docs[] = new \Elastica\Document('de' . $topic['id'], $topic);
+            if ($topic->isLinked()) {
+                $link = array(
+                    "rank" => 0,
+                    "link" => "/" . $topic["path"] . "/",
+                    "name" => $topic['name'],
+                    "hightlight" => 0,
+                    "meta" => array(
+                        "keywords" => $topic['meta']['keywords'],
+                        "titles" => $topic['meta']['titles']
+                    ),
+                );
+                $links[] = new \Elastica\Document($link['link'], $link);
+                foreach ($topic['links'] as $link) {
+                    $links[] = new \Elastica\Document($link['link'], $link);
+                }
+            }
+        }
+        $esTypeTopic->addDocuments($docs);
+        $esTypeLinks->addDocuments($links);
+        return $docs;
+    }
+
+    /**
+     * @return self
+     */
+    protected function readServices()
     {
         $esType = $this->getIndex()->getType('service');
         $docs = array();
@@ -103,13 +137,13 @@ class ElasticSearch
             }
         }
         $esType->addDocuments($docs);
-        return $this;
+        return $docs;
     }
 
     /**
      * @return self
      */
-    protected function indexLocations()
+    protected function readLocations()
     {
         $esType = $this->getIndex()->getType('location');
         $docs = array();
@@ -120,7 +154,7 @@ class ElasticSearch
             }
         }
         $esType->addDocuments($docs);
-        return $this;
+        return $docs;
     }
 
     /**

@@ -21,4 +21,9 @@ class Topic extends Base
         }
         return $serviceIds;
     }
+
+    public function isLinked()
+    {
+        return ($this['relation']['navi'] || count($this['relation']['navi']));
+    }
 }
