@@ -35,7 +35,7 @@ class Services extends Base
     {
         $list = new self();
         foreach ($this as $service) {
-            if($service->isLocale($locale)){
+            if ($service->isLocale($locale)) {
                 $list[] = $service;
             }
         }

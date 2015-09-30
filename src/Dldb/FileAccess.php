@@ -115,7 +115,7 @@ class FileAccess extends AbstractAccess
      * @return self
      */
     public function loadAuthorities($authorityJson, $locale = 'de')
-    {         
+    {
         $this->accessInstance[$locale]['Authority'] = new File\Authority($authorityJson, $locale);
         $this->accessInstance[$locale]['Authority']->setAccessInstance($this);
         return $this;

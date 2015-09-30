@@ -29,8 +29,8 @@ class Topic extends Base
     
     public function hasServices($locale)
     {
-        foreach ($this['relation']['services'] as $service) {   
-            $service = \App::$repository->fromService($locale)->fetchId($service['id']);     
+        foreach ($this['relation']['services'] as $service) {
+            $service = \App::$repository->fromService($locale)->fetchId($service['id']);
             if ($service && $service->isLocale($locale)) {
                 return true;
             }

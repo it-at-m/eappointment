@@ -34,13 +34,13 @@ class AbstractAccess
     );
 
     private function getInstanceCompatibilities()
-    { 
-        $accessInstance = $this->accessInstance[$this->locale];        
+    {
+        $accessInstance = $this->accessInstance[$this->locale];
         $accessInstance['Authorities'] = $accessInstance['Authority'];
         $accessInstance['Boroughs'] = $accessInstance['Borough'];
         $accessInstance['Offices'] = $accessInstance['Office'];
         $accessInstance['Settings'] = $accessInstance['Setting'];
-        $accessInstance['Topics'] = $accessInstance['Topic'];                  
+        $accessInstance['Topics'] = $accessInstance['Topic'];
         $accessInstance['Locations'] = $accessInstance['Location'];
         $accessInstance['Services'] = $accessInstance['Service'];
         return $accessInstance;

@@ -25,7 +25,7 @@ class Authority extends Base
 
     /**
      * fetch locations for a list of service and group by authority
-     * 
+     *
      * @return Collection\Authorities
      */
     public function fetchList(Array $servicelist = array(), $locale = false)

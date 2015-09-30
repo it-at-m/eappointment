@@ -34,7 +34,7 @@ class Service extends Base
     {
         $servicelist = $this->getItemList();
         if ($location_csv) {
-            $servicelist = new Collection(array_filter((array) $servicelist, function ($item) use($location_csv) {
+            $servicelist = new Collection(array_filter((array) $servicelist, function ($item) use ($location_csv) {
                 $service = new Entity($item);
                 return $service->containsLocation($location_csv);
             }));
@@ -122,7 +122,7 @@ class Service extends Base
     public function searchAll($query, $service_csv = '')
     {
         $servicelist = $this->fetchCombinations($service_csv);
-        $servicelist = new Collection(array_filter((array) $servicelist, function ($item) use($query) {
+        $servicelist = new Collection(array_filter((array) $servicelist, function ($item) use ($query) {
             return false !== strpos($item['name'], $query);
         }));
         return $servicelist;
