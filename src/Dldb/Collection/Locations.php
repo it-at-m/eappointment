@@ -56,7 +56,7 @@ class Locations extends Base
                 $list[] = $location;
             }
         }
-        return $list;
+        return (count($list)) ? $list : null;
     }
 
     public function getIds($locationList = null)

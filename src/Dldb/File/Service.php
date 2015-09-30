@@ -35,7 +35,7 @@ class Service extends Base
         $servicelist = $this->getItemList();
         if ($location_csv) {
             $servicelist = new Collection(array_filter((array) $servicelist, function ($item) use($location_csv) {
-                $service = new Entity($item);                
+                $service = new Entity($item);
                 return $service->containsLocation($location_csv);
             }));
         }
@@ -76,7 +76,7 @@ class Service extends Base
         $servicelist = new Collection();
         foreach (explode(',', $service_csv) as $service_id) {
             $service = $this->fetchId($service_id);
-            if ($service && $service->isLocale( $this->locale)) {
+            if ($service && $service->isLocale($this->locale)) {
                 $servicelist[$service_id] = $service;
             }
         }

@@ -121,8 +121,8 @@ class Authorities extends Base
     public function removeLocationsWithoutAppointments($serviceCsv = null, $external = false)
     {
         $authorityIterator = $this->getIterator();
-        foreach ($authorityIterator as $key => $authority) {
-            if ($authority->hasAppointments($serviceCsv, $external)) {
+        foreach ($authorityIterator as $key => $authority) {            
+            if ($authority->hasAppointments($serviceCsv, $external)) {                
                 $locationIterator = $authority['locations']->getIterator();
                 foreach ($locationIterator as $subkey => $location) {
                     if (!$location->hasAppointments($serviceCsv, $external)) {
