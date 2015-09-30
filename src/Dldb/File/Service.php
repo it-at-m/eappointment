@@ -19,7 +19,7 @@ class Service extends Base
         $itemList = new Collection();
         foreach ($data['data'] as $item) {
             $service = new Entity($item);
-            if ($service->hasEqualLocale($this->locale)) {
+            if ($service->isLocale($this->locale)) {
                 $itemList[$item['id']] = $service;
             }
         }
@@ -76,8 +76,8 @@ class Service extends Base
         $servicelist = new Collection();
         foreach (explode(',', $service_csv) as $service_id) {
             $service = $this->fetchId($service_id);
-            if ($service) {
-                $servicelist[$service_id] = $service->hasEqualLocale($this->locale);
+            if ($service && $service->isLocale( $this->locale)) {
+                $servicelist[$service_id] = $service;
             }
         }
         $servicelist->sortByName();

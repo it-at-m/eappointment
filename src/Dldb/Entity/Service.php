@@ -54,7 +54,7 @@ class Service extends Base
     /**
      * @return Bool
      */
-    public function hasEqualLocale($locale)
+    public function isLocale($locale)
     {
         $service = $this->getArrayCopy();
         return $service['meta']['locale'] == $locale;

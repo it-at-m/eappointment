@@ -38,6 +38,26 @@ class Authorities extends Base
     {
         return array_key_exists($authority_id, $this);
     }
+    
+    
+    /**
+     * Check if appointments are available
+     *
+     * @param String $serviceCsv only check for this serviceCsv
+     * @param Bool $external allow external links, default false
+     *
+     * @return Bool
+     */
+    public function hasLocations()
+    {
+        foreach ($this as $authority) {
+            if ($authority->hasLocations()) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
 
     /**
      * Check if appointments are available

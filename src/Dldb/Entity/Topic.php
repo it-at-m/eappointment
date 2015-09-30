@@ -26,4 +26,15 @@ class Topic extends Base
     {
         return ($this['relation']['navi'] || count($this['relation']['navi']));
     }
+    
+    public function hasServices($locale)
+    {
+        foreach ($this['relation']['services'] as $service) {   
+            $service = \App::$repository->fromService($locale)->fetchId($service['id']);     
+            if ($service && $service->isLocale($locale)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

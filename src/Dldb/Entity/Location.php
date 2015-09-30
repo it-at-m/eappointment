@@ -33,7 +33,7 @@ class Location extends Base
     /**
      * @return Bool
      */
-    public function hasEqualLocale($locale)
+    public function isLocale($locale)
     {
         $location = $this->getArrayCopy();
         return $location['meta']['locale'] == $locale;

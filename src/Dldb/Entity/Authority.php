@@ -108,7 +108,7 @@ class Authority extends Base
      */
     public function removeLocation($locationId)
     {
-        $authority = clone $this;
+        $authority= new self($this->getArrayCopy());
         $authority['locations'] = $authority['locations']->removeLocation($locationId);
         return $authority;
     }
