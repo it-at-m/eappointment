@@ -30,4 +30,15 @@ class Services extends Base
     {
         return implode(',', $this->getIds($serviceList));
     }
+    
+    public function isLocale($locale)
+    {
+        $list = new self();
+        foreach ($this as $service) {
+            if($service->isLocale($locale)){
+                $list[] = $service;
+            }
+        }
+        return (count($list)) ? $list : null;
+    }
 }

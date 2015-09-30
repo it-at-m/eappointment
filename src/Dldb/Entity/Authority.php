@@ -40,7 +40,7 @@ class Authority extends Base
     public function hasAppointments($serviceCsv = null, $external = false)
     {
         foreach ($this['locations'] as $location) {
-            if ($location->hasAppointments($serviceCsv, $external)) {
+            if ($location->hasAppointments($serviceCsv, $external)) {                
                 return true;
             }
         }

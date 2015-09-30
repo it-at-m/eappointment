@@ -99,7 +99,7 @@ class Location extends Base
         }
         if (null === $serviceCsv) {
             return count($servicecount) ? true : false;
-        } else {
+        } else {            
             return count($serviceList) > 0 && count($servicecount) == count($serviceList);
         }
     }
