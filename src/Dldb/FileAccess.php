@@ -3,11 +3,9 @@
  * @package 115Mandant
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
-
 namespace BO\Dldb;
 
 /**
- *
  */
 class FileAccess extends AbstractAccess
 {
@@ -17,13 +15,10 @@ class FileAccess extends AbstractAccess
      *
      * @return self
      */
-    public function __construct(
-        $locationJson = null,
-        $serviceJson = null,
-        $topicsJson = null,
-        $authoritiesJson = null,
-        $settingsJson = null
-    ) {
+    public $locale;
+
+    public function __construct($locale = 'de', $locationJson = null, $serviceJson = null, $topicsJson = null, $authoritiesJson = null, $settingsJson = null)
+    {
         if (null !== $locationJson) {
             $this->loadLocations($locationJson);
         }
@@ -39,6 +34,8 @@ class FileAccess extends AbstractAccess
         if (null !== $settingsJson) {
             $this->loadSettings($settingsJson);
         }
+        
+        $this->locale = $locale;
     }
 
     /**
@@ -46,21 +43,25 @@ class FileAccess extends AbstractAccess
      *
      * @return self
      */
-    public function loadFromPath($path, $locale = 'de')
-    {        
-        if (!is_dir($path)) {
+    public function loadFromPath($path)
+    {
+        if (! is_dir($path)) {
             throw new Exception("Could not read directory $path");
         }
-        $this->loadLocations($path . DIRECTORY_SEPARATOR . 'locations_'. $locale .'.json', $locale);
-        $this->loadServices($path . DIRECTORY_SEPARATOR . 'services_'. $locale .'.json', $locale);
+        $this->loadAuthorities($path . DIRECTORY_SEPARATOR . 'authorities_de.json', 'de');
+        $this->loadAuthorities($path . DIRECTORY_SEPARATOR . 'authorities_de.json', 'en');
+        $this->loadLocations($path . DIRECTORY_SEPARATOR . 'locations_de.json', 'de');
+        $this->loadLocations($path . DIRECTORY_SEPARATOR . 'locations_en.json', 'en');
+        $this->loadServices($path . DIRECTORY_SEPARATOR . 'services_de.json', 'de');
+        $this->loadServices($path . DIRECTORY_SEPARATOR . 'services_en.json', 'en');
         $this->loadSettings($path . DIRECTORY_SEPARATOR . 'settings.json');
-        $this->loadAuthorities($path . DIRECTORY_SEPARATOR . 'authorities_de.json', $locale);
-        $this->loadTopics($path . DIRECTORY_SEPARATOR . 'topics_de.json');    
+        $this->loadTopics($path . DIRECTORY_SEPARATOR . 'topics_de.json');
         
         return $this;
     }
 
     /**
+     *
      * @return self
      */
     public function loadLocations($locationJson, $locale = 'de')
@@ -71,6 +72,7 @@ class FileAccess extends AbstractAccess
     }
 
     /**
+     *
      * @return self
      */
     public function loadServices($serviceJson, $locale = 'de')
@@ -81,6 +83,7 @@ class FileAccess extends AbstractAccess
     }
 
     /**
+     *
      * @return self
      */
     public function loadTopics($topicJson)
@@ -93,6 +96,7 @@ class FileAccess extends AbstractAccess
     }
 
     /**
+     *
      * @return self
      */
     public function loadSettings($settingsJson)
@@ -107,16 +111,18 @@ class FileAccess extends AbstractAccess
     }
 
     /**
+     *
      * @return self
      */
     public function loadAuthorities($authorityJson, $locale = 'de')
-    {
+    {         
         $this->accessInstance[$locale]['Authority'] = new File\Authority($authorityJson, $locale);
         $this->accessInstance[$locale]['Authority']->setAccessInstance($this);
         return $this;
     }
 
     /**
+     *
      * @todo refactor: returns services, not topics.
      */
     public function fetchTopicServicesList($topic_path)
@@ -126,6 +132,7 @@ class FileAccess extends AbstractAccess
     }
 
     /**
+     *
      * @todo will not work in every edge case, cause authority export does not contain officeinformations
      * @todo returns Collection\Authorities and not locations
      * @return Collection\Locations
