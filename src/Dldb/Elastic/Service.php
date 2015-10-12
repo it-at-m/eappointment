@@ -112,4 +112,41 @@ class Service extends Base
         }
         return $serviceList;
     }
+
+    /**
+     * this function is similar to self::searchAll() but it might get different boosts in the future
+     *
+     * @return Collection
+     */
+    public function searchList($query, $service_csv = '', $location_csv = '')
+    {
+        if (!$location_csv) {
+            $location_csv = $this->fetchLocationCsv($service_csv);
+        }
+        $boolquery = new \Elastica\Query\Bool();
+        $searchquery = new \Elastica\Query\QueryString();
+        if ('' === trim($query)) {
+            $searchquery->setQuery('*');
+        } else {
+            $searchquery->setQuery($query);
+        }
+        $searchquery->setFields(['name^9','keywords^5']);
+        $searchquery->setLowercaseExpandedTerms(false);
+        $boolquery->addShould($searchquery);
+        //$prefixquery = new \Elastica\Query\Prefix();
+        //$prefixquery->setPrefix('az', preg_replace('#~\d$#', '', $query), 10);
+        //$boolquery->addShould($prefixquery);
+        $filter = null;
+        if ($location_csv) {
+            $filter = new \Elastica\Filter\Terms('locations.location', explode(',', $location_csv));
+        }
+        $query = new \Elastica\Query\Filtered($boolquery, $filter);
+        $resultList = $this->access()->getIndex()->getType('service')->search($query, 1000);
+        $serviceList = new Collection();
+        foreach ($resultList as $result) {
+            $service = new Entity($result->getData());
+            $serviceList[$service['id']] = $service;
+        }
+        return $serviceList;
+    }
 }

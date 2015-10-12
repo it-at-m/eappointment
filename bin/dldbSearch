@@ -18,9 +18,14 @@ $cli->description("Test Search")
     ->opt('port:p', 'port to connect to ES, default to 9200', false)
     ->opt('host:h', 'host to connect to ES, default to localhost', false)
     ->opt('transport:t', 'transport to connect to ES, default to http', false)
-    ->opt('alias:a', 'use the following alias after successful indexing, default dldbtest', false)
+    ->opt('alias:a', 'use the following alias, default dldbtest', false)
     ->opt('query:q', 'querystring', true)
-    ->opt('index:i', 'name of index, one of service or location', true)
+    ->opt('index:i', 'name of index, one of all, service or location', true)
+    ->opt(
+        'fixtures:f',
+        'path to fixtures (a set of .json data files like locations_de.json), default: tests/Dldb/fixtures/',
+        false
+    )
     ;
 $args = $cli->parse($argv, true);
 
@@ -29,6 +34,7 @@ try {
     $host = 'localhost';
     $port = '9200';
     $transport = 'Http';
+    $fixtures = 'tests/Dldb/fixtures/';
     if ($args->getOpt('host')) {
         $host = $args->getOpt('host');
     }
@@ -41,16 +47,24 @@ try {
     if ($args->getOpt('alias')) {
         $alias = $args->getOpt('alias');
     }
+    if ($args->getOpt('fixtures')) {
+        $fixtures = $args->getOpt('fixtures');
+    }
     $access = new \BO\Dldb\ElasticAccess($alias, $host, $port, $transport);
+    $access->loadFromPath($fixtures);
     $index = $args->getOpt('index');
     if ($index == 'service') {
-        $list = $access->searchService($args->getOpt('query'), $args->getOpt('services'), $args->getOpt('locations'));
+        $list = $access
+            ->fromService()
+            ->searchAll($args->getOpt('query'), $args->getOpt('services'), $args->getOpt('locations'));
         foreach ($list as $key => $item) {
             //echo $item['name'] . ' (' . $item['meta']['keywords'] . ')' . "\n";
             echo $key . ' => ' . $item['name'] . "\n";
         }
     } elseif ($index == 'location') {
-        $list = $access->searchLocation($args->getOpt('query'), $args->getOpt('services'), $args->getOpt('locations'));
+        $list = $access
+            ->fromLocation()
+            ->searchAll($args->getOpt('query'), $args->getOpt('services'), $args->getOpt('locations'));
         foreach ($list as $key => $item) {
             //echo $item['name'] . ' (' . $item['meta']['keywords'] . ')' . "\n";
             echo $key . ' => ' . $item['name'] . "\n";
@@ -61,6 +75,14 @@ try {
                 $plz = $location['address']['postal_code'];
                 echo "$id => $name ($street, $plz Berlin)\n";
             }
+        }
+    } elseif ($index == 'all') {
+        $list = $access
+            ->fromTopic()
+            ->searchAll($args->getOpt('query'));
+        foreach ($list as $key => $item) {
+            //echo $item['name'] . ' (' . $item['meta']['keywords'] . ')' . "\n";
+            echo $key . ' => ' . $item['name'] . "\n";
         }
     } else {
         echo "Unknown index\n";

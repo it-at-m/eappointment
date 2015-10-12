@@ -33,9 +33,9 @@ class AbstractAccess
         ),
     );
 
-    private function getInstanceCompatibilities()
+    private function getInstanceCompatibilities($locale = 'de')
     {
-        $accessInstance = $this->accessInstance[$this->locale];
+        $accessInstance = $this->accessInstance[$locale];
         $accessInstance['Authorities'] = $accessInstance['Authority'];
         $accessInstance['Boroughs'] = $accessInstance['Borough'];
         $accessInstance['Offices'] = $accessInstance['Office'];
@@ -74,10 +74,11 @@ class AbstractAccess
                 $actionName = 'All';
             }
         }
-        $accessInstance = $this->getInstanceCompatibilities($this->locale);
+        $accessInstance = $this->getInstanceCompatibilities();
         if ($instanceName
             && $instanceName != 'Missing'
-            && method_exists($accessInstance[$instanceName], $actionType . $actionName)) {
+            && method_exists($accessInstance[$instanceName], $actionType . $actionName)
+        ) {
             $accessInstance[$instanceName]->setAccessInstance($this);
             return call_user_func_array(
                 array($accessInstance[$instanceName], $actionType . $actionName),
@@ -108,7 +109,7 @@ class AbstractAccess
         if (array_key_exists($instanceName, $this->accessInstance[$locale])) {
             $instance = $this->accessInstance[$locale][$instanceName];
             if (null === $instance) {
-                throw new Exception("Instance for accessing $instanceName is not initialized");
+                throw new Exception("Instance for accessing $instanceName ($locale) is not initialized");
             }
             if ($instance instanceof \BO\Dldb\File\Base) {
                 return $instance;

@@ -3,14 +3,16 @@
  * @package 115Mandant
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
+
 namespace BO\Dldb\File;
 
 use \BO\Dldb\Entity\Location as Entity;
 use \BO\Dldb\Collection\Locations as Collection;
 
 /**
- * Common methods shared by access classes
- */
+  * Common methods shared by access classes
+  *
+  */
 class Location extends Base
 {
 
@@ -21,7 +23,7 @@ class Location extends Base
             $location = new Entity($item);
             if ($location->isLocale($this->locale)) {
                 $itemList[$item['id']] = $location;
-            }
+            }            
         }
         return $itemList;
     }
@@ -31,19 +33,21 @@ class Location extends Base
      * @return Collection
      */
     public function fetchList($service_csv = false)
-    {
-        $locationlist = $this->getItemList();
+    {        
+        $locationlist = $this->getItemList();        
         if ($service_csv) {
-            $locationlist = new Collection(array_filter((array) $locationlist, function ($item) use ($service_csv) {
-                $location = new Entity($item);
-                return $location->containsService($service_csv);
-            }));
+            $locationlist = new Collection(array_filter(
+                (array)$locationlist,
+                function ($item) use ($service_csv) {
+                    $location = new Entity($item);
+                    return $location->containsService($service_csv);
+                }
+            ));
         }
         return $locationlist;
     }
 
     /**
-     *
      * @return Collection
      */
     public function fetchFromCsv($location_csv)
@@ -53,22 +57,24 @@ class Location extends Base
             $location = $this->fetchId($location_id);
             if ($location && $location->isLocale($this->locale)) {
                 $locationlist[$location_id] = $location;
-            }
+            };
         }
         $locationlist->sortByName();
         return $locationlist;
     }
 
     /**
-     *
      * @return Collection\Locations
      */
     public function searchAll($query, $service_csv = '')
     {
         $locationlist = $this->fetchList($service_csv);
-        $locationlist = new Collection(array_filter((array) $locationlist, function ($item) use ($query) {
-            return false !== strpos($item['name'], $query);
-        }));
+        $locationlist = new Collection(array_filter(
+            (array)$locationlist,
+            function ($item) use ($query) {
+                return false !== strpos($item['name'], $query);
+            }
+        ));
         return $locationlist;
     }
 }

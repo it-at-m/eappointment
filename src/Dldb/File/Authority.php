@@ -3,14 +3,16 @@
  * @package 115Mandant
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
+
 namespace BO\Dldb\File;
 
 use \BO\Dldb\Entity\Authority as Entity;
 use \BO\Dldb\Collection\Authorities as Collection;
 
 /**
- * Common methods shared by access classes
- */
+  * Common methods shared by access classes
+  *
+  */
 class Authority extends Base
 {
 
@@ -28,21 +30,16 @@ class Authority extends Base
      *
      * @return Collection\Authorities
      */
-    public function fetchList(Array $servicelist = array(), $locale = false)
-    {
-        $locale = ($locale) ? $locale : $this->locale;
+    public function fetchList(Array $servicelist = array())
+    {       
         if (count($servicelist)) {
             $authoritylist = new Collection();
             foreach ($servicelist as $service_id) {
-                $service = $this->access()
-                    ->fromService($locale)
-                    ->fetchId($service_id);
+                $service = $this->access()->fromService($this->locale)->fetchId($service_id);
                 if ($service) {
-                    foreach ($service['locations'] as $locationinfo) {
-                        $location = $this->access()
-                            ->fromLocation($locale)
-                            ->fetchId($locationinfo['location']);
-                        if ($location->isLocale($locale)) {
+                    foreach ($service['locations'] as $locationinfo) {                        
+                        $location = $this->access()->fromLocation($this->locale)->fetchId($locationinfo['location']);
+                        if ($location && $location->isLocale($this->locale)) {
                             $authoritylist->addLocation($location);
                         }
                     }
@@ -51,11 +48,9 @@ class Authority extends Base
             $authoritylist->sortByName();
         } else {
             $authoritylist = $this->getItemList()->removeLocations();
-            $locationlist = $this->access()
-                ->fromLocation($locale)
-                ->fetchList();
+            $locationlist = $this->access()->fromLocation($this->locale)->fetchList();
             foreach ($locationlist as $location) {
-                if ($location->isLocale($locale)) {
+                if ($location->isLocale($this->locale)) {
                     $authoritylist->addLocation($location);
                 }
             }
@@ -69,9 +64,9 @@ class Authority extends Base
      * @todo returns Collection\Authorities and not locations
      * @return Collection\Locations
      */
-    public function fetchOffice($officepath, $locale = 'de')
+    public function fetchOffice($officepath)
     {
-        $authoritylist = $this->fetchList(array(), $locale);
+        $authoritylist = $this->fetchList();
         if ($officepath) {
             $authoritylist = $authoritylist->getWithOffice($officepath);
         }
