@@ -26,7 +26,7 @@ class Topic extends Base
     {
         return ($this['relation']['navi'] || count($this['relation']['navi']));
     }
-    
+
     public function hasServices($locale)
     {
         foreach ($this['relation']['services'] as $service) {
@@ -36,5 +36,20 @@ class Topic extends Base
             }
         }
         return false;
+    }
+
+    public function getServiceLocationLinkList()
+    {
+        $list = array();
+        $items = array(
+            $this['relation']['services'],
+            $this['relation']['locations']
+        );
+        foreach ($items as $item) {
+            foreach ($item as $entity) {
+                $list[$entity->getName() . '-' . $entity->getId()] = $entity;
+            }
+        }
+        return $list;
     }
 }

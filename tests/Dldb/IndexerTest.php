@@ -14,7 +14,7 @@ class IndexerTest extends \PHPUnit_Framework_TestCase
     public function testIndexer()
     {
         if (!getenv('FASTTEST')) {
-            $indexer = new \BO\Dldb\Indexer\ElasticSearch(LOCATION_JSON, SERVICE_JSON);
+            $indexer = new \BO\Dldb\Indexer\ElasticSearch(FIXTURES);
             $indexer->setHost(ES_HOST);
             $indexer->setPort(ES_PORT);
             $indexer->setTransport(ES_TRANSPORT);

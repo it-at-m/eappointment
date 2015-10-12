@@ -128,4 +128,54 @@ class Location extends Base
         $resultList = $this->access()->getIndex()->getType('location')->search($mainquery, $limit);
         return $this->access()->fromAuthority()->fromLocationResults($resultList, $sort);
     }
+
+    /**
+     * search locations
+     * this function is similar to self::searchAll() but it might get different boosts in the future
+     *
+     * @return Collection
+     */
+    public function searchList($querystring)
+    {
+        $query = Helper::boolFilteredQuery();
+        $mainquery = new \Elastica\Query();
+        $limit = 1000;
+        $sort = true;
+        $searchquery = new \Elastica\Query\QueryString();
+        if ($querystring > 10000 && $querystring < 15000) {
+            // if it is a postal code, sort by distance and limit results
+            $coordinates = \BO\Dldb\Plz\Coordinates::zip2LatLon($querystring);
+            if (false !== $coordinates) {
+                $searchquery->setQuery('*');
+                $mainquery->addSort([
+                    "_geo_distance" => [
+                        "geo" => [
+                            "lat" => $coordinates['lat'],
+                            "lon" => $coordinates['lon']
+                        ],
+                        "order" => "asc",
+                        "unit" => "km"
+                    ]
+                ]);
+                $limit = 5;
+                $sort = false;
+            }
+        } elseif ('' === trim($querystring)) {
+            // if empty, find all and trust in the filter
+            $searchquery->setQuery('*');
+        } else {
+            $searchquery->setQuery($querystring);
+        }
+        $searchquery->setFields(['name^9','authority.name^5', 'address.street', 'address.postal_code^9']);
+        $searchquery->setLowercaseExpandedTerms(false);
+        $query->getQuery()->addShould($searchquery);
+        $mainquery->setQuery($query);
+        $resultList = $this->access()->getIndex()->getType('location')->search($mainquery, $limit);
+        $locationList = new Collection();
+        foreach ($resultList as $result) {
+            $location = new Entity($result->getData());
+            $locationList[$location['id']] = $location;
+        }
+        return $locationList;
+    }
 }

@@ -3,9 +3,11 @@
  * @package 115Mandant
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
+
 namespace BO\Dldb;
 
 /**
+ *
  */
 class FileAccess extends AbstractAccess
 {
@@ -15,10 +17,13 @@ class FileAccess extends AbstractAccess
      *
      * @return self
      */
-    public $locale;
-
-    public function __construct($locale = 'de', $locationJson = null, $serviceJson = null, $topicsJson = null, $authoritiesJson = null, $settingsJson = null)
-    {
+    public function __construct(
+        $locationJson = null,
+        $serviceJson = null,
+        $topicsJson = null,
+        $authoritiesJson = null,
+        $settingsJson = null
+    ) {
         if (null !== $locationJson) {
             $this->loadLocations($locationJson);
         }
@@ -34,8 +39,6 @@ class FileAccess extends AbstractAccess
         if (null !== $settingsJson) {
             $this->loadSettings($settingsJson);
         }
-        
-        $this->locale = $locale;
     }
 
     /**
@@ -45,7 +48,7 @@ class FileAccess extends AbstractAccess
      */
     public function loadFromPath($path)
     {
-        if (! is_dir($path)) {
+        if (!is_dir($path)) {
             throw new Exception("Could not read directory $path");
         }
         $this->loadAuthorities($path . DIRECTORY_SEPARATOR . 'authorities_de.json', 'de');
@@ -56,7 +59,6 @@ class FileAccess extends AbstractAccess
         $this->loadServices($path . DIRECTORY_SEPARATOR . 'services_en.json', 'en');
         $this->loadSettings($path . DIRECTORY_SEPARATOR . 'settings.json');
         $this->loadTopics($path . DIRECTORY_SEPARATOR . 'topics_de.json');
-        
         return $this;
     }
 
