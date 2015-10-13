@@ -74,6 +74,10 @@ class Locations extends Base
         return implode(',', $this->getIds($locationList));
     }
 
+    /**
+     * @todo check why no clone keyword is used
+     *
+     */
     public function getWithOffice($officepath)
     {
         $locationList= new self();

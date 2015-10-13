@@ -82,6 +82,10 @@ class Authority extends Base
         }
     }
 
+    /**
+     * @todo check why no clone keyword is used
+     *
+     */
     public function getWithOffice($officepath)
     {
         $authority= new self($this->getArrayCopy());

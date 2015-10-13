@@ -6,6 +6,10 @@
 
 namespace BO\Dldb\Collection;
 
+/**
+ * @SuppressWarnings(TooManyPublicMethods)
+ * Methods to apply on this collection
+ */
 class Authorities extends Base
 {
 
@@ -38,8 +42,7 @@ class Authorities extends Base
     {
         return array_key_exists($authority_id, $this);
     }
-    
-    
+
     /**
      * Check if appointments are available
      *
@@ -57,7 +60,6 @@ class Authorities extends Base
         }
         return false;
     }
-    
 
     /**
      * Check if appointments are available

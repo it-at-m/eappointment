@@ -82,7 +82,7 @@ class IndexerTest extends \PHPUnit_Framework_TestCase
 
     public function testCompare()
     {
-        if (!getenv('FASTTEST') && !getenv('NOCOMPARE')) {
+        if (!getenv('NOCOMPARE')) {
             $access1 = new \BO\Dldb\ElasticAccess(ES_ALIAS, ES_HOST, ES_PORT, ES_TRANSPORT);
             $access1->loadFromPath(FIXTURES);
             $access2 = new FileAccess();
