@@ -41,12 +41,15 @@ class Service extends Base
      */
     public function fetchList($location_csv = false)
     {
-        $filter = null;
+        $boolquery = Helper::boolFilteredQuery();
+        $localeFilter = new \Elastica\Filter\Terms('meta.locale', array($this->locale));
+        $boolquery->getFilter()->addMust($localeFilter);
+        $query = \Elastica\Query::create($boolquery);
         if ($location_csv) {
             $filter = new \Elastica\Filter\Terms('locations.location', explode(',', $location_csv));
             $filter->setExecution('and');
+            $query->setPostFilter($filter);
         }
-        $query = \Elastica\Query::create($filter);
         $resultList = $this->access()->getIndex()->getType('service')->search($query, 10000);
         $serviceList = new Collection();
         foreach ($resultList as $result) {
@@ -86,7 +89,10 @@ class Service extends Base
         if (!$location_csv) {
             $location_csv = $this->fetchLocationCsv($service_csv);
         }
-        $boolquery = new \Elastica\Query\Bool();
+        //$boolquery = new \Elastica\Query\Bool();
+        $boolquery = Helper::boolFilteredQuery();
+        $localeFilter = new \Elastica\Filter\Terms('meta.locale', array($this->locale));
+        $boolquery->getFilter()->addMust($localeFilter);
         $searchquery = new \Elastica\Query\QueryString();
         if ('' === trim($query)) {
             $searchquery->setQuery('*');
@@ -95,10 +101,7 @@ class Service extends Base
         }
         $searchquery->setFields(['name^9','keywords^5']);
         $searchquery->setLowercaseExpandedTerms(false);
-        $boolquery->addShould($searchquery);
-        //$prefixquery = new \Elastica\Query\Prefix();
-        //$prefixquery->setPrefix('az', preg_replace('#~\d$#', '', $query), 10);
-        //$boolquery->addShould($prefixquery);
+        $boolquery->getQuery()->addShould($searchquery);
         $filter = null;
         if ($location_csv) {
             $filter = new \Elastica\Filter\Terms('locations.location', explode(',', $location_csv));
@@ -115,6 +118,7 @@ class Service extends Base
 
     /**
      * this function is similar to self::searchAll() but it might get different boosts in the future
+     * additionally, a restriction by locale is missing
      *
      * @return Collection
      */
@@ -123,7 +127,7 @@ class Service extends Base
         if (!$location_csv) {
             $location_csv = $this->fetchLocationCsv($service_csv);
         }
-        $boolquery = new \Elastica\Query\Bool();
+        $boolquery = Helper::boolFilteredQuery();
         $searchquery = new \Elastica\Query\QueryString();
         if ('' === trim($query)) {
             $searchquery->setQuery('*');
@@ -132,10 +136,7 @@ class Service extends Base
         }
         $searchquery->setFields(['name^9','keywords^5']);
         $searchquery->setLowercaseExpandedTerms(false);
-        $boolquery->addShould($searchquery);
-        //$prefixquery = new \Elastica\Query\Prefix();
-        //$prefixquery->setPrefix('az', preg_replace('#~\d$#', '', $query), 10);
-        //$boolquery->addShould($prefixquery);
+        $boolquery->getQuery()->addShould($searchquery);
         $filter = null;
         if ($location_csv) {
             $filter = new \Elastica\Filter\Terms('locations.location', explode(',', $location_csv));

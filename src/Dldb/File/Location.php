@@ -23,7 +23,7 @@ class Location extends Base
             $location = new Entity($item);
             if ($location->isLocale($this->locale)) {
                 $itemList[$item['id']] = $location;
-            }            
+            }
         }
         return $itemList;
     }
@@ -33,8 +33,8 @@ class Location extends Base
      * @return Collection
      */
     public function fetchList($service_csv = false)
-    {        
-        $locationlist = $this->getItemList();        
+    {
+        $locationlist = $this->getItemList();
         if ($service_csv) {
             $locationlist = new Collection(array_filter(
                 (array)$locationlist,

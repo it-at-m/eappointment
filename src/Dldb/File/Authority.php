@@ -27,17 +27,18 @@ class Authority extends Base
 
     /**
      * fetch locations for a list of service and group by authority
+     * @todo optimize by fetching lists instead every single id
      *
-     * @return Collection\Authorities
+     * @return Collection
      */
     public function fetchList(Array $servicelist = array())
-    {       
+    {
         if (count($servicelist)) {
             $authoritylist = new Collection();
             foreach ($servicelist as $service_id) {
                 $service = $this->access()->fromService($this->locale)->fetchId($service_id);
                 if ($service) {
-                    foreach ($service['locations'] as $locationinfo) {                        
+                    foreach ($service['locations'] as $locationinfo) {
                         $location = $this->access()->fromLocation($this->locale)->fetchId($locationinfo['location']);
                         if ($location && $location->isLocale($this->locale)) {
                             $authoritylist->addLocation($location);
@@ -60,9 +61,7 @@ class Authority extends Base
 
     /**
      *
-     * @todo will not work in every edge case, cause authority export does not contain officeinformations
-     * @todo returns Collection\Authorities and not locations
-     * @return Collection\Locations
+     * @return Collection
      */
     public function fetchOffice($officepath)
     {
