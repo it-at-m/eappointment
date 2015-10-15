@@ -3,13 +3,11 @@
  * @package Dldb
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
-
 namespace BO\Dldb\Entity;
 
 /**
-  * Helper for service export
-  *
-  */
+ * Helper for service export
+ */
 class Authority extends Base
 {
 
@@ -24,7 +22,7 @@ class Authority extends Base
     {
         $data = array(
             'name' => $name,
-            'locations' => new \BO\Dldb\Collection\Locations(),
+            'locations' => new \BO\Dldb\Collection\Locations()
         );
         return new self($data);
     }
@@ -32,8 +30,10 @@ class Authority extends Base
     /**
      * Check if appointments are available
      *
-     * @param String $serviceCsv only check for this serviceCsv
-     * @param Bool $external allow external links, default false
+     * @param String $serviceCsv
+     *            only check for this serviceCsv
+     * @param Bool $external
+     *            allow external links, default false
      *
      * @return Bool
      */
@@ -59,9 +59,11 @@ class Authority extends Base
 
     /**
      * Check if locations are available for defined office
+     *
      * @todo Remove this function, this is a data query and self manipulation, extreme bug probability
      *
-     * @param String $officepath only check for this office
+     * @param String $officepath
+     *            only check for this office
      *
      * @return Authority
      */
@@ -83,17 +85,19 @@ class Authority extends Base
     }
 
     /**
+     *
      * @todo check why no clone keyword is used
      *
      */
     public function getWithOffice($officepath)
     {
-        $authority= new self($this->getArrayCopy());
+        $authority = new self($this->getArrayCopy());
         $authority['locations'] = $authority['locations']->getWithOffice($officepath);
         return $authority;
     }
 
     /**
+     *
      * @param Int $locationId
      *
      * @return Bool
@@ -112,7 +116,7 @@ class Authority extends Base
      */
     public function removeLocation($locationId)
     {
-        $authority= new self($this->getArrayCopy());
+        $authority = clone $this;
         $authority['locations'] = $authority['locations']->removeLocation($locationId);
         return $authority;
     }

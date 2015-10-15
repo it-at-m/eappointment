@@ -102,9 +102,11 @@ class Service extends Base
         if ($topic['relation']['navi'] && isset($topic['relation']['childs'])) {
             foreach ($topic['relation']['childs'] as $child) {
                 $childtopic = $this->access()
-                    ->fromTopic()
+                    ->fromTopic($this->locale)
                     ->fetchPath($child['path']);
-                $serviceIds = array_merge($serviceIds, $childtopic->getServiceIds());
+                if ($childtopic) {
+                    $serviceIds = array_merge($serviceIds, $childtopic->getServiceIds());
+                }
             }
         }
         if (count($serviceIds)) {

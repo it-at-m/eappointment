@@ -3,16 +3,14 @@
  * @package 115Mandant
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
-
 namespace BO\Dldb\File;
 
 use \BO\Dldb\Entity\Topic as Entity;
 use \BO\Dldb\Collection\Topics as Collection;
 
 /**
-  * Common methods shared by access classes
-  *
-  */
+ * Common methods shared by access classes
+ */
 class Topic extends Base
 {
 
@@ -26,14 +24,28 @@ class Topic extends Base
     }
 
     /**
+     *
      * @return Collection
      */
     public function fetchList()
     {
-        return $this->getItemList();
+        $topiclist = new Collection();
+        foreach ($this->getItemList() as $item) {
+            $service_csv = implode(',', $item->getServiceIds());
+            if ($service_csv) {
+                $servicelist = $this->access()
+                        ->fromService($this->locale)
+                        ->fetchFromCsv($service_csv);
+                if (count($servicelist)) {
+                    $topiclist[$item['id']] = $item;
+                }
+            }
+        }
+        return $topiclist;
     }
 
     /**
+     *
      * @return Entity
      */
     public function fetchPath($topic_path)
