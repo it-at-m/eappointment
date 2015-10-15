@@ -30,13 +30,15 @@ class Topic extends Base
         $list = array();
         $items = array(
             $this['relation']['services'],
-            $this['relation']['locations']
+            $this['relation']['locations'],
+            $this['links'],
         );
         foreach ($items as $item) {
             foreach ($item as $entity) {
-                $list[$entity->getName() . '-' . $entity->getId()] = $entity;
+                $list[\BO\Dldb\Helper\Sorter::toSortableString($entity->getName()) . '-' . $entity->getId()] = $entity;
             }
         }
+        ksort($list);
         return $list;
     }
 }

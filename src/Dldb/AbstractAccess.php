@@ -129,6 +129,11 @@ class AbstractAccess
         return $this->from('Borough');
     }
 
+    public function fromLink($locale = 'de')
+    {
+        return $this->from('Link', $locale);
+    }
+
     public function fromLocation($locale = 'de')
     {
         return $this->from('Location', $locale);

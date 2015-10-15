@@ -12,5 +12,13 @@ namespace BO\Dldb\Entity;
   */
 class Link extends Base
 {
-
+    
+    /**
+     * return an ID for this entity
+     *
+     */
+    public function getId()
+    {
+        return $this['link'];
+    }
 }

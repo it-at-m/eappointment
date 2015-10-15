@@ -17,15 +17,4 @@ class Topic extends Base
 {
 
 
-    /**
-     * @return \BO\Dldb\Collection\Authorities
-     */
-    public function searchAll($querystring)
-    {
-        $topic = new Entity();
-        $topic['relation']['locations'] = $this->access()->fromLocation()->searchList($querystring);
-        $topic['relation']['services'] = $this->access()->fromService()->searchList($querystring);
-        //var_dump($topic);
-        return $topic->getServiceLocationLinkList();
-    }
 }

@@ -66,6 +66,12 @@ abstract class Base
         return $this->itemList;
     }
 
+    protected function setItemList($list)
+    {
+        $this->itemList = $list;
+        return $this;
+    }
+
     public function fetchId($itemId)
     {
         $itemList = $this->getItemList();

@@ -16,20 +16,16 @@ use \BO\Dldb\Collection\Links as Collection;
 class Link extends Base
 {
 
-    public function __construct()
-    {
-    }
-
     public function loadData()
     {
-        $data = $this->access()->fromTopic()->fetchList();
-        $this->itemList = $this->parseData($data);
+        $data = $this->access()->fromTopic($this->locale)->fetchList();
+        $this->setItemList($this->parseData($data));
     }
 
     protected function parseData($data)
     {
         $itemList = new Collection();
-        foreach ($data['data'] as $topic) {
+        foreach ($data as $topic) {
             foreach ($topic['links'] as $item) {
                 $itemList[$item['link']] = new Entity($item);
             }
@@ -57,5 +53,17 @@ class Link extends Base
             }
         }
         return false;
+    }
+
+    public function searchAll($query)
+    {
+        $list = $this->getItemList();
+        $result = new Collection();
+        foreach ($list as $link) {
+            if (false !== strpos($link['name'], $query)) {
+                $result[] = $link;
+            }
+        }
+        return $result;
     }
 }
