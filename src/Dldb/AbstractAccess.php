@@ -149,8 +149,8 @@ class AbstractAccess
         return $this->from('Setting');
     }
 
-    public function fromTopic()
+    public function fromTopic($locale = 'de')
     {
-        return $this->from('Topic');
+        return $this->from('Topic', $locale);
     }
 }

@@ -58,7 +58,8 @@ class FileAccess extends AbstractAccess
         $this->loadServices($path . DIRECTORY_SEPARATOR . 'services_de.json', 'de');
         $this->loadServices($path . DIRECTORY_SEPARATOR . 'services_en.json', 'en');
         $this->loadSettings($path . DIRECTORY_SEPARATOR . 'settings.json');
-        $this->loadTopics($path . DIRECTORY_SEPARATOR . 'topics_de.json');
+        $this->loadTopics($path . DIRECTORY_SEPARATOR . 'topics_de.json', 'de');
+        $this->loadTopics($path . DIRECTORY_SEPARATOR . 'topics_de.json', 'en');
         return $this;
     }
 
@@ -88,12 +89,12 @@ class FileAccess extends AbstractAccess
      *
      * @return self
      */
-    public function loadTopics($topicJson)
+    public function loadTopics($topicJson, $locale = 'de')
     {
-        $this->accessInstance['de']['Topic'] = new File\Topic($topicJson);
-        $this->accessInstance['de']['Topic']->setAccessInstance($this);
-        $this->accessInstance['de']['Link'] = new File\Link();
-        $this->accessInstance['de']['Link']->setAccessInstance($this);
+        $this->accessInstance[$locale]['Topic'] = new File\Topic($topicJson, $locale);
+        $this->accessInstance[$locale]['Topic']->setAccessInstance($this);
+        $this->accessInstance[$locale]['Link'] = new File\Link();
+        $this->accessInstance[$locale]['Link']->setAccessInstance($this);
         return $this;
     }
 

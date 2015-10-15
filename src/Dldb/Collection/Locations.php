@@ -59,19 +59,18 @@ class Locations extends Base
         return $list;
     }
 
-    public function getIds($locationList = null)
+    public function getIds()
     {
         $idList = array();
-        $locationList = ($locationList !== null) ? $locationList : $this;
-        foreach ($locationList as $location) {
+        foreach ($this as $location) {
             $idList[] = $location['id'];
         }
         return $idList;
     }
 
-    public function getCSV($locationList = null)
+    public function getCSV()
     {
-        return implode(',', $this->getIds($locationList));
+        return implode(',', $this->getIds());
     }
 
     /**
