@@ -90,10 +90,12 @@ class ElasticAccess extends FileAccess
     /**
      * @return self
      */
-    public function loadTopics($topicJson)
+    public function loadTopics($topicJson, $locale = 'de')
     {
-        $this->accessInstance['de']['Topic'] = new Elastic\Topic($topicJson);
-        $this->accessInstance['de']['Topic']->setAccessInstance($this);
+        $this->accessInstance[$locale]['Topic'] = new Elastic\Topic($topicJson);
+        $this->accessInstance[$locale]['Topic']->setAccessInstance($this);
+        $this->accessInstance[$locale]['Link'] = new Elastic\Link($topicJson, $locale);
+        $this->accessInstance[$locale]['Link']->setAccessInstance($this);
         return $this;
     }
 
@@ -114,10 +116,10 @@ class ElasticAccess extends FileAccess
     /**
      * @return self
      */
-    public function loadAuthorities($authorityJson)
+    public function loadAuthorities($authorityJson, $locale = 'de')
     {
-        $this->accessInstance['de']['Authority'] = new Elastic\Authority($authorityJson);
-        $this->accessInstance['de']['Authority']->setAccessInstance($this);
+        $this->accessInstance[$locale]['Authority'] = new Elastic\Authority($authorityJson);
+        $this->accessInstance[$locale]['Authority']->setAccessInstance($this);
         return $this;
     }
 }
