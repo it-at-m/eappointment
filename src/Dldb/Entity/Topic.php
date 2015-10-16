@@ -31,7 +31,7 @@ class Topic extends Base
         $items = array(
             $this['relation']['services'],
             $this['relation']['locations'],
-            $this['links'],
+            $this['links']
         );
         foreach ($items as $item) {
             foreach ($item as $entity) {
@@ -40,5 +40,19 @@ class Topic extends Base
         }
         ksort($list);
         return $list;
+    }
+
+    public function getParent($path)
+    {
+        if (count($this['relation']['parents']) > 1) {
+            foreach ($this['relation']['parents'] as $item) {
+                if ($item['path'] == $path)
+                    return $item['id'];
+            }
+        } else 
+            if (count($this['relation']['parents']) == 1)
+                return $this['relation']['parents'][0]['id'];
+        
+        return $this['id'];
     }
 }
