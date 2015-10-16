@@ -87,15 +87,12 @@ class Service extends Base
     /**
      * Return services by topic
      * If topic is root, include sub-services
-     *
+     * root_topic in realations not usable because of multiple roots for one service
      * @return Collection
      */
-    public function fetchTopicPath($topic_path)
-    {
-        $serviceIds = array();
-        $topic = $this->access()
-            ->fromTopic()
-            ->fetchPath($topic_path);
+    public function fetchListFromTopic($topic)
+    {                
+        $serviceIds = array();       
         if ($topic) {
             $serviceIds = $topic->getServiceIds();
         }
@@ -111,10 +108,11 @@ class Service extends Base
         }
         if (count($serviceIds)) {
             $servicelistCSV = implode(',', $serviceIds);
-            $servicelist = $this->fetchFromCsv($servicelistCSV);
+            $servicelist = $this->fetchFromCsv($servicelistCSV);            
             return $servicelist;
         }
         return new Collection();
+        
     }
 
     /**
