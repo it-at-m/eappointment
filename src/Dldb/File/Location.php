@@ -44,7 +44,7 @@ class Location extends Base
                 }
             ));
         }
-        return $locationlist;
+        return $locationlist->sortByName();
     }
 
     /**
@@ -59,8 +59,7 @@ class Location extends Base
                 $locationlist[$location_id] = $location;
             };
         }
-        $locationlist->sortByName();
-        return $locationlist;
+        return $locationlist->sortByName();
     }
 
     /**
@@ -75,6 +74,6 @@ class Location extends Base
                 return false !== strpos($item['name'], $query);
             }
         ));
-        return $locationlist;
+        return $locationlist->sortByName();
     }
 }

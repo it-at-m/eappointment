@@ -56,7 +56,7 @@ class Authority extends Base
                 }
             }
         }
-        return $authoritylist;
+        return $authoritylist->sortByName();
     }
 
     /**
@@ -69,6 +69,6 @@ class Authority extends Base
         if ($officepath) {
             $authoritylist = $authoritylist->getWithOffice($officepath);
         }
-        return $authoritylist;
+        return $authoritylist->sortByName();
     }
 }
