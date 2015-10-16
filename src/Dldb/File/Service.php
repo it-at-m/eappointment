@@ -38,8 +38,8 @@ class Service extends Base
                 $service = new Entity($item);
                 return $service->containsLocation($location_csv);
             }));
-        }
-        return $servicelist;
+        }    
+        return $servicelist->sortByName();
     }
 
     /**
@@ -80,8 +80,7 @@ class Service extends Base
                 $servicelist[$service_id] = $service;
             }
         }
-        $servicelist->sortByName();
-        return $servicelist;
+        return $servicelist->sortByName();
     }
 
     /**
@@ -92,6 +91,7 @@ class Service extends Base
      */
     public function fetchListFromTopic($topic)
     {                
+        $itemlist = new Collection();
         $serviceIds = array();       
         if ($topic) {
             $serviceIds = $topic->getServiceIds();
@@ -111,7 +111,7 @@ class Service extends Base
             $servicelist = $this->fetchFromCsv($servicelistCSV);            
             return $servicelist;
         }
-        return new Collection();
+        return $itemlist->sortByName();
         
     }
 
@@ -125,6 +125,6 @@ class Service extends Base
         $servicelist = new Collection(array_filter((array) $servicelist, function ($item) use ($query) {
             return false !== strpos($item['name'], $query);
         }));
-        return $servicelist;
+        return $servicelist->sortByName();
     }
 }
