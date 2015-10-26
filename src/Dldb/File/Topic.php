@@ -60,7 +60,7 @@ class Topic extends Base
     }
 
     /**
-     * @return \BO\Dldb\Collection\Authorities
+     * @return Entity
      */
     public function searchAll($querystring)
     {
@@ -68,7 +68,6 @@ class Topic extends Base
         $topic['relation']['locations'] = $this->access()->fromLocation()->searchList($querystring);
         $topic['relation']['services'] = $this->access()->fromService()->searchList($querystring);
         $topic['links'] = $this->access()->fromLink()->searchAll($querystring);
-        //var_dump($topic);
-        return $topic->getServiceLocationLinkList();
+        return $topic;
     }
 }

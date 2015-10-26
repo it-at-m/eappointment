@@ -77,10 +77,10 @@ try {
             }
         }
     } elseif ($index == 'all') {
-        $list = $access
+        $topic = $access
             ->fromTopic()
             ->searchAll($args->getOpt('query'));
-        foreach ($list as $key => $item) {
+        foreach ($topic->getServiceLocationLinkList() as $key => $item) {
             //echo $item['name'] . ' (' . $item['meta']['keywords'] . ')' . "\n";
             echo $key . ' => ' . $item['name'] . "\n";
         }

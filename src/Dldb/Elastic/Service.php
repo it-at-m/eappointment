@@ -122,11 +122,8 @@ class Service extends Base
      *
      * @return Collection
      */
-    public function searchList($query, $service_csv = '', $location_csv = '')
+    public function searchList($query)
     {
-        if (!$location_csv) {
-            $location_csv = $this->fetchLocationCsv($service_csv);
-        }
         $boolquery = Helper::boolFilteredQuery();
         $searchquery = new \Elastica\Query\QueryString();
         if ('' === trim($query)) {
@@ -135,12 +132,8 @@ class Service extends Base
             $searchquery->setQuery($query);
         }
         $searchquery->setFields(['name^9','keywords^5']);
-        $searchquery->setLowercaseExpandedTerms(false);
         $boolquery->getQuery()->addShould($searchquery);
         $filter = null;
-        if ($location_csv) {
-            $filter = new \Elastica\Filter\Terms('locations.location', explode(',', $location_csv));
-        }
         $query = new \Elastica\Query\Filtered($boolquery, $filter);
         $resultList = $this->access()->getIndex()->getType('service')->search($query, 1000);
         $serviceList = new Collection();
