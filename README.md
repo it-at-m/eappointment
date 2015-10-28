@@ -267,3 +267,11 @@ To update the list:
 * grep BERLIN PLZ.tab > src/Dldb/Plz/PLZ_Berlin.tab
 * bin/geoDbPlz2Json -f src/Dldb/Plz/PLZ_Berlin.tab > src/Dldb/Plz/plz_geodb.json
 * rm PLZ.tab
+ 
+--------------------------
+Usage of template snippets
+--------------------------
+
+Set namespace "dldb" with path to templates like:
+
+* \BO\Slim\Bootstrap::addTwigTemplateDirectory('dldb', 'path/to/templates');
