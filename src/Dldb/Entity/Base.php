@@ -15,6 +15,9 @@ class Base extends \ArrayObject
      */
     public function getId()
     {
+        if (!array_key_exists('id', $this)) {
+            var_dump($this);
+        }
         return $this['id'];
     }
 

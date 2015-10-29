@@ -90,15 +90,11 @@ class Service extends Base
      *
      * @return Collection
      */
-    public function fetchListFromTopic($topic)
+    public function fetchListFromTopic(\BO\Dldb\Entity\Topic $topic)
     {
         $itemlist = new Collection();
         $serviceIds = array();
-        $isTranslation = $this->access()
-            ->fromTopic($this->locale)
-            ->fetchPath($topic['path']);
-
-        if ($topic && $isTranslation) {
+        if ($topic) {
             $serviceIds = $topic->getServiceIds();
             if ($topic['relation']['navi'] && isset($topic['relation']['childs'])) {
                 foreach ($topic['relation']['childs'] as $child) {
@@ -117,7 +113,7 @@ class Service extends Base
             $servicelist = $this->fetchFromCsv($servicelistCSV);
             return $servicelist;
         }
-        return $itemlist;
+        return $itemlist->sortByName();
     }
 
     /**

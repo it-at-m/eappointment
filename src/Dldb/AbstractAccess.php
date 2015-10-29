@@ -33,9 +33,9 @@ class AbstractAccess
         ),
     );
 
-    private function getInstanceCompatibilities($locale = 'de')
+    private function getInstanceCompatibilities()
     {
-        $accessInstance = $this->accessInstance[$locale];
+        $accessInstance = $this->accessInstance['de'];
         $accessInstance['Authorities'] = $accessInstance['Authority'];
         $accessInstance['Boroughs'] = $accessInstance['Borough'];
         $accessInstance['Offices'] = $accessInstance['Office'];
