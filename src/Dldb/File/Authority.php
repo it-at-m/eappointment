@@ -46,7 +46,6 @@ class Authority extends Base
                     }
                 }
             }
-            $authoritylist->sortByName();
         } else {
             $authoritylist = $this->getItemList()->removeLocations();
             $locationlist = $this->access()->fromLocation($this->locale)->fetchList();
@@ -56,7 +55,7 @@ class Authority extends Base
                 }
             }
         }
-        return $authoritylist->sortByName();
+        return $authoritylist;
     }
 
     /**

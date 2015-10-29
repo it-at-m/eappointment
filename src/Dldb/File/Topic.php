@@ -41,7 +41,7 @@ class Topic extends Base
                 }
             }
         }
-        return $topiclist->sortByName();
+        return $topiclist;
     }
 
     /**
