@@ -62,7 +62,7 @@ class Topic extends Base
     /**
      * @return Entity
      */
-    public function searchAll($querystring)
+    public function readSearchResultList($querystring)
     {
         $topic = new Entity();
         $topic['relation']['locations'] = $this->access()->fromLocation()->searchList($querystring);
