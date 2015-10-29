@@ -39,7 +39,7 @@ class Service extends Base
                 return $service->containsLocation($location_csv);
             }));
         }    
-        return $servicelist->sortByName();
+        return $servicelist;
     }
 
     /**
@@ -80,7 +80,7 @@ class Service extends Base
                 $servicelist[$service_id] = $service;
             }
         }
-        return $servicelist->sortByName();
+        return $servicelist;
     }
 
     /**

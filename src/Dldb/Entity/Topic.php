@@ -42,16 +42,18 @@ class Topic extends Base
         return $list;
     }
 
-    public function getParent($path)
+    public function getParentId()
     {
         if (count($this['relation']['parents']) > 1) {
             foreach ($this['relation']['parents'] as $item) {
-                if ($item['path'] == $path)
+                if ($item['path'] == $path) {
                     return $item['id'];
+                }
             }
         } else 
-            if (count($this['relation']['parents']) == 1)
+            if (count($this['relation']['parents']) == 1) {
                 return $this['relation']['parents'][0]['id'];
+            }
         
         return $this['id'];
     }
