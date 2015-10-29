@@ -92,7 +92,7 @@ class Authority extends Base
     public function getLocationListByOfficePath($officepath)
     {
         $authority = clone $this;
-        $authority['locations'] = $authority['locations']->getLocationListByOfficePath($officepath);
+        $authority['locations'] = $authority['locations']->getWithOffice($officepath);
         return $authority;
     }
 

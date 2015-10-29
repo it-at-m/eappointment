@@ -58,7 +58,6 @@ try {
             ->fromService()
             ->searchAll($args->getOpt('query'), $args->getOpt('services'), $args->getOpt('locations'));
         foreach ($list as $key => $item) {
-            //echo $item['name'] . ' (' . $item['meta']['keywords'] . ')' . "\n";
             echo $key . ' => ' . $item['name'] . "\n";
         }
     } elseif ($index == 'location') {
@@ -66,7 +65,6 @@ try {
             ->fromLocation()
             ->searchAll($args->getOpt('query'), $args->getOpt('services'), $args->getOpt('locations'));
         foreach ($list as $key => $item) {
-            //echo $item['name'] . ' (' . $item['meta']['keywords'] . ')' . "\n";
             echo $key . ' => ' . $item['name'] . "\n";
             foreach ($item['locations'] as $id => $location) {
                 $name = $location['name'];
@@ -79,10 +77,9 @@ try {
     } elseif ($index == 'all') {
         $topic = $access
             ->fromTopic()
-            ->searchAll($args->getOpt('query'));
+            ->readSearchResultList($args->getOpt('query'));
         foreach ($topic->getServiceLocationLinkList() as $key => $item) {
-            //echo $item['name'] . ' (' . $item['meta']['keywords'] . ')' . "\n";
-            echo $key . ' => ' . $item['name'] . "\n";
+            echo $item->getId() . ' => ' . $item->getName() . "\n";
         }
     } else {
         echo "Unknown index\n";

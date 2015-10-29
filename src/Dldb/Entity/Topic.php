@@ -27,7 +27,7 @@ class Topic extends Base
 
     public function getServiceLocationLinkList()
     {
-        $list = array();
+        $list = new \BO\Dldb\Collection\Base();
         $items = array(
             $this['relation']['services'],
             $this['relation']['locations'],
@@ -35,11 +35,10 @@ class Topic extends Base
         );
         foreach ($items as $item) {
             foreach ($item as $entity) {
-                $list[\BO\Dldb\Helper\Sorter::toSortableString($entity->getName()) . '-' . $entity->getId()] = $entity;
+                $list[] = $entity;
             }
         }
-        ksort($list);
-        return $list;
+        return $list->sortByName();
     }
 
     public function getParentIdByPath($path)
