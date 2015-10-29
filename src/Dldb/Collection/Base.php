@@ -12,13 +12,10 @@ class Base extends \ArrayObject
 
     public function sortByName()
     {
-        $itemlist = clone $this;
-        $classname = get_class($this);
-        $list = new $classname();
-        foreach ($itemlist as $item) {
-            $list[Sorter::toSortableString($item->getName()) .' - '. $item->getId()] = $item;
-        }
-        $list->ksort();
-        return $list;
+        $itemList = clone $this;
+        $itemList->uasort(function ($a, $b) {
+            return strcmp(Sorter::toSortableString($a->getName()), Sorter::toSortableString($b->getName()));
+        });
+        return $itemList;
     }
 }
