@@ -93,8 +93,10 @@ class FileTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(count($topicList) > 0, "No topics found");
         $topic = $access->fetchTopic(TOPIC_SINGLE);
         $this->assertNotFalse($topic);
-        $topic = $access->fetchTopicPath('wirtschaft');
+        $topic = $access->fromTopic()->fetchPath('wirtschaft');
         $this->assertNotFalse($topic);
+        $topic = $access->fromTopic()->fetchPath('dummy');
+        $this->assertFalse($topic);
 
         $borough = $access->fetchBoroughId(13);
         $this->assertEquals('Berlin Gesamt', $borough['name']);
@@ -109,14 +111,13 @@ class FileTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('name', $office);
         $this->assertEquals($office['name'], 'Ausländerbehörde');
 
-        $serviceList = $access->fromService()->fetchTopicPath('verbraucherschutz');
+        $topic = $access->fromTopic()->fetchPath('verbraucherschutz');
+        $serviceList = $access->fromService()->fetchListFromTopic($topic);
         $this->assertArrayHasKey(324330, $serviceList);
         $this->assertArrayHasKey(324330, $serviceList);
-        $serviceList = $access->fromService()->fetchTopicPath('tiefbau');
-        //var_dump($serviceList->getNames());
+        $topic = $access->fromTopic()->fetchPath('tiefbau');
+        $serviceList = $access->fromService()->fetchListFromTopic($topic);
         $this->assertArrayHasKey(324501, $serviceList);
-        $serviceList = $access->fromService()->fetchTopicPath('dummy');
-        $this->assertTrue(count($serviceList) === 0, "Too many services in unknown topic");
     }
 
     public function testFail()

@@ -50,11 +50,9 @@ class Topic extends Base
                     return $item['id'];
                 }
             }
-        } else 
-            if (count($this['relation']['parents']) == 1) {
-                return $this['relation']['parents'][0]['id'];
-            }
-        
+        } elseif (count($this['relation']['parents']) == 1) {
+            return $this['relation']['parents'][0]['id'];
+        }
         return $this['id'];
     }
 }
