@@ -106,8 +106,7 @@ class Service extends Base
                     }
                 }
             }
-        }
-        
+        }        
         if (count($serviceIds)) {
             $servicelistCSV = implode(',', $serviceIds);
             $servicelist = $this->fetchFromCsv($servicelistCSV);
