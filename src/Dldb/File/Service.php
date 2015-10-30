@@ -34,11 +34,11 @@ class Service extends Base
     {
         $servicelist = $this->getItemList();
         if ($location_csv) {
-            $servicelist = new Collection(array_filter((array) $servicelist, function ($item) use ($location_csv) {
+            $servicelist = new Collection(array_filter((array) $servicelist, function ($item) use($location_csv) {
                 $service = new Entity($item);
                 return $service->containsLocation($location_csv);
             }));
-        }    
+        }
         return $servicelist;
     }
 
@@ -87,32 +87,37 @@ class Service extends Base
      * Return services by topic
      * If topic is root, include sub-services
      * root_topic in realations not usable because of multiple roots for one service
+     *
      * @return Collection
      */
     public function fetchListFromTopic($topic)
-    {                
+    {
         $itemlist = new Collection();
-        $serviceIds = array();       
-        if ($topic) {
+        $serviceIds = array();
+        $isTranslation = $this->access()
+            ->fromTopic($this->locale)
+            ->fetchPath($topic['path']);
+
+        if ($topic && $isTranslation) {
             $serviceIds = $topic->getServiceIds();
-        }
-        if ($topic['relation']['navi'] && isset($topic['relation']['childs'])) {
-            foreach ($topic['relation']['childs'] as $child) {
-                $childtopic = $this->access()
-                    ->fromTopic($this->locale)
-                    ->fetchPath($child['path']);
-                if ($childtopic) {
-                    $serviceIds = array_merge($serviceIds, $childtopic->getServiceIds());
+            if ($topic['relation']['navi'] && isset($topic['relation']['childs'])) {
+                foreach ($topic['relation']['childs'] as $child) {
+                    $childtopic = $this->access()
+                        ->fromTopic($this->locale)
+                        ->fetchPath($child['path']);
+                    if ($childtopic) {
+                        $serviceIds = array_merge($serviceIds, $childtopic->getServiceIds());
+                    }
                 }
             }
         }
+        
         if (count($serviceIds)) {
             $servicelistCSV = implode(',', $serviceIds);
-            $servicelist = $this->fetchFromCsv($servicelistCSV);            
+            $servicelist = $this->fetchFromCsv($servicelistCSV);
             return $servicelist;
         }
-        return $itemlist->sortByName();
-        
+        return $itemlist;
     }
 
     /**
@@ -122,9 +127,9 @@ class Service extends Base
     public function searchAll($query, $service_csv = '')
     {
         $servicelist = $this->fetchCombinations($service_csv);
-        $servicelist = new Collection(array_filter((array) $servicelist, function ($item) use ($query) {
+        $servicelist = new Collection(array_filter((array) $servicelist, function ($item) use($query) {
             return false !== strpos($item['name'], $query);
         }));
-        return $servicelist->sortByName();
+        return $servicelist;
     }
 }

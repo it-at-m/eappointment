@@ -89,10 +89,10 @@ class Authority extends Base
      * @todo check why no clone keyword is used
      *
      */
-    public function getWithOffice($officepath)
+    public function getLocationListByOfficePath($officepath)
     {
-        $authority = new self($this->getArrayCopy());
-        $authority['locations'] = $authority['locations']->getWithOffice($officepath);
+        $authority = clone $this;
+        $authority['locations'] = $authority['locations']->getLocationListByOfficePath($officepath);
         return $authority;
     }
 
