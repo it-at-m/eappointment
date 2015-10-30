@@ -62,12 +62,12 @@ class Authority extends Base
      *
      * @return Collection
      */
-    public function fetchOffice($officepath)
+    public function readAuthorityListByOfficePath($officepath)
     {
         $authoritylist = $this->fetchList();
         if ($officepath) {
-            $authoritylist = $authoritylist->getWithOffice($officepath);
+            $authoritylist = $authoritylist->readAuthorityLocationsByOfficePath($officepath);
         }
-        return $authoritylist->sortByName();
+        return $authoritylist;
     }
 }

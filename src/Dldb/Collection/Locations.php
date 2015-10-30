@@ -73,13 +73,9 @@ class Locations extends Base
         return implode(',', $this->getIds());
     }
 
-    /**
-     * @todo check why no clone keyword is used
-     *
-     */
-    public function getWithOffice($officepath)
+    public function getLocationListByOfficePath($officepath)
     {
-        $locationList= new self();
+        $locationList = new self();
         foreach ($this as $location_id => $location) {
             if ($location['office'] == $officepath) {
                 $locationList[$location_id] = new \BO\Dldb\Entity\Location($location->getArrayCopy());

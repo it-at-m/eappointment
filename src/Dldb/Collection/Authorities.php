@@ -158,11 +158,11 @@ class Authorities extends Base
         return $authoritylist;
     }
 
-    public function getWithOffice($officepath)
+    public function readAuthorityLocationsByOfficePath($officepath)
     {
         $authoritylist = clone $this;
         foreach ($authoritylist as $key => $authority) {
-            $authoritylist[$key] = $authority->getWithOffice($officepath);
+            $authoritylist[$key] = $authority->getLocationListByOfficePath($officepath);
         }
         return $authoritylist->removeEmptyAuthorities();
     }
