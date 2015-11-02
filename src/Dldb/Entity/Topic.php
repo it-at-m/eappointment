@@ -41,11 +41,11 @@ class Topic extends Base
         return $list->sortByName();
     }
 
-    public function getParentIdByPath($path)
+    public function getParentId()
     {
         if (count($this['relation']['parents']) > 1) {
             foreach ($this['relation']['parents'] as $item) {
-                if ($item['path'] == $path) {
+                if ($item['path'] == $this['path']) {
                     return $item['id'];
                 }
             }
