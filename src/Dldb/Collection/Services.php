@@ -3,11 +3,11 @@
  * @package Dldb
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
-
 namespace BO\Dldb\Collection;
 
 class Services extends Base
 {
+
     public function getIds()
     {
         $idList = array();
@@ -26,11 +26,11 @@ class Services extends Base
         return $nameList;
     }
 
-    public function getCSV($serviceList = null)
+    public function getCSV()
     {
-        return implode(',', $this->getIds($serviceList));
+        return implode(',', $this->getIds());
     }
-    
+
     public function isLocale($locale)
     {
         $list = new self();
