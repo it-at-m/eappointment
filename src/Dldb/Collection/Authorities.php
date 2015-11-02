@@ -3,7 +3,6 @@
  * @package Dldb
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
-
 namespace BO\Dldb\Collection;
 
 /**
@@ -31,7 +30,7 @@ class Authorities extends Base
 
     public function addAuthority($authority_id, $name)
     {
-        if (!$this->hasAuthority($authority_id)) {
+        if (! $this->hasAuthority($authority_id)) {
             $authority = \BO\Dldb\Entity\Authority::create($name);
             $this[$authority_id] = $authority;
         }
@@ -46,9 +45,11 @@ class Authorities extends Base
     /**
      * Check if appointments are available
      *
-     * @param String $serviceCsv only check for this serviceCsv
-     * @param Bool $external allow external links, default false
-     *
+     * @param String $serviceCsv
+     *            only check for this serviceCsv
+     * @param Bool $external
+     *            allow external links, default false
+     *            
      * @return Bool
      */
     public function hasLocations()
@@ -64,9 +65,11 @@ class Authorities extends Base
     /**
      * Check if appointments are available
      *
-     * @param String $serviceCsv only check for this serviceCsv
-     * @param Bool $external allow external links, default false
-     *
+     * @param String $serviceCsv
+     *            only check for this serviceCsv
+     * @param Bool $external
+     *            allow external links, default false
+     *            
      * @return Bool
      */
     public function hasAppointments($serviceCsv = null, $external = false)
@@ -78,11 +81,11 @@ class Authorities extends Base
         }
         return false;
     }
-    
+
     /**
      * Check if ea_id location exists
      *
-     * @param Int $locationId
+     * @param Int $locationId            
      *
      * @return Bool
      */
@@ -99,7 +102,7 @@ class Authorities extends Base
     /**
      * Remove a location
      *
-     * @param Int $locationId
+     * @param Int $locationId            
      *
      * @return clone self
      */
@@ -115,9 +118,11 @@ class Authorities extends Base
     /**
      * remove locations if no appointment is available
      *
-     * @param String $serviceCsv only check for this serviceCsv
-     * @param Bool $external allow external links, default false
-     *
+     * @param String $serviceCsv
+     *            only check for this serviceCsv
+     * @param Bool $external
+     *            allow external links, default false
+     *            
      * @return self
      */
     public function removeLocationsWithoutAppointments($serviceCsv = null, $external = false)
@@ -127,7 +132,7 @@ class Authorities extends Base
             if ($authority->hasAppointments($serviceCsv, $external)) {
                 $locationIterator = $authority['locations']->getIterator();
                 foreach ($locationIterator as $subkey => $location) {
-                    if (!$location->hasAppointments($serviceCsv, $external)) {
+                    if (! $location->hasAppointments($serviceCsv, $external)) {
                         $locationIterator->offsetUnset($subkey);
                     }
                 }
@@ -158,7 +163,7 @@ class Authorities extends Base
         return $authoritylist;
     }
 
-    public function readAuthorityLocationsByOfficePath($officepath)
+    public function toListWithOfficePath($officepath)
     {
         $authoritylist = clone $this;
         foreach ($authoritylist as $key => $authority) {
