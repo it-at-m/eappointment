@@ -16,7 +16,7 @@ use \BO\Dldb\File\Link as Base;
 class Link extends Base
 {
 
-    public function searchAll($query)
+    public function readSearchResultList($query)
     {
         $boolquery = Helper::boolFilteredQuery();
         $searchquery = new \Elastica\Query\QueryString();

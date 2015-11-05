@@ -3,7 +3,6 @@
  * @package ClientDldb
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
-
 namespace BO\Dldb\Elastic;
 
 use \BO\Dldb\Entity\Service as Entity;
@@ -11,13 +10,12 @@ use \BO\Dldb\Collection\Services as Collection;
 use \BO\Dldb\File\Service as Base;
 
 /**
-  *
-  */
+ */
 class Service extends Base
 {
 
-
     /**
+     *
      * @return Entity\Service
      */
     public function fetchId($service_id)
@@ -27,7 +25,10 @@ class Service extends Base
             $filter = new \Elastica\Filter\Ids();
             $filter->setIds($this->locale . $service_id);
             $query->getFilter()->addMust($filter);
-            $result = $this->access()->getIndex()->getType('service')->search($query);
+            $result = $this->access()
+                ->getIndex()
+                ->getType('service')
+                ->search($query);
             if ($result->count() == 1) {
                 $locationList = $result->getResults();
                 return new Entity($locationList[0]->getData());
@@ -37,20 +38,23 @@ class Service extends Base
     }
 
     /**
+     *
      * @return Collection\Services
      */
     public function fetchList($location_csv = false)
     {
         $boolquery = Helper::boolFilteredQuery();
-        $localeFilter = new \Elastica\Filter\Terms('meta.locale', array($this->locale));
-        $boolquery->getFilter()->addMust($localeFilter);
+        $boolquery->getFilter()->addMust(Helper::localeFilter($this->locale));
         $query = \Elastica\Query::create($boolquery);
         if ($location_csv) {
             $filter = new \Elastica\Filter\Terms('locations.location', explode(',', $location_csv));
             $filter->setExecution('and');
             $query->setPostFilter($filter);
         }
-        $resultList = $this->access()->getIndex()->getType('service')->search($query, 10000);
+        $resultList = $this->access()
+            ->getIndex()
+            ->getType('service')
+            ->search($query, 10000);
         $serviceList = new Collection();
         foreach ($resultList as $result) {
             $service = new Entity($result->getData());
@@ -60,6 +64,7 @@ class Service extends Base
     }
 
     /**
+     *
      * @return Collection\Services
      */
     public function fetchFromCsv($service_csv)
@@ -72,7 +77,10 @@ class Service extends Base
         }, $ids);
         $filter->setIds($ids);
         $query->getFilter()->addMust($filter);
-        $resultList = $this->access()->getIndex()->getType('service')->search($query, 10000);
+        $resultList = $this->access()
+            ->getIndex()
+            ->getType('service')
+            ->search($query, 10000);
         $serviceList = new Collection();
         foreach ($resultList as $result) {
             $service = new Entity($result->getData());
@@ -82,24 +90,27 @@ class Service extends Base
     }
 
     /**
+     *
      * @return Collection\Services
      */
     public function searchAll($query, $service_csv = '', $location_csv = '')
     {
-        if (!$location_csv) {
+        if (! $location_csv) {
             $location_csv = $this->fetchLocationCsv($service_csv);
         }
-        //$boolquery = new \Elastica\Query\Bool();
+        // $boolquery = new \Elastica\Query\Bool();
         $boolquery = Helper::boolFilteredQuery();
-        $localeFilter = new \Elastica\Filter\Terms('meta.locale', array($this->locale));
-        $boolquery->getFilter()->addMust($localeFilter);
+        $boolquery->getFilter()->addMust(Helper::localeFilter($this->locale));
         $searchquery = new \Elastica\Query\QueryString();
         if ('' === trim($query)) {
             $searchquery->setQuery('*');
         } else {
             $searchquery->setQuery($query);
         }
-        $searchquery->setFields(['name^9','keywords^5']);
+        $searchquery->setFields([
+            'name^9',
+            'keywords^5'
+        ]);
         $searchquery->setLowercaseExpandedTerms(false);
         $boolquery->getQuery()->addShould($searchquery);
         $filter = null;
@@ -107,7 +118,10 @@ class Service extends Base
             $filter = new \Elastica\Filter\Terms('locations.location', explode(',', $location_csv));
         }
         $query = new \Elastica\Query\Filtered($boolquery, $filter);
-        $resultList = $this->access()->getIndex()->getType('service')->search($query, 1000);
+        $resultList = $this->access()
+            ->getIndex()
+            ->getType('service')
+            ->search($query, 1000);
         $serviceList = new Collection();
         foreach ($resultList as $result) {
             $service = new Entity($result->getData());
@@ -122,7 +136,7 @@ class Service extends Base
      *
      * @return Collection
      */
-    public function searchList($query)
+    public function readSearchResultList($query)
     {
         $boolquery = Helper::boolFilteredQuery();
         $searchquery = new \Elastica\Query\QueryString();
@@ -131,11 +145,17 @@ class Service extends Base
         } else {
             $searchquery->setQuery($query);
         }
-        $searchquery->setFields(['name^9','keywords^5']);
+        $searchquery->setFields([
+            'name^9',
+            'keywords^5'
+        ]);
         $boolquery->getQuery()->addShould($searchquery);
         $filter = null;
         $query = new \Elastica\Query\Filtered($boolquery, $filter);
-        $resultList = $this->access()->getIndex()->getType('service')->search($query, 1000);
+        $resultList = $this->access()
+            ->getIndex()
+            ->getType('service')
+            ->search($query, 1000);
         $serviceList = new Collection();
         foreach ($resultList as $result) {
             $service = new Entity($result->getData());

@@ -27,7 +27,7 @@ class Authority extends Base
      * fetch locations for a list of service and group by authority
      *
      * @todo optimize by fetching lists instead every single id
-     *      
+     *
      * @return Collection
      */
     public function fetchList(Array $servicelist = array())

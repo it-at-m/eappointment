@@ -62,7 +62,7 @@ class Location extends Base
      *
      * @return Collection\Locations
      */
-    public function searchAll($query, $service_csv = '')
+    public function readSearchResultList($query, $service_csv = '')
     {
         $locationlist = $this->fetchList($service_csv);
         $locationlist = new Collection(array_filter((array) $locationlist, function ($item) use ($query) {

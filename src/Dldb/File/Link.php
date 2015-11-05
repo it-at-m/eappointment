@@ -57,7 +57,7 @@ class Link extends Base
         return false;
     }
 
-    public function searchAll($query)
+    public function readSearchResultList($query)
     {
         $list = $this->getItemList();
         $result = new Collection();

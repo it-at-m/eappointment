@@ -3,48 +3,51 @@
  * @package Dldb
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
-
 namespace BO\Dldb\Indexer;
 
 use BO\Dldb\FileAccess;
 
 /**
-  * Index DLDB data into ElasticSearch
-  *
-  */
+ * Index DLDB data into ElasticSearch
+ */
 class ElasticSearch
 {
+
     const ES_INDEX_PREFIX = 'dldb-';
+
     const ES_INDEX_DATE = 'Ymd-His';
 
-    protected $localeList = array('de','en');
+    protected $localeList = array(
+        'de',
+        'en'
+    );
 
     /**
-      * Access to DLDB files
-      *
-      * @var FileAccess $dldb
-      */
+     * Access to DLDB files
+     *
+     * @var FileAccess $dldb
+     */
     protected $dldb;
 
     /**
-      * hostname for ES
-      *
-      * @var String $host
-      */
+     * hostname for ES
+     *
+     * @var String $host
+     */
     protected $host = 'localhost';
 
     /**
-      * port for ES
-      *
-      * @var String $port
-      */
+     * port for ES
+     *
+     * @var String $port
+     */
     protected $port = '9200';
 
     /**
-      * transport method for ES
-      *
-      * @var String $transport
-      */
+     * transport method for ES
+     *
+     * @var String $transport
+     */
     protected $transport = 'Http';
 
     /**
@@ -55,17 +58,18 @@ class ElasticSearch
     protected $connection;
 
     /**
-      * Index from elastic search
-      *
-      * @var \Elastica\Index $index
-      */
+     * Index from elastic search
+     *
+     * @var \Elastica\Index $index
+     */
     protected $index;
 
     /**
      * Due to backward compatibility, the first parameter has two possible meanings
      *
-     * @param String $importDirOrLocationFile
-     * @param String $servicesFile (optional)
+     * @param String $importDirOrLocationFile            
+     * @param String $servicesFile
+     *            (optional)
      */
     public function __construct($importOrLocationFile, $servicesFile = null)
     {
@@ -80,6 +84,7 @@ class ElasticSearch
     }
 
     /**
+     *
      * @return self
      */
     public function run()
@@ -91,6 +96,7 @@ class ElasticSearch
     }
 
     /**
+     *
      * @return self
      */
     protected function readTopics()
@@ -110,7 +116,7 @@ class ElasticSearch
                     "meta" => array(
                         "keywords" => $topic['meta']['keywords'],
                         "titles" => $topic['meta']['titles']
-                    ),
+                    )
                 );
                 $links[] = new \Elastica\Document($link['link'], $link);
                 foreach ($topic['links'] as $link) {
@@ -124,6 +130,7 @@ class ElasticSearch
     }
 
     /**
+     *
      * @return self
      */
     protected function readServices()
@@ -141,6 +148,7 @@ class ElasticSearch
     }
 
     /**
+     *
      * @return self
      */
     protected function readLocations()
@@ -158,23 +166,23 @@ class ElasticSearch
     }
 
     /**
+     *
      * @return \Elastica\Client
      */
     protected function getConnection()
     {
         if (null === $this->connection) {
-            $this->connection = new \Elastica\Client(
-                array(
-                    'host' => $this->host,
-                    'port' => $this->port,
-                    'transport' => $this->transport
-                )
-            );
+            $this->connection = new \Elastica\Client(array(
+                'host' => $this->host,
+                'port' => $this->port,
+                'transport' => $this->transport
+            ));
         }
         return $this->connection;
     }
 
     /**
+     *
      * @return \Elastica\Index
      */
     protected function getIndex()
@@ -182,7 +190,7 @@ class ElasticSearch
         if (null === $this->index) {
             $connection = $this->getConnection();
             $this->index = $connection->getIndex(self::ES_INDEX_PREFIX . date(self::ES_INDEX_DATE));
-            if (!$this->index->exists()) {
+            if (! $this->index->exists()) {
                 $indexSettings = file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . 'ElasticSearch_Index.json');
                 $indexSettings = json_decode($indexSettings, true);
                 $this->index->create($indexSettings);
@@ -192,6 +200,7 @@ class ElasticSearch
     }
 
     /**
+     *
      * @return self
      */
     public function setHost($host)
@@ -201,6 +210,7 @@ class ElasticSearch
     }
 
     /**
+     *
      * @return self
      */
     public function setPort($port)
@@ -210,6 +220,7 @@ class ElasticSearch
     }
 
     /**
+     *
      * @return self
      */
     public function setTransport($transport)
@@ -244,7 +255,7 @@ class ElasticSearch
         foreach ($indexList as $index) {
             if ($currentIndex != $index && 0 === strpos($index, self::ES_INDEX_PREFIX)) {
                 $candidateIndex = $client->getIndex($index);
-                if (!$candidateIndex->getStatus()->getAliases()) {
+                if (! $candidateIndex->getStatus()->getAliases()) {
                     $candidateIndex->delete();
                 }
             }
