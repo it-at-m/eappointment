@@ -3,7 +3,6 @@
  * @package ClientDldb
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
-
 namespace BO\Dldb\Elastic;
 
 use \BO\Dldb\Entity\Location as Entity;
@@ -11,23 +10,24 @@ use \BO\Dldb\Collection\Locations as Collection;
 use \BO\Dldb\File\Location as Base;
 
 /**
-  *
-  */
+ */
 class Location extends Base
 {
 
-
     /**
+     *
      * @return Entity
      */
     public function fetchId($location_id)
     {
         if ($location_id) {
             $query = Helper::boolFilteredQuery();
-            $filter = new \Elastica\Filter\Ids();
-            $filter->setIds($this->locale . $location_id);
-            $query->getFilter()->addMust($filter);
-            $result = $this->access()->getIndex()->getType('location')->search($query, 1);
+            $query->getFilter()->addMust(Helper::idsFilter($this->locale . $location_id));
+            $result = $this->access()
+                ->getIndex()
+                ->getType('location')
+                ->search($query, 1);
+
             if ($result->count() == 1) {
                 $locationList = $result->getResults();
                 return new Entity($locationList[0]->getData());
@@ -37,19 +37,27 @@ class Location extends Base
     }
 
     /**
+     *
      * @return Collection
      */
     public function fetchList($service_csv = '')
     {
         $query = Helper::boolFilteredQuery();
+        $limit = 10000;
         $query->getFilter()->addMust(Helper::localeFilter($this->locale));
         if ($service_csv) {
             foreach (explode(',', $service_csv) as $service_id) {
-                $filter = new \Elastica\Filter\Term(array('services.service' => $service_id));
+                $filter = new \Elastica\Filter\Term(array(
+                    'services.service' => $service_id
+                ));
                 $query->getFilter()->addMust($filter);
             }
         }
-        $resultList = $this->access()->getIndex()->getType('location')->search($query, 10000);
+        $resultList = $this->access()
+            ->getIndex()
+            ->getType('location')
+            ->search($query, $limit);
+
         $locationList = new Collection();
         foreach ($resultList as $result) {
             $location = new Entity($result->getData());
@@ -59,6 +67,7 @@ class Location extends Base
     }
 
     /**
+     *
      * @return Collection
      */
     public function fetchFromCsv($location_csv)
@@ -71,7 +80,10 @@ class Location extends Base
         }, $ids);
         $filter->setIds($ids);
         $query->getFilter()->addMust($filter);
-        $resultList = $this->access()->getIndex()->getType('location')->search($query, 10000);
+        $resultList = $this->access()
+            ->getIndex()
+            ->getType('location')
+            ->search($query, 10000);
         $locationList = new Collection();
         foreach ($resultList as $result) {
             $location = new Entity($result->getData());
@@ -81,6 +93,7 @@ class Location extends Base
     }
 
     /**
+     *
      * @return \BO\ClientDldb\Collection\Authorities
      */
     public function searchAll($querystring, $service_csv = '')
@@ -88,7 +101,6 @@ class Location extends Base
         $query = Helper::boolFilteredQuery();
         $mainquery = new \Elastica\Query();
         $limit = 1000;
-        $sort = true;
         $searchquery = new \Elastica\Query\QueryString();
         if ($querystring > 10000 && $querystring < 15000) {
             // if it is a postal code, sort by distance and limit results
@@ -114,19 +126,31 @@ class Location extends Base
         } else {
             $searchquery->setQuery($querystring);
         }
-        $searchquery->setFields(['name^9','authority.name^5', 'address.street', 'address.postal_code^9']);
+        $searchquery->setFields([
+            'name^9',
+            'authority.name^5',
+            'address.street',
+            'address.postal_code^9'
+        ]);
         $searchquery->setLowercaseExpandedTerms(false);
         $query->getQuery()->addShould($searchquery);
         $filter = null;
         if ($service_csv) {
             foreach (explode(',', $service_csv) as $service_id) {
-                $filter = new \Elastica\Filter\Term(array('services.service' => $service_id));
+                $filter = new \Elastica\Filter\Term(array(
+                    'services.service' => $service_id
+                ));
                 $query->getFilter()->addMust($filter);
             }
         }
         $mainquery->setQuery($query);
-        $resultList = $this->access()->getIndex()->getType('location')->search($mainquery, $limit);
-        return $this->access()->fromAuthority()->fromLocationResults($resultList, $sort);
+        $resultList = $this->access()
+            ->getIndex()
+            ->getType('location')
+            ->search($mainquery, $limit);
+        return $this->access()
+            ->fromAuthority()
+            ->fromLocationResults($resultList);
     }
 
     /**
@@ -135,7 +159,7 @@ class Location extends Base
      *
      * @return Collection
      */
-    public function searchList($querystring)
+    public function readSearchResultList($querystring)
     {
         $query = Helper::boolFilteredQuery();
         $mainquery = new \Elastica\Query();
@@ -166,11 +190,19 @@ class Location extends Base
         } else {
             $searchquery->setQuery($querystring);
         }
-        $searchquery->setFields(['name^9','authority.name^5', 'address.street', 'address.postal_code^9']);
+        $searchquery->setFields([
+            'name^9',
+            'authority.name^5',
+            'address.street',
+            'address.postal_code^9'
+        ]);
         $searchquery->setLowercaseExpandedTerms(false);
         $query->getQuery()->addShould($searchquery);
         $mainquery->setQuery($query);
-        $resultList = $this->access()->getIndex()->getType('location')->search($mainquery, $limit);
+        $resultList = $this->access()
+            ->getIndex()
+            ->getType('location')
+            ->search($mainquery, $limit);
         $locationList = new Collection();
         foreach ($resultList as $result) {
             $location = new Entity($result->getData());

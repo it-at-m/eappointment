@@ -34,7 +34,7 @@ class Authority extends Base
      *            only check for this serviceCsv
      * @param Bool $external
      *            allow external links, default false
-     *
+     *            
      * @return Bool
      */
     public function hasAppointments($serviceCsv = null, $external = false)
@@ -61,10 +61,10 @@ class Authority extends Base
      * Check if locations are available for defined office
      *
      * @todo Remove this function, this is a data query and self manipulation, extreme bug probability
-     *
+     *      
      * @param String $officepath
      *            only check for this office
-     *
+     *            
      * @return Authority
      */
     public function getOffice($officepath = null)
@@ -87,18 +87,20 @@ class Authority extends Base
     /**
      *
      * @todo check why no clone keyword is used
-     *
+     *      
      */
     public function getLocationListByOfficePath($officepath)
     {
         $authority = clone $this;
-        $authority['locations'] = $authority['locations']->getWithOffice($officepath);
+        if (count($authority['locations'])) {
+            $authority['locations'] = $authority['locations']->getLocationListByOfficePath($officepath);
+        }
         return $authority;
     }
 
     /**
      *
-     * @param Int $locationId
+     * @param Int $locationId            
      *
      * @return Bool
      */
@@ -110,7 +112,7 @@ class Authority extends Base
     /**
      * Remove a location
      *
-     * @param Int $locationId
+     * @param Int $locationId            
      *
      * @return clone self
      */

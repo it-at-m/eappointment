@@ -3,7 +3,6 @@
  * @package 115Mandant
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
-
 namespace BO\Dldb;
 
 /**
@@ -23,13 +22,14 @@ class ElasticAccess extends FileAccess
     protected $connection;
 
     /**
-      * Index from elastic search
-      *
-      * @var \Elastica\Index $index
-      */
+     * Index from elastic search
+     *
+     * @var \Elastica\Index $index
+     */
     protected $index;
 
     /**
+     *
      * @return self
      */
     public function __construct($index = null, $host = 'localhost', $port = '9200', $transport = 'Http')
@@ -41,17 +41,16 @@ class ElasticAccess extends FileAccess
 
     public function connectElasticSearch($index, $host = 'localhost', $port = '9200', $transport = 'Http')
     {
-        $this->connection = new \Elastica\Client(
-            array(
-                'host' => $host,
-                'port' => $port,
-                'transport' => $transport
-            )
-        );
+        $this->connection = new \Elastica\Client(array(
+            'host' => $host,
+            'port' => $port,
+            'transport' => $transport
+        ));
         $this->index = $this->getConnection()->getIndex($index);
     }
 
     /**
+     *
      * @return \Elastica\Index
      */
     public function getIndex()
@@ -60,6 +59,7 @@ class ElasticAccess extends FileAccess
     }
 
     /**
+     *
      * @return \Elastica\Client
      */
     protected function getConnection()
@@ -68,6 +68,7 @@ class ElasticAccess extends FileAccess
     }
 
     /**
+     *
      * @return self
      */
     public function loadLocations($locationJson, $locale = 'de')
@@ -78,6 +79,7 @@ class ElasticAccess extends FileAccess
     }
 
     /**
+     *
      * @return self
      */
     public function loadServices($serviceJson, $locale = 'de')
@@ -88,6 +90,7 @@ class ElasticAccess extends FileAccess
     }
 
     /**
+     *
      * @return self
      */
     public function loadTopics($topicJson, $locale = 'de')
@@ -100,6 +103,7 @@ class ElasticAccess extends FileAccess
     }
 
     /**
+     *
      * @return self
      */
     public function loadSettings($settingsJson)
@@ -114,11 +118,12 @@ class ElasticAccess extends FileAccess
     }
 
     /**
+     *
      * @return self
      */
     public function loadAuthorities($authorityJson, $locale = 'de')
     {
-        $this->accessInstance[$locale]['Authority'] = new Elastic\Authority($authorityJson);
+        $this->accessInstance[$locale]['Authority'] = new Elastic\Authority($authorityJson, $locale);
         $this->accessInstance[$locale]['Authority']->setAccessInstance($this);
         return $this;
     }

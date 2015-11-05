@@ -119,7 +119,7 @@ class Service extends Base
      *
      * @return Collection
      */
-    public function searchAll($query, $service_csv = '')
+    public function readSearchResultList($query, $service_csv = '')
     {
         $servicelist = $this->fetchCombinations($service_csv);
         $servicelist = new Collection(array_filter((array) $servicelist, function ($item) use($query) {
