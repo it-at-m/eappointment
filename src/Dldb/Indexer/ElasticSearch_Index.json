@@ -361,7 +361,6 @@
                "filter" : [
                   "lowercase",
                   "azfilter",
-                  "de_DE",
                   "snowball_german2"
                ]
             },

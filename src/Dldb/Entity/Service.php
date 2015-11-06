@@ -50,13 +50,9 @@ class Service extends Base
         }
         return false;
     }
-    
-    /**
-     * @return Bool
-     */
-    public function isLocale($locale)
+
+    public function isResponsibleForAll()
     {
-        $service = $this->getArrayCopy();
-        return $service['meta']['locale'] == $locale;
+        return $this['responsibility_all'];
     }
 }
