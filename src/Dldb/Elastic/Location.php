@@ -159,7 +159,7 @@ class Location extends Base
      *
      * @return Collection
      */
-    public function readSearchResultList($querystring)
+    public function readSearchResultList($querystring, $service_csv = '')
     {
         $query = Helper::boolFilteredQuery();
         $mainquery = new \Elastica\Query();
@@ -198,6 +198,15 @@ class Location extends Base
         ]);
         $searchquery->setLowercaseExpandedTerms(false);
         $query->getQuery()->addShould($searchquery);
+        $filter = null;
+        if ($service_csv) {
+            foreach (explode(',', $service_csv) as $service_id) {
+                $filter = new \Elastica\Filter\Term(array(
+                    'services.service' => $service_id
+                ));
+                $query->getFilter()->addMust($filter);
+            }
+        }
         $mainquery->setQuery($query);
         $resultList = $this->access()
             ->getIndex()
