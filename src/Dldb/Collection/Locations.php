@@ -68,6 +68,15 @@ class Locations extends Base
         return $idList;
     }
 
+    public function getNames()
+    {
+        $nameList = array();
+        foreach ($this as $location) {
+            $nameList[$location['id']] = $location['name'];
+        }
+        return $nameList;
+    }
+
     public function getCSV()
     {
         return implode(',', $this->getIds());
@@ -82,5 +91,18 @@ class Locations extends Base
             }
         }
         return $locationList;
+    }
+
+    public function toSearchResultData()
+    {
+        $list = array();
+        foreach ($this as $location) {
+            $list[] = array(
+                'id' => $location['id'],
+                'type' => 'Standort',
+                'name' => $location['name']
+            );
+        }
+        return $list;
     }
 }
