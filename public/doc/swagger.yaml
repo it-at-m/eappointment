@@ -160,6 +160,25 @@ definitions:
       telephone:
         type: string
         description: telephone number
+  cluster:
+    type: object
+    description: "group of scopes"
+    properties:
+      callDisplayText:
+        type: string
+        description: "text for the call display if only the cluster is selected"
+      hint:
+        type: string
+        description: "information for the client like the address to a cluster location"
+      id:
+        type: integer
+        description: "auto increment"
+      name:
+        type: string
+        description: "name for internal usage"
+      shortNameEnabled:
+        type: boolean
+        description: "true if the scope short name should be display next to the workstation name"
   contact:
     type: object
     properties:
@@ -376,6 +395,9 @@ definitions:
       hint:
         type: string
         description: "hint for the client like a description where to find the scope"
+      id:
+        type: integer
+        description: "auto increment"
       preferences:
         type: object
         properties:
@@ -385,12 +407,18 @@ definitions:
               deallocationDuration:
                 type: integer
                 description: "minutes before an deleted appointment is free for booking again to prevent appointment trading"
+              endInDaysDefault:
+                type: integer
+                description: "maximum number of days in the future to offer appointments"
               multipleSlotsEnabled:
                 type: boolean
                 description: "true if more than one timeslot per appointment is allowed"
               reservationDuration:
                 type: integer
                 description: "minutes an appointment can have the status reserved"
+              startInDaysDefault:
+                type: integer
+                description: "number of days relative to today to start offering appointments"
           client:
             type: object
             properties:
@@ -406,6 +434,12 @@ definitions:
               emailRequired:
                 type: boolean
                 description: "true if client is required to enter an email address"
+              telephoneActivated:
+                type: boolean
+                description: "true if client is allowed to enter a telephone number"
+              telephoneRequired:
+                type: boolean
+                description: "true if client is required to enter a telephone number"
           notifications:
             type: object
             properties:
@@ -416,7 +450,7 @@ definitions:
                 type: integer
                 description: "minutes before call to send a sms to the client"
               headsUpContent:
-                type: text
+                type: string
                 description: "text to send a short time before a call"
           pickup:
             type: object
@@ -436,9 +470,15 @@ definitions:
               callDisplayText:
                 type: string
                 description: "text displayed at the right side on the call display"
+              fistNumber:
+                type: integer
+                description: "fist possible waiting number for ticket printer"
               lastNumber:
                 type: integer
                 description: "last possible waiting number for ticket printer"
+              publishWaitingTimeEnabled:
+                type: boolean
+                description: "true if waiting times are allowed to be published for public use"
               processingTimeAverage:
                 type: integer
                 description: "minutes average for completing a process, used to estimate waiting time"
@@ -460,6 +500,15 @@ definitions:
           ticketprinter:
             type: object
             properties:
+              confirmationEnabled:
+                type: boolean
+                description: "true if client should get a notification to confirm that notifications are enabled for him/her"
+              deactivatedText:
+                type: string
+                description: "text to display on the ticket printer, if all ticket printers are disabled"
+              notificationsEnabled:
+                type: boolean
+                description: "true if notifications for calling up clients are enabled"
               notificationsAmendmentEnabled:
                 type: boolean
                 description: "true if a client is allowed to enter a notfication address after getting his waiting number"
@@ -485,6 +534,9 @@ definitions:
           source:
             type: string
             description: "source of provider to resolve reference id"
+      shortName:
+        type: string
+        description: "short identifier to differentiate between nearly identical scopes"
       status:
         type: object
         properties:
@@ -503,10 +555,24 @@ definitions:
           queue:
             type: object
             properties:
+              givenNumberCount:
+                type: integer
+                description: "counter for given waiting numbers for the current day"
+              ghostWorkstationCount:
+                type: integer
+                description: "a fictive number of workstations to calculate waiting times, if zero, the real number of workingstations is used"
               lastGivenNumber:
                 type: integer
                 description: "last given waiting number"  
-      
+              lastGivenNumberTimestamp:
+                type: integer
+                description: "unix timestamp of the last given waiting number"
+          ticketprinter:
+            type: object
+            properties:
+              deactivated:
+                type: boolean
+                description: "true if all ticket printers are disabled"
   ticketprinter:
     type: object
     description: system to print waiting numbers for clients
