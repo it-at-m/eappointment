@@ -24,7 +24,7 @@ class Bootstrap
         date_default_timezone_set($timezone);
         mb_internal_encoding($charset);
         
-        $language = \App::$locale[self::getLanguage()];
+        $language = self::getLanguage();
         putenv('LC_ALL='. $language);
         setlocale(LC_ALL, $language);
         
@@ -71,13 +71,9 @@ class Bootstrap
     }
     
     public static function getLanguage()
-    {
-        \Slim\Route::setDefaultConditions(array(
-                'lang'=> implode('|', array_keys(\App::$locale))
-        ));
+    {        
         $lang = substr(\App::$slim->request()->getResourceUri(), 1, 2);
-        $lang = in_array($lang, array_keys(\App::$locale))? $lang : \App::DEFAULT_LANG;
-        $lang = ($lang == '') ? $lang = 'de' : $lang;
+        $lang = ($lang != '' && in_array($lang, array_keys(\App::$supportedLanguages))) ? $lang : \App::DEFAULT_LANG;
         \App::$slim->config('lang', $lang);
         return $lang;
     }

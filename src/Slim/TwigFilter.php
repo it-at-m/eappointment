@@ -10,14 +10,17 @@ namespace BO\Slim;
   * Extension for Twig and Slim
   *
   */
-class TwigFilter extends \Twig_SimpleFilter
+class TwigFilter extends \Slim\Views\TwigExtension
 {
 
-    public function __construct()
+    public function getFilters()
     {
-        parent::__construct('msort', array($this, 'msort'));
+        return array(
+            new \Twig_SimpleFilter('msort', array($this, 'msort')),
+            new \Twig_SimpleFilter('getObjectName', array($this, 'getObjectName'))
+        );
     }
-    
+
     public function msort($array, $key, $sort_flags = SORT_REGULAR)
     {
         if (is_array($array) && count($array) > 0) {
@@ -45,5 +48,10 @@ class TwigFilter extends \Twig_SimpleFilter
             }
         }
         return $array;
+    }
+
+    public function getObjectName($object)
+    {
+        return (new \ReflectionClass($object))->getShortName();
     }
 }
