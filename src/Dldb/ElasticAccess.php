@@ -95,7 +95,7 @@ class ElasticAccess extends FileAccess
      */
     public function loadTopics($topicJson, $locale = 'de')
     {
-        $this->accessInstance[$locale]['Topic'] = new Elastic\Topic($topicJson);
+        $this->accessInstance[$locale]['Topic'] = new Elastic\Topic($topicJson, $locale);
         $this->accessInstance[$locale]['Topic']->setAccessInstance($this);
         $this->accessInstance[$locale]['Link'] = new Elastic\Link($topicJson, $locale);
         $this->accessInstance[$locale]['Link']->setAccessInstance($this);
