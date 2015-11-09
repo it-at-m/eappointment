@@ -23,14 +23,10 @@ class Application
      * Settings for region
      *
      */
-    const DEFAULT_LANG = '';
+    const DEFAULT_LANG = 'de';
     const CHARSET = 'UTF-8';
-    const TIMEZONE = 'Europe/Berlin';
-    
-    public static $locale = array(
-            'de' => 'de_DE',
-            'en' => 'en_GB'
-    );
+    const TIMEZONE = 'Europe/Berlin';    
+    public static $supportedLanguages = array();
 
     /* -----------------------------------------------------------------------
      * Slim
