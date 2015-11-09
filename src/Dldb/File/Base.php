@@ -43,7 +43,7 @@ abstract class Base
     {
         $this->dataFile = $dataFile;
         $this->locale = $locale;
-    }
+            }
 
     public function loadData()
     {
