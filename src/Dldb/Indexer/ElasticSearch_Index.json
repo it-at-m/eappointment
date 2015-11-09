@@ -373,7 +373,8 @@
                   "icu_folding",
                   "lowercase",
                   "de_DE",
-                  "prefix"
+                  "prefix",
+                  "snowball_german2"
                ]
             },
             "default_search" : {
@@ -383,7 +384,8 @@
                   "icu_normalizer",
                   "icu_folding",
                   "lowercase",
-                  "de_DE"
+                  "de_DE",
+                  "snowball_german2"
                ]
             }
          },
