@@ -2,8 +2,8 @@ var gulp = require('gulp');
 
 // Default task
 gulp.task('default', [
-    //'clean'
-    'bootprint-swagger'
+    'yaml-swagger',
+    'bootprint-swagger',
+    'watch'
 ], function () {
-    //gulp.start('dev');
 });
