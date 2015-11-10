@@ -162,6 +162,7 @@ class Location extends Base
     public function readSearchResultList($querystring, $service_csv = '')
     {
         $query = Helper::boolFilteredQuery();
+        $query->getFilter()->addMust(Helper::localeFilter($this->locale));
         $mainquery = new \Elastica\Query();
         $limit = 1000;
         $sort = true;
@@ -217,6 +218,7 @@ class Location extends Base
             $location = new Entity($result->getData());
             $locationList[$location['id']] = $location;
         }
+
         return $locationList;
     }
 }

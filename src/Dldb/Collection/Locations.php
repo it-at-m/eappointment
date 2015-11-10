@@ -92,17 +92,4 @@ class Locations extends Base
         }
         return $locationList;
     }
-
-    public function toSearchResultData()
-    {
-        $list = array();
-        foreach ($this as $location) {
-            $list[] = array(
-                'id' => $location['id'],
-                'type' => 'Standort',
-                'name' => $location['name']
-            );
-        }
-        return $list;
-    }
 }

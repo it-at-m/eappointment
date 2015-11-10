@@ -41,17 +41,4 @@ class Services extends Base
         }
         return (count($list)) ? $list : null;
     }
-
-    public function toSearchResultData()
-    {
-        $list = array();
-        foreach ($this as $service) {
-            $list[] = array(
-                'id' => $service['id'],
-                'type' => 'Dienstleistung',
-                'name' => $service['name']
-            );
-        }
-        return $list;
-    }
 }
