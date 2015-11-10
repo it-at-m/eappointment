@@ -17,16 +17,4 @@ class Topics extends Base
         return $nameList;
     }
 
-    public function toSearchResultData()
-    {
-        $list = array();
-        foreach ($this as $topic) {
-            $list[] = array(
-                'path' => $topic['path'],
-                'type' => 'Thema',
-                'name' => $topic['name']
-            );
-        }
-        return $list;
-    }
 }

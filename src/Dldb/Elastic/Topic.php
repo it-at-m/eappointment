@@ -19,6 +19,7 @@ class Topic extends Base
 public function readSearchResultList($query)
     {
         $boolquery = Helper::boolFilteredQuery();
+        $boolquery->getFilter()->addMust(Helper::localeFilter($this->locale));
         $searchquery = new \Elastica\Query\QueryString();
         if ('' === trim($query)) {
             $searchquery->setQuery('*');

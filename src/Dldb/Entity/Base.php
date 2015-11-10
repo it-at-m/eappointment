@@ -16,7 +16,7 @@ class Base extends \ArrayObject
     public function getId()
     {
         if (!array_key_exists('id', $this)) {
-            var_dump($this);
+            return false;
         }
         return $this['id'];
     }
@@ -28,5 +28,33 @@ class Base extends \ArrayObject
     public function getName()
     {
         return $this['name'];
+    }
+
+    /**
+     * return a path for this entity
+     *
+     */
+    public function getPath()
+    {
+        if (!array_key_exists('path', $this)) {
+            return false;
+        }
+        return $this['path'];
+    }
+
+    public function getLocale()
+    {
+        if (!array_key_exists('locale', $this['meta'])) {
+            return false;
+        }
+        return $this['meta']['locale'];
+    }
+
+    public function getLink()
+    {
+        if (!array_key_exists('link', $this)) {
+            return false;
+        }
+        return $this['link'];
     }
 }
