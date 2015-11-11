@@ -1,5 +1,20 @@
 
-$font-size: 100%;
+
+$font-size: 80%;
+
+@import "bower_components/inuit-defaults/settings.defaults";
+
+@import "settings";
+
+@import "bower_components/inuit-functions/tools.functions";
+@import "bower_components/inuit-mixins/tools.mixins";
+
+@import "bower_components/inuit-normalize/generic.normalize";
+@import "bower_components/inuit-box-sizing/generic.box-sizing";
+
+@import "bower_components/inuit-page/base.page";
+
+@import "bower_components/csswizardry-grids/csswizardry-grids";
 
 body {
     font-size: $font-size;
