@@ -4,3 +4,4 @@ config.php
 **.swp
 .sass-cache
 composer.lock
+bower_components
