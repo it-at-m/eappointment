@@ -145,9 +145,9 @@ definitions:
       email:
         type: string
         description: mail address
-      emailSendCount: 
+      emailSendCount:
         type: integer
-        description: number of reminder mails send 
+        description: number of reminder mails send
       familyName:
         type: string
         description: name of the client
@@ -200,7 +200,7 @@ definitions:
         type: string
       streetNumber:
         type: string
-      
+
   department:
     type: object
     description: 'subunit in organisation like "Bürgeramt", "Standesamt", "Vertrieb"'
@@ -234,7 +234,7 @@ definitions:
           notifications:
             type: object
             properties:
-              enabled: 
+              enabled:
                 type: boolean
                 description: "true if sms are allowed"
               identification:
@@ -542,6 +542,7 @@ definitions:
         properties:
           emergency:
             type: object
+            description: "If activated, a workstation has an emergency-button to call for help"
             properties:
               acceptedByWorkstation:
                 type: string
@@ -563,7 +564,7 @@ definitions:
                 description: "a fictive number of workstations to calculate waiting times, if zero, the real number of workingstations is used"
               lastGivenNumber:
                 type: integer
-                description: "last given waiting number"  
+                description: "last given waiting number"
               lastGivenNumberTimestamp:
                 type: integer
                 description: "unix timestamp of the last given waiting number"
@@ -577,7 +578,7 @@ definitions:
     type: object
     description: system to print waiting numbers for clients
     properties:
-      enabled: 
+      enabled:
         type: boolean
         description: true if browser is allowed to hand out waiting numbers to the client
       hash:

@@ -1,0 +1,79 @@
+
+//@schema-background: rgba(230, 230, 150, 0.4);
+@schema-background: rgba(215, 215, 215, 0.4);
+@schema-curly: #ccc;
+
+
+.panel-definition {
+    border: 0px;
+
+    .panel-heading {
+        background: transparent;
+        border: 0px;
+        padding-left: 0;
+        h3 {
+            font-weight: bold;
+        }
+    }
+    .panel-body {
+        margin-left: 1em;
+    }
+    .panel-body, .json-inner-schema .json-schema-properties, .json-inner-schema .json-schema-array-items, .json-inner-schema .json-schema-description, .json-inner-schema .json-schema-example{
+        border-radius: 1em;
+        border-left: solid 0.4em @schema-curly;
+        position: relative;
+        padding: 2em 0 2em 1em;
+
+        :before {
+        }
+    }
+
+    .json-inner-schema:before {
+        border: 0.5em solid;
+        border-color: transparent @schema-curly transparent transparent;
+        border-radius: 0px !important;
+        content: ' ';
+        height: 0;
+        left:-1.3em;
+        top: 50%;
+        position: absolute;
+        width: 0;
+    }
+
+    .json-property-name {
+        display: block;
+    }
+
+    dl {
+        background: @schema-background;
+        border-color: lighten(@schema-background, 50%);
+        border-radius: 1em;
+        border-style: solid;
+        border-width: 0.2em;
+        overflow: auto;
+
+        .json-schema-properties:before {
+            padding-left: 1em;
+        }
+        dt, dd {
+            border-top: 0.2em solid white;
+        }
+        dt:first-of-type, dd:first-of-type {
+            border-top: 0px;
+        }
+        dt {
+            clear: both;
+            float: left;
+            padding: 1em;
+            width: 20%;
+
+            span {
+            }
+        }
+        dd {
+            float: right;
+            padding: 2.5em 1em 1em 1em;
+            width: 80%;
+        }
+    }
+}

@@ -6,6 +6,7 @@ gulp.task('watch', function() {
         'public/doc/swagger.yaml'
     ], ['yaml-swagger']);
     gulp.watch([
-      'public/doc/swagger.json'
+        'public/doc/swagger.json',
+        'public/doc/style.less'
   ], ['bootprint-swagger']);
 });
