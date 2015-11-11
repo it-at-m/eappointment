@@ -3,7 +3,6 @@
  * @package ClientDldb
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
-
 namespace BO\Dldb\Elastic;
 
 use \BO\Dldb\Entity\Link as Entity;
@@ -11,8 +10,7 @@ use \BO\Dldb\Collection\Links as Collection;
 use \BO\Dldb\File\Link as Base;
 
 /**
-  *
-  */
+ */
 class Link extends Base
 {
 
@@ -25,13 +23,22 @@ class Link extends Base
         } else {
             $searchquery->setQuery($query);
         }
-        $searchquery->setFields(['name^3', 'meta.titles^5', 'meta.keywords^9']);
+        $searchquery->setFields([
+            'name^3',
+            'meta.titles^5',
+            'meta.keywords^9'
+        ]);
         $boolquery->getQuery()->addShould($searchquery);
-        $resultList = $this->access()->getIndex()->getType('links')->search($boolquery, 1000);
+        $resultList = $this->access()
+            ->getIndex()
+            ->getType('links')
+            ->search($boolquery, 1000);
         $linkList = new Collection();
         foreach ($resultList as $result) {
             $link = new Entity($result->getData());
-            $linkList[$link['link']] = $link;
+            if (false === array_key_exists($link['link'], $linkList)) {
+                $linkList[$link['link']] = $link;
+            }
         }
         return $linkList;
     }

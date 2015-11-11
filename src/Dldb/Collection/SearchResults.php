@@ -5,6 +5,8 @@
  **/
 namespace BO\Dldb\Collection;
 
+use BO\Dldb\Entity\SearchResult as Entity;
+
 class SearchResults extends Base
 {
 
@@ -12,7 +14,7 @@ class SearchResults extends Base
     {
         $nameList = array();
         foreach ($this as $item) {
-            $nameList[$item['id']] = $item['name'];
+            $nameList[$item->getId()] = $item->getName();
         }
         return $nameList;
     }
@@ -21,21 +23,36 @@ class SearchResults extends Base
     {
         $list = new self();
         foreach ($this as $results) {
-            foreach ($results as $item) {
-                if (count($item)) {
-                   $list[] = \BO\Dldb\Entity\SearchResult::create($item);
+            foreach ($results as $data) {
+                if (count($data)) {
+                   $item = Entity::create($data);
+                   $list[] = $item;
                 }
             }
+            $list;
         }
         return $list;
     }
 
-    public function addResults($data)
+    public function addSearchResultsData($data)
     {
         if ($data) {
             $this[] = $data;
             return $this;
         }
         return null;
+    }
+
+    public function sortByType(Array $order)
+    {
+        $list = new self();
+        foreach($order as $type){
+            foreach($this as $item){
+                if($item->getType() == $type){
+                    $list[] = $item;
+                }
+            }
+        }
+        return $list;
     }
 }

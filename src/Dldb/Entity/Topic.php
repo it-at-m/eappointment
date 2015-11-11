@@ -38,7 +38,7 @@ class Topic extends Base
                 $list[] = $entity;
             }
         }
-        return $list->sortByName();
+        return $list;
     }
 
     public function getParentId()

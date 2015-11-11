@@ -57,4 +57,12 @@ class Base extends \ArrayObject
         }
         return $this['link'];
     }
+
+    public function getType()
+    {
+        if (!array_key_exists('type', $this)) {
+            return false;
+        }
+        return $this['type'];
+    }
 }
