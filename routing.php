@@ -10,12 +10,15 @@
 
 \App::$slim->get('/',
     '\BO\Zmsadmin\Index:render')
-    ->name("index");
+    ->name("pagesindex");
 
 \App::$slim->get('/workstation/',
     '\BO\Zmsadmin\Workstation:render')
     ->name("workstation");
 
+\App::$slim->get('/counter/',
+    '\BO\Zmsadmin\Counter:render')
+    ->name("counter");
 
 //\App::$slim->get('/dienstleistung/:service_id',
 //    '\BO\D115Mandant\Controller\ServiceDetail:render')

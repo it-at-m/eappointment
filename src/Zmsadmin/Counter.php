@@ -10,15 +10,15 @@ namespace BO\Zmsadmin;
   * Handle requests concerning services
   *
   */
-class Index extends BaseController
+class Counter extends BaseController
 {
     /**
      * @return String
      */
     public static function render()
     {
-        \BO\Slim\Render::html('page/index.twig', array(
-            'title' => 'Startseite'
+        \BO\Slim\Render::html('counter.twig', array(
+            'title' => 'page/Tresen'
         ));
     }
 }

@@ -17,6 +17,8 @@ class Workstation extends BaseController
      */
     public static function render()
     {
-        \BO\Slim\Render::html('workstation.twig', array());
+        \BO\Slim\Render::html('page/workstation.twig', array(
+            'title' => 'Sachbearbeiter'
+        ));
     }
 }
