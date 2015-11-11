@@ -1,7 +1,7 @@
 swagger: '2.0'
 info:
   version: 1.0.0
-  title: ZMS 2.0 API
+  title: ZMS Neo API
   description: Access to the backend function of the time management system called ZMS
   termsOfService: 'http://service.berlin.de/terminvereinbarung/'
   contact:
@@ -53,6 +53,16 @@ definitions:
       slotCount:
         type: integer
         description: numer of time slots used
+  appointmenttypes:
+    type: object
+    description: "integer values to different appointment types"
+    properties:
+      callcenter:
+        type: integer
+      intern:
+        type: integer
+      public:
+        type: integer
   availability:
     type: object
     description: representation of opening hours for appointments
@@ -136,6 +146,27 @@ definitions:
           public:
             type: integer
             description: "number of workstations to offer appointments for booking using a public website"
+  calendar:
+    type: object
+    description: "represents a calendar showing free days for appointments"
+    properties:
+      days:
+        type: array
+        description: "list of days containing appointments"
+        items:
+          $ref: "#/definitions/day"
+      firstDay:
+        $ref: "#/definitions/day"
+      lastDay:
+        $ref: "#/definitions/day"
+      requests:
+        type: array
+        items:
+          $ref: "#/definitions/request"
+      scopes:
+        type: array
+        items:
+          $ref: "#/definitions/scope"
   client:
     type: object
     description: representation of a client who intends to take a service
@@ -200,7 +231,22 @@ definitions:
         type: string
       streetNumber:
         type: string
-
+  day:
+    type: object
+    description: "representation of a day in the calendar"
+    properties:
+      year:
+        type: integer
+      month:
+        type: integer
+      day:
+        type: integer
+      freeAppointments:
+        $ref: "#/definitions/appointmenttypes"
+      firstAppointmentTimestamp:
+        $ref: "#/definitions/appointmenttypes"
+      lastAppointmentTimestamp:
+        $ref: "#/definitions/appointmenttypes"
   department:
     type: object
     description: 'subunit in organisation like "Bürgeramt", "Standesamt", "Vertrieb"'
