@@ -3,9 +3,16 @@ var bootprint = require('bootprint');
 var bootprintSwagger = require('bootprint-swagger');
 
 gulp.task('bootprint-swagger', [], function () {
-    require('bootprint')
-      .load(require('bootprint-swagger'))
+    bootprint
+      .load(bootprintSwagger)
+      .merge({
+          less: {
+              main: [
+                  'public/doc/style.less'
+              ]
+          }
+      })
       .build('public/doc/swagger.json', 'public/doc/')
       .generate()
-      .done(console.log);
+      .done();
 });
