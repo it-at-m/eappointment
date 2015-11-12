@@ -83,7 +83,18 @@
 			],
 			"responses": {
 				"200": {
-					"description": "success"
+					"description": "success, returns deleted object",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/availability.json"
+							}
+						}
+					}
 				},
 				"404": {
 					"description": "availability id does not exists"
@@ -92,12 +103,13 @@
 		}
 	},
 	"/calendar/": {
-		"get": {
+		"post": {
 			"description": "Get a list of available days for appointments",
 			"parameters": [
 				{
 					"name": "calendar",
 					"description": "data for finding available days",
+					"required": true,
 					"in": "body",
 					"schema": {
 						"$ref": "schema/calendar.json"
