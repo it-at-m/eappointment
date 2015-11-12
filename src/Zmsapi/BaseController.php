@@ -6,6 +6,9 @@
 
 namespace BO\Zmsapi;
 
+/**
+ * @SuppressWarnings(NumberOfChildren)
+ */
 abstract class BaseController
 {
 }
