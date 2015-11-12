@@ -1,4 +1,108 @@
 {
+	"/calendar/": {
+		"get": {
+			"description": "Get a list of available days for appointments",
+			"parameters": [
+				{
+					"name": "calendar",
+					"description": "data for finding available days",
+					"in": "body",
+					"schema": {
+						"$ref": "schema/calendar.json"
+					}
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "get an updated calendar objects with updated days list",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/calendar.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "Could not find any available days",
+					"schema": {
+						"$ref": "schema/calendar.json"
+					}
+				}
+			}
+		}
+	},
+	"/notifications/": {
+		"get": {
+			"description": "get a list of notifications in the send queue",
+			"responses": {
+				"200": {
+					"description": "returns a list, might be empty",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/notification.json"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"post": {
+			"description": "Add a notification to the send queue",
+			"parameters": [
+				{
+					"name": "notification",
+					"description": "notification data to send",
+					"in": "body",
+					"schema": {
+						"$ref": "schema/notification.json"
+					}
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "notification accepted"
+				},
+				"400": {
+					"description": "Missing required properties in the notification"
+				}
+			}
+		}
+	},
+	"/notifications/{id}": {
+		"delete": {
+			"description": "delete a notification in the send queue",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "notification number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "succesfully deleted"
+				},
+				"404": {
+					"description": "could not find notification or notification already sent"
+				}
+			}
+		}
+	},
 	"/process/{id}/{authKey}/": {
 		"get": {
 			"description": "Get a process",
@@ -22,7 +126,15 @@
 				"200": {
 					"description": "success",
 					"schema": {
-						"$ref": "schema/process.json"
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/process.json"
+							}
+						}
 					}
 				},
 				"403": {
@@ -63,7 +175,15 @@
 				"200": {
 					"description": "success, there might be changes on the object or added information. Use the response for further action with the process",
 					"schema": {
-						"$ref": "schema/process.json"
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/process.json"
+							}
+						}
 					}
 				},
 				"403": {
@@ -75,36 +195,7 @@
 			}
 		}
 	},
-	"/calendar/": {
-		"get": {
-			"description": "Get a list of available days for appointments",
-			"parameters": [
-				{
-					"name": "calendar",
-					"description": "data for finding available days",
-					"in": "body",
-					"schema": {
-						"$ref": "schema/calendar.json"
-					}
-				}
-			],
-			"responses": {
-				"200": {
-					"description": "get an updated calendar objects with updated days list",
-					"schema": {
-						"$ref": "schema/calendar.json"
-					}
-				},
-				"404": {
-					"description": "Could not find any available days",
-					"schema": {
-						"$ref": "schema/calendar.json"
-					}
-				}
-			}
-		}
-	},
-	"/process/free/": {
+	"/process/status/free/": {
 		"get": {
 			"description": "Get a list of free processes for a given day",
 			"parameters": [
@@ -119,11 +210,19 @@
 			],
 			"responses": {
 				"200": {
-					"description": "get an updated calendar objects with updated days list",
+					"description": "get a list of available processes",
 					"schema": {
-						"type": "array",
-						"items": {
-							"$ref": "schema/process.json"
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/process.json"
+								}
+							}
 						}
 					}
 				},
@@ -133,6 +232,96 @@
 						"type": "array",
 						"items": {
 							"$ref": "schema/process.json"
+						}
+					}
+				}
+			}
+		}
+	},
+	"/process/status/reserved/": {
+		"get": {
+			"description": "Get a list of reserved processes",
+			"responses": {
+				"200": {
+					"description": "get a list of processes",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/process.json"
+								}
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "Could not find any processes, returns empty list",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/process.json"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"post": {
+			"description": "Try to reserve the appointments in a process",
+			"parameters": [
+				{
+					"name": "process",
+					"description": "process data to update",
+					"in": "body",
+					"schema": {
+						"$ref": "schema/process.json"
+					}
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "get a list of processes",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/process.json"
+								}
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "Could not find any processes, returns empty list",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/process.json"
+								}
+							}
 						}
 					}
 				}
