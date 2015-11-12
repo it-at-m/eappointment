@@ -22,7 +22,7 @@ produces:
 paths:
   '/process/{id}':
     get:
-      description: Return a process by ID
+      description: Return a process by ID2
       operationId: readProcessById
       produces:
         - application/json
@@ -52,17 +52,9 @@ definitions:
         $ref: "#/definitions/scope"
       slotCount:
         type: integer
-        description: numer of time slots used
+        description: number of time slots used
   appointmenttypes:
-    type: object
-    description: "integer values to different appointment types"
-    properties:
-      callcenter:
-        type: integer
-      intern:
-        type: integer
-      public:
-        type: integer
+    $ref: "schema/appointmenttypes.json"
   availability:
     type: object
     description: representation of opening hours for appointments
@@ -232,21 +224,7 @@ definitions:
       streetNumber:
         type: string
   day:
-    type: object
-    description: "representation of a day in the calendar"
-    properties:
-      year:
-        type: integer
-      month:
-        type: integer
-      day:
-        type: integer
-      freeAppointments:
-        $ref: "#/definitions/appointmenttypes"
-      firstAppointmentTimestamp:
-        $ref: "#/definitions/appointmenttypes"
-      lastAppointmentTimestamp:
-        $ref: "#/definitions/appointmenttypes"
+    $ref: "schema/day.json"
   department:
     type: object
     description: 'subunit in organisation like "Bürgeramt", "Standesamt", "Vertrieb"'

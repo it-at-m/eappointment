@@ -1,7 +1,7 @@
 
 //@schema-background: rgba(230, 230, 150, 0.4);
-@schema-background: rgba(215, 215, 215, 0.4);
-@schema-curly: #ccc;
+@schema-background: rgba(255, 255, 150, 0.3);
+@schema-curly: #ddd;
 
 
 .panel-definition {
@@ -13,6 +13,14 @@
         padding-left: 0;
         h3 {
             font-weight: bold;
+            line-height: 1.5em;
+            text-transform: uppercase;
+
+            .json-property-type {
+                text-transform: none;
+                font-weight: normal;
+                display: block;
+            }
         }
     }
     .panel-body {
@@ -20,7 +28,7 @@
     }
     .panel-body, .json-inner-schema .json-schema-properties, .json-inner-schema .json-schema-array-items, .json-inner-schema .json-schema-description, .json-inner-schema .json-schema-example{
         border-radius: 1em;
-        border-left: solid 0.4em @schema-curly;
+        border-left: solid 0.3em @schema-curly;
         position: relative;
         padding: 2em 0 2em 1em;
 
@@ -29,12 +37,12 @@
     }
 
     .json-inner-schema:before {
-        border: 0.5em solid;
+        border: 0.4em solid;
         border-color: transparent @schema-curly transparent transparent;
         border-radius: 0px !important;
         content: ' ';
         height: 0;
-        left:-1.3em;
+        left:-1.0em;
         top: 50%;
         position: absolute;
         width: 0;
@@ -43,10 +51,21 @@
     .json-property-name {
         display: block;
     }
+    .json-property-type {
+        color: #66f;
+        font-style: normal;
+
+        a {
+            font-weight: bold;
+            color: #66f;
+            text-transform: uppercase;
+            text-decoration: underline;
+        }
+    }
 
     dl {
         background: @schema-background;
-        border-color: lighten(@schema-background, 50%);
+        border-color: darken(@schema-background, 50%);
         border-radius: 1em;
         border-style: solid;
         border-width: 0.2em;
@@ -56,7 +75,7 @@
             padding-left: 1em;
         }
         dt, dd {
-            border-top: 0.2em solid white;
+            border-top: 0.2em solid darken(@schema-background, 50%);
         }
         dt:first-of-type, dd:first-of-type {
             border-top: 0px;
@@ -74,6 +93,10 @@
             float: right;
             padding: 2.5em 1em 1em 1em;
             width: 80%;
+
+            p {
+                color: #666;
+            }
         }
     }
 }
