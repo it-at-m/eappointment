@@ -1,0 +1,16 @@
+.page-header {
+    @extend .grid, .grid--full;
+    background-color:   $pageheaderBackgroundColor;
+    padding:            ($gridGutter / 2) $gridGutter;
+    color:              $white;
+    .page-header_logo {
+        @extend .grid__item, .one-sixth, .palm--one-whole;
+    }
+    .page-header_sitename {
+        @extend .grid__item, .two-sixths, .palm--one-whole;
+    }
+    .page-header_userinfo {
+        @extend .grid__item, .three-sixths, .palm--one-whole;
+    }
+}
+

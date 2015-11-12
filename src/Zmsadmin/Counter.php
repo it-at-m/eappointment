@@ -17,8 +17,8 @@ class Counter extends BaseController
      */
     public static function render()
     {
-        \BO\Slim\Render::html('counter.twig', array(
-            'title' => 'page/Tresen'
+        \BO\Slim\Render::html('page/counter.twig', array(
+            'title' => 'Tresen'
         ));
     }
 }

@@ -16,6 +16,9 @@ $font-size: 80%;
 
 @import "bower_components/csswizardry-grids/csswizardry-grids";
 
+@import "grid";
+@import "page-header";
+
 body {
     font-size: $font-size;
 }
