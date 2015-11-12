@@ -9,6 +9,12 @@
 					"in": "path",
 					"required": true,
 					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
 				}
 			],
 			"responses": {
@@ -48,6 +54,12 @@
 					"schema": {
 						"$ref": "schema/availability.json"
 					}
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
 				}
 			],
 			"responses": {
@@ -79,6 +91,12 @@
 					"in": "path",
 					"required": true,
 					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
 				}
 			],
 			"responses": {
@@ -247,6 +265,12 @@
 					"in": "path",
 					"required": true,
 					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
 				}
 			],
 			"responses": {
@@ -287,6 +311,12 @@
 					"schema": {
 						"$ref": "schema/cluster.json"
 					}
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
 				}
 			],
 			"responses": {
@@ -318,6 +348,12 @@
 					"in": "path",
 					"required": true,
 					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
 				}
 			],
 			"responses": {
@@ -376,6 +412,12 @@
 					"in": "path",
 					"required": true,
 					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
 				}
 			],
 			"responses": {
@@ -421,6 +463,12 @@
 							"$ref": "schema/dayoff.json"
 						}
 					}
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
 				}
 			],
 			"responses": {
@@ -450,6 +498,14 @@
 	"/department/": {
 		"get": {
 			"description": "Get a list of organisations",
+			"parameters": [
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
 			"responses": {
 				"200": {
 					"description": "success",
@@ -481,6 +537,12 @@
 					"in": "path",
 					"required": true,
 					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
 				}
 			],
 			"responses": {
@@ -521,6 +583,12 @@
 					"schema": {
 						"$ref": "schema/department.json"
 					}
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
 				}
 			],
 			"responses": {
@@ -552,6 +620,12 @@
 					"in": "path",
 					"required": true,
 					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
 				}
 			],
 			"responses": {
@@ -567,6 +641,14 @@
 	"/mails/": {
 		"get": {
 			"description": "get a list of mails in the send queue",
+			"parameters": [
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
 			"responses": {
 				"200": {
 					"description": "returns a list, might be empty",
@@ -598,6 +680,12 @@
 					"schema": {
 						"$ref": "schema/mail.json"
 					}
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
 				}
 			],
 			"responses": {
@@ -634,6 +722,12 @@
 					"in": "path",
 					"required": true,
 					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
 				}
 			],
 			"responses": {
@@ -649,6 +743,14 @@
 	"/notification/": {
 		"get": {
 			"description": "get a list of notifications in the send queue",
+			"parameters": [
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
 			"responses": {
 				"200": {
 					"description": "returns a list, might be empty",
@@ -680,6 +782,12 @@
 					"schema": {
 						"$ref": "schema/notification.json"
 					}
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
 				}
 			],
 			"responses": {
@@ -702,6 +810,12 @@
 					"in": "path",
 					"required": true,
 					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
 				}
 			],
 			"responses": {
@@ -714,9 +828,160 @@
 			}
 		}
 	},
+	"/owner/": {
+		"get": {
+			"description": "Get a list of owners",
+			"parameters": [
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/owner.json"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"/owner/{id}/": {
+		"get": {
+			"description": "Get an owner by id",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "owner number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/owner.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "owner id does not exists"
+				}
+			}
+		},
+		"post": {
+			"description": "Update an owner",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "owner number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "owner",
+					"description": "owner data to update",
+					"required": true,
+					"in": "body",
+					"schema": {
+						"$ref": "schema/owner.json"
+					}
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/owner.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "owner id does not exists"
+				}
+			}
+		},
+		"delete": {
+			"description": "Deletes an owner",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "owner number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success"
+				},
+				"404": {
+					"description": "owner id does not exists"
+				}
+			}
+		}
+	},
 	"/organisation/": {
 		"get": {
 			"description": "Get a list of organisations",
+			"parameters": [
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
 			"responses": {
 				"200": {
 					"description": "success",
@@ -748,6 +1013,12 @@
 					"in": "path",
 					"required": true,
 					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
 				}
 			],
 			"responses": {
@@ -788,6 +1059,12 @@
 					"schema": {
 						"$ref": "schema/organisation.json"
 					}
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
 				}
 			],
 			"responses": {
@@ -819,6 +1096,12 @@
 					"in": "path",
 					"required": true,
 					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
 				}
 			],
 			"responses": {
@@ -1097,6 +1380,14 @@
 	"/process/status/reserved/": {
 		"get": {
 			"description": "Get a list of reserved processes",
+			"parameters": [
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
 			"responses": {
 				"200": {
 					"description": "get a list of processes",
@@ -1221,6 +1512,14 @@
 	"/scope/": {
 		"get": {
 			"description": "Get a list of scopes",
+			"parameters": [
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
 			"responses": {
 				"200": {
 					"description": "returns a list",
@@ -1255,6 +1554,12 @@
 					"in": "path",
 					"required": true,
 					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
 				}
 			],
 			"responses": {
@@ -1295,6 +1600,12 @@
 					"schema": {
 						"$ref": "schema/scope.json"
 					}
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
 				}
 			],
 			"responses": {
@@ -1329,6 +1640,12 @@
 					"in": "path",
 					"required": true,
 					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
 				}
 			],
 			"responses": {
@@ -1351,6 +1668,12 @@
 					"in": "path",
 					"required": true,
 					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
 				}
 			],
 			"responses": {
@@ -1387,6 +1710,12 @@
 					"in": "path",
 					"required": true,
 					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
 				}
 			],
 			"responses": {
@@ -1474,6 +1803,14 @@
 	"/useraccount/": {
 		"get": {
 			"description": "Get a list of useraccounts",
+			"parameters": [
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
 			"responses": {
 				"200": {
 					"description": "success",
@@ -1504,6 +1841,12 @@
 					"description": "useraccount number",
 					"in": "path",
 					"required": true,
+					"type": "string"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
 					"type": "string"
 				}
 			],
@@ -1545,6 +1888,12 @@
 					"schema": {
 						"$ref": "schema/useraccount.json"
 					}
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
 				}
 			],
 			"responses": {
@@ -1576,6 +1925,12 @@
 					"in": "path",
 					"required": true,
 					"type": "string"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
 				}
 			],
 			"responses": {
@@ -1591,6 +1946,14 @@
 	"/workstation/": {
 		"get": {
 			"description": "Get the current workstation based on authkey",
+			"parameters": [
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
 			"responses": {
 				"200": {
 					"description": "success",
@@ -1622,6 +1985,12 @@
 					"schema": {
 						"$ref": "schema/workstation.json"
 					}
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
 				}
 			],
 			"responses": {
@@ -1685,6 +2054,7 @@
 			}
 		},
 		"delete": {
+			"operationId": "WorkstationDelete",
 			"description": "Logout a user and delete his workstation entry",
 			"parameters": [
 				{
@@ -1692,6 +2062,12 @@
 					"description": "useraccount number",
 					"in": "path",
 					"required": true,
+					"type": "string"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
 					"type": "string"
 				}
 			],

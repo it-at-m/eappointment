@@ -29,6 +29,10 @@
  *                  in: path
  *                  required: true
  *                  type: integer
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
  *          responses:
  *              200:
  *                  description: "success"
@@ -65,6 +69,10 @@
  *                  in: body
  *                  schema:
  *                      $ref: "schema/availability.json"
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
  *          responses:
  *              200:
  *                  description: "success"
@@ -96,6 +104,10 @@
  *                  in: path
  *                  required: true
  *                  type: integer
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
  *          responses:
  *              200:
  *                  description: "success, returns deleted object"
@@ -233,6 +245,10 @@
  *                  in: path
  *                  required: true
  *                  type: integer
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
  *          responses:
  *              200:
  *                  description: "success"
@@ -270,6 +286,10 @@
  *                  in: body
  *                  schema:
  *                      $ref: "schema/cluster.json"
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
  *          responses:
  *              200:
  *                  description: "success"
@@ -301,6 +321,10 @@
  *                  in: path
  *                  required: true
  *                  type: integer
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
  *          responses:
  *              200:
  *                  description: "success"
@@ -358,6 +382,10 @@
  *                  in: path
  *                  required: true
  *                  type: integer
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
  *          responses:
  *              200:
  *                  description: "success"
@@ -398,6 +426,10 @@
  *                      type: array
  *                      items:
  *                          $ref: "schema/dayoff.json"
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
  *          responses:
  *              200:
  *                  description: "success"
@@ -425,6 +457,11 @@
  *  "/department/":
  *      get:
  *          description: Get a list of organisations
+ *          parameters:
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
  *          responses:
  *              200:
  *                  description: "success"
@@ -453,6 +490,10 @@
  *                  in: path
  *                  required: true
  *                  type: integer
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
  *          responses:
  *              200:
  *                  description: "success"
@@ -490,6 +531,10 @@
  *                  in: body
  *                  schema:
  *                      $ref: "schema/department.json"
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
  *          responses:
  *              200:
  *                  description: "success"
@@ -521,6 +566,10 @@
  *                  in: path
  *                  required: true
  *                  type: integer
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
  *          responses:
  *              200:
  *                  description: "success"
@@ -539,6 +588,11 @@
  *  "/mails/":
  *      get:
  *          description: get a list of mails in the send queue
+ *          parameters:
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
  *          responses:
  *              200:
  *                  description: returns a list, might be empty
@@ -570,6 +624,10 @@
  *                  in: body
  *                  schema:
  *                      $ref: "schema/mail.json"
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
  *          responses:
  *              200:
  *                  description: mail accepted
@@ -600,6 +658,10 @@
  *                  in: path
  *                  required: true
  *                  type: integer
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
  *          responses:
  *              200:
  *                  description: succesfully deleted
@@ -619,6 +681,11 @@
  *  "/notification/":
  *      get:
  *          description: get a list of notifications in the send queue
+ *          parameters:
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
  *          responses:
  *              200:
  *                  description: returns a list, might be empty
@@ -650,6 +717,10 @@
  *                  in: body
  *                  schema:
  *                      $ref: "schema/notification.json"
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
  *          responses:
  *              200:
  *                  description: notification accepted
@@ -671,6 +742,10 @@
  *                  in: path
  *                  required: true
  *                  type: integer
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
  *          responses:
  *              200:
  *                  description: succesfully deleted
@@ -687,9 +762,146 @@
 
 /**
  *  @swagger
+ *  "/owner/":
+ *      get:
+ *          description: Get a list of owners
+ *          parameters:
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/owner.json"
+ */
+\App::$slim->get('/owner/',
+    '\BO\Zmsapi\OwnerList:render')
+    ->name("OwnerList");
+
+/**
+ *  @swagger
+ *  "/owner/{id}/":
+ *      get:
+ *          description: Get an owner by id
+ *          parameters:
+ *              -   name: id
+ *                  description: owner number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/owner.json"
+ *              404:
+ *                  description: "owner id does not exists"
+ */
+\App::$slim->get('/owner/:id/',
+    '\BO\Zmsapi\OwnerGet:render')
+    ->conditions([
+        'id' => '\d{1,11}',
+     ])
+    ->name("OwnerGet");
+
+/**
+ *  @swagger
+ *  "/owner/{id}/":
+ *      post:
+ *          description: Update an owner
+ *          parameters:
+ *              -   name: id
+ *                  description: owner number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: owner
+ *                  description: owner data to update
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/owner.json"
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/owner.json"
+ *              404:
+ *                  description: "owner id does not exists"
+ */
+\App::$slim->post('/owner/:id/',
+    '\BO\Zmsapi\OwnerUpdate:render')
+    ->conditions([
+        'id' => '\d{1,11}',
+     ])
+    ->name("OwnerUpdate");
+
+/**
+ *  @swagger
+ *  "/owner/{id}/":
+ *      delete:
+ *          description: Deletes an owner
+ *          parameters:
+ *              -   name: id
+ *                  description: owner number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *              404:
+ *                  description: "owner id does not exists"
+ */
+\App::$slim->delete('/owner/:id/',
+    '\BO\Zmsapi\OwnerDelete:render')
+    ->conditions([
+        'id' => '\d{1,11}',
+     ])
+    ->name("OwnerDelete");
+
+
+/**
+ *  @swagger
  *  "/organisation/":
  *      get:
  *          description: Get a list of organisations
+ *          parameters:
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
  *          responses:
  *              200:
  *                  description: "success"
@@ -718,6 +930,10 @@
  *                  in: path
  *                  required: true
  *                  type: integer
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
  *          responses:
  *              200:
  *                  description: "success"
@@ -755,6 +971,10 @@
  *                  in: body
  *                  schema:
  *                      $ref: "schema/organisation.json"
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
  *          responses:
  *              200:
  *                  description: "success"
@@ -786,6 +1006,10 @@
  *                  in: path
  *                  required: true
  *                  type: integer
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
  *          responses:
  *              200:
  *                  description: "success"
@@ -1036,6 +1260,11 @@
  *  "/process/status/reserved/":
  *      get:
  *          description: Get a list of reserved processes
+ *          parameters:
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
  *          responses:
  *              200:
  *                  description: get a list of processes
@@ -1137,6 +1366,11 @@
  *  "/scope/":
  *      get:
  *          description: Get a list of scopes
+ *          parameters:
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
  *          responses:
  *              200:
  *                  description: "returns a list"
@@ -1167,6 +1401,10 @@
  *                  in: path
  *                  required: true
  *                  type: integer
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
  *          responses:
  *              200:
  *                  description: "success"
@@ -1198,6 +1436,10 @@
  *                  in: path
  *                  required: true
  *                  type: integer
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
  *          responses:
  *              200:
  *                  description: "success"
@@ -1231,6 +1473,10 @@
  *                  in: path
  *                  required: true
  *                  type: integer
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
  *          responses:
  *              200:
  *                  description: "success"
@@ -1270,6 +1516,10 @@
  *                  required: true
  *                  schema:
  *                      $ref: "schema/scope.json"
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
  *          responses:
  *              200:
  *                  description: "success"
@@ -1303,6 +1553,10 @@
  *                  in: path
  *                  required: true
  *                  type: integer
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
  *          responses:
  *              200:
  *                  description: "success"
@@ -1375,6 +1629,11 @@
  *  "/useraccount/":
  *      get:
  *          description: Get a list of useraccounts
+ *          parameters:
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
  *          responses:
  *              200:
  *                  description: "success"
@@ -1402,6 +1661,10 @@
  *                  description: useraccount number
  *                  in: path
  *                  required: true
+ *                  type: string
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
  *                  type: string
  *          responses:
  *              200:
@@ -1437,6 +1700,10 @@
  *                  in: body
  *                  schema:
  *                      $ref: "schema/useraccount.json"
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
  *          responses:
  *              200:
  *                  description: "success"
@@ -1465,6 +1732,10 @@
  *                  in: path
  *                  required: true
  *                  type: string
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
  *          responses:
  *              200:
  *                  description: "success"
@@ -1480,6 +1751,11 @@
  *  "/workstation/":
  *      get:
  *          description: Get the current workstation based on authkey
+ *          parameters:
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
  *          responses:
  *              200:
  *                  description: "success"
@@ -1509,6 +1785,10 @@
  *                  in: body
  *                  schema:
  *                      $ref: "schema/workstation.json"
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
  *          responses:
  *              200:
  *                  description: "success"
@@ -1563,12 +1843,17 @@
  *  @swagger
  *  "/workstation/{loginname}/":
  *      delete:
+ *          operationId: WorkstationDelete
  *          description: Logout a user and delete his workstation entry
  *          parameters:
  *              -   name: loginname
  *                  description: useraccount number
  *                  in: path
  *                  required: true
+ *                  type: string
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
  *                  type: string
  *          responses:
  *              200:
