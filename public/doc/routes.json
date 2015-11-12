@@ -1,4 +1,96 @@
 {
+	"/availability/{id}/": {
+		"get": {
+			"description": "Get an availability by id",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "availability number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/availability.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "availability id does not exists"
+				}
+			}
+		},
+		"post": {
+			"description": "Update an availability",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "availability number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "availability",
+					"description": "availability data to update",
+					"in": "body",
+					"schema": {
+						"$ref": "schema/availability.json"
+					}
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/availability.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "availability id does not exists"
+				}
+			}
+		},
+		"delete": {
+			"description": "Deletes an availability",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "availability number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success"
+				},
+				"404": {
+					"description": "availability id does not exists"
+				}
+			}
+		}
+	},
 	"/calendar/": {
 		"get": {
 			"description": "Get a list of available days for appointments",
@@ -30,8 +122,428 @@
 				"404": {
 					"description": "Could not find any available days",
 					"schema": {
-						"$ref": "schema/calendar.json"
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/calendar.json"
+							}
+						}
 					}
+				}
+			}
+		}
+	},
+	"/calldisplay/": {
+		"get": {
+			"description": "Get preferences for a calldisplay",
+			"parameters": [
+				{
+					"name": "calldisplay",
+					"description": "data containing scopes and clusters",
+					"in": "body",
+					"schema": {
+						"$ref": "schema/calldisplay.json"
+					}
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "get an updated calendar objects with updated days list",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/calldisplay.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "Could not find a given cluster or scope, see metaresult",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"/calldisplay/queue/": {
+		"get": {
+			"description": "Get queue for a calldisplay",
+			"parameters": [
+				{
+					"name": "calldisplay",
+					"description": "data containing scopes and clusters",
+					"in": "body",
+					"schema": {
+						"$ref": "schema/calldisplay.json"
+					}
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "get a list of queue entries",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/queue.json"
+								}
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "Could not find a given cluster or scope, see metaresult",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"/cluster/{id}/": {
+		"get": {
+			"description": "Get an cluster by id",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "cluster number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/cluster.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "cluster id does not exists"
+				}
+			}
+		},
+		"post": {
+			"description": "Update an cluster",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "cluster number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "cluster",
+					"description": "cluster data to update",
+					"in": "body",
+					"schema": {
+						"$ref": "schema/cluster.json"
+					}
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/cluster.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "cluster id does not exists"
+				}
+			}
+		},
+		"delete": {
+			"description": "Deletes an cluster",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "cluster number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success"
+				},
+				"404": {
+					"description": "cluster id does not exists"
+				}
+			}
+		}
+	},
+	"/cluster/{id}/queue/": {
+		"get": {
+			"description": "Get a waiting queue for a cluster",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "cluster number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/queue.json"
+								}
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "cluster id does not exists"
+				}
+			}
+		}
+	},
+	"/dayoff/{year}/": {
+		"get": {
+			"description": "Update list of common free days",
+			"parameters": [
+				{
+					"name": "year",
+					"description": "year for the free days",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/dayoff.json"
+								}
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "year out of range"
+				}
+			}
+		},
+		"post": {
+			"description": "Update list of common free days",
+			"parameters": [
+				{
+					"name": "year",
+					"description": "year for the free days",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "dayoff",
+					"description": "dayoff data to update",
+					"in": "body",
+					"schema": {
+						"type": "array",
+						"items": {
+							"$ref": "schema/dayoff.json"
+						}
+					}
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/dayoff.json"
+								}
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "year out of range"
+				}
+			}
+		}
+	},
+	"/department/": {
+		"get": {
+			"description": "Get a list of organisations",
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/department.json"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"/department/{id}/": {
+		"get": {
+			"description": "Get an department by id",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "department number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/department.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "department id does not exists"
+				}
+			}
+		},
+		"post": {
+			"description": "Update an department",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "department number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "department",
+					"description": "department data to update",
+					"in": "body",
+					"schema": {
+						"$ref": "schema/department.json"
+					}
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/department.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "department id does not exists"
+				}
+			}
+		},
+		"delete": {
+			"description": "Deletes an department",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "department number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success"
+				},
+				"404": {
+					"description": "department id does not exists"
 				}
 			}
 		}
@@ -81,7 +593,7 @@
 			}
 		}
 	},
-	"/mails/{id}": {
+	"/mails/{id}/": {
 		"delete": {
 			"description": "delete a mail in the send queue",
 			"parameters": [
@@ -103,7 +615,7 @@
 			}
 		}
 	},
-	"/notifications/": {
+	"/notification/": {
 		"get": {
 			"description": "get a list of notifications in the send queue",
 			"responses": {
@@ -148,7 +660,7 @@
 			}
 		}
 	},
-	"/notifications/{id}": {
+	"/notification/{id}/": {
 		"delete": {
 			"description": "delete a notification in the send queue",
 			"parameters": [
@@ -166,6 +678,155 @@
 				},
 				"404": {
 					"description": "could not find notification or notification already sent"
+				}
+			}
+		}
+	},
+	"/organisation/": {
+		"get": {
+			"description": "Get a list of organisations",
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/organisation.json"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"/organisation/{id}/": {
+		"get": {
+			"description": "Get an organisation by id",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "organisation number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/organisation.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "organisation id does not exists"
+				}
+			}
+		},
+		"post": {
+			"description": "Update an organisation",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "organisation number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "organisation",
+					"description": "organisation data to update",
+					"in": "body",
+					"schema": {
+						"$ref": "schema/organisation.json"
+					}
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/organisation.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "organisation id does not exists"
+				}
+			}
+		},
+		"delete": {
+			"description": "Deletes an organisation",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "organisation number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success"
+				},
+				"404": {
+					"description": "organisation id does not exists"
+				}
+			}
+		}
+	},
+	"/organisation/{id}/hash/": {
+		"get": {
+			"description": "Get a hash to identify a ticketprinter. Usually a browser requests a hash once and stores it in a cookie.",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "organisation number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/ticketprinter.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "organisation id does not exists"
 				}
 			}
 		}
@@ -556,7 +1217,7 @@
 			}
 		}
 	},
-	"/scope/{id}": {
+	"/scope/{id}/": {
 		"get": {
 			"description": "Get a scope",
 			"parameters": [
@@ -648,6 +1309,370 @@
 				},
 				"404": {
 					"description": "scope id does not exists"
+				}
+			}
+		}
+	},
+	"/scope/{id}/availability/": {
+		"get": {
+			"description": "Get a list of availability entries",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "scope number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/availability.json"
+								}
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "scope id does not exists"
+				}
+			}
+		}
+	},
+	"/scope/{id}/queue/": {
+		"get": {
+			"description": "Get a waiting queue for a scope",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "scope number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/queue.json"
+								}
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "scope id does not exists"
+				}
+			}
+		}
+	},
+	"/status/": {
+		"get": {
+			"description": "Get status of api",
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"$ref": "schema/status.json"
+					}
+				}
+			}
+		}
+	},
+	"/ticketprinter/{id}/waitingnumber/": {
+		"get": {
+			"description": "Get a waitingNumber according to scope preferences",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "scope number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "ticketprinter",
+					"description": "ticketprinter data, a valid hash is required",
+					"in": "body",
+					"required": true,
+					"schema": {
+						"$ref": "schema/ticketprinter.json"
+					}
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/process.json"
+							}
+						}
+					}
+				},
+				"403": {
+					"description": "hash is not valid"
+				},
+				"404": {
+					"description": "ticketprinter id does not exists"
+				}
+			}
+		}
+	},
+	"/useraccount/": {
+		"get": {
+			"description": "Get a list of useraccounts",
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/useraccount.json"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"/useraccount/{loginname}/": {
+		"get": {
+			"description": "Get an useraccount by loginname",
+			"parameters": [
+				{
+					"name": "loginname",
+					"description": "useraccount number",
+					"in": "path",
+					"required": true,
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/useraccount.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "useraccount loginname does not exists"
+				}
+			}
+		},
+		"post": {
+			"description": "Update an useraccount",
+			"parameters": [
+				{
+					"name": "loginname",
+					"description": "useraccount number",
+					"in": "path",
+					"required": true,
+					"type": "string"
+				},
+				{
+					"name": "useraccount",
+					"description": "useraccount data to update",
+					"in": "body",
+					"schema": {
+						"$ref": "schema/useraccount.json"
+					}
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/useraccount.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "useraccount loginname does not exists"
+				}
+			}
+		},
+		"delete": {
+			"description": "Deletes an useraccount",
+			"parameters": [
+				{
+					"name": "loginname",
+					"description": "useraccount number",
+					"in": "path",
+					"required": true,
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success"
+				},
+				"404": {
+					"description": "useraccount loginname does not exists"
+				}
+			}
+		}
+	},
+	"/useraccount/{loginname}/login/": {
+		"post": {
+			"description": "Get an authentication key for a user account",
+			"parameters": [
+				{
+					"name": "loginname",
+					"description": "useraccount number",
+					"in": "path",
+					"required": true,
+					"type": "string"
+				},
+				{
+					"name": "password",
+					"description": "useraccount number",
+					"in": "formData",
+					"required": true,
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/workstation.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "useraccount loginname does not exists"
+				}
+			}
+		}
+	},
+	"/useraccount/{loginname}/logout/": {
+		"delete": {
+			"description": "Logout a user and delete his workstation entry",
+			"parameters": [
+				{
+					"name": "loginname",
+					"description": "useraccount number",
+					"in": "path",
+					"required": true,
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success"
+				},
+				"404": {
+					"description": "useraccount loginname does not exists"
+				}
+			}
+		}
+	},
+	"/workstation/": {
+		"get": {
+			"description": "Get the current workstation based on authkey",
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/workstation.json"
+							}
+						}
+					}
+				},
+				"401": {
+					"description": "login required"
+				}
+			}
+		},
+		"post": {
+			"description": "Update a workstation, e.g. to change the scope",
+			"parameters": [
+				{
+					"name": "workstation",
+					"description": "workstation data to update",
+					"in": "body",
+					"schema": {
+						"$ref": "schema/workstation.json"
+					}
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/workstation.json"
+							}
+						}
+					}
+				},
+				"401": {
+					"description": "login required"
 				}
 			}
 		}

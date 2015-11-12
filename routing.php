@@ -19,6 +19,97 @@
 
 
 /**
+ *  @swagger
+ *  "/availability/{id}/":
+ *      get:
+ *          description: Get an availability by id
+ *          parameters:
+ *              -   name: id
+ *                  description: availability number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/availability.json"
+ *              404:
+ *                  description: "availability id does not exists"
+ */
+\App::$slim->get('/availability/:id/',
+    '\BO\Zmsapi\AvailabilityGet:render')
+    ->conditions([
+        'id' => '\d{4,11}',
+     ])
+    ->name("AvailabilityGet");
+
+/**
+ *  @swagger
+ *  "/availability/{id}/":
+ *      post:
+ *          description: Update an availability
+ *          parameters:
+ *              -   name: id
+ *                  description: availability number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: availability
+ *                  description: availability data to update
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/availability.json"
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/availability.json"
+ *              404:
+ *                  description: "availability id does not exists"
+ */
+\App::$slim->post('/availability/:id/',
+    '\BO\Zmsapi\AvailabilityUpdate:render')
+    ->conditions([
+        'id' => '\d{4,11}',
+     ])
+    ->name("AvailabilityUpdate");
+
+/**
+ *  @swagger
+ *  "/availability/{id}/":
+ *      delete:
+ *          description: Deletes an availability
+ *          parameters:
+ *              -   name: id
+ *                  description: availability number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *              404:
+ *                  description: "availability id does not exists"
+ */
+\App::$slim->delete('/availability/:id/',
+    '\BO\Zmsapi\AvailabilityDelete:render')
+    ->conditions([
+        'id' => '\d{4,11}',
+     ])
+    ->name("AvailabilityDelete");
+
+/**
 *  @swagger
 *  "/calendar/":
 *      get:
@@ -42,11 +133,394 @@
 *              404:
 *                  description: "Could not find any available days"
 *                  schema:
-*                      $ref: "schema/calendar.json"
+*                      type: object
+*                      properties:
+*                          meta:
+*                              $ref: "schema/metaresult.json"
+*                          data:
+*                              $ref: "schema/calendar.json"
 */
 \App::$slim->get('/calendar/',
     '\BO\Zmsapi\CalendarGet:render')
     ->name("CalendarGet");
+
+/**
+*  @swagger
+*  "/calldisplay/":
+*      get:
+*          description: Get preferences for a calldisplay
+*          parameters:
+*              -   name: calldisplay
+*                  description: data containing scopes and clusters
+*                  in: body
+*                  schema:
+*                      $ref: "schema/calldisplay.json"
+*          responses:
+*              200:
+*                  description: get an updated calendar objects with updated days list
+*                  schema:
+*                      type: object
+*                      properties:
+*                          meta:
+*                              $ref: "schema/metaresult.json"
+*                          data:
+*                              $ref: "schema/calldisplay.json"
+*              404:
+*                  description: "Could not find a given cluster or scope, see metaresult"
+*                  schema:
+*                      type: object
+*                      properties:
+*                          meta:
+*                              $ref: "schema/metaresult.json"
+*/
+\App::$slim->get('/calldisplay/',
+    '\BO\Zmsapi\CalldisplayGet:render')
+    ->name("CalldisplayGet");
+
+/**
+*  @swagger
+*  "/calldisplay/queue/":
+*      get:
+*          description: Get queue for a calldisplay
+*          parameters:
+*              -   name: calldisplay
+*                  description: data containing scopes and clusters
+*                  in: body
+*                  schema:
+*                      $ref: "schema/calldisplay.json"
+*          responses:
+*              200:
+*                  description: get a list of queue entries
+*                  schema:
+*                      type: object
+*                      properties:
+*                          meta:
+*                              $ref: "schema/metaresult.json"
+*                          data:
+*                              type: array
+*                              items:
+*                                  $ref: "schema/queue.json"
+*              404:
+*                  description: "Could not find a given cluster or scope, see metaresult"
+*                  schema:
+*                      type: object
+*                      properties:
+*                          meta:
+*                              $ref: "schema/metaresult.json"
+*/
+\App::$slim->get('/calldisplay/queue/',
+    '\BO\Zmsapi\CalldisplayQueue:render')
+    ->name("CalldisplayQueue:");
+
+/**
+ *  @swagger
+ *  "/cluster/{id}/":
+ *      get:
+ *          description: Get an cluster by id
+ *          parameters:
+ *              -   name: id
+ *                  description: cluster number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/cluster.json"
+ *              404:
+ *                  description: "cluster id does not exists"
+ */
+\App::$slim->get('/cluster/:id/',
+    '\BO\Zmsapi\ClusterGet:render')
+    ->conditions([
+        'id' => '\d{4,11}',
+     ])
+    ->name("ClusterGet");
+
+/**
+ *  @swagger
+ *  "/cluster/{id}/":
+ *      post:
+ *          description: Update an cluster
+ *          parameters:
+ *              -   name: id
+ *                  description: cluster number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: cluster
+ *                  description: cluster data to update
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/cluster.json"
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/cluster.json"
+ *              404:
+ *                  description: "cluster id does not exists"
+ */
+\App::$slim->post('/cluster/:id/',
+    '\BO\Zmsapi\ClusterUpdate:render')
+    ->conditions([
+        'id' => '\d{4,11}',
+     ])
+    ->name("ClusterUpdate");
+
+/**
+ *  @swagger
+ *  "/cluster/{id}/":
+ *      delete:
+ *          description: Deletes an cluster
+ *          parameters:
+ *              -   name: id
+ *                  description: cluster number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *              404:
+ *                  description: "cluster id does not exists"
+ */
+\App::$slim->delete('/cluster/:id/',
+    '\BO\Zmsapi\ClusterDelete:render')
+    ->conditions([
+        'id' => '\d{4,11}',
+     ])
+    ->name("ClusterDelete");
+
+/**
+ *  @swagger
+ *  "/cluster/{id}/queue/":
+ *      get:
+ *          description: Get a waiting queue for a cluster
+ *          parameters:
+ *              -   name: id
+ *                  description: cluster number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/queue.json"
+ *              404:
+ *                  description: "cluster id does not exists"
+ */
+\App::$slim->get('/cluster/:id/queue/',
+    '\BO\Zmsapi\ClusterQueue:render')
+    ->conditions([
+        'id' => '\d{1,11}',
+     ])
+    ->name("ClusterQueue");
+
+/**
+ *  @swagger
+ *  "/dayoff/{year}/":
+ *      get:
+ *          description: Update list of common free days
+ *          parameters:
+ *              -   name: year
+ *                  description: year for the free days
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/dayoff.json"
+ *              404:
+ *                  description: "year out of range"
+ */
+\App::$slim->get('/dayoff/:year/',
+    '\BO\Zmsapi\DayoffList:render')
+    ->conditions([
+        'year' => '2\d{3,3}',
+     ])
+    ->name("DayoffList");
+
+/**
+ *  @swagger
+ *  "/dayoff/{year}/":
+ *      post:
+ *          description: Update list of common free days
+ *          parameters:
+ *              -   name: year
+ *                  description: year for the free days
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: dayoff
+ *                  description: dayoff data to update
+ *                  in: body
+ *                  schema:
+ *                      type: array
+ *                      items:
+ *                          $ref: "schema/dayoff.json"
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/dayoff.json"
+ *              404:
+ *                  description: "year out of range"
+ */
+\App::$slim->post('/dayoff/:year/',
+    '\BO\Zmsapi\DayoffUpdate:render')
+    ->conditions([
+        'year' => '2\d{3,3}',
+     ])
+    ->name("DayoffUpdate");
+
+/**
+ *  @swagger
+ *  "/department/":
+ *      get:
+ *          description: Get a list of organisations
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/department.json"
+ */
+\App::$slim->get('/department/',
+    '\BO\Zmsapi\DepartmentList:render')
+    ->name("DepartmentList");
+
+/**
+ *  @swagger
+ *  "/department/{id}/":
+ *      get:
+ *          description: Get an department by id
+ *          parameters:
+ *              -   name: id
+ *                  description: department number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/department.json"
+ *              404:
+ *                  description: "department id does not exists"
+ */
+\App::$slim->get('/department/:id/',
+    '\BO\Zmsapi\DepartmentGet:render')
+    ->conditions([
+        'id' => '\d{4,11}',
+     ])
+    ->name("DepartmentGet");
+
+/**
+ *  @swagger
+ *  "/department/{id}/":
+ *      post:
+ *          description: Update an department
+ *          parameters:
+ *              -   name: id
+ *                  description: department number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: department
+ *                  description: department data to update
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/department.json"
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/department.json"
+ *              404:
+ *                  description: "department id does not exists"
+ */
+\App::$slim->post('/department/:id/',
+    '\BO\Zmsapi\DepartmentUpdate:render')
+    ->conditions([
+        'id' => '\d{4,11}',
+     ])
+    ->name("DepartmentUpdate");
+
+/**
+ *  @swagger
+ *  "/department/{id}/":
+ *      delete:
+ *          description: Deletes an department
+ *          parameters:
+ *              -   name: id
+ *                  description: department number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *              404:
+ *                  description: "department id does not exists"
+ */
+\App::$slim->delete('/department/:id/',
+    '\BO\Zmsapi\DepartmentDelete:render')
+    ->conditions([
+        'id' => '\d{4,11}',
+     ])
+    ->name("DepartmentDelete");
 
 /**
  *  @swagger
@@ -95,7 +569,7 @@
 
 /**
  *  @swagger
- *  "/mails/{id}":
+ *  "/mails/{id}/":
  *      delete:
  *          description: delete a mail in the send queue
  *          parameters:
@@ -110,7 +584,7 @@
  *              404:
  *                  description: "could not find mail or mail already sent"
  */
-\App::$slim->delete('/mails/{id}',
+\App::$slim->delete('/mails/{id}/',
     '\BO\Zmsapi\MailDelete:render')
     ->conditions([
         'id' => '\d{4,11}',
@@ -120,7 +594,7 @@
 
 /**
  *  @swagger
- *  "/notifications/":
+ *  "/notification/":
  *      get:
  *          description: get a list of notifications in the send queue
  *          responses:
@@ -136,7 +610,7 @@
  *                              items:
  *                                  $ref: "schema/notification.json"
  */
-\App::$slim->get('/notifications/',
+\App::$slim->get('/notification/',
     '\BO\Zmsapi\NotificationsGet:render')
     ->name("NotificationsGet");
 
@@ -144,7 +618,7 @@
 
 /**
  *  @swagger
- *  "/notifications/":
+ *  "/notification/":
  *      post:
  *          description: Add a notification to the send queue
  *          parameters:
@@ -159,13 +633,13 @@
  *              400:
  *                  description: "Missing required properties in the notification"
  */
-\App::$slim->post('/notifications/',
+\App::$slim->post('/notification/',
     '\BO\Zmsapi\NotificationsAdd:render')
     ->name("NotificationsAdd");
 
 /**
  *  @swagger
- *  "/notifications/{id}":
+ *  "/notification/{id}/":
  *      delete:
  *          description: delete a notification in the send queue
  *          parameters:
@@ -180,13 +654,157 @@
  *              404:
  *                  description: "could not find notification or notification already sent"
  */
-\App::$slim->delete('/notifications/{id}',
+\App::$slim->delete('/notification/{id}/',
     '\BO\Zmsapi\NotificationDelete:render')
     ->conditions([
         'id' => '\d{4,11}',
      ])
     ->name("NotificationDelete");
 
+
+/**
+ *  @swagger
+ *  "/organisation/":
+ *      get:
+ *          description: Get a list of organisations
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/organisation.json"
+ */
+\App::$slim->get('/organisation/',
+    '\BO\Zmsapi\OrganisationList:render')
+    ->name("OrganisationList");
+
+/**
+ *  @swagger
+ *  "/organisation/{id}/":
+ *      get:
+ *          description: Get an organisation by id
+ *          parameters:
+ *              -   name: id
+ *                  description: organisation number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/organisation.json"
+ *              404:
+ *                  description: "organisation id does not exists"
+ */
+\App::$slim->get('/organisation/:id/',
+    '\BO\Zmsapi\OrganisationGet:render')
+    ->conditions([
+        'id' => '\d{4,11}',
+     ])
+    ->name("OrganisationGet");
+
+/**
+ *  @swagger
+ *  "/organisation/{id}/":
+ *      post:
+ *          description: Update an organisation
+ *          parameters:
+ *              -   name: id
+ *                  description: organisation number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: organisation
+ *                  description: organisation data to update
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/organisation.json"
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/organisation.json"
+ *              404:
+ *                  description: "organisation id does not exists"
+ */
+\App::$slim->post('/organisation/:id/',
+    '\BO\Zmsapi\OrganisationUpdate:render')
+    ->conditions([
+        'id' => '\d{4,11}',
+     ])
+    ->name("OrganisationUpdate");
+
+/**
+ *  @swagger
+ *  "/organisation/{id}/":
+ *      delete:
+ *          description: Deletes an organisation
+ *          parameters:
+ *              -   name: id
+ *                  description: organisation number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *              404:
+ *                  description: "organisation id does not exists"
+ */
+\App::$slim->delete('/organisation/:id/',
+    '\BO\Zmsapi\OrganisationDelete:render')
+    ->conditions([
+        'id' => '\d{4,11}',
+     ])
+    ->name("OrganisationDelete");
+
+/**
+ *  @swagger
+ *  "/organisation/{id}/hash/":
+ *      get:
+ *          description: Get a hash to identify a ticketprinter. Usually a browser requests a hash once and stores it in a cookie.
+ *          parameters:
+ *              -   name: id
+ *                  description: organisation number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/ticketprinter.json"
+ *              404:
+ *                  description: "organisation id does not exists"
+ */
+\App::$slim->get('/organisation/:id/hash/',
+    '\BO\Zmsapi\OrganisationHash:render')
+    ->conditions([
+        'id' => '\d{4,11}',
+     ])
+    ->name("OrganisationHash");
 
 /**
  *  @swagger
@@ -454,7 +1072,7 @@
  *                              items:
  *                                  $ref: "schema/process.json"
  */
-\App::$slim->get('/process/status/reserved/',
+\App::$slim->post('/process/status/reserved/',
     '\BO\Zmsapi\ProcessReserve:render')
     ->name("ProcessReserve");
 
@@ -486,7 +1104,7 @@
  *              400:
  *                  description: "Invalid input"
  */
-\App::$slim->get('/process/status/confirmed/',
+\App::$slim->post('/process/status/confirmed/',
     '\BO\Zmsapi\ProcessConfirm:render')
     ->name("ProcessConfirm");
 
@@ -510,16 +1128,13 @@
  *              404:
  *                  description: "no scopes defined yet"
  */
-\App::$slim->get('/scope/:id/',
+\App::$slim->get('/scope/',
     '\BO\Zmsapi\ScopeList:render')
-    ->conditions([
-        'id' => '\d{1,11}',
-     ])
     ->name("ScopeList");
 
 /**
  *  @swagger
- *  "/scope/{id}":
+ *  "/scope/{id}/":
  *      get:
  *          description: Get a scope
  *          parameters:
@@ -550,7 +1165,73 @@
 
 /**
  *  @swagger
- *  "/scope/{id}":
+ *  "/scope/{id}/availability/":
+ *      get:
+ *          description: Get a list of availability entries
+ *          parameters:
+ *              -   name: id
+ *                  description: scope number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/availability.json"
+ *              404:
+ *                  description: "scope id does not exists"
+ */
+\App::$slim->get('/scope/:id/queue/',
+    '\BO\Zmsapi\AvailabilityList:render')
+    ->conditions([
+        'id' => '\d{1,11}',
+     ])
+    ->name("AvailabilityList:");
+
+/**
+ *  @swagger
+ *  "/scope/{id}/queue/":
+ *      get:
+ *          description: Get a waiting queue for a scope
+ *          parameters:
+ *              -   name: id
+ *                  description: scope number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/queue.json"
+ *              404:
+ *                  description: "scope id does not exists"
+ */
+\App::$slim->get('/scope/:id/queue/',
+    '\BO\Zmsapi\ScopeQueue:render')
+    ->conditions([
+        'id' => '\d{1,11}',
+     ])
+    ->name("ScopeQueue");
+
+/**
+ *  @swagger
+ *  "/scope/{id}/":
  *      post:
  *          description: Update a scope
  *          parameters:
@@ -589,7 +1270,7 @@
 
 /**
  *  @swagger
- *  "/scope/{id}":
+ *  "/scope/{id}/":
  *      delete:
  *          description: Delete a scope
  *          parameters:
@@ -610,6 +1291,268 @@
         'id' => '\d{1,11}',
      ])
     ->name("ScopeDelete");
+
+/**
+ *  @swagger
+ *  "/status/":
+ *      get:
+ *          description: Get status of api
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      $ref: "schema/status.json"
+ */
+\App::$slim->get('/status/',
+    '\BO\Zmsapi\Status:render')
+    ->name("Status");
+
+/**
+ *  @swagger
+ *  "/ticketprinter/{id}/waitingnumber/":
+ *      get:
+ *          description: Get a waitingNumber according to scope preferences
+ *          parameters:
+ *              -   name: id
+ *                  description: scope number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: ticketprinter
+ *                  description: ticketprinter data, a valid hash is required
+ *                  in: body
+ *                  required: true
+ *                  schema:
+ *                      $ref: "schema/ticketprinter.json"
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/process.json"
+ *              403:
+ *                  description: "hash is not valid"
+ *              404:
+ *                  description: "ticketprinter id does not exists"
+ */
+\App::$slim->get('/ticketprinter/:id/waitingnumber/',
+    '\BO\Zmsapi\TicketprinterWaitingnumber:render')
+    ->conditions([
+        'id' => '\d{1,11}',
+     ])
+    ->name("TicketprinterWaitingnumber:");
+
+/**
+ *  @swagger
+ *  "/useraccount/":
+ *      get:
+ *          description: Get a list of useraccounts
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/useraccount.json"
+ */
+\App::$slim->get('/useraccount/',
+    '\BO\Zmsapi\UseraccountList:render')
+    ->name("UseraccountList");
+
+/**
+ *  @swagger
+ *  "/useraccount/{loginname}/":
+ *      get:
+ *          description: Get an useraccount by loginname
+ *          parameters:
+ *              -   name: loginname
+ *                  description: useraccount number
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/useraccount.json"
+ *              404:
+ *                  description: "useraccount loginname does not exists"
+ */
+\App::$slim->get('/useraccount/:loginname/',
+    '\BO\Zmsapi\UseraccountGet:render')
+    ->name("UseraccountGet");
+
+/**
+ *  @swagger
+ *  "/useraccount/{loginname}/login/":
+ *      post:
+ *          description: Get an authentication key for a user account
+ *          parameters:
+ *              -   name: loginname
+ *                  description: useraccount number
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: password
+ *                  description: useraccount number
+ *                  in: formData
+ *                  required: true
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/workstation.json"
+ *              404:
+ *                  description: "useraccount loginname does not exists"
+ */
+\App::$slim->post('/useraccount/:loginname/logout/',
+    '\BO\Zmsapi\UseraccountLogout:render')
+    ->name("UseraccountLogout");
+
+/**
+ *  @swagger
+ *  "/useraccount/{loginname}/logout/":
+ *      delete:
+ *          description: Logout a user and delete his workstation entry
+ *          parameters:
+ *              -   name: loginname
+ *                  description: useraccount number
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *              404:
+ *                  description: "useraccount loginname does not exists"
+ */
+\App::$slim->delete('/useraccount/:loginname/logout/',
+    '\BO\Zmsapi\UseraccountLogout:render')
+    ->name("UseraccountLogout");
+
+/**
+ *  @swagger
+ *  "/useraccount/{loginname}/":
+ *      post:
+ *          description: Update an useraccount
+ *          parameters:
+ *              -   name: loginname
+ *                  description: useraccount number
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: useraccount
+ *                  description: useraccount data to update
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/useraccount.json"
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/useraccount.json"
+ *              404:
+ *                  description: "useraccount loginname does not exists"
+ */
+\App::$slim->post('/useraccount/:loginname/',
+    '\BO\Zmsapi\UseraccountUpdate:render')
+    ->name("UseraccountUpdate");
+
+/**
+ *  @swagger
+ *  "/useraccount/{loginname}/":
+ *      delete:
+ *          description: Deletes an useraccount
+ *          parameters:
+ *              -   name: loginname
+ *                  description: useraccount number
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *              404:
+ *                  description: "useraccount loginname does not exists"
+ */
+\App::$slim->delete('/useraccount/:loginname/',
+    '\BO\Zmsapi\UseraccountDelete:render')
+    ->name("UseraccountDelete");
+
+/**
+ *  @swagger
+ *  "/workstation/":
+ *      get:
+ *          description: Get the current workstation based on authkey
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/workstation.json"
+ *              401:
+ *                  description: "login required"
+ */
+\App::$slim->get('/workstation/',
+    '\BO\Zmsapi\WorkstationGet:render')
+    ->name("WorkstationGet");
+
+/**
+ *  @swagger
+ *  "/workstation/":
+ *      post:
+ *          description: Update a workstation, e.g. to change the scope
+ *          parameters:
+ *              -   name: workstation
+ *                  description: workstation data to update
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/workstation.json"
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/workstation.json"
+ *              401:
+ *                  description: "login required"
+ */
+\App::$slim->post('/workstation/',
+    '\BO\Zmsapi\WorkstationUpdate:render')
+    ->name("WorkstationUpdate");
 
 /* ---------------------------------------------------------------------------
  * maintenance
