@@ -16,10 +16,18 @@ $navElementPadding:         ($gridGutter / 3) ($gridGutter / 2);
         margin:             0;
         padding:            0;
         .nav__item {
-            border-top:     1px solid $greyDark;
-            padding:        $navElementPadding;
-            display:        block;
-            text-decoration:none;
+            border-top:             1px solid $greyDark;
+            padding:                $navElementPadding;
+            display:                block;
+            text-decoration:        none;
+            font-weight:            normal;
+            &.nav__item--active {
+                border-left:        9px solid $blue;
+                font-weight:        bold;
+            }
+        }
+        a {
+            text-decoration:        none;
             &:hover {
                 text-decoration:    underline;
             }
