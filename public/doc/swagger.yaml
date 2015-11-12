@@ -11,7 +11,7 @@ info:
   license:
     name: Commercial
     url: 'http://www.berlinonline.net'
-basePath: /terminvereinbarung/api/1
+basePath: /terminvereinbarung/api/2
 schemes:
   - https
 consumes:
