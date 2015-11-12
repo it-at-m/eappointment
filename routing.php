@@ -45,7 +45,7 @@
 \App::$slim->get('/availability/:id/',
     '\BO\Zmsapi\AvailabilityGet:render')
     ->conditions([
-        'id' => '\d{4,11}',
+        'id' => '\d{1,11}',
      ])
     ->name("AvailabilityGet");
 
@@ -98,7 +98,14 @@
  *                  type: integer
  *          responses:
  *              200:
- *                  description: "success"
+ *                  description: "success, returns deleted object"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/availability.json"
  *              404:
  *                  description: "availability id does not exists"
  */
@@ -112,11 +119,12 @@
 /**
 *  @swagger
 *  "/calendar/":
-*      get:
+*      post:
 *          description: Get a list of available days for appointments
 *          parameters:
 *              -   name: calendar
 *                  description: data for finding available days
+*                  required: true
 *                  in: body
 *                  schema:
 *                      $ref: "schema/calendar.json"
@@ -140,7 +148,7 @@
 *                          data:
 *                              $ref: "schema/calendar.json"
 */
-\App::$slim->get('/calendar/',
+\App::$slim->post('/calendar/',
     '\BO\Zmsapi\CalendarGet:render')
     ->name("CalendarGet");
 
@@ -1563,14 +1571,20 @@
     ->name("healthcheck");
 
 \App::$slim->notfound(function () {
-    \BO\Slim\Render::html('404.twig');
+    $message = \BO\Zmsapi\Response\Message::create();
+    $message->meta->error = true;
+    $message->meta->message = "Could not find a resource with the given URL";
+    \BO\Slim\Render::lastModified(time(), '0');
+    \BO\Slim\Render::json($message, 404);
+    \App::$slim->stop();
 });
 
 \App::$slim->error(function (\Exception $exception) {
+    $message = \BO\Zmsapi\Response\Message::create();
+    $message->meta->error = true;
+    $message->meta->message = $exception->getMessage();
+    $message->meta->trace = $exception->getTrace();
     \BO\Slim\Render::lastModified(time(), '0');
-    \BO\Slim\Render::html('failed.twig', array(
-        "failed" => $exception->getMessage(),
-        "error" => $exception,
-    ));
+    \BO\Slim\Render::json($message, 500);
     \App::$slim->stop();
 });
