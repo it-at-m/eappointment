@@ -1,0 +1,26 @@
+// The base grid layout
+
+.page {
+    margin:         $gridGutter auto;
+    max-width:      $pageMaxWidth;
+    padding:        0 $gridGutter;
+}
+
+.page-canvas {
+    @extend .grid, .grid--rev;
+    .page-canvas_navigation {
+        @extend .grid__item,  .one-sixth, .portable--one-whole;
+    }
+    .page-canvas_maincontent {
+        @extend .grid__item, .five-sixths, .portable--one-whole;
+    }
+}
+
+
+
+// We extend wizardrys inline-block bug fix, otherwise it does not work
+@if $use-markup-fix != true {
+    .grid__item {
+        margin-right: -0.1em;
+    }
+}

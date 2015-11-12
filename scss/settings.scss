@@ -1,3 +1,23 @@
 
+// Our colors
+$white:                         #FFFFFF;
+$black:                         #000000;
+$blue:                          #008CCA;
+$blueDark:                      #33445E;
+$red:                           #E75656;
+
 // Our settings
+$gridGutter:                    20px;
+$pageMaxWidth:                  1280px - ($gridGutter * 2) - 20px;
+$pageheaderBackgroundColor:     $blueDark;
+
+
+// ccswizardry settings
+$use-markup-fix:                false;
+$gutter:                        $gridGutter;
+
+
+// inuitcss settings
+
+
 
