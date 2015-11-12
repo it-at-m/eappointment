@@ -46,7 +46,76 @@
 */
 \App::$slim->get('/calendar/',
     '\BO\Zmsapi\CalendarGet:render')
-    ->name("pagesindex");
+    ->name("CalendarGet");
+
+/**
+ *  @swagger
+ *  "/mails/":
+ *      get:
+ *          description: get a list of mails in the send queue
+ *          responses:
+ *              200:
+ *                  description: returns a list, might be empty
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/mail.json"
+ */
+\App::$slim->get('/mails/',
+    '\BO\Zmsapi\MailGet:render')
+    ->name("MailGet");
+
+
+
+/**
+ *  @swagger
+ *  "/mails/":
+ *      post:
+ *          description: Add a mail to the send queue
+ *          parameters:
+ *              -   name: notification
+ *                  description: mail data to send
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/mail.json"
+ *          responses:
+ *              200:
+ *                  description: mail accepted
+ *              400:
+ *                  description: "Missing required properties in the notification"
+ */
+\App::$slim->post('/mails/',
+    '\BO\Zmsapi\MailAdd:render')
+    ->name("MailAdd");
+
+/**
+ *  @swagger
+ *  "/mails/{id}":
+ *      delete:
+ *          description: delete a mail in the send queue
+ *          parameters:
+ *              -   name: id
+ *                  description: mail number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: succesfully deleted
+ *              404:
+ *                  description: "could not find mail or mail already sent"
+ */
+\App::$slim->delete('/mails/{id}',
+    '\BO\Zmsapi\MailDelete:render')
+    ->conditions([
+        'id' => '\d{4,11}',
+     ])
+    ->name("MailDelete");
 
 
 /**
@@ -67,9 +136,9 @@
  *                              items:
  *                                  $ref: "schema/notification.json"
  */
-\App::$slim->post('/notifications/',
-    '\BO\Zmsapi\ProcessFree:render')
-    ->name("pagesindex");
+\App::$slim->get('/notifications/',
+    '\BO\Zmsapi\NotificationsGet:render')
+    ->name("NotificationsGet");
 
 
 
@@ -91,8 +160,8 @@
  *                  description: "Missing required properties in the notification"
  */
 \App::$slim->post('/notifications/',
-    '\BO\Zmsapi\ProcessFree:render')
-    ->name("pagesindex");
+    '\BO\Zmsapi\NotificationsAdd:render')
+    ->name("NotificationsAdd");
 
 /**
  *  @swagger
@@ -111,9 +180,12 @@
  *              404:
  *                  description: "could not find notification or notification already sent"
  */
-\App::$slim->post('/notifications/',
-    '\BO\Zmsapi\ProcessFree:render')
-    ->name("pagesindex");
+\App::$slim->delete('/notifications/{id}',
+    '\BO\Zmsapi\NotificationDelete:render')
+    ->conditions([
+        'id' => '\d{4,11}',
+     ])
+    ->name("NotificationDelete");
 
 
 /**
@@ -148,18 +220,18 @@
  *                  description: "process id does not exists"
  */
 \App::$slim->get('/process/:id/:authKey/',
-    '\BO\Zmsapi\AppointmentGet:render')
+    '\BO\Zmsapi\ProcessGet:render')
     ->conditions([
         'id' => '\d{4,11}',
      ])
-    ->name("pagesindex");
+    ->name("ProcessGet");
 
 
 /**
  *  @swagger
- *  "/process/{id}/{authKey}/":
- *      post:
- *          description: Update a process
+ *  "/process/{id}/{authKey}/ics/":
+ *      get:
+ *          description: Get an ICS-File for a process
  *          parameters:
  *              -   name: id
  *                  description: process number
@@ -171,6 +243,44 @@
  *                  in: path
  *                  required: true
  *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: object
+ *                              properties:
+ *                                  content:
+ *                                      type: string
+ *                                      description: "base64 encoded ICS file"
+ *              403:
+ *                  description: "authkey does not match"
+ *              404:
+ *                  description: "process id does not exists"
+ */
+\App::$slim->get('/process/:id/:authKey/ics/',
+    '\BO\Zmsapi\ProcessIcs:render')
+    ->conditions([
+        'id' => '\d{4,11}',
+     ])
+    ->name("ProcessIcs");
+
+
+/**
+ *  @swagger
+ *  "/process/{id}/":
+ *      post:
+ *          description: Update a process but does not send any mails or notifications on status changes
+ *          parameters:
+ *              -   name: id
+ *                  description: process number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
  *              -   name: process
  *                  description: process data to update
  *                  in: body
@@ -186,17 +296,59 @@
  *                              $ref: "schema/metaresult.json"
  *                          data:
  *                              $ref: "schema/process.json"
+ *              400:
+ *                  description: "Invalid input"
+ *              401:
+ *                  description: "authkey does not match"
+ *              403:
+ *                  description: "forbidden, this function does not allow status changes, only data may be changed"
+ *              404:
+ *                  description: "process id does not exists"
+ */
+\App::$slim->post('/process/:id/:authKey/',
+    '\BO\Zmsapi\ProcessUpdate:render')
+    ->conditions([
+        'id' => '\d{4,11}',
+    ])
+    ->name("ProcessUpdate");
+
+/**
+ *  @swagger
+ *  "/process/{id}/{authKey}/":
+ *      delete:
+ *          description: Deletes a process but does not send any mails or notifications
+ *          parameters:
+ *              -   name: id
+ *                  description: process number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: authKey
+ *                  description: authentication key
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success, there might be changes on the object or added information. Use the response for further action with the process"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/process.json"
  *              403:
  *                  description: "authkey does not match"
  *              404:
  *                  description: "process id does not exists"
  */
-\App::$slim->get('/process/:id/:authKey/',
-    '\BO\Zmsapi\AppointmentPost:render')
+\App::$slim->delete('/process/:id/:authKey/',
+    '\BO\Zmsapi\ProcessDelete:render')
     ->conditions([
         'id' => '\d{4,11}',
     ])
-    ->name("pagesindex");
+    ->name("ProcessDelete");
 
 /**
  *  @swagger
@@ -230,7 +382,7 @@
  */
 \App::$slim->get('/process/status/free/',
     '\BO\Zmsapi\ProcessFree:render')
-    ->name("pagesindex");
+    ->name("ProcessFree");
 
 /**
  *  @swagger
@@ -262,8 +414,8 @@
  *                                  $ref: "schema/process.json"
  */
 \App::$slim->get('/process/status/reserved/',
-    '\BO\Zmsapi\ProcessFree:render')
-    ->name("pagesindex");
+    '\BO\Zmsapi\ProcessReservedList:render')
+    ->name("ProcessReservedList");
 
 /**
  *  @swagger
@@ -288,6 +440,8 @@
  *                              type: array
  *                              items:
  *                                  $ref: "schema/process.json"
+ *              400:
+ *                  description: "Invalid input"
  *              404:
  *                  description: "Could not find any processes, returns empty list"
  *                  schema:
@@ -301,8 +455,161 @@
  *                                  $ref: "schema/process.json"
  */
 \App::$slim->get('/process/status/reserved/',
-    '\BO\Zmsapi\ProcessFree:render')
-    ->name("pagesindex");
+    '\BO\Zmsapi\ProcessReserve:render')
+    ->name("ProcessReserve");
+
+/**
+ *  @swagger
+ *  "/process/status/confirmed/":
+ *      post:
+ *          description: Try to confirm a process, changes status from reservered to confirmed
+ *          parameters:
+ *              -   name: process
+ *                  description: process data to update
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/process.json"
+ *          responses:
+ *              200:
+ *                  description: process is confirmed, notifications and mails sent according to preferences
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/process.json"
+ *              302:
+ *                  description: "Redirects to /processes/status/reserved/ since the given process does not exists in the list (any longer)"
+ *              400:
+ *                  description: "Invalid input"
+ */
+\App::$slim->get('/process/status/confirmed/',
+    '\BO\Zmsapi\ProcessConfirm:render')
+    ->name("ProcessConfirm");
+
+/**
+ *  @swagger
+ *  "/scope/":
+ *      get:
+ *          description: Get a list of scopes
+ *          responses:
+ *              200:
+ *                  description: "returns a list"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/scope.json"
+ *              404:
+ *                  description: "no scopes defined yet"
+ */
+\App::$slim->get('/scope/:id/',
+    '\BO\Zmsapi\ScopeList:render')
+    ->conditions([
+        'id' => '\d{1,11}',
+     ])
+    ->name("ScopeList");
+
+/**
+ *  @swagger
+ *  "/scope/{id}":
+ *      get:
+ *          description: Get a scope
+ *          parameters:
+ *              -   name: id
+ *                  description: scope number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/scope.json"
+ *              404:
+ *                  description: "scope id does not exists"
+ */
+\App::$slim->get('/scope/:id/',
+    '\BO\Zmsapi\ScopeGet:render')
+    ->conditions([
+        'id' => '\d{1,11}',
+     ])
+    ->name("ScopeGet");
+
+/**
+ *  @swagger
+ *  "/scope/{id}":
+ *      post:
+ *          description: Update a scope
+ *          parameters:
+ *              -   name: id
+ *                  description: scope number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: scope
+ *                  description: scope content
+ *                  in: body
+ *                  required: true
+ *                  schema:
+ *                      $ref: "schema/scope.json"
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/scope.json"
+ *              400:
+ *                  description: "Invalid input"
+ *              404:
+ *                  description: "process id does not exists"
+ */
+\App::$slim->post('/scope/:id/',
+    '\BO\Zmsapi\ScopeUpdate:render')
+    ->conditions([
+        'id' => '\d{1,11}',
+     ])
+    ->name("ScopeUpdate");
+
+/**
+ *  @swagger
+ *  "/scope/{id}":
+ *      delete:
+ *          description: Delete a scope
+ *          parameters:
+ *              -   name: id
+ *                  description: scope number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *              404:
+ *                  description: "scope id does not exists"
+ */
+\App::$slim->delete('/scope/:id/',
+    '\BO\Zmsapi\ScopeDelete:render')
+    ->conditions([
+        'id' => '\d{1,11}',
+     ])
+    ->name("ScopeDelete");
 
 /* ---------------------------------------------------------------------------
  * maintenance

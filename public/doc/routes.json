@@ -36,6 +36,73 @@
 			}
 		}
 	},
+	"/mails/": {
+		"get": {
+			"description": "get a list of mails in the send queue",
+			"responses": {
+				"200": {
+					"description": "returns a list, might be empty",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/mail.json"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"post": {
+			"description": "Add a mail to the send queue",
+			"parameters": [
+				{
+					"name": "notification",
+					"description": "mail data to send",
+					"in": "body",
+					"schema": {
+						"$ref": "schema/mail.json"
+					}
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "mail accepted"
+				},
+				"400": {
+					"description": "Missing required properties in the notification"
+				}
+			}
+		}
+	},
+	"/mails/{id}": {
+		"delete": {
+			"description": "delete a mail in the send queue",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "mail number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "succesfully deleted"
+				},
+				"404": {
+					"description": "could not find mail or mail already sent"
+				}
+			}
+		}
+	},
 	"/notifications/": {
 		"get": {
 			"description": "get a list of notifications in the send queue",
@@ -145,8 +212,8 @@
 				}
 			}
 		},
-		"post": {
-			"description": "Update a process",
+		"delete": {
+			"description": "Deletes a process but does not send any mails or notifications",
 			"parameters": [
 				{
 					"name": "id",
@@ -161,6 +228,91 @@
 					"in": "path",
 					"required": true,
 					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success, there might be changes on the object or added information. Use the response for further action with the process",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/process.json"
+							}
+						}
+					}
+				},
+				"403": {
+					"description": "authkey does not match"
+				},
+				"404": {
+					"description": "process id does not exists"
+				}
+			}
+		}
+	},
+	"/process/{id}/{authKey}/ics/": {
+		"get": {
+			"description": "Get an ICS-File for a process",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "process number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "authKey",
+					"description": "authentication key",
+					"in": "path",
+					"required": true,
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "object",
+								"properties": {
+									"content": {
+										"type": "string",
+										"description": "base64 encoded ICS file"
+									}
+								}
+							}
+						}
+					}
+				},
+				"403": {
+					"description": "authkey does not match"
+				},
+				"404": {
+					"description": "process id does not exists"
+				}
+			}
+		}
+	},
+	"/process/{id}/": {
+		"post": {
+			"description": "Update a process but does not send any mails or notifications on status changes",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "process number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
 				},
 				{
 					"name": "process",
@@ -186,8 +338,14 @@
 						}
 					}
 				},
-				"403": {
+				"400": {
+					"description": "Invalid input"
+				},
+				"401": {
 					"description": "authkey does not match"
+				},
+				"403": {
+					"description": "forbidden, this function does not allow status changes, only data may be changed"
 				},
 				"404": {
 					"description": "process id does not exists"
@@ -308,6 +466,9 @@
 						}
 					}
 				},
+				"400": {
+					"description": "Invalid input"
+				},
 				"404": {
 					"description": "Could not find any processes, returns empty list",
 					"schema": {
@@ -324,6 +485,169 @@
 							}
 						}
 					}
+				}
+			}
+		}
+	},
+	"/process/status/confirmed/": {
+		"post": {
+			"description": "Try to confirm a process, changes status from reservered to confirmed",
+			"parameters": [
+				{
+					"name": "process",
+					"description": "process data to update",
+					"in": "body",
+					"schema": {
+						"$ref": "schema/process.json"
+					}
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "process is confirmed, notifications and mails sent according to preferences",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/process.json"
+								}
+							}
+						}
+					}
+				},
+				"302": {
+					"description": "Redirects to /processes/status/reserved/ since the given process does not exists in the list (any longer)"
+				},
+				"400": {
+					"description": "Invalid input"
+				}
+			}
+		}
+	},
+	"/scope/": {
+		"get": {
+			"description": "Get a list of scopes",
+			"responses": {
+				"200": {
+					"description": "returns a list",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/scope.json"
+								}
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "no scopes defined yet"
+				}
+			}
+		}
+	},
+	"/scope/{id}": {
+		"get": {
+			"description": "Get a scope",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "scope number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/scope.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "scope id does not exists"
+				}
+			}
+		},
+		"post": {
+			"description": "Update a scope",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "scope number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "scope",
+					"description": "scope content",
+					"in": "body",
+					"required": true,
+					"schema": {
+						"$ref": "schema/scope.json"
+					}
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/scope.json"
+							}
+						}
+					}
+				},
+				"400": {
+					"description": "Invalid input"
+				},
+				"404": {
+					"description": "process id does not exists"
+				}
+			}
+		},
+		"delete": {
+			"description": "Delete a scope",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "scope number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success"
+				},
+				"404": {
+					"description": "scope id does not exists"
 				}
 			}
 		}
