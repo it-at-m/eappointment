@@ -5,8 +5,9 @@ gulp.task('watch', function() {
     gulp.watch([
         'public/doc/style.less',
         'public/doc/swagger.yaml',
-        'public/doc/*.json',
-        '!public/doc/swagger.json'
+        'public/doc/schema/*.json',
+        '!public/doc/swagger.json',
+        'routing.php'
     ], [
         'bootprint-swagger'
     ]);

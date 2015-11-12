@@ -1,7 +1,7 @@
 <?php
 // @codingStandardsIgnoreFile
- 
-class App extends \BO\Zmsadmin\Application
+
+class App extends \BO\Zmsapi\Application
 {
     const APP_PATH = APP_PATH;
 

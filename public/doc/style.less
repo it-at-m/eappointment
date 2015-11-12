@@ -4,6 +4,17 @@
 @schema-curly: #ddd;
 
 
+.sw-response-model {
+    .panel-body:before {
+        color: black;
+        content: "Content";
+        display:block;
+        font-size: 0.8em;
+        margin-left: -1em;
+        text-transform: uppercase;
+    }
+}
+
 .panel-definition {
     border: 0px;
 
@@ -26,7 +37,9 @@
     .panel-body {
         margin-left: 1em;
     }
-    .panel-body, .json-inner-schema .json-schema-properties, .json-inner-schema .json-schema-array-items, .json-inner-schema .json-schema-description, .json-inner-schema .json-schema-example{
+
+
+    .json-inner-schema .json-schema-properties, .json-inner-schema .json-schema-array-items, .json-inner-schema .json-schema-description, .json-inner-schema .json-schema-example{
         border-radius: 1em;
         border-left: solid 0.3em @schema-curly;
         position: relative;

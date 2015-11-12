@@ -20,26 +20,7 @@ consumes:
 produces:
   - application/json
 paths:
-  '/process/{id}':
-    get:
-      description: Return a process by ID2
-      operationId: readProcessById
-      produces:
-        - application/json
-      parameters:
-        - name: id
-          in: path
-          type: integer
-          required: true
-      responses:
-        '200':
-          description: get a process
-          schema:
-            $ref: '#/definitions/process'
-        default:
-          description: unexpected error
-          schema:
-            $ref: '#/definitions/errorModel'
+  $ref: "routes.json"
 definitions:
   appointment:
     $ref: "schema/appointment.json"

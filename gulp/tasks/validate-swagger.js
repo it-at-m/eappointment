@@ -1,10 +1,9 @@
 var gulp = require('gulp');
-var yaml = require('js-yaml');
 var fs   = require('fs');
 var SwaggerParser = require('swagger-parser');
 var gutil = require('gulp-util');
 
-gulp.task('validate-swagger', [], function () {
+gulp.task('validate-swagger', ['routes-swagger'], function () {
     SwaggerParser.validate('public/doc/swagger.yaml', {
         "cache": {
             "fs": false
