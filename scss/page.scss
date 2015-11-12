@@ -1,9 +1,10 @@
 // The base grid layout
 
 .page {
-    margin:         0 auto $gridGutter auto;
-    max-width:      $pageMaxWidth;
-    padding:        0 $gridGutter;
+    margin:             0 auto $gridGutter auto;
+    max-width:          $pageMaxWidth;
+    padding:            0 $gridGutter $gridGutter $gridGutter;
+    background-color:   $white;
 }
 
 .page-canvas {
