@@ -41,6 +41,8 @@ definitions:
     $ref: "schema/department.json"
   dayoff:
     $ref: "schema/dayoff.json"
+  mail:
+    $ref: "schema/mail.json"
   metaresult:
     $ref: "schema/metaresult.json"
   notification:
@@ -51,12 +53,16 @@ definitions:
     $ref: "schema/owner.json"
   process:
     $ref: "schema/process.json"
+  provider:
+    $ref: "schema/provider.json"
   queue:
     $ref: "schema/queue.json"
   request:
     $ref: "schema/request.json"
   scope:
     $ref: "schema/scope.json"
+  status:
+    $ref: "schema/status.json"
   ticketprinter:
     $ref: "schema/ticketprinter.json"
   useraccount:
