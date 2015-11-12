@@ -1,17 +1,22 @@
+$boxElementPadding:         ($gridGutter / 3) ($gridGutter / 2);
+
 .box {
     margin:                 0 0 $gridGutter 0;
     padding:                0;
     .box-header {
-        padding:            $gridGutter / 2;
+        padding:            $boxElementPadding;
         background-color:   $blue;
     }
     .box-body {
-        padding:            $gridGutter / 2;
+        padding:            $boxElementPadding;
         background-color:   $grey;
+        border:             1px solid $greyDark;
     }
     .box-footer {
-        padding:            $gridGutter / 2;
+        padding:            $boxElementPadding;
         background-color:   $grey;
+        border:             1px solid $greyDark;
+        border-width:       0px 1px 1px 1px;
     }
     .box__title {
         font-size:          1em;
