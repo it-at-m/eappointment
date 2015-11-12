@@ -17,7 +17,31 @@
     }
 }
 
-
+.region {
+    @extend .grid;
+    &.region--workstation {
+        .region-clientinfo {
+            @extend .grid__item, .one-fifth, .lap--one-whole, .palm--one-whole;
+        }
+        .region-appointment {
+            @extend .grid__item, .three-fifths, .lap--two-thirds, .palm--one-whole;
+        }
+        .region-calendar {
+            @extend .grid__item, .one-fifth, .lap--one-third, .palm--one-whole;
+        }
+    }
+    &.region--counter {
+        .region-clientinfo {
+            @extend .grid__item, .one-fifth, .lap--two-thirds, .palm--one-whole;
+        }
+        .region-appointment {
+            @extend .grid__item, .three-fifths, .lap--two-whole, .palm--one-whole;
+        }
+        .region-calendar {
+            @extend .grid__item, .one-fifth, .lap--one-third, .palm--one-whole;
+        }
+    }
+}
 
 // We extend wizardrys inline-block bug fix, otherwise it does not work
 @if $use-markup-fix != true {
