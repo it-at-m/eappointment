@@ -18,6 +18,12 @@ consumes:
   - application/json
 produces:
   - application/json
+securityDefinitions:
+  httpauth:
+    type: basic
+    description: 'The API uses two systems of authentication. An application uses basic authentication via HTTP to identify. According to the application settings, there might be different rights to use API methods. The user managment via the entity "useraccount" works with the Header "X-Authkey". With the methods in the path "/workstation", a valid "X-Authkey" is generated. Further rights depend on the settings for the authorized useraccount.'
+security:
+    - httpauth: []
 paths:
   $ref: "routes.json"
 definitions:
@@ -69,14 +75,3 @@ definitions:
     $ref: "schema/useraccount.json"
   workstation:
     $ref: "schema/workstation.json"
-  errorModel:
-    type: object
-    required:
-      - code
-      - message
-    properties:
-      code:
-        type: integer
-        format: int32
-      message:
-        type: string
