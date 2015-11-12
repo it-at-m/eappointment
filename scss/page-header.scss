@@ -1,8 +1,9 @@
 .page-header {
     @extend .grid, .grid--full;
+    color:              $white;
     background-color:   $pageheaderBackgroundColor;
     padding:            ($gridGutter / 2) $gridGutter;
-    color:              $white;
+    margin:             0 0 $gridGutter 0;
     .page-header_logo {
         @extend .grid__item, .one-sixth, .palm--one-whole;
     }

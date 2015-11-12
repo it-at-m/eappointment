@@ -1,0 +1,24 @@
+.box {
+    margin:                 0 0 $gridGutter 0;
+    padding:                0;
+    .box-header {
+        padding:            $gridGutter / 2;
+        background-color:   $blue;
+    }
+    .box-body {
+        padding:            $gridGutter / 2;
+        background-color:   $grey;
+    }
+    .box-footer {
+        padding:            $gridGutter / 2;
+        background-color:   $grey;
+    }
+    .box__title {
+        font-size:          1em;
+        line-height:        1.25em;
+        margin:             0;
+        padding:            0;
+        color:              $white;
+    }
+}
+
