@@ -41,6 +41,8 @@ definitions:
     $ref: "schema/department.json"
   dayoff:
     $ref: "schema/dayoff.json"
+  metaresult:
+    $ref: "schema/metaresult.json"
   notification:
     $ref: "schema/notification.json"
   organisation:
