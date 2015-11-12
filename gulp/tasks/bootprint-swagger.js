@@ -12,8 +12,7 @@ gulp.task('bootprint-swagger', ['validate-swagger'], function () {
         }
     })
     .then(function(api) {
-        fs.writeFile('public/doc/swagger.json', JSON.stringify(api), function (error) {
-            console.log("Callback ok");
+        fs.writeFile('public/doc/swagger.json', JSON.stringify(api, null, "\t"), function (error) {
             if (error) {
                 gutil.log(gutil.colors.red(error));
             } else {
