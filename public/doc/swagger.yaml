@@ -11,8 +11,7 @@ info:
   license:
     name: Commercial
     url: 'http://www.berlinonline.net'
-host: api.service.berlin.de
-basePath: /v1
+basePath: /zms/api/v1
 schemes:
   - https
 consumes:
@@ -42,12 +41,14 @@ definitions:
     $ref: "schema/department.json"
   dayoff:
     $ref: "schema/dayoff.json"
-  process:
-    $ref: "schema/process.json"
+  notification:
+    $ref: "schema/notification.json"
   organisation:
     $ref: "schema/organisation.json"
   owner:
     $ref: "schema/owner.json"
+  process:
+    $ref: "schema/process.json"
   queue:
     $ref: "schema/queue.json"
   request:
