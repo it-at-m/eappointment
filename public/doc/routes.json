@@ -34,7 +34,7 @@
 			}
 		},
 		"post": {
-			"description": "Get a process",
+			"description": "Update a process",
 			"parameters": [
 				{
 					"name": "id",
@@ -61,7 +61,7 @@
 			],
 			"responses": {
 				"200": {
-					"description": "success",
+					"description": "success, there might be changes on the object or added information. Use the response for further action with the process",
 					"schema": {
 						"$ref": "schema/process.json"
 					}
@@ -71,6 +71,70 @@
 				},
 				"404": {
 					"description": "process id does not exists"
+				}
+			}
+		}
+	},
+	"/calendar/": {
+		"get": {
+			"description": "Get a list of available days for appointments",
+			"parameters": [
+				{
+					"name": "calendar",
+					"description": "data for finding available days",
+					"in": "body",
+					"schema": {
+						"$ref": "schema/calendar.json"
+					}
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "get an updated calendar objects with updated days list",
+					"schema": {
+						"$ref": "schema/calendar.json"
+					}
+				},
+				"404": {
+					"description": "Could not find any available days",
+					"schema": {
+						"$ref": "schema/calendar.json"
+					}
+				}
+			}
+		}
+	},
+	"/process/free/": {
+		"get": {
+			"description": "Get a list of free processes for a given day",
+			"parameters": [
+				{
+					"name": "calendar",
+					"description": "data for finding available processes, try to restrict data to one day, if possible",
+					"in": "body",
+					"schema": {
+						"$ref": "schema/calendar.json"
+					}
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "get an updated calendar objects with updated days list",
+					"schema": {
+						"type": "array",
+						"items": {
+							"$ref": "schema/process.json"
+						}
+					}
+				},
+				"404": {
+					"description": "Could not find any available processes, returns empty list",
+					"schema": {
+						"type": "array",
+						"items": {
+							"$ref": "schema/process.json"
+						}
+					}
 				}
 			}
 		}
