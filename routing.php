@@ -81,7 +81,7 @@
 \App::$slim->post('/availability/:id/',
     '\BO\Zmsapi\AvailabilityUpdate:render')
     ->conditions([
-        'id' => '\d{4,11}',
+        'id' => '\d{1,11}',
      ])
     ->name("AvailabilityUpdate");
 
@@ -112,7 +112,7 @@
 \App::$slim->delete('/availability/:id/',
     '\BO\Zmsapi\AvailabilityDelete:render')
     ->conditions([
-        'id' => '\d{4,11}',
+        'id' => '\d{1,11}',
      ])
     ->name("AvailabilityDelete");
 
@@ -155,11 +155,12 @@
 /**
 *  @swagger
 *  "/calldisplay/":
-*      get:
+*      post:
 *          description: Get preferences for a calldisplay
 *          parameters:
 *              -   name: calldisplay
 *                  description: data containing scopes and clusters
+*                  required: true
 *                  in: body
 *                  schema:
 *                      $ref: "schema/calldisplay.json"
@@ -181,18 +182,19 @@
 *                          meta:
 *                              $ref: "schema/metaresult.json"
 */
-\App::$slim->get('/calldisplay/',
+\App::$slim->post('/calldisplay/',
     '\BO\Zmsapi\CalldisplayGet:render')
     ->name("CalldisplayGet");
 
 /**
 *  @swagger
 *  "/calldisplay/queue/":
-*      get:
+*      post:
 *          description: Get queue for a calldisplay
 *          parameters:
 *              -   name: calldisplay
 *                  description: data containing scopes and clusters
+*                  required: true
 *                  in: body
 *                  schema:
 *                      $ref: "schema/calldisplay.json"
@@ -216,9 +218,9 @@
 *                          meta:
 *                              $ref: "schema/metaresult.json"
 */
-\App::$slim->get('/calldisplay/queue/',
+\App::$slim->post('/calldisplay/queue/',
     '\BO\Zmsapi\CalldisplayQueue:render')
-    ->name("CalldisplayQueue:");
+    ->name("CalldisplayQueue");
 
 /**
  *  @swagger
@@ -247,7 +249,7 @@
 \App::$slim->get('/cluster/:id/',
     '\BO\Zmsapi\ClusterGet:render')
     ->conditions([
-        'id' => '\d{4,11}',
+        'id' => '\d{1,11}',
      ])
     ->name("ClusterGet");
 
@@ -264,6 +266,7 @@
  *                  type: integer
  *              -   name: cluster
  *                  description: cluster data to update
+ *                  required: true
  *                  in: body
  *                  schema:
  *                      $ref: "schema/cluster.json"
@@ -283,7 +286,7 @@
 \App::$slim->post('/cluster/:id/',
     '\BO\Zmsapi\ClusterUpdate:render')
     ->conditions([
-        'id' => '\d{4,11}',
+        'id' => '\d{1,11}',
      ])
     ->name("ClusterUpdate");
 
@@ -307,7 +310,7 @@
 \App::$slim->delete('/cluster/:id/',
     '\BO\Zmsapi\ClusterDelete:render')
     ->conditions([
-        'id' => '\d{4,11}',
+        'id' => '\d{1,11}',
      ])
     ->name("ClusterDelete");
 
@@ -466,7 +469,7 @@
 \App::$slim->get('/department/:id/',
     '\BO\Zmsapi\DepartmentGet:render')
     ->conditions([
-        'id' => '\d{4,11}',
+        'id' => '\d{1,11}',
      ])
     ->name("DepartmentGet");
 
@@ -483,6 +486,7 @@
  *                  type: integer
  *              -   name: department
  *                  description: department data to update
+ *                  required: true
  *                  in: body
  *                  schema:
  *                      $ref: "schema/department.json"
@@ -502,7 +506,7 @@
 \App::$slim->post('/department/:id/',
     '\BO\Zmsapi\DepartmentUpdate:render')
     ->conditions([
-        'id' => '\d{4,11}',
+        'id' => '\d{1,11}',
      ])
     ->name("DepartmentUpdate");
 
@@ -526,7 +530,7 @@
 \App::$slim->delete('/department/:id/',
     '\BO\Zmsapi\DepartmentDelete:render')
     ->conditions([
-        'id' => '\d{4,11}',
+        'id' => '\d{1,11}',
      ])
     ->name("DepartmentDelete");
 
@@ -549,8 +553,8 @@
  *                                  $ref: "schema/mail.json"
  */
 \App::$slim->get('/mails/',
-    '\BO\Zmsapi\MailGet:render')
-    ->name("MailGet");
+    '\BO\Zmsapi\MailList:render')
+    ->name("MailList");
 
 
 
@@ -562,12 +566,22 @@
  *          parameters:
  *              -   name: notification
  *                  description: mail data to send
+ *                  required: true
  *                  in: body
  *                  schema:
  *                      $ref: "schema/mail.json"
  *          responses:
  *              200:
  *                  description: mail accepted
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/mail.json"
  *              400:
  *                  description: "Missing required properties in the notification"
  */
@@ -592,10 +606,10 @@
  *              404:
  *                  description: "could not find mail or mail already sent"
  */
-\App::$slim->delete('/mails/{id}/',
+\App::$slim->delete('/mails/:id/',
     '\BO\Zmsapi\MailDelete:render')
     ->conditions([
-        'id' => '\d{4,11}',
+        'id' => '\d{1,11}',
      ])
     ->name("MailDelete");
 
@@ -619,8 +633,8 @@
  *                                  $ref: "schema/notification.json"
  */
 \App::$slim->get('/notification/',
-    '\BO\Zmsapi\NotificationsGet:render')
-    ->name("NotificationsGet");
+    '\BO\Zmsapi\NotificationList:render')
+    ->name("NotificationList");
 
 
 
@@ -632,6 +646,7 @@
  *          parameters:
  *              -   name: notification
  *                  description: notification data to send
+ *                  required: true
  *                  in: body
  *                  schema:
  *                      $ref: "schema/notification.json"
@@ -642,8 +657,8 @@
  *                  description: "Missing required properties in the notification"
  */
 \App::$slim->post('/notification/',
-    '\BO\Zmsapi\NotificationsAdd:render')
-    ->name("NotificationsAdd");
+    '\BO\Zmsapi\NotificationAdd:render')
+    ->name("NotificationAdd");
 
 /**
  *  @swagger
@@ -662,10 +677,10 @@
  *              404:
  *                  description: "could not find notification or notification already sent"
  */
-\App::$slim->delete('/notification/{id}/',
+\App::$slim->delete('/notification/:id/',
     '\BO\Zmsapi\NotificationDelete:render')
     ->conditions([
-        'id' => '\d{4,11}',
+        'id' => '\d{1,11}',
      ])
     ->name("NotificationDelete");
 
@@ -719,7 +734,7 @@
 \App::$slim->get('/organisation/:id/',
     '\BO\Zmsapi\OrganisationGet:render')
     ->conditions([
-        'id' => '\d{4,11}',
+        'id' => '\d{1,11}',
      ])
     ->name("OrganisationGet");
 
@@ -736,6 +751,7 @@
  *                  type: integer
  *              -   name: organisation
  *                  description: organisation data to update
+ *                  required: true
  *                  in: body
  *                  schema:
  *                      $ref: "schema/organisation.json"
@@ -755,7 +771,7 @@
 \App::$slim->post('/organisation/:id/',
     '\BO\Zmsapi\OrganisationUpdate:render')
     ->conditions([
-        'id' => '\d{4,11}',
+        'id' => '\d{1,11}',
      ])
     ->name("OrganisationUpdate");
 
@@ -779,7 +795,7 @@
 \App::$slim->delete('/organisation/:id/',
     '\BO\Zmsapi\OrganisationDelete:render')
     ->conditions([
-        'id' => '\d{4,11}',
+        'id' => '\d{1,11}',
      ])
     ->name("OrganisationDelete");
 
@@ -810,7 +826,7 @@
 \App::$slim->get('/organisation/:id/hash/',
     '\BO\Zmsapi\OrganisationHash:render')
     ->conditions([
-        'id' => '\d{4,11}',
+        'id' => '\d{1,11}',
      ])
     ->name("OrganisationHash");
 
@@ -848,7 +864,7 @@
 \App::$slim->get('/process/:id/:authKey/',
     '\BO\Zmsapi\ProcessGet:render')
     ->conditions([
-        'id' => '\d{4,11}',
+        'id' => '\d{1,11}',
      ])
     ->name("ProcessGet");
 
@@ -891,14 +907,14 @@
 \App::$slim->get('/process/:id/:authKey/ics/',
     '\BO\Zmsapi\ProcessIcs:render')
     ->conditions([
-        'id' => '\d{4,11}',
+        'id' => '\d{1,11}',
      ])
     ->name("ProcessIcs");
 
 
 /**
  *  @swagger
- *  "/process/{id}/":
+ *  "/process/{id}/{authKey}/":
  *      post:
  *          description: Update a process but does not send any mails or notifications on status changes
  *          parameters:
@@ -907,8 +923,14 @@
  *                  in: path
  *                  required: true
  *                  type: integer
+ *              -   name: authKey
+ *                  description: authentication key
+ *                  in: path
+ *                  required: true
+ *                  type: string
  *              -   name: process
  *                  description: process data to update
+ *                  required: true
  *                  in: body
  *                  schema:
  *                      $ref: "schema/process.json"
@@ -924,17 +946,15 @@
  *                              $ref: "schema/process.json"
  *              400:
  *                  description: "Invalid input"
- *              401:
- *                  description: "authkey does not match"
  *              403:
- *                  description: "forbidden, this function does not allow status changes, only data may be changed"
+ *                  description: "forbidden, authkey does not match or status changes, only data may be changed"
  *              404:
  *                  description: "process id does not exists"
  */
 \App::$slim->post('/process/:id/:authKey/',
     '\BO\Zmsapi\ProcessUpdate:render')
     ->conditions([
-        'id' => '\d{4,11}',
+        'id' => '\d{1,11}',
     ])
     ->name("ProcessUpdate");
 
@@ -972,18 +992,19 @@
 \App::$slim->delete('/process/:id/:authKey/',
     '\BO\Zmsapi\ProcessDelete:render')
     ->conditions([
-        'id' => '\d{4,11}',
+        'id' => '\d{1,11}',
     ])
     ->name("ProcessDelete");
 
 /**
  *  @swagger
  *  "/process/status/free/":
- *      get:
+ *      post:
  *          description: Get a list of free processes for a given day
  *          parameters:
  *              -   name: calendar
  *                  description: data for finding available processes, try to restrict data to one day, if possible
+ *                  required: true
  *                  in: body
  *                  schema:
  *                      $ref: "schema/calendar.json"
@@ -1006,7 +1027,7 @@
  *                      items:
  *                          $ref: "schema/process.json"
  */
-\App::$slim->get('/process/status/free/',
+\App::$slim->post('/process/status/free/',
     '\BO\Zmsapi\ProcessFree:render')
     ->name("ProcessFree");
 
@@ -1037,7 +1058,7 @@
  *                          data:
  *                              type: array
  *                              items:
- *                                  $ref: "schema/process.json"
+ *                                  type: object
  */
 \App::$slim->get('/process/status/reserved/',
     '\BO\Zmsapi\ProcessReservedList:render')
@@ -1051,6 +1072,7 @@
  *          parameters:
  *              -   name: process
  *                  description: process data to update
+ *                  required: true
  *                  in: body
  *                  schema:
  *                      $ref: "schema/process.json"
@@ -1063,22 +1085,13 @@
  *                          meta:
  *                              $ref: "schema/metaresult.json"
  *                          data:
- *                              type: array
- *                              items:
- *                                  $ref: "schema/process.json"
+ *                              $ref: "schema/process.json"
  *              400:
  *                  description: "Invalid input"
+ *              403:
+ *                  description: "authkey does not match"
  *              404:
  *                  description: "Could not find any processes, returns empty list"
- *                  schema:
- *                      type: object
- *                      properties:
- *                          meta:
- *                              $ref: "schema/metaresult.json"
- *                          data:
- *                              type: array
- *                              items:
- *                                  $ref: "schema/process.json"
  */
 \App::$slim->post('/process/status/reserved/',
     '\BO\Zmsapi\ProcessReserve:render')
@@ -1092,6 +1105,7 @@
  *          parameters:
  *              -   name: process
  *                  description: process data to update
+ *                  required: true
  *                  in: body
  *                  schema:
  *                      $ref: "schema/process.json"
@@ -1111,6 +1125,8 @@
  *                  description: "Redirects to /processes/status/reserved/ since the given process does not exists in the list (any longer)"
  *              400:
  *                  description: "Invalid input"
+ *              403:
+ *                  description: "authkey does not match"
  */
 \App::$slim->post('/process/status/confirmed/',
     '\BO\Zmsapi\ProcessConfirm:render')
@@ -1197,12 +1213,12 @@
  *              404:
  *                  description: "scope id does not exists"
  */
-\App::$slim->get('/scope/:id/queue/',
+\App::$slim->get('/scope/:id/availability/',
     '\BO\Zmsapi\AvailabilityList:render')
     ->conditions([
         'id' => '\d{1,11}',
      ])
-    ->name("AvailabilityList:");
+    ->name("AvailabilityList");
 
 /**
  *  @swagger
@@ -1312,8 +1328,8 @@
  *                      $ref: "schema/status.json"
  */
 \App::$slim->get('/status/',
-    '\BO\Zmsapi\Status:render')
-    ->name("Status");
+    '\BO\Zmsapi\StatusGet:render')
+    ->name("StatusGet");
 
 /**
  *  @swagger
@@ -1406,60 +1422,6 @@
 
 /**
  *  @swagger
- *  "/useraccount/{loginname}/login/":
- *      post:
- *          description: Get an authentication key for a user account
- *          parameters:
- *              -   name: loginname
- *                  description: useraccount number
- *                  in: path
- *                  required: true
- *                  type: string
- *              -   name: password
- *                  description: useraccount number
- *                  in: formData
- *                  required: true
- *                  type: string
- *          responses:
- *              200:
- *                  description: "success"
- *                  schema:
- *                      type: object
- *                      properties:
- *                          meta:
- *                              $ref: "schema/metaresult.json"
- *                          data:
- *                              $ref: "schema/workstation.json"
- *              404:
- *                  description: "useraccount loginname does not exists"
- */
-\App::$slim->post('/useraccount/:loginname/logout/',
-    '\BO\Zmsapi\UseraccountLogout:render')
-    ->name("UseraccountLogout");
-
-/**
- *  @swagger
- *  "/useraccount/{loginname}/logout/":
- *      delete:
- *          description: Logout a user and delete his workstation entry
- *          parameters:
- *              -   name: loginname
- *                  description: useraccount number
- *                  in: path
- *                  required: true
- *                  type: string
- *          responses:
- *              200:
- *                  description: "success"
- *              404:
- *                  description: "useraccount loginname does not exists"
- */
-\App::$slim->delete('/useraccount/:loginname/logout/',
-    '\BO\Zmsapi\UseraccountLogout:render')
-    ->name("UseraccountLogout");
-
-/**
- *  @swagger
  *  "/useraccount/{loginname}/":
  *      post:
  *          description: Update an useraccount
@@ -1471,6 +1433,7 @@
  *                  type: string
  *              -   name: useraccount
  *                  description: useraccount data to update
+ *                  required: true
  *                  in: body
  *                  schema:
  *                      $ref: "schema/useraccount.json"
@@ -1542,6 +1505,7 @@
  *          parameters:
  *              -   name: workstation
  *                  description: workstation data to update
+ *                  required: true
  *                  in: body
  *                  schema:
  *                      $ref: "schema/workstation.json"
@@ -1562,6 +1526,66 @@
     '\BO\Zmsapi\WorkstationUpdate:render')
     ->name("WorkstationUpdate");
 
+/**
+ *  @swagger
+ *  "/workstation/{loginname}/":
+ *      post:
+ *          description: Create a workstation for an username, used to login
+ *          parameters:
+ *              -   name: loginname
+ *                  description: useraccount identifier, usually the unique loginname
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: password
+ *                  description: password to verify user
+ *                  in: formData
+ *                  required: true
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/workstation.json"
+ *              404:
+ *                  description: "useraccount loginname does not exists"
+ */
+\App::$slim->post('/workstation/:loginname/',
+    '\BO\Zmsapi\WorkstationLogin:render')
+    ->name("WorkstationLogin");
+
+/**
+ *  @swagger
+ *  "/workstation/{loginname}/":
+ *      delete:
+ *          description: Logout a user and delete his workstation entry
+ *          parameters:
+ *              -   name: loginname
+ *                  description: useraccount number
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/workstation.json"
+ *              404:
+ *                  description: "useraccount loginname does not exists"
+ */
+\App::$slim->delete('/workstation/:loginname/',
+    '\BO\Zmsapi\WorkstationDelete:render')
+    ->name("WorkstationDelete");
 /* ---------------------------------------------------------------------------
  * maintenance
  * -------------------------------------------------------------------------*/

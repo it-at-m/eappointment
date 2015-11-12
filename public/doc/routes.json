@@ -149,12 +149,13 @@
 		}
 	},
 	"/calldisplay/": {
-		"get": {
+		"post": {
 			"description": "Get preferences for a calldisplay",
 			"parameters": [
 				{
 					"name": "calldisplay",
 					"description": "data containing scopes and clusters",
+					"required": true,
 					"in": "body",
 					"schema": {
 						"$ref": "schema/calldisplay.json"
@@ -191,12 +192,13 @@
 		}
 	},
 	"/calldisplay/queue/": {
-		"get": {
+		"post": {
 			"description": "Get queue for a calldisplay",
 			"parameters": [
 				{
 					"name": "calldisplay",
 					"description": "data containing scopes and clusters",
+					"required": true,
 					"in": "body",
 					"schema": {
 						"$ref": "schema/calldisplay.json"
@@ -280,6 +282,7 @@
 				{
 					"name": "cluster",
 					"description": "cluster data to update",
+					"required": true,
 					"in": "body",
 					"schema": {
 						"$ref": "schema/cluster.json"
@@ -513,6 +516,7 @@
 				{
 					"name": "department",
 					"description": "department data to update",
+					"required": true,
 					"in": "body",
 					"schema": {
 						"$ref": "schema/department.json"
@@ -589,6 +593,7 @@
 				{
 					"name": "notification",
 					"description": "mail data to send",
+					"required": true,
 					"in": "body",
 					"schema": {
 						"$ref": "schema/mail.json"
@@ -597,7 +602,21 @@
 			],
 			"responses": {
 				"200": {
-					"description": "mail accepted"
+					"description": "mail accepted",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/mail.json"
+								}
+							}
+						}
+					}
 				},
 				"400": {
 					"description": "Missing required properties in the notification"
@@ -656,6 +675,7 @@
 				{
 					"name": "notification",
 					"description": "notification data to send",
+					"required": true,
 					"in": "body",
 					"schema": {
 						"$ref": "schema/notification.json"
@@ -763,6 +783,7 @@
 				{
 					"name": "organisation",
 					"description": "organisation data to update",
+					"required": true,
 					"in": "body",
 					"schema": {
 						"$ref": "schema/organisation.json"
@@ -885,6 +906,59 @@
 				}
 			}
 		},
+		"post": {
+			"description": "Update a process but does not send any mails or notifications on status changes",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "process number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "authKey",
+					"description": "authentication key",
+					"in": "path",
+					"required": true,
+					"type": "string"
+				},
+				{
+					"name": "process",
+					"description": "process data to update",
+					"required": true,
+					"in": "body",
+					"schema": {
+						"$ref": "schema/process.json"
+					}
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success, there might be changes on the object or added information. Use the response for further action with the process",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/process.json"
+							}
+						}
+					}
+				},
+				"400": {
+					"description": "Invalid input"
+				},
+				"403": {
+					"description": "forbidden, authkey does not match or status changes, only data may be changed"
+				},
+				"404": {
+					"description": "process id does not exists"
+				}
+			}
+		},
 		"delete": {
 			"description": "Deletes a process but does not send any mails or notifications",
 			"parameters": [
@@ -976,63 +1050,14 @@
 			}
 		}
 	},
-	"/process/{id}/": {
-		"post": {
-			"description": "Update a process but does not send any mails or notifications on status changes",
-			"parameters": [
-				{
-					"name": "id",
-					"description": "process number",
-					"in": "path",
-					"required": true,
-					"type": "integer"
-				},
-				{
-					"name": "process",
-					"description": "process data to update",
-					"in": "body",
-					"schema": {
-						"$ref": "schema/process.json"
-					}
-				}
-			],
-			"responses": {
-				"200": {
-					"description": "success, there might be changes on the object or added information. Use the response for further action with the process",
-					"schema": {
-						"type": "object",
-						"properties": {
-							"meta": {
-								"$ref": "schema/metaresult.json"
-							},
-							"data": {
-								"$ref": "schema/process.json"
-							}
-						}
-					}
-				},
-				"400": {
-					"description": "Invalid input"
-				},
-				"401": {
-					"description": "authkey does not match"
-				},
-				"403": {
-					"description": "forbidden, this function does not allow status changes, only data may be changed"
-				},
-				"404": {
-					"description": "process id does not exists"
-				}
-			}
-		}
-	},
 	"/process/status/free/": {
-		"get": {
+		"post": {
 			"description": "Get a list of free processes for a given day",
 			"parameters": [
 				{
 					"name": "calendar",
 					"description": "data for finding available processes, try to restrict data to one day, if possible",
+					"required": true,
 					"in": "body",
 					"schema": {
 						"$ref": "schema/calendar.json"
@@ -1101,7 +1126,7 @@
 							"data": {
 								"type": "array",
 								"items": {
-									"$ref": "schema/process.json"
+									"type": "object"
 								}
 							}
 						}
@@ -1115,6 +1140,7 @@
 				{
 					"name": "process",
 					"description": "process data to update",
+					"required": true,
 					"in": "body",
 					"schema": {
 						"$ref": "schema/process.json"
@@ -1131,10 +1157,7 @@
 								"$ref": "schema/metaresult.json"
 							},
 							"data": {
-								"type": "array",
-								"items": {
-									"$ref": "schema/process.json"
-								}
+								"$ref": "schema/process.json"
 							}
 						}
 					}
@@ -1142,22 +1165,11 @@
 				"400": {
 					"description": "Invalid input"
 				},
+				"403": {
+					"description": "authkey does not match"
+				},
 				"404": {
-					"description": "Could not find any processes, returns empty list",
-					"schema": {
-						"type": "object",
-						"properties": {
-							"meta": {
-								"$ref": "schema/metaresult.json"
-							},
-							"data": {
-								"type": "array",
-								"items": {
-									"$ref": "schema/process.json"
-								}
-							}
-						}
-					}
+					"description": "Could not find any processes, returns empty list"
 				}
 			}
 		}
@@ -1169,6 +1181,7 @@
 				{
 					"name": "process",
 					"description": "process data to update",
+					"required": true,
 					"in": "body",
 					"schema": {
 						"$ref": "schema/process.json"
@@ -1198,6 +1211,9 @@
 				},
 				"400": {
 					"description": "Invalid input"
+				},
+				"403": {
+					"description": "authkey does not match"
 				}
 			}
 		}
@@ -1524,6 +1540,7 @@
 				{
 					"name": "useraccount",
 					"description": "useraccount data to update",
+					"required": true,
 					"in": "body",
 					"schema": {
 						"$ref": "schema/useraccount.json"
@@ -1552,68 +1569,6 @@
 		},
 		"delete": {
 			"description": "Deletes an useraccount",
-			"parameters": [
-				{
-					"name": "loginname",
-					"description": "useraccount number",
-					"in": "path",
-					"required": true,
-					"type": "string"
-				}
-			],
-			"responses": {
-				"200": {
-					"description": "success"
-				},
-				"404": {
-					"description": "useraccount loginname does not exists"
-				}
-			}
-		}
-	},
-	"/useraccount/{loginname}/login/": {
-		"post": {
-			"description": "Get an authentication key for a user account",
-			"parameters": [
-				{
-					"name": "loginname",
-					"description": "useraccount number",
-					"in": "path",
-					"required": true,
-					"type": "string"
-				},
-				{
-					"name": "password",
-					"description": "useraccount number",
-					"in": "formData",
-					"required": true,
-					"type": "string"
-				}
-			],
-			"responses": {
-				"200": {
-					"description": "success",
-					"schema": {
-						"type": "object",
-						"properties": {
-							"meta": {
-								"$ref": "schema/metaresult.json"
-							},
-							"data": {
-								"$ref": "schema/workstation.json"
-							}
-						}
-					}
-				},
-				"404": {
-					"description": "useraccount loginname does not exists"
-				}
-			}
-		}
-	},
-	"/useraccount/{loginname}/logout/": {
-		"delete": {
-			"description": "Logout a user and delete his workstation entry",
 			"parameters": [
 				{
 					"name": "loginname",
@@ -1662,6 +1617,7 @@
 				{
 					"name": "workstation",
 					"description": "workstation data to update",
+					"required": true,
 					"in": "body",
 					"schema": {
 						"$ref": "schema/workstation.json"
@@ -1685,6 +1641,77 @@
 				},
 				"401": {
 					"description": "login required"
+				}
+			}
+		}
+	},
+	"/workstation/{loginname}/": {
+		"post": {
+			"description": "Create a workstation for an username, used to login",
+			"parameters": [
+				{
+					"name": "loginname",
+					"description": "useraccount identifier, usually the unique loginname",
+					"in": "path",
+					"required": true,
+					"type": "string"
+				},
+				{
+					"name": "password",
+					"description": "password to verify user",
+					"in": "formData",
+					"required": true,
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/workstation.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "useraccount loginname does not exists"
+				}
+			}
+		},
+		"delete": {
+			"description": "Logout a user and delete his workstation entry",
+			"parameters": [
+				{
+					"name": "loginname",
+					"description": "useraccount number",
+					"in": "path",
+					"required": true,
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/workstation.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "useraccount loginname does not exists"
 				}
 			}
 		}
