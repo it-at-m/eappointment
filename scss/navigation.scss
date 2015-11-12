@@ -1,0 +1,29 @@
+$navElementPadding:         ($gridGutter / 3) ($gridGutter / 2);
+
+.navigation {
+    background-color:       $grey;
+    border:                 1px solid $greyDark;
+    .navigation__title {
+        font-size:          1em;
+        line-height:        1.2em;
+        color:              $black;
+        background-color:   $greyDark;
+        margin:             0;
+        padding:            $navElementPadding;
+    }
+    .nav {
+        list-style:         none;
+        margin:             0;
+        padding:            0;
+        .nav__item {
+            border-top:     1px solid $greyDark;
+            padding:        $navElementPadding;
+            display:        block;
+            text-decoration:none;
+            &:hover {
+                text-decoration:    underline;
+            }
+        }
+    }
+}
+

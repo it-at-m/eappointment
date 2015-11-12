@@ -1,7 +1,7 @@
 // The base grid layout
 
 .page {
-    margin:         $gridGutter auto;
+    margin:         0 auto $gridGutter auto;
     max-width:      $pageMaxWidth;
     padding:        0 $gridGutter;
 }
