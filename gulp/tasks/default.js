@@ -2,7 +2,7 @@ var gulp = require('gulp');
 
 // Default task
 gulp.task('default', [
-    'yaml-swagger',
+    'validate-swagger',
     'bootprint-swagger',
     'watch'
 ], function () {
