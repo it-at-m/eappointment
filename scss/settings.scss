@@ -39,7 +39,7 @@ $gutter:                        $gridGutter;
 $inuit-base-font-size:          13px; //0.813em; // 13px bei 16px base
 $inuit-base-line-height:        20px; //1.500em; // 20px bei 16px base
 $inuit-base-text-color:         $baseTextColor;
-$inuit-base-background-color:   $greyWhite;
+$inuit-base-background-color:   $white;
 
 // iniut Dimensions
 $inuit-base-spacing-unit:       20px; // we need pixel here. em does not get through the sass/inuit compiler
@@ -48,8 +48,9 @@ $inuit-base-spacing-unit:       20px; // we need pixel here. em does not get thr
 $inuit-btn-background:          $red;
 $inuit-btn-color:               $white;
 $inuit-enable-btn--full:        true;
+$inuit-btn-padding:             5px;
+$inuit-enable-btn--large:       true;
 
 // inuit Tables
 $inuit-enable-table--cells:     true;
 $inuit-enable-table--compact:   false;
-
