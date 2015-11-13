@@ -1,5 +1,10 @@
 // The base grid layout
 
+
+body {
+    font-size:          $inuit-base-font-size;
+}
+
 .page {
     margin:             0 auto $gridGutter auto;
     max-width:          $pageMaxWidth;

@@ -21,6 +21,7 @@
   ],
   "devDependencies": {
     "csswizardry-grids": "~2.2.0",
-    "inuit-starter-kit": "~0.2.9"
+    "inuit-starter-kit": "~0.2.9",
+    "inuit-buttons": "~0.4.2"
   }
 }

@@ -1,6 +1,6 @@
 // The basic box layout
 
-$boxElementPadding:         ($gridGutter / 3) ($gridGutter / 2);
+$boxElementPadding:         $baseBoxElementPadding;
 
 .box {
     margin:                 0 0 $gridGutter 0;

@@ -1,28 +1,47 @@
+/**
+ * OUR SETTINGS
+ */
 
-// Our colors
+// Colors
 $white:                         #FFFFFF;
 $black:                         #000000;
 $grey:                          #F0F0F0;
 $greyDark:                      #D2D2D2;
+$greyWhite:                     #F4F4F4;
 $blue:                          #008CCA;
 $blueDark:                      #33445E;
 $red:                           #E75656;
-
-// Our settings
-$gridGutter:                    20px;
-$pageMaxWidth:                  1280px - ($gridGutter * 2) - 20px;
 $pageheaderBackgroundColor:     $blueDark;
 
+// Dimensions
+$gridGutter:                    20px;
+$pageMaxWidth:                  1280px - ($gridGutter * 2) - 20px;
+$baseBoxElementPadding:         ($gridGutter / 3) ($gridGutter / 2);
 
-// ccswizardry settings
+
+/**
+ * CSSWIZARDRY SETTING
+ */
+ 
 $use-markup-fix:                false;
 $gutter:                        $gridGutter;
 
 
-// inuitcss settings
-$inuit-base-font-size:          16px;
-$inuit-base-line-height:        24px;
-$inuit-base-text-color:         #000;
-$inuit-base-background-color:   #f8f8f8;
+/**
+ * INUT SETTINGS
+ */
 
+// iniut Base Settings
+$inuit-base-font-size:          13px;
+$inuit-base-line-height:        24px;
+$inuit-base-text-color:         $black;
+$inuit-base-background-color:   $greyWhite;
+
+// iniut Dimensions
+$inuit-base-spacing-unit:       $gridGutter;
+
+// iniut Buttons
+$inuit-btn-background:          $red;
+$inuit-btn-color:               $white;
+$inuit-enable-btn--full:        true;
 
