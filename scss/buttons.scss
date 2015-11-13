@@ -1,5 +1,5 @@
 .button-emergency {
-    @extend .btn, .btn--full;
+    @extend .btn, .btn--full, .btn--large;
     margin-bottom:      $gridGutter;
     font-weight:        bold;
 }
