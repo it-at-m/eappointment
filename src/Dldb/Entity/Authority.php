@@ -34,7 +34,7 @@ class Authority extends Base
      *            only check for this serviceCsv
      * @param Bool $external
      *            allow external links, default false
-     *            
+     *
      * @return Bool
      */
     public function hasAppointments($serviceCsv = null, $external = false)
@@ -58,49 +58,25 @@ class Authority extends Base
     }
 
     /**
-     * Check if locations are available for defined office
      *
-     * @todo Remove this function, this is a data query and self manipulation, extreme bug probability
-     *      
      * @param String $officepath
      *            only check for this office
-     *            
      * @return Authority
-     */
-    public function getOffice($officepath = null)
-    {
-        foreach ($this['locations'] as $key => $location) {
-            // better: Entity\Location::isOffice($officepath)
-            if ($location['office'] != $officepath) {
-                unset($this['locations'][$key]); // help :-/
-            }
-        }
-        $data = array(
-            'name' => $this['name'],
-            'locations' => $this['locations']
-        );
-        if (count($data['locations'])) {
-            return new self($data);
-        }
-    }
-
-    /**
      *
-     * @todo check why no clone keyword is used
-     *      
      */
     public function getLocationListByOfficePath($officepath)
     {
         $authority = clone $this;
         if (count($authority['locations'])) {
-            $authority['locations'] = $authority['locations']->getLocationListByOfficePath($officepath);
+            $locations = new \BO\Dldb\Collection\Locations($authority['locations']);
+            $authority['locations'] = $locations->getLocationListByOfficePath($officepath);
         }
         return $authority;
     }
 
     /**
      *
-     * @param Int $locationId            
+     * @param Int $locationId
      *
      * @return Bool
      */
@@ -112,7 +88,7 @@ class Authority extends Base
     /**
      * Remove a location
      *
-     * @param Int $locationId            
+     * @param Int $locationId
      *
      * @return clone self
      */
