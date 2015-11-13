@@ -1,0 +1,16 @@
+.queue {
+    .queue_table {
+        @extend .table, .table--cells;
+        background-color:       $white;
+        thead {
+            background-color:   $blueLight;
+            th {
+                border:         0 none;
+                padding:        0.4em 0.5em;
+            }
+        }
+        td {
+            padding:            0.5em;
+        }
+    }
+}

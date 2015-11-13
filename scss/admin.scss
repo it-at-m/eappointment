@@ -14,6 +14,8 @@ $font-size: 80%;
 @import "bower_components/inuit-page/base.page";
 
 @import "bower_components/inuit-buttons/_objects.buttons";
+@import "bower_components/inuit-tables/_objects.tables.scss";
+@import "bower_components/inuit-list-bare/_objects.list-bare.scss";
 
 @import "bower_components/csswizardry-grids/csswizardry-grids";
 
@@ -22,4 +24,6 @@ $font-size: 80%;
 @import "box";
 @import "navigation";
 @import "buttons";
+@import "queue";
+@import "calendar";
 
