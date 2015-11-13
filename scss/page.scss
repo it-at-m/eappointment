@@ -25,24 +25,24 @@ body {
 .region {
     @extend .grid;
     &.region--workstation {
-        .region-clientinfo {
+        .region-left {
             @extend .grid__item, .one-fifth, .lap--one-whole, .palm--one-whole;
         }
-        .region-appointment {
+        .region-middle {
             @extend .grid__item, .three-fifths, .lap--two-thirds, .palm--one-whole;
         }
-        .region-calendar {
+        .region-right {
             @extend .grid__item, .one-fifth, .lap--one-third, .palm--one-whole;
         }
     }
     &.region--counter {
-        .region-clientinfo {
+        .region-left {
             @extend .grid__item, .one-fifth, .lap--two-thirds, .palm--one-whole;
         }
-        .region-appointment {
+        .region-middle {
             @extend .grid__item, .three-fifths, .lap--two-whole, .palm--one-whole;
         }
-        .region-calendar {
+        .region-right {
             @extend .grid__item, .one-fifth, .lap--one-third, .palm--one-whole;
         }
     }
