@@ -5,22 +5,37 @@ $boxElementPadding:         $baseBoxElementPadding;
 .box {
     margin:                 0 0 $gridGutter 0;
     padding:                0;
-    .box-header {
+    ul {
+        @extend .list-bare;
+    }
+    .box_header {
         padding:            $boxElementPadding;
         background-color:   $blue;
     }
-    .box-body {
-        padding:            $boxElementPadding;
+    .box_body {
+        padding:            0;
         background-color:   $grey;
         border:             1px solid $greyDark;
+        .inner {
+            padding:        $boxElementPadding;
+            + .inner {
+                border-top: 1px solid $greyDark;
+            }
+        }
+        > *:last-child {
+            margin-bottom:  0;
+        }
     }
-    .box-footer {
-        padding:            $boxElementPadding;
-        background-color:   $grey;
+    .box_footer {
         border:             1px solid $greyDark;
         border-width:       0px 1px 1px 1px;
+        margin-top:         -1px;
+        padding:            $boxElementPadding;
+        padding-top:        $gridGutter;
+        background-color:   $grey;
+        font-size:          0.85em;
     }
-    .box__title {
+    .box_header__title {
         font-size:          1em;
         line-height:        1.25em;
         margin:             0;
