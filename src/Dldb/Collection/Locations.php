@@ -87,7 +87,7 @@ class Locations extends Base
         $locationList = new self();
         foreach ($this as $location_id => $location) {
             if ($location['office'] == $officepath) {
-                $locationList[$location_id] = clone $location;
+                $locationList[$location_id] = $location;
             }
         }
         return $locationList;
