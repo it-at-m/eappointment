@@ -11,8 +11,9 @@ $font-size: 80%;
 
 @import "bower_components/inuit-normalize/generic.normalize";
 @import "bower_components/inuit-box-sizing/generic.box-sizing";
-
 @import "bower_components/inuit-page/base.page";
+
+@import "bower_components/inuit-buttons/_objects.buttons";
 
 @import "bower_components/csswizardry-grids/csswizardry-grids";
 
@@ -20,7 +21,5 @@ $font-size: 80%;
 @import "page-header";
 @import "box";
 @import "navigation";
+@import "buttons";
 
-body {
-    font-size: $font-size;
-}
