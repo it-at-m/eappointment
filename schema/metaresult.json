@@ -1,0 +1,30 @@
+{
+    "type": "object",
+    "properties": {
+        "error": {
+            "type": "boolean",
+            "description": "true if request was not successful"
+        },
+        "generated": {
+            "type": "string",
+            "description": "iso8601 date time string of generation on the server",
+            "example": "2015-11-20T18:01:04+01:00"
+        },
+        "length": {
+            "type": "number",
+            "description": "number of items in the data block"
+        },
+        "message": {
+            "type": "string",
+            "description": "contains additional information if property error is true"
+        },
+        "method": {
+            "type": "string",
+            "description": "http method of request"
+        },
+        "url": {
+            "type": "string",
+            "description": "Internal URL of api request to identify api instance"
+        }
+    }
+}
