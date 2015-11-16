@@ -1,6 +1,9 @@
 {
     "type": "object",
     "description": "process a service for a client",
+    "example": {
+        "id": 123456
+    },
     "properties": {
         "amendment": {
             "type": "string",
