@@ -1,0 +1,66 @@
+{
+    "type": "object",
+    "description": "subunit in organisation like \"Bürgeramt\", \"Standesamt\", \"Vertrieb\"",
+    "properties": {
+        "id": {
+            "type": "integer"
+        },
+        "dayoff": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/dayoff"
+            }
+        },
+        "email": {
+            "type": "string",
+            "description": "sender address for reminder mails to the clients"
+        },
+        "links": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "url": {
+                        "type": "string"
+                    },
+                    "target": {
+                        "type": "boolean",
+                        "description": "true if url should open in a new window"
+                    }
+                }
+            }
+        },
+        "organisation": {
+            "$ref": "#/definitions/organisation"
+        },
+        "preferences": {
+            "type": "object",
+            "properties": {
+                "notifications": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "true if sms are allowed"
+                        },
+                        "identification": {
+                            "type": "string",
+                            "description": "usually an email address"
+                        },
+                        "sendConfirmationEnabled": {
+                            "type": "boolean",
+                            "description": "true if confirmation sms are enabled"
+                        },
+                        "sendReminderEnabled": {
+                            "type": "boolean",
+                            "description": "true if reminder sms are enabled"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

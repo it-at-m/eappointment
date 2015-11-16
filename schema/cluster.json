@@ -1,0 +1,26 @@
+{
+    "type": "object",
+    "description": "group of scopes",
+    "properties": {
+        "callDisplayText": {
+            "type": "string",
+            "description": "text for the call display if only the cluster is selected"
+        },
+        "hint": {
+            "type": "string",
+            "description": "information for the client like the address to a cluster location"
+        },
+        "id": {
+            "type": "integer",
+            "description": "auto increment"
+        },
+        "name": {
+            "type": "string",
+            "description": "name for internal usage"
+        },
+        "shortNameEnabled": {
+            "type": "boolean",
+            "description": "true if the scope short name should be display next to the workstation name"
+        }
+    }
+}

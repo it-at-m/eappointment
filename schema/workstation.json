@@ -1,0 +1,34 @@
+{
+    "type": "object",
+    "description": "room or place to process a service for a client",
+    "properties": {
+        "hint": {
+            "type": "string",
+            "description": "used for displaying in the calldisplay"
+        },
+        "id": {
+            "type": "integer",
+            "description": "id of the workstation"
+        },
+        "name": {
+            "type": "string",
+            "description": "usually number of place or room where the workstation is located"
+        },
+        "queue": {
+            "type": "object",
+            "properties": {
+                "appointmentsOnly": {
+                    "type": "boolean",
+                    "description": "true if only appointments should be shown in queue"
+                },
+                "clusterEnabled": {
+                    "type": "boolean",
+                    "description": "true if the complete cluster should be shown in queue"
+                }
+            }
+        },
+        "useraccount": {
+            "$ref": "#/definitions/useraccount"
+        }
+    }
+}

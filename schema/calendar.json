@@ -1,0 +1,31 @@
+{
+    "type": "object",
+    "description": "represents a calendar showing free days for appointments",
+    "properties": {
+        "days": {
+            "type": "array",
+            "description": "list of days containing appointments",
+            "items": {
+                "$ref": "#/definitions/day"
+            }
+        },
+        "firstDay": {
+            "$ref": "#/definitions/day"
+        },
+        "lastDay": {
+            "$ref": "#/definitions/day"
+        },
+        "requests": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/request"
+            }
+        },
+        "scopes": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/scope"
+            }
+        }
+    }
+}

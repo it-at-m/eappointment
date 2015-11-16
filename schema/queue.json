@@ -1,0 +1,33 @@
+{
+    "type": "object",
+    "description": "waiting queue entry with clients",
+    "required": [
+        "arrivalTime",
+        "callCount",
+        "callTime",
+        "number",
+        "waitingTime"
+    ],
+    "properties": {
+        "arrivalTime": {
+            "type": "integer",
+            "description": "time when client was added to the queue or appointment time"
+        },
+        "callCount": {
+            "type": "integer",
+            "description": "number of calls for the client to appear at the workstation"
+        },
+        "callTime": {
+            "type": "integer",
+            "description": "unix timestamp of last call"
+        },
+        "number": {
+            "type": "string",
+            "description": "number to display on a call display"
+        },
+        "waitingTime": {
+            "type": "integer",
+            "description": "minutes since arrival of client"
+        }
+    }
+}

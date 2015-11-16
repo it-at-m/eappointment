@@ -1,0 +1,32 @@
+{
+    "type": "object",
+    "properties": {
+        "city": {
+            "type": "string"
+        },
+        "country": {
+            "type": "string"
+        },
+        "lat": {
+            "type": "number"
+        },
+        "lon": {
+            "type": "number"
+        },
+        "name": {
+            "type": "string"
+        },
+        "postalCode": {
+            "type": "string"
+        },
+        "region": {
+            "type": "string"
+        },
+        "street": {
+            "type": "string"
+        },
+        "streetNumber": {
+            "type": "string"
+        }
+    }
+}

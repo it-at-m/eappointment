@@ -1,0 +1,23 @@
+{
+    "type": "object",
+    "description": "reference to a service",
+    "required": [
+        "id",
+        "name",
+        "source"
+    ],
+    "properties": {
+        "id": {
+            "type": "string",
+            "description": "reference to a service"
+        },
+        "name": {
+            "type": "string",
+            "description": "name of the referenced service (explicit redundant)"
+        },
+        "source": {
+            "type": "string",
+            "description": "source of the service to resolve reference id"
+        }
+    }
+}

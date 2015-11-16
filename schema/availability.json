@@ -1,0 +1,113 @@
+{
+    "type": "object",
+    "description": "representation of opening hours for appointments",
+    "properties": {
+        "bookable": {
+            "type": "object",
+            "properties": {
+                "startInDays": {
+                    "type": "integer",
+                    "description": "number of days relative to today to start offering appointments"
+                },
+                "endInDays": {
+                    "type": "integer",
+                    "description": "maximum number of days in the future to offer appointments"
+                }
+            }
+        },
+        "description": {
+            "type": "string",
+            "description": "short note for internal usage"
+        },
+        "endDate": {
+            "type": "integer",
+            "description": "unix timestamp of a day until this availability is valid"
+        },
+        "endTime": {
+            "type": "string",
+            "description": "format '0:00' or '16:30'"
+        },
+        "id": {
+            "type": "integer"
+        },
+        "multipleSlotsAllowd": {
+            "type": "boolean",
+            "description": "an appointment is allowed to take more than one time slot"
+        },
+        "type": {
+            "type": "string",
+            "description": "The following type are available\n* appointment - defines times for appointments\n* openinghours - defines times where a scope is opened\n* break - defines times for a break (not implemented yet)\n"
+        },
+        "repeat": {
+            "type": "object",
+            "properties": {
+                "afterWeeks": {
+                    "type": "integer",
+                    "description": "number of weeks for repeating the times, usually 1, 2 or 3"
+                },
+                "weekOfMonth": {
+                    "type": "integer",
+                    "description": "number of week in month, on a value of 5 the last week of the month, even it is the 4th"
+                }
+            }
+        },
+        "scope": {
+            "$ref": "#/definitions/scope"
+        },
+        "slotTimeInMinutes": {
+            "type": "integer",
+            "description": ""
+        },
+        "startDate": {
+            "type": "integer",
+            "description": "unix timestamp of a day to start offering appointments"
+        },
+        "startTime": {
+            "type": "string",
+            "description": "format '0:00' or '17:30'"
+        },
+        "weekday": {
+            "type": "object",
+            "properties": {
+                "monday": {
+                    "type": "boolean"
+                },
+                "tuesday": {
+                    "type": "boolean"
+                },
+                "wednesday": {
+                    "type": "boolean"
+                },
+                "thursday": {
+                    "type": "boolean"
+                },
+                "friday": {
+                    "type": "boolean"
+                },
+                "saturday": {
+                    "type": "boolean"
+                },
+                "sunday": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "workstationCount": {
+            "type": "object",
+            "properties": {
+                "callcenter": {
+                    "type": "integer",
+                    "description": "number of workstations to handle appointments if handed out to the client by a callcenter"
+                },
+                "intern": {
+                    "type": "integer",
+                    "description": "maximum of workstations expected to handle appointments"
+                },
+                "public": {
+                    "type": "integer",
+                    "description": "number of workstations to offer appointments for booking using a public website"
+                }
+            }
+        }
+    }
+}

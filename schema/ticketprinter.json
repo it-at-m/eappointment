@@ -1,0 +1,28 @@
+{
+    "type": "object",
+    "description": "system to print waiting numbers for clients",
+    "properties": {
+        "enabled": {
+            "type": "boolean",
+            "description": "true if browser is allowed to hand out waiting numbers to the client"
+        },
+        "hash": {
+            "type": "string",
+            "description": "identifier for a browser (usually cookie content)"
+        },
+        "id": {
+            "type": "integer"
+        },
+        "lastUpdate": {
+            "type": "integer",
+            "description": "unix timestamp"
+        },
+        "name": {
+            "type": "string",
+            "description": "only for internal identification"
+        },
+        "organisation": {
+            "$ref": "#/definitions/organisation"
+        }
+    }
+}

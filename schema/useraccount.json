@@ -1,0 +1,54 @@
+{
+    "type": "object",
+    "properties": {
+        "department": {
+            "$ref": "#/definitions/department"
+        },
+        "lastLogin": {
+            "type": "integer",
+            "description": "unix timestamp"
+        },
+        "loginName": {
+            "type": "string"
+        },
+        "password": {
+            "type": "string",
+            "description": "this field is only used on changing the password"
+        },
+        "rights": {
+            "type": "object",
+            "properties": {
+                "availability": {
+                    "type": "boolean"
+                },
+                "cluster": {
+                    "type": "boolean"
+                },
+                "department": {
+                    "type": "boolean"
+                },
+                "organisation": {
+                    "type": "boolean"
+                },
+                "scope": {
+                    "type": "boolean"
+                },
+                "sms": {
+                    "type": "boolean"
+                },
+                "superuser": {
+                    "type": "boolean"
+                },
+                "ticketprinter": {
+                    "type": "boolean"
+                },
+                "useraccount": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "workstation": {
+            "$ref": "#/definitions/workstation"
+        }
+    }
+}
