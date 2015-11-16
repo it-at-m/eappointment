@@ -28,7 +28,7 @@
             }
         },
         "useraccount": {
-            "$ref": "#/definitions/useraccount"
+            "$ref": "useraccount.json"
         }
     }
 }

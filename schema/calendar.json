@@ -6,25 +6,25 @@
             "type": "array",
             "description": "list of days containing appointments",
             "items": {
-                "$ref": "#/definitions/day"
+                "$ref": "day.json"
             }
         },
         "firstDay": {
-            "$ref": "#/definitions/day"
+            "$ref": "day.json"
         },
         "lastDay": {
-            "$ref": "#/definitions/day"
+            "$ref": "day.json"
         },
         "requests": {
             "type": "array",
             "items": {
-                "$ref": "#/definitions/request"
+                "$ref": "request.json"
             }
         },
         "scopes": {
             "type": "array",
             "items": {
-                "$ref": "#/definitions/scope"
+                "$ref": "scope.json"
             }
         }
     }

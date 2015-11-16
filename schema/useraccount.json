@@ -2,7 +2,7 @@
     "type": "object",
     "properties": {
         "department": {
-            "$ref": "#/definitions/department"
+            "$ref": "department.json"
         },
         "lastLogin": {
             "type": "integer",
@@ -48,7 +48,7 @@
             }
         },
         "workstation": {
-            "$ref": "#/definitions/workstation"
+            "$ref": "workstation.json"
         }
     }
 }

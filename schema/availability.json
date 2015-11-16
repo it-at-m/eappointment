@@ -52,7 +52,7 @@
             }
         },
         "scope": {
-            "$ref": "#/definitions/scope"
+            "$ref": "scope.json"
         },
         "slotTimeInMinutes": {
             "type": "integer",

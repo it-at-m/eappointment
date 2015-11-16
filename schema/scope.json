@@ -3,10 +3,10 @@
     "description": "unit for processing services for clients",
     "properties": {
         "contact": {
-            "$ref": "#/definitions/contact"
+            "$ref": "contact.json"
         },
         "department": {
-            "$ref": "#/definitions/department"
+            "$ref": "department.json"
         },
         "hint": {
             "type": "string",
@@ -192,7 +192,7 @@
         "provider": {
             "properties": {
                 "contact": {
-                    "$ref": "#/definitions/contact"
+                    "$ref": "contact.json"
                 },
                 "id": {
                     "type": "string",

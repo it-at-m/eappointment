@@ -9,7 +9,7 @@
         "appointments": {
             "type": "array",
             "items": {
-                "$ref": "#/definitions/appointment"
+                "$ref": "appointment.json"
             }
         },
         "authKey": {
@@ -19,7 +19,7 @@
         "clients": {
             "type": "array",
             "items": {
-                "$ref": "#/definitions/client"
+                "$ref": "client.json"
             }
         },
         "createIP": {
@@ -35,7 +35,7 @@
             "description": "Number is used to identify appointments like on call displays\n"
         },
         "queue": {
-            "$ref": "#/definitions/queue"
+            "$ref": "queue.json"
         },
         "reminderTimestamp": {
             "type": "integer",
@@ -44,7 +44,7 @@
         "requests": {
             "type": "array",
             "items": {
-                "$ref": "#/definitions/request"
+                "$ref": "request.json"
             }
         },
         "status": {
@@ -52,10 +52,10 @@
             "description": "Status of the process. The following values are possible:\n  * free: open for reservation\n  * reserved: for updating data, no validation yet\n  * confirmed: appointment\n  * queued: confirmed and in waiting queue\n  * called: show on call displays\n  * processing: client appeared and gets service\n  * pending: client has to return for getting papers\n  * finished: successfully processed\n  * missed: no client appeared\n  * archived: only used in statistics\n"
         },
         "scope": {
-            "$ref": "#/definitions/scope"
+            "$ref": "scope.json"
         },
         "workstation": {
-            "$ref": "#/definitions/workstation"
+            "$ref": "workstation.json"
         }
     }
 }
