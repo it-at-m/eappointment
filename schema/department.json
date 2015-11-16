@@ -21,6 +21,14 @@
                 "target": true
             }
         ],
+        "preferences": {
+            "notifications": {
+                "enabled": true,
+                "identification": "terminvereinbarung@mitte.berlin.de",
+                "sendConfirmationEnabled": true,
+                "sendReminderEnabled": true
+            }
+        },
         "scopes": [
             {
                 "id": 123

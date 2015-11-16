@@ -1,0 +1,49 @@
+{
+    "type": "object",
+    "description": "content of a notification to send to a client",
+    "example": {
+        "id": 1234,
+        "deparment": {
+            "id": 123,
+            "preferences": {
+                "notifications": {
+                    "enabled": true,
+                    "identification": "terminvereinbarung@mitte.berlin.de",
+                    "sendConfirmationEnabled": true,
+                    "sendReminderEnabled": true
+                }
+            }
+        },
+        "message": "Denken Sie an ihren Termin mit der Nummer 123456",
+        "process": {
+            "clients": [
+                {
+                    "familyName": "Max Mustermann",
+                    "email": "max@service.berlin.de",
+                    "telephone": "030 115"
+                }
+            ],
+            "id": 123456,
+            "reminderTimestamp": 1447931730000,
+            "scope": {
+                "id": 123
+            },
+            "status": "confirmed"
+        }
+    },
+    "properties": {
+        "id": {
+            "type": "integer"
+        },
+        "department": {
+            "$ref": "department.json"
+        },
+        "message": {
+            "type": "string",
+            "description": "Short message to send"
+        },
+        "process": {
+            "$ref": "process.json"
+        }
+    }
+}
