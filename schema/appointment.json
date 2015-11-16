@@ -1,0 +1,17 @@
+{
+    "type": "object",
+    "description": "representation of an appointment",
+    "properties": {
+        "date": {
+            "type": "integer",
+            "description": "unix timestamp representing the date and time of the appointment"
+        },
+        "scope": {
+            "$ref": "scope.json"
+        },
+        "slotCount": {
+            "type": "integer",
+            "description": "number of time slots used"
+        }
+    }
+}
