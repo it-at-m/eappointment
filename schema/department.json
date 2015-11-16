@@ -8,7 +8,7 @@
         "dayoff": {
             "type": "array",
             "items": {
-                "$ref": "#/definitions/dayoff"
+                "$ref": "dayoff.json"
             }
         },
         "email": {
@@ -34,7 +34,7 @@
             }
         },
         "organisation": {
-            "$ref": "#/definitions/organisation"
+            "$ref": "organisation.json"
         },
         "preferences": {
             "type": "object",

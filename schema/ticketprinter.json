@@ -22,7 +22,7 @@
             "description": "only for internal identification"
         },
         "organisation": {
-            "$ref": "#/definitions/organisation"
+            "$ref": "organisation.json"
         }
     }
 }

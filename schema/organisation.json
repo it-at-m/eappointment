@@ -3,7 +3,7 @@
     "description": "top organisation units",
     "properties": {
         "contact": {
-            "$ref": "#/definitions/contact"
+            "$ref": "contact.json"
         },
         "id": {
             "type": "integer"
@@ -12,7 +12,7 @@
             "type": "string"
         },
         "owner": {
-            "$ref": "#/definitions/owner"
+            "$ref": "owner.json"
         },
         "preferences": {
             "type": "object",

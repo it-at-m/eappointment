@@ -3,7 +3,7 @@
     "description": "contract partner",
     "properties": {
         "contact": {
-            "$ref": "#/definitions/contact"
+            "$ref": "contact.json"
         },
         "id": {
             "type": "integer"
