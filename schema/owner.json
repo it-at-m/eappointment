@@ -20,7 +20,7 @@
                 "id": 456
             }
         ]
-    }
+    },
     "properties": {
         "contact": {
             "$ref": "contact.json"
