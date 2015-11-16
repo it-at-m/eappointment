@@ -43,10 +43,15 @@
         },
         "status": "confirmed"
     },
+    "required": [
+        "id",
+        "authKey"
+    ],
     "properties": {
         "amendment": {
             "type": "string",
-            "description": "additional information for this process from the client"
+            "description": "additional information for this process from the client",
+            "default": ""
         },
         "appointments": {
             "type": "array",

@@ -103,7 +103,8 @@
         },
         "hint": {
             "type": "string",
-            "description": "hint for the client like a description where to find the scope"
+            "description": "hint for the client like a description where to find the scope",
+            "default": ""
         },
         "id": {
             "type": "integer",
@@ -117,23 +118,28 @@
                     "properties": {
                         "deallocationDuration": {
                             "type": "integer",
-                            "description": "minutes before an deleted appointment is free for booking again to prevent appointment trading"
+                            "description": "minutes before an deleted appointment is free for booking again to prevent appointment trading",
+                            "default": 30
                         },
                         "endInDaysDefault": {
                             "type": "integer",
-                            "description": "maximum number of days in the future to offer appointments"
+                            "description": "maximum number of days in the future to offer appointments",
+                            "default": 60
                         },
                         "multipleSlotsEnabled": {
                             "type": "boolean",
-                            "description": "true if more than one timeslot per appointment is allowed"
+                            "description": "true if more than one timeslot per appointment is allowed",
+                            "default": true
                         },
                         "reservationDuration": {
                             "type": "integer",
-                            "description": "minutes an appointment can have the status reserved"
+                            "description": "minutes an appointment can have the status reserved",
+                            "default": 30
                         },
                         "startInDaysDefault": {
                             "type": "integer",
-                            "description": "number of days relative to today to start offering appointments"
+                            "description": "number of days relative to today to start offering appointments",
+                            "default": 1
                         }
                     }
                 },
@@ -142,27 +148,33 @@
                     "properties": {
                         "alternateAppointmentUrl": {
                             "type": "string",
-                            "description": "redirect url if client should book appointments over a specialised application"
+                            "description": "redirect url if client should book appointments over a specialised application",
+                            "default": ""
                         },
                         "amendmentLabel": {
                             "type": "string",
-                            "description": "label for the form field to enter additional informations to a process"
+                            "description": "label for the form field to enter additional informations to a process",
+                            "default": ""
                         },
                         "amendmentRequired": {
                             "type": "boolean",
-                            "description": "true if an amendment is required"
+                            "description": "true if an amendment is required",
+                            "default": false
                         },
                         "emailRequired": {
                             "type": "boolean",
-                            "description": "true if client is required to enter an email address"
+                            "description": "true if client is required to enter an email address",
+                            "default": false
                         },
                         "telephoneActivated": {
                             "type": "boolean",
-                            "description": "true if client is allowed to enter a telephone number"
+                            "description": "true if client is allowed to enter a telephone number",
+                            "default": false
                         },
                         "telephoneRequired": {
                             "type": "boolean",
-                            "description": "true if client is required to enter a telephone number"
+                            "description": "true if client is required to enter a telephone number",
+                            "default": false
                         }
                     }
                 },
@@ -171,19 +183,23 @@
                     "properties": {
                         "confirmationContent": {
                             "type": "string",
-                            "description": "text to send to client to confirm the appointment"
+                            "description": "text to send to client to confirm the appointment",
+                            "default": ""
                         },
                         "enabled": {
                             "type": "boolean",
-                            "description": "true if notifications for calling up clients are enabled"
+                            "description": "true if notifications for calling up clients are enabled",
+                            "default": false
                         },
                         "headsUpTime": {
                             "type": "integer",
-                            "description": "minutes before call to send a sms to the client"
+                            "description": "minutes before call to send a sms to the client",
+                            "default": 15
                         },
                         "headsUpContent": {
                             "type": "string",
-                            "description": "text to send a short time before a call"
+                            "description": "text to send a short time before a call",
+                            "default": ""
                         }
                     }
                 },
@@ -192,11 +208,13 @@
                     "properties": {
                         "alternateName": {
                             "type": "string",
-                            "description": "alternate text to display on call display if pickup of documents is required"
+                            "description": "alternate text to display on call display if pickup of documents is required",
+                            "default": ""
                         },
                         "isDefault": {
                             "type": "boolean",
-                            "description": "a pickup of documents is default, this scope is preselected for pickup"
+                            "description": "a pickup of documents is default, this scope is preselected for pickup",
+                            "default": false
                         }
                     }
                 },
@@ -205,31 +223,38 @@
                     "properties": {
                         "callCountMax": {
                             "type": "integer",
-                            "description": "number of calls before a process is removed from the queue"
+                            "description": "number of calls before a process is removed from the queue",
+                            "default": 3
                         },
                         "callDisplayText": {
                             "type": "string",
-                            "description": "text displayed at the right side on the call display"
+                            "description": "text displayed at the right side on the call display",
+                            "default": ""
                         },
                         "firstNumber": {
                             "type": "integer",
-                            "description": "fist possible waiting number for ticket printer"
+                            "description": "fist possible waiting number for ticket printer",
+                            "default": 1
                         },
                         "lastNumber": {
                             "type": "integer",
-                            "description": "last possible waiting number for ticket printer"
+                            "description": "last possible waiting number for ticket printer",
+                            "default": 999
                         },
                         "publishWaitingTimeEnabled": {
                             "type": "boolean",
-                            "description": "true if waiting times are allowed to be published for public use"
+                            "description": "true if waiting times are allowed to be published for public use",
+                            "default": true
                         },
                         "processingTimeAverage": {
                             "type": "integer",
-                            "description": "minutes average for completing a process, used to estimate waiting time"
+                            "description": "minutes average for completing a process, used to estimate waiting time",
+                            "default": 15
                         },
                         "statisticsEnabled": {
                             "type": "boolean",
-                            "description": "true if statistics are enabled"
+                            "description": "true if statistics are enabled",
+                            "default": true
                         }
                     }
                 },
@@ -238,15 +263,18 @@
                     "properties": {
                         "emailContent": {
                             "type": "string",
-                            "description": "content of an email to send to a client if he accepted to participate in a survey"
+                            "description": "content of an email to send to a client if he accepted to participate in a survey",
+                            "default": ""
                         },
                         "enabled": {
                             "type": "boolean",
-                            "description": "true if clients should be asked to participate in a survey"
+                            "description": "true if clients should be asked to participate in a survey",
+                            "default": false
                         },
                         "label": {
                             "type": "string",
-                            "description": "text to display next to the checkbox asking the client to participate in the survey"
+                            "description": "text to display next to the checkbox asking the client to participate in the survey",
+                            "default": ""
                         }
                     }
                 },
@@ -255,19 +283,23 @@
                     "properties": {
                         "confirmationEnabled": {
                             "type": "boolean",
-                            "description": "true if client should get a notification to confirm that notifications are enabled for him/her"
+                            "description": "true if client should get a notification to confirm that notifications are enabled for him/her",
+                            "default": false
                         },
                         "deactivatedText": {
                             "type": "string",
-                            "description": "text to display on the ticket printer, if all ticket printers are disabled"
+                            "description": "text to display on the ticket printer, if all ticket printers are disabled",
+                            "default": ""
                         },
                         "notificationsAmendmentEnabled": {
                             "type": "boolean",
-                            "description": "true if a client is allowed to enter a notfication address after getting his waiting number"
+                            "description": "true if a client is allowed to enter a notfication address after getting his waiting number",
+                            "default": false
                         },
                         "notificationsDelay": {
                             "type": "integer",
-                            "description": "minutes of calculated waiting time before a client is able to enter a notification address"
+                            "description": "minutes of calculated waiting time before a client is able to enter a notification address",
+                            "default": 20
                         }
                     }
                 },
@@ -276,7 +308,8 @@
                     "properties": {
                         "emergencyEnabled": {
                             "type": "boolean",
-                            "description": "true if an emergency button should be displayed on workstation screens"
+                            "description": "true if an emergency button should be displayed on workstation screens",
+                            "default": false
                         }
                     }
                 }
@@ -303,7 +336,8 @@
         },
         "shortName": {
             "type": "string",
-            "description": "short identifier to differentiate between nearly identical scopes"
+            "description": "short identifier to differentiate between nearly identical scopes",
+            "default": ""
         },
         "status": {
             "type": "object",
@@ -314,15 +348,18 @@
                     "properties": {
                         "acceptedByWorkstation": {
                             "type": "string",
-                            "description": "name of workstation which accepted the emergency call"
+                            "description": "name of workstation which accepted the emergency call",
+                            "default": ""
                         },
                         "activated": {
                             "type": "boolean",
-                            "description": "true in case of emergency"
+                            "description": "true in case of emergency",
+                            "default": false
                         },
                         "calledByWorkstation": {
                             "type": "string",
-                            "description": "name of workstation where the emergency occured"
+                            "description": "name of workstation where the emergency occured",
+                            "default": ""
                         }
                     }
                 },
@@ -331,19 +368,23 @@
                     "properties": {
                         "givenNumberCount": {
                             "type": "integer",
-                            "description": "counter for given waiting numbers for the current day"
+                            "description": "counter for given waiting numbers for the current day",
+                            "default": 0
                         },
                         "ghostWorkstationCount": {
                             "type": "integer",
-                            "description": "a fictive number of workstations to calculate waiting times, if zero, the real number of workingstations is used"
+                            "description": "a fictive number of workstations to calculate waiting times, if zero, the real number of workingstations is used",
+                            "default": 0
                         },
                         "lastGivenNumber": {
                             "type": "integer",
-                            "description": "last given waiting number"
+                            "description": "last given waiting number",
+                            "default": 0
                         },
                         "lastGivenNumberTimestamp": {
                             "type": "integer",
-                            "description": "unix timestamp of the last given waiting number"
+                            "description": "unix timestamp of the last given waiting number",
+                            "default": 0
                         }
                     }
                 },
@@ -352,7 +393,8 @@
                     "properties": {
                         "deactivated": {
                             "type": "boolean",
-                            "description": "true if all ticket printers are disabled"
+                            "description": "true if all ticket printers are disabled",
+                            "default": false
                         }
                     }
                 }

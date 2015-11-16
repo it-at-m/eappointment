@@ -1,0 +1,88 @@
+{
+    "type": "object",
+    "description": "content of a multipart mail to send as base64 encoding to a client",
+    "example": {
+        "id": 1234,
+        "createIP": "145.15.3.10",
+        "createTimestamp": 1447931596000,
+        "deparment": {
+            "id": 123,
+            "preferences": {
+                "notifications": {
+                    "enabled": true,
+                    "identification": "terminvereinbarung@mitte.berlin.de",
+                    "sendConfirmationEnabled": true,
+                    "sendReminderEnabled": true
+                }
+            }
+        },
+        "multipart": [
+            {
+                "mime": "text/html",
+                "content": "<h1>Title</h1><p>Message</p>",
+                "base64": false
+            }
+        ],
+        "process": {
+            "clients": [
+                {
+                    "familyName": "Max Mustermann",
+                    "email": "max@service.berlin.de",
+                    "telephone": "030 115"
+                }
+            ],
+            "id": 123456,
+            "reminderTimestamp": 1447931730000,
+            "scope": {
+                "id": 123
+            },
+            "status": "confirmed"
+        }
+    },
+    "required": [
+        "department",
+        "message",
+        "process"
+    ],
+    "properties": {
+        "id": {
+            "type": "integer"
+        },
+        "createIP": {
+            "type": "string",
+            "description": "IP Address of the creator"
+        },
+        "createTimestamp": {
+            "type": "integer",
+            "description": "unix timestamp representing creation of the notification"
+        },
+        "department": {
+            "$ref": "department.json"
+        },
+        "multipart": {
+            "type": "array",
+            "description": "message parts to send",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "mime": {
+                        "type": "string",
+                        "description": "mime type used in 'Content-Type', should include charset if necessary"
+                    },
+                    "content": {
+                        "type": "string",
+                        "description": "content to transfer"
+                    },
+                    "base64": {
+                        "type": "boolean",
+                        "description": "every content gets encoded to base64, set this to true, if content is already base64",
+                        "default": false
+                    }
+                }
+            }
+        },
+        "process": {
+            "$ref": "process.json"
+        }
+    }
+}
