@@ -1,0 +1,61 @@
+{
+    "type": "object",
+    "description": "process a service for a client",
+    "properties": {
+        "amendment": {
+            "type": "string",
+            "description": "additional information for this process from the client"
+        },
+        "appointments": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/appointment"
+            }
+        },
+        "authKey": {
+            "type": "string",
+            "description": "key for client to delete or change process"
+        },
+        "clients": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/client"
+            }
+        },
+        "createIP": {
+            "type": "string",
+            "description": "IP Address of the creator"
+        },
+        "createTimestamp": {
+            "type": "integer",
+            "description": "unix timestamp representing creation of the process"
+        },
+        "id": {
+            "type": "integer",
+            "description": "Number is used to identify appointments like on call displays\n"
+        },
+        "queue": {
+            "$ref": "#/definitions/queue"
+        },
+        "reminderTimestamp": {
+            "type": "integer",
+            "description": "timestamp of last reminder message"
+        },
+        "requests": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/request"
+            }
+        },
+        "status": {
+            "type": "string",
+            "description": "Status of the process. The following values are possible:\n  * free: open for reservation\n  * reserved: for updating data, no validation yet\n  * confirmed: appointment\n  * queued: confirmed and in waiting queue\n  * called: show on call displays\n  * processing: client appeared and gets service\n  * pending: client has to return for getting papers\n  * finished: successfully processed\n  * missed: no client appeared\n  * archived: only used in statistics\n"
+        },
+        "scope": {
+            "$ref": "#/definitions/scope"
+        },
+        "workstation": {
+            "$ref": "#/definitions/workstation"
+        }
+    }
+}

@@ -1,0 +1,27 @@
+{
+    "type": "object",
+    "description": "top organisation units",
+    "properties": {
+        "contact": {
+            "$ref": "#/definitions/contact"
+        },
+        "id": {
+            "type": "integer"
+        },
+        "name": {
+            "type": "string"
+        },
+        "owner": {
+            "$ref": "#/definitions/owner"
+        },
+        "preferences": {
+            "type": "object",
+            "properties": {
+                "ticketPrinterProtectionEnabled": {
+                    "type": "boolean",
+                    "description": "true if protection for ticket printer is enabled"
+                }
+            }
+        }
+    }
+}

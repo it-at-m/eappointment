@@ -1,0 +1,15 @@
+{
+    "type": "object",
+    "description": "contract partner",
+    "properties": {
+        "contact": {
+            "$ref": "#/definitions/contact"
+        },
+        "id": {
+            "type": "integer"
+        },
+        "name": {
+            "type": "string"
+        }
+    }
+}

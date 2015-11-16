@@ -1,0 +1,33 @@
+{
+    "type": "object",
+    "description": "representation of a client who intends to take a service",
+    "required": [
+        "familyName"
+    ],
+    "properties": {
+        "email": {
+            "type": "string",
+            "description": "mail address"
+        },
+        "emailSendCount": {
+            "type": "integer",
+            "description": "number of reminder mails send"
+        },
+        "familyName": {
+            "type": "string",
+            "description": "name of the client"
+        },
+        "notificationsSendCount": {
+            "type": "integer",
+            "description": "number of reminder sms send"
+        },
+        "surveyAccepted": {
+            "type": "boolean",
+            "description": "true if clients allows survey requests"
+        },
+        "telephone": {
+            "type": "string",
+            "description": "telephone number"
+        }
+    }
+}

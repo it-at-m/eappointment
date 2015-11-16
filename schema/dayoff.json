@@ -1,0 +1,18 @@
+{
+    "type": "object",
+    "description": "free day where a department is closed",
+    "required": [
+        "date",
+        "name"
+    ],
+    "properties": {
+        "date": {
+            "type": "integer",
+            "description": "unix timestamp"
+        },
+        "name": {
+            "type": "string",
+            "description": "e.g. \"Weihnachten\", \"Betriebsfeier\""
+        }
+    }
+}
