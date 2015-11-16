@@ -46,9 +46,6 @@
                     "type": "boolean"
                 }
             }
-        },
-        "workstation": {
-            "$ref": "workstation.json"
         }
     }
 }
