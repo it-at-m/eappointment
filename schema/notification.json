@@ -3,6 +3,8 @@
     "description": "content of a notification to send to a client",
     "example": {
         "id": 1234,
+        "createIP": "145.15.3.10",
+        "createTimestamp": 1447931596000,
         "deparment": {
             "id": 123,
             "preferences": {
@@ -31,9 +33,22 @@
             "status": "confirmed"
         }
     },
+    "required": [
+        "department",
+        "message",
+        "process"
+    ],
     "properties": {
         "id": {
             "type": "integer"
+        },
+        "createIP": {
+            "type": "string",
+            "description": "IP Address of the creator"
+        },
+        "createTimestamp": {
+            "type": "integer",
+            "description": "unix timestamp representing creation of the notification"
         },
         "department": {
             "$ref": "department.json"
