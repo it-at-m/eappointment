@@ -5,6 +5,9 @@
         "hint": "Ausgabeschalter 3",
         "id": 123,
         "name": "3",
+        "process": {
+            "id": false
+        },
         "queue": {
             "appointmentsOnly": false,
             "clusterEnabled": false
@@ -33,6 +36,9 @@
         "name": {
             "type": "string",
             "description": "usually number of place or room where the workstation is located"
+        },
+        "process": {
+            "$ref": "process.json"
         },
         "queue": {
             "type": "object",
