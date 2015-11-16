@@ -1,6 +1,13 @@
 {
     "type": "object",
     "description": "representation of an appointment",
+    "example": {
+        "date": 1447869171,
+        "scope": {
+            "id": 123
+        },
+        "slotCount": 2
+    },
     "properties": {
         "date": {
             "type": "integer",

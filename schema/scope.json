@@ -1,12 +1,105 @@
 {
     "type": "object",
     "description": "unit for processing services for clients",
+    "example": {
+        "contact": {
+            "city": "Schönefeld",
+            "country": "Germany",
+            "lat": 52.345,
+            "lon": 13.456,
+            "name": "Flughafen Schönefeld, Landebahn",
+            "postalCode": "15831",
+            "region": "Brandenburg",
+            "street": "Zaunstraße",
+            "streetNumber": "1"
+        },
+        "hint": "dritte Tür rechts",
+        "id": 123,
+        "preferences": {
+            "appointment": {
+                "deallocationDuration": 10,
+                "endInDaysDefault": 60,
+                "multipleSlotsEnabled": true,
+                "reservationDuration": 5,
+                "startInDaysDefault": 2
+            },
+            "client": {
+                "alternateAppointmentUrl": "",
+                "amendmentLabel": "Zusatzinformationen zum Anliegen",
+                "amendmentRequired": false,
+                "emailRequired": false,
+                "telephoneActivated": true,
+                "telephoneRequired": false
+            },
+            "notifications": {
+                "confirmationContent": "Ihr Termin wurde erfolgreich gebucht mit der Nummer: ",
+                "enabled": true,
+                "headsUpTime": 15,
+                "headsUpContent": "Ihr Termin wird bald aufgerufen, begeben Sie sich zum Warteraum."
+            },
+            "pickup": {
+                "alternateName": "Ausgabe von Dokumenten",
+                "isDefault": false
+            },
+            "queue": {
+                "callCountMax": 3,
+                "callDisplayText": "Herzlich Willkommen,\nHaben Sie bitte ein wenig Geduld, bis ihre Wartenummer aufgerufen wird.",
+                "firstNumber": 300,
+                "lastNumber": 500,
+                "publishWaitingTimeEnabled": true,
+                "processingTimeAverage": 12,
+                "statisticsEnabled": true
+            },
+            "survey": {
+                "emailContent": "Wir würden uns sehr freuen, wenn Sie an der Umfrage teilnehmen würden: <a href=\"http://in.berlin.de/umfrage/\">Zur Umfrage</a>",
+                "enabled": true,
+                "label": "Teilnahme an der Kundenzufriedensheits-Umfrage"
+            },
+            "ticketprinter": {
+                "confirmationEnabled": true,
+                "deactivatedText": "Dies Ausgabe von Wartenummern wurde bereits vorzeitig geschlossen, wir bitten um ihr Verständnis.",
+                "notificationsAmendmentEnabled": true,
+                "notificationsDelay": 30
+            },
+            "workstation": {
+                "emergencyEnabled": false
+            }
+        },
+        "provider": {
+            "contact": {
+                "city": "Schönefeld",
+                "country": "Germany",
+                "lat": 52.345,
+                "lon": 13.456,
+                "name": "Flughafen Schönefeld, Landebahn",
+                "postalCode": "15831",
+                "region": "Brandenburg",
+                "street": "Zaunstraße",
+                "streetNumber": "1"
+            },
+            "id": 123456,
+            "name": "Flughafen Schönefeld, Aufsicht",
+            "source": "dldb"
+        },
+        "shortName": "Zentrale",
+        "status": {
+            "emergency": {
+                "activated": false
+            },
+            "queue": {
+                "givenNumberCount": 23,
+                "ghostWorkstationCount": 0,
+                "lastGivenNumber": 322,
+                "lastGivenNumberTimestamp": 1447925159000
+            },
+            "ticketprinter": {
+                "deactivated": false
+            }
+        }
+    },
     "properties": {
         "contact": {
             "$ref": "contact.json"
-        },
-        "department": {
-            "$ref": "department.json"
         },
         "hint": {
             "type": "string",
@@ -80,6 +173,10 @@
                             "type": "string",
                             "description": "text to send to client to confirm the appointment"
                         },
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "true if notifications for calling up clients are enabled"
+                        },
                         "headsUpTime": {
                             "type": "integer",
                             "description": "minutes before call to send a sms to the client"
@@ -114,7 +211,7 @@
                             "type": "string",
                             "description": "text displayed at the right side on the call display"
                         },
-                        "fistNumber": {
+                        "firstNumber": {
                             "type": "integer",
                             "description": "fist possible waiting number for ticket printer"
                         },
@@ -164,17 +261,13 @@
                             "type": "string",
                             "description": "text to display on the ticket printer, if all ticket printers are disabled"
                         },
-                        "notificationsEnabled": {
-                            "type": "boolean",
-                            "description": "true if notifications for calling up clients are enabled"
-                        },
                         "notificationsAmendmentEnabled": {
                             "type": "boolean",
                             "description": "true if a client is allowed to enter a notfication address after getting his waiting number"
                         },
                         "notificationsDelay": {
                             "type": "integer",
-                            "description": "minutes waiting before a client is able to enter a notification address"
+                            "description": "minutes of calculated waiting time before a client is able to enter a notification address"
                         }
                     }
                 },

@@ -1,6 +1,11 @@
 {
     "type": "object",
     "description": "reference to a service",
+    "example": {
+        "id": "123456",
+        "name": "Abmeldung einer Wohnung",
+        "source": "dldb"
+    },
     "required": [
         "id",
         "name",

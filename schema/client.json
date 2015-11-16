@@ -1,6 +1,14 @@
 {
     "type": "object",
     "description": "representation of a client who intends to take a service",
+    "example": {
+        "familyName": "Max Mustermann",
+        "email": "max@service.berlin.de",
+        "emailSendCount": 0,
+        "notificationsSendCount": 0,
+        "surveyAccepted": false,
+        "telephone": "030 115"
+    },
     "required": [
         "familyName"
     ],

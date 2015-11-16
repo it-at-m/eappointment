@@ -1,6 +1,13 @@
 {
     "type": "object",
     "description": "waiting queue entry with clients",
+    "example": {
+        "arrivalTime": 1447922893000,
+        "callCount": 1,
+        "callTime": 1447922938000,
+        "number": "123",
+        "waitingTime": 2
+    },
     "required": [
         "arrivalTime",
         "callCount",
@@ -11,7 +18,7 @@
     "properties": {
         "arrivalTime": {
             "type": "integer",
-            "description": "time when client was added to the queue or appointment time"
+            "description": "unix timestamp when client was added to the queue or appointment time"
         },
         "callCount": {
             "type": "integer",

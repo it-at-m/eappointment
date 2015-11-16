@@ -1,6 +1,70 @@
 {
     "type": "object",
     "description": "represents a calendar showing free days for appointments",
+    "example": {
+        "days": [
+            {
+                "year": 2015,
+                "month": 11,
+                "day": 19,
+                "freeAppointments": {
+                    "callcenter": 0,
+                    "intern": 3,
+                    "public": 0
+                },
+                "firstAppointmentTimestamp": {
+                    "intern": 1447919770000
+                },
+                "lastAppointmentTimestamp": {
+                    "intern": 1447919788000
+                }
+            }
+        ],
+        "firstDay": {
+            "year": 2015,
+            "month": 11,
+            "day": 19,
+            "freeAppointments": {
+                "callcenter": 0,
+                "intern": 3,
+                "public": 0
+            },
+            "firstAppointmentTimestamp": {
+                "intern": 1447919770000
+            },
+            "lastAppointmentTimestamp": {
+                "intern": 1447919788000
+            }
+        },
+        "lastDay": {
+            "year": 2015,
+            "month": 11,
+            "day": 19,
+            "freeAppointments": {
+                "callcenter": 0,
+                "intern": 3,
+                "public": 0
+            },
+            "firstAppointmentTimestamp": {
+                "intern": 1447919770000
+            },
+            "lastAppointmentTimestamp": {
+                "intern": 1447919788000
+            }
+        },
+        "requests": [
+            {
+            "id": "123456",
+            "name": "Abmeldung einer Wohnung",
+            "source": "dldb"
+            }
+        ],
+        "scopes": [
+            {
+                "id": 1234
+            }
+        ]
+    },
     "properties": {
         "days": {
             "type": "array",

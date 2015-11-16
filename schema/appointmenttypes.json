@@ -1,6 +1,11 @@
 {
     "type": "object",
     "description": "integer values to different appointment types",
+    "example": {
+        "callcenter": 8,
+        "intern": 10,
+        "public": 3
+    },
     "properties": {
         "callcenter": {
             "type": "integer"

@@ -1,6 +1,13 @@
 {
     "type": "object",
     "description": "system to print waiting numbers for clients",
+    "example": {
+        "enabled": true,
+        "hash": "e744a234c1",
+        "id": 1234,
+        "lastUpdate": 1447925326000,
+        "name": "Eingangsbereich links"
+    },
     "properties": {
         "enabled": {
             "type": "boolean",
@@ -15,14 +22,11 @@
         },
         "lastUpdate": {
             "type": "integer",
-            "description": "unix timestamp"
+            "description": "unix timestamp of last status change"
         },
         "name": {
             "type": "string",
             "description": "only for internal identification"
-        },
-        "organisation": {
-            "$ref": "organisation.json"
         }
     }
 }

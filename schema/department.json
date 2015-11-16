@@ -1,6 +1,42 @@
 {
     "type": "object",
     "description": "subunit in organisation like \"Bürgeramt\", \"Standesamt\", \"Vertrieb\"",
+    "example": {
+        "id": 123,
+        "dayoff": [
+            {
+                "date": 1447921381000,
+                "name": "Betriebsfeier"
+            },
+            {
+                "date": 1447922381000,
+                "name": "Silvester"
+            }
+        ],
+        "email": "terminvereinbarung@mitte.berlin.de",
+        "links": [
+            {
+                "name": "Zuständigkeitsverzeichnis",
+                "url": "http://www.berlin.de/ba-mitte/zustaendigkeiten/",
+                "target": true
+            }
+        ],
+        "scopes": [
+            {
+                "id": 123
+            }
+        ],
+        "useraccounts": [
+            {
+                "lastLogin": 1447926465000,
+                "loginName": "johndoe",
+                "rights": {
+                    "scope": true,
+                    "ticketprinter": true
+                }
+            }
+        ]
+    },
     "properties": {
         "id": {
             "type": "integer"
@@ -33,9 +69,6 @@
                 }
             }
         },
-        "organisation": {
-            "$ref": "organisation.json"
-        },
         "preferences": {
             "type": "object",
             "properties": {
@@ -60,6 +93,18 @@
                         }
                     }
                 }
+            }
+        },
+        "scopes": {
+            "type": "array",
+            "items": {
+                "$ref": "scope.json"
+            }
+        },
+        "useraccounts": {
+            "type": "array",
+            "items": {
+                "$ref": "useraccount.json"
             }
         }
     }

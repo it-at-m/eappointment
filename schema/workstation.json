@@ -1,6 +1,26 @@
 {
     "type": "object",
     "description": "room or place to process a service for a client",
+    "example": {
+        "hint": "Ausgabeschalter 3",
+        "id": 123,
+        "name": "3",
+        "queue": {
+            "appointmentsOnly": false,
+            "clusterEnabled": false
+        },
+        "scope": {
+            "id": 123
+        },
+        "useraccount": {
+            "lastLogin": 1447926465000,
+            "loginName": "johndoe",
+            "rights": {
+                "scope": true,
+                "ticketprinter": true
+            }
+        }
+    },
     "properties": {
         "hint": {
             "type": "string",
@@ -26,6 +46,9 @@
                     "description": "true if the complete cluster should be shown in queue"
                 }
             }
+        },
+        "scope": {
+            "$ref": "scope.json"
         },
         "useraccount": {
             "$ref": "useraccount.json"
