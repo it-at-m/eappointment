@@ -1,6 +1,22 @@
 {
     "type": "object",
     "description": "representation of a day in the calendar",
+    "example": {
+        "year": 2015,
+        "month": 11,
+        "day": 19,
+        "freeAppointments": {
+            "callcenter": 0,
+            "intern": 3,
+            "public": 0
+        },
+        "firstAppointmentTimestamp": {
+            "intern": 1447919770000
+        },
+        "lastAppointmentTimestamp": {
+            "intern": 1447919788000
+        }
+    },
     "properties": {
         "year": {
             "type": "integer"

@@ -1,6 +1,21 @@
 {
     "type": "object",
     "description": "group of scopes",
+    "example": {
+        "callDisplayText": "Herzlich Willkommen,\nDie aufgerufenen Plätze finden Sie den im Gang rechts.",
+        "hint": "Warteraum in der 3. Etage",
+        "id": 123,
+        "name": "Bürger- und Standesamt",
+        "scopes": [
+            {
+                "id": 1234
+            },
+            {
+                "id": 5678
+            }
+        ],
+        "shortNameEnabled": true
+    },
     "properties": {
         "callDisplayText": {
             "type": "string",
@@ -17,6 +32,12 @@
         "name": {
             "type": "string",
             "description": "name for internal usage"
+        },
+        "scopes": {
+            "type": "array",
+            "items": {
+                "$ref": "scope.json"
+            }
         },
         "shortNameEnabled": {
             "type": "boolean",

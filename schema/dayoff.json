@@ -1,6 +1,10 @@
 {
     "type": "object",
     "description": "free day where a department is closed",
+    "example": {
+        "date": 1447921381000,
+        "name": "Betriebsfeier"
+    },
     "required": [
         "date",
         "name"

@@ -1,9 +1,14 @@
 {
     "type": "object",
+    "example": {
+        "lastLogin": 1447926465000,
+        "loginName": "johndoe",
+        "rights": {
+            "scope": true,
+            "ticketprinter": true
+        }
+    },
     "properties": {
-        "department": {
-            "$ref": "department.json"
-        },
         "lastLogin": {
             "type": "integer",
             "description": "unix timestamp"
