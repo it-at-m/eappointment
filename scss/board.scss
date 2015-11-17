@@ -1,23 +1,23 @@
-// The basic box layout
+// The basic board layout
 
-$boxElementPadding:         $baseBoxElementPadding;
+$boardElementPadding:         $baseBoxElementPadding;
 
-.box {
+.board {
     margin:                 0 0 $gridGutter 0;
     padding:                0;
     ul {
         @extend .list-bare;
     }
-    .box_header {
-        padding:            $boxElementPadding;
+    .board_header {
+        padding:            $boardElementPadding;
         background-color:   $blue;
     }
-    .box_body {
+    .board_body {
         padding:            0;
         background-color:   $grey;
         border:             1px solid $greyDark;
         .inner {
-            padding:        $boxElementPadding;
+            padding:        $boardElementPadding;
             + .inner {
                 border-top: 1px solid $greyDark;
             }
@@ -26,16 +26,16 @@ $boxElementPadding:         $baseBoxElementPadding;
             margin-bottom:  0;
         }
     }
-    .box_footer {
+    .board_footer {
         border:             1px solid $greyDark;
         border-width:       0px 1px 1px 1px;
         margin-top:         -1px;
-        padding:            $boxElementPadding;
+        padding:            $boardElementPadding;
         padding-top:        $gridGutter;
         background-color:   $grey;
         font-size:          0.85em;
     }
-    .box_header__title {
+    .board_header__title {
         font-size:          1em;
         line-height:        1.25em;
         margin:             0;
