@@ -25,10 +25,10 @@
 .lineup--counter {
     @extend .grid;
     .actor--appointment {
-        @extend .grid__item, .six-tenths, .lap--one-whole, .palm--one-whole;
+        @extend .grid__item, .five-tenths, .lap--one-whole, .palm--one-whole;
     }
     .actor--queueinfo {
-        @extend .grid__item, .two-tenths, .lap--two-thirds, .palm--one-whole;
+        @extend .grid__item, .three-tenths, .lap--two-thirds, .palm--one-whole;
     }
     .actor--calendar {
         @extend .grid__item, .two-tenths, .lap--one-third, .palm--one-whole;

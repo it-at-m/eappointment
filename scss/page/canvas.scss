@@ -1,10 +1,10 @@
 // The base grid with a navigation and a content area
-.page-body {
+.canvas {
     @extend .grid, .grid--rev;
-    .page-body_navigation {
+    .canvas_navigation {
         @extend .grid__item,  .one-sixth, .portable--one-whole;
     }
-    .page-body_maincontent {
+    .canvas_maincontent {
         @extend .grid__item, .five-sixths, .portable--one-whole;
     }
 }
