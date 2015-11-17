@@ -31,12 +31,3 @@ select {
     padding:        $formItemBasePadding;
     max-width:      100%;
 }
-select:hover {
-    //max-width:      200%;
-}
-.form--inline { 
-    label{
-        display:    inline-block;
-        font:       inherit;
-    }
-}

@@ -5,13 +5,13 @@
     background-color:   $pageheaderBackgroundColor;
     padding:            ($gridGutter / 2) $gridGutter;
     margin:             0 0 $gridGutter 0;
-    .header_left {
+    .header_logo {
         @extend .grid__item, .one-sixth, .palm--one-whole;
     }
-    .header_middle {
+    .header_sitename {
         @extend .grid__item, .two-sixths, .palm--one-whole;
     }
-    .header_right {
+    .header_userinfo {
         @extend .grid__item, .three-sixths, .palm--one-whole;
     }
 }
