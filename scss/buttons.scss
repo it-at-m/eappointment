@@ -1,5 +1,38 @@
 .button-emergency {
-    @extend .btn, .btn--full, .btn--large;
-    margin-bottom:      $gridGutter;
-    font-weight:        bold;
+    @extend 
+        .btn, 
+        .btn--full, 
+        .btn--large,
+        .btn--bold, 
+        .btn--alert;
+    margin-bottom:          $gridGutter;
+}
+
+
+
+/**
+ * Button function modifiers.
+ */
+
+.btn--bold {
+    font-weight: bold;
+}
+
+.btn--alert,
+.btn--alert:hover,
+.btn--alert:active,
+.btn--alert:focus{
+    background-color:       $red;
+    border-color:           $red;
+    color:                  $white;
+}
+
+.btn--inactive,
+.btn--inactive:hover,
+.btn--inactive:active,
+.btn--inactive:focus{
+    background-color:       lighten($btn-background, 15%);
+    border-color:           lighten($btn-background, 15%);
+    color:                  darken($btn-font-color, 5%);
+    cursor:                 text;     
 }
