@@ -1,0 +1,42 @@
+// Build the CSS for form. Use Bootrstaps sass forms as base model?
+
+$formItemBasePadding:  ($gridGutter / 4) ($gridGutter / 3);
+
+form {
+}
+
+fieldset{
+    padding:        $gridGutter;
+}
+
+// A form-item is a label, its input and a field description
+.form-item {
+    margin-bottom:  ($gridGutter / 3);
+    max-width:      100%;
+}
+
+.form-item__label,
+label {
+    display:        block;
+    font-weight:    bold;
+    font-size:      0.9em;
+    margin-bottom:  0.1em;
+    max-width:      100%;
+}
+
+.form-item__input,
+textarea,
+select {
+    border:         1px solid darken($grey,10%);    
+    padding:        $formItemBasePadding;
+    max-width:      100%;
+}
+select:hover {
+    //max-width:      200%;
+}
+.form--inline { 
+    label{
+        display:    inline-block;
+        font:       inherit;
+    }
+}

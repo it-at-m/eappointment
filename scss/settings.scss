@@ -14,11 +14,14 @@ $blueLight:                     #ECF9FF;
 $red:                           #E75656;
 $baseTextColor:                 $black;
 $pageheaderBackgroundColor:     $blueDark;
-
 $linkColor:                     $baseTextColor;
+$btn-background:                $red;//#aaa;
+$btn-font-color:                $white;
+$btn-border-color:              $btn-background;
 
 // Dimensions
 $pageMaxWidth:                  93.846em; // 1220px bei 13px font size;
+$pageMaxWidth:                  87.143em; // 1220px bei 14px font size;
 $gridGutter:                    1.538em; // 20px; bei 13px font size;
 $baseBoxElementPadding:         ($gridGutter / 3) ($gridGutter / 2);
 
@@ -36,8 +39,8 @@ $gutter:                        $gridGutter;
  */
 
 // iniut Base Settings
-$inuit-base-font-size:          13px; //0.813em; // 13px bei 16px base
-$inuit-base-line-height:        20px; //1.500em; // 20px bei 16px base
+$inuit-base-font-size:          14px;
+$inuit-base-line-height:        20px; 
 $inuit-base-text-color:         $baseTextColor;
 $inuit-base-background-color:   $white;
 
@@ -45,10 +48,12 @@ $inuit-base-background-color:   $white;
 $inuit-base-spacing-unit:       20px; // we need pixel here. em does not get through the sass/inuit compiler
 
 // iniut Buttons
-$inuit-btn-background:          $red;
-$inuit-btn-color:               $white;
+$inuit-btn-background:          $btn-background;
+$inuit-btn-color:               $btn-font-color;
+$inuit-btn-border-color:        $btn-border-color;
 $inuit-enable-btn--full:        true;
 $inuit-btn-padding:             5px;
+$inuit-btn-radius:              0px;
 $inuit-enable-btn--large:       true;
 
 // inuit Tables
