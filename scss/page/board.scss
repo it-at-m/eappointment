@@ -12,23 +12,10 @@ $boardElementPadding:         $baseBoxElementPadding;
         padding:            $boardElementPadding;
         background-color:   $blue;
     }
-        .board_header__title {
-            font-size:          1em;
-            line-height:        1.25em;
-            margin:             0;
-            padding:            0;
-            color:              $white;
-        }
     .board_body {
         padding:            0;
         background-color:   $grey;
         border:             1px solid $greyDark;
-        .inner {
-            padding:        $boardElementPadding;
-            + .inner {
-                border-top: 1px solid $greyDark;
-            }
-        }
         > *:last-child {
             margin-bottom:  0;
         }
@@ -41,6 +28,13 @@ $boardElementPadding:         $baseBoxElementPadding;
         padding-top:        $gridGutter;
         background-color:   $grey;
         font-size:          0.85em;
+    }
+    .board_header__title {
+        font-size:          1em;
+        line-height:        1.25em;
+        margin:             0;
+        padding:            0;
+        color:              $white;
     }
 }
 

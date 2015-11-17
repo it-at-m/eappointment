@@ -1,5 +1,5 @@
 .queue {
-    .queue_table {
+    table {
         @extend .table, .table--cells;
         background-color:       $white;
         thead {
