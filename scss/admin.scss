@@ -1,26 +1,31 @@
-
-
-$font-size: 80%;
-
+/**
+ * Import inuit css
+ */
+ 
 @import "bower_components/inuit-defaults/settings.defaults";
-
 @import "settings";
-
 @import "bower_components/inuit-functions/tools.functions";
 @import "bower_components/inuit-mixins/tools.mixins";
-
 @import "bower_components/inuit-normalize/generic.normalize";
 @import "bower_components/inuit-box-sizing/generic.box-sizing";
 @import "bower_components/inuit-page/base.page";
-
 @import "bower_components/inuit-buttons/_objects.buttons";
 @import "bower_components/inuit-tables/_objects.tables.scss";
 @import "bower_components/inuit-list-bare/_objects.list-bare.scss";
-
 @import "bower_components/csswizardry-grids/csswizardry-grids";
 
+
+/**
+ * Import our css
+ */
+ 
+// page layout
 @import "page";
 @import "page-header";
+@import "page-body";
+@import "lineups";
+
+// block layout
 @import "board";
 @import "navigation";
 @import "buttons";

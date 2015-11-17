@@ -1,0 +1,10 @@
+// The base grid with a navigation and a content area
+.page-body {
+    @extend .grid, .grid--rev;
+    .page-body_navigation {
+        @extend .grid__item,  .one-sixth, .portable--one-whole;
+    }
+    .page-body_maincontent {
+        @extend .grid__item, .five-sixths, .portable--one-whole;
+    }
+}
