@@ -1,10 +1,10 @@
 // The base grid with a navigation and a content area
 .canvas {
     @extend .grid, .grid--rev;
-    .canvas_navigation {
+    .canvas_sidebar {
         @extend .grid__item,  .one-sixth, .portable--one-whole;
     }
-    .canvas_maincontent {
+    .canvas_mainbar {
         @extend .grid__item, .five-sixths, .portable--one-whole;
     }
 }

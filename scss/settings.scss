@@ -23,7 +23,7 @@ $btn-border-color:              $btn-background;
 $pageMaxWidth:                  93.846em; // 1220px bei 13px font size;
 $pageMaxWidth:                  87.143em; // 1220px bei 14px font size;
 $gridGutter:                    1.538em; // 20px; bei 13px font size;
-$baseBoxElementPadding:         ($gridGutter / 3) ($gridGutter / 2);
+$baseBoxElementPadding:         ($gridGutter / 3) ($gridGutter / 2); // navigation_items; board_body inner elements;
 
 
 /**
