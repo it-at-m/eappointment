@@ -1,4 +1,4 @@
-// The base grid layout
+// Basic page and global elements layout
 
 a {
     color:              $linkColor;
@@ -9,42 +9,6 @@ a {
     max-width:          $pageMaxWidth;
     padding:            0 $gridGutter $gridGutter $gridGutter;
     background-color:   $white;
-}
-
-.page-canvas {
-    @extend .grid, .grid--rev;
-    .page-canvas_navigation {
-        @extend .grid__item,  .one-sixth, .portable--one-whole;
-    }
-    .page-canvas_maincontent {
-        @extend .grid__item, .five-sixths, .portable--one-whole;
-    }
-}
-
-.region {
-    @extend .grid;
-    &.region--workstation {
-        .region-left {
-            @extend .grid__item, .three-tenths, .lap--one-whole, .palm--one-whole;
-        }
-        .region-middle {
-            @extend .grid__item, .five-tenths, .lap--two-thirds, .palm--one-whole;
-        }
-        .region-right {
-            @extend .grid__item, .two-tenths, .lap--one-third, .palm--one-whole;
-        }
-    }
-    &.region--counter {
-        .region-left {
-            @extend .grid__item, .three-fifths, .lap--one-whole, .palm--one-whole;
-        }
-        .region-middle {
-            @extend .grid__item, .one-fifth, .lap--two-thirds, .palm--one-whole;
-        }
-        .region-right {
-            @extend .grid__item, .one-fifth, .lap--one-third, .palm--one-whole;
-        }
-    }
 }
 
 // We extend wizardrys inline-block bug fix, otherwise it does not work

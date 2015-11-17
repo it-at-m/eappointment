@@ -1,0 +1,37 @@
+/**
+ * A "lineup" is a set of "actors" (like twitter bootstraps "row" is a set of "span"s)
+ */
+
+.lineup {
+    @extend .grid;
+    .actor {
+        @extend .grid__item;
+    }
+}
+
+.lineup--workstation {
+    @extend .grid;
+    .actor--clientinfo {
+        @extend .grid__item, .three-tenths, .lap--one-whole, .palm--one-whole;
+    }
+    .actor--appointment {
+        @extend .grid__item, .five-tenths, .lap--two-thirds, .palm--one-whole;
+    }
+    .actor--calendar {
+        @extend .grid__item, .two-tenths, .lap--one-third, .palm--one-whole;
+    }
+}
+
+.lineup--counter {
+    @extend .grid;
+    .actor--appointment {
+        @extend .grid__item, .six-tenths, .lap--one-whole, .palm--one-whole;
+    }
+    .actor--queueinfo {
+        @extend .grid__item, .two-tenths, .lap--two-thirds, .palm--one-whole;
+    }
+    .actor--calendar {
+        @extend .grid__item, .two-tenths, .lap--one-third, .palm--one-whole;
+    }
+}
+

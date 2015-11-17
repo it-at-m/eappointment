@@ -9,13 +9,13 @@ fieldset{
     padding:        $gridGutter;
 }
 
-// A form-item is a label, its input and a field description
-.form-item {
+// A form-group is a label, its input and a field description
+.form-group {
     margin-bottom:  ($gridGutter / 3);
     max-width:      100%;
 }
 
-.form-item__label,
+.form-group__label,
 label {
     display:        block;
     font-weight:    bold;
@@ -24,7 +24,7 @@ label {
     max-width:      100%;
 }
 
-.form-item__input,
+.form-group__input,
 textarea,
 select {
     border:         1px solid darken($grey,10%);    
