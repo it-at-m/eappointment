@@ -1,7 +1,6 @@
 /**
  * Import inuit css
  */
- 
 @import "bower_components/inuit-defaults/settings.defaults";
 @import "settings";
 @import "bower_components/inuit-functions/tools.functions";
@@ -33,7 +32,6 @@
 @import "block/calendar";
 @import "block/queueinfo";
 @import "block/appointment";
-@import "block/clientsearch";
 @import "block/clientinfo";
 
 // Element layouts

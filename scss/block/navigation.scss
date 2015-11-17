@@ -6,13 +6,17 @@ $navElementPadding:         $baseBoxElementPadding;
     .navigation__title {
         font-size:          1em;
         line-height:        1.2em;
+        font-weight:        bold;
+        display:            block;
         color:              $black;
         background-color:   $greyDark;
         margin:             0;
         padding:            $navElementPadding;
     }
-    .nav {
+    ul {
         @extend .list-bare;
+    }
+    .nav {
         .nav__item {
             border-top:             1px solid $greyDark;
             padding:                $navElementPadding;
@@ -31,5 +35,9 @@ $navElementPadding:         $baseBoxElementPadding;
             }
         }
     }
+}
+
+.navigation_clientsearch {
+    padding:                $baseBoxElementPadding;
 }
 
