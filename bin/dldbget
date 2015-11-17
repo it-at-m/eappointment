@@ -36,7 +36,7 @@ $proxy = $args->getOpt('proxy');
 if ($proxy) {
     $proxyconf = array();
     preg_match('#^(?:(?P<user>[^:]+):(?P<pass>[^@]+)@)?(?P<host>[^:]+):?(?P<port>\d+)?$#', $proxy, $proxyconf);
-    $proxyconf = array_merge($proxyconf, array('host' => '','port' => '80','user' => false,'pass' => false));
+    $proxyconf = array_merge(array('host' => '','port' => '80','user' => false,'pass' => false), $proxyconf);
     if ($proxyconf['user']) {
         $client->useProxy(
             $proxyconf['host'],
