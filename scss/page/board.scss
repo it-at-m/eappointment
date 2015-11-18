@@ -2,39 +2,61 @@
 
 $boardElementPadding:         $baseBoxElementPadding;
 
+/* use the board css to extend the layout of the blocks */
 .board {
     margin:                 0 0 $gridGutter 0;
     padding:                0;
+    > .header {
+        @extend .board_header;
+        .title {
+            @extend .board_header__title;
+        }
+    }
+    > .body {
+        @extend .board_body;
+    }
+    > .footer {
+        @extend .board_footer;
+    }
     ul {
         @extend .list-bare;
     }
-    .board_header {
-        padding:            $boardElementPadding;
-        background-color:   $blue;
-    }
-    .board_body {
-        padding:            0;
-        background-color:   $grey;
-        border:             1px solid $greyDark;
-        > *:last-child {
-            margin-bottom:  0;
-        }
-    }
-    .board_footer {
-        border:             1px solid $greyDark;
-        border-width:       0px 1px 1px 1px;
-        margin-top:         -1px;
-        padding:            $boardElementPadding;
-        padding-top:        $gridGutter;
-        background-color:   $grey;
-        font-size:          0.85em;
-    }
-    .board_header__title {
-        font-size:          1em;
-        line-height:        1.25em;
-        margin:             0;
-        padding:            0;
-        color:              $white;
-    }
 }
 
+
+/* set the board layout */
+.board_header {
+    padding:            $boardElementPadding;
+    background-color:   $blue;
+}
+.board_body {
+    padding:            0;
+    background-color:   $grey;
+    border:             1px solid $greyDark;
+    > *:last-child {
+        margin-bottom:  0;
+    }
+}
+.board_footer {
+    border:             1px solid $greyDark;
+    border-width:       0px 1px 1px 1px;
+    margin-top:         -1px;
+    padding:            $boardElementPadding;
+    padding-top:        $gridGutter;
+    background-color:   $grey;
+    font-size:          0.85em;
+}
+.board_header__title {
+    font-size:          1em;
+    line-height:        1.25em;
+    margin:             0;
+    padding:            0;
+    color:              $white;
+}
+
+/* variations */
+.board--addBodyPadding {
+    .body {
+        padding:        $boardElementPadding;
+    }
+}

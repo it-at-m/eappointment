@@ -1,4 +1,5 @@
 .queue {
+    @extend .board;
     table {
         @extend .table, .table--cells;
         background-color:       $white;
