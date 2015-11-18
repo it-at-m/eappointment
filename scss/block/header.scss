@@ -1,17 +1,17 @@
 // Page Header
-.header {
+.pageheader {
     @extend .grid, .grid--full;
     color:              $white;
     background-color:   $pageheaderBackgroundColor;
     padding:            ($gridGutter / 2) $gridGutter;
     margin:             0 0 $gridGutter 0;
-    .header_logo {
+    .pageheader_logo {
         @extend .grid__item, .one-sixth, .palm--one-whole;
     }
-    .header_sitename {
+    .pageheader_sitename {
         @extend .grid__item, .two-sixths, .palm--one-whole;
     }
-    .header_userinfo {
+    .pageheader_userinfo {
         @extend .grid__item, .three-sixths, .palm--one-whole;
     }
 }

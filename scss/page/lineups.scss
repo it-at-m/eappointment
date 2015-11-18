@@ -4,34 +4,36 @@
 
 .lineup {
     @extend .grid;
-    .actor {
-        @extend .grid__item;
+    &--workstation {
+        @extend .grid;
+        .lineup_actor {
+            &--left {
+                @extend .grid__item, .three-tenths, .lap--one-whole, .palm--one-whole;
+            }
+            &--middle {
+                @extend .grid__item, .five-tenths, .lap--two-thirds, .palm--one-whole;
+            }
+            &--right {
+                @extend .grid__item, .two-tenths, .lap--one-third, .palm--one-whole;
+            }
+        }
+    }
+    &--counter {
+        @extend .grid;
+        .lineup_actor {
+            &--left {
+                @extend .grid__item, .five-tenths, .lap--one-whole, .palm--one-whole;
+            }
+            &--middle {
+                @extend .grid__item, .three-tenths, .lap--two-thirds, .palm--one-whole;
+            }
+            &--right {
+                @extend .grid__item, .two-tenths, .lap--one-third, .palm--one-whole;
+            }
+        }
     }
 }
 
-.lineup--workstation {
-    @extend .grid;
-    .actor--clientinfo {
-        @extend .grid__item, .three-tenths, .lap--one-whole, .palm--one-whole;
-    }
-    .actor--appointment {
-        @extend .grid__item, .five-tenths, .lap--two-thirds, .palm--one-whole;
-    }
-    .actor--calendar {
-        @extend .grid__item, .two-tenths, .lap--one-third, .palm--one-whole;
-    }
-}
 
-.lineup--counter {
-    @extend .grid;
-    .actor--appointment {
-        @extend .grid__item, .five-tenths, .lap--one-whole, .palm--one-whole;
-    }
-    .actor--queueinfo {
-        @extend .grid__item, .three-tenths, .lap--two-thirds, .palm--one-whole;
-    }
-    .actor--calendar {
-        @extend .grid__item, .two-tenths, .lap--one-third, .palm--one-whole;
-    }
-}
+
 

@@ -1,3 +1,3 @@
 .clientinfo {
-    padding:        $baseBoxElementPadding;
+    @extend .board, .board--addBodyPadding;
 }
