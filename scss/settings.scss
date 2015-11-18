@@ -8,6 +8,7 @@ $black:                         #000000;
 $grey:                          #F0F0F0;
 $greyDark:                      #D2D2D2;
 $greyWhite:                     #F4F4F4;
+$greyBorder:                    #D2D2D2;
 $blue:                          #008CCA;
 $blueDark:                      #33445E;
 $blueLight:                     #ECF9FF;
@@ -15,9 +16,9 @@ $red:                           #E75656;
 $baseTextColor:                 $black;
 $pageheaderBackgroundColor:     $blueDark;
 $linkColor:                     $baseTextColor;
-$btn-background:                $red;//#aaa;
-$btn-font-color:                $white;
-$btn-border-color:              $btn-background;
+$btn-background:                $white;
+$btn-font-color:                $baseTextColor;
+$btn-border-color:              $greyBorder;
 
 // Dimensions
 $pageMaxWidth:                  93.846em; // 1220px bei 13px font size;
@@ -43,6 +44,7 @@ $inuit-base-font-size:          14px;
 $inuit-base-line-height:        20px; 
 $inuit-base-text-color:         $baseTextColor;
 $inuit-base-background-color:   $white;
+$inuit-responsive-settings:     true;
 
 // iniut Dimensions
 $inuit-base-spacing-unit:       20px; // we need pixel here. em does not get through the sass/inuit compiler

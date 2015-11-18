@@ -27,7 +27,16 @@ label {
 .form-group__input,
 textarea,
 select {
-    border:         1px solid darken($grey,10%);    
+    border:         1px solid $greyBorder;
     padding:        $formItemBasePadding;
     max-width:      100%;
 }
+
+/*
+.form-group {
+    @extend .clearfix;
+    .btn--right {
+        float:          right;
+    }
+}
+*/

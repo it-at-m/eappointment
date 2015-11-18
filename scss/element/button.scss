@@ -31,8 +31,8 @@
 .btn--inactive:hover,
 .btn--inactive:active,
 .btn--inactive:focus{
-    background-color:       lighten($btn-background, 15%);
+    background-color:       darken($btn-background, 5%);
     border-color:           lighten($btn-background, 15%);
-    color:                  darken($btn-font-color, 5%);
+    color:                  lighten($btn-font-color, 15%);
     cursor:                 text;     
 }
