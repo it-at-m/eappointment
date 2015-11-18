@@ -24,6 +24,8 @@
     "inuit-starter-kit": "~0.2.9",
     "inuit-buttons": "~0.4.2",
     "inuit-tables": "~0.2.1",
-    "inuit-list-bare": "~0.3.0"
+    "inuit-list-bare": "~0.3.0",
+    "inuit-clearfix": "~0.2.2",
+    "inuit-responsive-tools": "~0.1.3"
   }
 }

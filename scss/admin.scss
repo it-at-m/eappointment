@@ -2,7 +2,12 @@
  * Import inuit css
  */
 @import "bower_components/inuit-defaults/settings.defaults";
+/*
+    // @import "bower_components/inuit-responsive-settings/_settings.responsive";
+    // we use csswizardry to asign the responsive settings
+*/
 @import "settings";
+@import "bower_components/csswizardry-grids/csswizardry-grids";
 @import "bower_components/inuit-functions/tools.functions";
 @import "bower_components/inuit-mixins/tools.mixins";
 @import "bower_components/inuit-normalize/generic.normalize";
@@ -11,7 +16,8 @@
 @import "bower_components/inuit-buttons/_objects.buttons";
 @import "bower_components/inuit-tables/_objects.tables.scss";
 @import "bower_components/inuit-list-bare/_objects.list-bare.scss";
-@import "bower_components/csswizardry-grids/csswizardry-grids";
+@import "bower_components/inuit-clearfix/_trumps.clearfix";
+@import "bower_components/inuit-responsive-tools/_tools.responsive";
 
 
 /**

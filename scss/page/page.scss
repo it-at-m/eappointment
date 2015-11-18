@@ -1,15 +1,38 @@
 // Basic page and global elements layout
 
-a {
-    color:              $linkColor;
-}
 
+// The page container
 .page {
     margin:             0 auto $gridGutter auto;
     max-width:          $pageMaxWidth;
     padding:            0 $gridGutter $gridGutter $gridGutter;
     background-color:   $white;
 }
+
+
+// Global settings
+a {
+    color:              $linkColor;
+}
+
+
+// Element alignments
+.align-left {
+    text-align:         left;
+}
+.align-center {
+    text-align:         center;
+}
+.align-right {
+    text-align:         right;
+}
+.pull-left {
+    float:              left;
+}
+.pull-right {
+    float:              right;
+}
+
 
 // We extend wizardrys inline-block bug fix, otherwise it does not work
 @if $use-markup-fix != true {

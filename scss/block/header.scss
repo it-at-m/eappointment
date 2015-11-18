@@ -1,18 +1,34 @@
 // Page Header
 .pageheader {
-    @extend .grid, .grid--full;
-    color:              $white;
-    background-color:   $pageheaderBackgroundColor;
-    padding:            ($gridGutter / 2) $gridGutter;
-    margin:             0 0 $gridGutter 0;
+    @extend 
+        .grid, 
+        .grid--full;
+    color:                  $white;
+    background-color:       $pageheaderBackgroundColor;
+    padding:                ($gridGutter / 2) $gridGutter;
+    margin:                 0 0 $gridGutter 0;
     .pageheader_logo {
-        @extend .grid__item, .one-sixth, .palm--one-whole;
+        @extend 
+            .grid__item, 
+            .two-twelfths, 
+            .palm--one-whole;
     }
     .pageheader_sitename {
-        @extend .grid__item, .two-sixths, .palm--one-whole;
+        @extend 
+            .grid__item, 
+            .six-twelfths, 
+            .palm--one-whole;
     }
     .pageheader_userinfo {
-        @extend .grid__item, .three-sixths, .palm--one-whole;
+        @extend 
+            .grid__item, 
+            .four-twelfths, 
+            .palm--one-whole;
+        @include media-query(lap) {
+            @extend .align-right;
+        }
     }
 }
+
+
 
