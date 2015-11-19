@@ -26,7 +26,9 @@ Locations
                 "name" : "Max Muster", // Name Ansprechpartners oder Bezeichnung des Ansprechpunktes/-teams
                 "phone" : "(030) 1234-5678",
                 "fax" : "(030) 1234-5678",
-                "email" : "test@example.com"
+                "email" : "test@example.com",
+                "signed_mail" => 1, // Empfang signierter Mails möglich
+                "signed_maillink" => "http://www.beispiel.de/signed_mail_info/" // URL der Hinweisseite zum Empfang signierter Mails
             },
             "appointment" : {
                 "external" : true, // wenn false, kann auch der Link für die ZMS-Terminvereinbarung generiert werden (z.B. für mehrere DL gleichzeitig)
