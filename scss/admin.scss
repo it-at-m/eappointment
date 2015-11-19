@@ -25,6 +25,7 @@
  */
  
 // Global page layouts
+@import "page/mixins";
 @import "page/page";
 @import "page/canvas";
 @import "page/board";
@@ -40,6 +41,7 @@
 @import "block/queueinfo";
 @import "block/appointment";
 @import "block/clientinfo";
+@import "block/scope-edit";
 
 // Element layouts
 @import "element/button";

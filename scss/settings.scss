@@ -24,19 +24,27 @@ $btn-border-color:              $greyBorder;
 $pageMaxWidth:                  93.846em; // 1220px bei 13px font size;
 $pageMaxWidth:                  87.143em; // 1220px bei 14px font size;
 $gridGutter:                    1.538em; // 20px; bei 13px font size;
+$gridGutter:                    1.429em; // 20px; bei 14px font size;
 $baseBoxElementPadding:         ($gridGutter / 3) ($gridGutter / 2); // navigation_items; board_body inner elements;
 
 
 /**
- * CSSWIZARDRY SETTING
+ * CSSWIZARDRY GRID SETTING
  */
  
 $use-markup-fix:                false;
 $gutter:                        $gridGutter;
-
+$breakpoints: (
+    "palm"          "(max-width: 44.9375em)",
+    "lap"           "(min-width: 45em) and (max-width: 63.9375em)",
+    "lap-and-up"    "(min-width: 45em)",
+    "portable"      "(max-width: 63.9375em)",
+    "desk"          "(min-width: 64em)",
+    "retina"        "(-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi), (min-resolution: 2dppx)"
+);
 
 /**
- * INUT SETTINGS
+ * INUIT SETTINGS
  */
 
 // iniut Base Settings

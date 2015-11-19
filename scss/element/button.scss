@@ -1,3 +1,4 @@
+
 .button-emergency {
     @extend 
         .btn, 
@@ -8,7 +9,21 @@
     margin-bottom:          $gridGutter;
 }
 
+.button-submit {
+    @extend 
+        .btn,
+        .btn--shadow;
+    margin-bottom:          ($gridGutter / 2);
+    font-size:              1rem;
+}
 
+.button-nextclient { 
+    @extend 
+        .btn, 
+        .btn--full, 
+        .btn--large,
+        .btn--bold;
+}
 
 /**
  * Button function modifiers.
@@ -35,4 +50,8 @@
     border-color:           lighten($btn-background, 15%);
     color:                  lighten($btn-font-color, 15%);
     cursor:                 text;     
+}
+
+.btn--shadow {
+    box-shadow:             1px 1px 0px 0px #333333;
 }
