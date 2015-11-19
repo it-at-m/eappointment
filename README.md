@@ -80,7 +80,9 @@ Locations
                 "webinfo" : "http://www.berlin.de/ba-mitte/org/sozialamt/index.html", // Homepage des Standortes
                 "fax": "(030) 90294-3888",
                 "phone": "(030) 115",
-                "competence": "http://www.berlin.de/meine/zustaendigkeit/" // Link zu detaillierten Zuständigkeitsinformationen
+                "competence": "http://www.berlin.de/meine/zustaendigkeit/", // Link zu detaillierten Zuständigkeitsinformationen,
+                "signed_mail" => 1, // Empfang signierter Mails möglich
+                "signed_maillink" => "http://www.beispiel.de/signed_mail_info/" // URL der Hinweisseite zum Empfang signierter Mails
             },
             "payment": "Am Standort kann bar und mit Lastschrift per girocard (ehemals EC-Karte) mit Unterschrift bezahlt werden.", // Zahlungsmöglichkeiten am Standort
             "id": "122314", // ID des Standortes
