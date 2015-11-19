@@ -28,14 +28,13 @@ $boardElementPadding:         $baseBoxElementPadding;
 .board_header {
     padding:            $boardElementPadding;
     background-color:   $blue;
+    position:           relative;
 }
 .board_body {
     padding:            0;
     background-color:   $grey;
     border:             1px solid $greyBorder;
-    > *:last-child {
-        margin-bottom:  0;
-    }
+    position:           relative;
 }
 .board_footer {
     border:             1px solid $greyDark;
@@ -44,7 +43,7 @@ $boardElementPadding:         $baseBoxElementPadding;
     padding:            $boardElementPadding;
     padding-top:        $gridGutter;
     background-color:   $grey;
-    font-size:          0.85em;
+    position:           relative;
 }
 .board_header__title {
     font-size:          1em;
@@ -58,5 +57,8 @@ $boardElementPadding:         $baseBoxElementPadding;
 .board--addBodyPadding {
     .body {
         padding:        $boardElementPadding;
+        > *:last-child {
+            margin-bottom:  0;
+        }
     }
 }

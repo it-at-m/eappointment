@@ -3,6 +3,7 @@
     table {
         @extend .table, .table--cells;
         background-color:       $white;
+        margin-bottom:          $gridGutter;
         thead {
             background-color:   $blueLight;
             th {

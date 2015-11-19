@@ -1,42 +1,133 @@
 // Build the CSS for form. Use Bootrstaps sass forms as base model?
 
-$formItemBasePadding:  ($gridGutter / 4) ($gridGutter / 3);
+$formItemBasePadding:   ($gridGutter / 4) ($gridGutter / 3) !default;
+$formErrorColor:        #a94442 !default;
+$legendBackgroundColor: #666666 !default;
+$formBorderColor:       $greyBorder !default;
 
 form {
+    margin-bottom:      $gridGutter;
 }
 
 fieldset{
     padding:        $gridGutter;
+    border:         0 none;
+    margin:         0;
+    legend {
+        background-color:   $legendBackgroundColor;
+        border:             0 none;
+        box-sizing:         content-box;
+        color:              $white;
+        margin:             0px (-$gridGutter);
+        padding:            ($gridGutter / 2) $gridGutter;
+        display:            block;
+        width:              100%;
+        font-weight:        bold;
+        font-size:          1em; 
+    }
 }
+
+
+label {
+    display:            block;
+    font-weight:        bold;
+    font-size:          0.9em;
+    margin-bottom:      0.1em;
+    max-width:          100%;
+}
+
+.form-input,
+textarea,
+select {
+    @extend .form-input--default;
+}
+
+input[type="checkbox"],
+input[type="radio"],
+.form-checkbox {
+    
+}
+
 
 // A form-group is a label, its input and a field description
 .form-group {
-    margin-bottom:  ($gridGutter / 3);
-    max-width:      100%;
-}
-
-.form-group__label,
-label {
-    display:        block;
-    font-weight:    bold;
-    font-size:      0.9em;
-    margin-bottom:  0.1em;
-    max-width:      100%;
-}
-
-.form-group__input,
-textarea,
-select {
-    border:         1px solid $greyBorder;
-    padding:        $formItemBasePadding;
-    max-width:      100%;
-}
-
-/*
-.form-group {
-    @extend .clearfix;
-    .btn--right {
-        float:          right;
+    margin-bottom:          $gridGutter;
+    max-width:              100%;
+    &.actions {
+        @extend .clearfix;
     }
 }
-*/
+
+.input-group {
+}
+
+.form-input-description {
+    font-size:              0.8em;
+}
+
+.has-error {
+    label { 
+        color:              $formErrorColor;
+    }
+    .form-input,
+    textarea,
+    select {
+        border-color:       $formErrorColor;
+        &:focus {
+            box-shadow:     0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px $formErrorColor;
+            outline:        0 none;
+        }
+    }
+}
+
+.checkbox-inline, 
+.radio-inline {
+    display:                    inline-block;
+    margin-bottom:              0;
+    position:                   relative;
+    vertical-align:             middle;
+    cursor:                     pointer;
+}
+
+
+// Modifications
+
+.form--inline {
+    label {
+        @extend .form-label--inline;
+    }
+    .form-input,
+    textarea,
+    select {
+        @extend .form-input--inline;
+    }
+}
+
+.form-input--default {
+    background-color:       #fff;
+    background-image:       none;
+    border:                 1px solid $formBorderColor;
+    border-radius:          4px;
+    box-shadow:             none;
+    color:                  #555;
+    width:                  100%; 
+    font-size:              14px;
+    line-height:            1.42857;
+    padding:                $formItemBasePadding;
+    transition:             border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
+    max-width:              100%;
+    min-height:             34px;
+    &:focus {
+        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px $formBorderColor;
+        outline: 0 none;
+    }
+}
+
+.form-label--inline {
+    display:                inline-block;
+    width:                  25%;
+}
+
+.form-input--inline {
+    width:                  74%;
+}

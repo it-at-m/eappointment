@@ -19,7 +19,11 @@
 \App::$slim->get('/counter/',
     '\BO\Zmsadmin\Counter:render')
     ->name("counter");
-
+    
+\App::$slim->get('/scope/',
+    '\BO\Zmsadmin\Scope:render')
+    ->name("scope");
+    
 //\App::$slim->get('/dienstleistung/:service_id',
 //    '\BO\D115Mandant\Controller\ServiceDetail:render')
 //    ->conditions([
