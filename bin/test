@@ -1,0 +1,11 @@
+#!/bin/bash
+
+DIR=$(dirname $(readlink -e ${BASH_SOURCE[0]}))
+ROOT=$(readlink -e $DIR/..)
+
+echo "Testing application"
+for filename in $ROOT/schema/*.json
+do
+    echo "Validating $filename";
+    $ROOT/vendor/bin/validate-json $filename $ROOT/tests/jsonschema4.json
+done;
