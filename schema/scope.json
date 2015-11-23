@@ -316,23 +316,7 @@
             }
         },
         "provider": {
-            "properties": {
-                "contact": {
-                    "$ref": "contact.json"
-                },
-                "id": {
-                    "type": "string",
-                    "description": "reference to an id"
-                },
-                "name": {
-                    "type": "string",
-                    "description": "name of the referenced service (explicit redundant)"
-                },
-                "source": {
-                    "type": "string",
-                    "description": "source of provider to resolve reference id"
-                }
-            }
+            "$ref": "provider.json"
         },
         "shortName": {
             "type": "string",

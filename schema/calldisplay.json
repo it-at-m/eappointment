@@ -1,0 +1,29 @@
+{
+    "type": "object",
+    "description": "data for a calldisplay",
+    "example": {
+        "scopes": [
+            {
+                "id": 1234
+            }
+        ]
+    },
+    "properties": {
+        "serverTime": {
+            "type": "integer",
+            "description": "unix timestamp GMT of the server time to adjust the clock on the call display"
+        },
+        "clusters": {
+            "type": "array",
+            "items": {
+                "$ref": "cluster.json"
+            }
+        },
+        "scopes": {
+            "type": "array",
+            "items": {
+                "$ref": "scope.json"
+            }
+        }
+    }
+}
