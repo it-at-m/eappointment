@@ -9,9 +9,26 @@
         ]
     },
     "properties": {
+        "image": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "string",
+                    "description": "contains base64 encoded image data"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "filename of the image"
+                },
+                "mime": {
+                    "type": "string",
+                    "description": "mime type of the base64 encoded image"
+                }
+            }
+        },
         "serverTime": {
             "type": "integer",
-            "description": "unix timestamp GMT of the server time to adjust the clock on the call display"
+            "description": "unix timestamp of the server time to adjust the clock on the call display"
         },
         "clusters": {
             "type": "array",
