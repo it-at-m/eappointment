@@ -4,7 +4,7 @@ $formItemBasePadding:   ($gridGutter / 4) ($gridGutter / 3) !default;
 $formErrorColor:        #a94442 !default;
 $legendBackgroundColor: #666666 !default;
 $formBorderColor:       $greyBorder !default;
-
+$elementMaxWidth:       40em !default;
 form {
     margin-bottom:      $gridGutter;
 }
@@ -49,16 +49,30 @@ input[type="radio"],
 }
 
 
-// A form-group is a label, its input and a field description
-.form-group {
+// A form-element is a label, its input and a field description
+.form-element {
     margin-bottom:          $gridGutter;
-    max-width:              100%;
+    max-width:              $elementMaxWidth;
     &.actions {
         @extend .clearfix;
     }
 }
 
-.input-group {
+// A inline-group is a group of form-elements
+.inline-group {
+    max-width:              $elementMaxWidth;
+    &.grid {
+        max-width:          $elementMaxWidth + $gridGutter;
+    }
+    .form-element {
+    }
+}
+
+.form-actions {
+    @extend 
+        .align-right, 
+        .inline-group;
+    margin:                     $gridGutter 0;
 }
 
 .form-input-description {
@@ -92,17 +106,6 @@ input[type="radio"],
 
 // Modifications
 
-.form--inline {
-    label {
-        @extend .form-label--inline;
-    }
-    .form-input,
-    textarea,
-    select {
-        @extend .form-input--inline;
-    }
-}
-
 .form-input--default {
     background-color:       #fff;
     background-image:       none;
@@ -123,6 +126,22 @@ input[type="radio"],
     }
 }
 
+.form--inline {
+    label {
+        @extend .form-label--inline;
+    }
+    .form-input,
+    textarea,
+    select {
+        @extend .form-input--inline;
+    }
+}
+
+.form-element--inline {
+    display:                inline-block;
+    margin-bottom:          0;
+}
+
 .form-label--inline {
     display:                inline-block;
     width:                  25%;
@@ -130,4 +149,16 @@ input[type="radio"],
 
 .form-input--inline {
     width:                  74%;
+}
+
+.form-input--half {
+    width:                  49%;
+}
+
+.form-input--small {
+    width:                  10em;
+}
+
+.form-input--tiny {
+    width:                  5em;
 }

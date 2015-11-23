@@ -13,7 +13,8 @@ $blue:                          #008CCA;
 $blueDark:                      #33445E;
 $blueLight:                     #ECF9FF;
 $red:                           #E75656;
-$baseTextColor:                 $black;
+$baseTextColor:                 #000000;
+$fontInactiveColor:             #999999;
 $pageheaderBackgroundColor:     $blueDark;
 $linkColor:                     $baseTextColor;
 $btn-background:                $white;
@@ -54,6 +55,14 @@ $inuit-base-text-color:         $baseTextColor;
 $inuit-base-background-color:   $white;
 $inuit-responsive-settings:     true;
 
+// iniut Headline Settings
+$inuit-heading-size-1:  20px;
+$inuit-heading-size-2:  18px;
+$inuit-heading-size-3:  16px;
+$inuit-heading-size-4:  $inuit-base-font-size;
+$inuit-heading-size-5:  $inuit-base-font-size;
+$inuit-heading-size-6:  $inuit-base-font-size;
+
 // iniut Dimensions
 $inuit-base-spacing-unit:       20px; // we need pixel here. em does not get through the sass/inuit compiler
 
@@ -67,5 +76,6 @@ $inuit-btn-radius:              0px;
 $inuit-enable-btn--large:       true;
 
 // inuit Tables
+$inuit-table-border-color:      $greyBorder;
 $inuit-enable-table--cells:     true;
 $inuit-enable-table--compact:   false;

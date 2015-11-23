@@ -1,3 +1,7 @@
+$queuePastColor:                #E6E6E6 !default;
+$queueFutureColor:              #74CAF0 !default;
+$queueMissedColor:              $red !default;
+
 .queue {
     @extend .board;
     table {
@@ -13,6 +17,65 @@
         }
         td {
             padding:            0.5em;
+        }
+        tr:first-child {
+            .queue-status {
+                border-top:     1px solid $greyBorder;
+            }
+        }
+        .queue-status {
+            border:             0 none;
+            padding-left:       0;
+            padding-right:      0;
+            width:              0.4em;
+        }
+        tr.past {
+            //background-color:           lighten($queuePastColor, 5%);
+            .queue-status {
+                background-color:       $queuePastColor;
+            }
+            + tr.future {
+                .queue-status {
+                    border-top:         1px solid $white;
+                    position:           relative;
+                    &:before {  
+                        display:            block;
+                        width:              10px;
+                        height:             10px;
+                        content:            "10:36";
+                        left:               -43px;
+                        position:           absolute;
+                        top:                -11px;
+                        color:              $greyDark;
+                    }
+                }
+                
+            }     
+        }
+        tr.future {
+            background-color:       $white;
+            .queue-status {
+                background-color:   $queueFutureColor;
+            }
+            + tr.missed {
+                .queue-status {
+                    //border-top:  2px solid $white;
+                }
+            }
+        }
+        tr.missed {
+            background-color:       $queuePastColor; //lighten($queueMissedColor, 35%);
+            color:                  #666666;
+            a {
+                color:              $linkColor;
+            }
+            .queue-status {
+                //background-color:   $queueMissedColor;
+            }
+        }
+        &.queue-missed {
+            margin-top:                 1em;
+            margin-bottom:              0;
         }
     }
 }
