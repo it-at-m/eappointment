@@ -6,7 +6,8 @@
         "callCount": 1,
         "callTime": 1447922938000,
         "number": "123",
-        "waitingTime": 2
+        "waitingTime": 2,
+        "withAppointment": false
     },
     "required": [
         "arrivalTime",
@@ -35,6 +36,15 @@
         "waitingTime": {
             "type": "integer",
             "description": "minutes since arrival of client"
+        },
+        "waitingTimeEstimate": {
+            "type": "integer",
+            "description": "estimated time in minutes to wait for a call"
+        },
+        "withAppointment": {
+            "type": "boolean",
+            "description": "true if corresponding process has an appointment",
+            "default": false
         }
     }
 }

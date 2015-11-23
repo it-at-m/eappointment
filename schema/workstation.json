@@ -25,6 +25,10 @@
         }
     },
     "properties": {
+        "authkey": {
+            "type": "string",
+            "description": "authentication key, usually only in a login response once"
+        },
         "hint": {
             "type": "string",
             "description": "used for displaying in the calldisplay"

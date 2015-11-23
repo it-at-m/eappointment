@@ -4,7 +4,8 @@
     "example": {
         "error": false,
         "generated": "2015-11-20T18:01:04+01:00",
-        "length": 1
+        "length": 1,
+        "server": "prod-zmsapi-01"
     },
     "properties": {
         "error": {

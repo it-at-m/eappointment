@@ -34,6 +34,12 @@
         ]
     },
     "properties": {
+        "clusters": {
+            "type": "array",
+            "items": {
+                "$ref": "cluster.json"
+            }
+        },
         "contact": {
             "$ref": "contact.json"
         },

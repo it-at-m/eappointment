@@ -1,0 +1,41 @@
+{
+    "type": "object",
+    "description": "status informations for the api",
+    "example": {
+        "generated": "2015-11-20T18:01:04+01:00",
+        "version": {
+            "major": 2,
+            "minor": 34,
+            "patch": 56
+        },
+        "server": "prod-zmsapi-01"
+    },
+    "properties": {
+        "generated": {
+            "type": "string",
+            "description": "iso8601 date time string of generation on the server",
+            "example": "2015-11-20T18:01:04+01:00"
+        },
+        "server": {
+            "type": "string",
+            "description": "identifier for the responding server"
+        },
+        "version": {
+            "type": "object",
+            "properties": {
+                "major": {
+                    "type": "integer",
+                    "description": "major version, this value increments on breaking changes"
+                },
+                "minor": {
+                    "type": "integer",
+                    "description": "minor version, this value increments on adding features"
+                },
+                "patch": {
+                    "type": "integer",
+                    "description": "patch level, this value increments with bugfixes"
+                }
+            }
+        }
+    }
+}
