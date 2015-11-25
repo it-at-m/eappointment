@@ -24,6 +24,7 @@ $btn-border-color:              $greyBorder;
 // Dimensions
 $pageMaxWidth:                  93.846em; // 1220px bei 13px font size;
 $pageMaxWidth:                  87.143em; // 1220px bei 14px font size;
+$pageMaxWidth:                  90em; // 1260px bei 14px font size;
 $gridGutter:                    1.538em; // 20px; bei 13px font size;
 $gridGutter:                    1.429em; // 20px; bei 14px font size;
 $baseBoxElementPadding:         ($gridGutter / 3) ($gridGutter / 2); // navigation_items; board_body inner elements;
@@ -34,6 +35,7 @@ $baseBoxElementPadding:         ($gridGutter / 3) ($gridGutter / 2); // navigati
  */
  
 $use-markup-fix:                false;
+$push:                          true;
 $gutter:                        $gridGutter;
 $breakpoints: (
     "palm"          "(max-width: 44.9375em)",

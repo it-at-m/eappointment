@@ -1,6 +1,6 @@
 .appointment {
     @extend .board, .board--addBodyPadding;
-    form {
-        //@extend .form--inline;
+    .form-element {
+        margin-bottom:      0.5em;
     }
 }

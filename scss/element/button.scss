@@ -15,9 +15,16 @@ $buttonInactiveFontColor:   $fontInactiveColor !default;
 .button-submit {
     @extend 
         .btn,
-        //.btn--success,
         .btn--shadow;
     margin-bottom:          ($gridGutter / 2);
+    font-size:              1rem;
+}
+
+.button-logout {
+    @extend 
+        .btn,
+        .btn--shadow;
+    margin:                 0;
     font-size:              1rem;
 }
 
@@ -45,6 +52,10 @@ $buttonInactiveFontColor:   $fontInactiveColor !default;
         .btn--full, 
         .btn--large,
         .btn--bold;
+}
+
+.button-file {
+    background-color:       $white;
 }
 
 /**

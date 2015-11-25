@@ -1,11 +1,15 @@
+$backgroundColorDayFree:        #CFE9C9;
+$backgroundColorDayBusy:        #FFAAA9;
+$textColorDateLocked:           #CCCCCC;
+
 .calendar-page {
-    background-color:       $white;
-    font-size:              0.9em;
-    margin-bottom:          1em;
+    background-color:           $white;
+    font-size:                  0.9em; 
+    margin-bottom:              1em;
     > .header {
-        border-bottom:      1px solid $grey;
-        margin:             0 0 0.2em 0;
-        padding:            0.2em 0.5em;
+        border-bottom:          1px solid $grey;
+        margin:                 0 0 0.2em 0;
+        padding:                0.2em 0.5em;
         .title {
             margin:             0;
             padding:            0;
@@ -18,8 +22,23 @@
             @extend .table;
             td, 
             th {
-                padding:        0 0.2em;
-                text-align:     center;
+                padding:            0 0.2em;
+                text-align:         center;
+            }
+            color:                  $baseTextColor;
+            a {
+                color:              $baseTextColor;
+                display:            block;
+            }
+            .date-free {
+                background-color:   $backgroundColorDayFree;
+            }
+            .date-busy {
+                background-color:   $backgroundColorDayBusy;
+            }
+            .date-locked {
+                color:              $textColorDateLocked;
+                cursor:             default;
             }
         }
     }

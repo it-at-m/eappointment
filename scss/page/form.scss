@@ -5,6 +5,7 @@ $formErrorColor:        #a94442 !default;
 $legendBackgroundColor: #666666 !default;
 $formBorderColor:       $greyBorder !default;
 $elementMaxWidth:       40em !default;
+
 form {
     margin-bottom:      $gridGutter;
 }
@@ -33,7 +34,9 @@ label {
     font-weight:        bold;
     font-size:          0.9em;
     margin-bottom:      0.1em;
+    margin-left:        1px;
     max-width:          100%;
+    vertical-align:     top;
 }
 
 .form-input,
@@ -45,7 +48,11 @@ select {
 input[type="checkbox"],
 input[type="radio"],
 .form-checkbox {
-    
+    margin-right:           0.3em;
+    &:focus {
+        outline: thin dotted;
+        outline-offset: -2px;
+    }
 }
 
 
@@ -53,26 +60,20 @@ input[type="radio"],
 .form-element {
     margin-bottom:          $gridGutter;
     max-width:              $elementMaxWidth;
+    span + input {
+        margin-left:        1em;
+    }
     &.actions {
         @extend .clearfix;
     }
 }
 
-// A inline-group is a group of form-elements
-.inline-group {
-    max-width:              $elementMaxWidth;
-    &.grid {
-        max-width:          $elementMaxWidth + $gridGutter;
-    }
-    .form-element {
-    }
-}
-
 .form-actions {
     @extend 
-        .align-right, 
-        .inline-group;
+        .align-right;
+        //.inline-group;
     margin:                     $gridGutter 0;
+    max-width:                  100%;
 }
 
 .form-input-description {
@@ -88,6 +89,7 @@ input[type="radio"],
     select {
         border-color:       $formErrorColor;
         &:focus {
+            border-color:   $formErrorColor;
             box-shadow:     0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px $formErrorColor;
             outline:        0 none;
         }
@@ -112,53 +114,121 @@ input[type="radio"],
     border:                 1px solid $formBorderColor;
     border-radius:          4px;
     box-shadow:             none;
+    box-sizing:             border-box;
     color:                  #555;
     width:                  100%; 
     font-size:              14px;
     line-height:            1.42857;
-    padding:                $formItemBasePadding;
+    padding:                $formItemBasePadding !important;
     transition:             border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
     max-width:              100%;
     min-height:             34px;
     &:focus {
-        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px $formBorderColor;
-        outline: 0 none;
+        border-color:       #66afe9;
+        box-shadow:         0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(102, 175, 233, 0.6);
+        outline:            0 none;
     }
 }
 
-.form--inline {
+.display-inline {
+    .form-element {
+        @extend .grid;
+        margin-bottom:          $gridGutter;
+        max-width:              none;
+        label {
+            @extend 
+                .grid__item, 
+                .three-twelfths,
+                .portable--one-whole;
+        }
+        .form-input,
+        textarea,
+        select,
+        .form-input-description {
+            @extend 
+                .grid__item, 
+                .nine-twelfths,
+                .portable--one-whole;
+        }
+        span, p {
+            letter-spacing: normal;
+        }
+        .form-input-description {
+            @extend 
+                .push--desk--three-twelfths;
+            padding-left:   0;
+            position:       relative;
+        }
+    }
+}
+
+.__display-inline {
+    .form-element,
+    &.form-element {
+        max-width:          none;
+    }
     label {
-        @extend .form-label--inline;
+        display:                inline-block;
+        width:                  16%;
+        width:                  12rem;
+    }
+    .form-input-description {
+        margin-left:            16%;
+        margin-left:            12rem;
     }
     .form-input,
     textarea,
     select {
-        @extend .form-input--inline;
+        max-width:              70%;
+    }
+    .inline-group {
+        max-width: 90%;
     }
 }
 
-.form-element--inline {
-    display:                inline-block;
-    margin-bottom:          0;
-}
-
-.form-label--inline {
-    display:                inline-block;
-    width:                  25%;
-}
-
-.form-input--inline {
-    width:                  74%;
-}
 
 .form-input--half {
-    width:                  49%;
+    width:                  49%  !important;
+    margin-right:           0.4em  !important;
 }
 
 .form-input--small {
-    width:                  10em;
+    width:                  10em  !important;
+    margin-right:           0.4em  !important;
 }
 
 .form-input--tiny {
-    width:                  5em;
+    width:                  5em !important;
+    margin-right:           0.4em  !important;
+}
+
+
+/**
+  * Add a grid to special form elements
+  */
+// Base
+.inline-group {
+    @extend .grid;
+    max-width:              $elementMaxWidth + $gridGutter;
+    .form-element {
+        @extend 
+            .grid__item, 
+            .one-whole;
+    }
+}
+
+// 10/2 grid
+.inline-group {
+    .scope-description {
+        @extend 
+            .grid__item, 
+            .ten-twelfths,
+            .portable--eight-twelfths;
+    }
+    .scope-shortcut {
+        @extend 
+            .grid__item, 
+            .two-twelfths,
+            .portable--four-twelfths;
+    }
 }
