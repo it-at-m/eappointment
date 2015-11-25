@@ -1,6 +1,6 @@
 .scope-edit {
-    @extend .board;
     form {
         //@extend .form--inline;
+        @extend .board;
     }
 }

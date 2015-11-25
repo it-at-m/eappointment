@@ -1,4 +1,6 @@
-// The basic board layout
+/**
+ * The basic board layout has a blue header and a grey body
+ */
 
 $boardElementPadding:         $baseBoxElementPadding;
 
@@ -41,9 +43,15 @@ $boardElementPadding:         $baseBoxElementPadding;
     border-width:       0px 1px 1px 1px;
     margin-top:         -1px;
     padding:            $boardElementPadding;
-    padding-top:        $gridGutter;
+    //padding-top:        $gridGutter;
     background-color:   $grey;
     position:           relative;
+    > *:last-child {
+        margin-bottom:  0;
+    }
+    > *:first-child {
+        margin-top:     0;
+    }
 }
 .board_header__title {
     font-size:          1em;

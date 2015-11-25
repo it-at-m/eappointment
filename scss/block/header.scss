@@ -6,27 +6,38 @@
     color:                  $white;
     background-color:       $pageheaderBackgroundColor;
     padding:                ($gridGutter / 2) $gridGutter;
-    margin:                 0 0 $gridGutter 0;
+    margin:                 0 (- $gridGutter) $gridGutter;
     .pageheader_logo {
         @extend 
             .grid__item, 
             .two-twelfths, 
             .palm--one-whole;
+        vertical-align: middle;
+        img {
+            display:    block;
+        }
     }
     .pageheader_sitename {
         @extend 
             .grid__item, 
             .six-twelfths, 
             .palm--one-whole;
+        font-size:      1.3em;
+        font-weight:    normal;
+        line-height:    1.2em;
+        vertical-align: middle;
     }
     .pageheader_userinfo {
         @extend 
             .grid__item, 
             .four-twelfths, 
+            .align-right,
             .palm--one-whole;
-        @include media-query(lap) {
-            @extend .align-right;
-        }
+        vertical-align: middle;
+    }
+    
+    .sitename {
+        
     }
 }
 
