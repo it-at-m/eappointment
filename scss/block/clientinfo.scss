@@ -1,3 +1,6 @@
 .clientinfo {
-    @extend .board, .board--addBodyPadding;
+    @extend 
+        .board, 
+        .board--addBodyPadding,
+        .board--minHeight;
 }

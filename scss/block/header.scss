@@ -6,7 +6,8 @@
     color:                  $white;
     background-color:       $pageheaderBackgroundColor;
     padding:                ($gridGutter / 2) $gridGutter;
-    margin:                 0 (- $gridGutter) $gridGutter;
+    //margin:                 0 (- $gridGutter) $gridGutter;
+    margin:                 0 0 $gridGutter 0;
     .pageheader_logo {
         @extend 
             .grid__item, 
