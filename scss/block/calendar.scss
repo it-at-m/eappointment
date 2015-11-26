@@ -1,3 +1,10 @@
 .calendar {
-    @extend .board;
+    @extend 
+        .board,
+        .board--minHeight;
+    .calendar-page {
+        .body {
+            font-size:  0.85em;
+        }
+    }
 }

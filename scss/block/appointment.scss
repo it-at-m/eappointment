@@ -1,6 +1,37 @@
 .appointment {
-    @extend .board, .board--addBodyPadding;
-    .form-element {
-        margin-bottom:      0.5em;
+    @extend 
+        .board, 
+        .board--addBodyPadding,
+        .board--minHeight;
+    form .split{
+        @include form--horizontal(one-quarter, three-quarters);
+    }
+    .form-group {
+        margin-bottom:      0.4em !important;
+    }
+    .form-actions {
+        margin:             0;
+    }
+    .split {
+        @extend .grid;
+        .split_left {
+            @extend 
+                .grid__item, 
+                .four-eighths,
+                .palm--one-whole;
+        }
+        .split_right {
+            @extend 
+                .grid__item,
+                .four-eighths,
+                .palm--one-whole;
+        }
+    }
+    // Overwrite Base horizontalform label grid width
+    .appointment_slots label {
+        width:  3.5em !important;
+    }
+    .appointment_comment {
+        @include form--horizontal(one-eighth, seven-eighths);
     }
 }

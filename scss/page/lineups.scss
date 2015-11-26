@@ -8,13 +8,25 @@
         @extend .grid;
         .lineup_actor {
             &--left {
-                @extend .grid__item, .three-tenths, .lap--one-whole, .palm--one-whole;
+                @extend 
+                    .grid__item, 
+                    .three-twelfths, 
+                    .lap--one-whole, 
+                    .palm--one-whole;
             }
             &--middle {
-                @extend .grid__item, .five-tenths, .lap--two-thirds, .palm--one-whole;
+                @extend 
+                    .grid__item, 
+                    .seven-twelfths, 
+                    .lap--two-thirds, 
+                    .palm--one-whole;
             }
             &--right {
-                @extend .grid__item, .two-tenths, .lap--one-third, .palm--one-whole;
+                @extend 
+                    .grid__item, 
+                    .two-twelfths, 
+                    .lap--one-third, 
+                    .palm--one-whole;
             }
         }
     }
@@ -22,13 +34,25 @@
         @extend .grid;
         .lineup_actor {
             &--left {
-                @extend .grid__item, .five-tenths, .lap--one-whole, .palm--one-whole;
+                @extend 
+                    .grid__item, 
+                    .seven-twelfths,
+                    .lap--one-whole, 
+                    .palm--one-whole;
             }
             &--middle {
-                @extend .grid__item, .three-tenths, .lap--two-thirds, .palm--one-whole;
+                @extend 
+                    .grid__item, 
+                    .three-twelfths,
+                    .lap--two-thirds, 
+                    .palm--one-whole;
             }
             &--right {
-                @extend .grid__item, .two-tenths, .lap--one-third, .palm--one-whole;
+                @extend 
+                    .grid__item, 
+                    .two-twelfths, 
+                    .lap--one-third, 
+                    .palm--one-whole;
             }
         }
     }
