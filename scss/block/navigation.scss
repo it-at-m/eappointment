@@ -23,7 +23,7 @@ $navElementPadding:         $baseBoxElementPadding;
             display:                block;
             text-decoration:        none;
             font-weight:            normal;
-            &.nav__item--active {
+            &.active {
                 border-left:        9px solid $blue;
                 font-weight:        bold;
             }
@@ -41,3 +41,7 @@ $navElementPadding:         $baseBoxElementPadding;
     padding:                $baseBoxElementPadding;
 }
 
+.nav__item--active {
+    border-left:        9px solid $blue;
+    font-weight:        bold;
+}

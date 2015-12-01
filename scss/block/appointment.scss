@@ -4,7 +4,7 @@
         .board--addBodyPadding,
         .board--minHeight;
     form .split{
-        @include form--horizontal(one-quarter, three-quarters);
+        //@include form--horizontal(one-quarter, three-quarters);
     }
     .form-group {
         margin-bottom:      0.4em !important;
@@ -17,13 +17,15 @@
         .split_left {
             @extend 
                 .grid__item, 
-                .four-eighths,
+                //.four-eighths,
+                .five-twelfths,
                 .palm--one-whole;
         }
         .split_right {
             @extend 
                 .grid__item,
-                .four-eighths,
+                //.four-eighths,
+                .seven-twelfths,
                 .palm--one-whole;
         }
     }
@@ -32,6 +34,6 @@
         width:  3.5em !important;
     }
     .appointment_comment {
-        @include form--horizontal(one-eighth, seven-eighths);
+        @include form--horizontal(two-twelfths, ten-twelfths);
     }
 }

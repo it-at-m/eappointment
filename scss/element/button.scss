@@ -46,13 +46,6 @@ $buttonInactiveFontColor:   $fontInactiveColor !default;
     font-size:              1rem;
 }
 
-.button-nextclient { 
-    @extend 
-        .btn, 
-        .btn--full, 
-        .btn--large,
-        .btn--bold;
-}
 
 .button-file {
     background-color:       $white;
