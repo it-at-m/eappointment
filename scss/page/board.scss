@@ -2,7 +2,10 @@
  * The basic board layout has a blue header and a grey body
  */
 
-$boardElementPadding:         $baseBoxElementPadding;
+$boardElementPadding:                   $baseBoxElementPadding !default;
+$boardFooterBackground:                 #F8F8F8 !default;
+$contentTopLineupBoardBodyMinHeight:  21em; // (calendar,appointment,clientinfo,queueinfo,...)
+$contentTopLineupBoardBodyMaxHeight:  28em; // (calendar,appointment,clientinfo,queueinfo,...)
 
 /* use the board css to extend the layout of the blocks */
 .board {
@@ -37,15 +40,21 @@ $boardElementPadding:         $baseBoxElementPadding;
     background-color:   $grey;
     border:             1px solid $greyBorder;
     position:           relative;
+    > *:first-child {
+        margin-top:     0;
+        > *:first-child {
+            margin-top:     0;
+        }
+    }
 }
 .board_footer {
+    font-size:          0.9em;
     border:             1px solid $greyDark;
     border-width:       0px 1px 1px 1px;
-    margin-top:         -1px;
     padding:            $boardElementPadding;
-    //padding-top:        $gridGutter;
     background-color:   $grey;
     position:           relative;
+    background-color:   $boardFooterBackground;
     > *:last-child {
         margin-bottom:  0;
     }
@@ -68,13 +77,19 @@ $boardElementPadding:         $baseBoxElementPadding;
         > *:last-child {
             margin-bottom:  0;
             > *:last-child {
-                margin-bottom:  0;
+                //margin-bottom:  0;
             }
         }
     }
 }
-.board--minHeight {
+.board_body--minHeight {
     > .body {
-        min-height:     $contentTopLineupBoardMinHeight;
+        min-height:     $contentTopLineupBoardBodyMinHeight;
+    }
+}
+.board_body--maxHeight {
+    > .body {
+        max-height:     $contentTopLineupBoardBodyMaxHeight;
+        overflow:       auto;
     }
 }

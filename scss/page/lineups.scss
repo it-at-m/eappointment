@@ -10,14 +10,14 @@
             &--left {
                 @extend 
                     .grid__item, 
-                    .three-twelfths, 
+                    .four-twelfths, 
                     .lap--one-whole, 
                     .palm--one-whole;
             }
             &--middle {
                 @extend 
                     .grid__item, 
-                    .seven-twelfths, 
+                    .six-twelfths, 
                     .lap--two-thirds, 
                     .palm--one-whole;
             }

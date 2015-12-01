@@ -1,6 +1,45 @@
 .clientinfo {
     @extend 
-        .board, 
+        .board_body--minHeight,
+        .board_body--maxHeight,
         .board--addBodyPadding,
-        .board--minHeight;
+        .board;
+    .clientinfo_dialog {
+        dl {
+            @extend
+                .list-dl,
+                //.list-dl--horizontal,
+                .list-dl--compact;
+        }
+    }
+    .waiting-time {
+        @extend .text--highlight;
+    }
+    
+    
+    .button-nextclient { 
+        @extend 
+            .btn, 
+            .btn--full, 
+            .btn--large,
+            .btn--bold;
+    }
+
+    .button-cancel {
+        @extend 
+            .btn,
+            .btn--alert,
+            .btn--shadow;
+        font-size:              0.9em;
+        font-size:              0.9rem;
+    }
+
+    .button-finish {
+         @extend 
+            .btn,
+            .btn--success,
+            .btn--shadow;
+        font-size:              1rem;
+    }
+
 }

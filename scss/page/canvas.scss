@@ -2,9 +2,23 @@
 .canvas {
     @extend .grid, .grid--rev;
     .canvas_sidebar {
-        @extend .grid__item,  .one-sixth, .portable--one-whole;
+        @extend 
+            .grid__item,  
+            .one-sixth, 
+            .portable--one-whole;
+        // we need more space in the content area, so overwrite the grid 
+        @include media-query(desk) {
+            width:  15%; 
+        }
     }
     .canvas_mainbar {
-        @extend .grid__item, .five-sixths, .portable--one-whole;
+        @extend 
+            .grid__item, 
+            .five-sixths, 
+            .portable--one-whole;
+        // we need more space in the content area, so overwrite the grid 
+        @include media-query(desk) {
+            width:  85%;
+        }
     }
 }

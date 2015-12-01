@@ -34,6 +34,9 @@ a {
     float:              right;
 }
 
+.text--highlight {
+    color:              $blue;
+}
 
 // We extend wizardrys inline-block bug fix, otherwise it does not work
 @if $use-markup-fix != true {
