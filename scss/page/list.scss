@@ -1,0 +1,62 @@
+/* UL */
+ul {
+}
+
+/* OL */
+ol {
+}
+
+
+
+/* DL */
+dl {
+    @extend .list-dl;
+    dt {
+        @extend .list-dl__title;
+    }
+    dd {
+        @extend .list-dl__description;
+    }
+}
+
+.list-dl {
+    display:            block;
+}
+.list-dl__title {
+    font-weight:        bold;
+}
+.list-dl__description {
+    margin-left:        1em;
+}
+
+.list-dl--horizontal {
+    @extend .clearfix;
+    dt {
+        @extend .clearfix;
+        display:        inline-block;
+         margin-bottom: 0em;
+    }
+    dd {
+        @extend .clearfix;
+        display:        inline;
+        word-wrap:      break-word;
+        margin-left:    0.1em;
+        margin-bottom:  0.5em;
+    }
+}
+.list-dl--compact {
+    dt, dd {
+        line-height:    1.25em;
+        display:        block;
+    }
+    dt {
+        font-size:          0.95em;
+        line-height:        1.2em;
+        //float:              left;
+        //margin-right:       0.5em;
+    }
+    dd {
+        margin-left:    0;
+        margin-bottom:  0.5em;
+    }
+}
