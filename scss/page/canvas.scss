@@ -1,4 +1,7 @@
 // The base grid with a navigation and a content area
+$canvasSidebarWidth:    15% !default;
+$canvasMainbarWidth:    85% !default;
+
 .canvas {
     @extend .grid, .grid--rev;
     .canvas_sidebar {
@@ -8,7 +11,7 @@
             .portable--one-whole;
         // we need more space in the content area, so overwrite the grid 
         @include media-query(desk) {
-            width:  15%; 
+            width:  $canvasSidebarWidth; 
         }
     }
     .canvas_mainbar {
@@ -18,7 +21,7 @@
             .portable--one-whole;
         // we need more space in the content area, so overwrite the grid 
         @include media-query(desk) {
-            width:  85%;
+            width:  $canvasMainbarWidth;
         }
     }
 }

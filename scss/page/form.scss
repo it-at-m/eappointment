@@ -33,7 +33,7 @@ label,
 .label {
     display:            block;
     font-weight:        bold;
-    font-size:          0.95em;
+    font-size:          $fontSizeLabels;
     margin-bottom:      0.1em;
     margin-left:        2px;
     max-width:          100%;
@@ -65,7 +65,8 @@ label,
 textarea,
 select,
 .form-input {
-    @extend .form-input--default;
+    @extend 
+        .form-input--default;
 }
 
 input[type="checkbox"],
@@ -89,6 +90,7 @@ input[type="radio"] {
 }
 
 
+
 /**
  * Our form classes
  */
@@ -107,6 +109,23 @@ input[type="radio"] {
     }
 }
 
+.add-date-picker {
+    position:           relative; 
+    display:            inline-block;
+    &:before {
+        display:        inline;
+        left:           0.5em;
+        position:       absolute;
+        top:            0.2em;
+        width:          0;
+        content:        "\1f4c5";
+    }
+    input {
+        padding-left:   2em;
+        width:          10em;
+    }
+}
+    
 // Align the buttons at the end of a form to the right side
 .form-actions {
     @extend 

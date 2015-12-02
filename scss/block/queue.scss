@@ -5,7 +5,9 @@ $queueMissedColor:              $red !default;
 .queue {
     @extend .board;
     table {
-        @extend .table, .table--cells;
+        @extend 
+            .table, 
+            .table--cells;
         background-color:       $white;
         margin-bottom:          $gridGutter;
         thead {
@@ -18,9 +20,11 @@ $queueMissedColor:              $red !default;
         td {
             padding:            0.5em;
         }
-        tr:first-child {
-            .queue-status {
-                border-top:     1px solid $greyBorder;
+        tbody {
+            tr:first-child {
+                .queue-status {
+                    border-top:     1px solid $greyBorder;
+                }
             }
         }
         .queue-status {
@@ -30,7 +34,6 @@ $queueMissedColor:              $red !default;
             width:              0.4em;
         }
         tr.past {
-            //background-color:           lighten($queuePastColor, 5%);
             .queue-status {
                 background-color:       $queuePastColor;
             }
@@ -42,8 +45,8 @@ $queueMissedColor:              $red !default;
                         display:            block;
                         width:              10px;
                         height:             10px;
-                        content:            "O";
-                        left:               -13px;
+                        content:            "🕓";
+                        left:               -16px;
                         position:           absolute;
                         top:                -10px;
                         color:              $greyDark;
@@ -57,20 +60,12 @@ $queueMissedColor:              $red !default;
             .queue-status {
                 background-color:   $queueFutureColor;
             }
-            + tr.missed {
-                .queue-status {
-                    //border-top:  2px solid $white;
-                }
-            }
         }
         tr.missed {
-            background-color:       $queuePastColor; //lighten($queueMissedColor, 35%);
+            background-color:       $queuePastColor;
             color:                  #666666;
             a {
                 color:              $linkColor;
-            }
-            .queue-status {
-                //background-color:   $queueMissedColor;
             }
         }
         &.queue-missed {

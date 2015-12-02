@@ -24,6 +24,10 @@
     '\BO\Zmsadmin\Scope:render')
     ->name("scope");
     
+\App::$slim->get('/testpage/',
+    '\BO\Zmsadmin\Testpage:render')
+    ->name("testpage");
+    
 //\App::$slim->get('/dienstleistung/:service_id',
 //    '\BO\D115Mandant\Controller\ServiceDetail:render')
 //    ->conditions([

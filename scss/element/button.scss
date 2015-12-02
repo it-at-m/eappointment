@@ -2,28 +2,32 @@ $buttonSuccessColor:        $blue !default;
 $buttonAlertColor:          $red !default;
 $buttonInactiveFontColor:   $fontInactiveColor !default;
 
+.btn {
+    @extend 
+        .btn--shadow;
+}
+
 .button-emergency {
     @extend 
         .btn, 
         .btn--full, 
         .btn--large,
-        .btn--bold, 
+        .btn--bold,
+        .btn--noShadow,
         .btn--alert;
     margin-bottom:          $gridGutter;
 }
 
 .button-submit {
     @extend 
-        .btn,
-        .btn--shadow;
+        .btn;
     margin-bottom:          ($gridGutter / 2);
     font-size:              1rem;
 }
 
 .button-logout {
     @extend 
-        .btn,
-        .btn--shadow;
+        .btn;
     margin:                 0;
     font-size:              1rem;
 }
@@ -31,8 +35,7 @@ $buttonInactiveFontColor:   $fontInactiveColor !default;
 .button-save {
     @extend 
         .btn,
-        .btn--success,
-        .btn--shadow;
+        .btn--success;
     margin-bottom:          ($gridGutter / 2);
     font-size:              1rem;
 }
@@ -40,8 +43,7 @@ $buttonInactiveFontColor:   $fontInactiveColor !default;
 .button-delete {
     @extend 
         .btn,
-        .btn--alert,
-        .btn--shadow;
+        .btn--alert;
     margin-bottom:          ($gridGutter / 2);
     font-size:              1rem;
 }
@@ -58,6 +60,8 @@ $buttonInactiveFontColor:   $fontInactiveColor !default;
 .btn--bold {
     font-weight: bold;
 }
+
+
 
 .btn--alert,
 .btn--alert:hover,
@@ -89,4 +93,8 @@ $buttonInactiveFontColor:   $fontInactiveColor !default;
 
 .btn--shadow {
     box-shadow:             1px 1px 0px 0px #333333;
+}
+
+.btn--noShadow {
+    box-shadow:             none;
 }
