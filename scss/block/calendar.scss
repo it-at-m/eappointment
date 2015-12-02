@@ -1,10 +1,13 @@
 .calendar {
     @extend 
         .board;
-        //.board_body--minHeight;
     .calendar-page {
         .body {
             font-size:  0.85em;
         }
     }
+}
+
+.calendar_navigation {
+    display:    inline-block;
 }

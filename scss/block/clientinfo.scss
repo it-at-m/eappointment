@@ -7,9 +7,9 @@
     .clientinfo_dialog {
         dl {
             @extend
-                .list-dl,
                 //.list-dl--horizontal,
-                .list-dl--compact;
+                //.list-dl--compact,
+                .list-dl;
         }
     }
     .waiting-time {
@@ -30,8 +30,6 @@
             .btn,
             .btn--alert,
             .btn--shadow;
-        font-size:              0.9em;
-        font-size:              0.9rem;
     }
 
     .button-finish {
@@ -39,7 +37,6 @@
             .btn,
             .btn--success,
             .btn--shadow;
-        font-size:              1rem;
     }
 
 }

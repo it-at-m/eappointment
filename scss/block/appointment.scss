@@ -34,6 +34,6 @@
         width:  3.5em !important;
     }
     .appointment_comment {
-        @include form--horizontal(two-twelfths, ten-twelfths);
+        //@include form--horizontal(two-twelfths, ten-twelfths);
     }
 }

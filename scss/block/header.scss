@@ -1,21 +1,24 @@
 // Page Header
 .pageheader {
     @extend 
-        .grid, 
-        .grid--full;
+        .grid--full,
+        .grid;
     color:                  $white;
+    a {
+        color:              $white;
+    }
     background-color:       $pageheaderBackgroundColor;
     padding:                ($gridGutter / 2) $gridGutter;
-    //margin:                 0 (- $gridGutter) $gridGutter;
     margin:                 0 0 $gridGutter 0;
     .pageheader_logo {
         @extend 
             .grid__item, 
             .two-twelfths, 
             .palm--one-whole;
-        vertical-align: middle;
+        vertical-align:     middle;
         img {
-            display:    block;
+            display:        block;
+            max-width:      10em;
         }
     }
     .pageheader_sitename {
@@ -23,10 +26,10 @@
             .grid__item, 
             .six-twelfths, 
             .palm--one-whole;
-        font-size:      1.3em;
-        font-weight:    normal;
-        line-height:    1.2em;
-        vertical-align: middle;
+        font-size:          1.3em;
+        font-weight:        normal;
+        line-height:        1.2em;
+        vertical-align:     middle;
     }
     .pageheader_userinfo {
         @extend 
@@ -34,11 +37,7 @@
             .four-twelfths, 
             .align-right,
             .palm--one-whole;
-        vertical-align: middle;
-    }
-    
-    .sitename {
-        
+        vertical-align:     middle;
     }
 }
 

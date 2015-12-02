@@ -22,13 +22,14 @@ $btn-font-color:                $baseTextColor;
 $btn-border-color:              $greyBorder;
 
 // Dimensions
-//$pageMaxWidth:                    93.846em; // 1220px bei 13px font size;
-//$pageMaxWidth:                    87.143em; // 1220px bei 14px font size;
-//$pageMaxWidth:                    96.923em; // 1260px bei 13px font size;
-$pageMaxWidth:                      90em; // 1260px bei 14px font size;
-//$gridGutter:                      1.538em; // 20px; bei 13px font size;
-$gridGutter:                        1.429em; // 20px; bei 14px font size;
-$baseBoxElementPadding:             ($gridGutter / 3) ($gridGutter / 2); // navigation_items; board_body inner elements;
+//$pageMaxWidth:                96.923em; // 1260px bei 13px font size;
+$pageMaxWidth:                  90em; // 1260px bei 14px font size;
+//$gridGutter:                  1.538em; // 20px; bei 13px font size;
+$gridGutter:                    1.429em; // 20px; bei 14px font size;
+$baseBoxElementPadding:         ($gridGutter / 3) ($gridGutter / 2); // navigation_items; board_body inner elements;
+$base-font-family:              Neo, Arial, sans-serif;
+
+$fontSizeLabels:                0.95em; // form labels, dl dt, table th 
 
 /**
  * CSSWIZARDRY GRID SETTING
@@ -58,12 +59,12 @@ $inuit-base-background-color:   $white;
 $inuit-responsive-settings:     true;
 
 // iniut Headline Settings
-$inuit-heading-size-1:  20px;
-$inuit-heading-size-2:  18px;
-$inuit-heading-size-3:  16px;
-$inuit-heading-size-4:  $inuit-base-font-size;
-$inuit-heading-size-5:  $inuit-base-font-size;
-$inuit-heading-size-6:  $inuit-base-font-size;
+$inuit-heading-size-1:          20px;
+$inuit-heading-size-2:          18px;
+$inuit-heading-size-3:          16px;
+$inuit-heading-size-4:          $inuit-base-font-size;
+$inuit-heading-size-5:          $inuit-base-font-size;
+$inuit-heading-size-6:          $inuit-base-font-size;
 
 // iniut Dimensions
 $inuit-base-spacing-unit:       20px; // we need pixel here. em does not get through the sass/inuit compiler
