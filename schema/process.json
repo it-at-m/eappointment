@@ -99,6 +99,18 @@
         },
         "status": {
             "type": "string",
+            "enum": [
+                "free",
+                "reserved",
+                "confirmed",
+                "queued",
+                "called",
+                "processing",
+                "pending",
+                "finished",
+                "missed",
+                "archived"
+            ],
             "description": "Status of the process. The following values are possible:\n  * free: open for reservation\n  * reserved: for updating data, no validation yet\n  * confirmed: appointment\n  * queued: confirmed and in waiting queue\n  * called: show on call displays\n  * processing: client appeared and gets service\n  * pending: client has to return for getting papers\n  * finished: successfully processed\n  * missed: no client appeared\n  * archived: only used in statistics\n"
         }
     }

@@ -2,10 +2,15 @@
 
 DIR=$(dirname $(readlink -e ${BASH_SOURCE[0]}))
 ROOT=$(readlink -e $DIR/..)
+LOG=$ROOT/schemavalidation.log
 
 echo "Testing application"
+touch $LOG
 for filename in $ROOT/schema/*.json
 do
-    echo "Validating $filename";
-    $ROOT/vendor/bin/validate-json $filename $ROOT/tests/jsonschema4.json
+    echo "Testing $filename" >> $LOG
+    ($ROOT/vendor/bin/validate-json $filename $ROOT/tests/jsonschema4.json >> $LOG)|| (cat $LOG && echo "Validating $filename failed" && exit 1)
 done;
+rm $LOG
+cd $ROOT
+$ROOT/vendor/bin/phpunit
