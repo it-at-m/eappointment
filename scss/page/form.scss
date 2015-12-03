@@ -12,7 +12,7 @@ form {
 }
 
 fieldset{
-    padding:        $gridGutter;
+    padding:        0;//$gridGutter;
     border:         0 none;
     margin:         0;
     legend {
@@ -20,8 +20,8 @@ fieldset{
         border:             0 none;
         box-sizing:         content-box;
         color:              $white;
-        margin:             0px (-$gridGutter);
-        padding:            ($gridGutter / 2) $gridGutter;
+        margin:             $gridGutter (-$gridGutter / 2) $gridGutter (-$gridGutter / 2);
+        padding:            ($gridGutter / 2) ($gridGutter / 2);
         display:            block;
         width:              100%;
         font-weight:        bold;
