@@ -3,7 +3,8 @@ $queueFutureColor:              #74CAF0 !default;
 $queueMissedColor:              $red !default;
 
 .queue {
-    @extend .board;
+    @extend 
+        .board;
     table {
         @extend 
             .table, 

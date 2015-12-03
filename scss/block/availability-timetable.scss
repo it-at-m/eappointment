@@ -1,0 +1,74 @@
+
+.availability-timetable {
+    position:               relative;
+    margin-bottom:          $gridGutter;
+    line-height:        $inuit-base-line-height;
+}
+
+.availability-timetable_container {
+    position:               relative;
+    with:                   100%;
+    max-width:              100%;
+    overflow:               auto;
+    .inner {
+        width:              24em;
+        height:             100%;
+        .time-level {
+            position:       absolute;
+            top:            0;
+            left:           0;
+            height:         100%;
+            width:          100%;
+            .item {
+                width:              1em;
+                position:           absolute;
+                top:                0;
+                height:             100%;
+                border-left:        1px solid $grey;
+                .item_top {
+                    position:           absolute;
+                    top:                0;
+                    text-align: center;
+                    width: 100%;
+                }
+                .item_bottom {
+                    position:           absolute;
+                    bottom:                0;
+                    text-align: center;
+                    width: 100%;
+                }
+            }
+        }
+        .appointment-level {
+            position:   relative;
+            top:        100px;
+            left:       0;
+            .item {
+                border-left:    1px solid $white;
+                background:     rgba(0,0,255,0.5);
+                min-height:     20px;
+                position:       absolute;
+            }
+        }
+        .opening-level {
+            position:   relative;
+            top:        200px;
+            left:       0;
+            .item {
+                border-left:    1px solid $white;
+                background: rgba(255,0,255,0.5);
+                min-height: 20px;
+                position:   absolute;
+            }
+        }
+        .text {
+            @extend .resize;
+        }
+    }
+}
+
+.resize {
+    font-size:          $inuit-base-font-size;
+    line-height:        $inuit-base-line-height;
+}
+
