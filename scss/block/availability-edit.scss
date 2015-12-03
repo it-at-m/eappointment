@@ -1,0 +1,6 @@
+.availability-edit {
+    form {
+        @extend .form--horizontal;
+        @extend .board;
+    }
+}

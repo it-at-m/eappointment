@@ -26,7 +26,9 @@ $contentTopLineupBoardBodyMaxHeight:  28em; // (calendar,appointment,clientinfo,
 }
 
 
+
 /* set the board layout */
+
 .board_header {
     padding:            $boardElementPadding;
     background-color:   $blue;
@@ -48,6 +50,7 @@ $contentTopLineupBoardBodyMaxHeight:  28em; // (calendar,appointment,clientinfo,
         margin:         0;
     }
 }
+
 .board_body {
     padding:            0;
     background-color:   $grey;
@@ -61,6 +64,7 @@ $contentTopLineupBoardBodyMaxHeight:  28em; // (calendar,appointment,clientinfo,
         }
     }
 }
+
 .board_footer {
     font-size:          0.9em;
     border:             1px solid $greyDark;
@@ -83,7 +87,10 @@ $contentTopLineupBoardBodyMaxHeight:  28em; // (calendar,appointment,clientinfo,
     padding:            0;
 }
 
+
+
 /* variations */
+
 .board--addBodyPadding {
     .body {
         padding:        $boardElementPadding;
@@ -95,14 +102,35 @@ $contentTopLineupBoardBodyMaxHeight:  28em; // (calendar,appointment,clientinfo,
         }
     }
 }
+
 .board_body--minHeight {
     > .body {
         min-height:     $contentTopLineupBoardBodyMinHeight;
     }
 }
+
 .board_body--maxHeight {
     > .body {
         max-height:     $contentTopLineupBoardBodyMaxHeight;
         overflow:       auto;
     }
+}
+
+.board--red {
+    > .header {
+        @extend .board_header--red;
+    }
+    > .body {
+        @extend .board_body--red;
+    }
+}
+
+.board_header--red {
+    background-color:   $red;
+}
+
+.board_body--red {
+    background-color:   lighten($red,30%);
+    border-color:       lighten($red,20%);
+    border-width:       0 0 1px 0;
 }
