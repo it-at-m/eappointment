@@ -24,6 +24,10 @@
     '\BO\Zmsadmin\Scope:render')
     ->name("scope");
     
+\App::$slim->get('/availability/',
+    '\BO\Zmsadmin\Availability:render')
+    ->name("availability");
+    
 \App::$slim->get('/testpage/',
     '\BO\Zmsadmin\Testpage:render')
     ->name("testpage");

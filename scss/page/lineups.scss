@@ -4,6 +4,10 @@
 
 .lineup {
     @extend .grid;
+    .lineup_actor {
+        @extend 
+            .grid__item;
+    }
     &--workstation {
         @extend .grid;
         .lineup_actor {
@@ -51,6 +55,25 @@
                 @extend 
                     .grid__item, 
                     .two-twelfths, 
+                    .lap--one-third, 
+                    .palm--one-whole;
+            }
+        }
+    }
+    &--availability {
+        @extend .grid;
+        .lineup_actor {
+            &--left {
+                @extend 
+                    .grid__item, 
+                    .nine-twelfths,
+                    .lap--one-whole, 
+                    .palm--one-whole;
+            }
+            &--right {
+                @extend 
+                    .grid__item, 
+                    .three-twelfths, 
                     .lap--one-third, 
                     .palm--one-whole;
             }
