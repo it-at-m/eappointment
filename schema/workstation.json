@@ -17,7 +17,7 @@
         },
         "useraccount": {
             "lastLogin": 1447926465000,
-            "loginName": "johndoe",
+            "id": "johndoe",
             "rights": {
                 "scope": true,
                 "ticketprinter": true
