@@ -4,5 +4,5 @@ namespace BO\Zmsentities;
 
 class Availability extends Schema\Entity
 {
-    public $schema = "availability.json";
+    public static $schema = "availability.json";
 }
