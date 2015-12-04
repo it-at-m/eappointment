@@ -41,7 +41,7 @@
     },
     "required": [
         "department",
-        "message",
+        "multipart",
         "process"
     ],
     "properties": {
