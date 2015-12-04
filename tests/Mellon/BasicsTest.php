@@ -33,6 +33,13 @@ class BasicsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('456', $valid->getValue(), "Unvalidated parameters should return the default value");
 
     }
+
+    public function testStdin()
+    {
+        $valid = Validator::input()->isDeclared();
+        $this->assertTrue($valid instanceof Valid);
+    }
+
     public function testUnvalidated()
     {
         $valid = Validator::value('123');
