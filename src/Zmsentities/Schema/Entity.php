@@ -5,7 +5,7 @@ namespace BO\Zmsentities\Schema;
 /**
  * @SuppressWarnings(NumberOfChildren)
  */
-class Entity extends \ArrayObject
+class Entity extends \ArrayObject implements \JsonSerializable
 {
     /**
      * @var String $schema Filename of JSON-Schema file
@@ -17,7 +17,10 @@ class Entity extends \ArrayObject
      */
     protected $jsonSchema = null;
 
-    public function __construct($input = [], $flags = 0, $iterator_class = "ArrayIterator")
+    /**
+     * Read the json schema and let array act like an object
+     */
+    public function __construct($input = [], $flags = \ArrayObject::ARRAY_AS_PROPS, $iterator_class = "ArrayIterator")
     {
         $this->jsonSchema = self::readJsonSchema();
         parent::__construct($input, $flags, $iterator_class);
@@ -35,6 +38,8 @@ class Entity extends \ArrayObject
 
     /**
      * Check if the given data validates against the given jsonSchema
+     *
+     * @return Boolean
      */
     public function isValid()
     {
@@ -42,6 +47,23 @@ class Entity extends \ArrayObject
         return $validator->isValid();
     }
 
+    /**
+     * create an example for testing
+     *
+     * @return self
+     */
+    public static function createExample()
+    {
+        $class = get_called_class();
+        $object = new $class();
+        return $object->getExample();
+    }
+
+    /**
+     * return a new object as example
+     *
+     * @return self
+     */
     public static function getExample()
     {
         $class = get_called_class();
@@ -56,5 +78,10 @@ class Entity extends \ArrayObject
     {
         $class = get_called_class();
         return Loader::asArray($class::$schema);
+    }
+
+    public function jsonSerialize()
+    {
+        return $this;
     }
 }
