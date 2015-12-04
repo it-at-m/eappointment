@@ -10,7 +10,7 @@
         "endDate": 1447919116000,
         "endTime": "15:30",
         "id": 1234,
-        "multipleSlotsAllowd": true,
+        "multipleSlotsAllowed": true,
         "type": "appointment",
         "repeat": {
             "afterWeeks": 0
@@ -59,7 +59,7 @@
         "id": {
             "type": "integer"
         },
-        "multipleSlotsAllowd": {
+        "multipleSlotsAllowed": {
             "type": "boolean",
             "description": "an appointment is allowed to take more than one time slot"
         },
