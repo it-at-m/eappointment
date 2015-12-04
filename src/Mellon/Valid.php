@@ -224,7 +224,7 @@ class Valid extends \BO\Mellon\Parameter
     }
 
     /**
-     * Get the validated valie or the default value as string
+     * Get the validated value or the default value as string
      *
      * @return String
      */
@@ -297,10 +297,10 @@ class Valid extends \BO\Mellon\Parameter
     public function __call($name, $arguments)
     {
         if (0 === strpos($name, 'is')) {
-            throw new \Exception(
+            throw new Exception(
                 "the validation $name() is not defined in class " . get_class($this) . ". Read the manual."
             );
         }
-        throw new \Exception("function $name is not defined in " . get_class($this));
+        throw new Exception("function $name is not defined in " . get_class($this));
     }
 }

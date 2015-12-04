@@ -111,4 +111,28 @@ class ValidationTest extends \PHPUnit_Framework_TestCase
             "'(0|1)' should not match NULL"
         );
     }
+
+    public function testMissingFunction()
+    {
+        $this->setExpectedException("\BO\Mellon\Exception");
+        Validator::value("test")->isANotExistingFunction();
+    }
+
+    public function testInvalidFunction()
+    {
+        $this->setExpectedException("\BO\Mellon\Exception");
+        Validator::value("test")->isaninvalidfunction();
+    }
+
+    public function testInvalidValidationFunction()
+    {
+        $this->setExpectedException("\BO\Mellon\Exception");
+        Validator::value("test")->isString()->isANotExistingFunction();
+    }
+
+    public function testUndefinedFunction()
+    {
+        $this->setExpectedException("\BO\Mellon\Exception");
+        Validator::value("test")->isString()->aninvalidfunction();
+    }
 }

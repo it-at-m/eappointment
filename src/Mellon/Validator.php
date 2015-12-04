@@ -100,6 +100,10 @@ class Validator
     }
 
     /**
+     * Validate a key from the given parameters
+     *
+     * @param String $name of the key
+     *
      * @return \BO\Mellon\Unvalidated
      */
     public static function param($name)
@@ -109,11 +113,29 @@ class Validator
     }
 
     /**
+     * Validate a mixed value
+     *
+     * @param Mixed $mixed
+     * @param String $name an optional name to identify the value
+     *
      * @return \BO\Mellon\Unvalidated
      */
-    public static function value($mixed)
+    public static function value($mixed, $name = null)
     {
-        return new \BO\Mellon\Unvalidated($mixed);
+        return new \BO\Mellon\Unvalidated($mixed, $name);
+    }
+
+    /**
+     * Validate content of STDIN, usually the body of an HTTP request
+     *
+     * @param String $name an optional name to identify the value
+     *
+     * @return \BO\Mellon\Unvalidated
+     */
+    public static function input($name = null)
+    {
+        $mixed = file_get_contents('php://input');
+        return self::value($mixed, $name);
     }
 
     /**
