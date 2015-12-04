@@ -4,5 +4,5 @@ namespace BO\Zmsentities;
 
 class Dayoff extends Schema\Entity
 {
-    public $schema = "dayoff.json";
+    public static $schema = "dayoff.json";
 }

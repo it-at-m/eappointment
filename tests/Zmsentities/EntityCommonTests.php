@@ -2,11 +2,14 @@
 
 namespace BO\Zmsentities\Tests;
 
-class EntityCommonTests extends Base
+abstract class EntityCommonTests extends Base
 {
 
     public function testNew()
     {
         $entity = new $this->entityclass();
+        $example = $entity::getExample();
+        var_dump($example);
+        $this->assertTrue($example->isValid());
     }
 }

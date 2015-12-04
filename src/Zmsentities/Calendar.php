@@ -4,5 +4,5 @@ namespace BO\Zmsentities;
 
 class Calendar extends Schema\Entity
 {
-    public $schema = "calendar.json";
+    public static $schema = "calendar.json";
 }

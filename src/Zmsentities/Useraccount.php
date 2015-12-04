@@ -4,5 +4,5 @@ namespace BO\Zmsentities;
 
 class Useraccount extends Schema\Entity
 {
-    public $schema = "useraccount.json";
+    public static $schema = "useraccount.json";
 }

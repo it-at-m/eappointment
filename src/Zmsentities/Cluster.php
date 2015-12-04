@@ -4,5 +4,5 @@ namespace BO\Zmsentities;
 
 class Cluster extends Schema\Entity
 {
-    public $schema = "cluster.json";
+    public static $schema = "cluster.json";
 }

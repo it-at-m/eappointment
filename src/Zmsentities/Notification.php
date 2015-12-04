@@ -4,5 +4,5 @@ namespace BO\Zmsentities;
 
 class Notification extends Schema\Entity
 {
-    public $schema = "notification.json";
+    public static $schema = "notification.json";
 }

@@ -4,5 +4,5 @@ namespace BO\Zmsentities;
 
 class Contact extends Schema\Entity
 {
-    public $schema = "contact.json";
+    public static $schema = "contact.json";
 }
