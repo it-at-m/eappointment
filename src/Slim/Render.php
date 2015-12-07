@@ -20,11 +20,21 @@ class Render
     /**
      * @return NULL
      */
-    public static function html($template, $parameters = array())
+    public static function html($template, $parameters = array(), $status = 200)
     {
-        \App::$slim->response->setStatus(200);
+        \App::$slim->response->setStatus($status);
         \App::$slim->response->headers->set('Content-Type', 'text/html; charset=utf-8');
         \App::$slim->render($template, $parameters);
+    }
+
+    /**
+     * @return NULL
+     */
+    public static function json($data, $status = 200)
+    {
+        \App::$slim->response->setStatus($status);
+        \App::$slim->response->headers->set('Content-Type', 'application/json');
+        \App::$slim->response->setBody(json_encode($data));
     }
 
     /**
