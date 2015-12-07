@@ -360,8 +360,10 @@
                "type" : "custom",
                "filter" : [
                   "lowercase",
+                  "de_DE",
                   "azfilter",
                   "snowball_german2"
+                  
                ]
             },
             "default_index" : {
