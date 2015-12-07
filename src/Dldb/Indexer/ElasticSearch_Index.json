@@ -362,8 +362,7 @@
                   "lowercase",
                   "de_DE",
                   "azfilter",
-                  "snowball_german2"
-                  
+                  "snowball_german2"                  
                ]
             },
             "default_index" : {
