@@ -3,9 +3,9 @@
         .board;
     > .body {
         @extend 
-            .board_body--noPadding,
-            .board_body--noBorder,
-            .board_body--white;
+            //.board_body--noBorder,
+            //.board_body--white,
+            .board_body--noPadding;
     }
 }
 
@@ -23,14 +23,18 @@ $calendarCircleConflictColor:                   #BE1522;
     @extend 
         .table--cells,
         .table;
+    background-color:           $white;
+    thead {
+        background-color:       $tableHeadBackground;
+    }
     th {
-        height:                 3em;
-        border:                 0 none;
+        height:                 2em;
+        border-width:           1px 0;
         position:               relative;
         .day {
-            font-size:          1.3em;
+            font-size:          1.1em;
             position:           absolute;
-            top:                0.5em;
+            top:                0.2em;
             right:              0.5em;
         }
     }
@@ -72,7 +76,7 @@ $calendarCircleConflictColor:                   #BE1522;
         .day {
             font-size:          1.3em;
             position:           absolute;
-            top:                0.5em;
+            top:                0.3em;
             right:              0.5em;
         }
     }
