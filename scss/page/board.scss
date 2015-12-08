@@ -17,7 +17,7 @@ $contentTopLineupBoardBodyMaxHeight:  28em; // (calendar,appointment,clientinfo,
     > .body {
         @extend 
             .board_body,
-            .board--addBodyPadding;
+            .board_body--addPadding;
         &.no-padding {
             @extend .board--removeBodyPadding;
         }
@@ -35,12 +35,20 @@ $contentTopLineupBoardBodyMaxHeight:  28em; // (calendar,appointment,clientinfo,
 /* set the board layout */
 
 .board_header {
+    @extend 
+        .clearfix;
     padding:            $boardElementPadding;
     background-color:   $blue;
     position:           relative;
     color:              $white;
+    > * {
+        vertical-align: middle;
+    }
     a {
         color:          $white;
+    }
+    .btn {
+        color:          $baseTextColor;
     }
     .title {
         @extend 
@@ -95,7 +103,7 @@ $contentTopLineupBoardBodyMaxHeight:  28em; // (calendar,appointment,clientinfo,
 
 /* variations */
 
-.board--addBodyPadding {
+.board_body--addPadding {
     padding:        $boardElementPadding;
     > *:last-child {
         margin-bottom:  0;
@@ -108,6 +116,11 @@ $contentTopLineupBoardBodyMaxHeight:  28em; // (calendar,appointment,clientinfo,
 .board--removeBodyPadding {
     padding:        0;
 }
+
+.board_body--white {
+    background-color:   $white;
+}
+
 .board_body--minHeight {
     > .body {
         min-height:     $contentTopLineupBoardBodyMinHeight;

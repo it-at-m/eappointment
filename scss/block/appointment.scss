@@ -1,7 +1,6 @@
 .appointment {
     @extend 
         .board, 
-        .board--addBodyPadding,
         .board--minHeight;
     form .split{
         //@include form--horizontal(one-quarter, three-quarters);

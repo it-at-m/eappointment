@@ -46,22 +46,22 @@ label,
 // Shared size and type resets for form inputs. Apply `.form-input` to any
 // of the following form controls:
 //
-// select
-// textarea
-// input[type="text"]
-// input[type="password"]
-// input[type="datetime"]
-// input[type="datetime-local"]
-// input[type="date"]
-// input[type="month"]
-// input[type="time"]
-// input[type="week"]
-// input[type="number"]
-// input[type="email"]
-// input[type="url"]
-// input[type="search"]
-// input[type="tel"]
-// input[type="color"]
+/*
+input[type="text"],
+input[type="password"],
+input[type="datetime"],
+input[type="datetime-local"],
+input[type="date"],
+input[type="month"],
+input[type="time"],
+input[type="week"],
+input[type="number"],
+input[type="email"],
+input[type="url"],
+input[type="search"],
+input[type="tel"],
+input[type="color"],
+*/
 textarea,
 select,
 .form-input {
@@ -120,7 +120,10 @@ input[type="radio"] {
         width:          0;
         content:        "\1f4c5";
     }
-    input {
+    input,
+    input[type="text"],
+    input[type="date"],
+    .form-input {
         padding-left:   2em;
         width:          10em;
     }
@@ -205,7 +208,7 @@ input[type="radio"] {
 
 
 
-// Horizontal form with the label left aside the input
+// Horizontal form with the label left aside the input (default form layout)
 @mixin form--horizontal($labelGrid: one-sixth, $controlGrid: five-sixths) {
     .form-group {
         @extend .grid;
@@ -231,6 +234,8 @@ input[type="radio"] {
                 @extend 
                     .palm--one-whole;
                 display: inline-block;
+                font-weight:    normal;
+                font-size:      1em;
             }
             // Set some space to inline elements
             input + label,

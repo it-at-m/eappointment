@@ -1,6 +1,5 @@
 .availability-conflicts {
     @extend 
         .board, 
-        .board--red,
-        .board--addBodyPadding;
+        .board--red;
 }
