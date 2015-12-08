@@ -18,9 +18,6 @@ $contentTopLineupBoardBodyMaxHeight:  28em; // (calendar,appointment,clientinfo,
         @extend 
             .board_body,
             .board_body--addPadding;
-        &.no-padding {
-            @extend .board--removeBodyPadding;
-        }
     }
     > .footer {
         @extend .board_footer;
@@ -113,8 +110,12 @@ $contentTopLineupBoardBodyMaxHeight:  28em; // (calendar,appointment,clientinfo,
     }
 }
 
-.board--removeBodyPadding {
+.board_body--noPadding {
     padding:        0;
+}
+
+.board_body--noBorder {
+    border:         0 none;
 }
 
 .board_body--white {

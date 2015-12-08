@@ -3,7 +3,7 @@
         .board;
     > .body {
         @extend 
-            .board--removeBodyPadding,
+            .board_body--noPadding,
             .board_body--white;
     }
 }
