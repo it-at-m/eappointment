@@ -1,6 +1,5 @@
 .queueinfo {
     @extend 
-        .board, 
-        .board--addBodyPadding,
+        .board,
         .board--minHeight;
 }

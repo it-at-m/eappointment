@@ -20,13 +20,17 @@
     '\BO\Zmsadmin\Counter:render')
     ->name("counter");
     
-\App::$slim->get('/scope/',
+\App::$slim->get('/scope/edit',
     '\BO\Zmsadmin\Scope:render')
     ->name("scope");
     
-\App::$slim->get('/availability/',
+\App::$slim->get('/availability/day',
     '\BO\Zmsadmin\Availability:render')
     ->name("availability");
+    
+\App::$slim->get('/availability/calendar',
+    '\BO\Zmsadmin\AvailabilityCalendar:render')
+    ->name("availabilityCalendar");
     
 \App::$slim->get('/testpage/',
     '\BO\Zmsadmin\Testpage:render')

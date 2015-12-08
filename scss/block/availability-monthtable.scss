@@ -1,0 +1,13 @@
+.availability-monthtable {
+    @extend 
+        .board;
+    > .body {
+        @extend 
+            .board_body--white;
+    }
+}
+
+.availability-monthtable_calendar {
+    @extend 
+        .table;
+}
