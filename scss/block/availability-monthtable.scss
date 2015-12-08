@@ -3,11 +3,77 @@
         .board;
     > .body {
         @extend 
+            .board_body--noPadding,
+            .board_body--noBorder,
             .board_body--white;
     }
 }
 
+
+$calendarDayTodayBackgroundColor:               #E5F5FC;
+$calendarDayOutofrangeBackgroundColor:          #F8F8F8;
+$calendarDayClosedBackgroundColor:              #F4F4F4;
+$calendarDayHolidayBackgroundColor:             #EFC10F;
+
+$calendarCircleOpenColor:                       #A3CA3E;
+$calendarCircleAvailabilityColor:               #009FE3;
+$calendarCircleConflictColor:                   #BE1522;
+
 .availability-monthtable_calendar {
     @extend 
+        .table--cells,
         .table;
+    th {
+        height:                 3em;
+        border:                 0 none;
+        position:               relative;
+        .day {
+            font-size:          1.3em;
+            position:           absolute;
+            top:                0.5em;
+            right:              0.5em;
+        }
+    }
+    td {
+        height:                     7em;
+        &.closed {
+            background-color:       $calendarDayClosedBackgroundColor;
+        }
+        &.holiday {
+            box-shadow:             inset 0px 5px 0px $calendarDayHolidayBackgroundColor;
+        }
+        &.today {
+            background-color:       $calendarDayTodayBackgroundColor;
+        }
+        &.out-of-range.last {
+            background-color:       $white;
+            border:                 0 none;
+            //background-color:       $calendarDayOutofrangeBackgroundColor;
+        }
+        &.out-of-range.first {
+            background-color:       $white;
+            border-top:             0 none;
+            border-left:            0 none;
+            //background-color:       $calendarDayOutofrangeBackgroundColor;
+        }
+    }
+    .month-item {
+        display:            block;
+        position:           relative;
+        top:                0;
+        left:               0;
+        width:              100%;
+        height:             100%;
+        text-decoration:    none;
+        &:hover {
+            outline:                1px dotted $black;
+            outline-offset:         -1px;
+        }
+        .day {
+            font-size:          1.3em;
+            position:           absolute;
+            top:                0.5em;
+            right:              0.5em;
+        }
+    }
 }

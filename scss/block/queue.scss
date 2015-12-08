@@ -7,7 +7,7 @@ $queueMissedColor:              $red !default;
         .board;
     > .body {
         @extend 
-            .board--removeBodyPadding;
+            .board_body--noPadding;
     }
     table {
         @extend 
