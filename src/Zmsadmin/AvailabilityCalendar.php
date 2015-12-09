@@ -17,25 +17,42 @@ class AvailabilityCalendar extends BaseController
      */
     public static function render()
     {
-        $times = array(
-            'conflict_times' => array(
-                array('title' => 'Konflikt', 'start' => '12.15', 'end' => '12.45'),
-            ), 
-            'numberofappointment_times' => array(
-                array('title' => '31 von 64 Terminen verfügbar', 'max'=>'64', 'busy'=> '31', 'start' => '8.00', 'end' => '13.00'),
-                array('title' => '11 von 144 Terminen verfügbar', 'max'=>'144', 'busy'=> '11','start' => '13.00', 'end' => '19.00'),
-            ), 
-            'opening_times' => array(
-                array('title' => 'Ganztags', 'start' => '8.00', 'end' => '19.00'),
-            ), 
-            'appointment_times' => array(
-                array('title' => 'Terminvergabe 1', 'workstations' => '6', 'height' => '3.0rem', 'start' => '8.00', 'end' => '12.45'),
-                array('title' => 'Terminvergabe 2', 'workstations' => '8', 'height' => '4.6rem', 'start' => '12.15', 'end' => '19.00'),
-            ),
+        $data = array(
+            '2015-12-1'  => array('closed' => false, 'holiday' => false, 'hasOpeningTimes' => true, 'hasAppointmentTimes' => true, 'hasConflict'=>false),
+            '2015-12-2'  => array('closed' => false, 'holiday' => false, 'hasOpeningTimes' => true, 'hasAppointmentTimes' => true, 'hasConflict'=>false),
+            '2015-12-3'  => array('closed' => false, 'holiday' => false, 'hasOpeningTimes' => true, 'hasAppointmentTimes' => true, 'hasConflict'=>false),
+            '2015-12-4'  => array('closed' => false, 'holiday' => false, 'hasOpeningTimes' => false, 'hasAppointmentTimes' => true, 'hasConflict'=>false),
+            '2015-12-5'  => array('closed' => true, 'holiday' => false, 'hasOpeningTimes' => false, 'hasAppointmentTimes' => false, 'hasConflict'=>false),
+            '2015-12-6'  => array('closed' => true, 'holiday' => false, 'hasOpeningTimes' => false, 'hasAppointmentTimes' => false, 'hasConflict'=>false),
+            '2015-12-7'  => array('closed' => false, 'holiday' => false, 'hasOpeningTimes' => true, 'hasAppointmentTimes' => false, 'hasConflict'=>false),
+            '2015-12-8'  => array('closed' => false, 'holiday' => false, 'hasOpeningTimes' => true, 'hasAppointmentTimes' => true, 'hasConflict'=>false),
+            '2015-12-9'  => array('closed' => false, 'holiday' => false, 'hasOpeningTimes' => true, 'hasAppointmentTimes' => true, 'hasConflict'=>true),
+            '2015-12-10' => array('closed' => false, 'holiday' => false, 'hasOpeningTimes' => true, 'hasAppointmentTimes' => true, 'hasConflict'=>false),
+            '2015-12-11' => array('closed' => false, 'holiday' => false, 'hasOpeningTimes' => false, 'hasAppointmentTimes' => true, 'hasConflict'=>false),
+            '2015-12-12' => array('closed' => true, 'holiday' => false, 'hasOpeningTimes' => false, 'hasAppointmentTimes' => false, 'hasConflict'=>false),
+            '2015-12-13' => array('closed' => true, 'holiday' => false, 'hasOpeningTimes' => false, 'hasAppointmentTimes' => false, 'hasConflict'=>false),
+            '2015-12-14' => array('closed' => false, 'holiday' => false, 'hasOpeningTimes' => true, 'hasAppointmentTimes' => false, 'hasConflict'=>false),
+            '2015-12-15' => array('closed' => false, 'holiday' => false, 'hasOpeningTimes' => true, 'hasAppointmentTimes' => true, 'hasConflict'=>false),
+            '2015-12-16' => array('closed' => false, 'holiday' => false, 'hasOpeningTimes' => true, 'hasAppointmentTimes' => true, 'hasConflict'=>false),
+            '2015-12-17' => array('closed' => false, 'holiday' => false, 'hasOpeningTimes' => true, 'hasAppointmentTimes' => true, 'hasConflict'=>false),
+            '2015-12-18' => array('closed' => false, 'holiday' => false, 'hasOpeningTimes' => true, 'hasAppointmentTimes' => true, 'hasConflict'=>false),
+            '2015-12-19' => array('closed' => true, 'holiday' => false, 'hasOpeningTimes' => false, 'hasAppointmentTimes' => false, 'hasConflict'=>true),
+            '2015-12-20' => array('closed' => true, 'holiday' => false, 'hasOpeningTimes' => false, 'hasAppointmentTimes' => false, 'hasConflict'=>false),
+            '2015-12-21' => array('closed' => false, 'holiday' => false, 'hasOpeningTimes' => true, 'hasAppointmentTimes' => false, 'hasConflict'=>false),
+            '2015-12-22' => array('closed' => false, 'holiday' => false, 'hasOpeningTimes' => true, 'hasAppointmentTimes' => true, 'hasConflict'=>false),
+            '2015-12-23' => array('closed' => false, 'holiday' => false, 'hasOpeningTimes' => true, 'hasAppointmentTimes' => true, 'hasConflict'=>false),
+            '2015-12-24' => array('closed' => true, 'holiday' => false, 'hasOpeningTimes' => false, 'hasAppointmentTimes' => false, 'hasConflict'=>false),
+            '2015-12-25' => array('closed' => true, 'holiday' => true, 'hasOpeningTimes' => false, 'hasAppointmentTimes' => false, 'hasConflict'=>false),
+            '2015-12-26' => array('closed' => true, 'holiday' => true, 'hasOpeningTimes' => false, 'hasAppointmentTimes' => false, 'hasConflict'=>false),
+            '2015-12-27' => array('closed' => true, 'holiday' => false, 'hasOpeningTimes' => false, 'hasAppointmentTimes' => false, 'hasConflict'=>false),
+            '2015-12-28' => array('closed' => false, 'holiday' => false, 'hasOpeningTimes' => false, 'hasAppointmentTimes' => true, 'hasConflict'=>false),
+            '2015-12-29' => array('closed' => false, 'holiday' => false, 'hasOpeningTimes' => false, 'hasAppointmentTimes' => true, 'hasConflict'=>false),
+            '2015-12-30' => array('closed' => false, 'holiday' => false, 'hasOpeningTimes' => false, 'hasAppointmentTimes' => true, 'hasConflict'=>false),
+            '2015-12-31' => array('closed' => true, 'holiday' => false, 'hasOpeningTimes' => false, 'hasAppointmentTimes' => false, 'hasConflict'=>false),
         );
         \BO\Slim\Render::html('page/availability-calendar.twig', array(
             'title' => 'Öffnungszeiten',
-            'times' => $times,
+            'data_days' => $data,
             'menuActive' => 'availabilityCalendar'
         ));
     }

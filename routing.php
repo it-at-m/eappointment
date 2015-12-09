@@ -22,15 +22,15 @@
     
 \App::$slim->get('/scope/edit',
     '\BO\Zmsadmin\Scope:render')
-    ->name("scope");
+    ->name("scope_edit");
     
 \App::$slim->get('/availability/day',
     '\BO\Zmsadmin\Availability:render')
-    ->name("availability");
+    ->name("availability_day");
     
 \App::$slim->get('/availability/calendar',
     '\BO\Zmsadmin\AvailabilityCalendar:render')
-    ->name("availabilityCalendar");
+    ->name("availability_month");
     
 \App::$slim->get('/testpage/',
     '\BO\Zmsadmin\Testpage:render')

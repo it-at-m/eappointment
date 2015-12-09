@@ -10,32 +10,32 @@
 }
 
 
-$calendarDayTodayBackgroundColor:               #E5F5FC;
+$calendarDayTodayBackgroundColor:               #E5F5FC; //#FCFCEF;
 $calendarDayOutofrangeBackgroundColor:          #F8F8F8;
 $calendarDayClosedBackgroundColor:              #F4F4F4;
 $calendarDayHolidayBackgroundColor:             #EFC10F;
 
 $calendarCircleOpenColor:                       #A3CA3E;
-$calendarCircleAvailabilityColor:               #009FE3;
+$calendarCircleAppointmentColor:                #009FE3;
 $calendarCircleConflictColor:                   #BE1522;
 
 .availability-monthtable_calendar {
     @extend 
         .table--cells,
         .table;
-    background-color:           $white;
+    background-color:               $white;
     thead {
-        background-color:       $tableHeadBackground;
+        background-color:           $tableHeadBackground;
     }
     th {
-        height:                 2em;
-        border-width:           1px 0;
-        position:               relative;
+        height:                     2em;
+        border-width:               1px 0;
+        position:                   relative;
         .day {
-            font-size:          1.1em;
-            position:           absolute;
-            top:                0.2em;
-            right:              0.5em;
+            font-size:              1.1em;
+            position:               absolute;
+            top:                    0.2em;
+            right:                  0.5em;
         }
     }
     td {
@@ -52,32 +52,105 @@ $calendarCircleConflictColor:                   #BE1522;
         &.out-of-range.last {
             background-color:       $white;
             border:                 0 none;
-            //background-color:       $calendarDayOutofrangeBackgroundColor;
         }
         &.out-of-range.first {
             background-color:       $white;
             border-top:             0 none;
             border-left:            0 none;
-            //background-color:       $calendarDayOutofrangeBackgroundColor;
         }
     }
     .month-item {
-        display:            block;
-        position:           relative;
-        top:                0;
-        left:               0;
-        width:              100%;
-        height:             100%;
-        text-decoration:    none;
+        display:                    block;
+        position:                   relative;
+        top:                        0;
+        left:                       0;
+        width:                      100%;
+        height:                     100%;
+        text-decoration:            none;
         &:hover {
             outline:                1px dotted $black;
             outline-offset:         -1px;
         }
         .day {
-            font-size:          1.3em;
-            position:           absolute;
-            top:                0.3em;
-            right:              0.5em;
+            font-size:              1.3em;
+            position:               absolute;
+            top:                    0.3em;
+            right:                  0.5em;
+        }
+        .circles {
+            position:               absolute;
+            right:                  0.5em;
+            top:                    2em;
+            .circle-conflict {
+                @extend .circle--upsize;
+                color:              $calendarCircleConflictColor;
+            }
+            .circle-open {
+                @extend .circle--upsize;
+                color:              $calendarCircleOpenColor;
+            }
+            .circle-appointment {
+                @extend .circle--upsize;
+                color:              $calendarCircleAppointmentColor;
+            }
         }
     }
+}
+
+.availability-monthtable_legend {
+    ul {
+        li {
+            display:        inline;
+            margin-right:   2em;
+        }
+    }
+    .circle-conflict {
+        @extend .circle--upsize;
+        color:              $calendarCircleConflictColor;
+    }
+    .circle-open {
+        @extend .circle--upsize;
+        color:              $calendarCircleOpenColor;
+    }
+    .circle-appointment {
+        @extend .circle--upsize;
+        color:              $calendarCircleAppointmentColor;
+    }
+    .box-holiday {
+        display:            inline-block;
+        width:              1em;
+        height:             0.5em;
+        content:            "";
+        background-color:   $calendarDayHolidayBackgroundColor;
+        vertical-align:     text-top;
+        border:             0 none;
+    }
+    .box-today {
+        display:            inline-block;
+        width:              1em;
+        height:             1em;
+        content:            "";
+        background-color:   $calendarDayTodayBackgroundColor;
+        vertical-align:     text-top;
+        border:             1px solid $inuit-table-border-color;
+    }
+    .box-closed {
+        display:            inline-block;
+        width:              1em;
+        height:             1em;
+        content:            "";
+        background-color:   $calendarDayClosedBackgroundColor;
+        vertical-align:     text-top;
+        border:             1px solid $inuit-table-border-color;
+    }
+}
+
+
+
+/* Modifier */
+.circle--upsize {
+    font-size:          2.5em;
+    line-height:        20px;
+    line-height:        1.4rem;
+    vertical-align:     bottom;
 }
