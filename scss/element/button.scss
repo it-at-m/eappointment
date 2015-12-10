@@ -5,6 +5,7 @@ $buttonInactiveFontColor:   $fontInactiveColor !default;
 .btn {
     @extend 
         .btn--shadow;
+    margin-right:   0.5em;
 }
 
 .button-emergency {
@@ -97,4 +98,12 @@ $buttonInactiveFontColor:   $fontInactiveColor !default;
 
 .btn--noShadow {
     box-shadow:             none;
+}
+
+.btn--bigicon {
+    font-size:              1.4em; 
+    line-height:            1em;
+    padding:                0.18em !important;
+    text-align:             center;
+    vertical-align:         middle;
 }

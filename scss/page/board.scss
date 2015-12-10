@@ -4,8 +4,8 @@
 
 $boardElementPadding:                   $baseBoxElementPadding !default;
 $boardFooterBackground:                 #F8F8F8 !default;
-$contentTopLineupBoardBodyMinHeight:  21em; // (calendar,appointment,clientinfo,queueinfo,...)
-$contentTopLineupBoardBodyMaxHeight:  28em; // (calendar,appointment,clientinfo,queueinfo,...)
+$contentTopLineupBoardBodyMinHeight:    33.7em; // (calendar,appointment,clientinfo,queueinfo,...)
+$contentTopLineupBoardBodyMaxHeight:    28em; // (calendar,appointment,clientinfo,queueinfo,...)
 
 /* use the board css to extend the layout of the blocks */
 .board {
@@ -18,6 +18,10 @@ $contentTopLineupBoardBodyMaxHeight:  28em; // (calendar,appointment,clientinfo,
         @extend 
             .board_body,
             .board_body--addPadding;
+        &.no-padding {
+            @extend
+                .board_body--noPadding;
+        }
     }
     > .footer {
         @extend .board_footer;
@@ -41,11 +45,14 @@ $contentTopLineupBoardBodyMaxHeight:  28em; // (calendar,appointment,clientinfo,
     > * {
         vertical-align: middle;
     }
-    a {
+    a,
+    label {
         color:          $white;
     }
     .btn {
         color:          $baseTextColor;
+        line-height:    1em;
+        padding:        0.45em;
     }
     .title {
         @extend 
@@ -57,7 +64,7 @@ $contentTopLineupBoardBodyMaxHeight:  28em; // (calendar,appointment,clientinfo,
     }
     .header_controls * {
         display:        inline-block;
-        margin:         0;
+        margin-bottom:         0;
     }
 }
 
@@ -112,6 +119,11 @@ $contentTopLineupBoardBodyMaxHeight:  28em; // (calendar,appointment,clientinfo,
 
 .board_body--noPadding {
     padding:        0;
+    > table {
+        tr > td:last-child {
+            border-right:       0 none;
+        }
+    }
 }
 
 .board_body--noBorder {

@@ -4,10 +4,20 @@ $queueMissedColor:              $red !default;
 
 .queue {
     @extend 
-        .board;
-    > .body {
-        @extend 
-            .board_body--noPadding;
+    .board;
+         > .header {
+        .title {
+            margin-right:           0.7em;
+        }
+        .right {
+            .btn {
+                margin-right:       0;
+                margin-left:        0.5em;
+            }
+            .form-group {
+                margin:       0 2em;
+            }
+        }
     }
     table {
         @extend 
@@ -46,6 +56,7 @@ $queueMissedColor:              $red !default;
                 .queue-status {
                     border-top:         1px solid $white;
                     position:           relative;
+                    /*
                     &:before {  
                         display:            block;
                         width:              10px;
@@ -56,6 +67,7 @@ $queueMissedColor:              $red !default;
                         top:                -10px;
                         color:              $greyDark;
                     }
+                    */
                 }
                 
             }     
@@ -78,4 +90,8 @@ $queueMissedColor:              $red !default;
             margin-bottom:              0;
         }
     }
+    .form-actions > * {
+        margin-bottom:          0;
+    }
+   
 }

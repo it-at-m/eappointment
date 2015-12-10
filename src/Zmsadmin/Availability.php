@@ -34,7 +34,7 @@ class Availability extends BaseController
             ),
         );
         \BO\Slim\Render::html('page/availability.twig', array(
-            'title' => 'Öffnungszeiten',
+            'title' => 'Öffnungszeiten Bürgeramt Rathaus Mitte',
             'times' => $times,
             'menuActive' => 'availability'
         ));

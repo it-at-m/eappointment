@@ -1,17 +1,20 @@
-$navElementPadding:         $baseBoxElementPadding;
+$navElementPadding:         0.5em 0em 0.5em 1.1em;
+$navElementActivePadding:   0.5em 0em 0.5em 0.6em;
+$navElementTitlePadding:    0.5em 0em 0.5em 0.6em;
 
 .navigation {
     background-color:       $grey;
     border:                 1px solid $greyDark;
+    margin-bottom:          $gridGutter;
     .navigation__title {
         font-size:          1em;
         line-height:        1.2em;
         font-weight:        bold;
         display:            block;
-        color:              $black;
+        color:              lighten($black, 25%);
         background-color:   $greyDark;
         margin:             0;
-        padding:            $navElementPadding;
+        padding:            $navElementTitlePadding;
     }
     ul {
         @extend .list-bare;
@@ -23,14 +26,17 @@ $navElementPadding:         $baseBoxElementPadding;
             display:                block;
             text-decoration:        none;
             font-weight:            normal;
+            color:                  $baseTextColor;
             &.active {
-                border-left:        9px solid $blue;
+                border-left:        0.6em solid $blue;
                 font-weight:        bold;
+                padding:            $navElementActivePadding;
             }
         }
         a {
             text-decoration:        none;
-            &:hover {
+            &:hover,
+            &:focus {
                 text-decoration:    underline;
             }
         }
@@ -39,9 +45,43 @@ $navElementPadding:         $baseBoxElementPadding;
 
 .navigation_clientsearch {
     padding:                $baseBoxElementPadding;
+    form {
+        margin-bottom:          0.5em;
+    }
+    .form-actions {
+        margin:             0em;
+    }
+    .button-submit {
+        margin:             0.3em 0.1em 0 0;
+    }
 }
 
-.nav__item--active {
-    border-left:        9px solid $blue;
-    font-weight:        bold;
+.navigation_linklist {
+    li {
+        padding-left:   1.5em;
+        margin-bottom:  $gridGutter;
+        h4 {
+            margin: 0;
+            font-weight:    normal;
+        }
+        &::before {
+            margin-left: -1.5em;
+            float: left;
+            @extend .icon--base-style;
+        }
+        &.support:before {
+            content: "⍰";
+        }
+        &.manual:before {
+            content: "📖";
+        }
+        &.version:before {
+            content: "ℹ";
+        }
+    }
+    .linklist_icon {
+    }
+    .linklist_icon {
+    }
 }
+

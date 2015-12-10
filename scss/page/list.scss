@@ -1,5 +1,6 @@
 /* UL */
 ul {
+    @extend .list-bare;
 }
 
 /* OL */
@@ -21,11 +22,14 @@ dl {
 .list-dl {
     display:            block;
 }
+
 .list-dl__title {
     font-weight:        bold;
 }
+
 .list-dl__description {
     margin-left:        1em;
+    margin-bottom:      0.5em;
 }
 
 .list-dl--horizontal {
@@ -43,6 +47,7 @@ dl {
         margin-bottom:  0.5em;
     }
 }
+
 .list-dl--compact {
     dt, dd {
         line-height:    1.25em;
