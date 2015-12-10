@@ -1,16 +1,15 @@
 .calendar {
     @extend 
         .board;
+    > .header {
+        padding-right:  0;
+    }
     > .body {
-        @extend 
-            .board_body--noPadding,
-            .board_body--white;
+        padding:        0.5em 0.4em;
     }
 }
 
-.calendar_navigation {
-    display:    inline-block;
-}
+
 
 /**
  * CSS for small calendarpages display free/busy days and the day of the month
@@ -18,6 +17,7 @@
 $backgroundColorDayFree:        #CFE9C9;
 $backgroundColorDayBusy:        #FFAAA9;
 $textColorDateLocked:           #CCCCCC;
+$textColorDateSunday:           $red;
 
 .calendar-page {
     background-color:           $white;
@@ -35,19 +35,27 @@ $textColorDateLocked:           #CCCCCC;
         }
     }
     > .body {
-        font-size:  0.85em;
+        font-size:              0.873em;
         table {
             @extend 
-                .table;
-            td, 
+                .table; 
             th {
-                padding:            0 0.2em;
+                padding:            0 0.1em;
                 text-align:         center;
+            }
+            td {
+                padding:            0 0.1em;
+                text-align:         center;
+                border-bottom:      3px solid white;
+                line-height:        1.5em;
             }
             color:                  $baseTextColor;
             a {
                 color:              $baseTextColor;
                 display:            block;
+                &:hover {
+                    outline:     1px dotted $baseTextColor;
+                }
             }
             .date-free {
                 background-color:   $backgroundColorDayFree;
@@ -57,6 +65,10 @@ $textColorDateLocked:           #CCCCCC;
             }
             .date-locked {
                 color:              $textColorDateLocked;
+                cursor:             default;
+            }
+            .sunday {
+                color:              $textColorDateSunday;
                 cursor:             default;
             }
         }

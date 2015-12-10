@@ -2,6 +2,7 @@
 
 html {
     font-family:        $base-font-family;
+    line-height:        $inuit-base-line-height;
 }
 
 // The page container
@@ -13,13 +14,25 @@ html {
     background-color:   $white;
 }
 
-
 // Global settings
 a {
     color:              $linkColor;
+    text-decoration:        none;
+    &:hover,
+    &:focus {
+        text-decoration:    underline;
+    }
 }
 p {
     margin:             0 0 1em 0;
+}
+
+hr {
+    height:             1px;
+    border:             0 none;
+    margin:             $gridGutter 0;
+    color:              $greyBorder;
+    background:         $greyBorder;
 }
 
 // Element alignments

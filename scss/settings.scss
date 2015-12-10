@@ -16,7 +16,7 @@ $red:                           #E75656;
 $baseTextColor:                 #000000;
 $fontInactiveColor:             #999999;
 $pageheaderBackgroundColor:     $blueDark;
-$linkColor:                     $baseTextColor;
+$linkColor:                     #0074A5;
 $btn-background:                $white;
 $btn-font-color:                $baseTextColor;
 $btn-border-color:              $greyBorder;
@@ -27,8 +27,8 @@ $tableHeadBackground:           $blueLight;
 $pageMaxWidth:                  90em; // 1260px bei 14px font size;
 //$gridGutter:                  1.538em; // 20px; bei 13px font size;
 $gridGutter:                    1.429em; // 20px; bei 14px font size;
-$baseBoxElementPadding:         ($gridGutter / 3) ($gridGutter / 2); // navigation_items; board_body inner elements;
-$base-font-family:              Neo, Arial, sans-serif;
+$baseBoxElementPadding:         ($gridGutter / 3) ($gridGutter / 2); // board_body inner elements;
+$base-font-family:              Neo, Roboto, Arial, sans-serif;
 
 $fontSizeLabels:                0.95em; // form labels, dl dt, table th 
 

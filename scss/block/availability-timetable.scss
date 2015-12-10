@@ -11,14 +11,14 @@ $openingBarTop:                 21rem;
 
 
 .availability-timetable {
-    /*
+    
     @extend 
         .board;
     > .body {
         @extend 
             .board_body--white;
     }
-    */
+    
     position:               relative;
     margin-bottom:          $gridGutter * 2;
     line-height:            $inuit-base-line-height;

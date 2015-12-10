@@ -31,9 +31,10 @@ fieldset{
 
 label,
 .label {
+    color:              #333333;
+    font-size:          $fontSizeLabels;
     display:            block;
     font-weight:        bold;
-    font-size:          $fontSizeLabels;
     margin-bottom:      0.1em;
     margin-left:        2px;
     max-width:          100%;
@@ -90,6 +91,22 @@ input[type="radio"] {
 }
 
 
+input[disabled], 
+input[readonly], 
+input[disabled="disabled"], 
+input[readonly="readonly"], 
+.form-control[disabled], 
+.form-control[readonly],
+fieldset[disabled] .form-control {
+    cursor:                 not-allowed;
+    background-color:       #f8f8f8;
+    opacity:                1;
+    color:                  #999;
+}
+
+select > option {
+    padding:                0.05em 0;
+}
 
 /**
  * Our form classes
@@ -133,7 +150,7 @@ input[type="radio"] {
 .form-actions {
     @extend 
         .align-right;
-    margin:                     $gridGutter 0;
+    margin:                     $gridGutter 0; 
     max-width:                  100%;
 }
 
@@ -191,10 +208,10 @@ input[type="radio"] {
     border-radius:          4px;
     box-shadow:             none;
     box-sizing:             border-box;
-    color:                  #555;
+    color:                  $baseTextColor;
     //width:                  100%; 
-    font-size:              14px;
-    line-height:            1.42857;
+    font-size:              $inuit-base-font-size;
+    line-height:            $inuit-base-line-height; 
     padding:                $formItemBasePadding;
     transition:             border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
     max-width:              100%;
@@ -241,6 +258,9 @@ input[type="radio"] {
             input + label,
             input + span {
                 margin-left:    1em;
+            }
+            p {
+                margin-bottom:  0;
             }
         }
         span, p {
