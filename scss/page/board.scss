@@ -26,9 +26,6 @@ $contentTopLineupBoardBodyMaxHeight:    28em; // (calendar,appointment,clientinf
     > .footer {
         @extend .board_footer;
     }
-    ul {
-        @extend .list-bare;
-    }
 }
 
 

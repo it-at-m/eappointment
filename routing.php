@@ -20,9 +20,9 @@
     '\BO\Zmsadmin\Counter:render')
     ->name("counter");
     
-\App::$slim->get('/scope/edit',
+\App::$slim->get('/scope/',
     '\BO\Zmsadmin\Scope:render')
-    ->name("scope_edit");
+    ->name("scope");
     
 \App::$slim->get('/owner/',
     '\BO\Zmsadmin\Owner:render')
