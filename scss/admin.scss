@@ -17,6 +17,7 @@
 @import "bower_components/inuit-buttons/_objects.buttons";
 @import "bower_components/inuit-tables/_objects.tables.scss";
 @import "bower_components/inuit-list-bare/_objects.list-bare.scss";
+@import "bower_components/inuit-list-inline/_objects.list-inline.scss";
 @import "bower_components/inuit-clearfix/_trumps.clearfix";
 @import "bower_components/inuit-responsive-tools/_tools.responsive";
 
@@ -39,6 +40,7 @@
 // Block layouts
 @import "block/header";
 @import "block/navigation";
+@import "block/breadcrumb";
 @import "block/queue";
 @import "block/calendar";
 @import "element/calendar-navigation";
