@@ -72,9 +72,9 @@ select,
 
 input[type="checkbox"],
 input[type="radio"] {
-    margin: 4px 0.3em 0;
-    margin-top: 1px \9; // IE8-9
-    line-height: normal;
+    margin:                 0px 0.3em 0;
+    margin-top:             1px \9; // IE8-9
+    line-height:            normal;
     &:focus {
         outline:            thin dotted;
         outline-offset:     -2px;
@@ -127,31 +127,37 @@ select > option {
 }
 
 .add-date-picker {
-    position:           relative; 
-    display:            inline-block;
+    position:               relative; 
+    display:                inline-block;
     &:before {
-        display:        inline;
-        left:           0.5em;
-        position:       absolute;
-        top:            0.2em;
-        width:          0;
-        content:        "\1f4c5";
+        display:            inline;
+        left:               0.5em;
+        position:           absolute;
+        top:                0.2em;
+        width:              0;
+        content:            "\1f4c5";
     }
     input,
     input[type="text"],
     input[type="date"],
     .form-input {
-        padding-left:   2em;
-        width:          10em;
+        padding-left:       2em;
+        width:              10em;
     }
 }
     
 // Align the buttons at the end of a form to the right side
 .form-actions {
     @extend 
-        .align-right;
-    margin:                     $gridGutter 0; 
-    max-width:                  100%;
+        .clearfix;
+    margin:                 $gridGutter 0; 
+    max-width:              100%;
+    .right {
+        float:              right;
+    }
+    .left {
+        float:              left;
+    }
 }
 
 // Make the form description smaller
@@ -245,7 +251,10 @@ select > option {
                 .grid__item, 
                 .#{$controlGrid},
                 .portable--one-whole;
-            max-width:  $elementMaxWidth;
+            max-width:          $elementMaxWidth;
+            > * {
+                vertical-align:     middle;
+            }
             label,
             .label {
                 @extend 
@@ -253,11 +262,12 @@ select > option {
                 display: inline-block;
                 font-weight:    normal;
                 font-size:      1em;
+                margin-top:     0;
             }
             // Set some space to inline elements
             input + label,
             input + span {
-                margin-left:    1em;
+                margin-left:    0.25em;
             }
             p {
                 margin-bottom:  0;
