@@ -1,0 +1,46 @@
+.owner {
+    //@extend .list-bare;
+    .header {
+        //@extend .board_header;
+    }
+    .body {
+        //@extend .board_body;
+    }
+    
+    
+    ul.owner_list {
+        padding-left:        0;
+        > li {
+            list-style:     none;
+            > ul {
+                padding-left:        0;
+                > li {
+                    list-style:     none;
+                    margin-bottom:      2em;
+                    > ul {
+                        padding-left:        0;
+                        > li {
+                            list-style:     none;
+                            margin-bottom:      1em;
+                            > ul {
+                                > li {
+                                    margin:      0.3em 0;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        .organisation {
+            @extend 
+                .board;
+        }
+        .cluster {
+            font-style: italic;
+        }
+    }
+    .title-department {
+        font-weight:    bold;
+    }
+}

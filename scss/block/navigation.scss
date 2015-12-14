@@ -57,31 +57,31 @@ $navElementTitlePadding:    0.5em 0em 0.5em 0.6em;
 }
 
 .navigation_linklist {
-    li {
-        padding-left:   1.5em;
-        margin-bottom:  $gridGutter;
-        h4 {
-            margin: 0;
-            font-weight:    normal;
+    ul {
+        @extend 
+            .list-bare;
+        li {
+            padding-left:   1.5em;
+            margin-bottom:  $gridGutter;
+            h4 {
+                margin: 0;
+                font-weight:    normal;
+            }
+            &::before {
+                margin-left: -1.3em;
+                float: left;
+                @extend .icon--base-style;
+            }
+            &.support:before {
+                content: "⍰";
+            }
+            &.manual:before {
+                content: "📖";
+            }
+            &.version:before {
+                content: "ℹ";
+            }
         }
-        &::before {
-            margin-left: -1.3em;
-            float: left;
-            @extend .icon--base-style;
-        }
-        &.support:before {
-            content: "⍰";
-        }
-        &.manual:before {
-            content: "📖";
-        }
-        &.version:before {
-            content: "ℹ";
-        }
-    }
-    .linklist_icon {
-    }
-    .linklist_icon {
     }
 }
 
