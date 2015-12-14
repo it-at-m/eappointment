@@ -24,6 +24,10 @@
     '\BO\Zmsadmin\Scope:render')
     ->name("scope_edit");
     
+\App::$slim->get('/owner/',
+    '\BO\Zmsadmin\Owner:render')
+    ->name("owner");
+    
 \App::$slim->get('/availability/day',
     '\BO\Zmsadmin\Availability:render')
     ->name("availability_day");
