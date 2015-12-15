@@ -36,9 +36,17 @@
     '\BO\Zmsadmin\Scope:render')
     ->name("scope");
 
+\App::$slim->get('/cluster/',
+    '\BO\Zmsadmin\Cluster:render')
+    ->name("cluster");
+
 \App::$slim->get('/department/',
     '\BO\Zmsadmin\Department:render')
     ->name("department");
+
+\App::$slim->get('/organisation/',
+    '\BO\Zmsadmin\Organisation:render')
+    ->name("organisation");
 
 \App::$slim->get('/owner/',
     '\BO\Zmsadmin\Owner:render')

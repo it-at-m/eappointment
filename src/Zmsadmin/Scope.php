@@ -19,7 +19,7 @@ class Scope extends BaseController
     {
         \BO\Slim\Render::html('page/scope.twig', array(
             'title' => 'Standort',
-            'menuActive' => 'scope'
+            'menuActive' => 'owner'
         ));
     }
 }
