@@ -19,7 +19,7 @@ class Department extends BaseController
     {
         \BO\Slim\Render::html('page/department.twig', array(
             'title' => 'Standort',
-            'menuActive' => 'scope'
+            'menuActive' => 'owner'
         ));
     }
 }

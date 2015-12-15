@@ -10,14 +10,14 @@ namespace BO\Zmsadmin;
   * Handle requests concerning services
   *
   */
-class Scope extends BaseController
+class Organisation extends BaseController
 {
     /**
      * @return String
      */
     public static function render()
     {
-        \BO\Slim\Render::html('page/scope.twig', array(
+        \BO\Slim\Render::html('page/organisation.twig', array(
             'title' => 'Standort',
             'menuActive' => 'owner'
         ));
