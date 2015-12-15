@@ -10,7 +10,7 @@ help: # This help
 now: # Dummy target
 
 dev: # init development system
-	$(COMPOSER) update --dev
+	$(COMPOSER) update
 	npm install
 
 live: # init live system, delete unnecessary libs
