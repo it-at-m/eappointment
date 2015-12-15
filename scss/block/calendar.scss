@@ -14,8 +14,8 @@
 /**
  * CSS for small calendarpages display free/busy days and the day of the month
  */
-$backgroundColorDayFree:        #CFE9C9;
-$backgroundColorDayBusy:        #FFAAA9;
+$backgroundColorDayFree:        $calendarGreen !default;
+$backgroundColorDayBusy:        $calendarRed !default;
 $textColorDateLocked:           #CCCCCC;
 $textColorDateSunday:           $red;
 

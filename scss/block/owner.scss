@@ -1,46 +1,49 @@
-.owner {
-    //@extend .list-bare;
-    .header {
-        //@extend .board_header;
+.owner { 
+}
+
+.owner-list {
+    padding-left:           0;
+    .owner-list_item {
+        list-style:         none;
+        margin-bottom:      2em;
     }
-    .body {
-        //@extend .board_body;
+}
+
+.organisation-list {
+    padding-left:           0;
+    .organisation-list_item {
+        @extend 
+            .board;
+        list-style:         none;
+        margin-bottom:      2em;
     }
-    
-    
-    ul.owner_list {
-        padding-left:        0;
-        > li {
-            list-style:     none;
-            > ul {
-                padding-left:        0;
-                > li {
-                    list-style:     none;
-                    margin-bottom:      2em;
-                    > ul {
-                        padding-left:        0;
-                        > li {
-                            list-style:     none;
-                            margin-bottom:      1em;
-                            > ul {
-                                > li {
-                                    margin:      0.3em 0;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        .organisation {
-            @extend 
-                .board;
-        }
-        .cluster {
-            font-style: italic;
+    .organisation-list_title {
+        @extend 
+            .board_header__title;
+    }
+}
+
+.department-list {
+    padding-left:           0;
+    .department-list_item {
+        list-style:         none;
+        margin-bottom:      1em;
+    }
+    .department-list_title {
+        font-weight:        bold;
+        display:            inline-block;
+        margin-right:       0.5em;
+    }
+    .cluster {
+        .cluster_title {
+            font-style:         italic;
         }
     }
-    .title-department {
-        font-weight:    bold;
+}
+
+.scope-list {
+    padding-left:           2em;
+    .scope-list_item {
+        list-style-type:    initial;
     }
 }

@@ -13,6 +13,11 @@ $blue:                          #008CCA;
 $blueDark:                      #33445E;
 $blueLight:                     #ECF9FF;
 $red:                           #E75656;
+
+$infoYellow:                    #FFFBD5;
+$calendarRed:                   #FFAAA9;
+$calendarGreen:                 #CFE9C9;
+
 $baseTextColor:                 #000000;
 $fontInactiveColor:             #999999;
 $pageheaderBackgroundColor:     $blueDark;
@@ -75,9 +80,10 @@ $inuit-btn-background:          $btn-background;
 $inuit-btn-color:               $btn-font-color;
 $inuit-btn-border-color:        $btn-border-color;
 $inuit-enable-btn--full:        true;
+$inuit-enable-btn--small:       true;
+$inuit-enable-btn--large:       true;
 $inuit-btn-padding:             5px;
 $inuit-btn-radius:              0px;
-$inuit-enable-btn--large:       true;
 
 // inuit Tables
 $inuit-table-border-color:      $greyBorder;

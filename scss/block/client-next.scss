@@ -1,0 +1,14 @@
+$clientNextIconColor:         #33445E;
+
+.client-next {
+    @extend 
+        //.board_body--minHeight,
+        .board_body--maxHeight,
+        .board;
+    .body {
+        @extend
+            .align-center;
+    }
+}
+
+
