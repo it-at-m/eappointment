@@ -19,27 +19,31 @@
 \App::$slim->get('/counter/',
     '\BO\Zmsadmin\Counter:render')
     ->name("counter");
-    
+
 \App::$slim->get('/scope/',
     '\BO\Zmsadmin\Scope:render')
     ->name("scope");
-    
+
+\App::$slim->get('/department/',
+    '\BO\Zmsadmin\Department:render')
+    ->name("department");
+
 \App::$slim->get('/owner/',
     '\BO\Zmsadmin\Owner:render')
     ->name("owner");
-    
+
 \App::$slim->get('/availability/day',
     '\BO\Zmsadmin\Availability:render')
     ->name("availability_day");
-    
+
 \App::$slim->get('/availability/calendar',
     '\BO\Zmsadmin\AvailabilityCalendar:render')
     ->name("availability_month");
-    
+
 \App::$slim->get('/testpage/',
     '\BO\Zmsadmin\Testpage:render')
     ->name("testpage");
-    
+
 //\App::$slim->get('/dienstleistung/:service_id',
 //    '\BO\D115Mandant\Controller\ServiceDetail:render')
 //    ->conditions([
