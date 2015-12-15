@@ -5,7 +5,7 @@
 $boardElementPadding:                   $baseBoxElementPadding !default;
 $boardFooterBackground:                 #F8F8F8 !default;
 $contentTopLineupBoardBodyMinHeight:    33.7em; // (calendar,appointment,clientinfo,queueinfo,...)
-$contentTopLineupBoardBodyMaxHeight:    28em; // (calendar,appointment,clientinfo,queueinfo,...)
+$contentTopLineupBoardBodyMaxHeight:    33.7em; // (calendar,appointment,clientinfo,queueinfo,...)
 
 /* use the board css to extend the layout of the blocks */
 .board {
@@ -98,6 +98,8 @@ $contentTopLineupBoardBodyMaxHeight:    28em; // (calendar,appointment,clientinf
     line-height:        1.25em;
     margin:             0;
     padding:            0;
+    display:            inline-block;
+    margin-right:       0.5em;
 }
 
 

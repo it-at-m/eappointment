@@ -1,29 +1,14 @@
-.clientinfo {
+.client-info {
     @extend 
-        .board_body--minHeight,
         .board_body--maxHeight,
         .board;
     .clientinfo_dialog {
         dl {
             @extend
-                //.list-dl--horizontal,
-                //.list-dl--compact,
                 .list-dl;
         }
-    }
-    .waiting-time {
-        @extend .text--highlight;
-    }
+    }    
     
-    
-    .button-nextclient { 
-        @extend 
-            .btn, 
-            .btn--full, 
-            .btn--large,
-            .btn--bold;
-    }
-
     .button-cancel {
         @extend 
             .btn,

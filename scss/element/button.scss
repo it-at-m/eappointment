@@ -12,11 +12,11 @@ $buttonInactiveFontColor:   $fontInactiveColor !default;
     @extend 
         .btn, 
         .btn--full, 
-        .btn--large,
         .btn--bold,
         .btn--noShadow,
         .btn--alert;
     margin-bottom:          $gridGutter;
+    padding:                0.7em;
 }
 
 .button-submit {
@@ -54,6 +54,49 @@ $buttonInactiveFontColor:   $fontInactiveColor !default;
     background-color:       $white;
 }
 
+.button-callnextclient {
+    @extend 
+        .btn;
+    position:           relative;
+    width:              12em;
+    height:             13em;
+    padding-top:        1em;
+    .user {
+        position:       relative;
+        display:        block;
+        font-size:      6.5em;
+        line-height:    1.2em;
+        color:          $clientNextIconColor;
+    }
+    .arrow {
+        display:        block;
+        font-size:      2.5em;
+        line-height:    1.2em;
+        position:       absolute;
+        right:          0.8em;
+        top:            1.3em;
+        color:          $clientNextIconColor;
+    }
+    .text {
+        display:        block;
+        margin-top:     0.0em;
+        font-weight:    bold;
+        font-size:      1.1em;
+        color:          $baseTextColor; 
+    }
+    &.pending {
+        background:     none;
+        border:         0 none;
+        box-shadow:     none;
+        cursor:         default;
+        .user,
+        .arrow,
+        .text {
+            opacity:    0.2;
+        }
+    }
+}
+
 /**
  * Button modifiers.
  */
@@ -62,8 +105,18 @@ $buttonInactiveFontColor:   $fontInactiveColor !default;
     font-weight: bold;
 }
 
-
-
+.btn--asLink {
+    background:             none;
+    background-color:       none;
+    border:                 0 none;
+    box-shadow:             none !important;
+    color:                  $linkColor;
+    &:hover {
+        text-decoration:    underline;
+        color:              $linkColor;
+    }
+}
+        
 .btn--alert,
 .btn--alert:hover,
 .btn--alert:active,
@@ -107,3 +160,4 @@ $buttonInactiveFontColor:   $fontInactiveColor !default;
     text-align:             center;
     vertical-align:         middle;
 }
+

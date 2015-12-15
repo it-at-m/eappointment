@@ -1,0 +1,43 @@
+.client-precall {
+    @extend
+        .board_body--maxHeight,
+        .board;
+    .body {
+        @extend
+            .align-center;
+        
+        .title {
+            margin:         1em 0 1em 0;
+            font-size:      1.1em;
+            font-weight:    bold;
+        }
+    }
+    .form-actions {
+        margin-bottom:      0;
+    }
+}
+
+.client-precall_info {
+    background-color:   $infoYellow;
+    display:            block;
+    padding:            0.4em 0.2em;
+    margin-bottom:      1em;
+}
+
+.client-precall_button-skip {
+    @extend
+        .btn;
+}
+.client-precall_button-abort {
+    @extend
+        .btn,
+        .btn--alert;
+}
+.client-precall_button-success {
+    @extend
+        .btn--success,
+        .btn;
+    margin-bottom:          1em;
+}
+
+
