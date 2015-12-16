@@ -61,25 +61,24 @@ $navElementTitlePadding:    0.5em 0em 0.5em 0.6em;
         @extend 
             .list-bare;
         li {
-            padding-left:   1.5em;
-            margin-bottom:  $gridGutter;
-            h4 {
-                margin: 0;
+            padding-left:       1.5em;
+            margin-bottom:      $gridGutter;
+            .title {
+                margin:         0;
                 font-weight:    normal;
             }
             &::before {
-                margin-left: -1.3em;
-                float: left;
-                @extend .icon--base-style;
+                margin-left:    -1.3em;
+                float:          left;
             }
             &.support:before {
-                content: "⍰";
+                content:        "⍰";
             }
             &.manual:before {
-                content: "📖";
+                content:        "📖";
             }
             &.version:before {
-                content: "ℹ";
+                content:        "ℹ";
             }
         }
     }
