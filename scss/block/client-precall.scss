@@ -17,13 +17,6 @@
     }
 }
 
-.client-precall_info {
-    background-color:   $infoYellow;
-    display:            block;
-    padding:            0.4em 0.2em;
-    margin-bottom:      1em;
-}
-
 .client-precall_button-skip {
     @extend
         .btn;
