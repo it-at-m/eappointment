@@ -52,11 +52,11 @@
     '\BO\Zmsadmin\Owner:render')
     ->name("owner");
 
-\App::$slim->get('/availability/day',
+\App::$slim->get('/availability/day/',
     '\BO\Zmsadmin\Availability:render')
     ->name("availability_day");
 
-\App::$slim->get('/availability/calendar',
+\App::$slim->get('/availability/calendar/',
     '\BO\Zmsadmin\AvailabilityCalendar:render')
     ->name("availability_month");
 
