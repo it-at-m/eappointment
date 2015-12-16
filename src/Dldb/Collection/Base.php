@@ -4,6 +4,7 @@
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 namespace BO\Dldb\Collection;
+use \BO\Dldb\Helper\Sorter;
 
 use \BO\Dldb\Helper\Sorter;
 

@@ -121,7 +121,7 @@ class FileAccess extends AbstractAccess
             }
             ;
         }
-        $locationlist->sortByName();
+        $locationlist;
         return $locationlist;
     }
 
@@ -138,7 +138,7 @@ class FileAccess extends AbstractAccess
                 $servicelist[$service_id] = $service;
             }
         }
-        $servicelist->sortByName();
+        $servicelist;
         return $servicelist;
     }
 
@@ -161,7 +161,7 @@ class FileAccess extends AbstractAccess
                 }
             }
         }
-        $authoritylist->sortByName();
+        $authoritylist;
         return $authoritylist;
     }
 
