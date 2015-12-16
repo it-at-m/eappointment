@@ -72,6 +72,7 @@ class ElasticAccess extends FileAccess
             $filter->setExecution('and');
         }
         $query = \Elastica\Query::create($filter);
+        $query->addSort(['name.sort' => 'asc', 'meta.keywords.sort' => 'asc']);
         $resultList = $this->getIndex()
             ->getType('location')
             ->search($query, 10000);
@@ -136,6 +137,7 @@ class ElasticAccess extends FileAccess
             $filter->setExecution('and');
         }
         $query = \Elastica\Query::create($filter);
+        $query->addSort(['name.sort' => 'asc']);
         $resultList = $this->getIndex()
             ->getType('service')
             ->search($query, 10000);
@@ -201,6 +203,7 @@ class ElasticAccess extends FileAccess
             $filter->setExecution('and');
         }
         $query = \Elastica\Query::create($filter);
+        $query->addSort(['authority.name.sort' => 'asc', 'name.sort' => 'asc']);
         $resultList = $this->getIndex()
             ->getType('location')
             ->search($query, 10000);
@@ -212,11 +215,14 @@ class ElasticAccess extends FileAccess
      *
      * @return self
      */
-    public function loadLocations($locationJson, $locale = 'de')
+    protected function authorityListFromLocationResults($resultList)
     {
-        $this->accessInstance[$locale]['Location'] = new Elastic\Location($locationJson, $locale);
-        $this->accessInstance[$locale]['Location']->setAccessInstance($this);
-        return $this;
+        $authoritylist = new Collection\Authorities();
+        foreach ($resultList as $result) {
+            $location = new Entity\Location($result->getData());
+            $authoritylist->addLocation($location);
+        }
+        return $authoritylist;
     }
 
     /**
@@ -227,9 +233,9 @@ class ElasticAccess extends FileAccess
     {
         $query = new \Elastica\Query();
         $limit = 1000;
-        $sort = true;
         $boolquery = new \Elastica\Query\Bool();
         $searchquery = new \Elastica\Query\QueryString();
+        $sort = true;
         if ($querystring > 10000 && $querystring < 15000) {
             // if it is a postal code, sort by distance and limit results
             $coordinates = \BO\Dldb\Plz\Coordinates::zip2LatLon($querystring);
@@ -269,42 +275,46 @@ class ElasticAccess extends FileAccess
         }
         $filteredQuery = new \Elastica\Query\Filtered($boolquery, $filter);
         $query->setQuery($filteredQuery);
+        if ($sort) {
+            $query->addSort(['authority.name.sort' => 'asc', 'name.sort' => 'asc']);
+        }
         $resultList = $this->getIndex()
             ->getType('location')
             ->search($query, $limit);
-        return $this->authorityListFromLocationResults($resultList, $sort);
+        return $this->authorityListFromLocationResults($resultList);
     }
 
     /**
      *
      * @return Collection\Services
      */
-    public function loadTopics($topicJson, $locale = 'de')
+    public function searchService($querystring, $service_csv = '', $location_csv = '')
     {
+        $query = new \Elastica\Query();
         if (! $location_csv) {
             $location_csv = $this->fetchServiceLocationCsv($service_csv);
         }
+
         $boolquery = new \Elastica\Query\Bool();
         $searchquery = new \Elastica\Query\QueryString();
-        if ('' === trim($query)) {
+        if ('' === trim($querystring)) {
             $searchquery->setQuery('*');
         } else {
-            $searchquery->setQuery($query);
+            $searchquery->setQuery($querystring);
         }
         $searchquery->setFields([
             'name^9',
             'keywords^5'
         ]);
-        $searchquery->setLowercaseExpandedTerms(false);
+
         $boolquery->addShould($searchquery);
-        // $prefixquery = new \Elastica\Query\Prefix();
-        // $prefixquery->setPrefix('az', preg_replace('#~\d$#', '', $query), 10);
-        // $boolquery->addShould($prefixquery);
         $filter = null;
         if ($location_csv) {
             $filter = new \Elastica\Filter\Terms('locations.location', explode(',', $location_csv));
         }
-        $query = new \Elastica\Query\Filtered($boolquery, $filter);
+        $filteredQuery = new \Elastica\Query\Filtered($boolquery, $filter);
+        $query->setQuery($filteredQuery);
+        $query->addSort(['name.sort' => 'asc', 'meta.keywords.sort' => 'asc']);
         $resultList = $this->getIndex()
             ->getType('service')
             ->search($query, 1000);
