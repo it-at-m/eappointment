@@ -46,19 +46,19 @@ class TwigExtension extends \Slim\Views\TwigExtension
         );
         return $days[$name];
     }
-    
+
     public function dateToTS($datetime)
     {
         $timestamp = ($datetime === (int)$datetime) ? $datetime : strtotime($datetime);
         return $timestamp;
     }
-    
+
     public function tsToDate($timestamp)
     {
         $date =  date('Y-m-d', $timestamp);
         return $date;
     }
-    
+
     public function formatDateTime($datetime)
     {
         $formatDate['date']     = strftime('%a, %d. %B %Y', $datetime);
@@ -105,20 +105,15 @@ class TwigExtension extends \Slim\Views\TwigExtension
     public function getAppointmentForService($location, $service_id)
     {
         $servicecompare = explode(',', $service_id);
-        $appointment = array(
-            'allowed' => false,
-            'external' => true,
-            'link' => '#',
-        );
         foreach ($location['services'] as $service) {
             if (in_array($service['service'], $servicecompare)) {
                 $appointment = $service['appointment'];
-                if ($appointment['allowed'] === false || $appointment['external'] === true) {
+                if ($appointment['allowed'] === true || $appointment['external'] === true) {
                     return $appointment;
                 }
             }
         }
-        return $appointment;
+        return false;
     }
 
     public function dayIsBookable($dateList, $day)
