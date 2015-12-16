@@ -80,6 +80,9 @@ $navElementTitlePadding:    0.5em 0em 0.5em 0.6em;
             &.version:before {
                 content:        "ℹ";
             }
+            &.logo {
+                padding-left:   0;
+            }
         }
     }
 }
