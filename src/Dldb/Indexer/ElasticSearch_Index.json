@@ -174,17 +174,13 @@
                      "type" : "string"
                   },
                   "name" : {
-                     "type" : "multi_field",
-                     "fields" : {               
-		                "sort" : {    
-		                  "type" : "string",           
-		                  "analyzer" : "german_phonebook"
-		                },
-		                "name" : {
-		                  "type" : "string",
-		                  "analyzer" : "autocomplete"
-		                }    
-		             }
+                     "type" : "string",
+                     "fields": {
+                         "authority.sort": {
+                             "type":     "string",
+                             "analyzer": "german_phonebook"
+                         }
+                     }
                   }
                }
             },
@@ -199,9 +195,12 @@
                   	"analyzer" : "german_phonebook"
                   },
                   "name" : {
-                  	"type" : "string",
-                  	"analyzer" : "autocomplete"
-                  }    
+                     "type" : "string"
+                  },
+                  "sort": {
+                      "type":     "string",
+                      "analyzer": "german_phonebook"
+                  }
                }
             },
             "contact" : {
@@ -344,9 +343,12 @@
                   	 "analyzer" : "german_phonebook"
                   },
                   "name" : {
-                  	"type" : "string",
-                  	"analyzer" : "autocomplete"
-                  }  
+                     "type" : "string"
+                  },
+                  "sort": {
+                      "type":     "string",
+                      "analyzer": "german_phonebook"
+                  }
                }
             },
             "meta" : {
@@ -392,35 +394,79 @@
    },
    "settings" : {
       "analysis" : {
-         "analyzer" : {         	
-            "german_phonebook": {
-	           "tokenizer": "keyword",
-	           "filter":  [
-	           	 "lowercase",
-	          	 "german_phonebook"        	 
-	           ]
-	        },
-	        "autocomplete": {
-	            "type":      "custom",
-	            "tokenizer": "standard",
-	            "filter": [
-	                "lowercase",
-	                "autocomplete_filter" 
-	            ]
-	        }
+         "analyzer" : {
+            "az" : {
+               "tokenizer" : "keyword",
+               "type" : "custom",
+               "filter" : [
+                  "lowercase",
+                  "azfilter",
+                  "de_DE",
+                  "snowball_german2"
+               ]
+            },
+            "default_index" : {
+               "tokenizer" : "standard",
+               "type" : "custom",
+               "filter" : [
+                  "icu_normalizer",
+                  "icu_folding",
+                  "lowercase",
+                  "de_DE",
+                  "snowball_german2",
+                  "prefix"
+               ]
+           },
+            "german_phonebook" : {
+               "tokenizer" : "keyword",
+               "type" : "custom",
+               "filter" : [
+                  "icu_normalizer",
+                  "icu_folding",
+                  "lowercase",
+                  "de_DE",
+                  "snowball_german2"
+               ]
+            },
+            "default_search" : {
+               "tokenizer" : "standard",
+               "type" : "custom",
+               "filter" : [
+                  "icu_normalizer",
+                  "icu_folding",
+                  "lowercase",
+                  "de_DE",
+                  "snowball_german2"
+               ]
+            }
          },
          "filter" : {
-            "german_phonebook": { 
-            	"type":     "icu_collation",
-		        "language": "de",
-		        "country":  "DE",
-		        "variant":  "@collation=phonebook"
-	        },
-	        "autocomplete_filter": {
-            	"type": "edge_ngram",
-            	"min_gram": 2,
-            	"max_gram": 50
-        	}
+            "snowball_german2" : {
+               "language" : "German2",
+               "type" : "snowball"
+            },
+            "german_phonebook": {
+                "type":     "icu_collation",
+                "language": "de",
+                "country":  "DE",
+                "variant":  "@collation=phonebook"
+            },
+            "de_DE" : {
+                "type" : "hunspell",
+                "locale" : "de_DE"
+            },
+            "prefix" : {
+                "type": "edgeNGram",
+                "min_gram": 3,
+                "max_gram": 100,
+                "side": "front"
+            },
+            "azfilter" : {
+                "type": "edgeNGram",
+                "min_gram": 1,
+                "max_gram": 1,
+                "side": "front"
+            }
          }
       },
       "number_of_shards" : "1",
