@@ -72,7 +72,7 @@ class ElasticAccess extends FileAccess
             $filter->setExecution('and');
         }
         $query = \Elastica\Query::create($filter);
-        $query->addSort(['name.sort' => 'asc', 'meta.keywords.sort' => 'asc']);
+        $query->addSort(['sort' => 'asc']);
         $resultList = $this->getIndex()
             ->getType('location')
             ->search($query, 10000);
@@ -137,7 +137,7 @@ class ElasticAccess extends FileAccess
             $filter->setExecution('and');
         }
         $query = \Elastica\Query::create($filter);
-        $query->addSort(['name.sort' => 'asc']);
+        $query->addSort(['sort' => 'asc']);
         $resultList = $this->getIndex()
             ->getType('service')
             ->search($query, 10000);
@@ -203,7 +203,7 @@ class ElasticAccess extends FileAccess
             $filter->setExecution('and');
         }
         $query = \Elastica\Query::create($filter);
-        $query->addSort(['authority.name.sort' => 'asc', 'name.sort' => 'asc']);
+        $query->addSort(['authority.sort' => 'asc', 'sort' => 'asc']);
         $resultList = $this->getIndex()
             ->getType('location')
             ->search($query, 10000);
@@ -277,7 +277,7 @@ class ElasticAccess extends FileAccess
         $filteredQuery = new \Elastica\Query\Filtered($boolquery, $filter);
         $query->setQuery($filteredQuery);
         if ($sort) {
-            $query->addSort(['authority.name.sort' => 'asc', 'name.sort' => 'asc']);
+            $query->addSort(['authority.sort' => 'asc', 'sort' => 'asc']);
         }
         $resultList = $this->getIndex()
             ->getType('location')
@@ -315,7 +315,7 @@ class ElasticAccess extends FileAccess
         }
         $filteredQuery = new \Elastica\Query\Filtered($boolquery, $filter);
         $query->setQuery($filteredQuery);
-        $query->addSort(['name.sort' => 'asc', 'meta.keywords.sort' => 'asc']);
+        $query->addSort(['sort' => 'asc']);
         $resultList = $this->getIndex()
             ->getType('service')
             ->search($query, 1000);
