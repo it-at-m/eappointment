@@ -264,7 +264,8 @@ class ElasticAccess extends FileAccess
             'name^9',
             'authority.name^5',
             'address.street',
-            'address.postal_code^9'
+            'address.postal_code^9',
+            'meta.keywords'
         ]);
         $searchquery->setLowercaseExpandedTerms(false);
         $boolquery->addShould($searchquery);
@@ -304,7 +305,7 @@ class ElasticAccess extends FileAccess
         }
         $searchquery->setFields([
             'name^9',
-            'keywords^5'
+            'meta.keywords^5'
         ]);
 
         $boolquery->addShould($searchquery);
