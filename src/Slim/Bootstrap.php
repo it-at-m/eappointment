@@ -23,15 +23,15 @@ class Bootstrap
         ini_set('default_charset', $charset);
         date_default_timezone_set($timezone);
         mb_internal_encoding($charset);
-        
+
         $language = self::getLanguage();
         putenv('LC_ALL='. $language);
-        setlocale(LC_ALL, $language);
-        
+        setlocale(LC_ALL, \App::$lcTimes[$language]);
+
         // Specify the location of the translation tables
         bindtextdomain('dldb-'.$language, \App::APP_PATH. '/locale');
         bind_textdomain_codeset('dldb-'.$language, 'UTF-8');
-        
+
         // Choose domain
         textdomain('dldb-'.$language);
     }
@@ -69,9 +69,9 @@ class Bootstrap
 
         //self::addTwigTemplateDirectory('default', \App::APP_PATH . \App::TEMPLATE_PATH);
     }
-    
+
     public static function getLanguage()
-    {        
+    {
         $lang = substr(\App::$slim->request()->getResourceUri(), 1, 2);
         $lang = ($lang != '' && in_array($lang, array_keys(\App::$supportedLanguages))) ? $lang : \App::DEFAULT_LANG;
         \App::$slim->config('lang', $lang);
@@ -83,7 +83,7 @@ class Bootstrap
         $twig = \App::$slim->view->getInstance();
         $twig->addExtension($extension);
     }
-    
+
     public static function addTwigFilter($filter)
     {
         $twig = \App::$slim->view->getInstance();
