@@ -14,10 +14,6 @@
 /**
  * CSS for small calendarpages display free/busy days and the day of the month
  */
-$backgroundColorDayFree:        $calendarGreen !default;
-$backgroundColorDayBusy:        $calendarRed !default;
-$textColorDateLocked:           #CCCCCC;
-$textColorDateSunday:           $red;
 
 .calendar-page {
     background-color:           $white;
@@ -54,14 +50,14 @@ $textColorDateSunday:           $red;
                 color:              $baseTextColor;
                 display:            block;
                 &:hover {
-                    outline:     1px dotted $baseTextColor;
+                    outline:        1px dotted $baseTextColor;
                 }
             }
             .date-free {
-                background-color:   $backgroundColorDayFree;
+                background-color:   $backgroundColorDateFree;
             }
             .date-busy {
-                background-color:   $backgroundColorDayBusy;
+                background-color:   $backgroundColorDateBusy;
             }
             .date-locked {
                 color:              $textColorDateLocked;

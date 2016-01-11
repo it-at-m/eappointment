@@ -26,6 +26,14 @@ $btn-font-color:                $baseTextColor;
 $btn-border-color:              $greyBorder;
 $tableHeadBackground:           $blueLight;
 
+// Dates
+$backgroundColorDateFree:       $calendarGreen !default;
+$backgroundColorDateBusy:       $calendarRed !default;
+$backgroundColorDateDisabled:   #eee;
+$textColorDateLocked:           #CCCCCC;
+$textColorDateSunday:           $red;
+
+
 // Dimensions
 //$pageMaxWidth:                96.923em; // 1260px bei 13px font size;
 $pageMaxWidth:                  90em; // 1260px bei 14px font size;
