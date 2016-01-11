@@ -28,16 +28,15 @@
         min-height:                 2em;
         padding:                    0.1em 0.5em;
         border-bottom:              1px solid $greyBorder;
-        //background-color:           $white;
-        &.placeholder {
-            background-color:       transparent;
-            border:                 0 none;
-        }
     }
     .timeslot__time {
     }
     .timeslot__text {
         margin-left:            0.5em;
+    }
+    .timeslot--placeholder {
+        background-color:       transparent;
+        border:                 0 none;
     }
     .timeslot--disabled {
         background-color:       $backgroundColorDateDisabled;
