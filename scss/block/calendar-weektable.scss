@@ -1,0 +1,54 @@
+.calendar-weektable {
+    @extend 
+        .board;
+    > .body {
+        @extend 
+            //.board_body--noBorder,
+            //.board_body--white,
+            .board_body--noPadding;
+    }
+}
+
+
+.calendar-weektable_calendar {
+    @extend 
+        .table--cells,
+        .table;
+    background-color:               $white;
+    thead {
+        background-color:           $tableHeadBackground;
+    }
+    th {
+        height:                     2em;
+        border-width:               1px 0;
+        position:                   relative;
+    }
+    .timeslot {
+        font-size:                  0.85em;
+        min-height:                 2em;
+        padding:                    0.1em 0.5em;
+        border-bottom:              1px solid $greyBorder;
+        //background-color:           $white;
+        &.placeholder {
+            background-color:       transparent;
+            border:                 0 none;
+        }
+    }
+    .timeslot__time {
+    }
+    .timeslot__text {
+        margin-left:            0.5em;
+    }
+    .timeslot--disabled {
+        background-color:       $backgroundColorDateDisabled;
+    }
+    .timeslot--free {
+        background-color:       $backgroundColorDateFree;
+    }
+    .timeslot--busy {
+        background-color:       $backgroundColorDateBusy;
+    }
+}
+
+
+

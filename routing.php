@@ -60,6 +60,10 @@
     '\BO\Zmsadmin\AvailabilityCalendar:render')
     ->name("availability_month");
 
+\App::$slim->get('/calendar/:year/kw/:weeknr/',
+    '\BO\Zmsadmin\CalendarWeek:render')
+    ->name("calendar_week");
+
 \App::$slim->get('/testpage/',
     '\BO\Zmsadmin\Testpage:render')
     ->name("testpage");
