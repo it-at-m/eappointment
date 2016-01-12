@@ -1,17 +1,27 @@
 table {
     @extend 
         .table;
+    background-color:       $white;
     .center {
-        text-align:     center;
-    }
-    th {
-        font-size:      $fontSizeLabels;
-        font-weight:    bold;
+        text-align:         center;
     }
     .spacer {
-        width:100%;
+        width:              100%;
     }
     td {
-        vertical-align: top;
+        vertical-align:     top;
+        padding:            0.5em;        
+    }
+    thead {
+        background-color:   $tableHeadBackground;
+        th {
+            font-size:          $fontSizeLabels;
+            font-weight:        bold;
+            border:         0 none;
+            padding:        0.4em 0.5em;
+        }
+    }
+    form {
+        margin: 0;
     }
 }

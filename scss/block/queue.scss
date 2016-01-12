@@ -23,17 +23,14 @@ $queueMissedColor:              $red !default;
         @extend 
             .table, 
             .table--cells;
-        background-color:       $white;
         margin-bottom:          $gridGutter;
         thead {
-            background-color:   $tableHeadBackground;
             th {
                 border:         0 none;
-                padding:        0.4em 0.5em;
             }
         }
         td {
-            padding:            0.5em;
+            
         }
         tbody {
             tr:first-child {

@@ -36,6 +36,10 @@
     '\BO\Zmsadmin\Scope:render')
     ->name("scope");
 
+\App::$slim->get('/scope/:id/pickup/',
+    '\BO\Zmsadmin\ScopePickup:render')
+    ->name("scopePickup");
+
 \App::$slim->get('/cluster/',
     '\BO\Zmsadmin\Cluster:render')
     ->name("cluster");

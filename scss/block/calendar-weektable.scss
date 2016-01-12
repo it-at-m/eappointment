@@ -15,11 +15,8 @@
         .table--cells,
         .table;
     background-color:               $white;
-    thead {
-        background-color:           $tableHeadBackground;
-    }
     th {
-        height:                     2em;
+        min-height:                 2em;
         border-width:               1px 0;
         position:                   relative;
     }
