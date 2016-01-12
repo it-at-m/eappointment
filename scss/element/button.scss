@@ -8,6 +8,11 @@ $buttonInactiveFontColor:   $fontInactiveColor !default;
     margin-right:   0.5em;
 }
 
+button.link  {
+    @extend 
+        .btn--link;
+}
+
 .button-emergency {
     @extend 
         .btn, 
@@ -161,3 +166,15 @@ $buttonInactiveFontColor:   $fontInactiveColor !default;
     vertical-align:         middle;
 }
 
+/* let a button looks like a link */
+.btn--link {
+    background:             none;
+    border:                 0 none;
+    color:                  $linkColor;
+    padding:                0;
+    margin:                 0;
+    display:                inline;
+    &:hover {
+        cursor:             pointer;
+    }
+}

@@ -1,0 +1,12 @@
+.scope-pickup {
+    @extend .board;
+    > .body {
+        @extend 
+            .board_body--noPadding;
+    }
+    table {
+        @extend 
+            .table,
+            .table--cells;
+    }
+}
