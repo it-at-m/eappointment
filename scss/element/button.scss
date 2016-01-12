@@ -46,6 +46,14 @@ button.link  {
     font-size:              1rem;
 }
 
+.button-login {
+    @extend 
+        .btn,
+        .btn--success;
+    margin-bottom:          ($gridGutter / 2);
+    font-size:              1rem;
+}
+
 .button-delete {
     @extend 
         .btn,

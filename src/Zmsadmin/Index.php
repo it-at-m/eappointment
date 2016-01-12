@@ -18,7 +18,7 @@ class Index extends BaseController
     public static function render()
     {
         \BO\Slim\Render::html('page/index.twig', array(
-            'title' => 'Startseite'
+            'title' => 'Anmeldung'
         ));
     }
 }

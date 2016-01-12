@@ -1,0 +1,16 @@
+.loginform {
+    @extend 
+        .board;
+    form { 
+        @extend 
+            .form--horizontal;
+    }
+    .form-actions {
+        margin-top:         0;
+        margin-bottom:      0;
+        .form-group {
+            margin-top:     0;
+            margin-bottom:  0;
+        }
+    }
+}
