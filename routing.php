@@ -12,6 +12,10 @@
     '\BO\Zmsadmin\Index:render')
     ->name("pagesindex");
 
+\App::$slim->get('/',
+    '\BO\Zmsadmin\Index:render')
+    ->name("login");
+    
 \App::$slim->get('/workstation/process/:id/precall/',
     '\BO\Zmsadmin\WorkstationClientPreCall:render')
     ->name("workstationClientPreCall");
