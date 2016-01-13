@@ -88,6 +88,10 @@
     '\BO\Zmsadmin\UseraccountEdit:render')
     ->name("useraccountEdit");
 
+\App::$slim->get('/calldisplay/',
+    '\BO\Zmsadmin\Calldisplay:render')
+    ->name("calldisplay");
+    
 \App::$slim->get('/testpage/',
     '\BO\Zmsadmin\Testpage:render')
     ->name("testpage");

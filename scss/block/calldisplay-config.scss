@@ -1,0 +1,9 @@
+.calldisplay-config {
+    @extend .board;
+    form {
+        @include form--horizontal(two-twelfths, ten-twelfths);
+        .form-group > .controls {
+            max-width: none;
+        }
+    }
+}
