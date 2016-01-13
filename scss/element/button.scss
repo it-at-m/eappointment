@@ -31,6 +31,13 @@ button.link  {
     font-size:              1rem;
 }
 
+.button-new {
+    @extend 
+        .btn;
+    margin-bottom:          ($gridGutter / 2);
+    font-size:              1rem;
+}
+
 .button-logout {
     @extend 
         .btn;

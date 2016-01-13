@@ -1,0 +1,8 @@
+.useraccount-edit {
+    @extend 
+        .board;
+    form {
+        @extend 
+            .form--horizontal;
+    }
+}
