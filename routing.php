@@ -72,9 +72,26 @@
     '\BO\Zmsadmin\CalendarWeek:render')
     ->name("calendar_week");
 
+\App::$slim->get('/profile/',
+    '\BO\Zmsadmin\Profile:render')
+    ->name("profile");
+
+\App::$slim->get('/useraccount/',
+    '\BO\Zmsadmin\Useraccount:render')
+    ->name("useraccount");
+
+\App::$slim->get('/department/:id/useraccount/',
+    '\BO\Zmsadmin\UseraccountByDepartment:render')
+    ->name("useraccountByDdepartment");
+
+\App::$slim->get('/useraccount/:id/',
+    '\BO\Zmsadmin\UseraccountEdit:render')
+    ->name("useraccountEdit");
+
 \App::$slim->get('/testpage/',
     '\BO\Zmsadmin\Testpage:render')
     ->name("testpage");
+
 
 //\App::$slim->get('/dienstleistung/:service_id',
 //    '\BO\D115Mandant\Controller\ServiceDetail:render')

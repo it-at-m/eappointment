@@ -117,6 +117,25 @@
             }
         }
     }
+    &--profile {
+        @extend .grid;
+        .lineup_actor {
+            &--left {
+                @extend 
+                    .grid__item, 
+                    .five-twelfths,
+                    .lap--one-whole, 
+                    .palm--one-whole;
+            }
+            &--right {
+                @extend 
+                    .grid__item, 
+                    .seven-twelfths, 
+                    .lap--one-third, 
+                    .palm--one-whole;
+            }
+        }
+    }
 }
 
 
