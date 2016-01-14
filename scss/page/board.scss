@@ -118,11 +118,6 @@ $contentTopLineupBoardBodyMaxHeight:    33.7em; // (calendar,appointment,clienti
 
 .board_body--noPadding {
     padding:        0;
-    > table {
-        tr > td:last-child {
-            border-right:       0 none;
-        }
-    }
 }
 
 .board_body--noBorder {
