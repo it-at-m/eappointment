@@ -100,6 +100,10 @@
     '\BO\Zmsadmin\Notification:render')
     ->name("notification");
 
+\App::$slim->get('/links/',
+    '\BO\Zmsadmin\Links:render')
+    ->name("links");
+    
 \App::$slim->get('/testpage/',
     '\BO\Zmsadmin\Testpage:render')
     ->name("testpage");
