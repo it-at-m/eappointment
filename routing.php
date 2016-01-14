@@ -60,6 +60,10 @@
     '\BO\Zmsadmin\Owner:render')
     ->name("owner");
 
+\App::$slim->get('/owner/:id/',
+    '\BO\Zmsadmin\OwnerEdit:render')
+    ->name("ownerEdit");
+    
 \App::$slim->get('/availability/day/',
     '\BO\Zmsadmin\Availability:render')
     ->name("availability_day");
