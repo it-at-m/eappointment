@@ -2,11 +2,9 @@
 
 namespace BO\Zmsclient\Psr7;
 
-use Jgut\Spiral\Client as Transportclient;
-use Jgut\Spiral\Transport\Curl;
-use GuzzleHttp\Psr7\Response;
+use \Asika\Http\Transport\CurlTransport as Curl;
 
-class Client
+class Client implements ClientInterface
 {
 
     /**
@@ -14,18 +12,20 @@ class Client
      */
     static public $curlopt = [];
 
-    public static function request(\Psr\Http\Message\RequestInterface $request)
+    /**
+     * @param \Psr\Http\Message\RequestInterface $request
+     *
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public static function readResponse(\Psr\Http\Message\RequestInterface $request)
     {
-        return self::getTransport()->request($request, new Response());
+        return self::getTransport()->request($request);
     }
 
     protected static function getTransport()
     {
         $transport = new Curl();
-        foreach (self::$curlopt as $option => $value) {
-            $transport->setOption($option, $value);
-        }
-        $client = new Transportclient($transport);
-        return $client;
+        $transport->setOption('options', self::$curlopt);
+        return $transport;
     }
 }

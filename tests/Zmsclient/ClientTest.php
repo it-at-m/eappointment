@@ -2,15 +2,20 @@
 
 namespace BO\Zmsclient\Tests;
 
-use GuzzleHttp\Psr7\Request;
 use BO\Zmsclient\Psr7\Client;
+use BO\Zmsclient\Psr7\Request;
+use BO\Zmsclient\Psr7\Uri;
+use \BO\Mellon\Validator;
 
 class ClientTest extends Base
 {
     public function testStatus()
     {
-        $request = new Request('GET', 'https://localhost/terminvereinbarung/api/2/status/');
-        $response = Client::request($request);
-        echo((string)$response->getBody());
+        $uri = new Uri('https://localhost/terminvereinbarung/api/2/status/');
+        $request = new Request('GET', $uri);
+        $response = Client::readResponse($request);
+        $bodyContent = (string)$response->getBody();
+        $body = Validator::value($bodyContent)->isJson();
+        $this->assertFalse($body->hasFailed());
     }
 }
