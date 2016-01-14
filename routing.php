@@ -112,6 +112,26 @@
     '\BO\Zmsadmin\Search:render')
     ->name("search");
 
+\App::$slim->get('/dayoff/',
+    '\BO\Zmsadmin\Dayoff:render')
+    ->name("dayoff");
+
+\App::$slim->get('/dayoff/:id/',
+    '\BO\Zmsadmin\DayoffEdit:render')
+    ->name("dayoffEdit");
+/*
+\App::$slim->get('/dayoff/:year/',
+    '\BO\Zmsadmin\DayoffByYear:render')
+    ->name("dayoffByYear");
+
+\App::$slim->get('/department/dayoff/',
+    '\BO\Zmsadmin\DayoffByDepartment:render')
+    ->name("dayoffByDepartment");
+
+\App::$slim->get('/department/dayoff/:year/',
+    '\BO\Zmsadmin\DayoffByDepartmentAndYear:render')
+    ->name("dayoffByDepartmentAndYear");
+*/
 \App::$slim->get('/testpage/',
     '\BO\Zmsadmin\Testpage:render')
     ->name("testpage");
