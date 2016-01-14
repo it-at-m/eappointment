@@ -131,7 +131,26 @@
                 @extend 
                     .grid__item, 
                     .seven-twelfths, 
-                    .lap--one-third, 
+                    .lap--one-whole, 
+                    .palm--one-whole;
+            }
+        }
+    }
+    &--links {
+        @extend .grid;
+        .lineup_actor {
+            &--left {
+                @extend 
+                    .grid__item, 
+                    .eight-twelfths,
+                    .lap--one-whole, 
+                    .palm--one-whole;
+            }
+            &--right {
+                @extend 
+                    .grid__item, 
+                    .four-twelfths, 
+                    .lap--one-whole, 
                     .palm--one-whole;
             }
         }
