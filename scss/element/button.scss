@@ -69,6 +69,13 @@ button.link  {
     font-size:              1rem;
 }
 
+.button-reset {
+    @extend 
+        .btn,
+        .btn--alert;
+    margin-bottom:          ($gridGutter / 2);
+    font-size:              1rem;
+}
 
 .button-file {
     background-color:       $white;

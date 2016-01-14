@@ -1,0 +1,11 @@
+.ticketprinter-status {
+    @extend 
+        .board;
+    form {
+        @extend 
+            .form--horizontal;
+        textarea.hint {
+            min-height:     10em;
+        }
+    }
+}
