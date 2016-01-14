@@ -95,7 +95,11 @@
 \App::$slim->get('/scope/:id/ticketprinter/',
     '\BO\Zmsadmin\TicketprinterStatusByScope:render')
     ->name("ticketprinterStatusByScope");
-    
+
+\App::$slim->get('/notification/',
+    '\BO\Zmsadmin\Notification:render')
+    ->name("notification");
+
 \App::$slim->get('/testpage/',
     '\BO\Zmsadmin\Testpage:render')
     ->name("testpage");
