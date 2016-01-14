@@ -86,6 +86,7 @@ $contentTopLineupBoardBodyMaxHeight:    33.7em; // (calendar,appointment,clienti
     background-color:   $grey;
     position:           relative;
     background-color:   $boardFooterBackground;
+    text-align:         center;
     > *:last-child {
         margin-bottom:  0;
     }
