@@ -56,6 +56,14 @@ hr {
     color:              $blue;
 }
 
+// Global Textcolors
+.green {
+    color:  $green;
+}
+.red {
+    color:  $red;
+}
+
 // We extend wizardrys inline-block bug fix, otherwise it does not work
 @if $use-markup-fix != true {
     .grid__item {
