@@ -1,0 +1,8 @@
+.canvas_mainbar .searchmask {
+    @extend 
+        .board;
+    form {
+        @extend 
+            .form--horizontal;
+    }
+}

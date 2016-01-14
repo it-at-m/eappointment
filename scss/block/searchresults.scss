@@ -1,0 +1,13 @@
+.searchresults {
+    @extend 
+        .board;
+    > .body {
+        @extend
+            .board_body--noPadding;
+    }
+    table {
+        @extend
+            .tabele,
+            .table--cells;
+    }
+}

@@ -103,7 +103,11 @@
 \App::$slim->get('/links/',
     '\BO\Zmsadmin\Links:render')
     ->name("links");
-    
+
+\App::$slim->get('/search/',
+    '\BO\Zmsadmin\Search:render')
+    ->name("search");
+
 \App::$slim->get('/testpage/',
     '\BO\Zmsadmin\Testpage:render')
     ->name("testpage");
