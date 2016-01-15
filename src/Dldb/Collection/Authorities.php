@@ -49,7 +49,7 @@ class Authorities extends Base
      *            only check for this serviceCsv
      * @param Bool $external
      *            allow external links, default false
-     *            
+     *
      * @return Bool
      */
     public function hasLocations()
@@ -69,7 +69,7 @@ class Authorities extends Base
      *            only check for this serviceCsv
      * @param Bool $external
      *            allow external links, default false
-     *            
+     *
      * @return Bool
      */
     public function hasAppointments($serviceCsv = null, $external = false)
@@ -85,7 +85,7 @@ class Authorities extends Base
     /**
      * Check if ea_id location exists
      *
-     * @param Int $locationId            
+     * @param Int $locationId
      *
      * @return Bool
      */
@@ -102,7 +102,7 @@ class Authorities extends Base
     /**
      * Remove a location
      *
-     * @param Int $locationId            
+     * @param Int $locationId
      *
      * @return clone self
      */
@@ -122,7 +122,7 @@ class Authorities extends Base
      *            only check for this serviceCsv
      * @param Bool $external
      *            allow external links, default false
-     *            
+     *
      * @return self
      */
     public function removeLocationsWithoutAppointments($serviceCsv = null, $external = false)
@@ -170,5 +170,20 @@ class Authorities extends Base
             $authoritylist[$key] = $authority->getLocationListByOfficePath($officepath);
         }
         return $authoritylist->removeEmptyAuthorities();
+    }
+
+    /**
+     * transform list to authorities with accociated locations
+     *
+     * @return Collection
+     */
+
+    public function toListWithAssociatedLocations($locationlist)
+    {
+        $authoritylist = $this->removeLocations();
+        foreach ($locationlist as $location) {
+            $authoritylist->addLocation($location);
+        }
+        return $authoritylist;
     }
 }
