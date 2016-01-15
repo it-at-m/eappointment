@@ -87,6 +87,50 @@ class Http
         }
         $request = new Request('GET', $uri);
         $response = $this->readResponse($request);
-        return new Result($response);
+        return new Result($response, $request);
+    }
+
+    /**
+     * Creates a POST-Http-Request and fetches the response
+     *
+     * @param String $relativeUrl
+     * @param \BO\Zmsentities\Schema\Entity $entity
+     * @param Array $getParameters (optional)
+     *
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function readPostResult($relativeUrl, \BO\Zmsentities\Schema\Entity $entity, Array $getParameters = null)
+    {
+        $uri = new Uri();
+        $uri = $uri->withPath($this->http_baseurl . $relativeUrl);
+        if (null !== $getParameters) {
+            $uri = $uri->withQuery(http_build_query($getParameters));
+        }
+        $request = new Request('POST', $uri);
+        $body = new Psr7\Stream();
+        $body->write(json_encode($entity));
+        $request = $request->withBody($body);
+        $response = $this->readResponse($request);
+        return new Result($response, $request);
+    }
+
+    /**
+     * Creates a DELETE-Http-Request and fetches the response
+     *
+     * @param String $relativeUrl
+     * @param Array $getParameters (optional)
+     *
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function readDeleteResult($relativeUrl, Array $getParameters = null)
+    {
+        $uri = new Uri();
+        $uri = $uri->withPath($this->http_baseurl . $relativeUrl);
+        if (null !== $getParameters) {
+            $uri = $uri->withQuery(http_build_query($getParameters));
+        }
+        $request = new Request('DELETE', $uri);
+        $response = $this->readResponse($request);
+        return new Result($response, $request);
     }
 }

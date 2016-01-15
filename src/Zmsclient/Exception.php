@@ -1,7 +1,58 @@
 <?php
 
-namespace \BO\Zmsentities;
+namespace BO\Zmsclient;
 
-class Exceptions extends \exception
+class Exception extends \Exception
 {
+    /**
+     * @var \Psr\Http\Message\ResponseInterface $response
+     */
+    protected $response;
+
+    /**
+     * @var \Psr\Http\Message\RequestInterface $request
+     */
+    protected $request;
+
+    /**
+     * @param String $message
+     * @param \Psr\Http\Message\ResponseInterface $response
+     * @param \Psr\Http\Message\RequestInterface $request (optional) reference for better error messages
+     * @param \Exception $previous
+     */
+    public function __construct(
+        $message = '',
+        \Psr\Http\Message\ResponseInterface $response = null,
+        \Psr\Http\Message\RequestInterface $request = null,
+        \Exception $previous = null
+    ) {
+        $this->response = $response;
+        $this->request = $request;
+        $code = null;
+        if (null !== $response) {
+            $code = $response->getStatusCode();
+        }
+        if (null !== $request) {
+            $info = $this->getRequestInfoString();
+            $message .= " $info";
+        }
+        parent::__construct($message, $code, $previous);
+    }
+
+    /**
+     * Info about request intended for error messages
+     *
+     * @return String
+     */
+    protected function getRequestInfoString()
+    {
+        $info = '';
+        if (null !== $this->request) {
+            $uri = $this->request->getRequestTarget();
+            $protocol = $this->request->getProtocolVersion();
+            $method = $this->request->getMethod();
+            $info = "($method $uri HTTP/$protocol)";
+        }
+        return $info;
+    }
 }

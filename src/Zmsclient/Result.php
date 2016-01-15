@@ -16,12 +16,24 @@ class Result
     protected $response;
 
     /**
-     * @var \BO\Zmsentities\Schema\entity $entity
+     * @var \Psr\Http\Message\RequestInterface $request
      */
-    protected $entity = null;
+    protected $request;
 
-    public function __construct(\Psr\Http\Message\ResponseInterface $response)
-    {
+    /**
+     * @var Array $data Type \BO\Zmsentities\Schema\entity
+     */
+    protected $data = null;
+
+    /**
+     * @param \Psr\Http\Message\ResponseInterface $response
+     * @param \Psr\Http\Message\RequestInterface $request (optional) reference for better error messages
+     */
+    public function __construct(
+        \Psr\Http\Message\ResponseInterface $response,
+        \Psr\Http\Message\RequestInterface $request = null
+    ) {
+        $this->request = $request;
         $this->setResponse($response);
     }
 
@@ -52,15 +64,27 @@ class Result
         $response = $this->response;
         $body = Validator::value((string)$response->getBody())->isJson();
         if ($body->hasFailed()) {
-            throw new Exception('API-Call failed, JSON parsing with error: ' . implode('; ', $body->getMessages()));
+            throw new Exception(
+                'API-Call failed, JSON parsing with error: ' . implode('; ', $body->getMessages()),
+                $response,
+                $this->request
+            );
         }
         $result = $body->getValue();
         if (!array_key_exists("meta", $result)) {
-            throw new Exception('Missing "meta" value on result, API-Call failed.');
+            throw new Exception(
+                'Missing "meta" value on result, API-Call failed.',
+                $response,
+                $this->request
+            );
         }
         $entity = Factory::create($result['meta'])->getEntity();
         if ($entity->error == true) {
-            throw new Exception('API-Error: ' . $entity->message);
+            throw new Exception(
+                'API-Error: ' . $entity->message,
+                $response,
+                $this->request
+            );
         }
     }
 
@@ -81,7 +105,16 @@ class Result
      */
     public function getEntity()
     {
-        return $this->entity;
+        return reset($this->data);
+    }
+    /**
+     * Description
+     *
+     * @return Array (\BO\Zmsentities\Schema\Entity)
+     */
+    public function getData()
+    {
+        return $this->data;
     }
 
     /**
@@ -93,7 +126,12 @@ class Result
      */
     public function setData(Array $data)
     {
-        $this->entity = Factory::create($data)->getEntity();
+        if (array_key_exists('$schema', $data)) {
+            $data = [$data];
+        }
+        foreach ($data as $entityData) {
+            $this->data[] = Factory::create($entityData)->getEntity();
+        }
         return $this;
     }
 }
