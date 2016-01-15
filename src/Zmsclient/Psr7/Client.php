@@ -14,18 +14,15 @@ class Client implements ClientInterface
 
     /**
      * @param \Psr\Http\Message\RequestInterface $request
+     * @param Array $curlopts Additional or special curl options
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public static function readResponse(\Psr\Http\Message\RequestInterface $request)
+    public static function readResponse(\Psr\Http\Message\RequestInterface $request, Array $curlopts = array())
     {
-        return self::getTransport()->request($request);
-    }
-
-    protected static function getTransport()
-    {
+        $curlopts = $curlopts + self::$curlopt;
         $transport = new Curl();
-        $transport->setOption('options', self::$curlopt);
-        return $transport;
+        $transport->setOption('options', $curlopts);
+        return $transport->request($request);
     }
 }

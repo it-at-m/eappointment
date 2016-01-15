@@ -1,7 +1,7 @@
 COMPOSER=php -d suhosin.executor.include.whitelist=phar bin/composer.phar
 
 
-.PHONY: help now dev live watch
+.PHONY: help now dev live watch coverage
 
 help: # This help
 	@echo "Possible Targets:"
@@ -15,3 +15,5 @@ dev: # init development system
 live: # init live system, delete unnecessary libs
 	$(COMPOSER) update --no-dev
 
+coverage: # create a code coverage report for testing
+	php -dzend_extension=xdebug.so vendor/bin/phpunit --coverage-html coverage/
