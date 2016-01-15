@@ -242,7 +242,7 @@ Services
                "hint" : "" // Hinweis zur Zuständigkeit des Standortes
             }
          ],
-         "authoritys" : [ // Behörden, die diese Dienstleistung anbieten
+         "authorities" : [ // Behörden, die diese Dienstleistung anbieten
             {
                 "id": "12760", // id der Behörde
                 "name": "Landesamt für Bürger- und Ordnungsangelegenheiten", // Name der Behörde
