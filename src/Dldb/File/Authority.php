@@ -26,34 +26,24 @@ class Authority extends Base
     /**
      * fetch locations for a list of service and group by authority
      *
-     * @todo optimize by fetching lists instead every single id
-     *
      * @return Collection
      */
-    public function fetchList(Array $servicelist = array())
+    public function fetchList($service_csv = false)
     {
-        if (count($servicelist)) {
-            $authoritylist = new Collection();
-            foreach ($servicelist as $service_id) {
-                $service = $this->access()
-                    ->fromService($this->locale)
-                    ->fetchId($service_id);
-                if ($service) {
-                    foreach ($service['locations'] as $locationinfo) {
-                        $location = $this->access()
-                            ->fromLocation($this->locale)
-                            ->fetchId($locationinfo['location']);
-                        if ($location && $location->isLocale($this->locale)) {
-                            $authoritylist->addLocation($location);
-                        }
-                    }
+        $authoritylist = $this->getItemList()->removeLocations();
+        $locationlist = $this->access()->fromLocation($this->locale)->fetchList($service_csv);
+        if ($service_csv) {
+            $servicelist = $this->access()
+                ->fromService($this->locale)
+                ->fetchFromCsv($service_csv);
+            $authoritylist = $authoritylist->toListWithAssociatedLocations($locationlist);
+            $authoritylist = new Collection(array_filter((array) $authoritylist, function ($item) use($servicelist) {
+                $authority = new Entity($item);
+                if ($authority->isInServiceList($servicelist)) {
+                    return $authority;
                 }
-            }
+            }));
         } else {
-            $authoritylist = $this->getItemList()->removeLocations();
-            $locationlist = $this->access()
-                ->fromLocation($this->locale)
-                ->fetchList();
             foreach ($locationlist as $location) {
                 if ($location->isLocale($this->locale)) {
                     $authoritylist->addLocation($location);

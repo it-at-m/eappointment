@@ -98,4 +98,25 @@ class Authority extends Base
         $authority['locations'] = $authority['locations']->removeLocation($locationId);
         return $authority;
     }
+
+    /**
+     * Check if Authority is part of ServiceList
+     *
+     * @param String $serviceCsv
+     *            only check for this serviceCsv
+     *
+     * @return clone self
+     */
+    public function isInServiceList($servicelist = array())
+    {
+
+        foreach ($servicelist as $service) {
+            foreach($service['authorities'] as $authority){
+                if ($authority['id'] == $this['id']) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }
