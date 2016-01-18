@@ -9,7 +9,7 @@ abstract class EntityCommonTests extends Base
     {
         $entity = new $this->entityclass();
         $example = $entity::getExample();
-        var_dump($example);
+        //var_dump($example);
         $this->assertTrue($example->isValid());
     }
 }

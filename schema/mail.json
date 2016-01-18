@@ -37,7 +37,8 @@
                 "id": 123
             },
             "status": "confirmed"
-        }
+        },
+        "subject": "Example Mail"
     },
     "required": [
         "department",
