@@ -19,7 +19,7 @@ class JsonTest extends \PHPUnit_Framework_TestCase
     public function testJson()
     {
         $value = '{"test":"value"}';
-        $valid = Validator::value($value)->isJson()->setDefault(array('Test'),'["Test"]');
+        $valid = Validator::value($value)->isJson()->setDefault(array('Test'), '["Test"]');
         $this->assertFalse(
             $valid->hasFailed(),
             "JSON '$value' should validate"
@@ -28,7 +28,7 @@ class JsonTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array('test' => 'value'), $valid->getValue());
 
         $value = "abc";
-        $valid = Validator::value($value)->isJson()->setDefault(array('Test'),'["Test"]');
+        $valid = Validator::value($value)->isJson()->setDefault(array('Test'))->setDefaultJson('["Test"]');
         $this->assertTrue(
             $valid->hasFailed(),
             "JSON '$value' should not validate"
