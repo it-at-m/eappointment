@@ -15,7 +15,8 @@
     },
     "require": {},
     "scripts": {
-        "test": "php -dzend_extension=xdebug.so vendor/bin/phpunit --coverage-html coverage/"
+        "test": "php -dzend_extension=xdebug.so vendor/bin/phpunit --coverage-html coverage/",
+        "command": "bin/configure"
     },
     "autoload": {
         "psr-4": {

@@ -12,7 +12,8 @@ namespace BO\Mellon;
   * Beware: the function getValue does not return a string, it returns an object or array
   *    The function __toString() or cast like (string)$param returns the JSON-String.
   */
-class Json extends \BO\Mellon\Valid {
+class Json extends \BO\Mellon\Valid
+{
 
     protected $originalJsonString = null;
     protected $defaultJsonString = '{}';
@@ -62,9 +63,21 @@ class Json extends \BO\Mellon\Valid {
      *
      * @return self
      */
-    public function setDefault($value, $defaultJsonString)
+    public function setDefault($value)
     {
             $this->default = $value;
+            return $this;
+    }
+
+    /**
+     * Set a default value to return if a string does not validate
+     *
+     * @param Mixed $value
+     *
+     * @return self
+     */
+    public function setDefaultJson($defaultJsonString)
+    {
             $this->defaultJsonString = $defaultJsonString;
             return $this;
     }
@@ -81,5 +94,4 @@ class Json extends \BO\Mellon\Valid {
         }
         return $this->originalJsonString;
     }
-
 }
