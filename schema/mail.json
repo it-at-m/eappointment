@@ -42,7 +42,8 @@
     "required": [
         "department",
         "multipart",
-        "process"
+        "process",
+        "subject"
     ],
     "properties": {
         "id": {
@@ -83,6 +84,10 @@
         },
         "process": {
             "$ref": "process.json"
+        },
+        "subject": {
+            "type": "string",
+            "description": "Subject part for the mail"
         }
     }
 }
