@@ -23,6 +23,7 @@ class CalendarGet extends BaseController
         $message = Response\Message::create();
         $input = Validator::input()->isJson()->getValue();
         $message->data = new \BO\Zmsentities\Calendar($input);
+        $message->data = \BO\Zmsentities\Calendar::createExample();
         Render::lastModified(time(), '0');
         Render::json($message);
     }
