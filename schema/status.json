@@ -20,6 +20,48 @@
             "type": "string",
             "description": "identifier for the responding server"
         },
+        "processes": {
+            "type": "object",
+            "properties": {
+                "blocked": {
+                    "type": "string",
+                    "description": "Number of temporary blocked appointment IDs in the database."
+                },
+                "confirmed": {
+                    "type": "string",
+                    "description": "Number of valid appointments in the database. Every process counts for the clients involved."
+                },
+                "deleted": {
+                    "type": "string",
+                    "description": "Number of deleted appointments in the database blocking free appointment times."
+                },
+                "lastInsert": {
+                    "type": "string",
+                    "description": "Timestamp of last inserted process"
+                },
+                "missed": {
+                    "type": "string",
+                    "description": "Number of missed appointments in the database. Zeroed on daily basis in the night."
+                },
+                "reserved": {
+                    "type": "string",
+                    "description": "Number of reserved appointments in the database."
+                }
+            }
+        },
+        "database": {
+            "type": "object",
+            "properties": {
+                "clusterStatus": {
+                    "type": "string",
+                    "description": "Status of database cluster health"
+                },
+                "nodeConnections": {
+                    "type": "string",
+                    "description": "Percentage of used connections on requested node."
+                }
+            }
+        },
         "version": {
             "type": "object",
             "properties": {
