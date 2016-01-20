@@ -8,6 +8,11 @@ namespace BO\Zmsdb\Connection;
 class Select
 {
     /**
+     * @var Bool $enableProfiling
+     */
+    public static $enableProfiling = false;
+
+    /**
      * @var String $readSourceName PDO connection string
      */
     public static $readSourceName = null;
@@ -43,6 +48,16 @@ class Select
     protected static $writeConnection = null;
 
     /**
+     * @var \Aura\Sql\Profiler $readProfiler for read only requests
+     */
+    protected static $readProfiler = null;
+
+    /**
+     * @var \Aura\Sql\Profiler $writeProfiler for write only requests
+     */
+    protected static $writeProfiler = null;
+
+    /**
      * Create a PDO compatible object
      * @param String $dataSourceName compatible with PDO
      * @return PdoInterface
@@ -51,6 +66,24 @@ class Select
     {
         $pdo = new Pdo($dataSourceName, self::$username, self::$password, self::$pdoOptions);
         return $pdo;
+    }
+
+    /**
+     * Enable profiling for sql queries
+     */
+    public static function disableProfilers()
+    {
+        self::$readProfiler->setActive(false);
+        self::$write->setActive(false);
+    }
+
+    /**
+     * Enable profiling for sql queries
+     */
+    public static function enableProfilers()
+    {
+        self::$readProfiler->setActive(true);
+        self::$write->setActive(true);
     }
 
     /**
@@ -71,6 +104,9 @@ class Select
     {
         if (null === self::$readConnection) {
             self::$readConnection = self::createPdoConnection(self::$readSourceName);
+            self::$readProfiler = new \Aura\Sql\Profiler();
+            self::$readProfiler->setActive(self::$enableProfiling);
+            self::$readConnection->setProfiler(self::$readProfiler);
         }
         return self::$readConnection;
     }
@@ -94,6 +130,9 @@ class Select
     {
         if (null === self::$writeConnection) {
             self::$writeConnection = self::createPdoConnection(self::$writeSourceName);
+            self::$writeProfiler = new \Aura\Sql\Profiler();
+            self::$writeProfiler->setActive(self::$enableProfiling);
+            self::$writeConnection->setProfiler(self::$writeProfiler);
         }
         return self::$writeConnection;
     }

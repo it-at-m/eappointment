@@ -19,7 +19,12 @@ class Status extends Base
         $entity['database']['nodeConnections'] = $nodeConnections;
         $entity['database']['clusterStatus'] =
             array_key_exists('wsrep_ready', $statusVariables) ? $statusVariables['wsrep_ready'] : 'OFF';
-        $entity['database']['appointmentCount'] = $this->readValidAppointmentsCount();
+        $entity['processes']['blocked'] = $this->readBlockedProcessCount();
+        $entity['processes']['confirmed'] = $this->readConfirmedProcessCount();
+        $entity['processes']['deleted'] = $this->readDeletedProcessCount();
+        $entity['processes']['lastInsert'] = $this->readLastInsertedProcessTime();
+        $entity['processes']['missed'] = $this->readMissedProcessCount();
+        $entity['processes']['reserved'] = $this->readReservedProcessCount();
         return $entity;
     }
 
@@ -27,21 +32,130 @@ class Status extends Base
      * Get the numer of valid appointments
      * @return Int
      */
-    protected function readValidAppointmentsCount()
+    protected function readBlockedProcessCount()
     {
-        $appointmentCount = $this->getReader()->fetchValue(
+        $processCount = $this->getReader()->fetchValue(
             'SELECT
                 SUM(b.AnzahlPersonen) as cnt
             FROM buerger AS b
             WHERE
-                b.StandortID != 0
+                name = "dereferenced"
                 AND (
                     b.istFolgeterminvon IS NULL
                     OR b.istFolgeterminvon = 0
                 )
             '
         );
-        return $appointmentCount;
+        return $processCount;
+    }
+
+    /**
+     * Get the numer of valid appointments
+     * @return Int
+     */
+    protected function readConfirmedProcessCount()
+    {
+        $processCount = $this->getReader()->fetchValue(
+            'SELECT
+                SUM(b.AnzahlPersonen) as cnt
+            FROM buerger AS b
+            WHERE
+                b.StandortID != 0
+                AND vorlaeufigeBuchung = 0
+                AND (
+                    b.istFolgeterminvon IS NULL
+                    OR b.istFolgeterminvon = 0
+                )
+            '
+        );
+        return $processCount;
+    }
+
+    /**
+     * Get the numer of valid appointments
+     * @return Int
+     */
+    protected function readLastInsertedProcessTime()
+    {
+        $processCount = $this->getReader()->fetchValue(
+            'SELECT
+                FROM_UNIXTIME(MAX(IPTimeStamp)) as ts
+            FROM buerger AS b
+            WHERE
+                b.StandortID != 0
+                AND vorlaeufigeBuchung = 0
+                AND (
+                    b.istFolgeterminvon IS NULL
+                    OR b.istFolgeterminvon = 0
+                )
+            '
+        );
+        return $processCount;
+    }
+
+    /**
+     * Get the numer of valid appointments
+     * @return Int
+     */
+    protected function readDeletedProcessCount()
+    {
+        $processCount = $this->getReader()->fetchValue(
+            'SELECT
+                SUM(b.AnzahlPersonen) as cnt
+            FROM buerger AS b
+            WHERE
+                name = "(abgesagt)"
+                AND (
+                    b.istFolgeterminvon IS NULL
+                    OR b.istFolgeterminvon = 0
+                )
+            '
+        );
+        return $processCount;
+    }
+
+    /**
+     * Get the numer of valid appointments
+     * @return Int
+     */
+    protected function readMissedProcessCount()
+    {
+        $processCount = $this->getReader()->fetchValue(
+            'SELECT
+                SUM(b.AnzahlPersonen) as cnt
+            FROM buerger AS b
+            WHERE
+                nicht_erschienen > 0
+                AND b.StandortID != 0
+                AND (
+                    b.istFolgeterminvon IS NULL
+                    OR b.istFolgeterminvon = 0
+                )
+            '
+        );
+        return $processCount;
+    }
+
+    /**
+     * Get the numer of valid appointments
+     * @return Int
+     */
+    protected function readReservedProcessCount()
+    {
+        $processCount = $this->getReader()->fetchValue(
+            'SELECT
+                SUM(b.AnzahlPersonen) as cnt
+            FROM buerger AS b
+            WHERE
+                b.StandortID != 0
+                AND vorlaeufigeBuchung = 1
+                AND (
+                    b.istFolgeterminvon IS NULL
+                    OR b.istFolgeterminvon = 0
+                )
+            '
+        );
+        return $processCount;
     }
 
     /**
