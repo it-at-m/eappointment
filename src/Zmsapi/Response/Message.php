@@ -35,7 +35,12 @@ class Message implements \JsonSerializable
 
     public function jsonSerialize()
     {
+        $schema = \App::$slim->request->getScheme();
+        $schema .= '://';
+        $schema .= \App::$slim->request->getHost();
+        $schema .= \App::$slim->urlFor('index');
         $message = [
+            '$schema' => $schema,
             "meta" => $this->meta,
             "data" => $this->data,
         ];
