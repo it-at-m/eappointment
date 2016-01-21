@@ -7,6 +7,7 @@
 namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
+use \BO\Zmsdb\Status as Query;
 
 /**
   * Handle requests concerning services
@@ -19,9 +20,11 @@ class StatusGet extends BaseController
      */
     public static function render()
     {
+        $status = (new Query())->readEntity();
         $message = Response\Message::create();
-        $message->data = \BO\Zmsentities\Status::createExample();
-        Render::lastModified(time(), '0');
+        $message->data = $status;
+        //throw new \Exception("Test");
+        Render::lastModified(time(), '10');
         Render::json($message);
     }
 }

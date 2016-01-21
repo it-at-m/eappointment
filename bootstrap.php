@@ -15,5 +15,14 @@ require(APP_PATH . '/config.php');
 //\BO\Slim\Bootstrap::addTwigExtension(new \BO\Dldb\TwigExtension());
 //\BO\Slim\Bootstrap::addTwigTemplateDirectory('dldb', APP_PATH . '/vendor/bo/clientdldb/templates');
 
+\BO\Zmsdb\Connection\Select::$enableProfiling = \APP::DEBUG;
+\BO\Zmsdb\Connection\Select::$readSourceName = \APP::DB_DSN_READONLY;
+\BO\Zmsdb\Connection\Select::$writeSourceName = \APP::DB_DSN_READWRITE;
+\BO\Zmsdb\Connection\Select::$username = \APP::DB_USERNAME;
+\BO\Zmsdb\Connection\Select::$password = \APP::DB_PASSWORD;
+\BO\Zmsdb\Connection\Select::$pdoOptions = [
+    \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+];
+
 // load routing
 require(\App::APP_PATH . '/routing.php');

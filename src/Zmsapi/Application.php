@@ -10,7 +10,31 @@ class Application extends \BO\Slim\Application
 {
     /**
      * Name of the application
-     *
      */
     const IDENTIFIER = 'Zmsapi';
+
+    /**
+     * @var Bool DEBUG
+     */
+    const DEBUG = false;
+
+    /**
+     * @var String DB_DSN_READONLY
+     */
+    const DB_DSN_READONLY = 'mysql:dbname=zmsbo;host=127.0.0.1';
+
+    /**
+     * @var String DB_DSN_READWRITE
+     */
+    const DB_DSN_READWRITE = 'mysql:dbname=zmsbo;host=127.0.0.1';
+
+    /**
+     * @var String DB_USERNAME
+     */
+    const DB_USERNAME = 'server';
+
+    /**
+     * @var String DB_PASSWORD
+     */
+    const DB_PASSWORD = 'internet';
 }
