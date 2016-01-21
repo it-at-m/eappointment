@@ -3,3 +3,4 @@ vendor
 config.php
 
 composer.lock
+tags

@@ -44,6 +44,12 @@ class Message implements \JsonSerializable
             "meta" => $this->meta,
             "data" => $this->data,
         ];
+        if (\App::DEBUG) {
+            $message['profiler'] = [
+                'DB_RO' => \BO\Zmsdb\Connection\Select::getReadConnection()->getProfiler()->getProfiles(),
+                'DB_RW' => \BO\Zmsdb\Connection\Select::getWriteConnection()->getProfiler()->getProfiles(),
+            ];
+        }
         return $message;
     }
 }
