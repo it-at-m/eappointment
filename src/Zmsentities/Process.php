@@ -1,9 +1,9 @@
 <?php
-
 namespace BO\Zmsentities;
 
 class Process extends Schema\Entity
 {
+
     public static $schema = "process.json";
 
     public function getRequestIds()
@@ -18,5 +18,22 @@ class Process extends Schema\Entity
     public function getRequestCSV()
     {
         return implode(',', $this->getRequestIds());
+    }
+
+    public function addDate($date)
+    {
+        $this->date = $date;
+        return $this;
+    }
+
+    public function addRequest($source, $requestList)
+    {
+        foreach (explode(',', $requestList) as $id) {
+            $request = new Request();
+            $request->source = $source;
+            $request->id = $id;
+            $this->requests[] = $request;
+        }
+        return $this;
     }
 }
