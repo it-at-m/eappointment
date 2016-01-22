@@ -21,6 +21,9 @@ class StatusGet extends BaseController
     public static function render()
     {
         $status = (new Query())->readEntity();
+        $status['version']['major'] = \App::VERSION_MAJOR;
+        $status['version']['minor'] = \App::VERSION_MINOR;
+        $status['version']['patch'] = \App::VERSION_PATCH;
         $message = Response\Message::create();
         $message->data = $status;
         //throw new \Exception("Test");
