@@ -1363,6 +1363,78 @@
 
 /**
  *  @swagger
+ *  "/provider/{source}/{id}/":
+ *      get:
+ *          description: Get an provider by id
+ *          parameters:
+ *              -   name: source
+ *                  description: provider source like 'dldb'
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: id
+ *                  description: provider number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/provider.json"
+ *              404:
+ *                  description: "provider id for source does not exists"
+ */
+\App::$slim->get('/provider/:source/:id/',
+    '\BO\Zmsapi\ProviderGet:render')
+    ->conditions([
+        'id' => '\d{1,11}',
+     ])
+    ->name("ProviderGet");
+
+/**
+ *  @swagger
+ *  "/request/{source}/{id}/":
+ *      get:
+ *          description: Get an request by id
+ *          parameters:
+ *              -   name: source
+ *                  description: request source like 'dldb'
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: id
+ *                  description: request number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/request.json"
+ *              404:
+ *                  description: "request id for source does not exists"
+ */
+\App::$slim->get('/request/:source/:id/',
+    '\BO\Zmsapi\RequestGet:render')
+    ->conditions([
+        'id' => '\d{1,11}',
+     ])
+    ->name("RequestGet");
+
+/**
+ *  @swagger
  *  "/scope/":
  *      get:
  *          description: Get a list of scopes
