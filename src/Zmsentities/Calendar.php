@@ -27,4 +27,13 @@ class Calendar extends Schema\Entity
         }
         return $this;
     }
+
+    public function getScopeList()
+    {
+        $list = array();
+        foreach($this->scopes as $scope){
+            $list[] = $scope['id'];
+        }
+        return $list;
+    }
 }
