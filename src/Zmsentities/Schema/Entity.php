@@ -89,4 +89,9 @@ class Entity extends \ArrayObject implements \JsonSerializable
         $schema = array('$schema' => 'https://schema.berlin.de/queuemanagement/' . $entity . '.json');
         return array_merge($schema, $serialize);
     }
+
+    public function __toString()
+    {
+        return json_encode($this->jsonSerialize(), JSON_HEX_QUOT);
+    }
 }
