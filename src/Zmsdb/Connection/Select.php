@@ -65,6 +65,7 @@ class Select
     protected static function createPdoConnection($dataSourceName)
     {
         $pdo = new Pdo($dataSourceName, self::$username, self::$password, self::$pdoOptions);
+        $pdo->exec('SET NAMES "UTF8";');
         return $pdo;
     }
 
