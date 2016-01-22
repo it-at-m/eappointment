@@ -3,6 +3,7 @@
     "description": "reference to a service",
     "example": {
         "id": "123456",
+        "link": "http://service.berlin.de/dienstleistung/120335/",
         "name": "Abmeldung einer Wohnung",
         "source": "dldb"
     },
@@ -15,6 +16,10 @@
         "id": {
             "type": "string",
             "description": "reference to a service"
+        },
+        "link": {
+            "type": "string",
+            "description": "URI with detailed information for the request"
         },
         "name": {
             "type": "string",

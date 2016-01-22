@@ -1,6 +1,23 @@
 {
     "type": "object",
     "description": "reference to a service provider with a mapping in a standard contact schema",
+    "example": {
+        "contact": {
+            "city": "Schönefeld",
+            "country": "Germany",
+            "lat": 52.345,
+            "lon": 13.456,
+            "name": "Flughafen Schönefeld, Landebahn",
+            "postalCode": "15831",
+            "region": "Brandenburg",
+            "street": "Zaunstraße",
+            "streetNumber": "1"
+        },
+        "id": 21334,
+        "name": "Bürgeramt Mitte",
+        "source": "dldb",
+        "link": "https://service.berlin.de/standort/122280/"
+    },
     "properties": {
         "contact": {
             "$ref": "contact.json"
@@ -8,6 +25,10 @@
         "id": {
             "type": "string",
             "description": "reference to an id"
+        },
+        "link": {
+            "type": "string",
+            "description": "URI with detailed information for the provider"
         },
         "name": {
             "type": "string",
