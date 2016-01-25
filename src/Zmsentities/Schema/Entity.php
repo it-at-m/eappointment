@@ -27,6 +27,11 @@ class Entity extends \ArrayObject implements \JsonSerializable
         parent::__construct($input, $flags, $iterator_class);
     }
 
+    public function exchangeArray($input)
+    {
+        parent::exchangeArray($this->getUnflattenedArray($input));
+    }
+
     /**
       * split fields
       * If a key to a field has two underscores "__" it should go into a subarray

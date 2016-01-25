@@ -31,7 +31,7 @@ class Calendar extends Schema\Entity
     public function getScopeList()
     {
         $list = array();
-        foreach($this->scopes as $scope){
+        foreach ($this->scopes as $scope) {
             $list[] = $scope['id'];
         }
         return $list;
