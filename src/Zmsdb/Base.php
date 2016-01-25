@@ -45,4 +45,26 @@ abstract class Base
     {
         return $this->readDb;
     }
+
+    public function fetchOne(Query\Base $query, \BO\Zmsentities\Schema\Entity $entity)
+    {
+        $query->addLimit(1);
+        $data = $this->getReader()->fetchOne($query->getSql(), $query->getParameters());
+        if ($data) {
+            $entity->exchangeArray($data);
+        }
+        return $entity;
+    }
+
+    public function fetchList(Query\Base $query, \BO\Zmsentities\Schema\Entity $entity)
+    {
+        $resultList = [];
+        $dataList = $this->getReader()->fetchAll($query->getSql(), $query->getParameters());
+        foreach ($dataList as $data) {
+            $dataEntity = clone $entity;
+            $dataEntity->exchangeArray($data);
+            $resultList[] = $dataEntity;
+        }
+        return $resultList;
+    }
 }
