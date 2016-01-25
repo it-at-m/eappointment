@@ -10,7 +10,7 @@ class RequestTest extends Base
     {
         $entity = (new Query())->readEntity('dldb', 120335);
         //var_dump(json_encode($entity, JSON_PRETTY_PRINT));
-        $this->assertInstanceOf("\\BO\\Zmsentities\\Request", $entity);
+        $this->assertEntity("\\BO\\Zmsentities\\Request", $entity);
         //var_dump(\BO\Zmsdb\Connection\Select::getReadConnection()->getProfiler()->getProfiles());
     }
 }
