@@ -96,8 +96,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
      */
     public static function createExample()
     {
-        $class = get_called_class();
-        $object = new $class();
+        $object = new static();
         return $object->getExample();
     }
 
