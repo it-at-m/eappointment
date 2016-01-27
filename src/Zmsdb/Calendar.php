@@ -103,9 +103,9 @@ class Calendar extends Base
                 AND o.Startdatum <= :end_availability
                 AND o.Anzahlterminarbeitsplaetze != 0
             GROUP BY o.OeffnungszeitID, b.Datum, `slotnr`
-            HAVING
+            -- HAVING
                 -- reduce results cause processing them costs time
-                freeAppointments__intern != 0
+                -- freeAppointments__intern != 0
         ';
         $monthList = $calendar->getMonthList();
         $statement = $this->getReader()->prepare($query);
