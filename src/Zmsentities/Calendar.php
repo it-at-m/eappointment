@@ -14,6 +14,7 @@ class Calendar extends Schema\Entity
             'clusters' => [],
             'providers' => [],
             'scopes' => [],
+            'requests' => [],
         ];
     }
 
@@ -83,8 +84,15 @@ class Calendar extends Schema\Entity
         return $monthList;
     }
 
+
+    protected $dayIndex = [];
+
     public function getDay($year, $month, $dayNumber)
     {
+        $indexKey = "$year.$month.$dayNumber";
+        if (array_key_exists($indexKey, $this->dayIndex)) {
+            return $this->dayIndex[$indexKey];
+        }
         foreach ($this['days'] as $key => $day) {
             if ($day['year'] == $year && $day['month'] == $month && $day['day'] == $dayNumber) {
                 if (!($day instanceof Day)) {
@@ -100,6 +108,7 @@ class Calendar extends Schema\Entity
             'day' => $dayNumber,
         ]);
         $this['days'][] = $day;
+        $this->dayIndex[$indexKey] = $day;
         return $day;
     }
 }
