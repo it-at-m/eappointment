@@ -24,6 +24,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
     {
         $this->jsonSchema = self::readJsonSchema();
         $input = $this->getUnflattenedArray($input);
+        $input = array_merge($this->getDefaults(), $input);
         parent::__construct($input, $flags, $iterator_class);
     }
 
@@ -33,9 +34,17 @@ class Entity extends \ArrayObject implements \JsonSerializable
     }
 
     /**
+     * Set Default values
+     */
+    public function getDefaults()
+    {
+        return [];
+    }
+
+    /**
       * split fields
       * If a key to a field has two underscores "__" it should go into a subarray
-      *
+      * ATTENTION: performance critical function, keep highly optimized!
       * @param  array $hash
       *
       * @return array
