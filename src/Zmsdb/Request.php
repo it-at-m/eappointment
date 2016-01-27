@@ -17,4 +17,20 @@ class Request extends Base
             ->addConditionRequestId($requestId);
         return $this->fetchOne($query, new Entity());
     }
+
+    public function readSlotsOnEntity(\BO\Zmsentities\Request $entity)
+    {
+        $query = 'SELECT
+                x.`dienstleister` AS provider__id,
+                x.`slots`
+            FROM `startinfo`.`xdienst` x
+                LEFT JOIN `startinfo`.`dienstleister` d ON x.dienstleister = d.id
+            WHERE
+                x.`dienstleistung` = :request_id
+                AND x.`termin_hide` = 0
+                AND d.`zms_termin` = 1
+        ';
+        $providerSlots = $this->getReader()->fetchAll($query, ['request_id' => $entity->id]);
+        return $providerSlots;
+    }
 }
