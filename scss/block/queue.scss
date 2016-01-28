@@ -4,19 +4,11 @@ $queueMissedColor:              $red !default;
 
 .queue {
     @extend 
-    .board;
-         > .header {
+        .board,
+        .board--noBodyPadding;
+    > .header {
         .title {
             margin-right:           0.7em;
-        }
-        .right {
-            .btn {
-                margin-right:       0;
-                margin-left:        0.5em;
-            }
-            .form-group {
-                margin:       0 2em;
-            }
         }
     }
     table {
@@ -66,7 +58,6 @@ $queueMissedColor:              $red !default;
                     }
                     */
                 }
-                
             }     
         }
         tr.future {
@@ -92,5 +83,4 @@ $queueMissedColor:              $red !default;
             margin-bottom:          0;
         }
     }
-   
 }
