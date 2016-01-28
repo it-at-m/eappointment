@@ -1,6 +1,7 @@
 .scope-edit {
+    @extend 
+        .board;
     form {
         @extend .form--horizontal;
-        @extend .board;
     }
 }

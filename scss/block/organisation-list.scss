@@ -1,0 +1,13 @@
+.organisation-list {
+    padding-left:           0;
+    .organisation-list_item {
+        @extend 
+            .board;
+        list-style:         none;
+        margin-bottom:      2em;
+    }
+    .organisation-list_title {
+        @extend 
+            .board_header__title;
+    }
+}

@@ -1,3 +1,5 @@
+/* TODO */ 
+
 .owner { 
 }
 
@@ -9,15 +11,29 @@
     }
 }
 
-.organisation-list {
+.owner-list__ {
     padding-left:           0;
-    .organisation-list_item {
+    .owner-list_item {
         @extend 
             .board;
         list-style:         none;
         margin-bottom:      2em;
     }
-    .organisation-list_title {
+    .owner-list_title {
+        @extend 
+            .board_header__title;
+    }
+}
+
+.department-list__ {
+    padding-left:           0;
+    .department-list_item {
+        @extend 
+            .board;
+        list-style:         none;
+        margin-bottom:      2em;
+    }
+    .department-list_title {
         @extend 
             .board_header__title;
     }
