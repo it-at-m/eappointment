@@ -4,5 +4,16 @@
     form {
         @extend 
             .form--horizontal;
+        .form-group {
+            margin-bottom:  0;
+        }
+    }
+}
+
+.canvas_sidebar .searchmask {
+    form {
+        .form-group {
+            margin-bottom:  0;
+        }
     }
 }
