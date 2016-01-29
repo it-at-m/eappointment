@@ -28,7 +28,7 @@ class Http
     protected $http_baseurl = null;
 
     /**
-     * @var PSR7\Uri $uri
+     * @var Psr7\Uri $uri
      */
     protected $uri = null;
 
@@ -39,7 +39,7 @@ class Http
     public function __construct($baseUrl, Psr7\ClientInterface $client = null)
     {
         $this->http_baseurl = parse_url($baseUrl, PHP_URL_PATH);
-        $this->uri = new PSR7\Uri();
+        $this->uri = new Psr7\Uri();
         $this->uri = $this->uri->withScheme(parse_url($baseUrl, PHP_URL_SCHEME));
         $this->uri = $this->uri->withHost(parse_url($baseUrl, PHP_URL_HOST));
         $port = parse_url($baseUrl, PHP_URL_PORT);
@@ -95,7 +95,7 @@ class Http
         if (null !== $getParameters) {
             $uri = $uri->withQuery(http_build_query($getParameters));
         }
-        $request = new PSR7\Request('GET', $uri);
+        $request = new Psr7\Request('GET', $uri);
         $response = $this->readResponse($request);
         return new Result($response, $request);
     }
@@ -115,7 +115,7 @@ class Http
         if (null !== $getParameters) {
             $uri = $uri->withQuery(http_build_query($getParameters));
         }
-        $request = new PSR7\Request('POST', $uri);
+        $request = new Psr7\Request('POST', $uri);
         $body = new Psr7\Stream();
         $body->write(json_encode($entity));
         $request = $request->withBody($body);
@@ -137,7 +137,7 @@ class Http
         if (null !== $getParameters) {
             $uri = $uri->withQuery(http_build_query($getParameters));
         }
-        $request = new PSR7\Request('DELETE', $uri);
+        $request = new Psr7\Request('DELETE', $uri);
         $response = $this->readResponse($request);
         return new Result($response, $request);
     }
