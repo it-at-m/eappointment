@@ -2,9 +2,6 @@
 
 namespace BO\Zmsclient;
 
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Uri;
-
 /**
  * Access api method_exists
  */
@@ -31,12 +28,26 @@ class Http
     protected $http_baseurl = null;
 
     /**
+     * @var PSR7\Uri $uri
+     */
+    protected $uri = null;
+
+    /**
      *
      * @param Psr7\ClientInterface $client
      */
     public function __construct($baseUrl, Psr7\ClientInterface $client = null)
     {
-        $this->http_baseurl = $baseUrl;
+        $this->http_baseurl = parse_url($baseUrl, PHP_URL_PATH);
+        $this->uri = new PSR7\Uri();
+        $this->uri = $this->uri->withScheme(parse_url($baseUrl, PHP_URL_SCHEME));
+        $this->uri = $this->uri->withHost(parse_url($baseUrl, PHP_URL_HOST));
+        $port = parse_url($baseUrl, PHP_URL_PORT);
+        if (!$port) {
+            $this->uri = $this->uri->withPort($this->uri->getScheme() == 'https' ? 443 : 80);
+        } else {
+            $this->uri = $this->uri->withPort($port);
+        }
         if (null === $client) {
             $client = new Psr7\Client();
         }
@@ -80,12 +91,11 @@ class Http
      */
     public function readGetResult($relativeUrl, Array $getParameters = null)
     {
-        $uri = new Uri();
-        $uri = $uri->withPath($this->http_baseurl . $relativeUrl);
+        $uri = $this->uri->withPath($this->http_baseurl . $relativeUrl);
         if (null !== $getParameters) {
             $uri = $uri->withQuery(http_build_query($getParameters));
         }
-        $request = new Request('GET', $uri);
+        $request = new PSR7\Request('GET', $uri);
         $response = $this->readResponse($request);
         return new Result($response, $request);
     }
@@ -101,12 +111,11 @@ class Http
      */
     public function readPostResult($relativeUrl, \BO\Zmsentities\Schema\Entity $entity, Array $getParameters = null)
     {
-        $uri = new Uri();
-        $uri = $uri->withPath($this->http_baseurl . $relativeUrl);
+        $uri = $this->uri->withPath($this->http_baseurl . $relativeUrl);
         if (null !== $getParameters) {
             $uri = $uri->withQuery(http_build_query($getParameters));
         }
-        $request = new Request('POST', $uri);
+        $request = new PSR7\Request('POST', $uri);
         $body = new Psr7\Stream();
         $body->write(json_encode($entity));
         $request = $request->withBody($body);
@@ -124,12 +133,11 @@ class Http
      */
     public function readDeleteResult($relativeUrl, Array $getParameters = null)
     {
-        $uri = new Uri();
-        $uri = $uri->withPath($this->http_baseurl . $relativeUrl);
+        $uri = $this->uri->withPath($this->http_baseurl . $relativeUrl);
         if (null !== $getParameters) {
             $uri = $uri->withQuery(http_build_query($getParameters));
         }
-        $request = new Request('DELETE', $uri);
+        $request = new PSR7\Request('DELETE', $uri);
         $response = $this->readResponse($request);
         return new Result($response, $request);
     }
