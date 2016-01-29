@@ -14,10 +14,15 @@ class Calendar extends Schema\Entity
             'clusters' => [],
             'providers' => [],
             'scopes' => [],
-            'requests' => [],
+            'requests' => []
         ];
     }
 
+    /**
+     * Returns calendar with added Providers
+     *
+     * @return $this
+     */
     public function addProvider($source, $idList)
     {
         foreach (explode(',', $idList) as $id) {
@@ -29,6 +34,11 @@ class Calendar extends Schema\Entity
         return $this;
     }
 
+    /**
+     * Returns calendar with added requests
+     *
+     * @return $this
+     */
     public function addRequest($source, $requestList)
     {
         foreach (explode(',', $requestList) as $id) {
@@ -40,6 +50,23 @@ class Calendar extends Schema\Entity
         return $this;
     }
 
+    /**
+     * Returns calendar with first and last day
+     *
+     * @return $this
+     */
+    public function addFirstAndLastDay($firstDay, $lastDay)
+    {
+        $this->firstDay = $firstDay;
+        $this->lastDay = $lastDay;
+        return $this;
+    }
+
+    /**
+     * Returns a list of associated scope ids
+     *
+     * @return array
+     */
     public function getScopeList()
     {
         $list = array();
@@ -49,6 +76,11 @@ class Calendar extends Schema\Entity
         return $list;
     }
 
+    /**
+     * Returns a list of associated provider ids
+     *
+     * @return array
+     */
     public function getProviderIdList()
     {
         $list = array();
@@ -61,6 +93,7 @@ class Calendar extends Schema\Entity
     /**
      * Returns a list of contained month given by firstDay and lastDay
      * The return value is a DateTime object for the first day of the month
+     *
      * @return [\DateTime]
      */
     public function getMonthList()
@@ -84,18 +117,16 @@ class Calendar extends Schema\Entity
         return $monthList;
     }
 
-
-    protected $dayIndex = [];
-
+    /**
+     * Returns a day by given year, month and daynumber
+     *
+     * @return \ArrayObject
+     */
     public function getDay($year, $month, $dayNumber)
     {
-        $indexKey = "$year.$month.$dayNumber";
-        if (array_key_exists($indexKey, $this->dayIndex)) {
-            return $this->dayIndex[$indexKey];
-        }
         foreach ($this['days'] as $key => $day) {
             if ($day['year'] == $year && $day['month'] == $month && $day['day'] == $dayNumber) {
-                if (!($day instanceof Day)) {
+                if (! ($day instanceof Day)) {
                     $day = new Day($day);
                     $this['days'][$key] = $day;
                 }
@@ -105,10 +136,9 @@ class Calendar extends Schema\Entity
         $day = new Day([
             'year' => $year,
             'month' => $month,
-            'day' => $dayNumber,
+            'day' => $dayNumber
         ]);
         $this['days'][] = $day;
-        $this->dayIndex[$indexKey] = $day;
         return $day;
     }
 }
