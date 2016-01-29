@@ -8,6 +8,7 @@ namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
+use \BO\Zmsdb\Calendar as Query;
 
 /**
   * Handle requests concerning services
@@ -22,8 +23,9 @@ class CalendarGet extends BaseController
     {
         $message = Response\Message::create();
         $input = Validator::input()->isJson()->getValue();
-        $message->data = new \BO\Zmsentities\Calendar($input);
-        $message->data = \BO\Zmsentities\Calendar::createExample();
+        $query = new Query();
+        $calendar = new \BO\Zmsentities\Calendar($input);
+        $message->data = $query->readResolvedEntity($calendar);
         Render::lastModified(time(), '0');
         Render::json($message);
     }
