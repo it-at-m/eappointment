@@ -116,8 +116,11 @@ select > option {
 .form-group {
     margin-bottom:          $gridGutter;
     max-width:              $elementMaxWidth;
-    label, 
-    .label {
+    > .controls {
+        label, 
+        .label {
+            font-weight:    normal;
+        }
     }
     .group_control {
     }
