@@ -24,6 +24,7 @@ class Render
     {
         \App::$slim->response->setStatus($status);
         \App::$slim->response->headers->set('Content-Type', 'text/html; charset=utf-8');
+        \App::$slim->response->headers->set('Cache-Control', 'max-age=0');
         \App::$slim->render($template, $parameters);
     }
 
