@@ -25,7 +25,6 @@ class Bootstrap
         mb_internal_encoding($charset);
 
         $language = self::getLanguage();
-        putenv('LC_ALL='. $language);
         setlocale(LC_ALL, \App::$lcTimes[$language]);
 
         // Specify the location of the translation tables
@@ -57,7 +56,6 @@ class Bootstrap
             'view' => new \Slim\Views\Twig(),
             'templates.path' => \App::APP_PATH  . \App::TEMPLATE_PATH
         ));
-
         // configure slim views with twig
         \App::$slim->view()->parserOptions = array (
             'debug' => \App::SLIM_DEBUG,
