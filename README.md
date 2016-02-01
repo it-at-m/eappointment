@@ -246,9 +246,13 @@ Services
             {
                 "id": "12760", // id der Behörde
                 "name": "Landesamt für Bürger- und Ordnungsangelegenheiten", // Name der Behörde
-                "webinfo": "http://www.berlin.de/labo/" // Url zur Behördenseite
+                "webinfo": "http://www.berlin.de/labo/", // Url zur Behördenseite
+                "appointment_link": "" // Link zum Buchen eines Termins in der Behörde, leer falls nicht möglich (not implemented yet)
             }
          ],
+         "appointment" : {
+            "link": "http://service.berlin.de/dienstleistung/12345/terminall/" // Link für berlinweites Termin-Buchen, leer falls nicht möglich
+         },
          "fees" : "gebührenfrei", // Gebühren zur Erbringung der Dienstleistung
          "onlineprocessing" : { // Falls ein Onlineverfahren für die Dienstleistung existiert
             "description" : "",
