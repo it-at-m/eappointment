@@ -29,7 +29,7 @@ class Bootstrap
 
         // Specify the location of the translation tables
         bindtextdomain('dldb-'.$language, \App::APP_PATH. '/locale');
-        bind_textdomain_codeset('dldb-'.$language, 'UTF-8');
+        bind_textdomain_codeset('dldb-'.$language, $charset);
 
         // Choose domain
         textdomain('dldb-'.$language);
