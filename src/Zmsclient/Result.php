@@ -65,7 +65,8 @@ class Result
         $body = Validator::value((string)$response->getBody())->isJson();
         if ($body->hasFailed()) {
             throw new Exception(
-                'API-Call failed, JSON parsing with error: ' . implode('; ', $body->getMessages()),
+                'API-Call failed, JSON parsing with error: ' . implode('; ', $body->getMessages())
+                    . ' - Snippet: ' .substr((string)$response->getBody(), 0, 255) . '...',
                 $response,
                 $this->request
             );
