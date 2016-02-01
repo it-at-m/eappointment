@@ -43,9 +43,7 @@ class Http
         $this->uri = $this->uri->withScheme(parse_url($baseUrl, PHP_URL_SCHEME));
         $this->uri = $this->uri->withHost(parse_url($baseUrl, PHP_URL_HOST));
         $port = parse_url($baseUrl, PHP_URL_PORT);
-        if (!$port) {
-            $this->uri = $this->uri->withPort($this->uri->getScheme() == 'https' ? 443 : 80);
-        } else {
+        if ($port) {
             $this->uri = $this->uri->withPort($port);
         }
         if (null === $client) {
