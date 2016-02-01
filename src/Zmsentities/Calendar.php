@@ -81,7 +81,7 @@ class Calendar extends Schema\Entity
      *
      * @return array
      */
-    public function getProviderIdList()
+    public function getProviderList()
     {
         $list = array();
         foreach ($this->providers as $provider) {
