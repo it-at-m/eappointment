@@ -22,8 +22,8 @@ class Render
      */
     public static function html($template, $parameters = array(), $status = 200)
     {
-        \App::$slim->response->setStatus($status);
-        \App::$slim->response->headers->set('Content-Type', 'text/html; charset=utf-8');
+        \App::$slim->response->setStatus(200);
+        \App::$slim->response->headers->set('Content-Type', 'text/html;charset=utf-8');
         \App::$slim->response->headers->set('Cache-Control', 'max-age=0');
         \App::$slim->render($template, $parameters);
     }
