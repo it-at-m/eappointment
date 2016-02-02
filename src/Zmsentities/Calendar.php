@@ -141,4 +141,9 @@ class Calendar extends Schema\Entity
         $this['days'][] = $day;
         return $day;
     }
+
+    public function getDayByDateTime(\DateTimeInterface $datetime)
+    {
+        return $this->getDay($datetime->format('Y'), $datetime->format('m'), $datetime->format('d'));
+    }
 }
