@@ -121,14 +121,12 @@ select > option {
         .label {
             font-weight:    normal;
         }
+        .append + .prepend {
+            margin-left:    1em;
+        }
     }
     .group_control {
     }
-    /*
-    __span + input {
-        margin-left:        1em;
-    }
-    */
 }
 
 .add-date-picker {
@@ -267,7 +265,7 @@ select > option {
             .label {
                 @extend 
                     .palm--one-whole;
-                display: inline-block;
+                /*display: inline-block;*/
                 font-weight:    normal;
                 font-size:      1em;
                 margin-top:     0;
