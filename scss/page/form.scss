@@ -120,6 +120,7 @@ select > option {
         label, 
         .label {
             font-weight:    normal;
+            display:        table;
         }
         .append + .prepend {
             margin-left:    1em;
@@ -191,7 +192,7 @@ select > option {
 
 .checkbox-inline, 
 .radio-inline {
-    display:                    inline-block;
+    display:                    inline-block !important;
     margin-bottom:              0;
     position:                   relative;
     vertical-align:             middle;
@@ -270,13 +271,6 @@ select > option {
                 font-size:      1em;
                 margin-top:     0;
             }
-            // Set some space to inline elements
-            /*
-            __input + label,
-            __input + span {
-                margin-left:    0.25em;
-            }
-            */
             p {
                 margin-bottom:  0;
             }
@@ -301,7 +295,13 @@ select > option {
     label,
     .label {
         min-height:         0;
-        margin-top:         0.3em;
+        /*margin-top:         0.3em;*/
+    }
+    .form-actions {
+        position:   relative;
+        @extend 
+            .#{$controlGrid},
+            .push--desk--#{$labelGrid};
     }
 }
 .form--horizontal {
