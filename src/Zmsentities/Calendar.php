@@ -57,8 +57,10 @@ class Calendar extends Schema\Entity
      */
     public function addFirstAndLastDay($firstDay, $lastDay)
     {
-        $this->firstDay = $firstDay;
-        $this->lastDay = $lastDay;
+        $firstDay = $this->getDayByDateTime(new \DateTime($firstDay));
+        $lastDay = $this->getDayByDateTime(new \DateTime($lastDay));
+        $this->firstDay = array('year' => $firstDay->year, 'month' => $firstDay->month, 'day' => $firstDay->day);
+        $this->lastDay = array('year' => $lastDay->year, 'month' => $lastDay->month, 'day' => $lastDay->day);
         return $this;
     }
 
@@ -145,5 +147,20 @@ class Calendar extends Schema\Entity
     public function getDayByDateTime(\DateTimeInterface $datetime)
     {
         return $this->getDay($datetime->format('Y'), $datetime->format('m'), $datetime->format('d'));
+    }
+
+    /**
+     * Check if given day exists in calendar
+     *
+     * @return bool
+     */
+    public function hasDay($year, $month, $dayNumber)
+    {
+        foreach ($this['days'] as $key => $day) {
+            if ($day['year'] == $year && $day['month'] == $month && $day['day'] == $dayNumber) {
+                return true;
+            }
+        }
+        return false;
     }
 }
