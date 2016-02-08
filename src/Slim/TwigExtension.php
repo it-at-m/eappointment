@@ -29,9 +29,23 @@ class TwigExtension extends \Slim\Views\TwigExtension
             new \Twig_SimpleFunction('includeUrl', array($this, 'includeUrl')),
             new \Twig_SimpleFunction('currentLang', array($this, 'currentLang')),
             new \Twig_SimpleFunction('currentRoute', array($this, 'currentRoute')),
+            new \Twig_SimpleFunction('formatDateTime', array($this, 'formatDateTime')),
         );
     }
-    
+
+    public function formatDateTime($date)
+    {
+        $datetime = date_create($date->year .'-'. $date->month .'-'. $date->day);
+        $formatDate['date']     = $datetime->format('%a, %d. %B %Y');
+        $formatDate['fulldate'] = $datetime->format('%A, den %d. %B %Y');
+        $formatDate['time']     = $datetime->format('%H:%M Uhr');
+        $formatDate['ym']       = $datetime->format('Y-m');
+        $formatDate['ymd']       = $datetime->format('Y-m-d');
+        $formatDate['ts']       = $datetime->getTimestamp();
+
+        return $formatDate;
+    }
+
     public function currentRoute($lang = null)
     {
         $routeInstance = \App::$slim->router()->getCurrentRoute();
