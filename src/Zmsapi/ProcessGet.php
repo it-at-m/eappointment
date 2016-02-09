@@ -7,6 +7,7 @@
 namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
+use \BO\Zmsdb\Process as Query;
 
 /**
   * Handle requests concerning services
@@ -19,10 +20,10 @@ class ProcessGet extends BaseController
      */
     public static function render($itemId, $authKey)
     {
+
+        $process = (new Query())->readEntity($itemId, $authKey);
         $message = Response\Message::create();
-        $message->data = \BO\Zmsentities\Process::createExample();
-        $message->data->id = $itemId;
-        $message->data->authKey = $authKey;
+        $message->data = $process;
         Render::lastModified(time(), '0');
         Render::json($message);
     }
