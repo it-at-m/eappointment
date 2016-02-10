@@ -13,10 +13,4 @@ class ProcessTest extends Base
         $this->assertEntity("\\BO\\Zmsentities\\Process", $entity);
         //var_dump(\BO\Zmsdb\Connection\Select::getReadConnection()->getProfiler()->getProfiles());
     }
-
-    public function testProcessFree()
-    {
-        $entity = (new Query())->readEntity(1049, 'f3b3');
-        $this->assertEntity("\\BO\\Zmsentities\\Process", $entity);
-    }
 }
