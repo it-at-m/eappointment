@@ -44,6 +44,7 @@ class Bootstrap
             \Monolog\Handler\ErrorLogHandler::OPERATING_SYSTEM,
             $level
         ));
+        \App::$log->pushHandler(new \Monolog\Handler\StreamHandler(\App::APP_PATH ."/logs/zmsappointment.log"));
     }
 
     public static function configureSlim()
