@@ -52,4 +52,20 @@ class Application extends \BO\Slim\Application
      * @var String DB_PASSWORD
      */
     const DB_PASSWORD = 'internet';
+
+    /**
+     * language preferences
+     */
+
+    public static $locale = 'de';
+
+    public static $supportedLanguages = array(
+        'de' => 'Deutsch',
+        'en' => 'English'
+    );
+
+    public static $lcTimes = array(
+        'de' => 'de_DE.UTF-8',
+        'en' => 'en_GB.UTF-8'
+    );
 }

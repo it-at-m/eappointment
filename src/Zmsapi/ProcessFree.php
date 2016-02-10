@@ -3,19 +3,20 @@
  * @package 115Mandant
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
-
 namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\Process as Query;
+
 /**
-  * Handle requests concerning services
-  *
-  */
+ * Handle requests concerning services
+ */
 class ProcessFree extends BaseController
 {
+
     /**
+     *
      * @return String
      */
     public static function render()
