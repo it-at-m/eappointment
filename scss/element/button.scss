@@ -67,6 +67,10 @@ button.link  {
         .btn--alert;
     margin-bottom:          ($gridGutter / 2);
     font-size:              1rem;
+    &::before {
+        content: "⊍";
+        margin-right: 0.5em;
+    }
 }
 
 .button-reset {
