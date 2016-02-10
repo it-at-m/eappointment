@@ -14,8 +14,8 @@ class Process extends Base implements MappingInterface
         return [
             'amendment' => 'process.Anmerkung',
             'id' => 'process.BuergerID',
-            'appointment__date' => 'process.Datum',
-            'appointment__scope_id' => 'process.StandortID',
+            'appointment__date' => self::expression('unix_timestamp(CONCAT(`process`.`Datum`, " ", `process`.`Uhrzeit`))'),
+            'appointment__scope__id' => 'process.StandortID',
             'appointment__slotCount' => 'process.hatFolgetermine',
             'authKey' => 'process.absagecode',
             'client__email' => 'process.EMail',
@@ -32,8 +32,7 @@ class Process extends Base implements MappingInterface
             'queue__number' => 'process.wartenummer',
             'queue__waitingTime' => 'process.wartezeit',
             'queue__reminderTimestamp' => 'process.Erinnerungszeitpunkt',
-            'workstation__id' => 'process.NutzerID',
-
+            'workstation__id' => 'process.NutzerID'
         ];
     }
 
