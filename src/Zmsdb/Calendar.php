@@ -1,5 +1,4 @@
 <?php
-
 namespace BO\Zmsdb;
 
 use \BO\Zmsentities\Calendar as Entity;
@@ -8,7 +7,7 @@ use \BO\Zmsdb\Query\SlotList;
 class Calendar extends Base
 {
 
-    public function readResolvedEntity(\BO\Zmsentities\Calendar $calendar)
+    public function readResolvedEntity(Entity $calendar)
     {
         $calendar['processing'] = [];
         $calendar['processing']['slotlist'] = new SlotList();
@@ -20,17 +19,17 @@ class Calendar extends Base
         return $calendar;
     }
 
-    protected function readResolvedRequests(\BO\Zmsentities\Calendar $calendar)
+    protected function readResolvedRequests(Entity $calendar)
     {
         $requestReader = new Request($this->getWriter(), $this->getReader());
-        if (!isset($calendar['processing']['slotinfo'])) {
+        if (! isset($calendar['processing']['slotinfo'])) {
             $calendar['processing']['slotinfo'] = [];
         }
         foreach ($calendar['requests'] as $key => $request) {
             $request = $requestReader->readEntity('dldb', $request['id']);
             $calendar['requests'][$key] = $request;
             foreach ($requestReader->readSlotsOnEntity($request) as $slotinfo) {
-                if (!isset($calendar['processing']['slotinfo'][$slotinfo['provider__id']])) {
+                if (! isset($calendar['processing']['slotinfo'][$slotinfo['provider__id']])) {
                     $calendar['processing']['slotinfo'][$slotinfo['provider__id']] = 0;
                 }
                 $calendar['processing']['slotinfo'][$slotinfo['provider__id']] += $slotinfo['slots'];
@@ -39,7 +38,7 @@ class Calendar extends Base
         return $calendar;
     }
 
-    protected function readResolvedClusters(\BO\Zmsentities\Calendar $calendar)
+    protected function readResolvedClusters(Entity $calendar)
     {
         $scopeReader = new Scope($this->getWriter(), $this->getReader());
         foreach ($calendar['clusters'] as $cluster) {
@@ -51,7 +50,7 @@ class Calendar extends Base
         return $calendar;
     }
 
-    protected function readResolvedProviders(\BO\Zmsentities\Calendar $calendar)
+    protected function readResolvedProviders(Entity $calendar)
     {
         $scopeReader = new Scope($this->getWriter(), $this->getReader());
         $providerReader = new Provider($this->getWriter(), $this->getReader());
@@ -65,43 +64,35 @@ class Calendar extends Base
         return $calendar;
     }
 
-    protected function readResolvedDays(\BO\Zmsentities\Calendar $calendar)
+    protected function readResolvedDays(Entity $calendar)
     {
         $query = SlotList::getQuery();
         $monthList = $calendar->getMonthList();
         $statement = $this->getReader()->prepare($query);
         foreach ($monthList as $monthDateTime) {
-            $month =  new \DateTimeImmutable($monthDateTime->format('c'));
+            $month = new \DateTimeImmutable($monthDateTime->format('c'));
             foreach ($calendar->scopes as $scope) {
                 $statement->execute(SlotList::getParameters($scope['id'], $monthDateTime));
                 $slotsRequired = $calendar['processing']['slotinfo'][$scope->getProviderId()];
                 while ($slotData = $statement->fetch(\PDO::FETCH_ASSOC)) {
                     $calendar = $this->addDayInfoToCalendar($calendar, $slotData, $month, $slotsRequired);
                 }
+
             }
         }
         return $calendar;
     }
 
     /**
-     *
      * ATTENTION: performance critical function, keep highly optimized!
      */
-    protected function addDayInfoToCalendar(
-        \BO\Zmsentities\Calendar $calendar,
-        array $slotData,
-        \DateTimeImmutable $month,
-        $slotsRequired
-    ) {
-        $slotlist =& $calendar['processing']['slotlist'];
-        if (!$slotlist->isSlotData($slotData)) {
+    protected function addDayInfoToCalendar(Entity $calendar, array $slotData, \DateTimeImmutable $month, $slotsRequired)
+    {
+        $slotlist = & $calendar['processing']['slotlist'];
+        if (! $slotlist->isSlotData($slotData)) {
             $slotlist->toReducedBySlots($slotsRequired);
             $calendar = $slotlist->addToCalendar($calendar);
-            $calendar['processing']['slotlist'] = new SlotList(
-                $slotData,
-                $month->modify('first day of'),
-                $month->modify('last day of')
-            );
+            $calendar['processing']['slotlist'] = new SlotList($slotData, $month->modify('first day of'), $month->modify('last day of'));
         } else {
             $slotlist->addSlotData($slotData);
         }
