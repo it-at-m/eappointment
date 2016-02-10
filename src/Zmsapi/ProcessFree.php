@@ -7,7 +7,8 @@
 namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
-
+use \BO\Mellon\Validator;
+use \BO\Zmsdb\Process as Query;
 /**
   * Handle requests concerning services
   *
@@ -20,7 +21,11 @@ class ProcessFree extends BaseController
     public static function render()
     {
         $message = Response\Message::create();
-        $message->data = array(\BO\Zmsentities\Process::createExample());
+        $input = Validator::input()->isJson()->getValue();
+        $query = new Query();
+        $process = new \BO\Zmsentities\Process($input);
+        $message->data = $query->readResolvedEntity($process);
+        Render::lastModified(time(), '0');
         Render::json($message);
     }
 }
