@@ -5,7 +5,7 @@ $buttonInactiveFontColor:   $fontInactiveColor !default;
 .btn {
     @extend 
         .btn--shadow;
-    margin-right:   0.5em;
+    margin:   0.5em;
 }
 
 button.link  {
@@ -24,9 +24,17 @@ button.link  {
     padding:                0.7em;
 }
 
-.button-submit {
+.button-default {
     @extend 
         .btn;
+    margin-bottom:          ($gridGutter / 2);
+    font-size:              1rem;
+}
+
+.button-submit {
+    @extend 
+        .btn,
+        .btn--success;
     margin-bottom:          ($gridGutter / 2);
     font-size:              1rem;
 }
@@ -71,6 +79,14 @@ button.link  {
         content: "⊍";
         margin-right: 0.5em;
     }
+}
+
+.button-close {
+    @extend 
+        .btn,
+        .btn--alert;
+    margin-bottom:          ($gridGutter / 2);
+    font-size:              1rem;
 }
 
 .button-reset {
