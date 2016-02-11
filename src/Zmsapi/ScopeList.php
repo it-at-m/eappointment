@@ -7,6 +7,7 @@
 namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
+use \BO\Zmsdb\Scope as Query;
 
 /**
   * Handle requests concerning services
@@ -19,8 +20,10 @@ class ScopeList extends BaseController
      */
     public static function render()
     {
+        $scope = (new Query())->readList(1);
         $message = Response\Message::create();
-        $message->data = array(\BO\Zmsentities\Scope::createExample());
+        $message->data = $scope;
+        Render::lastModified(time(), '0');
         Render::json($message);
     }
 }
