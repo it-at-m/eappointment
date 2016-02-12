@@ -13,14 +13,14 @@ use \BO\Zmsdb\Request as Query;
   * Handle requests concerning services
   *
   */
-class RequestGet extends BaseController
+class RequestList extends BaseController
 {
     /**
      * @return String
      */
-    public static function render($source, $itemId)
+    public static function render($source, $itemIds = null)
     {
-        $request = (new Query())->readEntity($source, $itemId);
+        $request = (new Query())->readList($source, $itemIds);
         $message = Response\Message::create();
         $message->data = $request;
         Render::lastModified(time(), '0');

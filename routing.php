@@ -1435,6 +1435,46 @@
 
 /**
  *  @swagger
+ *  "/request/list/{source}/{csv}/":
+ *      get:
+ *          description: Get a list of request by csv
+ *          parameters:
+ *              -   name: source
+ *                  description: request source like 'dldb'
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   required": true,
+ *				    description: request numbers as csv string,
+ *  			    in: path,
+ *					type: array,
+ *					items:
+ *					   type: string,
+ *					collectionFormat: csv
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/request.json"
+ *              400:
+ *                  description: "invalid tag value"
+ *              404:
+ *                  description: "request id for source does not exists"
+ */
+\App::$slim->get('/request/list/:source/(:csv/)',
+    '\BO\Zmsapi\RequestList:render')
+    ->conditions([
+        'csv' => '[0-9,]{3,}'
+    ])
+    ->name("RequestList");
+
+/**
+ *  @swagger
  *  "/scope/":
  *      get:
  *          description: Get a list of scopes
@@ -1454,7 +1494,7 @@
  *                          data:
  *                              type: array
  *                              items:
- *                                  $ref: "schema/scope.json"
+ *                                  $ref: "schema/scope.json" *
  *              404:
  *                  description: "no scopes defined yet"
  */
