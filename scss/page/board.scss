@@ -49,6 +49,14 @@ $contentTopLineupBoardBodyMaxHeight:    33.7em; // (calendar,appointment,clienti
     label {
         color:          $white;
     }
+    a,
+    button {
+        margin-top:     0;
+        margin-bottom:  0;
+    }
+    .form-group {
+        margin:         0 2em;
+    }
     .btn {
         color:          $baseTextColor;
         line-height:    1em;
@@ -68,9 +76,6 @@ $contentTopLineupBoardBodyMaxHeight:    33.7em; // (calendar,appointment,clienti
         .btn {
             margin-right:       0;
             margin-left:        0.5em;
-        }
-        .form-group {
-            margin:       0 2em;
         }
     }
 }
