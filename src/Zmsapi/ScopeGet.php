@@ -21,8 +21,6 @@ class ScopeGet extends BaseController
     public static function render($itemId)
     {
         $scope = (new Query())->readEntity($itemId, 1);
-        //$scope = (new Query())->readByProviderId($itemId, 1);
-        //$scope = (new Query())->readByClusterId($itemId, 1);
         $message = Response\Message::create();
         $message->data = $scope;
         Render::lastModified(time(), '0');
