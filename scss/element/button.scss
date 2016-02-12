@@ -5,7 +5,8 @@ $buttonInactiveFontColor:   $fontInactiveColor !default;
 .btn {
     @extend 
         .btn--shadow;
-    margin:   0.5em;
+    margin:                 0.5em;
+    font-size:              1rem;
 }
 
 button.link  {
@@ -20,61 +21,53 @@ button.link  {
         .btn--bold,
         .btn--noShadow,
         .btn--alert;
-    margin-bottom:          $gridGutter;
+    margin:                 0 0 $gridGutter 0;
     padding:                0.7em;
 }
 
 .button-default {
     @extend 
         .btn;
-    margin-bottom:          ($gridGutter / 2);
-    font-size:              1rem;
 }
 
 .button-submit {
     @extend 
         .btn,
         .btn--success;
-    margin-bottom:          ($gridGutter / 2);
-    font-size:              1rem;
+}
+
+.button-reload {
+    @extend 
+        .btn;
 }
 
 .button-new {
     @extend 
         .btn;
-    margin-bottom:          ($gridGutter / 2);
-    font-size:              1rem;
 }
 
 .button-logout {
     @extend 
         .btn;
     margin:                 0;
-    font-size:              1rem;
 }
 
 .button-save {
     @extend 
         .btn,
         .btn--success;
-    margin-bottom:          ($gridGutter / 2);
-    font-size:              1rem;
 }
 
 .button-login {
     @extend 
         .btn,
         .btn--success;
-    margin-bottom:          ($gridGutter / 2);
-    font-size:              1rem;
 }
 
 .button-delete {
     @extend 
         .btn,
         .btn--alert;
-    margin-bottom:          ($gridGutter / 2);
-    font-size:              1rem;
     &::before {
         content: "⊍";
         margin-right: 0.5em;
@@ -85,16 +78,12 @@ button.link  {
     @extend 
         .btn,
         .btn--alert;
-    margin-bottom:          ($gridGutter / 2);
-    font-size:              1rem;
 }
 
 .button-reset {
     @extend 
         .btn,
         .btn--alert;
-    margin-bottom:          ($gridGutter / 2);
-    font-size:              1rem;
 }
 
 .button-file {

@@ -83,7 +83,9 @@ input[type="radio"] {
 
 
 .checkbox label, 
-.radio label {
+.checkbox-label,
+.radio label,
+.radio-label {
     cursor: pointer;
     font-weight: normal;
     margin-bottom: 0;
@@ -121,6 +123,13 @@ select > option {
         .label {
             font-weight:    normal;
             display:        table;
+            > input {
+                margin-left:    0;
+            }
+        }
+        .append,
+        .prepend {
+            line-height:    1.8em;
         }
         .append + .prepend {
             margin-left:    1em;
