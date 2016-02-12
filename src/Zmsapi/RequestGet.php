@@ -7,6 +7,7 @@
 namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
+use \BO\Zmsdb\Request as Query;
 
 /**
   * Handle requests concerning services
@@ -19,10 +20,9 @@ class RequestGet extends BaseController
      */
     public static function render($source, $itemId)
     {
+        $request = (new Query())->readEntity($source, $itemId);
         $message = Response\Message::create();
-        $message->data = \BO\Zmsentities\Request::createExample();
-        $message->data->id = $itemId;
-        $message->data->source = $source;
+        $message->data = $request;
         Render::lastModified(time(), '0');
         Render::json($message);
     }
