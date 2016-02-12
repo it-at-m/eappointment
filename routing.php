@@ -1499,6 +1499,76 @@
 
 /**
  *  @swagger
+ *  "/scope/provider/{id}/":
+ *      get:
+ *          description: Get a list of scope by provider ID
+ *          parameters:
+ *              -   name: id
+ *                  description: provider number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/scope.json"
+ *              404:
+ *                  description: "scope id does not exists"
+ */
+\App::$slim->get('/scope/provider/:id/',
+    '\BO\Zmsapi\ScopeByProviderList:render')
+    ->conditions([
+        'id' => '\d{1,11}',
+    ])
+    ->name("ScopeByProviderList");
+
+/**
+ *  @swagger
+ *  "/scope/cluster/{id}/":
+ *      get:
+ *          description: Get a list of scope by cluster ID
+ *          parameters:
+ *              -   name: id
+ *                  description: cluster number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/scope.json"
+ *              404:
+ *                  description: "scope id does not exists"
+ */
+\App::$slim->get('/scope/cluster/:id/',
+    '\BO\Zmsapi\ScopeByClusterList:render')
+    ->conditions([
+        'id' => '\d{1,11}',
+    ])
+    ->name("ScopeByClusterList");
+
+/**
+ *  @swagger
  *  "/scope/{id}/availability/":
  *      get:
  *          description: Get a list of availability entries
