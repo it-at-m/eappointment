@@ -1,20 +1,18 @@
 <?php
-
 namespace BO\Zmsdb;
 
 use \BO\Zmsentities\Request as Entity;
 
 class Request extends Base
 {
+
     public function readEntity($source, $requestId)
     {
         if ('dldb' !== $source) {
             return new Entity();
         }
         $query = new Query\Request(Query\Base::SELECT);
-        $query
-            ->addEntityMapping()
-            ->addConditionRequestId($requestId);
+        $query->addEntityMapping()->addConditionRequestId($requestId);
         return $this->fetchOne($query, new Entity());
     }
 
@@ -30,7 +28,22 @@ class Request extends Base
                 AND x.`termin_hide` = 0
                 AND d.`zms_termin` = 1
         ';
-        $providerSlots = $this->getReader()->fetchAll($query, ['request_id' => $entity->id]);
+        $providerSlots = $this->getReader()->fetchAll($query, [
+            'request_id' => $entity->id
+        ]);
         return $providerSlots;
+    }
+
+    public function readList($source, $requestIds)
+    {
+        $query = new Query\Request(Query\Base::SELECT);
+        $query
+            ->addEntityMapping();
+        if (null !== $requestIds) {
+            $query
+                ->addConditionRequestCsv($requestIds);
+        }
+
+        return $this->fetchList($query, new Entity());
     }
 }

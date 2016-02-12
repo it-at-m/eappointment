@@ -36,4 +36,13 @@ class Scope extends Base
             ->addConditionProviderId($providerId);
         return $this->fetchList($query, new Entity());
     }
+
+    public function readList($resolveReferences = 0)
+    {
+        $query = new Query\Scope(Query\Base::SELECT);
+        $query
+        ->addEntityMapping()
+        ->addResolvedReferences($resolveReferences);
+        return $this->fetchList($query, new Entity());
+    }
 }

@@ -1,10 +1,11 @@
 <?php
-
 namespace BO\Zmsdb\Query;
 
 class Request extends Base
 {
+
     /**
+     *
      * @var String TABLE mysql table reference
      */
     const TABLE = 'startinfo.dienstleistungen';
@@ -15,13 +16,22 @@ class Request extends Base
             'id' => 'request.id',
             'link' => self::expression('CONCAT("https://service.berlin.de/dienstleistung/", `request`.`id`, "/")'),
             'name' => 'request.name',
-            'source' => self::expression('"dldb"'),
+            'source' => self::expression('"dldb"')
         ];
     }
 
     public function addConditionRequestId($requestId)
     {
         $this->query->where('id', '=', $requestId);
+        return $this;
+    }
+
+    public function addConditionRequestCsv($requestCsv)
+    {
+        $requestIds = \explode(',', $requestCsv);
+        foreach ($requestIds as $requestId) {
+            $this->query->orWhere('id', '=', $requestId);
+        }
         return $this;
     }
 }
