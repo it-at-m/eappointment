@@ -15,4 +15,14 @@ class Availability extends Base
         $availability = $this->fetchOne($query, new Entity());        
         return $availability;
     }
+    
+    public function readList($scopeId, $resolveReferences = 0)
+    {
+        $query = new Query\Availability(Query\Base::SELECT);
+        $query
+            ->addEntityMapping()
+            ->addResolvedReferences($resolveReferences)
+            ->addConditionScopeId($scopeId);
+        return $this->fetchList($query, new Entity());
+    }
 }

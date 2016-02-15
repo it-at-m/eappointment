@@ -44,4 +44,16 @@ class Availability extends Base implements MappingInterface
         return $this;
     }
     
+    public function addConditionScopeId($scopeId)
+    {
+        $this->query->leftJoin(
+            new Alias('standort', 'availability_scope'),
+            'availability.StandortID',
+            '=',
+            'availability_scope.StandortID'
+            );
+        $this->query->where('availability_scope.StandortID', '=', $scopeId);
+        return $this;
+    }
+    
 }
