@@ -17,6 +17,8 @@ class Availability extends BaseController
      */
     public static function render()
     {
+        
+        
         $times = array(
             'conflict_times' => array(
                 array('title' => 'Konflikt', 'start' => '12.15', 'end' => '12.45'),
