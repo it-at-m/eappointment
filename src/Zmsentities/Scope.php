@@ -1,11 +1,10 @@
 <?php
-
 namespace BO\Zmsentities;
 
 class Scope extends Schema\Entity
 {
-    public static $schema = "scope.json";
 
+    public static $schema = "scope.json";
 
     public function getProviderId()
     {
