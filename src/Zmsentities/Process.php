@@ -26,6 +26,22 @@ class Process extends Schema\Entity
         return $this;
     }
 
+    /**
+     * Returns calendar with added Providers
+     *
+     * @return $this
+     */
+    public function addProvider($source, $idList)
+    {
+        foreach (explode(',', $idList) as $id) {
+            $provider = new Provider();
+            $provider->source = $source;
+            $provider->id = $id;
+            $this->providers[] = $provider;
+        }
+        return $this;
+    }
+
     public function addRequest($source, $requestList)
     {
         foreach (explode(',', $requestList) as $id) {

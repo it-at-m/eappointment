@@ -16,4 +16,24 @@ class Appointment extends Schema\Entity
         $suffix = ($lang == 'en') ? ' o\'clock' : ' Uhr';
         return date('H:i', $this->date) . $suffix;
     }
+
+    public function addDate($date)
+    {
+        $this->date = $date;
+        return $this;
+    }
+
+    public function addScope($scopeId)
+    {
+        $scope = new Scope();
+        $scope->id = $id;
+        $this->scope[] = $scope;
+        return $this;
+    }
+
+    public function addSlotCount($amount)
+    {
+        $this->slotCount = $amount;
+        return $this;
+    }
 }
