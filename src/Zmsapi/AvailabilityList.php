@@ -1,12 +1,13 @@
 <?php
 /**
- * @package 115Mandant
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
 namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
+use \BO\Zmsdb\Availability as Query;
 
 /**
   * Handle requests concerning services
@@ -19,9 +20,9 @@ class AvailabilityList extends BaseController
      */
     public static function render($scopeId)
     {
+        $availabilities = (new Query())->readList($scopeId, 1);
         $message = Response\Message::create();
-        $scopeId = $scopeId; // @todo fetch data
-        $message->data = array(\BO\Zmsentities\Availability::createExample());
+        $message->data = $availabilities;
         Render::lastModified(time(), '0');
         Render::json($message);
     }

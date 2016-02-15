@@ -1,25 +1,26 @@
 <?php
+
 /**
- * @package 115Mandant
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
-
 namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Zmsdb\Availability as Query;
 
 /**
-  * Handle requests concerning services
-  *
-  */
+ * Handle requests concerning services
+ */
 class AvailabilityGet extends BaseController
 {
+
     /**
+     *
      * @return String
      */
     public static function render($itemId)
-    {        
+    {
         $availability = (new Query())->readEntity($itemId);
         $message = Response\Message::create();
         $message->data = $availability;
