@@ -17,4 +17,17 @@ class Provider extends Base
             ->addConditionProviderId($providerId);
         return $this->fetchOne($query, new Entity());
     }
+    
+    public function readList($source, $providerIds)
+    {
+        $query = new Query\Provider(Query\Base::SELECT);
+        $query
+        ->addEntityMapping();
+        if (null !== $providerIds) {
+            $query
+            ->addConditionProviderCsv($providerIds);
+        }
+    
+        return $this->fetchList($query, new Entity());
+    }
 }
