@@ -10,7 +10,7 @@ namespace BO\Zmsadmin;
   * Handle requests concerning services
   *
   */
-class AvailabilityCalendar extends BaseController
+class AvailabilityMonth extends BaseController
 {
     /**
      * @return String
@@ -50,10 +50,10 @@ class AvailabilityCalendar extends BaseController
             '2015-12-30' => array('closed' => false, 'holiday' => false, 'hasOpeningTimes' => false, 'hasAppointmentTimes' => true, 'hasConflict'=>false),
             '2015-12-31' => array('closed' => true, 'holiday' => false, 'hasOpeningTimes' => false, 'hasAppointmentTimes' => false, 'hasConflict'=>false),
         );
-        \BO\Slim\Render::html('page/availability-calendar.twig', array(
+        \BO\Slim\Render::html('page/availabilityMonth.twig', array(
             'title' => 'Öffnungszeiten',
             'data_days' => $data,
-            'menuActive' => 'availabilityCalendar'
+            'menuActive' => 'availability'
         ));
     }
 }

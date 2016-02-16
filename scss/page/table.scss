@@ -15,13 +15,13 @@ table {
     thead {
         background-color:   $tableHeadBackground;
         th {
-            font-size:          $fontSizeLabels;
-            font-weight:        bold;
+            font-size:      $fontSizeLabels;
+            font-weight:    bold;
             border:         0 none;
             padding:        0.4em 0.5em;
         }
     }
     form {
-        margin: 0;
+        margin:             0;
     }
 }

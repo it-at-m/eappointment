@@ -1,5 +1,6 @@
-.availability-edit {
-    @extend .board;
+.scope-form {
+    @extend 
+        .board;
     form {
         @extend .form--horizontal;
     }
