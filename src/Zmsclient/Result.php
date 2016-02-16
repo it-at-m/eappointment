@@ -117,6 +117,23 @@ class Result
     {
         return $this->data;
     }
+    
+    /**
+     * Description
+     *
+     * @return String
+     */
+    public function getIds()
+    {
+        $data = $this->getData();
+        $idList = array();
+        foreach($data as $item){
+            if(array_key_exists('id', $item)){
+                $idList[] = $item['id'];
+            }
+        }
+        return join(',', array_unique($idList));
+    }
 
     /**
      * Set entity from response
