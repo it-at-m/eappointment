@@ -1,18 +1,12 @@
-.appointment {
+.appointment-form {
     @extend 
         .board, 
         .board--minHeight;
-    form .split{
-        //@include form--horizontal(one-quarter, three-quarters);
-    }
     .form-group {
         margin-bottom:      0.4em !important;
     }
     .form-actions {
-        margin-bottom:             0;
-        .button-submit {
-            //margin-bottom:             0;
-        }
+        margin-bottom:      0;
     }
     label {
         font-size:          0.8566em; //12px;
@@ -22,14 +16,12 @@
         .split_left {
             @extend 
                 .grid__item, 
-                //.four-eighths,
                 .five-twelfths,
                 .palm--one-whole;
         }
         .split_right {
             @extend 
                 .grid__item,
-                //.four-eighths,
                 .seven-twelfths,
                 .palm--one-whole;
         }
@@ -37,8 +29,5 @@
     // Overwrite Base horizontalform label grid width
     .appointment_slots label {
         width:  3.5em !important;
-    }
-    .appointment_comment {
-        //@include form--horizontal(two-twelfths, ten-twelfths);
     }
 }

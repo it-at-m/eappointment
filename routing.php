@@ -41,8 +41,8 @@
     ->name("scope");
 
 \App::$slim->get('/scope/:id/pickup/',
-    '\BO\Zmsadmin\ScopePickup:render')
-    ->name("scopePickup");
+    '\BO\Zmsadmin\Pickup:render')
+    ->name("pickup");
 
 \App::$slim->get('/cluster/',
     '\BO\Zmsadmin\Cluster:render')
@@ -68,8 +68,8 @@
     '\BO\Zmsadmin\Availability:render')
     ->name("availability_day");
 
-\App::$slim->get('/availability/calendar/',
-    '\BO\Zmsadmin\AvailabilityCalendar:render')
+\App::$slim->get('/availability/month/',
+    '\BO\Zmsadmin\AvailabilityMonth:render')
     ->name("availability_month");
 
 \App::$slim->get('/calendar/:year/kw/:weeknr/',

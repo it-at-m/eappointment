@@ -10,14 +10,14 @@ namespace BO\Zmsadmin;
   * Handle requests concerning services
   *
   */
-class ScopePickup extends BaseController
+class Pickup extends BaseController
 {
     /**
      * @return String
      */
     public static function render()
     {
-        \BO\Slim\Render::html('page/scopePickup.twig', array(
+        \BO\Slim\Render::html('page/pickup.twig', array(
             'title' => 'Abholer verwalten',
             'menuActive' => 'pickup'
         ));

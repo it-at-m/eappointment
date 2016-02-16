@@ -2,7 +2,7 @@ $queuePastColor:                #E6E6E6 !default;
 $queueFutureColor:              #74CAF0 !default;
 $queueMissedColor:              $red !default;
 
-.queue {
+.queue-table {
     @extend 
         .board,
         .board--noBodyPadding;
