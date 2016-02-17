@@ -85,7 +85,27 @@
             }
         }
     }
-    &--scope-pickup {
+    &--pickup {
+        @extend 
+            .grid;
+        .lineup_actor {
+            &--left {
+                @extend 
+                    .grid__item, 
+                    .nine-twelfths,
+                    .lap--one-whole, 
+                    .palm--one-whole;
+            }
+            &--right {
+                @extend 
+                    .grid__item, 
+                    .three-twelfths, 
+                    .lap--one-third, 
+                    .palm--one-whole;
+            }
+        }
+    }
+    &--useraccount {
         @extend 
             .grid;
         .lineup_actor {
