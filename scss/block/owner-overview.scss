@@ -1,65 +1,37 @@
 /* TODO todo */ 
 
 .owner-overview { 
-}
+    .owner-list {
+        padding-left:           0;
+        .owner-list_item {
+            list-style:         none;
+            margin-bottom:      2em;
+        }
+    }
+    .department-list {
+        padding-left:           0;
+        .department-list_item {
+            list-style:         none;
+            margin-bottom:      1em;
+        }
+        .department-list_title {
+            font-weight:        bold;
+            display:            inline-block;
+            margin-right:       0.5em;
+        }
+        .cluster {
+            .cluster_title {
+                font-style:         italic;
+            }
+        }
+    }
 
-.owner-list {
-    padding-left:           0;
-    .owner-list_item {
-        list-style:         none;
-        margin-bottom:      2em;
-    }
-}
-
-.owner-list__ {
-    padding-left:           0;
-    .owner-list_item {
-        @extend 
-            .board;
-        list-style:         none;
-        margin-bottom:      2em;
-    }
-    .owner-list_title {
-        @extend 
-            .board_header__title;
-    }
-}
-
-.department-list__ {
-    padding-left:           0;
-    .department-list_item {
-        @extend 
-            .board;
-        list-style:         none;
-        margin-bottom:      2em;
-    }
-    .department-list_title {
-        @extend 
-            .board_header__title;
-    }
-}
-
-.department-list {
-    padding-left:           0;
-    .department-list_item {
-        list-style:         none;
-        margin-bottom:      1em;
-    }
-    .department-list_title {
-        font-weight:        bold;
-        display:            inline-block;
-        margin-right:       0.5em;
-    }
-    .cluster {
-        .cluster_title {
-            font-style:         italic;
+    .scope-list {
+        padding-left:           2em;
+        .scope-list_item {
+            list-style-type:    initial;
         }
     }
 }
 
-.scope-list {
-    padding-left:           2em;
-    .scope-list_item {
-        list-style-type:    initial;
-    }
-}
+
