@@ -8,6 +8,7 @@ namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
+use \BO\Zmsdb\Process as Query;
 
 /**
   * Handle requests concerning services
@@ -22,8 +23,11 @@ class ProcessReserve extends BaseController
     {
         $message = Response\Message::create();
         $input = Validator::input()->isJson()->getValue();
-        $message->data = new \BO\Zmsentities\Process($input);
+        $query = new Query();
+        $process = new \BO\Zmsentities\Process($input);
+        $message->data = $query->readReservedEntity($process);
         Render::lastModified(time(), '0');
         Render::json($message);
+
     }
 }
