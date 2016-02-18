@@ -1,12 +1,18 @@
 $buttonSuccessColor:        $blue !default;
 $buttonAlertColor:          $red !default;
 $buttonInactiveFontColor:   $fontInactiveColor !default;
+$buttonMargin:              0.5em;
 
 .btn {
     @extend 
         .btn--shadow;
-    margin:                 0.5em;
+    margin:                 $buttonMargin;
     font-size:              1rem;
+}
+
+.button-default {
+    @extend 
+        .btn;
 }
 
 button.link  {
@@ -21,13 +27,8 @@ button.link  {
         .btn--bold,
         .btn--noShadow,
         .btn--alert;
-    margin:                 0 0 $gridGutter 0;
+    margin:                 0 0 $buttonMargin 0;
     padding:                0.7em;
-}
-
-.button-default {
-    @extend 
-        .btn;
 }
 
 .button-submit {
@@ -70,7 +71,18 @@ button.link  {
         .btn--alert;
     &::before {
         content: "⊍";
-        margin-right: 0.5em;
+        margin-right:       0.5em;
+    }
+}
+
+.button-edit-availabilty {
+    @extend 
+        .btn,
+        .btn--small;
+    margin:                 $buttonMargin / 2;
+    &::before {
+        content: "\1f553";
+        margin-right:       0.5em;
     }
 }
 
