@@ -2,6 +2,7 @@
 namespace BO\Zmsdb;
 
 use \BO\Zmsentities\Process as Entity;
+use BO\Zmsdb\Helper\ProcessStatus as Status;
 use \BO\Zmsdb\Query\SlotList;
 
 class Process extends Base
@@ -14,31 +15,92 @@ class Process extends Base
             ->addResolvedReferences($resolveReferences)
             ->addConditionProcessId($processId)
             ->addConditionAuthKey($authKey);
-        // echo json_decode($query->getSql());
-        // var_dump($this->fetchOne($query, new Entity()));
+        //echo json_decode($query->getSql());
+        //var_dump($this->fetchOne($query, new Entity()));
         $process = $this->fetchOne($query, new Entity());
-        $process->status = $this->getProcessStatus($processId, $authKey);
+        $status = new Status();
+        $process['status'] = $status->readProcessStatus($processId, $authKey);
         return $process;
     }
 
-    public function readResolvedEntity(\BO\Zmsentities\Process $process)
+    public function readReservedEntity($process)
     {
+        $processId = $this->getNewProcessId();
+        $process = $this->readEntity($processId, 'NULL');
+        return $process;
+    }
+
+    public function getNewProcessId()
+    {
+        $query = new Query\Process(Query\Base::INSERT);
+        $query->addInsertTable();
+        $lock = $this->getLock();
+        if ($lock == 1){
+                $query->addInsertvalues([
+                'BuergerID' =>
+                    'SELECT A.BuergerID+1 AS nextid
+                    FROM buerger A
+                    LEFT JOIN buerger B on A.BuergerID+1 = B.BuergerID
+                    WHERE B.BuergerID IS NULL AND A.BuergerID > 10000
+                    ORDER BY A.BuergerID LIMIT 1'
+            ]);
+        }
+        else {
+            $query->addInsertvalues([
+                'BuergerID' => NULL
+            ]);
+        }
+
+        $statement = $this->getWriter()->prepare($query->getSql());
+        $statement->execute($query->getParameters());
+        $lastInsertId = $this->getWriter()->lastInsertId();
+        $this->releaseLock();
+        return $lastInsertId;
+    }
+
+    public function getLock()
+    {
+        return $this->getReader()->fetchValue('SELECT GET_LOCK("AutoIncWithOldNum", 2)');
+    }
+
+    public function releaseLock()
+    {
+        return $this->getReader()->fetchValue('SELECT RELEASE_LOCK("AutoIncWithOldNum")');
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /* prüfen ob das benötigt wird begin */
+    public function readResolvedEntity(\BO\Zmsentities\Calendar $calendar)
+    {
+        $process = new Entity();
         $process['processing'] = [];
         $process['processing']['slotlist'] = new SlotList();
-        $process = $this->readResolvedProviders($process);
-        $process = $this->readResolvedRequests($process);
-        $process = $this->readResolvedDay($process);
+        $process = $this->readResolvedProviders($calendar, $process);
+        $process = $this->readResolvedRequests($calendar, $process);
+        $process = $this->readResolvedDay($calendar, $process);
         unset($process['processing']);
         return $process;
     }
 
-    protected function readResolvedRequests(\BO\Zmsentities\Process $process)
+    protected function readResolvedRequests(\BO\Zmsentities\Calendar $calendar, Entity $process)
     {
         $requestReader = new Request($this->getWriter(), $this->getReader());
         if (!isset($process['processing']['slotinfo'])) {
             $process['processing']['slotinfo'] = [];
         }
-        foreach ($process['requests'] as $key => $request) {
+        foreach ($calendar['requests'] as $key => $request) {
             $request = $requestReader->readEntity('dldb', $request['id']);
             $process['requests'][$key] = $request;
             foreach ($requestReader->readSlotsOnEntity($request) as $slotinfo) {
@@ -51,26 +113,28 @@ class Process extends Base
         return $process;
     }
 
-    protected function readResolvedProviders(\BO\Zmsentities\Process $process)
+    protected function readResolvedProviders(\BO\Zmsentities\Calendar $calendar, Entity $process)
     {
         $scopeReader = new Scope($this->getWriter(), $this->getReader());
         $providerReader = new Provider($this->getWriter(), $this->getReader());
-        foreach ($process['providers'] as $key => $provider) {
+        foreach ($calendar['providers'] as $key => $provider) {
             $process['providers'][$key] = $providerReader->readEntity('dldb', $provider['id']);
             $scopeList = $scopeReader->readByProviderId($provider['id']);
-            foreach ($scopeList as $scope) {
-                $process['scopes'][] = $scope;
+            foreach ($scopeList as $key => $scope) {
+                $process['scopes'][$key] = $scope;
             }
         }
         return $process;
     }
 
-    protected function readResolvedDay(\BO\Zmsentities\Process $process)
+    protected function readResolvedDay(\BO\Zmsentities\Calendar $calendar, Entity $process)
     {
         $query = SlotList::getQuery();
         $statement = $this->getReader()->prepare($query);
-        $date = \DateTime::createFromFormat('Y-m-d', $process['date']);
         $process['appointments'] = array();
+
+        $date = \DateTime::createFromFormat('Y-m-d', $calendar['firstDay']['year']. '-'. $calendar['firstDay']['month']. '-'. $calendar['firstDay']['day']);
+
         foreach ($process->scopes as $scope) {
             $statement->execute(SlotList::getParameters($scope['id'], $date));
             while ($slotData = $statement->fetch(\PDO::FETCH_ASSOC)) {
@@ -83,208 +147,19 @@ class Process extends Base
         return $process;
     }
 
-    protected function addAppointmentsToProcess($process, array $slot, \DateTime $date)
+    protected function addAppointmentsToProcess($process, array $slotData, \DateTime $date)
     {
         $appointment = null;
-        $slotDate = \DateTime::createFromFormat('Y-m-d', $slot['year']."-".$slot['month'].'-'.$slot['day']);
+        $slotDate = \DateTime::createFromFormat('Y-m-d', $slotData['year']."-".$slotData['month'].'-'.$slotData['day']);
         if($slotDate->format('Y-m-d') == $date->format('Y-m-d')){
             $scopeReader = new Scope($this->getWriter(), $this->getReader());
-            $scope = $scopeReader->readEntity($slot['appointment__scope__id'],1);
+            $scope = $scopeReader->readEntity($slotData['appointment__scope__id'],1);
             $appointment = new \BO\Zmsentities\Appointment();
-            $appointment->addDate($slot['appointment__date']);
+            $appointment->addDate($slotData['appointment__date']);
             $appointment->scope = $scope;
 
         }
         return $appointment;
     }
 
-    /**
-     * get the current process status from given Id and authKey
-     *
-     * @return String
-     */
-    public function getProcessStatus($processId, $authKey)
-    {
-        $processData = $this->getReader()->fetchOne('SELECT
-            *
-            FROM buerger AS b
-            WHERE
-                b.BuergerID = "' . $processId . '"
-                AND b.absagecode = "' . $authKey . '"
-        ');
-
-        $status = 'free';
-
-        if ($this->isReservedProcess($processData)) {
-            $status = 'reserved';
-        }
-        if ($this->isConfirmedProcess($processData)) {
-            $status = 'confirmed';
-        }
-        if ($this->isQueuedProcess($processData)) {
-            $status = 'queued';
-        }
-        if ($this->isCalledProcess($processData)) {
-            $status = 'called';
-        }
-        if ($this->isProcessingProcess($processData)) {
-            $status = 'processing';
-        }
-        if ($this->isPendingProcess($processData)) {
-            $status = 'pending';
-        }
-        if ($this->isMissedProcess($processData)) {
-            $status = 'missed';
-        }
-        if ($this->isBlockedProcess($processData) || $this->isDeletedProcess($processData)) {
-            $status = 'blocked';
-        }
-
-        return $status;
-    }
-
-    /**
-     * check if it is a blocked appointment
-     *
-     * @return Bool
-     */
-    protected function isBlockedProcess($process)
-    {
-        if ($process['Name'] == 'dereferenced') {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * check if it is a confirmed appointment
-     *
-     * @return Bool
-     */
-    protected function isConfirmedProcess($process)
-    {
-        if ($process['Name'] != 'dereferenced'
-            && $process['vorlaeufigeBuchung'] == 0
-            && $process['StandortID'] != 0
-            && empty($process['istFolgeterminvon'])) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * check if it is a reserved appointment
-     *
-     * @return Bool
-     */
-    protected function isReservedProcess($process)
-    {
-        if ($process['Name'] != 'dereferenced'
-            && $process['vorlaeufigeBuchung'] == 1
-            && $process['StandortID'] != 0
-            && empty($process['istFolgeterminvon'])) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * check if it is a called appointment
-     *
-     * @return Bool
-     */
-    protected function isCalledProcess($process)
-    {
-        if ($process['Name'] != 'dereferenced'
-            && $process['vorlaeufigeBuchung'] == 0
-            && $process['StandortID'] != 0
-            && $process['aufrufzeit'] != '00:00:00'
-            && $process['aufruferfolgreich'] == 0
-            && empty($process['istFolgeterminvon'])) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * check if it is a queued appointment
-     *
-     * @return Bool
-     */
-    protected function isQueuedProcess($process)
-    {
-        if ($process['Name'] != 'dereferenced'
-            && $process['vorlaeufigeBuchung'] == 0
-            && $process['StandortID'] != 0
-            && $process['wsm_aufnahmezeit'] != '00:00:00'
-            && empty($process['istFolgeterminvon'])) {
-                return true;
-            }
-            return false;
-    }
-
-    /**
-     * check if it is a processing appointment
-     *
-     * @return Bool
-     */
-    protected function isProcessingProcess($process)
-    {
-        if ($process['Name'] != 'dereferenced'
-            && $process['vorlaeufigeBuchung'] == 0
-            && $process['StandortID'] != 0
-            && $process['aufruferfolgreich'] != 0
-            && empty($process['istFolgeterminvon'])) {
-                return true;
-            }
-            return false;
-    }
-
-    /**
-     * check if it is a processing appointment
-     *
-     * @return Bool
-     */
-    protected function isPendingProcess($process)
-    {
-        if ($process['Name'] != 'dereferenced'
-            && $process['vorlaeufigeBuchung'] == 0
-            && $process['StandortID'] != 0
-            && $process['Abholer'] != 0
-            && empty($process['istFolgeterminvon'])) {
-                return true;
-            }
-            return false;
-    }
-
-    /**
-     * check if it is a missed appointment
-     *
-     * @return Bool
-     */
-    protected function isMissedProcess($process)
-    {
-        if ($process['Name'] != 'dereferenced'
-            && $process['vorlaeufigeBuchung'] == 0
-            && $process['StandortID'] != 0
-            && $process['nicht_erschienen'] != 0
-            && empty($process['istFolgeterminvon'])) {
-                return true;
-            }
-            return false;
-    }
-
-    /**
-     * check if it is a deleted appointment
-     *
-     * @return Bool
-     */
-    protected function isDeletedProcess($process)
-    {
-        if ($process['Name'] == '(abgesagt)'
-            && empty($process['istFolgeterminvon'])) {
-                return true;
-            }
-            return false;
-    }
 }

@@ -75,6 +75,22 @@ abstract class Base
     }
 
     /**
+     * Add the from part to the queryBaseStatement
+     * This implementation tries to guess the syntax using the constant TABLE in the class
+     * Override the method for a special implementation or required joins
+     *
+     * @return self
+     */
+    public function addInsertTable()
+    {
+        $class = get_class($this);
+        $table = constant($class . '::TABLE');
+        $alias = lcfirst(preg_replace('#^.*\\\#', '', $class));
+        $this->query->table($table, $alias);
+        return $this;
+    }
+
+    /**
      * Add joins to table if required
      * Override this method if join are required for a select
      */
