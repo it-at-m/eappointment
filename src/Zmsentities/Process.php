@@ -20,12 +20,6 @@ class Process extends Schema\Entity
         return implode(',', $this->getRequestIds());
     }
 
-    public function addDate($date)
-    {
-        $this->date = $date;
-        return $this;
-    }
-
     /**
      * Returns calendar with added Providers
      *
@@ -50,6 +44,12 @@ class Process extends Schema\Entity
             $request->id = $id;
             $this->requests[] = $request;
         }
+        return $this;
+    }
+
+    public function setStatus($status)
+    {
+        $this->status = $status;
         return $this;
     }
 }
