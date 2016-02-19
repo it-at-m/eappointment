@@ -25,9 +25,7 @@ class Appointment extends Schema\Entity
 
     public function addScope($scopeId)
     {
-        $scope = new Scope();
-        $scope->id = $id;
-        $this->scope[] = $scope;
+        $this->scope['id'] = $scopeId;
         return $this;
     }
 
