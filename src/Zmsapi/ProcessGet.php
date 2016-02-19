@@ -21,7 +21,7 @@ class ProcessGet extends BaseController
     public static function render($itemId, $authKey)
     {
 
-        $process = (new Query())->readEntity($itemId, $authKey);
+        $process = (new Query())->readEntity($itemId, $authKey, 1);
         $message = Response\Message::create();
         $message->data = $process;
         Render::lastModified(time(), '0');

@@ -25,7 +25,7 @@ class ProcessReserve extends BaseController
         $input = Validator::input()->isJson()->getValue();
         $query = new Query();
         $process = new \BO\Zmsentities\Process($input);
-        $message->data = $query->readReservedEntity($process);
+        $message->data = $query->updateEntity($process);
         Render::lastModified(time(), '0');
         Render::json($message);
 

@@ -8,6 +8,7 @@ namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
+use \BO\Zmsdb\Process as Query;
 
 /**
   * Handle requests concerning services
@@ -20,11 +21,13 @@ class ProcessUpdate extends BaseController
      */
     public static function render($itemId, $authKey)
     {
+        $query = new Query();
         $message = Response\Message::create();
         $input = Validator::input()->isJson()->getValue();
-        $message->data = new \BO\Zmsentities\Process($input);
-        $message->data->id = $itemId;
-        $message->data->authKey = $authKey;
+        $process = new \BO\Zmsentities\Process($input);
+        $process->id = $itemId;
+        $process->authKey = $authKey;
+        $message->data = $query->updateEntity($process);
         Render::lastModified(time(), '0');
         Render::json($message);
     }
