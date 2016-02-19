@@ -67,4 +67,16 @@ abstract class Base
         }
         return $resultList;
     }
+
+    /**
+     * Write an Item to database - Insert, Update
+     * TODO: Check if there is a smarter way to do mapping with entity
+     *
+     * @return \PDO
+     */
+    public function writeItem(Query\Base $query, $table = '', $replace = '')
+    {
+        $statement = $this->getWriter()->prepare(str_replace($table, $replace, $query->getSql()));
+        $statement->execute($query->getParameters());
+    }
 }

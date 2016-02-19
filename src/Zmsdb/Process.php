@@ -15,44 +15,67 @@ class Process extends Base
             ->addResolvedReferences($resolveReferences)
             ->addConditionProcessId($processId)
             ->addConditionAuthKey($authKey);
-        //echo json_decode($query->getSql());
-        //var_dump($this->fetchOne($query, new Entity()));
+        // echo json_decode($query->getSql());
+        // var_dump($this->fetchOne($query, new Entity()));
         $process = $this->fetchOne($query, new Entity());
         $status = new Status();
         $process['status'] = $status->readProcessStatus($processId, $authKey);
         return $process;
     }
 
-    public function readReservedEntity($process)
+    public function updateEntity($processData)
     {
-        $processId = $this->getNewProcessId();
-        $process = $this->readEntity($processId, 'NULL');
+        $query = new Query\Process(Query\Base::UPDATE);
+        $process = new Entity($processData);
+
+        if (array_key_exists('id', $processData) && $processData['id'] != 0) {
+            $processId = $processData['id'];
+        }
+        else {
+            $processId = $this->getNewProcessId();
+        }
+        $query->addConditionProcessId($processId);
+
+        if(array_key_exists('authKey', $processData) && $processData['authKey'] != 0){
+            $authKey = $processData['authKey'];
+            $query->addConditionAuthKey($authKey);
+        } else {
+            $authKey = substr(md5(rand()), 0, 4);
+        }
+
+        $process['id'] = $processId;
+        $process['authKey'] = $authKey;
+        $values = $query->reverseEntityMapping($process);
+
+        $query->addValues($values);
+        $this->writeItem($query, 'process', $query::TABLE);
+        $process = $this->readEntity($processId, $authKey, 1);
+        $status = new Status();
+        $process['status'] = $status->readProcessStatus($processId, $authKey);
         return $process;
     }
 
     public function getNewProcessId()
     {
         $query = new Query\Process(Query\Base::INSERT);
-        $query->addInsertTable();
         $lock = $this->getLock();
-        if ($lock == 1){
-                $query->addInsertvalues([
-                'BuergerID' =>
-                    'SELECT A.BuergerID+1 AS nextid
+        if ($lock == 1) {
+            $dateTime = new \DateTime();
+            $query->addValues([
+                'BuergerID' => 'SELECT A.BuergerID+1 AS nextid
                     FROM buerger A
                     LEFT JOIN buerger B on A.BuergerID+1 = B.BuergerID
                     WHERE B.BuergerID IS NULL AND A.BuergerID > 10000
-                    ORDER BY A.BuergerID LIMIT 1'
+                    ORDER BY A.BuergerID LIMIT 1',
+                'IPTimeStamp' => $dateTime->getTimestamp()
             ]);
-        }
-        else {
-            $query->addInsertvalues([
+        } else {
+            $query->addValues([
                 'BuergerID' => NULL
             ]);
         }
 
-        $statement = $this->getWriter()->prepare($query->getSql());
-        $statement->execute($query->getParameters());
+        $this->writeItem($query);
         $lastInsertId = $this->getWriter()->lastInsertId();
         $this->releaseLock();
         return $lastInsertId;
@@ -68,21 +91,8 @@ class Process extends Base
         return $this->getReader()->fetchValue('SELECT RELEASE_LOCK("AutoIncWithOldNum")');
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
     /* prüfen ob das benötigt wird begin */
-    public function readResolvedEntity(\BO\Zmsentities\Calendar $calendar)
+    public function readFreeAppointments(\BO\Zmsentities\Calendar $calendar)
     {
         $process = new Entity();
         $process['processing'] = [];
@@ -97,14 +107,14 @@ class Process extends Base
     protected function readResolvedRequests(\BO\Zmsentities\Calendar $calendar, Entity $process)
     {
         $requestReader = new Request($this->getWriter(), $this->getReader());
-        if (!isset($process['processing']['slotinfo'])) {
+        if (! isset($process['processing']['slotinfo'])) {
             $process['processing']['slotinfo'] = [];
         }
         foreach ($calendar['requests'] as $key => $request) {
             $request = $requestReader->readEntity('dldb', $request['id']);
             $process['requests'][$key] = $request;
             foreach ($requestReader->readSlotsOnEntity($request) as $slotinfo) {
-                if (!isset($process['processing']['slotinfo'][$slotinfo['provider__id']])) {
+                if (! isset($process['processing']['slotinfo'][$slotinfo['provider__id']])) {
                     $process['processing']['slotinfo'][$slotinfo['provider__id']] = 0;
                 }
                 $process['processing']['slotinfo'][$slotinfo['provider__id']] += $slotinfo['slots'];
@@ -133,13 +143,13 @@ class Process extends Base
         $statement = $this->getReader()->prepare($query);
         $process['appointments'] = array();
 
-        $date = \DateTime::createFromFormat('Y-m-d', $calendar['firstDay']['year']. '-'. $calendar['firstDay']['month']. '-'. $calendar['firstDay']['day']);
+        $date = \DateTime::createFromFormat('Y-m-d', $calendar['firstDay']['year'] . '-' . $calendar['firstDay']['month'] . '-' . $calendar['firstDay']['day']);
 
         foreach ($process->scopes as $scope) {
             $statement->execute(SlotList::getParameters($scope['id'], $date));
             while ($slotData = $statement->fetch(\PDO::FETCH_ASSOC)) {
                 $appointment = $this->addAppointmentsToProcess($process, $slotData, $date);
-                if(null !== $appointment){
+                if (null !== $appointment) {
                     $process['appointments'][] = $appointment;
                 }
             }
@@ -150,16 +160,14 @@ class Process extends Base
     protected function addAppointmentsToProcess($process, array $slotData, \DateTime $date)
     {
         $appointment = null;
-        $slotDate = \DateTime::createFromFormat('Y-m-d', $slotData['year']."-".$slotData['month'].'-'.$slotData['day']);
-        if($slotDate->format('Y-m-d') == $date->format('Y-m-d')){
+        $slotDate = \DateTime::createFromFormat('Y-m-d', $slotData['year'] . "-" . $slotData['month'] . '-' . $slotData['day']);
+        if ($slotDate->format('Y-m-d') == $date->format('Y-m-d')) {
             $scopeReader = new Scope($this->getWriter(), $this->getReader());
-            $scope = $scopeReader->readEntity($slotData['appointment__scope__id'],1);
+            $scope = $scopeReader->readEntity($slotData['appointment__scope__id'], 1);
             $appointment = new \BO\Zmsentities\Appointment();
             $appointment->addDate($slotData['appointment__date']);
             $appointment->scope = $scope;
-
         }
         return $appointment;
     }
-
 }
