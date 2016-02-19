@@ -15,7 +15,7 @@ class Process extends Base
             ->addResolvedReferences($resolveReferences)
             ->addConditionProcessId($processId)
             ->addConditionAuthKey($authKey);
-        // echo json_decode($query->getSql());
+        //\App::$log->debug($query->getSql());
         // var_dump($this->fetchOne($query, new Entity()));
         $process = $this->fetchOne($query, new Entity());
         $status = new Status();
@@ -49,10 +49,40 @@ class Process extends Base
 
         $query->addValues($values);
         $this->writeItem($query, 'process', $query::TABLE);
+        $this->writeXRequestsToDb($process['id'], $process['requests']);
+
         $process = $this->readEntity($processId, $authKey, 1);
         $status = new Status();
         $process['status'] = $status->readProcessStatus($processId, $authKey);
         return $process;
+    }
+
+    public function writeXRequestsToDb($processId, $requests)
+    {
+        $xrequests = (new Request())->readXRequestByProcessId($processId);
+
+        if(null === $xrequests){
+            $query = new Query\XRequest(Query\Base::INSERT);
+            foreach($requests as $request){
+                $query->addValues([
+                    'AnliegenID' => $request['id'],
+                    'BuergerID' => $processId
+                ]);
+                $this->writeItem($query);
+            }
+        }
+        else {
+            foreach($xrequests as $xrequest){
+                $query = new Query\XRequest(Query\Base::UPDATE);
+                $query->addConditionXRequestId($xrequest['id']);
+                $query->addValues([
+                    'AnliegenID' => $requests[$xrequest['id']],
+                    'BuergerID' => $processId
+                ]);
+                $this->writeItem($query);
+            }
+        }
+
     }
 
     public function getNewProcessId()
@@ -97,20 +127,20 @@ class Process extends Base
         $process = new Entity();
         $process['processing'] = [];
         $process['processing']['slotlist'] = new SlotList();
-        $process = $this->readResolvedProviders($calendar, $process);
-        $process = $this->readResolvedRequests($calendar, $process);
-        $process = $this->readResolvedDay($calendar, $process);
+        $process = $this->readResolvedRequests($calendar['requests'], $process);
+        $process = $this->readResolvedProviders($calendar['providers'], $process);
+        $process = $this->readResolvedDay($calendar['firstDay'], $process);
         unset($process['processing']);
         return $process;
     }
 
-    protected function readResolvedRequests(\BO\Zmsentities\Calendar $calendar, Entity $process)
+    protected function readResolvedRequests(Array $requests, Entity $process)
     {
         $requestReader = new Request($this->getWriter(), $this->getReader());
         if (! isset($process['processing']['slotinfo'])) {
             $process['processing']['slotinfo'] = [];
         }
-        foreach ($calendar['requests'] as $key => $request) {
+        foreach ($requests as $key => $request) {
             $request = $requestReader->readEntity('dldb', $request['id']);
             $process['requests'][$key] = $request;
             foreach ($requestReader->readSlotsOnEntity($request) as $slotinfo) {
@@ -123,11 +153,11 @@ class Process extends Base
         return $process;
     }
 
-    protected function readResolvedProviders(\BO\Zmsentities\Calendar $calendar, Entity $process)
+    protected function readResolvedProviders(Array $providers, Entity $process)
     {
         $scopeReader = new Scope($this->getWriter(), $this->getReader());
         $providerReader = new Provider($this->getWriter(), $this->getReader());
-        foreach ($calendar['providers'] as $key => $provider) {
+        foreach ($providers as $key => $provider) {
             $process['providers'][$key] = $providerReader->readEntity('dldb', $provider['id']);
             $scopeList = $scopeReader->readByProviderId($provider['id']);
             foreach ($scopeList as $key => $scope) {
@@ -137,13 +167,13 @@ class Process extends Base
         return $process;
     }
 
-    protected function readResolvedDay(\BO\Zmsentities\Calendar $calendar, Entity $process)
+    protected function readResolvedDay(Array $firstDay, Entity $process)
     {
         $query = SlotList::getQuery();
         $statement = $this->getReader()->prepare($query);
         $process['appointments'] = array();
 
-        $date = \DateTime::createFromFormat('Y-m-d', $calendar['firstDay']['year'] . '-' . $calendar['firstDay']['month'] . '-' . $calendar['firstDay']['day']);
+        $date = \DateTime::createFromFormat('Y-m-d', $firstDay['year'] . '-' . $firstDay['month'] . '-' . $firstDay['day']);
 
         foreach ($process->scopes as $scope) {
             $statement->execute(SlotList::getParameters($scope['id'], $date));

@@ -13,7 +13,6 @@ class Scope extends Base
             ->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
             ->addConditionScopeId($scopeId);
-        //var_dump($query->getSql());
         return $this->fetchOne($query, new Entity());
     }
 

@@ -34,6 +34,21 @@ class Request extends Base
         return $providerSlots;
     }
 
+    public function readXRequestByProcessId($processId)
+    {
+        $query = 'SELECT
+                ba.`BuergeranliegenID` AS xrequest
+            FROM `zmsbo`.`buergeranliegen` ba
+            WHERE
+                ba.`BuergerID` = :process_id
+        ';
+        $xrequests = $this->getReader()->fetchAll($query, [
+            'process_id' => $processId,
+        ]);
+
+        return (count($xrequests)) ? $xrequests : null;
+    }
+
     public function readList($source, $requestIds)
     {
         $query = new Query\Request(Query\Base::SELECT);
