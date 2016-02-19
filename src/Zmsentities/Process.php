@@ -52,4 +52,12 @@ class Process extends Schema\Entity
         $this->status = $status;
         return $this;
     }
+
+    public function addFormData($formData)
+    {
+        foreach ($formData as $param => $item) {
+            $this->clients[$param] = $item['value'];
+        }
+        return $this;
+    }
 }
