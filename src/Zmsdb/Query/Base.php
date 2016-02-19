@@ -43,13 +43,16 @@ abstract class Base
             $this->addSelect();
         } elseif (self::INSERT === $queryType) {
             $this->query = new Insert($dialect);
+            $this->addTable();
         } elseif (self::UPDATE === $queryType) {
             $this->query = new Update($dialect);
+            $this->addTable();
         } elseif (self::REPLACE === $queryType) {
             $this->query = new INSERT($dialect);
             $this->query->queryBaseStatement('REPLACE INTO');
         } elseif (self::DELETE === $queryType) {
             $this->query = new Delete($dialect);
+            $this->addTable();
         } elseif ($queryType instanceof \Solution10\SQL\Query) {
             $this->query = $queryType;
         }
@@ -81,7 +84,7 @@ abstract class Base
      *
      * @return self
      */
-    public function addInsertTable()
+    public function addTable()
     {
         $class = get_class($this);
         $table = constant($class . '::TABLE');
