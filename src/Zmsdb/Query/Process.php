@@ -10,6 +10,61 @@ class Process extends Base implements MappingInterface
      */
     const TABLE = 'buerger';
 
+    public function addJoin()
+    {
+        $this->query->leftJoin(
+            new Alias(Scope::TABLE, 'scope'),
+            'process.StandortID',
+            '=',
+            'scope.StandortID'
+            );
+        $scopeQuery = new Scope($this->query);
+        $scopeQuery->addEntityMappingPrefixed('scope__');
+
+        $this->query->leftJoin(
+            new Alias(Provider::TABLE, 'provider'),
+            'scope.InfoDienstleisterID',
+            '=',
+            'provider.id'
+        );
+        $providerQuery = new Provider($this->query);
+        $providerQuery->addEntityMappingPrefixed('scope__provider__');
+
+        $this->query->leftJoin(
+            new Alias('buergeranliegen', 'xrequest'),
+            'process.BuergerID',
+            '=',
+            'xrequest.BuergeranliegenID'
+            );
+        $this->query->leftJoin(
+            new Alias(REQUEST::TABLE, 'request'),
+            'request.id',
+            '=',
+            'xrequest.BuergeranliegenID'
+            );
+        $requestQuery = new Request($this->query);
+        $requestQuery->addEntityMappingPrefixed('requests__');
+        return [$scopeQuery];
+    }
+
+    public function readRequestOnEntity(\BO\Zmsentities\Request $entity)
+    {
+        $query = 'SELECT
+                x.`dienstleister` AS provider__id,
+                x.`slots`
+            FROM `startinfo`.`xdienst` x
+                LEFT JOIN `startinfo`.`dienstleister` d ON x.dienstleister = d.id
+            WHERE
+                x.`dienstleistung` = :request_id
+                AND x.`termin_hide` = 0
+                AND d.`zms_termin` = 1
+        ';
+        $providerSlots = $this->getReader()->fetchAll($query, [
+            'request_id' => $entity->id
+        ]);
+        return $providerSlots;
+    }
+
     public function getEntityMapping()
     {
         return [
@@ -34,7 +89,6 @@ class Process extends Base implements MappingInterface
             'queue__waitingTime' => 'process.wartezeit',
             'queue__reminderTimestamp' => 'process.Erinnerungszeitpunkt',
             'workstation__id' => 'process.NutzerID',
-            'scope__id' => 'process.StandortID'
         ];
     }
 
@@ -54,12 +108,6 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
-    public function addValues($values)
-    {
-        $this->query->values($values);
-        return $this;
-    }
-
     public function reverseEntityMapping($processData)
     {
         $data = array();
@@ -67,7 +115,8 @@ class Process extends Base implements MappingInterface
             $data['Anmerkung'] = $processData['amendment'];
         }
         if ($this->hasKey($processData['appointments'], 'date')){
-            $data['Datum'] = $processData['appointments']['date'];
+            $data['Datum'] = date('Y-m-d', $processData['appointments']['date']);
+            $data['Uhrzeit'] = date('H:i', $processData['appointments']['date']);
         }
         if ($this->hasKey($processData, 'scope')){
             $data['StandortID'] = $processData['scope'];

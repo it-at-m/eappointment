@@ -204,4 +204,15 @@ abstract class Base
         $this->query->limit($count);
         return $this;
     }
+
+    /**
+     * Add values to a insert or update query
+     *
+     * @return self
+     */
+    public function addValues($values)
+    {
+        $this->query->values($values);
+        return $this;
+    }
 }
