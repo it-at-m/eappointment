@@ -25,7 +25,7 @@ class ProcessFree extends BaseController
         $input = Validator::input()->isJson()->getValue();
         $query = new Query();
         $calendar = new \BO\Zmsentities\Calendar($input);
-        $message->data = $query->readResolvedEntity($calendar);
+        $message->data = $query->readFreeAppointments($calendar);
         Render::lastModified(time(), '0');
         Render::json($message);
     }
