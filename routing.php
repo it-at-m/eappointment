@@ -1408,13 +1408,14 @@
  *                  in: path
  *                  required: true
  *                  type: string
- *              -   required": true,
- *				    description: request numbers as csv string,
- *  			    in: path,
- *					type: array,
- *					items:
- *					   type: string,
- *					collectionFormat: csv
+ *              -   name: csv
+ *                  required: true
+ *                  description: request numbers as csv string
+ *                  in: path
+ *                  type: array
+ *                  items:
+ *                     type: string
+ *                  collectionFormat: csv
  *          responses:
  *              200:
  *                  description: "success"
@@ -1435,8 +1436,8 @@
     ->conditions([
         'csv' => '[0-9,]{3,}'
     ])
-    ->name("ProviderList");    
-    
+    ->name("ProviderList");
+
 /**
  *  @swagger
  *  "/request/{source}/{id}/":
@@ -1484,13 +1485,14 @@
  *                  in: path
  *                  required: true
  *                  type: string
- *              -   required": true,
- *				    description: request numbers as csv string,
- *  			    in: path,
- *					type: array,
- *					items:
- *					   type: string,
- *					collectionFormat: csv
+ *              -   name: csv
+ *                  required: true
+ *                  description: request numbers as csv string
+ *                  in: path
+ *                  type: array
+ *                  items:
+ *                     type: string
+ *                  collectionFormat: csv
  *          responses:
  *              200:
  *                  description: "success"
@@ -1534,7 +1536,7 @@
  *                          data:
  *                              type: array
  *                              items:
- *                                  $ref: "schema/scope.json" *
+ *                                  $ref: "schema/scope.json"
  *              404:
  *                  description: "no scopes defined yet"
  */
