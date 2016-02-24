@@ -3,6 +3,7 @@
 namespace BO\Zmsdb;
 
 use \BO\Zmsentities\Session as Entity;
+use \BO\Zmsclient\SessionHandler;
 
 class Session extends Base
 {
@@ -13,7 +14,7 @@ class Session extends Base
     public function readEntity()
     {
         $entity = new Entity();
-        $handler = new Helper\ZMS_SessionHandler();
+        $handler = new SessionHandler();        
         session_set_save_handler($handler, true);        
         session_name($handler->sessionName);
         session_start();
