@@ -2097,7 +2097,29 @@
     ->name("WorkstationDelete");
 
     
-
+/**
+ *  @swagger
+ *  "/session/":
+ *      post:
+ *          description: Get current Session
+ *          parameters:
+ *              -   name: session
+ *                  description: session data
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/workstation.json"
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/session.json"
+ */
 \App::$slim->get('/session/',
     '\BO\Zmsapi\SessionHandler:render')
     ->name("sessionhandler");    
