@@ -2095,6 +2095,13 @@
 \App::$slim->delete('/workstation/:loginname/',
     '\BO\Zmsapi\WorkstationDelete:render')
     ->name("WorkstationDelete");
+
+    
+
+\App::$slim->get('/session/',
+    '\BO\Zmsapi\SessionHandler:render')
+    ->name("sessionhandler");    
+    
 /* ---------------------------------------------------------------------------
  * maintenance
  * -------------------------------------------------------------------------*/
