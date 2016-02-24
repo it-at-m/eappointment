@@ -1,0 +1,107 @@
+{
+    "type": "object",
+    "description": "Representation of a session.",
+    "example": {
+        "name": "Zmsappointment",
+        "id": "7b89b1c1fd6c7a52fa748ff663babd0c",
+        "content": {
+        	"basket": {
+	            "requests" : "120335",
+		        "providers" : "122217",
+		        "scope" : "123",
+		        "process" : "1234567",
+		        "date" : "1456310041",
+		        "familyName" : "Max Mustermann",
+		        "clientEmail" : "max@zms-bo.de",
+		        "clientTelehone" : "030 23232323",
+		        "clientAmendment" : "Notiz zum Termin",
+		        "authKey" : "1234"
+		    },
+		    "human": {
+		    	"captcha_text" : "kck6Qz",
+		        "Client" : 0,
+		        "TS" : 0,
+		        "Origin" : "captcha",
+		        "RemoteAddress" : "127.0.0.1",
+		        "referrer" : "termin",
+		        "Step" : {
+		        	"dayselect":1
+		        }
+			}
+	    }       
+    },
+    "properties": {
+        "name": {
+            "type": "string"
+        },
+        "id": {
+            "type": "string"
+        },
+        "content": {
+            "type": "object",
+            "properties": {
+            	"basket" : {
+            		"type": "object",
+            		"properties": {
+            			"requests" : {
+            				"type": "string"
+            			},
+				        "providers" : {
+            				"type": "string"
+            			},
+				        "scope" : {
+            				"type": "integer"
+            			},
+				        "process" : {
+            				"type": "integer"
+            			},
+				        "date" : {
+            				"type": "integer"
+            			},
+				        "familyName" : {
+            				"type": "string"
+            			},
+				        "clientEmail" : {
+            				"type": "string"
+            			},
+				        "clientTelehone" : {
+            				"type": "integer"
+            			},
+				        "clientAmendment" : {
+            				"type": "string"
+            			},
+				        "authKey" :{
+            				"type": "string"
+            			}
+            		}
+            	},
+            	"human" : {
+            		"type" : "object",
+            		"properties" : {
+            			"captcha_text" : {
+            				"type": "string"
+            			},
+				        "Client" : {
+            				"type": "integer"
+            			},
+				        "TS" : {
+            				"type": "integer"
+            			},
+				        "Origin" : {
+            				"type": "string"
+            			},
+				        "RemoteAddress" : {
+            				"type": "string"
+            			},
+				        "referrer" : {
+            				"type": "string"
+            			},
+				        "Step" : {
+            				"type": "array"
+            			}
+            		}
+            	}
+            }
+        }
+    }      
+}
