@@ -2120,9 +2120,10 @@
  *                          data:
  *                              $ref: "schema/session.json"
  */
-\App::$slim->get('/session/',
-    '\BO\Zmsapi\SessionHandler:render')
-    ->name("sessionhandler");    
+\App::$slim->map('/session/',
+    '\BO\Zmsapi\SessionGet:render')
+    ->via('GET','POST')
+    ->name("SessionGet");    
     
 /* ---------------------------------------------------------------------------
  * maintenance

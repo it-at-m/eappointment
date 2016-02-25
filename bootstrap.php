@@ -10,11 +10,11 @@ require(APP_PATH . '/vendor/autoload.php');
 // initialize the static \App singleton
 require(APP_PATH . '/config.php');
 
-// Set option for environment, routing, logging and templating
 \BO\Slim\Bootstrap::init();
 //\BO\Slim\Bootstrap::addTwigExtension(new \BO\Dldb\TwigExtension());
 //\BO\Slim\Bootstrap::addTwigTemplateDirectory('dldb', APP_PATH . '/vendor/bo/clientdldb/templates');
 
+// Set option for environment, routing, logging and templating
 \BO\Zmsdb\Connection\Select::$enableProfiling = \APP::DEBUG;
 \BO\Zmsdb\Connection\Select::$readSourceName = \APP::DB_DSN_READONLY;
 \BO\Zmsdb\Connection\Select::$writeSourceName = \APP::DB_DSN_READWRITE;
