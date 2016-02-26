@@ -4,73 +4,43 @@ namespace BO\Zmsclient;
 /**
  * Session handler for mysql
  */
-class SessionHandler extends \BO\Zmsdb\Base implements \SessionHandlerInterface
+class SessionHandler implements \SessionHandlerInterface
 {
 
-    public $sessionName = \App::SESSION_NAME;
-    
+    public $sessionName;
+
     public function open($save_path, $name)
-    {        
+    {
         $this->sessionName = $name;
     }
-    
+
     public function close()
     {
         return true;
     }
 
-    public function read($session_id)
+    public function read($sessionId)
     {
-        $result = $this->getReader()->fetchOne('
-            SELECT 
-                sessioncontent as content
-            FROM 
-                sessiondata 
-            WHERE 
-                sessionid = ? AND
-                sessionname = ?
-            ', array(
-            $session_id,
-            $this->sessionName
-        ));
-        return $result['content'];
+        $session = \App::$http->readGetResult('/session/' . $this->sessionName .'/'. $sessionId .'/')->getEntity();
+        return ($session) ? $session['content'] : null;
     }
 
-    public function write($session_id, $session_data)
+    public function write($sessionId, $sessionData)
     {
-        \App::$log->debug("SESSION WRITE HANDLER: ". $session_id ." - ". print_r($_SESSION,1));
-        $query = '
-            REPLACE INTO 
-                sessiondata 
-            SET 
-                sessionid=?, 
-                sessionname=?, 
-                sessioncontent=?
-        ';        
-        $statement = $this->getWriter()->prepare($query);
-        return $statement->execute(array(
-            $session_id,
-            $this->sessionName,
-            $session_data
-        ));
+        $entity = new \BO\Zmsentities\Session();
+        $entity->id = $sessionId;
+        $entity->name = $this->sessionName;
+        $entity->content = $sessionData;
+        $session = \App::$http->readPostResult('/session/', $entity)->getEntity();
+        return ($session) ? true : false;
     }
 
-    public function destroy($session_id)
+    public function destroy($sessionId)
     {
-        $query = '
-            DELETE FROM
-                sessiondata
-            WHERE
-                sessionid=? AND
-                sessionname=?
-        ';
-        $statement = $this->getWriter()->prepare($query);
-        return $statement->execute(array(
-            $session_id,
-            $this->sessionName
-        ));
+        $result = \App::$http->readDeleteResult('/session/' . $this->sessionName .'/'. $sessionId .'/');
+        return ($result) ? true : false;
     }
-    
+
     public function gc($maxlifetime)
     {
         /*
