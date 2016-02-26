@@ -8,23 +8,25 @@ namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Zmsdb\Session as Query;
+use \BO\Mellon\Validator;
 
 /**
  * Handle requests concerning services
  */
-class SessionGet extends BaseController
+class SessionUpdate extends BaseController
 {
 
     /**
      *
      * @return String
      */
-    public static function render($sessionName, $sessionId)
+    public static function render()
     {
+        $query = new Query();
         $message = Response\Message::create();
-        $session = (new Query())->readEntity($sessionName, $sessionId);
-        $message->data = $session;
-        // $message->data = \BO\Zmsentities\Session::createExample();
+        $input = Validator::input()->isJson()->getValue();
+        $sessionData = new \BO\Zmsentities\Session($input);
+        $message->data = $query->updateEntity($sessionData);
         Render::lastModified(time(), '0');
         Render::json($message);
     }

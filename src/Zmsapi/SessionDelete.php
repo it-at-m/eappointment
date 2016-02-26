@@ -12,7 +12,7 @@ use \BO\Zmsdb\Session as Query;
 /**
  * Handle requests concerning services
  */
-class SessionGet extends BaseController
+class SessionDelete extends BaseController
 {
 
     /**
@@ -23,8 +23,12 @@ class SessionGet extends BaseController
     {
         $message = Response\Message::create();
         $session = (new Query())->readEntity($sessionName, $sessionId);
+        $query = new Query();
+        $result = $query->deleteEntity($sessionName, $sessionId);
+
+        \App::$log->debug('SESSION DELETED: ', [$session]);
         $message->data = $session;
-        // $message->data = \BO\Zmsentities\Session::createExample();
+        $message = Response\Message::create();
         Render::lastModified(time(), '0');
         Render::json($message);
     }
