@@ -42,7 +42,7 @@
             "properties": {
             	"basket" : {
             		"type": "object",
-            		"properties": {
+            		"items": {
             			"requests" : {
             				"type": "string"
             			},
@@ -77,7 +77,7 @@
             	},
             	"human" : {
             		"type" : "object",
-            		"properties" : {
+            		"items" : {
             			"captcha_text" : {
             				"type": "string"
             			},
