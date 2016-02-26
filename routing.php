@@ -2096,35 +2096,44 @@
     '\BO\Zmsapi\WorkstationDelete:render')
     ->name("WorkstationDelete");
 
-    
+
 /**
- *  @swagger
- *  "/session/":
- *      post:
- *          description: Get current Session
- *          parameters:
- *              -   name: session
- *                  description: session data
- *                  required: true
- *                  in: body
- *                  schema:
- *                      $ref: "schema/workstation.json"
- *          responses:
- *              200:
- *                  description: "success"
- *                  schema:
- *                      type: object
- *                      properties:
- *                          meta:
- *                              $ref: "schema/metaresult.json"
- *                          data:
- *                              $ref: "schema/session.json"
- */
+*  @swagger
+*  "/session/":
+*      post:
+*          description: Get current Session
+*          parameters:
+*              -   name: session
+*                  description: data from session
+*                  required: true
+*                  in: body
+*                  schema:
+*                      $ref: "schema/session.json"
+*          responses:
+*              200:
+*                  description: get an updated calendar objects with updated days list
+*                  schema:
+*                      type: object
+*                      properties:
+*                          meta:
+*                              $ref: "schema/metaresult.json"
+*                          data:
+*                              $ref: "schema/session.json"
+*              404:
+*                  description: "Could not find any available days"
+*                  schema:
+*                      type: object
+*                      properties:
+*                          meta:
+*                              $ref: "schema/metaresult.json"
+*                          data:
+*                              $ref: "schema/calendar.json"
+*/
 \App::$slim->map('/session/',
     '\BO\Zmsapi\SessionGet:render')
     ->via('GET','POST')
-    ->name("SessionGet");    
-    
+    ->name("SessionGet");
+
 /* ---------------------------------------------------------------------------
  * maintenance
  * -------------------------------------------------------------------------*/
