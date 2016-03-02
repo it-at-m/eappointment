@@ -109,6 +109,7 @@ class TwigExtension extends \Slim\Views\TwigExtension
 
         if ($withUri) {
             $uri .= $req->getRootUri();
+            $uri = preg_replace('#^https?://[^/]+#', '', $uri); //Do not force protocoll or host
         }
         return Helper::proxySanitizeUri($uri);
     }
