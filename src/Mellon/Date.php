@@ -19,11 +19,11 @@ class Date extends \BO\Mellon\Valid
      *
      * @return self
      */
-     public function isDate($message = 'no valid date')
+     public function isDate($format = 'Y-m-d', $message = 'no valid date')
     {
-        $format = 'Y-m-d';
-        $d = \DateTime::createFromFormat($format, $this->value);
-        if($d && $d->format($format) == $this->value) {
+        $this->validated = true;
+        $date = \DateTime::createFromFormat($format, $this->value);
+        if($date && $date->format($format) == $this->value) {
             return $this->validate($message, FILTER_SANITIZE_SPECIAL_CHARS);
         }
         return $this->validate($message, false);
