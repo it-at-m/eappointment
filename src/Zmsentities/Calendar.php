@@ -149,6 +149,16 @@ class Calendar extends Schema\Entity
         return $this->getDay($datetime->format('Y'), $datetime->format('m'), $datetime->format('d'));
     }
 
+    public function getDateTimeFromDate($date)
+    {
+        return \DateTime::createFromFormat('Y-m-d', $date['year']. '-'. $date['month'] .'-'. $date['day']);
+    }
+
+    public function getDateTimeFromTs($timestamp)
+    {
+        return new \DateTime('@' . $timestamp);
+    }
+
     /**
      * Check if given day exists in calendar
      *
@@ -162,5 +172,23 @@ class Calendar extends Schema\Entity
             }
         }
         return false;
+    }
+
+
+    public function addFreeProcess(Process $process)
+    {
+        $exists = false;
+        foreach($process->appointments as $appointment){
+            foreach($this->freeProcesses as $key => $freeProcess){
+                if($appointment && false !== $freeProcess->hasAppointment($appointment)){
+                    $this->freeProcesses[$key]->addAppointment($appointment);
+                    $exists = true;
+                }
+            }
+        }
+        if(false === $exists){
+            $this->freeProcesses[] = $process;
+        }
+        return $this;
     }
 }

@@ -29,8 +29,9 @@ class Appointment extends Schema\Entity
         return $this;
     }
 
-    public function addSlotCount($amount)
+    public function addSlotCount()
     {
-        $this->slotCount = $amount;
+        $this->slotCount += 1;
+        return $this;
     }
 }
