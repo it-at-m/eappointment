@@ -25,18 +25,15 @@ class Process extends Schema\Entity
      *
      * @return $this
      */
-    public function addProvider($source, $idList)
+    public function addScope($scopeId)
     {
-        foreach (explode(',', $idList) as $id) {
-            $provider = new Provider();
-            $provider->source = $source;
-            $provider->id = $id;
-            $this->providers[] = $provider;
-        }
+        $scope = new Scope();
+        $scope->id = $scopeId;
+        $this->scope = $scope;
         return $this;
     }
 
-    public function addRequest($source, $requestList)
+    public function addRequests($source, $requestList)
     {
         foreach (explode(',', $requestList) as $id) {
             $request = new Request();
@@ -58,6 +55,22 @@ class Process extends Schema\Entity
         foreach ($formData as $param => $item) {
             $this->clients[$param] = $item['value'];
         }
+        return $this;
+    }
+
+    public function hasAppointment($date, $scope)
+    {
+        foreach($this->appointments as $key => $item){
+            if($item['date'] == $date && $item['scope']['id'] == $scope){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public function addAppointment(Appointment $newappointment)
+    {
+        $this->appointments[] = $newappointment;
         return $this;
     }
 }
