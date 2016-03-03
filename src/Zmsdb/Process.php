@@ -3,7 +3,6 @@ namespace BO\Zmsdb;
 
 use \BO\Zmsentities\Process as Entity;
 use BO\Zmsdb\Helper\ProcessStatus as Status;
-use \BO\Zmsdb\Query\SlotList;
 
 class Process extends Base
 {
@@ -46,7 +45,7 @@ class Process extends Base
         $process['id'] = $processId;
         $process['authKey'] = $authKey;
         $values = $query->reverseEntityMapping($process);
-
+        \App::$log->debug('values', [$values]);
         $query->addValues($values);
         $this->writeItem($query, 'process', $query::TABLE);
         $this->writeXRequestsToDb($process['id'], $process['requests']);
@@ -122,82 +121,11 @@ class Process extends Base
     }
 
     /* prüfen ob das benötigt wird begin */
-    public function readFreeAppointments(\BO\Zmsentities\Calendar $calendar)
+    public function readFreeProcesses(\BO\Zmsentities\Calendar $calendar)
     {
-        $process = new Entity();
-        $process['processing'] = [];
-        $process['processing']['slotlist'] = new SlotList();
-        $process = $this->readResolvedRequests($calendar['requests'], $process);
-        $process = $this->readResolvedProviders($calendar['providers'], $process);
-        $process = $this->readResolvedDay($calendar['firstDay'], $process);
-        unset($process['processing']);
-        return $process;
+        $resolvedCalendar = new Calendar();
+        $calendar = $resolvedCalendar->readResolvedEntity($calendar, true, false);
+        return $calendar;
     }
 
-    protected function readResolvedRequests(Array $requests, Entity $process)
-    {
-        $requestReader = new Request($this->getWriter(), $this->getReader());
-        if (! isset($process['processing']['slotinfo'])) {
-            $process['processing']['slotinfo'] = [];
-        }
-        foreach ($requests as $key => $request) {
-            $request = $requestReader->readEntity('dldb', $request['id']);
-            $process['requests'][$key] = $request;
-            foreach ($requestReader->readSlotsOnEntity($request) as $slotinfo) {
-                if (! isset($process['processing']['slotinfo'][$slotinfo['provider__id']])) {
-                    $process['processing']['slotinfo'][$slotinfo['provider__id']] = 0;
-                }
-                $process['processing']['slotinfo'][$slotinfo['provider__id']] += $slotinfo['slots'];
-            }
-        }
-        return $process;
-    }
-
-    protected function readResolvedProviders(Array $providers, Entity $process)
-    {
-        $scopeReader = new Scope($this->getWriter(), $this->getReader());
-        $providerReader = new Provider($this->getWriter(), $this->getReader());
-        foreach ($providers as $key => $provider) {
-            $process['providers'][$key] = $providerReader->readEntity('dldb', $provider['id']);
-            $scopeList = $scopeReader->readByProviderId($provider['id']);
-            foreach ($scopeList as $key => $scope) {
-                $process['scopes'][$key] = $scope;
-            }
-        }
-        return $process;
-    }
-
-    protected function readResolvedDay(Array $firstDay, Entity $process)
-    {
-        $query = SlotList::getQuery();
-        $statement = $this->getReader()->prepare($query);
-        $process['appointments'] = array();
-
-        $date = \DateTime::createFromFormat('Y-m-d', $firstDay['year'] . '-' . $firstDay['month'] . '-' . $firstDay['day']);
-
-        foreach ($process->scopes as $scope) {
-            $statement->execute(SlotList::getParameters($scope['id'], $date));
-            while ($slotData = $statement->fetch(\PDO::FETCH_ASSOC)) {
-                $appointment = $this->addAppointmentsToProcess($process, $slotData, $date);
-                if (null !== $appointment) {
-                    $process['appointments'][] = $appointment;
-                }
-            }
-        }
-        return $process;
-    }
-
-    protected function addAppointmentsToProcess($process, array $slotData, \DateTime $date)
-    {
-        $appointment = null;
-        $slotDate = \DateTime::createFromFormat('Y-m-d', $slotData['year'] . "-" . $slotData['month'] . '-' . $slotData['day']);
-        if ($slotDate->format('Y-m-d') == $date->format('Y-m-d')) {
-            $scopeReader = new Scope($this->getWriter(), $this->getReader());
-            $scope = $scopeReader->readEntity($slotData['appointment__scope__id'], 1);
-            $appointment = new \BO\Zmsentities\Appointment();
-            $appointment->addDate($slotData['appointment__date']);
-            $appointment->scope = $scope;
-        }
-        return $appointment;
-    }
 }
