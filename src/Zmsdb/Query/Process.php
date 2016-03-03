@@ -34,13 +34,13 @@ class Process extends Base implements MappingInterface
             new Alias('buergeranliegen', 'xrequest'),
             'process.BuergerID',
             '=',
-            'xrequest.BuergeranliegenID'
+            'xrequest.BuergerID'
             );
         $this->query->leftJoin(
             new Alias(REQUEST::TABLE, 'request'),
             'request.id',
             '=',
-            'xrequest.BuergeranliegenID'
+            'xrequest.AnliegenID'
             );
         $requestQuery = new Request($this->query);
         $requestQuery->addEntityMappingPrefixed('requests__');
@@ -114,12 +114,12 @@ class Process extends Base implements MappingInterface
         if ($this->hasKey($processData, 'amendment')){
             $data['Anmerkung'] = $processData['amendment'];
         }
-        if ($this->hasKey($processData['appointments'], 'date')){
-            $data['Datum'] = date('Y-m-d', $processData['appointments']['date']);
-            $data['Uhrzeit'] = date('H:i', $processData['appointments']['date']);
+        if ($this->hasKey($processData['appointments'][0], 'date')){
+            $data['Datum'] = date('Y-m-d', $processData['appointments'][0]['date']);
+            $data['Uhrzeit'] = date('H:i', $processData['appointments'][0]['date']);
         }
         if ($this->hasKey($processData, 'scope')){
-            $data['StandortID'] = $processData['scope'];
+            $data['StandortID'] = $processData['scope']['id'];
         }
         if ($this->hasKey($processData, 'authKey')){
             $data['absagecode'] = $processData['authKey'];

@@ -181,6 +181,38 @@ class SlotList
         return $calendar;
     }
 
+    public function addFreeProcesses(\BO\Zmsentities\Calendar $calendar)
+    {
+        $scopeReader = new \BO\Zmsdb\Scope();
+        $datestr = $calendar['firstDay']['year'].'-'.$calendar['firstDay']['month'].'-'.$calendar['firstDay']['day'];
+        $selectedDate = \DateTime::createFromFormat('Y-m-d', $datestr)->format('Y-m-d');
+
+        $calendar['freeProcesses'] = array();
+        foreach ($this->slots as $date => $slotList) {
+            if($date == $selectedDate){
+                $scope = $scopeReader->readEntity($this->slotData['appointment__scope__id'],1);
+                foreach ($slotList as $slotInfo) {
+                    if($slotInfo['public'] > 0){
+                        $appointment = new \BO\Zmsentities\Appointment();
+                        $appointmentDateTime = \DateTime::createFromFormat('Y-m-d H:i', $selectedDate .' '. $slotInfo['time']);
+                        $appointment['scope'] = $scope;
+                        $appointment['date'] = $appointmentDateTime->format('U');
+                        $appointment['slotCount'] = $slotInfo['public'];
+
+                        $process = new \BO\Zmsentities\Process();
+                        $process['scope'] = $scope;
+                        $process['requests'] = $calendar['requests'];
+                        $process->addAppointment($appointment);
+
+                        $calendar['freeProcesses'][] = $process;
+                    }
+                }
+            }
+
+        }
+        return $calendar;
+    }
+
     public function toReducedBySlots($slotsRequired)
     {
         //TODO: implement
