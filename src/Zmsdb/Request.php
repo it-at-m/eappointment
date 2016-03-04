@@ -33,8 +33,8 @@ class Request extends Base
             'process_id' => $processId,
         ]);
 
-        if(count($result)){
-            foreach($result as $request){
+        if (count($result)) {
+            foreach ($result as $request) {
                 $requests[] = $this->readEntity('dldb', $request['id']);
             }
         }
