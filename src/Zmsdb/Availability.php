@@ -11,8 +11,8 @@ class Availability extends Base
         $query = new Query\Availability(Query\Base::SELECT);
         $query->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
-            ->addConditionAvailabilityId($availabilityId);        
-        $availability = $this->fetchOne($query, new Entity());        
+            ->addConditionAvailabilityId($availabilityId);
+        $availability = $this->fetchOne($query, new Entity());
         return $availability;
     }
     

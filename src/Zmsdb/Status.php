@@ -8,6 +8,7 @@ class Status extends Base
 {
     /**
      * Fetch status from db
+     *
      * @return \BO\Zmsentities\Status
      */
     public function readEntity()
@@ -30,6 +31,7 @@ class Status extends Base
 
     /**
      * Get the numer of blocked appointments
+     *
      * @return Int
      */
     protected function readBlockedProcessCount()
@@ -51,6 +53,7 @@ class Status extends Base
 
     /**
      * Get the numer of confirmed appointments
+     *
      * @return Int
      */
     protected function readConfirmedProcessCount()
@@ -73,6 +76,7 @@ class Status extends Base
 
     /**
      * Get the numer of last inserted appointments
+     *
      * @return Int
      */
     protected function readLastInsertedProcessTime()
@@ -95,6 +99,7 @@ class Status extends Base
 
     /**
      * Get the numer of deleted appointments
+     *
      * @return Int
      */
     protected function readDeletedProcessCount()
@@ -116,6 +121,7 @@ class Status extends Base
 
     /**
      * Get the numer of missed appointments
+     *
      * @return Int
      */
     protected function readMissedProcessCount()
@@ -138,6 +144,7 @@ class Status extends Base
 
     /**
      * Get the numer of reserved appointments
+     *
      * @return Int
      */
     protected function readReservedProcessCount()
@@ -160,6 +167,7 @@ class Status extends Base
 
     /**
      * Fetch mysql config variables
+     *
      * @return Array
      */
     protected function readConfigVariables()
@@ -170,6 +178,7 @@ class Status extends Base
 
     /**
      * Fetch mysql status variables
+     *
      * @return Array
      */
     protected function readStatusVariables()

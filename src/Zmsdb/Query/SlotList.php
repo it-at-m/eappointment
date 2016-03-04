@@ -189,12 +189,15 @@ class SlotList
 
         $calendar['freeProcesses'] = array();
         foreach ($this->slots as $date => $slotList) {
-            if($date == $selectedDate){
-                $scope = $scopeReader->readEntity($this->slotData['appointment__scope__id'],1);
+            if ($date == $selectedDate) {
+                $scope = $scopeReader->readEntity($this->slotData['appointment__scope__id'], 1);
                 foreach ($slotList as $slotInfo) {
-                    if($slotInfo['public'] > 0){
+                    if ($slotInfo['public'] > 0) {
                         $appointment = new \BO\Zmsentities\Appointment();
-                        $appointmentDateTime = \DateTime::createFromFormat('Y-m-d H:i', $selectedDate .' '. $slotInfo['time']);
+                        $appointmentDateTime = \DateTime::createFromFormat(
+                            'Y-m-d H:i',
+                            $selectedDate .' '. $slotInfo['time']
+                        );
                         $appointment['scope'] = $scope;
                         $appointment['date'] = $appointmentDateTime->format('U');
                         $appointment['slotCount'] = $slotInfo['public'];

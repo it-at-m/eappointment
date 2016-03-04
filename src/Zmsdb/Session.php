@@ -8,6 +8,7 @@ class Session extends Base
 {
     /**
      * Fetch status from db
+     *
      * @return \BO\Zmsentities\Session
      */
     public function readEntity($sessionName, $sessionId)
@@ -34,7 +35,8 @@ class Session extends Base
 
     protected function readSessionData($sessionName, $sessionId)
     {
-        $result = $this->getReader()->fetchOne('
+        $result = $this->getReader()->fetchOne(
+            '
             SELECT
                 sessioncontent
             FROM
@@ -42,10 +44,12 @@ class Session extends Base
             WHERE
                 sessionid = ? AND
                 sessionname = ?
-            ', array(
+            ',
+            array(
                     $sessionId,
                     $sessionName
-                ));
+            )
+        );
         return $result['sessioncontent'];
     }
 
@@ -60,11 +64,13 @@ class Session extends Base
                 sessioncontent=?
         ';
         $statement = $this->getWriter()->prepare($query);
-        $statement->execute(array(
+        $statement->execute(
+            array(
             $sessionId,
             $sessionName,
             $sessionContent
-        ));
+            )
+        );
     }
 
     protected function deleteSessionData($sessionName, $sessionId)
@@ -77,9 +83,11 @@ class Session extends Base
                 sessionname=?
         ';
         $statement = $this->getWriter()->prepare($query);
-        $statement->execute(array(
+        $statement->execute(
+            array(
             $sessionId,
             $sessionName
-        ));
+            )
+        );
     }
 }

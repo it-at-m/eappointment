@@ -68,7 +68,7 @@ abstract class Base
      *
      * @return self
      */
-    public function addSelect()
+    protected function addSelect()
     {
         $class = get_class($this);
         $table = constant($class . '::TABLE');
@@ -84,7 +84,7 @@ abstract class Base
      *
      * @return self
      */
-    public function addTable()
+    protected function addTable()
     {
         $class = get_class($this);
         $table = constant($class . '::TABLE');
@@ -97,13 +97,14 @@ abstract class Base
      * Add joins to table if required
      * Override this method if join are required for a select
      */
-    public function addRequiredJoins()
+    protected function addRequiredJoins()
     {
     }
 
     /**
      * If resolveReferences is required, override this method
-     * @param Int $depth Number of levels of sub references to resolve
+     *
+     * @param  Int $depth Number of levels of sub references to resolve
      * @return self
      */
     public function addResolvedReferences($depth)
@@ -121,15 +122,17 @@ abstract class Base
 
     /**
      * If resolveReferences is required, override this method
+     *
      * @return Array of self
      */
-    public function addJoin()
+    protected function addJoin()
     {
         return [];
     }
 
     /**
      * get SQL-String
+     *
      * @return String
      */
     public function getSql()
@@ -139,6 +142,7 @@ abstract class Base
 
     /**
      * List of parameters to use for a prepared statement
+     *
      * @return Array
      */
     public function getParameters()
@@ -154,9 +158,10 @@ abstract class Base
 
     /**
      * Shortcut to create an SQL-Expression without quoting
+     *
      * @return \Solution10\SQL\Expression
      */
-    public static function expression($string)
+    protected static function expression($string)
     {
         return new Expression($string);
     }
@@ -175,10 +180,11 @@ abstract class Base
     /**
      * Add a select part to the query containing a mapping from the db schema to the entity schema with a prefix
      * This method is usually used on joined tables
-     * @param String $prefix add a prefix per field like 'provider__'
+     *
+     * @param  String $prefix add a prefix per field like 'provider__'
      * @return self
      */
-    public function addEntityMappingPrefixed($prefix)
+    protected function addEntityMappingPrefixed($prefix)
     {
         $prefixed = [];
         foreach ($this->getEntityMapping() as $key => $value) {
@@ -193,7 +199,7 @@ abstract class Base
      *
      * @return self
      */
-    public function addReferenceMapping()
+    protected function addReferenceMapping()
     {
         $this->query->select($this->getReferenceMapping());
         return $this;

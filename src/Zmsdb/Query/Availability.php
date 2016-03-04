@@ -12,29 +12,33 @@ class Availability extends Base implements MappingInterface
     public function getEntityMapping()
     {
         return [
-        	'id' => 'availability.OeffnungszeitID',
-        	'bookable__startInDays' => 'availability.Offen_ab',
-        	'bookable__endInDays' => 'availability.Offen_bis',
-        	'description' => 'availability.kommentar',
-        	'startDate' => self::expression('UNIX_TIMESTAMP(`availability`.`Startdatum`)'),
-        	'startTime' => self::expression('DATE_FORMAT(`availability`.`Anfangszeit`,"%H:%i")'),
-        	'endDate' => self::expression('UNIX_TIMESTAMP(`availability`.`Endedatum`)'),
-        	'endTime' => self::expression('DATE_FORMAT(`availability`.`Endzeit`,"%H:%i")'),        	
-        	'multipleSlotsAllowed' => 'availability.erlaubemehrfachslots',
-        	'repeat__afterWeeks' => 'availability.allexWochen',
-        	'repeat__weekOfMonth' => 'availability.jedexteWoche',
-        	'scope__id' => 'availability.StandortID',
-        	'slotTimeInMinutes' => 'availability.Timeslot',
-        	'weekday__monday' => self::expression('CASE WHEN `availability`.`Wochentag` = 2 THEN true ELSE false END'),
-        	'weekday__tuesday' => self::expression('CASE WHEN `availability`.`Wochentag` = 4 THEN true ELSE false END'),
-        	'weekday__wednesday' => self::expression('CASE WHEN `availability`.`Wochentag` = 8 THEN true ELSE false END'),
-        	'weekday__thursday' => self::expression('CASE WHEN `availability`.`Wochentag` = 16 THEN true ELSE false END'),
-        	'weekday__friday' => self::expression('CASE WHEN `availability`.`Wochentag` = 32 THEN true ELSE false END'),
-        	'weekday__saturday' => self::expression('CASE WHEN `availability`.`Wochentag` = 64 THEN true ELSE false END'),
-        	'weekday__sunday' => self::expression('CASE WHEN `availability`.`Wochentag` = 1 THEN true ELSE false END'),
-        	'workstationCount__callcenter' => self::expression('GREATEST(0, `availability`.`Anzahlterminarbeitsplaetze` - `availability`.`reduktionTermineCallcenter`)'),
-        	'workstationCount__intern' => 'availability.Anzahlterminarbeitsplaetze',
-        	'workstationCount__public' => self::expression('GREATEST(0, `availability`.`Anzahlterminarbeitsplaetze` - `availability`.`reduktionTermineImInternet`)')
+            'id' => 'availability.OeffnungszeitID',
+            'bookable__startInDays' => 'availability.Offen_ab',
+            'bookable__endInDays' => 'availability.Offen_bis',
+            'description' => 'availability.kommentar',
+            'startDate' => self::expression('UNIX_TIMESTAMP(`availability`.`Startdatum`)'),
+            'startTime' => self::expression('DATE_FORMAT(`availability`.`Anfangszeit`,"%H:%i")'),
+            'endDate' => self::expression('UNIX_TIMESTAMP(`availability`.`Endedatum`)'),
+            'endTime' => self::expression('DATE_FORMAT(`availability`.`Endzeit`,"%H:%i")'),
+            'multipleSlotsAllowed' => 'availability.erlaubemehrfachslots',
+            'repeat__afterWeeks' => 'availability.allexWochen',
+            'repeat__weekOfMonth' => 'availability.jedexteWoche',
+            'scope__id' => 'availability.StandortID',
+            'slotTimeInMinutes' => 'availability.Timeslot',
+            'weekday__monday' => self::expression('`availability`.`Wochentag` & 2'),
+            'weekday__tuesday' => self::expression('`availability`.`Wochentag` & 4'),
+            'weekday__wednesday' => self::expression('`availability`.`Wochentag` & 8'),
+            'weekday__thursday' => self::expression('`availability`.`Wochentag` & 16'),
+            'weekday__friday' => self::expression('`availability`.`Wochentag` & 32'),
+            'weekday__saturday' => self::expression('`availability`.`Wochentag` & 64'),
+            'weekday__sunday' => self::expression('`availability`.`Wochentag` & 1'),
+            'workstationCount__callcenter' => self::expression(
+                'GREATEST(0, `availability`.`Anzahlterminarbeitsplaetze` - `availability`.`reduktionTermineCallcenter`)'
+            ),
+            'workstationCount__intern' => 'availability.Anzahlterminarbeitsplaetze',
+            'workstationCount__public' => self::expression(
+                'GREATEST(0, `availability`.`Anzahlterminarbeitsplaetze` - `availability`.`reduktionTermineImInternet`)'
+            )
         ];
     }
 
@@ -43,7 +47,7 @@ class Availability extends Base implements MappingInterface
         $this->query->where('availability.OeffnungszeitID', '=', $availabilityId);
         return $this;
     }
-    
+
     public function addConditionScopeId($scopeId)
     {
         $this->query->leftJoin(
@@ -51,9 +55,8 @@ class Availability extends Base implements MappingInterface
             'availability.StandortID',
             '=',
             'availability_scope.StandortID'
-            );
+        );
         $this->query->where('availability_scope.StandortID', '=', $scopeId);
         return $this;
     }
-    
 }

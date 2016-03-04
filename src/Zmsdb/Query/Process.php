@@ -17,7 +17,7 @@ class Process extends Base implements MappingInterface
             'process.StandortID',
             '=',
             'scope.StandortID'
-            );
+        );
         $scopeQuery = new Scope($this->query);
         $scopeQuery->addEntityMappingPrefixed('scope__');
 
@@ -35,18 +35,21 @@ class Process extends Base implements MappingInterface
             'process.BuergerID',
             '=',
             'xrequest.BuergerID'
-            );
+        );
         $this->query->leftJoin(
             new Alias(REQUEST::TABLE, 'request'),
             'request.id',
             '=',
             'xrequest.AnliegenID'
-            );
+        );
         $requestQuery = new Request($this->query);
         $requestQuery->addEntityMappingPrefixed('requests__');
         return [$scopeQuery];
     }
 
+    /**
+     * TODO: Check if necessary, the slot list is built on the calendar
+     */
     public function readRequestOnEntity(\BO\Zmsentities\Request $entity)
     {
         $query = 'SELECT
@@ -59,9 +62,12 @@ class Process extends Base implements MappingInterface
                 AND x.`termin_hide` = 0
                 AND d.`zms_termin` = 1
         ';
-        $providerSlots = $this->getReader()->fetchAll($query, [
+        $providerSlots = $this->getReader()->fetchAll(
+            $query,
+            [
             'request_id' => $entity->id
-        ]);
+            ]
+        );
         return $providerSlots;
     }
 
@@ -70,7 +76,9 @@ class Process extends Base implements MappingInterface
         return [
             'amendment' => 'process.Anmerkung',
             'id' => 'process.BuergerID',
-            'appointment__date' => self::expression('unix_timestamp(CONCAT(`process`.`Datum`, " ", `process`.`Uhrzeit`))'),
+            'appointment__date' => self::expression(
+                'unix_timestamp(CONCAT(`process`.`Datum`, " ", `process`.`Uhrzeit`))'
+            ),
             'appointment__scope__id' => 'process.StandortID',
             'appointment__slotCount' => 'process.hatFolgetermine',
             'authKey' => 'process.absagecode',
@@ -103,7 +111,7 @@ class Process extends Base implements MappingInterface
         if (! empty($authKey)) {
             $this->query->where('process.absagecode', '=', $authKey);
         } else {
-            $this->query->where('process.absagecode', 'IS', NULL);
+            $this->query->where('process.absagecode', 'IS', null);
         }
         return $this;
     }
@@ -111,21 +119,21 @@ class Process extends Base implements MappingInterface
     public function reverseEntityMapping($processData)
     {
         $data = array();
-        if ($this->hasKey($processData, 'amendment')){
+        if ($this->hasKey($processData, 'amendment')) {
             $data['Anmerkung'] = $processData['amendment'];
         }
-        if ($this->hasKey($processData['appointments'][0], 'date')){
+        if ($this->hasKey($processData['appointments'][0], 'date')) {
             $data['Datum'] = date('Y-m-d', $processData['appointments'][0]['date']);
             $data['Uhrzeit'] = date('H:i', $processData['appointments'][0]['date']);
         }
-        if ($this->hasKey($processData, 'scope')){
+        if ($this->hasKey($processData, 'scope')) {
             $data['StandortID'] = $processData['scope']['id'];
         }
-        if ($this->hasKey($processData, 'authKey')){
+        if ($this->hasKey($processData, 'authKey')) {
             $data['absagecode'] = $processData['authKey'];
         }
-        if ($this->hasKey($processData, 'status')){
-            if($processData['status'] == 'reserved'){
+        if ($this->hasKey($processData, 'status')) {
+            if ($processData['status'] == 'reserved') {
                 $data['vorlaeufigeBuchung'] = 1;
             }
 
