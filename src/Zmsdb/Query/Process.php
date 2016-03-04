@@ -10,6 +10,17 @@ class Process extends Base implements MappingInterface
      */
     const TABLE = 'buerger';
 
+    const QUERY_DELETE = "UPDATE `buerger` process LEFT JOIN `standort` s USING(StandortID)
+        SET
+            process.`Anmerkung` = CONCAT('Abgesagter Termin gebucht am: ', FROM_UNIXTIME(`IPTimeStamp`) ,' | ', `Anmerkung`),
+            process.`Name` = '(abgesagt)',
+            process.`IPadresse` = '',
+            process.`IPTimeStamp` = UNIX_TIMESTAMP() + (s.loeschdauer * 60),
+            process.`vorlaeufigeBuchung` = 1
+        WHERE
+            (process.BuergerID = ? AND process.absagecode = ?)
+            OR process.istFolgeterminvon = ?
+        ";
     public function addJoin()
     {
         $this->query->leftJoin(
@@ -17,7 +28,7 @@ class Process extends Base implements MappingInterface
             'process.StandortID',
             '=',
             'scope.StandortID'
-        );
+            );
         $scopeQuery = new Scope($this->query);
         $scopeQuery->addEntityMappingPrefixed('scope__');
 
@@ -30,20 +41,6 @@ class Process extends Base implements MappingInterface
         $providerQuery = new Provider($this->query);
         $providerQuery->addEntityMappingPrefixed('scope__provider__');
 
-        $this->query->leftJoin(
-            new Alias('buergeranliegen', 'xrequest'),
-            'process.BuergerID',
-            '=',
-            'xrequest.BuergerID'
-        );
-        $this->query->leftJoin(
-            new Alias(REQUEST::TABLE, 'request'),
-            'request.id',
-            '=',
-            'xrequest.AnliegenID'
-        );
-        $requestQuery = new Request($this->query);
-        $requestQuery->addEntityMappingPrefixed('requests__');
         return [$scopeQuery];
     }
 
@@ -119,21 +116,21 @@ class Process extends Base implements MappingInterface
     public function reverseEntityMapping($processData)
     {
         $data = array();
-        if ($this->hasKey($processData, 'amendment')) {
+        if ($this->hasKey($processData, 'amendment')){
             $data['Anmerkung'] = $processData['amendment'];
         }
-        if ($this->hasKey($processData['appointments'][0], 'date')) {
+        if ($this->hasKey($processData['appointments'][0], 'date')){
             $data['Datum'] = date('Y-m-d', $processData['appointments'][0]['date']);
             $data['Uhrzeit'] = date('H:i', $processData['appointments'][0]['date']);
         }
-        if ($this->hasKey($processData, 'scope')) {
+        if ($this->hasKey($processData, 'scope')){
             $data['StandortID'] = $processData['scope']['id'];
         }
-        if ($this->hasKey($processData, 'authKey')) {
+        if ($this->hasKey($processData, 'authKey')){
             $data['absagecode'] = $processData['authKey'];
         }
-        if ($this->hasKey($processData, 'status')) {
-            if ($processData['status'] == 'reserved') {
+        if ($this->hasKey($processData, 'status')){
+            if($processData['status'] == 'reserved'){
                 $data['vorlaeufigeBuchung'] = 1;
             }
 
