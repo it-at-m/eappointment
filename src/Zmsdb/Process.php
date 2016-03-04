@@ -29,13 +29,12 @@ class Process extends Base
 
         if (array_key_exists('id', $processData) && $processData['id'] != 0) {
             $processId = $processData['id'];
-        }
-        else {
+        } else {
             $processId = $this->getNewProcessId();
         }
         $query->addConditionProcessId($processId);
 
-        if(array_key_exists('authKey', $processData) && $processData['authKey'] != 0){
+        if (array_key_exists('authKey', $processData) && $processData['authKey'] != 0) {
             $authKey = $processData['authKey'];
             $query->addConditionAuthKey($authKey);
         } else {
@@ -60,24 +59,27 @@ class Process extends Base
     {
         $xrequests = (new Request())->readXRequestByProcessId($processId);
 
-        if(null === $xrequests){
+        if (null === $xrequests) {
             $query = new Query\XRequest(Query\Base::INSERT);
-            foreach($requests as $request){
-                $query->addValues([
+            foreach ($requests as $request) {
+                $query->addValues(
+                    [
                     'AnliegenID' => $request['id'],
                     'BuergerID' => $processId
-                ]);
+                    ]
+                );
                 $this->writeItem($query);
             }
-        }
-        else {
-            foreach($xrequests as $xrequest){
+        } else {
+            foreach ($xrequests as $xrequest) {
                 $query = new Query\XRequest(Query\Base::UPDATE);
                 $query->addConditionXRequestId($xrequest['id']);
-                $query->addValues([
+                $query->addValues(
+                    [
                     'AnliegenID' => $requests[$xrequest['id']],
                     'BuergerID' => $processId
-                ]);
+                    ]
+                );
                 $this->writeItem($query);
             }
         }
@@ -90,18 +92,22 @@ class Process extends Base
         $lock = $this->getLock();
         if ($lock == 1) {
             $dateTime = new \DateTime();
-            $query->addValues([
+            $query->addValues(
+                [
                 'BuergerID' => 'SELECT A.BuergerID+1 AS nextid
                     FROM buerger A
                     LEFT JOIN buerger B on A.BuergerID+1 = B.BuergerID
                     WHERE B.BuergerID IS NULL AND A.BuergerID > 10000
                     ORDER BY A.BuergerID LIMIT 1',
                 'IPTimeStamp' => $dateTime->getTimestamp()
-            ]);
+                ]
+            );
         } else {
-            $query->addValues([
-                'BuergerID' => NULL
-            ]);
+            $query->addValues(
+                [
+                'BuergerID' => null
+                ]
+            );
         }
 
         $this->writeItem($query);
@@ -127,5 +133,4 @@ class Process extends Base
         $calendar = $resolvedCalendar->readResolvedEntity($calendar, true, false);
         return $calendar;
     }
-
 }

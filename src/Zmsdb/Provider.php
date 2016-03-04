@@ -17,9 +17,15 @@ class Provider extends Base
             ->addConditionProviderId($providerId);
         return $this->fetchOne($query, new Entity());
     }
-    
+
+    /**
+     * TODO: Check if necessary, the list of providers should come by the calendar or process
+     */
     public function readList($source, $providerIds)
     {
+        if ('dldb' !== $source) {
+            return [];
+        }
         $query = new Query\Provider(Query\Base::SELECT);
         $query
         ->addEntityMapping();
@@ -27,7 +33,7 @@ class Provider extends Base
             $query
             ->addConditionProviderCsv($providerIds);
         }
-    
+
         return $this->fetchList($query, new Entity());
     }
 }

@@ -40,8 +40,8 @@ class Scope extends Base
     {
         $query = new Query\Scope(Query\Base::SELECT);
         $query
-        ->addEntityMapping()
-        ->addResolvedReferences($resolveReferences);
+            ->addEntityMapping()
+            ->addResolvedReferences($resolveReferences);
         return $this->fetchList($query, new Entity());
     }
 }

@@ -18,7 +18,7 @@ class Calendar extends Base
             $this->readFreeProcessesByDay($calendar) :
             $calendar = $this->readResolvedDays($calendar);
 
-        if($cleanProcessing){
+        if ($cleanProcessing) {
             unset($calendar['processing']);
         }
         return $calendar;
@@ -102,7 +102,7 @@ class Calendar extends Base
             $slotsRequired = $calendar['processing']['slotinfo'][$scope->getProviderId()];
             while ($slotData = $statement->fetch(\PDO::FETCH_ASSOC)) {
                 $calendar = $this->addFreeProcessesToCalendar($calendar, $slotData, $selectedDateTime, $slotsRequired);
-                if(count($calendar['freeProcesses'])){
+                if (count($calendar['freeProcesses'])) {
                     return $calendar;
                 }
             }
@@ -113,26 +113,42 @@ class Calendar extends Base
     /**
      * ATTENTION: performance critical function, keep highly optimized!
      */
-    protected function addDayInfoToCalendar(Entity $calendar, array $slotData, \DateTimeImmutable $month, $slotsRequired)
-    {
+    protected function addDayInfoToCalendar(
+        Entity $calendar,
+        array $slotData,
+        \DateTimeImmutable $month,
+        $slotsRequired
+    ) {
         $slotlist = & $calendar['processing']['slotlist'];
         if (! $slotlist->isSlotData($slotData)) {
             $slotlist->toReducedBySlots($slotsRequired);
             $calendar = $slotlist->addToCalendar($calendar);
-            $calendar['processing']['slotlist'] = new SlotList($slotData, $month->modify('first day of'), $month->modify('last day of'));
+            $calendar['processing']['slotlist'] = new SlotList(
+                $slotData,
+                $month->modify('first day of'),
+                $month->modify('last day of')
+            );
         } else {
             $slotlist->addSlotData($slotData);
         }
         return $calendar;
     }
 
-    protected function addFreeProcessesToCalendar(Entity $calendar, array $slotData, \DateTimeImmutable $selectedDateTime, $slotsRequired)
-    {
+    protected function addFreeProcessesToCalendar(
+        Entity $calendar,
+        array $slotData,
+        \DateTimeImmutable $selectedDateTime,
+        $slotsRequired
+    ) {
         $slotlist = & $calendar['processing']['slotlist'];
         if (! $slotlist->isSlotData($slotData)) {
             $slotlist->toReducedBySlots($slotsRequired);
             $calendar = $slotlist->addFreeProcesses($calendar);
-            $calendar['processing']['slotlist'] = new SlotList($slotData, $selectedDateTime->modify('first day of'), $selectedDateTime->modify('last day of'));
+            $calendar['processing']['slotlist'] = new SlotList(
+                $slotData,
+                $selectedDateTime->modify('first day of'),
+                $selectedDateTime->modify('last day of')
+            );
         } else {
             $slotlist->addSlotData($slotData);
         }

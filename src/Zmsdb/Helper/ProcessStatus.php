@@ -11,41 +11,33 @@ class ProcessStatus extends \BO\Zmsdb\Process
      */
     public function readProcessStatus($processId, $authKey)
     {
-        $processData = $this->getReader()->fetchOne('SELECT
+        $processData = $this->getReader()->fetchOne(
+            'SELECT
             *
             FROM buerger AS b
             WHERE
                 b.BuergerID = "' . $processId . '"
                 AND b.absagecode = "' . $authKey . '"
-        ');
-
-        $status = 'free';
-
-        if ($this->isReservedProcess($processData)) {
-            $status = 'reserved';
+            LIMIT 1
+            '
+        );
+        $statusList = [
+            'free' => true,
+            'reserved' => $this->isReservedProcess($processData),
+            'confirmed' => $this->isConfirmedProcess($processData),
+            'queued' => $this->isQueuedProcess($processData),
+            'called' => $this->isCalledProcess($processData),
+            'processing' => $this->isProcessingProcess($processData),
+            'pending' => $this->isPendingProcess($processData),
+            'missed' => $this->isMissedProcess($processData),
+            'blocked' => $this->isBlockedProcess($processData),
+            'deleted' => $this->isDeletedProcess($processData),
+        ];
+        foreach ($statusList as $statusType => $statusCheck) {
+            if ($statusCheck) {
+                $status = $statusType;
+            }
         }
-        if ($this->isConfirmedProcess($processData)) {
-            $status = 'confirmed';
-        }
-        if ($this->isQueuedProcess($processData)) {
-            $status = 'queued';
-        }
-        if ($this->isCalledProcess($processData)) {
-            $status = 'called';
-        }
-        if ($this->isProcessingProcess($processData)) {
-            $status = 'processing';
-        }
-        if ($this->isPendingProcess($processData)) {
-            $status = 'pending';
-        }
-        if ($this->isMissedProcess($processData)) {
-            $status = 'missed';
-        }
-        if ($this->isBlockedProcess($processData) || $this->isDeletedProcess($processData)) {
-            $status = 'blocked';
-        }
-
         return $status;
     }
 
@@ -56,10 +48,7 @@ class ProcessStatus extends \BO\Zmsdb\Process
      */
     protected function isBlockedProcess($process)
     {
-        if ($process['Name'] == 'dereferenced') {
-            return true;
-        }
-        return false;
+        return ($process['Name'] == 'dereferenced');
     }
 
     /**
@@ -69,13 +58,11 @@ class ProcessStatus extends \BO\Zmsdb\Process
      */
     protected function isConfirmedProcess($process)
     {
-        if ($process['Name'] != 'dereferenced'
+        return ($process['Name'] != 'dereferenced'
             && $process['vorlaeufigeBuchung'] == 0
             && $process['StandortID'] != 0
-            && empty($process['istFolgeterminvon'])) {
-            return true;
-        }
-        return false;
+            && empty($process['istFolgeterminvon'])
+        );
     }
 
     /**
@@ -85,13 +72,11 @@ class ProcessStatus extends \BO\Zmsdb\Process
      */
     protected function isReservedProcess($process)
     {
-        if ($process['Name'] != 'dereferenced'
+        return ($process['Name'] != 'dereferenced'
             && $process['vorlaeufigeBuchung'] == 1
             && $process['StandortID'] != 0
-            && empty($process['istFolgeterminvon'])) {
-            return true;
-        }
-        return false;
+            && empty($process['istFolgeterminvon'])
+        );
     }
 
     /**
@@ -101,15 +86,13 @@ class ProcessStatus extends \BO\Zmsdb\Process
      */
     protected function isCalledProcess($process)
     {
-        if ($process['Name'] != 'dereferenced'
+        return ($process['Name'] != 'dereferenced'
             && $process['vorlaeufigeBuchung'] == 0
             && $process['StandortID'] != 0
             && $process['aufrufzeit'] != '00:00:00'
             && $process['aufruferfolgreich'] == 0
-            && empty($process['istFolgeterminvon'])) {
-            return true;
-        }
-        return false;
+            && empty($process['istFolgeterminvon'])
+        );
     }
 
     /**
@@ -119,14 +102,12 @@ class ProcessStatus extends \BO\Zmsdb\Process
      */
     protected function isQueuedProcess($process)
     {
-        if ($process['Name'] != 'dereferenced'
+        return ($process['Name'] != 'dereferenced'
             && $process['vorlaeufigeBuchung'] == 0
             && $process['StandortID'] != 0
             && $process['wsm_aufnahmezeit'] != '00:00:00'
-            && empty($process['istFolgeterminvon'])) {
-                return true;
-            }
-            return false;
+            && empty($process['istFolgeterminvon'])
+        );
     }
 
     /**
@@ -136,14 +117,12 @@ class ProcessStatus extends \BO\Zmsdb\Process
      */
     protected function isProcessingProcess($process)
     {
-        if ($process['Name'] != 'dereferenced'
+        return ($process['Name'] != 'dereferenced'
             && $process['vorlaeufigeBuchung'] == 0
             && $process['StandortID'] != 0
             && $process['aufruferfolgreich'] != 0
-            && empty($process['istFolgeterminvon'])) {
-                return true;
-            }
-            return false;
+            && empty($process['istFolgeterminvon'])
+        );
     }
 
     /**
@@ -153,14 +132,12 @@ class ProcessStatus extends \BO\Zmsdb\Process
      */
     protected function isPendingProcess($process)
     {
-        if ($process['Name'] != 'dereferenced'
+        return ($process['Name'] != 'dereferenced'
             && $process['vorlaeufigeBuchung'] == 0
             && $process['StandortID'] != 0
             && $process['Abholer'] != 0
-            && empty($process['istFolgeterminvon'])) {
-                return true;
-            }
-            return false;
+            && empty($process['istFolgeterminvon'])
+        );
     }
 
     /**
@@ -170,14 +147,12 @@ class ProcessStatus extends \BO\Zmsdb\Process
      */
     protected function isMissedProcess($process)
     {
-        if ($process['Name'] != 'dereferenced'
+        return ($process['Name'] != 'dereferenced'
             && $process['vorlaeufigeBuchung'] == 0
             && $process['StandortID'] != 0
             && $process['nicht_erschienen'] != 0
-            && empty($process['istFolgeterminvon'])) {
-                return true;
-            }
-            return false;
+            && empty($process['istFolgeterminvon'])
+        );
     }
 
     /**
@@ -187,10 +162,8 @@ class ProcessStatus extends \BO\Zmsdb\Process
      */
     protected function isDeletedProcess($process)
     {
-        if ($process['Name'] == '(abgesagt)'
-            && empty($process['istFolgeterminvon'])) {
-                return true;
-            }
-            return false;
+        return ($process['Name'] == '(abgesagt)'
+            && empty($process['istFolgeterminvon'])
+        );
     }
 }

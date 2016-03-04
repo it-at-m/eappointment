@@ -59,7 +59,8 @@ class Select
 
     /**
      * Create a PDO compatible object
-     * @param String $dataSourceName compatible with PDO
+     *
+     * @param  String $dataSourceName compatible with PDO
      * @return PdoInterface
      */
     protected static function createPdoConnection($dataSourceName)
@@ -90,6 +91,7 @@ class Select
     /**
      * Set the read connection.
      * Usually this function is only required to set mockups for testing
+     *
      * @param PdoInterface $connection
      */
     public static function setReadConnection(PdoInterface $connection)
@@ -99,6 +101,7 @@ class Select
 
     /**
      * Create or return a connection for reading data
+     *
      * @return PdoInterface
      */
     public static function getReadConnection()
@@ -115,7 +118,8 @@ class Select
     /**
      * Set the write connection.
      * Usually this function is only required to set mockups for testing
-     * @param PdoInterface $connection
+     *
+     * @param  PdoInterface $connection
      * @return self
      */
     public static function setWriteConnection(PdoInterface $connection)
@@ -125,6 +129,7 @@ class Select
 
     /**
      * Create or return a connection for writing data
+     *
      * @return PdoInterface
      */
     public static function getWriteConnection()

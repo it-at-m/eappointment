@@ -28,9 +28,12 @@ class Request extends Base
                 AND x.`termin_hide` = 0
                 AND d.`zms_termin` = 1
         ';
-        $providerSlots = $this->getReader()->fetchAll($query, [
+        $providerSlots = $this->getReader()->fetchAll(
+            $query,
+            [
             'request_id' => $entity->id
-        ]);
+            ]
+        );
         return $providerSlots;
     }
 
@@ -42,15 +45,24 @@ class Request extends Base
             WHERE
                 ba.`BuergerID` = :process_id
         ';
-        $xrequests = $this->getReader()->fetchAll($query, [
+        $xrequests = $this->getReader()->fetchAll(
+            $query,
+            [
             'process_id' => $processId,
-        ]);
+            ]
+        );
 
         return (count($xrequests)) ? $xrequests : null;
     }
 
+    /**
+     * TODO: Check if necessary, the list of requests should come by the calendar or process
+     */
     public function readList($source, $requestIds)
     {
+        if ('dldb' !== $source) {
+            return [];
+        }
         $query = new Query\Request(Query\Base::SELECT);
         $query
             ->addEntityMapping();
