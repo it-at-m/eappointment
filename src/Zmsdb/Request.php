@@ -18,41 +18,27 @@ class Request extends Base
 
     public function readSlotsOnEntity(\BO\Zmsentities\Request $entity)
     {
-        $query = 'SELECT
-                x.`dienstleister` AS provider__id,
-                x.`slots`
-            FROM `startinfo`.`xdienst` x
-                LEFT JOIN `startinfo`.`dienstleister` d ON x.dienstleister = d.id
-            WHERE
-                x.`dienstleistung` = :request_id
-                AND x.`termin_hide` = 0
-                AND d.`zms_termin` = 1
-        ';
-        $providerSlots = $this->getReader()->fetchAll(
-            $query,
-            [
+        $query = Query\Request::QUERY_SLOTS;
+        $providerSlots = $this->getReader()->fetchAll($query, [
             'request_id' => $entity->id
-            ]
-        );
+        ]);
         return $providerSlots;
     }
 
-    public function readXRequestByProcessId($processId)
+    public function readRequestByProcessId($processId)
     {
-        $query = 'SELECT
-                ba.`BuergeranliegenID` AS xrequest
-            FROM `zmsbo`.`buergeranliegen` ba
-            WHERE
-                ba.`BuergerID` = :process_id
-        ';
-        $xrequests = $this->getReader()->fetchAll(
-            $query,
-            [
+        $requests = array();
+        $query = Query\Request::QUERY_BY_PROCESSID;
+        $result = $this->getReader()->fetchAll($query, [
             'process_id' => $processId,
-            ]
-        );
+        ]);
 
-        return (count($xrequests)) ? $xrequests : null;
+        if(count($result)){
+            foreach($result as $request){
+                $requests[] = $this->readEntity('dldb', $request['id']);
+            }
+        }
+        return (count($requests)) ? $requests : null;
     }
 
     /**

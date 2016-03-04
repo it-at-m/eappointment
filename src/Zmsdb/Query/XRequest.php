@@ -10,6 +10,8 @@ class XRequest extends Base
      */
     const TABLE = 'buergeranliegen';
 
+    const QUERY_DELETE = "DELETE FROM `buergeranliegen` WHERE `BuergerID` = ?";
+
     public function getEntityMapping()
     {
         return [
@@ -19,9 +21,10 @@ class XRequest extends Base
         ];
     }
 
-    public function addConditionXRequestId($xrequestId)
+    public function addConditionXRequestId($requestId)
     {
-        $this->query->where('BuergeranliegenID', '=', $xrequestId);
+        $this->query->where('AnliegenID', '=', $requestId);
         return $this;
     }
+
 }
