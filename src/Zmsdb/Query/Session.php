@@ -46,5 +46,4 @@ class Session extends Base
         $this->query->where('session.sessionname', '=', $sessionName);
         return $this;
     }
-
 }

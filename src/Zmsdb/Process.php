@@ -34,7 +34,7 @@ class Process extends Base
         }
         $query->addConditionProcessId($processId);
 
-        if(array_key_exists('authKey', $processData) && $processData['authKey'] != 0){
+        if (array_key_exists('authKey', $processData) && $processData['authKey'] != 0) {
             $authKey = $processData['authKey'];
             $query->addConditionAuthKey($authKey);
         } else {
@@ -71,15 +71,16 @@ class Process extends Base
                 $processId,
                 $authKey,
                 $processId
-            ));
+            )
+        );
         if ($status) {
             $query = Query\XRequest::QUERY_DELETE;
             $statement = $this->getWriter()->prepare($query);
             $status = $status = $statement->execute(array(
-                $processId
+            $processId
             ));
         }
-        return $status;
+            return $status;
     }
 
     public function writeRequestsToDb($processId, $requests)
@@ -87,7 +88,7 @@ class Process extends Base
         $checkRequests = (new Request())->readRequestByProcessId($processId);
         if (null === $checkRequests) {
             $query = new Query\XRequest(Query\Base::INSERT);
-            foreach($requests as $request){
+            foreach ($requests as $request) {
                 $query->addValues(
                     [
                     'AnliegenID' => $request['id'],
@@ -162,5 +163,4 @@ class Process extends Base
         $calendar = $resolvedCalendar->readResolvedEntity($calendar, true, false);
         return $calendar;
     }
-
 }

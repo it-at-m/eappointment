@@ -26,5 +26,4 @@ class XRequest extends Base
         $this->query->where('AnliegenID', '=', $requestId);
         return $this;
     }
-
 }
