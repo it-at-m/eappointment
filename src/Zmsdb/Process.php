@@ -17,8 +17,8 @@ class Process extends Base
         //\App::$log->debug($query->getSql());
         // var_dump($this->fetchOne($query, new Entity()));
         $process = $this->fetchOne($query, new Entity());
-        $status = new Status();
-        $process['status'] = $status->readProcessStatus($processId, $authKey);
+        $process['requests'] = (new Request())->readRequestByProcessId($processId);
+        $process['status'] = (new Status())->readProcessStatus($processId, $authKey);
         return $process;
     }
 
@@ -29,13 +29,12 @@ class Process extends Base
 
         if (array_key_exists('id', $processData) && $processData['id'] != 0) {
             $processId = $processData['id'];
-        }
-        else {
+        } else {
             $processId = $this->getNewProcessId();
         }
         $query->addConditionProcessId($processId);
 
-        if(array_key_exists('authKey', $processData) && $processData['authKey'] != 0){
+        if (array_key_exists('authKey', $processData) && $processData['authKey'] != 0) {
             $authKey = $processData['authKey'];
             $query->addConditionAuthKey($authKey);
         } else {
@@ -45,10 +44,12 @@ class Process extends Base
         $process['id'] = $processId;
         $process['authKey'] = $authKey;
         $values = $query->reverseEntityMapping($process);
-        \App::$log->debug('values', [$values]);
+        \App::$log->debug('values', [
+            $values
+        ]);
         $query->addValues($values);
         $this->writeItem($query, 'process', $query::TABLE);
-        $this->writeXRequestsToDb($process['id'], $process['requests']);
+        $this->writeRequestsToDb($process['id'], $process['requests']);
 
         $process = $this->readEntity($processId, $authKey, 1);
         $status = new Status();
@@ -56,32 +57,59 @@ class Process extends Base
         return $process;
     }
 
-    public function writeXRequestsToDb($processId, $requests)
+    /**
+     * Markiere einen Termin als abgesagt
+     *
+     * @param
+     *            processId and authKey
+     *
+     * @return Resource Status
+     */
+    public function deleteEntity($processId, $authKey)
     {
-        $xrequests = (new Request())->readXRequestByProcessId($processId);
+        $query = Query\Process::QUERY_DELETE;
+        $statement = $this->getWriter()->prepare($query);
+        $status = $statement->execute(
+            array(
+                $processId,
+                $authKey,
+                $processId
+            ));
+        if ($status) {
+            $query = Query\XRequest::QUERY_DELETE;
+            $statement = $this->getWriter()->prepare($query);
+            $status = $status = $statement->execute(array(
+                $processId
+            ));
+        }
+        return $status;
+    }
 
-        if(null === $xrequests){
+    public function writeRequestsToDb($processId, $requests)
+    {
+        $checkRequests = (new Request())->readRequestByProcessId($processId);
+        if (null === $checkRequests) {
             $query = new Query\XRequest(Query\Base::INSERT);
-            foreach($requests as $request){
-                $query->addValues([
-                    'AnliegenID' => $request['id'],
-                    'BuergerID' => $processId
-                ]);
+            foreach ($requests as $request) {
+                $query->addValues(
+                    [
+                        'AnliegenID' => $request['id'],
+                        'BuergerID' => $processId
+                    ]);
                 $this->writeItem($query);
             }
-        }
-        else {
-            foreach($xrequests as $xrequest){
+        } else {
+            foreach ($requests as $request) {
                 $query = new Query\XRequest(Query\Base::UPDATE);
-                $query->addConditionXRequestId($xrequest['id']);
-                $query->addValues([
-                    'AnliegenID' => $requests[$xrequest['id']],
-                    'BuergerID' => $processId
-                ]);
+                $query->addConditionXRequestId($request['id']);
+                $query->addValues(
+                    [
+                        'AnliegenID' => $request['id'],
+                        'BuergerID' => $processId
+                    ]);
                 $this->writeItem($query);
             }
         }
-
     }
 
     public function getNewProcessId()
@@ -90,14 +118,15 @@ class Process extends Base
         $lock = $this->getLock();
         if ($lock == 1) {
             $dateTime = new \DateTime();
-            $query->addValues([
-                'BuergerID' => 'SELECT A.BuergerID+1 AS nextid
+            $query->addValues(
+                [
+                    'BuergerID' => 'SELECT A.BuergerID+1 AS nextid
                     FROM buerger A
                     LEFT JOIN buerger B on A.BuergerID+1 = B.BuergerID
                     WHERE B.BuergerID IS NULL AND A.BuergerID > 10000
                     ORDER BY A.BuergerID LIMIT 1',
-                'IPTimeStamp' => $dateTime->getTimestamp()
-            ]);
+                    'IPTimeStamp' => $dateTime->getTimestamp()
+                ]);
         } else {
             $query->addValues([
                 'BuergerID' => NULL
@@ -105,19 +134,22 @@ class Process extends Base
         }
 
         $this->writeItem($query);
-        $lastInsertId = $this->getWriter()->lastInsertId();
+        $lastInsertId = $this->getWriter()
+            ->lastInsertId();
         $this->releaseLock();
         return $lastInsertId;
     }
 
     public function getLock()
     {
-        return $this->getReader()->fetchValue('SELECT GET_LOCK("AutoIncWithOldNum", 2)');
+        return $this->getReader()
+            ->fetchValue('SELECT GET_LOCK("AutoIncWithOldNum", 2)');
     }
 
     public function releaseLock()
     {
-        return $this->getReader()->fetchValue('SELECT RELEASE_LOCK("AutoIncWithOldNum")');
+        return $this->getReader()
+            ->fetchValue('SELECT RELEASE_LOCK("AutoIncWithOldNum")');
     }
 
     /* prüfen ob das benötigt wird begin */
@@ -127,5 +159,4 @@ class Process extends Base
         $calendar = $resolvedCalendar->readResolvedEntity($calendar, true, false);
         return $calendar;
     }
-
 }

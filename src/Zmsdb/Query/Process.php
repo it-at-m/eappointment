@@ -10,6 +10,18 @@ class Process extends Base implements MappingInterface
      */
     const TABLE = 'buerger';
 
+    const QUERY_DELETE = "UPDATE `buerger` process LEFT JOIN `standort` s USING(StandortID)
+        SET
+            process.`Anmerkung` = CONCAT('Abgesagter Termin gebucht am: ', FROM_UNIXTIME(`IPTimeStamp`) ,' | ', `Anmerkung`),
+            process.`Name` = '(abgesagt)',
+            process.`IPadresse` = '',
+            process.`IPTimeStamp` = UNIX_TIMESTAMP() + (s.loeschdauer * 60),
+            process.`vorlaeufigeBuchung` = 1
+        WHERE
+            (process.BuergerID = ? AND process.absagecode = ?)
+            OR process.istFolgeterminvon = ?
+        ";
+
     public function addJoin()
     {
         $this->query->leftJoin(
@@ -29,21 +41,6 @@ class Process extends Base implements MappingInterface
         );
         $providerQuery = new Provider($this->query);
         $providerQuery->addEntityMappingPrefixed('scope__provider__');
-
-        $this->query->leftJoin(
-            new Alias('buergeranliegen', 'xrequest'),
-            'process.BuergerID',
-            '=',
-            'xrequest.BuergerID'
-            );
-        $this->query->leftJoin(
-            new Alias(REQUEST::TABLE, 'request'),
-            'request.id',
-            '=',
-            'xrequest.AnliegenID'
-            );
-        $requestQuery = new Request($this->query);
-        $requestQuery->addEntityMappingPrefixed('requests__');
         return [$scopeQuery];
     }
 
