@@ -9,6 +9,10 @@ class SessionHandler implements \SessionHandlerInterface
 
     public $sessionName;
 
+    /**
+     * @SuppressWarnings(UnusedFormalParameter)
+     *
+     */
     public function open($save_path, $name)
     {
         $this->sessionName = $name;
@@ -41,6 +45,11 @@ class SessionHandler implements \SessionHandlerInterface
         return ($result) ? true : false;
     }
 
+    /**
+     * @SuppressWarnings(UnusedFormalParameter)
+     * @SuppressWarnings(ShortMethodName)
+     *
+     */
     public function gc($maxlifetime)
     {
         /*
