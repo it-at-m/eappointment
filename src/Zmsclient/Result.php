@@ -127,8 +127,8 @@ class Result
     {
         $data = $this->getData();
         $idList = array();
-        foreach($data as $item){
-            if(array_key_exists('id', $item)){
+        foreach ($data as $item) {
+            if (array_key_exists('id', $item)) {
                 $idList[] = $item['id'];
             }
         }
