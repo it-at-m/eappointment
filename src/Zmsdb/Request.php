@@ -19,9 +19,10 @@ class Request extends Base
     public function readSlotsOnEntity(\BO\Zmsentities\Request $entity)
     {
         $query = Query\Request::QUERY_SLOTS;
-        $providerSlots = $this->getReader()->fetchAll($query, [
-            'request_id' => $entity->id
-        ]);
+        $providerSlots = $this->getReader()->fetchAll(
+            $query,
+            ['request_id' => $entity->id]
+        );
         return $providerSlots;
     }
 
@@ -29,9 +30,10 @@ class Request extends Base
     {
         $requests = array();
         $query = Query\Request::QUERY_BY_PROCESSID;
-        $result = $this->getReader()->fetchAll($query, [
-            'process_id' => $processId,
-        ]);
+        $result = $this->getReader()->fetchAll(
+            $query,
+            ['process_id' => $processId,]
+        );
 
         if (count($result)) {
             foreach ($result as $request) {

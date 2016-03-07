@@ -25,11 +25,13 @@ class Session extends Base
     {
         $query = Query\Session::QUERY_WRITE;
         $statement = $this->getWriter()->prepare($query);
-        $statement->execute(array(
+        $statement->execute(
+            array(
             $session['id'],
             $session['name'],
             $session['content']
-        ));
+            )
+        );
         $entity = $this->readEntity($session['name'], $session['id']);
         return $entity;
     }
@@ -38,9 +40,11 @@ class Session extends Base
     {
         $query = Query\Session::QUERY_DELETE;
         $statement = $this->getWriter()->prepare($query);
-        $statement->execute(array(
+        $statement->execute(
+            array(
             $sessionId,
             $sessionName
-        ));
+            )
+        );
     }
 }

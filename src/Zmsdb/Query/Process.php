@@ -121,8 +121,16 @@ class Process extends Base implements MappingInterface
         $data['Anmerkung'] = $this->setValue('amendment', $process);
         $data['StandortID'] = $this->setValue('scope__id', $process);
         $data['absagecode'] = $this->setValue('authKey', $process);
-        $data['Datum'] = $this->setValue('appointments__|date', $process, date('Y-m-d', $process['appointments'][0]['date']));
-        $data['Uhrzeit'] = $this->setValue('appointments__|date', $process, date('H:i', $process['appointments'][0]['date']));
+        $data['Datum'] = $this->setValue(
+            'appointments__|date',
+            $process,
+            date('Y-m-d', $process['appointments'][0]['date'])
+        );
+        $data['Uhrzeit'] = $this->setValue(
+            'appointments__|date',
+            $process,
+            date('H:i', $process['appointments'][0]['date'])
+        );
 
         $data['Name'] = $this->setValue('clients__|familyName', $process);
         $data['EMail'] = $this->setValue('clients__|email', $process);
@@ -141,22 +149,21 @@ class Process extends Base implements MappingInterface
     public function setValue($property, $process, $customvalue = null)
     {
         $value = null;
-        if (strpos($property, '__')){
+        if (strpos($property, '__')) {
             list($subkey, $newkey) = explode('__', $property, 2);
-            if (strpos($newkey, '|') > -1){
-                $newkey = str_replace('|','',$newkey);
-                if(array_key_exists($newkey, $process[$subkey][0])){
+            if (strpos($newkey, '|') > -1) {
+                $newkey = str_replace('|', '', $newkey);
+                if (array_key_exists($newkey, $process[$subkey][0])) {
                     $value = (null === $customvalue) ? $process[$subkey][0][$newkey] : $customvalue;
                 }
-            }
-            else {
-                if(array_key_exists($newkey, $process[$subkey])){
+            } else {
+                if (array_key_exists($newkey, $process[$subkey])) {
                     $value = (null === $customvalue) ? $process[$subkey][$newkey] : $customvalue;
                 }
             }
 
         } else {
-            if(array_key_exists($property, $process)){
+            if (array_key_exists($property, $process)) {
                 $value = (null === $customvalue) ? $process[$property] : $customvalue;
             }
         }
