@@ -142,7 +142,7 @@ class Result
      *
      * @return self
      */
-    public function setData(Array $data)
+    public function setData(array $data)
     {
         if (array_key_exists('$schema', $data)) {
             $data = [$data];

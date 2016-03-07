@@ -87,7 +87,7 @@ class Http
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function readGetResult($relativeUrl, Array $getParameters = null)
+    public function readGetResult($relativeUrl, array $getParameters = null)
     {
         $uri = $this->uri->withPath($this->http_baseurl . $relativeUrl);
         if (null !== $getParameters) {
@@ -107,7 +107,7 @@ class Http
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function readPostResult($relativeUrl, \BO\Zmsentities\Schema\Entity $entity, Array $getParameters = null)
+    public function readPostResult($relativeUrl, \BO\Zmsentities\Schema\Entity $entity, array $getParameters = null)
     {
         $uri = $this->uri->withPath($this->http_baseurl . $relativeUrl);
         if (null !== $getParameters) {
@@ -129,7 +129,7 @@ class Http
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function readDeleteResult($relativeUrl, Array $getParameters = null)
+    public function readDeleteResult($relativeUrl, array $getParameters = null)
     {
         $uri = $this->uri->withPath($this->http_baseurl . $relativeUrl);
         if (null !== $getParameters) {
