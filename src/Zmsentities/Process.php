@@ -6,6 +6,24 @@ class Process extends Schema\Entity
 
     public static $schema = "process.json";
 
+    public function getDefaults()
+    {
+        return [
+            'amendment' => '',
+            'appointments' => [],
+            'authKey' => '',
+            'clients' => [],
+            'createIP' => '',
+            'createTimestamp' => '',
+            'id' => 0,
+            'queue' => [],
+            'reminderTimestamp' => 0,
+            'requests' => [],
+            'scope' => [],
+            'status' => ''
+        ];
+    }
+
     public function getRequestIds()
     {
         $idList = array();
@@ -50,11 +68,21 @@ class Process extends Schema\Entity
         return $this;
     }
 
-    public function addFormData($formData)
+    public function addClient($formData)
     {
-        foreach ($formData as $param => $item) {
-            $this->clients[$param] = $item['value'];
+        $client = new Client();
+        foreach($formData as $key => $item){
+            if (null !== $item['value'] && array_key_exists($key, $client)){
+               $client[$key] = $item['value'];
+            }
         }
+        $this->clients[] = $client;
+        return $this;
+    }
+
+    public function addAmendment($formData)
+    {
+        $this['amendment'] = $formData['amendment']['value'];
         return $this;
     }
 
@@ -73,4 +101,35 @@ class Process extends Schema\Entity
         $this->appointments[] = $newappointment;
         return $this;
     }
+
+    public function getScopeId()
+    {
+        return ($this->scope['id']) ? $this->scope['id'] : 0;
+    }
+
+    public function getAmendment()
+    {
+        return ($this->amendment) ? $this->amendment : '';
+    }
+
+    public function getFirstClient()
+    {
+        if (count($this->clients)){
+            $data = current($this->clients);
+            $client = new Client($data);
+        }
+        else {
+            $client = new Client();
+        }
+
+        return $client;
+    }
+
+    public function getFirstAppointmentDateTime()
+    {
+        $appointment = current($this->appointments);
+        $date = \DateTime::createFromFormat('U', $appointment['date']);
+        return $date;
+    }
+
 }
