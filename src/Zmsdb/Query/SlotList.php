@@ -131,7 +131,7 @@ class SlotList
         return $this;
     }
 
-    public function isSlotData(array $slotData)
+    public function isSameAvailability(array $slotData)
     {
         return $this->slotData['availability__id'] == $slotData['availability__id']
             //&& $this->slotData['day'] == $slotData['day']
@@ -150,10 +150,6 @@ class SlotList
                 throw new \Exception(
                     "Found two database entries for the same slot $slotdate #$slotnumber @" . $slotData['slottime']
                 );
-            }
-            if (!isset($slot['public'])) {
-                var_dump($this->slots);
-                var_dump($slotData);
             }
             $slot['slottime'] = $slotData['slottime'];
             $slot['public'] -= $slotData['availability__workstationCount__public'];
@@ -181,7 +177,10 @@ class SlotList
         return $calendar;
     }
 
-    public function addFreeProcesses(\BO\Zmsentities\Calendar $calendar)
+    /**
+     * TODO Unterscheidung nach intern/callcenter/public sollte erst nach der API erfolgen!
+     */
+    public function addFreeProcesses(\BO\Zmsentities\Calendar $calendar, $slotType = 'public')
     {
         $scopeReader = new \BO\Zmsdb\Scope();
         $datestr = $calendar['firstDay']['year'].'-'.$calendar['firstDay']['month'].'-'.$calendar['firstDay']['day'];
@@ -192,7 +191,7 @@ class SlotList
             if ($date == $selectedDate) {
                 $scope = $scopeReader->readEntity($this->slotData['appointment__scope__id'], 1);
                 foreach ($slotList as $slotInfo) {
-                    if ($slotInfo['public'] > 0) {
+                    if ($slotInfo[$slotType] > 0) {
                         $appointment = new \BO\Zmsentities\Appointment();
                         $appointmentDateTime = \DateTime::createFromFormat(
                             'Y-m-d H:i',
@@ -200,7 +199,7 @@ class SlotList
                         );
                         $appointment['scope'] = $scope;
                         $appointment['date'] = $appointmentDateTime->format('U');
-                        $appointment['slotCount'] = $slotInfo['public'];
+                        $appointment['slotCount'] = $slotInfo[$slotType];
 
                         $process = new \BO\Zmsentities\Process();
                         $process['scope'] = $scope;
@@ -216,11 +215,59 @@ class SlotList
         return $calendar;
     }
 
+    /**
+     * Reduce available slots
+     * On given amount of required slots reduce the amount of available slots by comparing continous slots available
+     *
+     * @param Int $slotsRequired
+     * @return self
+     */
     public function toReducedBySlots($slotsRequired)
     {
-        //TODO: implement
         $slotsRequired = $slotsRequired;
+        if (count($this->slots) && $slotsRequired > 1) {
+            foreach ($this->slots as $date => $slotList) {
+                $slotLength = count($slotList);
+                $slotKeys = array_keys($slotList);
+                sort($slotKeys);
+                for ($slotIndex = 0; $slotIndex < $slotLength; $slotIndex++) {
+                    if ($slotIndex + $slotsRequired < $slotLength) {
+                        for ($slotRelative = 1; $slotRelative < $slotsRequired; $slotRelative++) {
+                            if ($slotIndex + $slotRelative < $slotLength) {
+                                $this->slots[$date][$slotKeys[$slotIndex]] = self::takeLowerSlotValue(
+                                    $this->slots[$date][$slotKeys[$slotIndex]],
+                                    $this->slots[$date][$slotKeys[$slotIndex + $slotRelative]]
+                                );
+                            }
+                        }
+                    } else {
+                        $this->slots[$date][$slotIndex]['public'] = 0;
+                        $this->slots[$date][$slotIndex]['intern'] = 0;
+                        $this->slots[$date][$slotIndex]['callcenter'] = 0;
+                    }
+                }
+            }
+        }
         return $this;
+    }
+
+    /**
+     * Compare two slots and return the lower values
+     * @param array $slotA
+     * @param array $slotB
+     * @return array $slotA modified
+     */
+    protected static function takeLowerSlotValue($slotA, $slotB)
+    {
+        if (!isset($slotB['public']) || !isset($slotA['public'])) {
+            var_dump("takeLowerSlotValue");
+            //var_dump($slotA);
+            //var_dump($slotB);
+        }
+        foreach (['public', 'intern', 'callcenter'] as $type) {
+            $slotA[$type] = $slotA[$type] < $slotB[$type] ? $slotA[$type] : $slotB[$type];
+        }
+        return $slotA;
     }
 
     /**

@@ -83,7 +83,6 @@ class Calendar extends Base
                 while ($slotData = $statement->fetch(\PDO::FETCH_ASSOC)) {
                     $calendar = $this->addDayInfoToCalendar($calendar, $slotData, $month, $slotsRequired);
                 }
-
             }
         }
         return $calendar;
@@ -107,7 +106,6 @@ class Calendar extends Base
                 }
             }
         }
-
     }
 
     /**
@@ -120,7 +118,7 @@ class Calendar extends Base
         $slotsRequired
     ) {
         $slotlist = & $calendar['processing']['slotlist'];
-        if (! $slotlist->isSlotData($slotData)) {
+        if (! $slotlist->isSameAvailability($slotData)) {
             $slotlist->toReducedBySlots($slotsRequired);
             $calendar = $slotlist->addToCalendar($calendar);
             $calendar['processing']['slotlist'] = new SlotList(
@@ -141,7 +139,7 @@ class Calendar extends Base
         $slotsRequired
     ) {
         $slotlist = & $calendar['processing']['slotlist'];
-        if (! $slotlist->isSlotData($slotData)) {
+        if (! $slotlist->isSameAvailability($slotData)) {
             $slotlist->toReducedBySlots($slotsRequired);
             $calendar = $slotlist->addFreeProcesses($calendar);
             $calendar['processing']['slotlist'] = new SlotList(
