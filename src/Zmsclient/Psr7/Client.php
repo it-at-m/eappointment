@@ -18,7 +18,7 @@ class Client implements ClientInterface
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public static function readResponse(\Psr\Http\Message\RequestInterface $request, Array $curlopts = array())
+    public static function readResponse(\Psr\Http\Message\RequestInterface $request, array $curlopts = array())
     {
         $curlopts = $curlopts + self::$curlopt;
         $transport = new Curl();
