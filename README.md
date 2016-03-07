@@ -34,6 +34,12 @@ The following rewrite rules are required, examples for Apache2:
 For development, additional modules are required. Commits from a live environment require to ignore the pre-commit hooks.
 
     make dev
+    
+## Testing
+
+To test application run the following command:
+
+    bin/test
 
 ## Add SCSS module
 
