@@ -166,7 +166,7 @@ class Calendar extends Schema\Entity
      */
     public function hasDay($year, $month, $dayNumber)
     {
-        foreach ($this['days'] as $key => $day) {
+        foreach ($this['days'] as $day) {
             if ($day['year'] == $year && $day['month'] == $month && $day['day'] == $dayNumber) {
                 return true;
             }
@@ -178,15 +178,15 @@ class Calendar extends Schema\Entity
     public function addFreeProcess(Process $process)
     {
         $exists = false;
-        foreach($process->appointments as $appointment){
-            foreach($this->freeProcesses as $key => $freeProcess){
-                if($appointment && false !== $freeProcess->hasAppointment($appointment)){
+        foreach ($process->appointments as $appointment) {
+            foreach ($this->freeProcesses as $key => $freeProcess) {
+                if ($appointment && false !== $freeProcess->hasAppointment($appointment)) {
                     $this->freeProcesses[$key]->addAppointment($appointment);
                     $exists = true;
                 }
             }
         }
-        if(false === $exists){
+        if (false === $exists) {
             $this->freeProcesses[] = $process;
         }
         return $this;
