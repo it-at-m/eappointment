@@ -16,7 +16,7 @@ class Calendar extends Base
         $calendar = $this->readResolvedRequests($calendar);
         $calendar = ($getProcesses) ?
             $this->readFreeProcessesByDay($calendar) :
-            $calendar = $this->readResolvedDays($calendar);
+            $this->readResolvedDays($calendar);
 
         if ($cleanProcessing) {
             unset($calendar['processing']);

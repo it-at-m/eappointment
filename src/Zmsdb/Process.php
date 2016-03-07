@@ -22,20 +22,18 @@ class Process extends Base
         return $process;
     }
 
-    public function updateEntity($processData)
+    public function updateEntity(\BO\Zmsentities\Process $process)
     {
         $query = new Query\Process(Query\Base::UPDATE);
-        $process = new Entity($processData);
 
-        if (array_key_exists('id', $processData) && $processData['id'] != 0) {
-            $processId = $processData['id'];
+        if (array_key_exists('id', $process) && $process['id'] != 0) {
+            $processId = $process['id'];
         } else {
             $processId = $this->getNewProcessId();
         }
         $query->addConditionProcessId($processId);
-
-        if (array_key_exists('authKey', $processData) && $processData['authKey'] != 0) {
-            $authKey = $processData['authKey'];
+        if (array_key_exists('authKey', $process) && $process['authKey'] != 0) {
+            $authKey = $process['authKey'];
             $query->addConditionAuthKey($authKey);
         } else {
             $authKey = substr(md5(rand()), 0, 4);
@@ -46,7 +44,7 @@ class Process extends Base
         $values = $query->reverseEntityMapping($process);
         $query->addValues($values);
         $this->writeItem($query, 'process', $query::TABLE);
-        $this->writeRequestsToDb($process['id'], $process['requests']);
+        $this->writeRequestsToDb($processId, $process['requests']);
 
         $process = $this->readEntity($processId, $authKey, 1);
         $status = new Status();

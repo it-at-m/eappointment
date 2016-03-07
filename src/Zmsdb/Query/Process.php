@@ -86,7 +86,7 @@ class Process extends Base implements MappingInterface
             'client__familyName' => 'process.Name',
             'client__notificationsSendCount' => 'process.SMSverschickt',
             'client__surveyAccepted' => 'process.zustimmung_kundenbefragung',
-            'client__telphone' => 'process.telefonnummer_fuer_rueckfragen',
+            'client__telephone' => 'process.telefonnummer_fuer_rueckfragen',
             'createIP' => 'process.IPAdresse',
             'createTimestamp' => 'process.IPTimeStamp',
             'queue__arrivalTime' => 'process.wsm_aufnahmezeit',
@@ -115,53 +115,53 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
-    public function reverseEntityMapping($processData)
+    public function reverseEntityMapping(\BO\Zmsentities\Process $process)
     {
         $data = array();
-        if ($this->hasKey($processData, 'amendment')) {
-            $data['Anmerkung'] = $processData['amendment'];
-        }
-        if ($this->hasKey($processData['appointments'][0], 'date')) {
-            $data['Datum'] = date('Y-m-d', $processData['appointments'][0]['date']);
-            $data['Uhrzeit'] = date('H:i', $processData['appointments'][0]['date']);
-        }
-        if ($this->hasKey($processData, 'scope')) {
-            $data['StandortID'] = $processData['scope']['id'];
-        }
-        if ($this->hasKey($processData, 'authKey')) {
-            $data['absagecode'] = $processData['authKey'];
-        }
-        if ($this->hasKey($processData, 'status')) {
-            if ($processData['status'] == 'reserved') {
-                $data['vorlaeufigeBuchung'] = 1;
-            }
+        $data['Anmerkung'] = $this->setValue('amendment', $process);
+        $data['StandortID'] = $this->setValue('scope__id', $process);
+        $data['absagecode'] = $this->setValue('authKey', $process);
+        $data['Datum'] = $this->setValue('appointments__|date', $process, date('Y-m-d', $process['appointments'][0]['date']));
+        $data['Uhrzeit'] = $this->setValue('appointments__|date', $process, date('H:i', $process['appointments'][0]['date']));
 
+        $data['Name'] = $this->setValue('clients__|familyName', $process);
+        $data['EMail'] = $this->setValue('clients__|email', $process);
+        $data['telefonnummer_fuer_rueckfragen'] = $this->setValue('clients__|telephone', $process);
+        $data['zustimmung_kundenbefragung'] = $this->setValue('clients__|surveyAccepted', $process);
+        $data['EMailverschickt'] = $this->setValue('clients__|emailSendCount', $process);
+        $data['SMSverschickt'] = $this->setValue('clients__|notificationsSendCount', $process);
+
+        if ($process['status'] == 'reserved') {
+            $data['vorlaeufigeBuchung'] = $this->setValue('status', $process, 1);
         }
-        return $data;
-            /*
-            'client__email' => 'process.EMail',
-            'client__emailSendCount' => 'process.EMailverschickt',
-            'client__familyName' => 'process.Name',
-            'client__notificationsSendCount' => 'process.SMSverschickt',
-            'client__surveyAccepted' => 'process.zustimmung_kundenbefragung',
-            'client__telphone' => 'process.telefonnummer_fuer_rueckfragen',
-            'createIP' => 'process.IPAdresse',
-            'createTimestamp' => 'process.IPTimeStamp',
-            'queue__arrivalTime' => 'process.wsm_aufnahmezeit',
-            'queue__callCount' => 'process.AnzahlAufrufe',
-            'queue__callTime' => 'process.aufrufzeit',
-            'queue__number' => 'process.wartenummer',
-            'queue__waitingTime' => 'process.wartezeit',
-            'queue__reminderTimestamp' => 'process.Erinnerungszeitpunkt',
-            'workstation__id' => 'process.NutzerID',
-            */
+
+        return array_filter($data);
     }
 
-    public function hasKey($array, $value)
+    public function setValue($property, $process, $customvalue = null)
     {
-        if (array_key_exists($value, $array)) {
-            return true;
+        $value = null;
+        if (strpos($property, '__')){
+            list($subkey, $newkey) = explode('__', $property, 2);
+            if (strpos($newkey, '|') > -1){
+                $newkey = str_replace('|','',$newkey);
+                if(array_key_exists($newkey, $process[$subkey][0])){
+                    $value = (null === $customvalue) ? $process[$subkey][0][$newkey] : $customvalue;
+                }
+            }
+            else {
+                if(array_key_exists($newkey, $process[$subkey])){
+                    $value = (null === $customvalue) ? $process[$subkey][$newkey] : $customvalue;
+                }
+            }
+
+        } else {
+            if(array_key_exists($property, $process)){
+                $value = (null === $customvalue) ? $process[$property] : $customvalue;
+            }
         }
-        return false;
+
+        \App::$log->debug('value: ', [$value]);
+        return $value;
     }
 }
