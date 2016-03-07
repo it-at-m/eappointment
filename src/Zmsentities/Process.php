@@ -88,8 +88,8 @@ class Process extends Schema\Entity
 
     public function hasAppointment($date, $scope)
     {
-        foreach($this->appointments as $key => $item){
-            if($item['date'] == $date && $item['scope']['id'] == $scope){
+        foreach ($this->appointments as $item) {
+            if ($item['date'] == $date && $item['scope']['id'] == $scope) {
                 return true;
             }
         }
