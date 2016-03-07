@@ -26,7 +26,7 @@ class SessionHandler implements \SessionHandlerInterface
     public function read($sessionId)
     {
         $session = \App::$http->readGetResult('/session/' . $this->sessionName .'/'. $sessionId .'/')->getEntity();
-        return ($session) ? $session['content'] : null;
+        return (isset($session) && array_key_exists('content', $session)) ? $session['content'] : null;
     }
 
     public function write($sessionId, $sessionData)
