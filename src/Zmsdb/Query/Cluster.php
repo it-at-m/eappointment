@@ -2,7 +2,7 @@
 
 namespace BO\Zmsdb\Query;
 
-class Department extends Base
+class Cluster extends Base
 {
     /**
      * @var String TABLE mysql table reference

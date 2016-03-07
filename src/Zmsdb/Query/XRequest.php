@@ -26,4 +26,10 @@ class XRequest extends Base
         $this->query->where('AnliegenID', '=', $requestId);
         return $this;
     }
+
+    public function addConditionProcessId($processId)
+    {
+        $this->query->where('BuergerID', '=', $processId);
+        return $this;
+    }
 }

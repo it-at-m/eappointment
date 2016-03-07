@@ -23,27 +23,20 @@ class Process extends Base implements MappingInterface
             (process.BuergerID = ? AND process.absagecode = ?)
             OR process.istFolgeterminvon = ?
         ";
+
     public function addJoin()
     {
-        $this->query->leftJoin(
-            new Alias(Scope::TABLE, 'scope'),
-            'process.StandortID',
-            '=',
-            'scope.StandortID'
-        );
+        $this->query->leftJoin(new Alias(Scope::TABLE, 'scope'), 'process.StandortID', '=', 'scope.StandortID');
         $scopeQuery = new Scope($this->query);
         $scopeQuery->addEntityMappingPrefixed('scope__');
 
-        $this->query->leftJoin(
-            new Alias(Provider::TABLE, 'provider'),
-            'scope.InfoDienstleisterID',
-            '=',
-            'provider.id'
-        );
+        $this->query->leftJoin(new Alias(Provider::TABLE, 'provider'), 'scope.InfoDienstleisterID', '=', 'provider.id');
         $providerQuery = new Provider($this->query);
         $providerQuery->addEntityMappingPrefixed('scope__provider__');
 
-        return [$scopeQuery];
+        return [
+            $scopeQuery
+        ];
     }
 
     /**
@@ -61,12 +54,11 @@ class Process extends Base implements MappingInterface
                 AND x.`termin_hide` = 0
                 AND d.`zms_termin` = 1
         ';
-        $providerSlots = $this->getReader()->fetchAll(
-            $query,
-            [
-            'request_id' => $entity->id
-            ]
-        );
+        $providerSlots = $this->getReader()
+            ->fetchAll(
+                $query,
+                ['request_id' => $entity->id]
+            );
         return $providerSlots;
     }
 
@@ -75,18 +67,18 @@ class Process extends Base implements MappingInterface
         return [
             'amendment' => 'process.Anmerkung',
             'id' => 'process.BuergerID',
-            'appointment__date' => self::expression(
+            'appointments__0__date' => self::expression(
                 'unix_timestamp(CONCAT(`process`.`Datum`, " ", `process`.`Uhrzeit`))'
             ),
-            'appointment__scope__id' => 'process.StandortID',
-            'appointment__slotCount' => 'process.hatFolgetermine',
+            'appointments__0__scope__id' => 'process.StandortID',
+            'appointments__0__slotCount' => 'process.hatFolgetermine',
             'authKey' => 'process.absagecode',
-            'client__email' => 'process.EMail',
-            'client__emailSendCount' => 'process.EMailverschickt',
-            'client__familyName' => 'process.Name',
-            'client__notificationsSendCount' => 'process.SMSverschickt',
-            'client__surveyAccepted' => 'process.zustimmung_kundenbefragung',
-            'client__telephone' => 'process.telefonnummer_fuer_rueckfragen',
+            'clients__0__email' => 'process.EMail',
+            'clients__0__emailSendCount' => 'process.EMailverschickt',
+            'clients__0__familyName' => 'process.Name',
+            'clients__0__notificationsSendCount' => 'process.SMSverschickt',
+            'clients__0__surveyAccepted' => 'process.zustimmung_kundenbefragung',
+            'clients__0__telephone' => 'process.telefonnummer_fuer_rueckfragen',
             'createIP' => 'process.IPAdresse',
             'createTimestamp' => 'process.IPTimeStamp',
             'queue__arrivalTime' => 'process.wsm_aufnahmezeit',
@@ -95,7 +87,7 @@ class Process extends Base implements MappingInterface
             'queue__number' => 'process.wartenummer',
             'queue__waitingTime' => 'process.wartezeit',
             'queue__reminderTimestamp' => 'process.Erinnerungszeitpunkt',
-            'workstation__id' => 'process.NutzerID',
+            'workstation__id' => 'process.NutzerID'
         ];
     }
 
@@ -118,57 +110,23 @@ class Process extends Base implements MappingInterface
     public function reverseEntityMapping(\BO\Zmsentities\Process $process)
     {
         $data = array();
-        $data['Anmerkung'] = $this->setValue('amendment', $process);
-        $data['StandortID'] = $this->setValue('scope__id', $process);
-        $data['absagecode'] = $this->setValue('authKey', $process);
-        $data['Datum'] = $this->setValue(
-            'appointments__|date',
-            $process,
-            date('Y-m-d', $process['appointments'][0]['date'])
-        );
-        $data['Uhrzeit'] = $this->setValue(
-            'appointments__|date',
-            $process,
-            date('H:i', $process['appointments'][0]['date'])
-        );
+        $data['absagecode'] = $process['authKey'];
+        $data['Anmerkung'] = $process->getAmendment();
+        $data['StandortID'] = $process->getScopeId();
 
-        $data['Name'] = $this->setValue('clients__|familyName', $process);
-        $data['EMail'] = $this->setValue('clients__|email', $process);
-        $data['telefonnummer_fuer_rueckfragen'] = $this->setValue('clients__|telephone', $process);
-        $data['zustimmung_kundenbefragung'] = $this->setValue('clients__|surveyAccepted', $process);
-        $data['EMailverschickt'] = $this->setValue('clients__|emailSendCount', $process);
-        $data['SMSverschickt'] = $this->setValue('clients__|notificationsSendCount', $process);
+        $datetime = $process->getFirstAppointmentDateTime();
+        $data['Datum'] = $datetime->format('Y-m-d');
+        $data['Uhrzeit'] = $datetime->format('H:i');
 
-        if ($process['status'] == 'reserved') {
-            $data['vorlaeufigeBuchung'] = $this->setValue('status', $process, 1);
-        }
+        $client = $process->getFirstClient();
+        $data['Name'] = $client->familyName;
+        $data['EMail'] = $client->email;
+        $data['telefonnummer_fuer_rueckfragen'] = $client->telephone;
+        $data['zustimmung_kundenbefragung'] = $client->surveyAccepted;
+        $data['EMailverschickt'] = $client->emailSendCount;
+        $data['SMSverschickt'] = $client->notificationsSendCount;
 
-        return array_filter($data);
-    }
-
-    public function setValue($property, $process, $customvalue = null)
-    {
-        $value = null;
-        if (strpos($property, '__')) {
-            list($subkey, $newkey) = explode('__', $property, 2);
-            if (strpos($newkey, '|') > -1) {
-                $newkey = str_replace('|', '', $newkey);
-                if (array_key_exists($newkey, $process[$subkey][0])) {
-                    $value = (null === $customvalue) ? $process[$subkey][0][$newkey] : $customvalue;
-                }
-            } else {
-                if (array_key_exists($newkey, $process[$subkey])) {
-                    $value = (null === $customvalue) ? $process[$subkey][$newkey] : $customvalue;
-                }
-            }
-
-        } else {
-            if (array_key_exists($property, $process)) {
-                $value = (null === $customvalue) ? $process[$property] : $customvalue;
-            }
-        }
-
-        \App::$log->debug('value: ', [$value]);
-        return $value;
+        $data['vorlaeufigeBuchung'] = ($process['status'] == 'reserved') ? 1 : 0;
+        return $data;
     }
 }
