@@ -6,6 +6,10 @@
 
 namespace BO\Zmsadmin;
 
+/**
+ * @SuppressWarnings(Children)
+ *
+ */
 abstract class BaseController
 {
 }
