@@ -71,9 +71,9 @@ class Process extends Schema\Entity
     public function addClient($formData)
     {
         $client = new Client();
-        foreach($formData as $key => $item){
-            if (null !== $item['value'] && array_key_exists($key, $client)){
-               $client[$key] = $item['value'];
+        foreach ($formData as $key => $item) {
+            if (null !== $item['value'] && array_key_exists($key, $client)) {
+                $client[$key] = $item['value'];
             }
         }
         $this->clients[] = $client;
@@ -114,11 +114,10 @@ class Process extends Schema\Entity
 
     public function getFirstClient()
     {
-        if (count($this->clients)){
+        if (count($this->clients)) {
             $data = current($this->clients);
             $client = new Client($data);
-        }
-        else {
+        } else {
             $client = new Client();
         }
 
@@ -131,5 +130,4 @@ class Process extends Schema\Entity
         $date = \DateTime::createFromFormat('U', $appointment['date']);
         return $date;
     }
-
 }
