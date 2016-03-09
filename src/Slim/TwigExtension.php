@@ -30,6 +30,7 @@ class TwigExtension extends \Slim\Views\TwigExtension
             new \Twig_SimpleFunction('currentLang', array($this, 'currentLang')),
             new \Twig_SimpleFunction('currentRoute', array($this, 'currentRoute')),
             new \Twig_SimpleFunction('formatDateTime', array($this, 'formatDateTime')),
+            new \Twig_SimpleFunction('toGermanDateFromTs', array($this, 'toGermanDateFromTs')),
         );
     }
 
@@ -44,6 +45,16 @@ class TwigExtension extends \Slim\Views\TwigExtension
         $formatDate['ts']       = $datetime->getTimestamp();
 
         return $formatDate;
+    }
+
+    public function toGermanDateFromTs($timestamp)
+    {
+        $datetime = \DateTime::createFromFormat('U', $timestamp);
+        $datetime->setTimezone(new \DateTimeZone(\App::TIMEZONE));
+        return array(
+            'date' => strftime('%a. %d. %B %Y', $datetime->getTimestamp()),
+            'time' => strftime('%H:%M Uhr', $datetime->getTimestamp())
+        );
     }
 
     public function currentRoute($lang = null)

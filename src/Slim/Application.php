@@ -1,8 +1,10 @@
 <?php
 /**
+ *
  * @package Slimproject
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
- **/
+ *
+ */
 namespace BO\Slim;
 
 class Application
@@ -28,7 +30,11 @@ class Application
     const TIMEZONE = 'Europe/Berlin';
 
     public static $supportedLanguages = array();
-    public static $lcTimes = array();
+
+    public static $lcTimes = array(
+        'de' => 'de_DE',
+        'en' => 'en_GB'
+    );
 
     /*
      * -----------------------------------------------------------------------
