@@ -5,3 +5,4 @@ coverage
 tags
 Makefile
 bin/configure
+bin/test
