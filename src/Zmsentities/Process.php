@@ -127,7 +127,7 @@ class Process extends Schema\Entity
     public function getFirstAppointmentDateTime()
     {
         $appointment = current($this->appointments);
-        $date = \DateTime::createFromFormat('U', $appointment['date']);
+        $date = \DateTime::createFromFormat("U", $appointment['date'])->setTimeZone(new \DateTimeZone(\App::TIMEZONE));
         return $date;
     }
 }
