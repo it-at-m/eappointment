@@ -1,7 +1,7 @@
 #!/bin/bash
 
 DIR=$(dirname ${BASH_SOURCE[0]})
-ROOT=$(readlink -e $DIR/..)
+ROOT=$(greadlink -e $DIR/..)
 
 echo "Configuring application"
 ln -sf $ROOT/bin/test $ROOT/.git/hooks/pre-commit
