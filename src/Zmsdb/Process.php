@@ -53,6 +53,31 @@ class Process extends Base
     }
 
     /**
+     * Markiere einen Termin als bestätigt
+     *
+     * @param
+     * process
+     *
+     * @return Resource Status
+     */
+    public function updateProcessStatus(\BO\Zmsentities\Process $process, $status = 'free')
+    {
+        $query = new Query\Process(Query\Base::UPDATE);
+        $query->addConditionProcessId($process['id']);
+        $query->addConditionAuthKey($process['authKey']);
+
+        $process['status'] = $status;
+        $values = $query->reverseEntityMapping($process);
+        $query->addValues($values);
+        $this->writeItem($query, 'process', $query::TABLE);
+
+        $process = $this->readEntity($process['id'], $process['authKey'], 1);
+        $status = new Status();
+        $process['status'] = $status->readProcessStatus($process['id'], $process['authKey']);
+        return $process;
+    }
+
+    /**
      * Markiere einen Termin als abgesagt
      *
      * @param
