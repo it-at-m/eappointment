@@ -1,7 +1,7 @@
 #!/bin/bash
 
-DIR=$(dirname ${BASH_SOURCE[0]})
-ROOT=$DIR/..
+DIR=$(dirname $(realpath -e ${BASH_SOURCE[0]}))
+ROOT=$(realpath -e $DIR/..)
 
 echo "Testing application"
 cd $ROOT
