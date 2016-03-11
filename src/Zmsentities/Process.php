@@ -104,30 +104,36 @@ class Process extends Schema\Entity
 
     public function getScopeId()
     {
-        return ($this->scope['id']) ? $this->scope['id'] : 0;
+        return (\array_key_exists('id', $this->scope)) ? $this->scope['id'] : null;
     }
 
     public function getAmendment()
     {
-        return ($this->amendment) ? $this->amendment : '';
+        return ($this->amendment) ? $this->amendment : null;
+    }
+
+    public function getAuthKey()
+    {
+        return ($this->authKey) ? $this->authKey : null;
     }
 
     public function getFirstClient()
     {
-        if (count($this->clients)) {
+        $client = null;
+        if (count($this->clients) > 0) {
             $data = current($this->clients);
             $client = new Client($data);
-        } else {
-            $client = new Client();
         }
-
         return $client;
     }
 
     public function getFirstAppointmentDateTime()
     {
+        $date = null;
         $appointment = current($this->appointments);
-        $date = \DateTime::createFromFormat("U", $appointment['date'])->setTimeZone(new \DateTimeZone(\App::TIMEZONE));
+        if ($appointment) {
+            $date = \DateTime::createFromFormat("U", $appointment['date'])->setTimeZone(new \DateTimeZone(\App::TIMEZONE));
+        }
         return $date;
     }
 }
