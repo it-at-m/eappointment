@@ -4,6 +4,34 @@ namespace BO\Zmsdb\Helper;
 class ProcessStatus extends \BO\Zmsdb\Process
 {
 
+    public function readUpdatedStatus(\BO\Zmsentities\Process $process, $status = 'free')
+    {
+        $query = new \BO\Zmsdb\Query\Process(\BO\Zmsdb\Query\Base::UPDATE);
+        $query->addConditionProcessId($process['id']);
+        $query->addConditionAuthKey($process['authKey']);
+
+        $statusList = [
+            'reserved' => 'createReservedProcessEntity',
+            'confirmed' => 'createConfirmedProcessEntity',
+            'queued' => 'createQueuedProcessEntity',
+            'called' => 'createCalledProcessEntity',
+            'processing' => 'createProcessingProcessEntity',
+            'pending' => 'createPendingProcessEntity',
+            'missed' => 'createMissedProcessEntity',
+            'blocked' => 'createBlockedProcessEntity',
+            'deleted' => 'createDeletedProcessEntity',
+        ];
+
+        $entity = call_user_func_array(array($this, $statusList[$status]), array($process));
+        $values = $query->reverseEntityMapping($entity);
+        $query->addValues($values);
+
+        $this->writeItem($query, 'process', $query::TABLE);
+        $process = $this->readEntity($process['id'], $process['authKey'], 1);
+        $process['status'] = $this->readProcessStatus($process['id'], $process['authKey']);
+        return $process;
+    }
+
     /**
      * get the current process status from given Id and authKey
      *
@@ -39,6 +67,13 @@ class ProcessStatus extends \BO\Zmsdb\Process
             }
         }
         return $status;
+    }
+
+    protected function createConfirmedProcessEntity($process)
+    {
+        $entity = new \BO\Zmsentities\Process($process);
+        $entity['status'] = 'confirmed';
+        return $entity;
     }
 
     /**
