@@ -24,6 +24,7 @@ class Process extends Base
 
     public function updateEntity(\BO\Zmsentities\Process $process)
     {
+        //\App::$log->debug('UPDATE ENTITY');
         $query = new Query\Process(Query\Base::UPDATE);
 
         if (array_key_exists('id', $process) && $process['id'] != 0) {
@@ -47,8 +48,7 @@ class Process extends Base
         $this->writeRequestsToDb($processId, $process['requests']);
 
         $process = $this->readEntity($processId, $authKey, 1);
-        $status = new Status();
-        $process['status'] = $status->readProcessStatus($processId, $authKey);
+        $process['status'] = (new Status())->readProcessStatus($processId, $authKey);
         return $process;
     }
 
@@ -62,18 +62,8 @@ class Process extends Base
      */
     public function updateProcessStatus(\BO\Zmsentities\Process $process, $status = 'free')
     {
-        $query = new Query\Process(Query\Base::UPDATE);
-        $query->addConditionProcessId($process['id']);
-        $query->addConditionAuthKey($process['authKey']);
-
-        $process['status'] = $status;
-        $values = $query->reverseEntityMapping($process);
-        $query->addValues($values);
-        $this->writeItem($query, 'process', $query::TABLE);
-
-        $process = $this->readEntity($process['id'], $process['authKey'], 1);
-        $status = new Status();
-        $process['status'] = $status->readProcessStatus($process['id'], $process['authKey']);
+        //\App::$log->debug('UPDATE STATUS');
+        $process = (new Status())->readUpdatedStatus($process, $status);
         return $process;
     }
 

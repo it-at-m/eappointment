@@ -115,18 +115,26 @@ class Process extends Base implements MappingInterface
         $data['StandortID'] = $process->getScopeId();
 
         $datetime = $process->getFirstAppointmentDateTime();
-        $data['Datum'] = $datetime->format('Y-m-d');
-        $data['Uhrzeit'] = $datetime->format('H:i');
+        if(null !== $datetime){
+            $data['Datum'] = $datetime->format('Y-m-d');
+            $data['Uhrzeit'] = $datetime->format('H:i');
+        }
 
         $client = $process->getFirstClient();
-        $data['Name'] = $client->familyName;
-        $data['EMail'] = $client->email;
-        $data['telefonnummer_fuer_rueckfragen'] = $client->telephone;
-        $data['zustimmung_kundenbefragung'] = $client->surveyAccepted;
-        $data['EMailverschickt'] = $client->emailSendCount;
-        $data['SMSverschickt'] = $client->notificationsSendCount;
+        if(null !== $client){
+            $data['Name'] = $client->familyName;
+            $data['EMail'] = $client->email;
+            $data['telefonnummer_fuer_rueckfragen'] = $client->telephone;
+            $data['zustimmung_kundenbefragung'] = $client->surveyAccepted;
+            $data['EMailverschickt'] = $client->emailSendCount;
+            $data['SMSverschickt'] = $client->notificationsSendCount;
+        }
 
         $data['vorlaeufigeBuchung'] = ($process['status'] == 'reserved') ? 1 : 0;
+
+        $data = array_filter($data, function($value) {
+            return ($value !== NULL && $value !== FALSE && $value !== '');
+        });
         return $data;
     }
 }
