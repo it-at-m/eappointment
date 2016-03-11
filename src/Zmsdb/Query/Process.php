@@ -115,13 +115,13 @@ class Process extends Base implements MappingInterface
         $data['StandortID'] = $process->getScopeId();
 
         $datetime = $process->getFirstAppointmentDateTime();
-        if(null !== $datetime){
+        if (null !== $datetime) {
             $data['Datum'] = $datetime->format('Y-m-d');
             $data['Uhrzeit'] = $datetime->format('H:i');
         }
 
         $client = $process->getFirstClient();
-        if(null !== $client){
+        if (null !== $client) {
             $data['Name'] = $client->familyName;
             $data['EMail'] = $client->email;
             $data['telefonnummer_fuer_rueckfragen'] = $client->telephone;
@@ -132,8 +132,8 @@ class Process extends Base implements MappingInterface
 
         $data['vorlaeufigeBuchung'] = ($process['status'] == 'reserved') ? 1 : 0;
 
-        $data = array_filter($data, function($value) {
-            return ($value !== NULL && $value !== FALSE && $value !== '');
+        $data = array_filter($data, function ($value) {
+            return ($value !== null && $value !== false && $value !== '');
         });
         return $data;
     }
