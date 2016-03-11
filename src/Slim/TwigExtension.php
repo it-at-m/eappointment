@@ -151,7 +151,7 @@ class TwigExtension extends \Slim\Views\TwigExtension
     {
         $req = \App::$slim->request();
         $uri = $req->getRootUri();
-        //\App::$log->debug('uri', [$uri]);
+        \App::$log->debug('uri', [$uri]);
         if ($withUri) {
             $uri = preg_replace('#^https?://[^/]+#', '', $uri); //Do not force protocoll or host
         }
