@@ -49,8 +49,7 @@ class TwigExtension extends \Slim\Views\TwigExtension
 
     public function toGermanDateFromTs($timestamp)
     {
-        $datetime = \DateTime::createFromFormat('U', $timestamp);
-        $datetime->setTimezone(new \DateTimeZone(\App::TIMEZONE));
+        $datetime = \DateTime::createFromFormat("U", $timestamp)->setTimeZone(new \DateTimeZone(\App::TIMEZONE));
         return array(
             'date' => strftime('%a. %d. %B %Y', $datetime->getTimestamp()),
             'time' => strftime('%H:%M Uhr', $datetime->getTimestamp())
@@ -151,8 +150,8 @@ class TwigExtension extends \Slim\Views\TwigExtension
     public static function includeUrl($withUri = true)
     {
         $req = \App::$slim->request();
-        $uri = $req->getUrl();
-
+        $uri = $req->getRootUri();
+        //\App::$log->debug('uri', [$uri]);
         if ($withUri) {
             $uri = preg_replace('#^https?://[^/]+#', '', $uri); //Do not force protocoll or host
         }
