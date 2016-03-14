@@ -22,11 +22,17 @@ class Date extends \BO\Mellon\Valid
      public function isDate($format = 'U', $message = 'no valid date')
     {
         $this->validated = true;
-        $date = \DateTime::createFromFormat($format, $this->value);
-        $isDate = (bool)strtotime($date->format('Y-m-d'));
-        if (false === $isDate) {
+        if (null !== $this->value) {
+            $selectedDate = \DateTime::createFromFormat($format, $this->value);
+            $selectedDate->setTimezone(new \DateTimeZone(\App::TIMEZONE));
+            $isDate = (bool)strtotime($selectedDate->format('Y-m-d'));
+            if (false === $isDate) {
+                $this->failure($message);
+            }
+        }
+        else {
             $this->failure($message);
         }
-        return $this;
+        return $this->validate($message, FILTER_VALIDATE_INT);
     }
 }
