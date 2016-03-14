@@ -279,21 +279,21 @@ class SlotList
     ) {
         $startDate = new \DateTime($startDate->format('c'));
         do {
-            $startTime = new \DateTime($this->availability['startTime']);
-            $stopTime = new \DateTime($this->availability['endTime']);
+            $startDate->modify('today ' . $this->availability['startTime']);
+            $stopTime = new \DateTime($startDate->format('Y-m-d') . ' ' . $this->availability['endTime']);
             $date = $startDate->format('Y-m-d');
             if ($this->availability->hasDate($startDate)) {
                 $slotnr = 0;
                 do {
                     $this->slots[$date][$slotnr] = [
-                        'time' => $startTime->format('H:i'),
+                        'time' => $startDate->format('H:i'),
                         'public' => $this->availability['workstationCount']['public'],
                         'callcenter' => $this->availability['workstationCount']['callcenter'],
                         'intern' => $this->availability['workstationCount']['intern'],
                     ];
-                    $startTime->modify('+' . $this->availability['slotTimeInMinutes'] . 'minute');
+                    $startDate->modify('+' . $this->availability['slotTimeInMinutes'] . 'minute');
                     $slotnr++;
-                } while ($startTime->getTimestamp() <= $stopTime->getTimestamp());
+                } while ($startDate->getTimestamp() <= $stopTime->getTimestamp());
             }
             $startDate->modify('+1day');
             $date = $startDate->format('Y-m-d');
