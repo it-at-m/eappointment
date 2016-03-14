@@ -132,7 +132,8 @@ class Process extends Schema\Entity
         $date = null;
         $appointment = current($this->appointments);
         if ($appointment) {
-            $date = \DateTime::createFromFormat("U", $appointment['date'])->setTimeZone(new \DateTimeZone(\App::TIMEZONE));
+            $date = \DateTime::createFromFormat("U", $appointment['date']);
+            $date->setTimeZone(new \DateTimeZone(\App::TIMEZONE));
         }
         return $date;
     }
