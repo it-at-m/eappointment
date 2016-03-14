@@ -36,6 +36,72 @@
         },
         "id": {
             "type": "string"
+        },
+        "content": {
+            "type": "object",
+            "properties": {
+            	"basket" : {
+            		"type": "object",
+            		"properties": {
+            			"requests" : {
+            				"type": "string"
+            			},
+				        "providers" : {
+            				"type": "string"
+            			},
+				        "scope" : {
+            				"type": "integer"
+            			},
+				        "process" : {
+            				"type": "integer"
+            			},
+				        "date" : {
+            				"type": "integer"
+            			},
+				        "familyName" : {
+            				"type": "string"
+            			},
+				        "clientEmail" : {
+            				"type": "string"
+            			},
+				        "clientTelehone" : {
+            				"type": "integer"
+            			},
+				        "clientAmendment" : {
+            				"type": "string"
+            			},
+				        "authKey" :{
+            				"type": "string"
+            			}
+            		}
+            	},
+            	"human" : {
+            		"type" : "object",
+            		"properties" : {
+            			"captcha_text" : {
+            				"type": "string"
+            			},
+				        "Client" : {
+            				"type": "integer"
+            			},
+				        "TS" : {
+            				"type": "integer"
+            			},
+				        "Origin" : {
+            				"type": "string"
+            			},
+				        "RemoteAddress" : {
+            				"type": "string"
+            			},
+				        "referrer" : {
+            				"type": "string"
+            			},
+				        "Step" : {
+            				"type": "array"
+            			}
+            		}
+            	}
+            }
         }
     }      
 }
