@@ -194,7 +194,6 @@ class SlotList
             $slotDebug = "$slotdate #$slotnumber @" . $slotData['slottime']
                 . " (Avail.#" . $this->slotData['availability__id'] . ")";
             if (!isset($this->slots[$slotdate][$slotnumber])) {
-                var_dump($this->slots);
                 throw new \Exception(
                     "Found database entry without a pre-generated slot $slotDebug"
                 );
@@ -227,7 +226,6 @@ class SlotList
                 $day['freeAppointments']['callcenter'] += $slotInfo['callcenter'];
             }
         }
-        //var_dump($this->slots);
         return $calendar;
     }
 
@@ -313,11 +311,6 @@ class SlotList
      */
     protected static function takeLowerSlotValue($slotA, $slotB)
     {
-        if (!isset($slotB['public']) || !isset($slotA['public'])) {
-            var_dump("takeLowerSlotValue");
-            //var_dump($slotA);
-            //var_dump($slotB);
-        }
         foreach (['public', 'intern', 'callcenter'] as $type) {
             $slotA[$type] = $slotA[$type] < $slotB[$type] ? $slotA[$type] : $slotB[$type];
         }

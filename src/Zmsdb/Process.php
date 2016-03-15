@@ -175,6 +175,6 @@ class Process extends Base
     {
         $resolvedCalendar = new Calendar();
         $calendar = $resolvedCalendar->readResolvedEntity($calendar, true, false);
-        return $calendar;
+        return $calendar['freeProcesses'];
     }
 }

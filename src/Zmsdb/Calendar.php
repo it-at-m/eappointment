@@ -145,7 +145,7 @@ class Calendar extends Base
             $calendar['processing']['slotlist'] = new SlotList(
                 $slotData,
                 $selectedDateTime->modify('first day of'),
-                $selectedDateTime->modify('last day of')
+                $selectedDateTime->modify('last day of')->modify('23:59:59')
             );
         } else {
             $slotlist->addSlotData($slotData);
