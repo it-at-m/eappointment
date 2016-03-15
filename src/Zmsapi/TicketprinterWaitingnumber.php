@@ -11,7 +11,6 @@ use \BO\Mellon\Validator;
 
 /**
   * Handle requests concerning services
-  *
   */
 class TicketprinterWaitingnumber extends BaseController
 {

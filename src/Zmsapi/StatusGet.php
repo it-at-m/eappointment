@@ -11,7 +11,6 @@ use \BO\Zmsdb\Status as Query;
 
 /**
   * Handle requests concerning services
-  *
   */
 class StatusGet extends BaseController
 {

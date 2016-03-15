@@ -11,7 +11,6 @@ use \BO\Zmsdb\Process as Query;
 
 /**
   * Handle requests concerning services
-  *
   */
 class ProcessGet extends BaseController
 {

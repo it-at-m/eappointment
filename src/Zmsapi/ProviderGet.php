@@ -11,7 +11,6 @@ use \BO\Zmsdb\Provider as Query;
 
 /**
   * Handle requests concerning services
-  *
   */
 class ProviderGet extends BaseController
 {

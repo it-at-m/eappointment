@@ -12,7 +12,6 @@ use \BO\Zmsdb\Process as Query;
 
 /**
   * Handle requests concerning services
-  *
   */
 class ProcessUpdate extends BaseController
 {
