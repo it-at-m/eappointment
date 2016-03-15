@@ -97,7 +97,21 @@
             				"type": "string"
             			},
 				        "Step" : {
-            				"type": "array"
+            				"type": "object",
+            				"properties": {
+            					"dayselect": {
+            						"type": "integer"
+            					},
+            					"timeselect": {
+            						"type": "integer"
+            					},
+            					"register": {
+            						"type": "integer"
+            					},
+            					"confirm": {
+            						"type": "integer"
+            					}
+            				}
             			}
             		}
             	}

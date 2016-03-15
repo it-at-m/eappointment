@@ -32,5 +32,4 @@ class Session extends Schema\Entity
             ]
         ];
     }
-
 }
