@@ -1549,6 +1549,53 @@
 			}
 		}
 	},
+	"/provider/list/{source}/{csv}/": {
+		"get": {
+			"description": "Get a list of provider by optional csv",
+			"parameters": [
+				{
+					"name": "source",
+					"description": "request source like 'dldb'",
+					"in": "path",
+					"required": true,
+					"type": "string"
+				},
+				{
+					"name": "csv",
+					"required": true,
+					"description": "request numbers as csv string",
+					"in": "path",
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"collectionFormat": "csv"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/provider.json"
+							}
+						}
+					}
+				},
+				"400": {
+					"description": "invalid tag value"
+				},
+				"404": {
+					"description": "request id for source does not exists"
+				}
+			}
+		}
+	},
 	"/request/{source}/{id}/": {
 		"get": {
 			"description": "Get an request by id",
@@ -1582,6 +1629,53 @@
 							}
 						}
 					}
+				},
+				"404": {
+					"description": "request id for source does not exists"
+				}
+			}
+		}
+	},
+	"/request/list/{source}/{csv}/": {
+		"get": {
+			"description": "Get a list of request by optional csv",
+			"parameters": [
+				{
+					"name": "source",
+					"description": "request source like 'dldb'",
+					"in": "path",
+					"required": true,
+					"type": "string"
+				},
+				{
+					"name": "csv",
+					"required": true,
+					"description": "request numbers as csv string",
+					"in": "path",
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"collectionFormat": "csv"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/request.json"
+							}
+						}
+					}
+				},
+				"400": {
+					"description": "invalid tag value"
 				},
 				"404": {
 					"description": "request id for source does not exists"
@@ -1731,6 +1825,84 @@
 			"responses": {
 				"200": {
 					"description": "success"
+				},
+				"404": {
+					"description": "scope id does not exists"
+				}
+			}
+		}
+	},
+	"/scope/provider/{id}/": {
+		"get": {
+			"description": "Get a list of scope by provider ID",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "provider number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/scope.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "scope id does not exists"
+				}
+			}
+		}
+	},
+	"/scope/cluster/{id}/": {
+		"get": {
+			"description": "Get a list of scope by cluster ID",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "cluster number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/scope.json"
+							}
+						}
+					}
 				},
 				"404": {
 					"description": "scope id does not exists"
@@ -2168,6 +2340,152 @@
 				},
 				"404": {
 					"description": "useraccount loginname does not exists"
+				}
+			}
+		}
+	},
+	"/session/{name}/{id}/": {
+		"get": {
+			"description": "Get current Session",
+			"parameters": [
+				{
+					"name": "name",
+					"description": "name from session (3 - 20 letters)",
+					"required": true,
+					"in": "path",
+					"type": "string"
+				},
+				{
+					"name": "id",
+					"description": "id from session (20 - 40 chars)",
+					"required": true,
+					"in": "path",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "get a session by id and name",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/session.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "Could not find any available session",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/session.json"
+							}
+						}
+					}
+				}
+			}
+		},
+		"delete": {
+			"description": "delete a session",
+			"parameters": [
+				{
+					"name": "name",
+					"description": "name from session (3 - 20 letters)",
+					"required": true,
+					"in": "path",
+					"type": "string"
+				},
+				{
+					"name": "id",
+					"description": "id from session (20 - 40 chars)",
+					"required": true,
+					"in": "path",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "session deleted successfully",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/session.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "Could not find any available session",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/session.json"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"/session/": {
+		"post": {
+			"description": "Update current Session",
+			"parameters": [
+				{
+					"name": "session",
+					"description": "session content",
+					"in": "body",
+					"required": true,
+					"schema": {
+						"$ref": "schema/session.json"
+					}
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "get an updated session object",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/session.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "Could not find any available session",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/session.json"
+							}
+						}
+					}
 				}
 			}
 		}
