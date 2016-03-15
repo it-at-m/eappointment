@@ -8,21 +8,31 @@ namespace BO\Zmsdb\Query;
 class SlotList
 {
     const QUERY = 'SELECT
+
+            -- collect some important settings, especially from the scope, use the appointment key
             UNIX_TIMESTAMP(CONCAT(b.Datum, " ", b.Uhrzeit)) AS appointment__date,
             s.StandortID AS appointment__scope__id,
             s.mehrfachtermine AS appointment__scope__preferences__appointment__multipleSlotsEnabled,
+
+            -- results are used slots, collect some information to match calculated open slots
             DAYOFMONTH(b.Datum) AS `day`,
             MONTH(b.Datum) AS `month`,
             YEAR(b.Datum) AS `year`,
             b.Uhrzeit AS slottime,
             b.Datum AS slotdate,
+
+            -- as grouped by slot, we can calculate available free appointments
             GREATEST(0, o.Anzahlterminarbeitsplaetze - o.reduktionTermineImInternet - COUNT(b.Datum))
                 AS `freeAppointments__public`,
             GREATEST(0, o.Anzahlterminarbeitsplaetze - o.reduktionTermineCallcenter - COUNT(b.Datum))
                 AS `freeAppointments__callcenter`,
             o.Anzahlterminarbeitsplaetze - COUNT(b.Datum)
                 AS `freeAppointments__intern`,
+
+            -- calculate the incrementing slotnr for the availability
             FLOOR(((TIME_TO_SEC(b.Uhrzeit) - TIME_TO_SEC(o.Terminanfangszeit)) / TIME_TO_SEC(o.Timeslot))) AS `slotnr`,
+
+            -- collect settings for the availability to calculate missing slots
             o.OeffnungszeitID AS availability__id,
             o.erlaubemehrfachslots AS availability__multipleSlotsAllowed,
             o.allexWochen AS availability__repeat__afterWeeks,
@@ -32,6 +42,8 @@ class SlotList
             UNIX_TIMESTAMP(o.Endedatum) AS availability__endDate,
             o.Terminanfangszeit	 AS availability__startTime,
             o.Terminendzeit	 AS availability__endTime,
+
+            -- weekday is saved bitwise
             o.Wochentag & 2 AS availability__weekday__monday,
             o.Wochentag & 4 AS availability__weekday__tuesday,
             o.Wochentag & 8 AS availability__weekday__wednesday,
@@ -39,34 +51,68 @@ class SlotList
             o.Wochentag & 32 AS availability__weekday__friday,
             o.Wochentag & 64 AS availability__weekday__saturday,
             o.Wochentag & 1 AS availability__weekday__sunday,
+
+            -- calculate available slots, do not use reduction values
             o.Anzahlterminarbeitsplaetze - o.reduktionTermineImInternet AS availability__workstationCount__public,
             o.Anzahlterminarbeitsplaetze - o.reduktionTermineCallcenter AS availability__workstationCount__callcenter,
             o.Anzahlterminarbeitsplaetze AS availability__workstationCount__intern,
+
+            -- availability overwrites scope settings if greater zero
             IF(o.Offen_ab, o.Offen_ab, s.Termine_ab) AS availability__bookable__startInDays,
             IF(o.Offen_bis, o.Offen_bis, s.Termine_bis) AS availability__bookable__endInDays
         FROM
             standort s
             LEFT JOIN oeffnungszeit o USING(StandortID)
-            LEFT JOIN buerger b ON
-                b.StandortID = o.StandortID
-                AND o.Wochentag & POW(2, DAYOFWEEK(b.Datum) - 1)
-                AND b.Uhrzeit >= o.Terminanfangszeit
-                AND b.Uhrzeit <= o.Terminendzeit
-                AND b.Datum >= o.Startdatum
-                AND b.Datum <= o.Endedatum
+            LEFT JOIN buerger b ON b.StandortID = o.StandortID
+
         WHERE
             o.StandortID = :scope_id
             AND o.OeffnungszeitID IS NOT NULL
+
+            -- ignore slots out of date range
             AND (b.Datum IS  NULL OR b.Datum BETWEEN :start_process AND :end_process)
+
+            -- ignore availability out of date range
             AND o.Endedatum >= :start_availability
             AND o.Startdatum <= :end_availability
+
+            -- ignore availability without appointment slots
             AND o.Anzahlterminarbeitsplaetze != 0
+
+            -- match weekday
+            AND o.Wochentag & POW(2, DAYOFWEEK(b.Datum) - 1)
+
+            -- match week
+            AND (
+                (
+                    o.allexWochen
+                    AND ((UNIX_TIMESTAMP(b.Datum) - UNIX_TIMESTAMP(o.Startdatum)) / 86400 / 7) % o.allexWochen != 0
+                )
+                OR (
+                    o.jedexteWoche
+                    AND (
+                        CEIL(DAYOFMONTH(b.Datum) / 7) = o.jedexteWoche
+                        OR (
+                            o.jedexteWoche = 5
+                            AND CEIL(LAST_DAY(b.Datum) / 7) = CEIL(DAYOFMONTH(b.Datum) / 7)
+                        )
+                    )
+                )
+            )
+
+            -- match time and date
+            AND b.Uhrzeit >= o.Terminanfangszeit
+            AND b.Uhrzeit <= o.Terminendzeit
+            AND b.Datum >= o.Startdatum
+            AND b.Datum <= o.Endedatum
         GROUP BY o.OeffnungszeitID, b.Datum, `slotnr`
         HAVING
-            -- reduce results cause processing them costs time and here we have a query cache
+            -- reduce results cause processing them costs time even with query cache
             FROM_UNIXTIME(appointment__date) BETWEEN
                 DATE_ADD(:nowStart, INTERVAL availability__bookable__startInDays DAY)
                 AND DATE_ADD(:nowEnd, INTERVAL availability__bookable__endInDays DAY)
+
+        -- ordering is important for processing later on (slot reduction)
         ORDER BY o.OeffnungszeitID, b.Datum, `slotnr`
         ';
 
@@ -145,10 +191,18 @@ class SlotList
         if (isset($slotData['slotnr'])) {
             $slotnumber = $slotData['slotnr'];
             $slotdate = $slotData['slotdate'];
+            $slotDebug = "$slotdate #$slotnumber @" . $slotData['slottime']
+                . " (Avail.#" . $this->slotData['availability__id'] . ")";
+            if (!isset($this->slots[$slotdate][$slotnumber])) {
+                var_dump($this->slots);
+                throw new \Exception(
+                    "Found database entry without a pre-generated slot $slotDebug"
+                );
+            }
             $slot =& $this->slots[$slotdate][$slotnumber];
             if (isset($slot['slottime'])) {
                 throw new \Exception(
-                    "Found two database entries for the same slot $slotdate #$slotnumber @" . $slotData['slottime']
+                    "Found two database entries for the same slot $slotDebug"
                 );
             }
             $slot['slottime'] = $slotData['slottime'];
