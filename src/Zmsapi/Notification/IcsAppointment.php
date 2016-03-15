@@ -42,9 +42,10 @@ class IcsAppointment
     {
         ob_start();
         \BO\Slim\Render::html(
-            'page/icsappointment.twig', array(
-            'date' => $date,
-            'process' => $process,
+            'page/icsappointment.twig',
+            array(
+                'date' => $date,
+                'process' => $process,
             )
         );
         $icsstring = ob_get_contents();
@@ -52,5 +53,3 @@ class IcsAppointment
         return $icsstring;
     }
 }
-
-?>
