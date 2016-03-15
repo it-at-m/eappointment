@@ -9,6 +9,9 @@
         "slotCount": 2
     },
     "properties": {
+        "availability": {
+            "$ref": "availability.json"
+        },
         "date": {
             "type": "integer",
             "description": "unix timestamp representing the date and time of the appointment"
