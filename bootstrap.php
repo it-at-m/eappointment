@@ -11,8 +11,9 @@ require(APP_PATH . '/vendor/autoload.php');
 require(APP_PATH . '/config.php');
 
 \BO\Slim\Bootstrap::init();
-//\BO\Slim\Bootstrap::addTwigExtension(new \BO\Dldb\TwigExtension());
-//\BO\Slim\Bootstrap::addTwigTemplateDirectory('dldb', APP_PATH . '/vendor/bo/clientdldb/templates');
+\BO\Slim\Bootstrap::addTwigExtension(new \BO\Slim\TwigExtension());
+\BO\Slim\Bootstrap::addTwigExtension(new \Twig_Extensions_Extension_Text());
+\BO\Slim\Bootstrap::addTwigExtension(new \Twig_Extensions_Extension_I18n());
 
 // Set option for environment, routing, logging and templating
 \BO\Zmsdb\Connection\Select::$enableProfiling = \APP::DEBUG;

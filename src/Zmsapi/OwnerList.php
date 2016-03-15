@@ -10,7 +10,6 @@ use \BO\Slim\Render;
 
 /**
   * Handle requests concerning services
-  *
   */
 class OwnerList extends BaseController
 {

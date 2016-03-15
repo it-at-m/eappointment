@@ -11,7 +11,6 @@ use \BO\Zmsdb\Request as Query;
 
 /**
   * Handle requests concerning services
-  *
   */
 class RequestGet extends BaseController
 {

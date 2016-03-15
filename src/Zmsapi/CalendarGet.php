@@ -12,7 +12,6 @@ use \BO\Zmsdb\Calendar as Query;
 
 /**
   * Handle requests concerning services
-  *
   */
 class CalendarGet extends BaseController
 {

@@ -11,7 +11,6 @@ use \BO\Zmsdb\Availability as Query;
 
 /**
   * Handle requests concerning services
-  *
   */
 class AvailabilityList extends BaseController
 {

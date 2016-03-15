@@ -11,7 +11,6 @@ use \BO\Zmsdb\Scope as Query;
 
 /**
   * Handle requests concerning services
-  *
   */
 class ScopeByProviderList extends BaseController
 {
