@@ -9,10 +9,12 @@
     }
 }
 
+$border-color:                      $inuit-table-border-color;
 
 .calendar-weektable_calendar {
     @extend 
         .table--cells,
+        .table--compact,
         .table;
     background-color:               $white;
     th {
@@ -20,29 +22,37 @@
         border-width:               1px 0;
         position:                   relative;
     }
+    td {
+        background-color:           $backgroundColorDateDisabled;
+    }
+    th {
+        width: 14%;
+    }
     .timeslot {
-        font-size:                  0.85em;
+        font-size:                  0.9em;
         min-height:                 2em;
-        padding:                    0.1em 0.5em;
-        border-bottom:              1px solid $greyBorder;
-    }
-    .timeslot__time {
-    }
-    .timeslot__text {
-        margin-left:            0.5em;
-    }
-    .timeslot--placeholder {
-        background-color:       transparent;
-        border:                 0 none;
-    }
-    .timeslot--disabled {
-        background-color:       $backgroundColorDateDisabled;
-    }
-    .timeslot--free {
-        background-color:       $backgroundColorDateFree;
-    }
-    .timeslot--busy {
-        background-color:       $backgroundColorDateBusy;
+        background-color:           transparent;
+        border:                     0 none;
+        border-bottom:              1px solid $border-color;
+        .timeslot__time {
+            display:                inline-block;
+            padding:                0.1em 0.3em 0.1em 0.2em;
+            border-right:           1px solid $border-color;
+        }
+        .timeslot__item {
+            display:                inline-block;
+            padding:                0.1em 0;
+            margin-left:            0.4em;
+        }
+        &.timeslot--disabled {
+            background-color:       $backgroundColorDateDisabled;
+        }
+        &.timeslot--free {
+            background-color:       $backgroundColorDateFree;
+        }
+        &.timeslot--busy {
+            background-color:       $backgroundColorDateBusy;
+        }
     }
 }
 
