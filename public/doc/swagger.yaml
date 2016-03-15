@@ -35,6 +35,8 @@ definitions:
     $ref: "schema/availability.json"
   calendar:
     $ref: "schema/calendar.json"
+  calldisplay:
+    $ref: "schema/calldisplay.json"
   client:
     $ref: "schema/client.json"
   cluster:
@@ -67,6 +69,8 @@ definitions:
     $ref: "schema/request.json"
   scope:
     $ref: "schema/scope.json"
+  session:
+    $ref: "schema/session.json"
   status:
     $ref: "schema/status.json"
   ticketprinter:
