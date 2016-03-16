@@ -194,6 +194,7 @@ class SlotList
             $slotDebug = "$slotdate #$slotnumber @" . $slotData['slottime']
                 . " (Avail.#" . $this->slotData['availability__id'] . ")";
             if (!isset($this->slots[$slotdate][$slotnumber])) {
+                var_dump($this->slots[$slotdate]);
                 throw new \Exception(
                     "Found database entry without a pre-generated slot $slotDebug"
                 );
@@ -250,6 +251,7 @@ class SlotList
                             $selectedDate .' '. $slotInfo['time']
                         );
                         $appointment['scope'] = $scope;
+                        $appointment['availability'] = $this->availability;
                         $appointment['date'] = $appointmentDateTime->format('U');
                         $appointment['slotCount'] = $slotInfo[$slotType];
 
@@ -327,7 +329,10 @@ class SlotList
         $startDate = new \DateTime($startDate->format('c'));
         do {
             $startDate->modify('today ' . $this->availability['startTime']);
-            $stopTime = new \DateTime($startDate->format('Y-m-d') . ' ' . $this->availability['endTime']);
+            $stopTime = new \DateTime(
+                $startDate->format('Y-m-d') . ' ' . $this->availability['endTime'],
+                $startDate->getTimezone()
+            );
             $date = $startDate->format('Y-m-d');
             if ($this->availability->hasDate($startDate)) {
                 $slotnr = 0;
