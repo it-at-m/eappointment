@@ -1,6 +1,6 @@
 {
     "type": "object",
-    "description": "This entity represents a calculated number of ",
+    "description": "This entity represents a calculated number for available appointments. Attention: Be aware that the different types of appointments are not exclusive, the total amount of appointments are not equal to the sum of appointments from the different types.",
     "example": {
         "callcenter": 8,
         "intern": 10,
@@ -8,13 +8,16 @@
     },
     "properties": {
         "callcenter": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Appointments of this type are usually only available via human agents, usually by phone"
         },
         "intern": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Appointments of this type are usually only available for authenticated workstations"
         },
         "public": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Appointments of this type are available for everyone"
         },
         "slotnumber": {
             "type": "integer",
