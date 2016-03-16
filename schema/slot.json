@@ -1,0 +1,28 @@
+{
+    "type": "object",
+    "description": "This entity represents a calculated number of ",
+    "example": {
+        "callcenter": 8,
+        "intern": 10,
+        "public": 3
+    },
+    "properties": {
+        "callcenter": {
+            "type": "integer"
+        },
+        "intern": {
+            "type": "integer"
+        },
+        "public": {
+            "type": "integer"
+        },
+        "slotnumber": {
+            "type": "integer",
+            "description": "This field is set, if the slot is part of a incrementing list of slots"
+        },
+        "time": {
+            "type": "string",
+            "description": "Format is 12:34 with HH:mm without seconds. This field is set, if the slot represents a time of a day"
+        }
+    }
+}

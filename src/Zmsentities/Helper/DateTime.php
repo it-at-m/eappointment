@@ -8,10 +8,12 @@ class DateTime extends \DateTimeImmutable
     {
         if ($time instanceof \DateTimeInterface) {
             $dateTime = new self();
-            $dateTime = $dateTime->setTimestamp($time->getTimestamp());
             if (null !== $timezone) {
                 $dateTime = $dateTime->setTimezone($timezone);
+            } else {
+                $dateTime = $dateTime->setTimezone($time->getTimezone());
             }
+            $dateTime = $dateTime->setTimestamp($time->getTimestamp());
         } else {
             $dateTime = new self($time, $timezone);
         }
