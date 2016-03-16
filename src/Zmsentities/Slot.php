@@ -2,9 +2,9 @@
 
 namespace BO\Zmsentities;
 
-class Appointmenttypes extends Schema\Entity
+class Slot extends Schema\Entity
 {
-    public static $schema = "appointmenttypes.json";
+    public static $schema = "slot.json";
 
     public function getDefaults()
     {

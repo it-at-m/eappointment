@@ -28,13 +28,13 @@
             "type": "integer"
         },
         "freeAppointments": {
-            "$ref": "appointmenttypes.json"
+            "$ref": "slot.json"
         },
         "firstAppointmentTimestamp": {
-            "$ref": "appointmenttypes.json"
+            "$ref": "slot.json"
         },
         "lastAppointmentTimestamp": {
-            "$ref": "appointmenttypes.json"
+            "$ref": "slot.json"
         }
     }
 }

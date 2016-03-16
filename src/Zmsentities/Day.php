@@ -12,7 +12,7 @@ class Day extends Schema\Entity
             'year' => '',
             'month' => '',
             'day' => '',
-            'freeAppointments' => new Appointmenttypes(),
+            'freeAppointments' => new Slot(),
         ];
     }
 }
