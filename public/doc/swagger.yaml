@@ -30,7 +30,7 @@ definitions:
   appointment:
     $ref: "schema/appointment.json"
   appointmenttypes:
-    $ref: "schema/appointmenttypes.json"
+    $ref: "schema/slot.json"
   availability:
     $ref: "schema/availability.json"
   calendar:
