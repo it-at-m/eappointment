@@ -34,4 +34,34 @@ class Appointment extends Schema\Entity
         $this->slotCount += 1;
         return $this;
     }
+
+    public function getAvailability()
+    {
+        $data = array();
+        if (array_key_exists('availability', $this)) {
+            $data = $this['availability'];
+        }
+        return new Availability($data);
+    }
+
+    public function toDateTime()
+    {
+        $date = \DateTime::createFromFormat("U", $this['date']);
+        $date->setTimeZone(new \DateTimeZone(\App::TIMEZONE));
+        return $date;
+    }
+
+    public function getStartTime()
+    {
+        $time = $this->toDateTime();
+        return $time;
+    }
+
+    public function getEndTime()
+    {
+        $time = $this->getStartTime();
+        $availability = $this->getAvailability();
+        return $time->modify('+' . $availability->slotTimeInMinutes . ' minutes');
+    }
+
 }

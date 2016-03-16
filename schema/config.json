@@ -1,0 +1,22 @@
+{
+    "type": "object",
+    "example": {
+        "appointments": {
+        	"urlChange": "http://service-berlin/terminvereinbarung/termin/manage/",
+        	"urlAppointments": "http://service-berlin/terminvereinbarung/"
+        }
+    },
+    "properties": {
+        "appointments" : {
+    		"type" : "object",
+    		"properties" : {
+    			"urlChange" : {
+    				"type": "string"
+    			},
+    			"urlAppointments" : {
+    				"type": "string"
+    			}
+    		}
+    	}     
+    }
+}
