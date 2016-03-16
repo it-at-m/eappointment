@@ -1,8 +1,6 @@
 <?php
 namespace BO\Zmsentities;
 
-use BO\Zmsadmin\Availability;
-
 class Process extends Schema\Entity
 {
 
