@@ -63,5 +63,4 @@ class Appointment extends Schema\Entity
         $availability = $this->getAvailability();
         return $time->modify('+' . $availability->slotTimeInMinutes . ' minutes');
     }
-
 }
