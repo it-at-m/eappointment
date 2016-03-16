@@ -53,4 +53,52 @@ class AvailabilityTest extends EntityCommonTests
             'Availability default should be, that you cannot reserve an appointment for the next day'
         );
     }
+
+    public function testSlotList()
+    {
+        $time = new \DateTimeImmutable('12:00:00');
+        $entity = new $this->entityclass([
+            'startTime' => $time->format('H:i'),
+            'endTime' => $time->modify("18:00:00")->format('H:i'),
+            'slotTimeInMinutes' => 90,
+        ]);
+        $entity['workstationCount']['intern'] = 3;
+        $slotList = $entity->getSlotList();
+        $this->assertEquals($slotList, [
+            0 => array (
+                'time' => '12:00',
+                'public' => 0,
+                'callcenter' => 0,
+                'intern' => 3,
+            ),
+            1 => array (
+                'time' => '13:30',
+                'public' => 0,
+                'callcenter' => 0,
+                'intern' => 3,
+            ),
+            2 => array (
+                'time' => '15:00',
+                'public' => 0,
+                'callcenter' => 0,
+                'intern' => 3,
+            ),
+            3 => array (
+                'time' => '16:30',
+                'public' => 0,
+                'callcenter' => 0,
+                'intern' => 3,
+            ),
+            4 => array (
+                'time' => '18:00',
+                'public' => 0,
+                'callcenter' => 0,
+                'intern' => 3,
+            ),
+        ]);
+        $entity['slotTimeInMinutes'] = 0;
+        $slotList = $entity->getSlotList();
+        $this->assertEquals($slotList, []);
+        //var_dump($entity);
+    }
 }
