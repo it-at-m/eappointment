@@ -1,6 +1,7 @@
 <?php
 namespace BO\Zmsentities;
 
+use BO\Zmsadmin\Availability;
 class Process extends Schema\Entity
 {
 
@@ -127,14 +128,11 @@ class Process extends Schema\Entity
         return $client;
     }
 
-    public function getFirstAppointmentDateTime()
+    public function getFirstAppointment()
     {
-        $date = null;
-        $appointment = current($this->appointments);
-        if ($appointment) {
-            $date = \DateTime::createFromFormat("U", $appointment['date']);
-            $date->setTimeZone(new \DateTimeZone(\App::TIMEZONE));
-        }
-        return $date;
+        return new Appointment(current($this->appointments));
+
     }
+
+
 }
