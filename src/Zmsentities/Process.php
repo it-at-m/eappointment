@@ -2,6 +2,7 @@
 namespace BO\Zmsentities;
 
 use BO\Zmsadmin\Availability;
+
 class Process extends Schema\Entity
 {
 
@@ -133,6 +134,4 @@ class Process extends Schema\Entity
         return new Appointment(current($this->appointments));
 
     }
-
-
 }
