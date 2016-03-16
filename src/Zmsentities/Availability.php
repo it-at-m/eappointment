@@ -36,6 +36,12 @@ class Availability extends Schema\Entity
                 'startInDays' => 1,
                 'endInDays' => 60,
             ],
+            'workstationCount' => [
+                'public' => 0,
+                'callcenter' => 0,
+                'intern' => 0,
+            ],
+            'slotTimeInMinutes' => 10,
         ];
     }
 
@@ -183,5 +189,31 @@ class Availability extends Schema\Entity
             return false;
         }
         return true;
+    }
+
+    /**
+     * Creates a list of slots available on a valid day
+     *
+     * @return Array of arrays with the keys time, public, callcenter, intern
+     */
+    public function getSlotList()
+    {
+        $startTime = Helper\DateTime::create($this['startTime']);
+        $stopTime = Helper\DateTime::create($this['endTime']);
+        $slotnr = 0;
+        $slotList = array();
+        if ($this['slotTimeInMinutes'] > 0) {
+            do {
+                $slotList[$slotnr] = [
+                    'time' => $startTime->format('H:i'),
+                    'public' => $this['workstationCount']['public'],
+                    'callcenter' => $this['workstationCount']['callcenter'],
+                    'intern' => $this['workstationCount']['intern'],
+                ];
+                $startTime = $startTime->modify('+' . $this['slotTimeInMinutes'] . 'minute');
+                $slotnr++;
+            } while ($startTime->getTimestamp() <= $stopTime->getTimestamp());
+        }
+        return $slotList;
     }
 }
