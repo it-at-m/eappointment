@@ -76,7 +76,7 @@ abstract class Base
      */
     public function writeItem(Query\Base $query, $table = '', $replace = '')
     {
-        \App::$log->debug('params', [$query->getParameters()]);
+        //\App::$log->debug('params', [$query->getParameters()]);
         $statement = $this->getWriter()->prepare(str_replace($table, $replace, $query->getSql()));
         $statement->execute($query->getParameters());
     }
