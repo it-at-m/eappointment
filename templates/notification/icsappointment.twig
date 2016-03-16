@@ -28,13 +28,12 @@
 {# "SEQUENCE:0" #}
 {# "ORGANIZER:Fraunhofer HHI" #}
 "CLASS:PUBLIC"
-
-"DTSTART;TZID=Europe/Berlin: {{ date|date("Ymd") ~ "T" ~ date|date("H:i") }}"
-"DTEND;TZID=Europe/Berlin: {{ date|date("Ymd") ~ "T" ~ date|date("H:i") }}"
+"DTSTART;TZID=Europe/Berlin: {{ startTime|date("Ymd") ~ "T" ~ startTime|date("H:i") }}"
+"DTEND;TZID=Europe/Berlin: {{ endTime|date("Ymd") ~ "T" ~ endTime|date("H:i") }}"
 "DTSTAMP: {{ date|date("Ymd\THis\Z") }}"
-"LOCATION: {{ process.scope.name }}"
+"LOCATION: {{ process.scope.provider.name ~ " " ~ process.scope.provider.contact.street ~", " ~ process.scope.provider.contact.postalCode ~ " " ~ process.scope.provider.contact.city }}"
 "SUMMARY: {% trans "Berlin-Termin:" %} {{ process.id }}"
-"DESCRIPTION: {{ description }}"
+"DESCRIPTION: {{ message }}"
 
 "BEGIN:VALARM"
 "ACTION:DISPLAY"

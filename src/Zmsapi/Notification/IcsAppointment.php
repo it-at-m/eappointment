@@ -10,46 +10,53 @@ namespace BO\Zmsapi\Notification;
  */
 class IcsAppointment
 {
+
     public $content = '';
 
     /**
      * Constructor: ICSappoinment
-     * Initializes the object.
+     * Initializes the object and returns the ics string.
      *
      * Parameters:
-     * $date - Datum
-     * $location - Ort
-     * $subject - Zusammenfassung
-     * $description - Beschreibung
+     * $process - current process with appointment data
      */
-    public function __construct(\BO\Zmsentities\Process $process)
+    public function createIcsString(\BO\Zmsentities\Process $process)
     {
-        $date = $process->getFirstAppointmentDateTime();
-        $this->content = $this->createIcsContent($date, $process);
-    }
-
-    /**
-     * Function: function_getcontent
-     * liefert den ics-Eintrag als String
-     *
-     * Parameters:
-     * none
-     *
-     * Returns:
-     * String im ics-Format
-     */
-    protected function createIcsContent($date, $process)
-    {
+        $appointment = $process->getFirstAppointment();
+        $date = $appointment->toDateTime();
+        $confirmMessage = $this->createConfirmMessage($process);
         ob_start();
         \BO\Slim\Render::html(
-            'page/icsappointment.twig',
+            'notification/icsappointment.twig',
             array(
                 'date' => $date,
+                'startTime' => $appointment->getStartTime(),
+                'endTime' => $appointment->getEndTime(),
                 'process' => $process,
+                'message' => $confirmMessage
             )
         );
-        $icsstring = ob_get_contents();
-        ob_end_clean();
-        return $icsstring;
+            $this->content = \base64_encode(ob_get_contents());
+            ob_end_clean();
+            return $this;
+    }
+
+    protected function createConfirmMessage($process)
+    {
+        $appointment = $process->getFirstAppointment();
+        $client = $process->getFirstClient();
+        ob_start();
+        \BO\Slim\Render::html(
+            'notification/confirmMessage.twig',
+            array(
+                'date' => $appointment['date'],
+                'client' => $client,
+                'process' => $process,
+                'config' => \BO\Zmsdb\Config::readEntity()
+            )
+        );
+            $confirmMessage = ob_get_contents();
+            ob_end_clean();
+            return $confirmMessage;
     }
 }
