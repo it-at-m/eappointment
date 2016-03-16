@@ -29,8 +29,6 @@ paths:
 definitions:
   appointment:
     $ref: "schema/appointment.json"
-  appointmenttypes:
-    $ref: "schema/appointmenttypes.json"
   availability:
     $ref: "schema/availability.json"
   calendar:
@@ -71,6 +69,8 @@ definitions:
     $ref: "schema/scope.json"
   session:
     $ref: "schema/session.json"
+  slot:
+    $ref: "schema/slot.json"
   status:
     $ref: "schema/status.json"
   ticketprinter:
