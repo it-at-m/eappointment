@@ -31,7 +31,23 @@ class TwigExtension extends \Slim\Views\TwigExtension
             new \Twig_SimpleFunction('currentRoute', array($this, 'currentRoute')),
             new \Twig_SimpleFunction('formatDateTime', array($this, 'formatDateTime')),
             new \Twig_SimpleFunction('toGermanDateFromTs', array($this, 'toGermanDateFromTs')),
+            new \Twig_SimpleFunction('toTextFormat', array($this, 'toTextFormat')),
         );
+    }
+
+    public function toTextFormat($string)
+    {
+        $string = \strip_tags($string, '<br />');
+        $temp = str_replace(array("<br />"),"\n",$string);
+        $lines = explode("\n",$temp);
+        $new_lines = array();
+        foreach($lines as $i => $line)
+        {
+            if(!empty($line))
+                $new_lines[]=trim($line);
+        }
+        $result = implode("\n",$new_lines);
+        return addSlashes($result);
     }
 
     public function formatDateTime($date)
