@@ -26,17 +26,26 @@ class Process extends Base implements MappingInterface
 
     public function addJoin()
     {
-        $this->query->leftJoin(new Alias(Scope::TABLE, 'scope'), 'process.StandortID', '=', 'scope.StandortID');
-        $scopeQuery = new Scope($this->query);
-        $scopeQuery->addEntityMappingPrefixed('scope__');
-
-        $this->query->leftJoin(new Alias(Provider::TABLE, 'provider'), 'scope.InfoDienstleisterID', '=', 'provider.id');
-        $providerQuery = new Provider($this->query);
-        $providerQuery->addEntityMappingPrefixed('scope__provider__');
-
         return [
-            $scopeQuery
+            $this->addJoinScope(),
         ];
+    }
+
+    /**
+     * Add scope to the dataset
+     *
+     */
+    protected function addJoinScope()
+    {
+        $this->query->leftJoin(
+            new Alias(Scope::TABLE, 'scope'),
+            'process.StandortID',
+            '=',
+            'scope.StandortID'
+        );
+        $joinQuery = new Scope($this->query);
+        $joinQuery->addEntityMappingPrefixed('scope__');
+        return $joinQuery;
     }
 
     /**
