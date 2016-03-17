@@ -7,7 +7,7 @@ use BO\Zmsdb\Helper\ProcessStatus as Status;
 class Process extends Base
 {
 
-    public function readEntity($processId, $authKey, $resolveReferences = 0)
+    public function readEntity($processId, $authKey, $resolveReferences = 2)
     {
         $query = new Query\Process(Query\Base::SELECT);
         $query->addEntityMapping()
@@ -47,7 +47,7 @@ class Process extends Base
         $this->writeItem($query, 'process', $query::TABLE);
         $this->writeRequestsToDb($processId, $process['requests']);
 
-        $process = $this->readEntity($processId, $authKey, 1);
+        $process = $this->readEntity($processId, $authKey);
         $process['status'] = (new Status())->readProcessStatus($processId, $authKey);
         return $process;
     }

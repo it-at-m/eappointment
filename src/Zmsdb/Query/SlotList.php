@@ -196,7 +196,6 @@ class SlotList
             $slotDebug = "$slotdate #$slotnumber @" . $slotData['slottime']
                 . " (Avail.#" . $this->slotData['availability__id'] . ")";
             if (!isset($this->slots[$slotdate][$slotnumber])) {
-                var_dump($this->slots[$slotdate]);
                 throw new \Exception(
                     "Found database entry without a pre-generated slot $slotDebug"
                 );
