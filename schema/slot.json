@@ -4,7 +4,8 @@
     "example": {
         "callcenter": 8,
         "intern": 10,
-        "public": 3
+        "public": 3,
+        "type": "sum"
     },
     "properties": {
         "callcenter": {
