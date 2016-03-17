@@ -31,6 +31,11 @@ abstract class Base
     protected $query = null;
 
     /**
+     * @var String $query
+     */
+    protected $prefix = '';
+
+    /**
      * Create query builder if necessary
      *
      * @param Mixed $queryType one of the constants for a query type or of instance \Solution10\SQL\Query
@@ -186,12 +191,18 @@ abstract class Base
      */
     protected function addEntityMappingPrefixed($prefix)
     {
+        $this->prefix = $prefix;
         $prefixed = [];
         foreach ($this->getEntityMapping() as $key => $value) {
             $prefixed[$prefix . $key] = $value;
         }
         $this->query->select($prefixed);
         return $this;
+    }
+
+    protected function getPrefixed($prefix)
+    {
+        return $this->prefix . $prefix;
     }
 
     /**
