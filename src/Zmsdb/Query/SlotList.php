@@ -2,6 +2,8 @@
 
 namespace BO\Zmsdb\Query;
 
+use BO\Zmsentities\Helper\DateTime;
+
 /**
  * Calculate Slots for available booking times
  */
@@ -323,32 +325,16 @@ class SlotList
      * Create slots based on availability
      */
     public function createSlots(
-        \DateTimeImmutable $startDate,
-        \DateTimeImmutable $stopDate
+        \DateTimeInterface $startDate,
+        \DateTimeInterface $stopDate
     ) {
-        $startDate = new \DateTime($startDate->format('c'));
+        $time = DateTime::create($startDate);
         do {
-            $startDate->modify('today ' . $this->availability['startTime']);
-            $stopTime = new \DateTime(
-                $startDate->format('Y-m-d') . ' ' . $this->availability['endTime'],
-                $startDate->getTimezone()
-            );
-            $date = $startDate->format('Y-m-d');
-            if ($this->availability->hasDate($startDate)) {
-                $slotnr = 0;
-                do {
-                    $this->slots[$date][$slotnr] = [
-                        'time' => $startDate->format('H:i'),
-                        'public' => $this->availability['workstationCount']['public'],
-                        'callcenter' => $this->availability['workstationCount']['callcenter'],
-                        'intern' => $this->availability['workstationCount']['intern'],
-                    ];
-                    $startDate->modify('+' . $this->availability['slotTimeInMinutes'] . 'minute');
-                    $slotnr++;
-                } while ($startDate->getTimestamp() <= $stopTime->getTimestamp());
+            $date = $time->format('Y-m-d');
+            if ($this->availability->hasDate($time)) {
+                $this->slots[$date] = $this->availability->getSlotList();
             }
-            $startDate->modify('+1day');
-            $date = $startDate->format('Y-m-d');
-        } while ($startDate->getTimestamp() <= $stopDate->getTimestamp());
+            $time = $time->modify('+1day');
+        } while ($time->getTimestamp() <= $stopDate->getTimestamp());
     }
 }
