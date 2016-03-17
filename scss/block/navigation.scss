@@ -18,6 +18,9 @@ $navElementTitlePadding:    0.5em 0em 0.5em 0.6em;
     }
     ul {
         @extend .list-bare;
+        li {
+            margin:         0;
+        }
     }
     .nav {
         .nav__item {

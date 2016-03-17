@@ -1,0 +1,13 @@
+.cluster-list {
+    @extend
+        .list-tablelist--bordered,
+        .list-tablelist;
+    > .row {
+        @extend
+            .list-tablelist_row;
+        > .cell {
+            @extend
+                .list-tablelist_cell;
+        }
+    }    
+}

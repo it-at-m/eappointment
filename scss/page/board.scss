@@ -9,7 +9,7 @@ $boardFooterBackground:                 #F8F8F8 !default;
 $contentTopLineupBoardBodyMinHeight:    33.7em; // (calendar,appointment,clientinfo,queueinfo,...)
 $contentTopLineupBoardBodyMaxHeight:    33.7em; // (calendar,appointment,clientinfo,queueinfo,...)
 
-/* use the board css to extend the layout of the blocks */
+/* ... to be @extend´ed! use the board css to extend the layout of the blocks */
 .board {
     margin:                     0 0 $gridGutter 0;
     padding:                    0;

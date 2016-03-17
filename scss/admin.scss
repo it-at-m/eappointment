@@ -34,6 +34,7 @@
 @import "page/lineups";
 @import "page/form";
 @import "page/list";
+@import "page/tablelist";
 @import "page/table";
 @import "page/font";
 @import "page/well";
@@ -53,6 +54,7 @@
 @import "block/client-precall";
 @import "block/client-called";
 @import "block/scope-form";
+@import "block/scope-list";
 @import "block/pickup-table";
 @import "block/department-form";
 @import "block/availability-timetable";
@@ -62,6 +64,7 @@
 @import "block/owner-overview";
 @import "block/owner-edit";
 @import "block/cluster-form";
+@import "block/cluster-list";
 @import "block/organisation-form";
 @import "block/organisation-list";
 @import "block/welcome";

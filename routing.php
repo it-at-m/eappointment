@@ -96,6 +96,10 @@
     '\BO\Zmsadmin\Calldisplay:render')
     ->name("calldisplay");
 
+\App::$slim->get('/scope/ticketprinter/',
+    '\BO\Zmsadmin\TicketprinterConfig:render')
+    ->name("ticketprinter");
+    
 \App::$slim->get('/scope/:id/ticketprinter/',
     '\BO\Zmsadmin\TicketprinterStatusByScope:render')
     ->name("ticketprinterStatusByScope");
