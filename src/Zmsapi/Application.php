@@ -68,4 +68,10 @@ class Application extends \BO\Slim\Application
         'de' => 'de_DE.UTF-8',
         'en' => 'en_GB.UTF-8'
     );
+
+    /**
+     * dldb access to stored data without exposing type of data storage
+     */
+    public static $dldbdata = null;
+    public static $data = '/data';
 }

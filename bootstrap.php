@@ -14,6 +14,7 @@ require(APP_PATH . '/config.php');
 \BO\Slim\Bootstrap::addTwigExtension(new \BO\Slim\TwigExtension());
 \BO\Slim\Bootstrap::addTwigExtension(new \Twig_Extensions_Extension_Text());
 \BO\Slim\Bootstrap::addTwigExtension(new \Twig_Extensions_Extension_I18n());
+\BO\Slim\Bootstrap::addTwigTemplateDirectory('dldb', APP_PATH . '/vendor/bo/clientdldb/templates');
 
 // Set option for environment, routing, logging and templating
 \BO\Zmsdb\Connection\Select::$enableProfiling = \APP::DEBUG;
@@ -24,6 +25,10 @@ require(APP_PATH . '/config.php');
 \BO\Zmsdb\Connection\Select::$pdoOptions = [
     \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
 ];
+
+// configure clientdldb data access
+\App::$dldbdata = new \BO\Dldb\FileAccess(\App::$locale);
+\App::$dldbdata->loadFromPath(\App::APP_PATH . \App::$data);
 
 // load routing
 require(\App::APP_PATH . '/routing.php');
