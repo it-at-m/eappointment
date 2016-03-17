@@ -33,7 +33,7 @@ DTEND;TZID=Europe/Berlin:{{ endTime|date("Ymd") }}T{{ endTime|date("His") }}
 DTSTAMP:{{ "now"|date("Ymd") }}T{{ "now"|date("His") }}Z
 LOCATION:{{ process.scope.provider.name }} {{ process.scope.provider.contact.street }}, {{ process.scope.provider.contact.postalCode }} {{ process.scope.provider.contact.city }}
 SUMMARY:{% trans "Berlin-Termin:" %} {{ process.id }}
-DESCRIPTION: {{ toTextFormat(message)|e('html') }}
+DESCRIPTION: {{ toTextFormat(message) }}
 BEGIN:VALARM
 ACTION:DISPLAY
 TRIGGER:-P1D
