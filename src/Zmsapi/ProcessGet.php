@@ -7,6 +7,7 @@
 namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
+use \BO\Mellon\Validator;
 use \BO\Zmsdb\Process as Query;
 
 /**
@@ -20,7 +21,8 @@ class ProcessGet extends BaseController
     public static function render($itemId, $authKey)
     {
 
-        $process = (new Query())->readEntity($itemId, $authKey, 1);
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
+        $process = (new Query())->readEntity($itemId, $authKey, $resolveReferences);
         $message = Response\Message::create();
         $message->data = $process;
         Render::lastModified(time(), '0');
