@@ -24,34 +24,48 @@ $border-color:                      $inuit-table-border-color;
     }
     td {
         background-color:           $backgroundColorDateDisabled;
+        border-color:               darken($border-color, 25%);
     }
     th {
         width: 14%;
+        border-color:               darken($border-color, 25%);
     }
     .timeslot {
-        font-size:                  0.9em;
-        min-height:                 2em;
+        font-size:                  0.8em;
+        line-height:                1.2em;
+        min-height:                 1.5em;
         background-color:           transparent;
         border:                     0 none;
         border-bottom:              1px solid $border-color;
+        display:                    block;
         .timeslot__time {
-            display:                inline-block;
+            display:                table-cell;
             padding:                0.1em 0.3em 0.1em 0.2em;
-            border-right:           1px solid $border-color;
+            background:             rgba(255, 255, 255, 0.2) none repeat scroll 0 0;
+            vertical-align:         top;
         }
-        .timeslot__item {
-            display:                inline-block;
-            padding:                0.1em 0;
-            margin-left:            0.4em;
+        .timeslot__items {
+            display: table-cell;
+            .item {
+                background:         rgba(255, 255, 255, 0.9) none repeat scroll 0 0;
+                border-radius:      2px;
+                box-shadow:         0 0 2px rgba(90, 90, 90, 0.5);
+                display:            inline-block;
+                margin:             1px;
+                padding:            0 3px 1px;
+            }
         }
         &.timeslot--disabled {
             background-color:       $backgroundColorDateDisabled;
+            color:                  #666666;
         }
         &.timeslot--free {
             background-color:       $backgroundColorDateFree;
+            border-color:           darken($backgroundColorDateFree, 20%);
         }
         &.timeslot--busy {
             background-color:       $backgroundColorDateBusy;
+            border-color:           #D89191;
         }
     }
 }
