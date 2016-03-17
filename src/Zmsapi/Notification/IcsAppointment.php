@@ -36,7 +36,8 @@ class IcsAppointment
                 'message' => $confirmMessage
             )
         );
-            $this->content = \base64_encode(ob_get_contents());
+            $result = \html_entity_decode(ob_get_contents());
+            $this->content = \base64_encode($result);
             ob_end_clean();
             return $this;
     }
@@ -45,6 +46,7 @@ class IcsAppointment
     {
         $appointment = $process->getFirstAppointment();
         $client = $process->getFirstClient();
+        $requests = $this->readDldbRequestData($process['requests']);
         ob_start();
         \BO\Slim\Render::html(
             'notification/confirmMessage.twig',
@@ -52,11 +54,26 @@ class IcsAppointment
                 'date' => $appointment['date'],
                 'client' => $client,
                 'process' => $process,
+                'requests' => $requests,
                 'config' => \BO\Zmsdb\Config::readEntity()
             )
         );
             $confirmMessage = ob_get_contents();
             ob_end_clean();
             return $confirmMessage;
+    }
+
+    protected function readDldbRequestData($requests)
+    {
+        $requestData = array();
+        foreach ($requests as $request) {
+            if ($request['source'] == 'dldb') {
+                $dldbServiceData = \App::$dldbdata->fromService(\App::$locale)
+                    ->fetchId($request['id']);
+                $request['dldbdata'] = $dldbServiceData;
+                $requestData[] = $request;
+            }
+        }
+        return $requestData;
     }
 }
