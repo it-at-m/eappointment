@@ -18,7 +18,7 @@ class Scope extends Base implements MappingInterface
             'provider.id'
         );
         $providerQuery = new Provider($this->query);
-        $providerQuery->addEntityMappingPrefixed('provider__');
+        $providerQuery->addEntityMappingPrefixed($this->getPrefixed('provider__'));
         $this->query->leftJoin(
             new Alias(Department::TABLE, 'department'),
             'scope.BehoerdenID',
@@ -26,8 +26,8 @@ class Scope extends Base implements MappingInterface
             'department.BehoerdenID'
         );
         $departmentQuery = new Department($this->query);
-        $departmentQuery->addEntityMappingPrefixed('department__');
-        return [$providerQuery];
+        $departmentQuery->addEntityMappingPrefixed($this->getPrefixed('department__'));
+        return [$providerQuery, $departmentQuery];
     }
 
     public function getEntityMapping()

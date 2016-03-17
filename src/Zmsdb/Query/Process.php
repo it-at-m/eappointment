@@ -44,7 +44,7 @@ class Process extends Base implements MappingInterface
             'scope.StandortID'
         );
         $joinQuery = new Scope($this->query);
-        $joinQuery->addEntityMappingPrefixed('scope__');
+        $joinQuery->addEntityMappingPrefixed($this->getPrefixed('scope__'));
         return $joinQuery;
     }
 
