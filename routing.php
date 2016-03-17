@@ -29,6 +29,10 @@
  *                  in: path
  *                  required: true
  *                  type: integer
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
  *              -   name: X-Authkey
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
@@ -140,6 +144,10 @@
 *                  in: body
 *                  schema:
 *                      $ref: "schema/calendar.json"
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
 *          responses:
 *              200:
 *                  description: get an updated calendar objects with updated days list
@@ -176,6 +184,10 @@
 *                  in: body
 *                  schema:
 *                      $ref: "schema/calldisplay.json"
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
 *          responses:
 *              200:
 *                  description: get an updated calendar objects with updated days list
@@ -210,6 +222,10 @@
 *                  in: body
 *                  schema:
 *                      $ref: "schema/calldisplay.json"
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
 *          responses:
 *              200:
 *                  description: get a list of queue entries
@@ -249,6 +265,10 @@
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
  *          responses:
  *              200:
  *                  description: "success"
@@ -349,6 +369,10 @@
  *                  in: path
  *                  required: true
  *                  type: integer
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
  *          responses:
  *              200:
  *                  description: "success"
@@ -375,7 +399,7 @@
  *  @swagger
  *  "/dayoff/{year}/":
  *      get:
- *          description: Update list of common free days
+ *          description: Get a list of common free days for a given year
  *          parameters:
  *              -   name: year
  *                  description: year for the free days
@@ -386,6 +410,10 @@
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
  *          responses:
  *              200:
  *                  description: "success"
@@ -462,6 +490,10 @@
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
  *          responses:
  *              200:
  *                  description: "success"
@@ -494,6 +526,10 @@
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
  *          responses:
  *              200:
  *                  description: "success"
@@ -593,6 +629,10 @@
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
  *          responses:
  *              200:
  *                  description: returns a list, might be empty
@@ -686,6 +726,10 @@
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
  *          responses:
  *              200:
  *                  description: returns a list, might be empty
@@ -770,6 +814,10 @@
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
  *          responses:
  *              200:
  *                  description: "success"
@@ -802,6 +850,10 @@
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
  *          responses:
  *              200:
  *                  description: "success"
@@ -902,6 +954,10 @@
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
  *          responses:
  *              200:
  *                  description: "success"
@@ -934,6 +990,10 @@
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
  *          responses:
  *              200:
  *                  description: "success"
@@ -1034,6 +1094,10 @@
  *                  in: path
  *                  required: true
  *                  type: integer
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
  *          responses:
  *              200:
  *                  description: "success"
@@ -1070,6 +1134,10 @@
  *                  in: path
  *                  required: true
  *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
  *          responses:
  *              200:
  *                  description: "success"
@@ -1232,6 +1300,10 @@
  *                  in: body
  *                  schema:
  *                      $ref: "schema/calendar.json"
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
  *          responses:
  *              200:
  *                  description: get a list of available processes
@@ -1265,6 +1337,10 @@
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
  *          responses:
  *              200:
  *                  description: get a list of processes
@@ -1377,6 +1453,10 @@
  *                  in: path
  *                  required: true
  *                  type: integer
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
  *          responses:
  *              200:
  *                  description: "success"
@@ -1416,6 +1496,10 @@
  *                  items:
  *                     type: string
  *                  collectionFormat: csv
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
  *          responses:
  *              200:
  *                  description: "success"
@@ -1453,6 +1537,10 @@
  *                  description: request number
  *                  in: path
  *                  required: true
+ *                  type: integer
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
  *                  type: integer
  *          responses:
  *              200:
@@ -1493,6 +1581,10 @@
  *                  items:
  *                     type: string
  *                  collectionFormat: csv
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
  *          responses:
  *              200:
  *                  description: "success"
@@ -1525,6 +1617,10 @@
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
  *          responses:
  *              200:
  *                  description: "returns a list"
@@ -1559,6 +1655,10 @@
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
  *          responses:
  *              200:
  *                  description: "success"
@@ -1594,6 +1694,10 @@
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
  *          responses:
  *              200:
  *                  description: "success"
@@ -1629,6 +1733,10 @@
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
  *          responses:
  *              200:
  *                  description: "success"
@@ -1664,6 +1772,10 @@
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
  *          responses:
  *              200:
  *                  description: "success"
@@ -1701,6 +1813,10 @@
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
  *          responses:
  *              200:
  *                  description: "success"
@@ -1826,6 +1942,10 @@
  *                  required: true
  *                  schema:
  *                      $ref: "schema/ticketprinter.json"
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
  *          responses:
  *              200:
  *                  description: "success"
@@ -1858,6 +1978,10 @@
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
  *          responses:
  *              200:
  *                  description: "success"
@@ -1890,6 +2014,10 @@
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
  *          responses:
  *              200:
  *                  description: "success"
@@ -1980,6 +2108,10 @@
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
  *          responses:
  *              200:
  *                  description: "success"
