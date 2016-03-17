@@ -5,6 +5,9 @@ REALPATH=$([[ "$REALPATH" =~ 'readlink' ]] && echo "$REALPATH -e" || echo "$REAL
 DIR=$(dirname $($REALPATH ${BASH_SOURCE[0]}))
 ROOT=$($REALPATH $DIR/..)
 
+echo "Get DLDB Exports"
+$ROOT/bin/getDldbExport
+
 echo "Configuring application"
 
 ln -sf $ROOT/bin/test $ROOT/.git/hooks/pre-commit
