@@ -28,7 +28,23 @@ class Process extends Base implements MappingInterface
     {
         return [
             $this->addJoinScope(),
+            $this->addJoinAvailability(),
         ];
+    }
+
+    /**
+     * Add scope to the dataset
+     *
+     */
+    protected function addJoinAvailability()
+    {
+        $this->query->leftJoin(
+            new Alias(Availability::TABLE, 'availability'),
+            Availability::getJoinExpression('`process`', '`availability`')
+        );
+        $joinQuery = new Availability($this->query);
+        $joinQuery->addEntityMappingPrefixed($this->getPrefixed('appointments__0__availability__'));
+        return $joinQuery;
     }
 
     /**
@@ -77,10 +93,15 @@ class Process extends Base implements MappingInterface
             'amendment' => 'process.Anmerkung',
             'id' => 'process.BuergerID',
             'appointments__0__date' => self::expression(
-                'unix_timestamp(CONCAT(`process`.`Datum`, " ", `process`.`Uhrzeit`))'
+                'UNIX_TIMESTAMP(CONCAT(`process`.`Datum`, " ", `process`.`Uhrzeit`))'
             ),
             'appointments__0__scope__id' => 'process.StandortID',
-            'appointments__0__slotCount' => 'process.hatFolgetermine',
+            //'appointments__0__slotCount' => 'process.hatFolgetermine',
+            'appointments__0__slotCount' => self::expression('(SELECT COUNT(*) + 1
+                    FROM ' . self::TABLE . ' as `followingProcess` 
+                    WHERE 
+                        `followingProcess`.`istFolgeterminvon` = `id`
+                )'),
             'authKey' => 'process.absagecode',
             'clients__0__email' => 'process.EMail',
             'clients__0__emailSendCount' => 'process.EMailverschickt',

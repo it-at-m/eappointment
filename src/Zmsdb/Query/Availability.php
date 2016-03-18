@@ -50,13 +50,48 @@ class Availability extends Base implements MappingInterface
 
     public function addConditionScopeId($scopeId)
     {
-        $this->query->leftJoin(
-            new Alias('standort', 'availability_scope'),
-            'availability.StandortID',
-            '=',
-            'availability_scope.StandortID'
-        );
-        $this->query->where('availability_scope.StandortID', '=', $scopeId);
+        $this->query->where('StandortID', '=', $scopeId);
         return $this;
+    }
+
+    public function addConditionTime(\DateTimeInterface $time)
+    {
+        $time = \BO\Zmsentites\Helper\DateTime::create($time);
+    }
+
+    public static function getJoinExpression($process, $availability)
+    {
+        return self::expression("
+            $availability.StandortID = $process.StandortID
+            AND $availability.OeffnungszeitID IS NOT NULL
+
+            -- match weekday
+            AND $availability.Wochentag & POW(2, DAYOFWEEK($process.Datum) - 1)
+
+            -- match week
+            AND (
+                (
+                    $availability.allexWochen
+                    AND ((UNIX_TIMESTAMP($process.Datum) - UNIX_TIMESTAMP($availability.Startdatum)) / 86400 / 7)
+                        % $availability.allexWochen != 0
+                )
+                OR (
+                    $availability.jedexteWoche
+                    AND (
+                        CEIL(DAYOFMONTH($process.Datum) / 7) = $availability.jedexteWoche
+                        OR (
+                            $availability.jedexteWoche = 5
+                            AND CEIL(LAST_DAY($process.Datum) / 7) = CEIL(DAYOFMONTH($process.Datum) / 7)
+                        )
+                    )
+                )
+            )
+
+            -- match time and date
+            AND $process.Uhrzeit >= $availability.Terminanfangszeit
+            AND $process.Uhrzeit <= $availability.Terminendzeit
+            AND $process.Datum >= $availability.Startdatum
+            AND $process.Datum <= $availability.Endedatum
+            ");
     }
 }

@@ -107,7 +107,7 @@ abstract class Base
     }
 
     /**
-     * If resolveReferences is required, override this method
+     * resolves references by joining tables defined in the method addJoin()
      *
      * @param  Int $depth Number of levels of sub references to resolve
      * @return self
