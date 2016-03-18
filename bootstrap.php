@@ -26,7 +26,8 @@ require(APP_PATH . '/config.php');
     \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
 ];
 
-\BO\Zmsdb\Helper\DldbData::$dataPath = \App::APP_PATH . '/vendor/bo/clientdldb/tests/Dldb/fixtures';
+//use fixtures path for developement
+\BO\Zmsdb\Helper\DldbData::$dataPath = \App::APP_PATH . '/vendor/bo/zmsdb/tests/Zmsdb/fixtures';
 //\BO\Zmsdb\Helper\DldbData::$dataPath = \App::APP_PATH . \App::$data;
 
 // load routing
