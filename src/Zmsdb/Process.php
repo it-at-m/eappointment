@@ -17,8 +17,9 @@ class Process extends Base
         //\App::$log->debug($query->getSql());
         // var_dump($this->fetchOne($query, new Entity()));
         $process = $this->fetchOne($query, new Entity());
-        $process['requests'] = (new Request())->readRequestByProcessId($processId);
+        $process['requests'] = (new Request())->readRequestByProcessId($processId, $resolveReferences);
         $process['status'] = (new Status())->readProcessStatus($processId, $authKey);
+        $process = $this->addDldbData($process, $resolveReferences);
         return $process;
     }
 
@@ -176,5 +177,19 @@ class Process extends Base
         $resolvedCalendar = new Calendar();
         $calendar = $resolvedCalendar->readResolvedEntity($calendar, true, false);
         return $calendar['freeProcesses'];
+    }
+
+    protected function addDldbData($process, $resolveReferences)
+    {
+        if (isset($process['scope']['provider'])) {
+            $provider = $process['scope']['provider'];
+            if ($resolveReferences >= 2 && $provider['source'] == 'dldb') {
+                $process['scope']['provider']['data'] = Helper\DldbData::readExtendedProviderData(
+                    $provider['source'],
+                    $provider['id']
+                );
+            }
+        }
+        return $process;
     }
 }
