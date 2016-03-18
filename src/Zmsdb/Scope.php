@@ -13,7 +13,9 @@ class Scope extends Base
             ->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
             ->addConditionScopeId($scopeId);
-        return $this->fetchOne($query, new Entity());
+        $scope = $this->fetchOne($query, new Entity());
+        $scope = $this->addDldbData($scope, $resolveReferences);
+        return $scope;
     }
 
     public function readByClusterId($clusterId, $resolveReferences = 0)
@@ -43,5 +45,18 @@ class Scope extends Base
             ->addEntityMapping()
             ->addResolvedReferences($resolveReferences);
         return $this->fetchList($query, new Entity());
+    }
+
+    protected function addDldbData($scope, $resolveReferences)
+    {
+        if (isset($scope['provider'])) {
+            if ($resolveReferences >= 2 && $scope['provider']['source'] == 'dldb') {
+                $scope['provider']['data'] = Helper\DldbData::readExtendedProviderData(
+                    $scope['provider']['source'],
+                    $scope['provider']['id']
+                );
+            }
+        }
+        return $scope;
     }
 }
