@@ -6,15 +6,20 @@ use \BO\Zmsentities\Request as Entity;
 class Request extends Base
 {
 
-    public function readEntity($source, $requestId)
+    public function readEntity($source, $requestId, $resolveReferences = 0)
     {
         if ('dldb' !== $source) {
             return new Entity();
         }
         $query = new Query\Request(Query\Base::SELECT);
-        $query->addEntityMapping()->addConditionRequestId($requestId);
+        $query
+            ->addEntityMapping()
+            ->addResolvedReferences($resolveReferences)
+            ->addConditionRequestId($requestId);
         $request = $this->fetchOne($query, new Entity());
-        $request['data'] = Helper\DldbData::readExtendedRequestData($source, $requestId);
+        if ($resolveReferences >= 1 && $request['source'] == 'dldb') {
+            $request['data'] = Helper\DldbData::readExtendedRequestData($source, $requestId);
+        }
         return $request;
     }
 
@@ -28,7 +33,7 @@ class Request extends Base
         return $providerSlots;
     }
 
-    public function readRequestByProcessId($processId)
+    public function readRequestByProcessId($processId, $resolveReferences = 0)
     {
         $requests = array();
         $query = Query\Request::QUERY_BY_PROCESSID;
@@ -39,7 +44,7 @@ class Request extends Base
 
         if (count($result)) {
             foreach ($result as $request) {
-                $requests[] = $this->readEntity('dldb', $request['id']);
+                $requests[] = $this->readEntity('dldb', $request['id'], $resolveReferences);
             }
         }
         return (count($requests)) ? $requests : null;
@@ -48,13 +53,14 @@ class Request extends Base
     /**
      * TODO: Check if necessary, the list of requests should come by the calendar or process
      */
-    public function readList($source, $requestIds)
+    public function readList($source, $requestIds, $resolveReferences = 0)
     {
         if ('dldb' !== $source) {
             return [];
         }
         $query = new Query\Request(Query\Base::SELECT);
         $query
+            ->addResolvedReferences($resolveReferences)
             ->addEntityMapping();
         if (null !== $requestIds) {
             $query
