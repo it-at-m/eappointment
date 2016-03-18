@@ -16,11 +16,11 @@ Zahlungshinweis: {{ process.scope.provider.data.payment }}<br /><br />
 {% set requestalias = "Dienstleistungen" %}
 {% endif %}
 Sie haben folgende {{ requestalias }} ausgewählt:<br /><br />
-{% for request in requests %}
+{% for request in process.requests %}
 {{ request.name }}<br />
 {% if request.source == "dldb" %}
-{% include "@dldb/detail/service_detail_prerequisites.twig" with {"service":request.dldbdata} %}<br /><br />
-{% include "@dldb/detail/service_detail_fees.twig" with {"service":request.dldbdata} %}
+{% include "@dldb/detail/service_detail_prerequisites.twig" with {"service":request.data} %}<br /><br />
+{% include "@dldb/detail/service_detail_fees.twig" with {"service":request.data} %}
 {% endif %}
 {% endfor %}<br /><br />
 Sollten Sie den Termin nicht wahrnehmen können, sagen Sie ihn bitte ab.<br />

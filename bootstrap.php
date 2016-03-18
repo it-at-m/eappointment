@@ -26,9 +26,8 @@ require(APP_PATH . '/config.php');
     \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
 ];
 
-// configure clientdldb data access
-\App::$dldbdata = new \BO\Dldb\FileAccess(\App::$locale);
-\App::$dldbdata->loadFromPath(\App::APP_PATH . \App::$data);
+\BO\Zmsdb\Helper\DldbData::$dataPath = '/vendor/bo/zmsdb/tests/Zmsdb/fixtures';
+//\BO\Zmsdb\Helper\DldbData::$dataPath = \App::APP_PATH . \App::$data;
 
 // load routing
 require(\App::APP_PATH . '/routing.php');

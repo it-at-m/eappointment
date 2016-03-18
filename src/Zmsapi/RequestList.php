@@ -19,9 +19,9 @@ class RequestList extends BaseController
      */
     public static function render($source, $itemIds = null)
     {
-        $request = (new Query())->readList($source, $itemIds);
+        $requestList = (new Query())->readList($source, $itemIds);
         $message = Response\Message::create();
-        $message->data = $request;
+        $message->data = $requestList;
         Render::lastModified(time(), '0');
         Render::json($message);
     }

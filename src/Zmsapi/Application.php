@@ -70,8 +70,7 @@ class Application extends \BO\Slim\Application
     );
 
     /**
-     * dldb access to stored data without exposing type of data storage
+     * dldb data path
      */
-    public static $dldbdata = null;
     public static $data = '/data';
 }
