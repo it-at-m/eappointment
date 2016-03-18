@@ -15,7 +15,9 @@ class Provider extends Base
         $query
             ->addEntityMapping()
             ->addConditionProviderId($providerId);
-        return $this->fetchOne($query, new Entity());
+        $provider = $this->fetchOne($query, new Entity());
+        $provider['data'] = Helper\DldbData::readExtendedProviderData($source, $providerId);
+        return $provider;
     }
 
     /**
