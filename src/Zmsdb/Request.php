@@ -13,7 +13,9 @@ class Request extends Base
         }
         $query = new Query\Request(Query\Base::SELECT);
         $query->addEntityMapping()->addConditionRequestId($requestId);
-        return $this->fetchOne($query, new Entity());
+        $request = $this->fetchOne($query, new Entity());
+        $request['data'] = Helper\DldbData::readExtendedRequestData($source, $requestId);
+        return $request;
     }
 
     public function readSlotsOnEntity(\BO\Zmsentities\Request $entity)
