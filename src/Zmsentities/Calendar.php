@@ -200,5 +200,4 @@ class Calendar extends Schema\Entity
         }
         return $this;
     }
-
 }
