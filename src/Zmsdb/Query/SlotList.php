@@ -245,7 +245,7 @@ class SlotList
         \DateTimeImmutable $freeProcessesDate = null,
         $slotType = 'public'
     ) {
-    
+
         $scopeReader = new \BO\Zmsdb\Scope();
         $freeProcesses = array();
         $selectedDate = $freeProcessesDate->format('Y-m-d');
@@ -339,13 +339,5 @@ class SlotList
             }
             $time = $time->modify('+1day');
         } while ($time->getTimestamp() <= $stopDate->getTimestamp());
-    }
-
-    /**
-     * Read slotdata
-     */
-    public function getSlotData()
-    {
-        return $this->slotData;
     }
 }
