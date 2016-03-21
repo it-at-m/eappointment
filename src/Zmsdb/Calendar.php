@@ -7,20 +7,15 @@ use \BO\Zmsdb\Query\SlotList;
 class Calendar extends Base
 {
 
-    public function readResolvedEntity(Entity $calendar, $getProcesses = false, $cleanProcessing = true)
+    public function readResolvedEntity(Entity $calendar, $freeProcessesDate = null)
     {
         $calendar['processing'] = [];
         $calendar['processing']['slotlist'] = new SlotList();
         $calendar = $this->readResolvedProviders($calendar);
         $calendar = $this->readResolvedClusters($calendar);
         $calendar = $this->readResolvedRequests($calendar);
-        $calendar = ($getProcesses) ?
-            $this->readFreeProcessesByDay($calendar) :
-            $this->readResolvedDays($calendar);
-
-        if ($cleanProcessing) {
-            unset($calendar['processing']);
-        }
+        $calendar = $this->readResolvedDays($calendar, $freeProcessesDate);
+        unset($calendar['processing']['slotlist']);
         return $calendar;
     }
 
@@ -59,6 +54,7 @@ class Calendar extends Base
     {
         $scopeReader = new Scope($this->getWriter(), $this->getReader());
         $providerReader = new Provider($this->getWriter(), $this->getReader());
+        $calendar['scopes'] = array();
         foreach ($calendar['providers'] as $key => $provider) {
             $calendar['providers'][$key] = $providerReader->readEntity('dldb', $provider['id']);
             $scopeList = $scopeReader->readByProviderId($provider['id']);
@@ -69,7 +65,7 @@ class Calendar extends Base
         return $calendar;
     }
 
-    protected function readResolvedDays(Entity $calendar)
+    protected function readResolvedDays(Entity $calendar, $freeProcessesDate)
     {
         $query = SlotList::getQuery();
         $monthList = $calendar->getMonthList();
@@ -81,31 +77,17 @@ class Calendar extends Base
                 $statement->execute(SlotList::getParameters($scope['id'], $monthDateTime));
                 $slotsRequired = $calendar['processing']['slotinfo'][$scope->getProviderId()];
                 while ($slotData = $statement->fetch(\PDO::FETCH_ASSOC)) {
-                    $calendar = $this->addDayInfoToCalendar($calendar, $slotData, $month, $slotsRequired);
+                    $calendar = $this->addDayInfoToCalendar(
+                        $calendar,
+                        $slotData,
+                        $month,
+                        $slotsRequired,
+                        $freeProcessesDate
+                    );
                 }
             }
         }
         return $calendar;
-    }
-
-    protected function readFreeProcessesByDay(Entity $calendar)
-    {
-        $selectedDate = $calendar->getDateTimeFromDate($calendar['firstDay']);
-        $query = SlotList::getQuery();
-        $statement = $this->getReader()->prepare($query);
-
-        $selectedDateTime = new \DateTimeImmutable($selectedDate->format('c'));
-        foreach ($calendar->scopes as $scope) {
-            $scope = new \BO\Zmsentities\Scope($scope);
-            $statement->execute(SlotList::getParameters($scope['id'], $selectedDate));
-            $slotsRequired = $calendar['processing']['slotinfo'][$scope->getProviderId()];
-            while ($slotData = $statement->fetch(\PDO::FETCH_ASSOC)) {
-                $calendar = $this->addFreeProcessesToCalendar($calendar, $slotData, $selectedDateTime, $slotsRequired);
-                if (count($calendar['freeProcesses'])) {
-                    return $calendar;
-                }
-            }
-        }
     }
 
     /**
@@ -115,37 +97,17 @@ class Calendar extends Base
         Entity $calendar,
         array $slotData,
         \DateTimeImmutable $month,
-        $slotsRequired
+        $slotsRequired,
+        $freeProcessesDate
     ) {
         $slotlist = & $calendar['processing']['slotlist'];
         if (! $slotlist->isSameAvailability($slotData)) {
             $slotlist->toReducedBySlots($slotsRequired);
-            $calendar = $slotlist->addToCalendar($calendar);
+            $slotlist->addToCalendar($calendar, $freeProcessesDate);
             $calendar['processing']['slotlist'] = new SlotList(
                 $slotData,
-                $month->modify('first day of'),
+                $month->modify('first day of')->modify('00:00:00'),
                 $month->modify('last day of')->modify('23:59:59')
-            );
-        } else {
-            $slotlist->addSlotData($slotData);
-        }
-        return $calendar;
-    }
-
-    protected function addFreeProcessesToCalendar(
-        Entity $calendar,
-        array $slotData,
-        \DateTimeImmutable $selectedDateTime,
-        $slotsRequired
-    ) {
-        $slotlist = & $calendar['processing']['slotlist'];
-        if (! $slotlist->isSameAvailability($slotData)) {
-            $slotlist->toReducedBySlots($slotsRequired);
-            $calendar = $slotlist->addFreeProcesses($calendar);
-            $calendar['processing']['slotlist'] = new SlotList(
-                $slotData,
-                $selectedDateTime->modify('first day of'),
-                $selectedDateTime->modify('last day of')->modify('23:59:59')
             );
         } else {
             $slotlist->addSlotData($slotData);
