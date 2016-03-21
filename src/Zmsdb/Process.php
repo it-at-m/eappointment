@@ -175,7 +175,8 @@ class Process extends Base
     public function readFreeProcesses(\BO\Zmsentities\Calendar $calendar)
     {
         $resolvedCalendar = new Calendar();
-        $calendar = $resolvedCalendar->readResolvedEntity($calendar, true, false);
+        $selectedDate = $calendar->getFirstDay();
+        $calendar = $resolvedCalendar->readResolvedEntity($calendar, $selectedDate);
         return $calendar['freeProcesses'];
     }
 
