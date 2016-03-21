@@ -1,4 +1,6 @@
-ul.organisation-list {
+ul.owner-list {
     @extend 
         .list-bare;
+    > li {
+    }
 }

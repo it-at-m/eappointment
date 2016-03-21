@@ -1,29 +1,19 @@
-/* TODO todo */ 
-
 .owner-overview { 
-    .owner-list {
-        padding-left:           0;
-        .owner-list_item {
+    ul.organisation-list {
+        > li {
+            @extend 
+                .board;
             list-style:         none;
             margin-bottom:      2em;
         }
+        .organisation-list_title {
+            @extend 
+                .board_header;
+        }
+        .department-list {
+            @extend 
+                .board_body;
+        }
     }
-    .department-list {
-        padding-left:           0;
-        .department-list_item {
-            list-style:         none;
-            margin-bottom:      1em;
-        }
-        .department-list_title {
-            font-weight:        bold;
-            display:            inline-block;
-            margin-right:       0.5em;
-        }
-        .cluster {
-            .cluster_title {
-                font-style:         italic;
-            }
-        }
-    }    
 }
 
