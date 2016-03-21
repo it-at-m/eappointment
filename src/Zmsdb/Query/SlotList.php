@@ -243,7 +243,7 @@ class SlotList
         $calendar['freeProcesses'] = array();
         foreach ($this->slots as $date => $slotList) {
             if ($date == $selectedDate) {
-                $scope = $scopeReader->readEntity($this->slotData['appointment__scope__id'],2);
+                $scope = $scopeReader->readEntity($this->slotData['appointment__scope__id'], 2);
                 foreach ($slotList as $slotInfo) {
                     if ($slotInfo[$slotType] > 0) {
                         $appointment = new \BO\Zmsentities\Appointment();

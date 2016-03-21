@@ -17,7 +17,6 @@ class Process extends Base
         //\App::$log->debug($query->getSql());
         // var_dump($this->fetchOne($query, new Entity()));
         $process = $this->fetchOne($query, new Entity());
-        \App::$log->debug("PROCESS", [$process]);
         $process['requests'] = (new Request())->readRequestByProcessId($processId, $resolveReferences);
         $process['status'] = (new Status())->readProcessStatus($processId, $authKey);
         $process = $this->addDldbData($process, $resolveReferences);
