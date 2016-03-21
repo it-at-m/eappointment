@@ -154,6 +154,15 @@ class Calendar extends Schema\Entity
         return \DateTime::createFromFormat('Y-m-d', $date['year']. '-'. $date['month'] .'-'. $date['day']);
     }
 
+    public function getFirstDay()
+    {
+        $dateTime = \DateTimeImmutable::createFromFormat(
+            'Y-m-d',
+            $this['firstDay']['year']. '-'. $this['firstDay']['month'] .'-'. $this['firstDay']['day']
+        );
+        return $dateTime->modify('00:00:00');
+    }
+
     public function getDateTimeFromTs($timestamp)
     {
         return new \DateTime('@' . $timestamp);
@@ -191,4 +200,5 @@ class Calendar extends Schema\Entity
         }
         return $this;
     }
+
 }
