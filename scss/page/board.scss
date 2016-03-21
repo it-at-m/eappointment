@@ -45,6 +45,7 @@ $contentTopLineupBoardBodyMaxHeight:    33.7em; // (calendar,appointment,clienti
     background-color:       $blue;
     position:               relative;
     color:                  $white;
+    margin-bottom:         0;
     > * {
         vertical-align:     middle;
     }
