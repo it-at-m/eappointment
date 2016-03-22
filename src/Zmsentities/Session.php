@@ -19,7 +19,8 @@ class Session extends Schema\Entity
                 'email' => '',
                 'telehone' => '',
                 'amendment' => '',
-                'authKey' => ''
+                'authKey' => '',
+                'finished' => 0
             ],
             'human' => [
                 'captcha_text' => '',
