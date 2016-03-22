@@ -20,7 +20,7 @@ class Session extends Schema\Entity
                 'telehone' => '',
                 'amendment' => '',
                 'authKey' => '',
-                'finished' => 0
+                'status' => 'free'
             ],
             'human' => [
                 'captcha_text' => '',
