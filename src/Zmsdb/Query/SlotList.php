@@ -220,12 +220,9 @@ class SlotList
     public function addToCalendar(\BO\Zmsentities\Calendar $calendar, $freeProcessesDate)
     {
         foreach ($this->slots as $date => $slotList) {
-
             if (null !== $freeProcessesDate && $date == $freeProcessesDate->format('Y-m-d')) {
                 $calendar['freeProcesses'] = $this->addFreeProcesses($calendar, $freeProcessesDate);
-
             }
-
             $datetime = new \DateTimeImmutable($date);
             $day = $calendar->getDayByDateTime($datetime);
             foreach ($slotList as $slotInfo) {
