@@ -16,7 +16,7 @@
 		        "clientTelehone" : "030 23232323",
 		        "clientAmendment" : "Notiz zum Termin",
 		        "authKey" : "1234",
-		        "finished" : 0
+		        "status" : "free"
 		    },
 		    "human": {
 		    	"captcha_text" : "kck6Qz",
@@ -74,8 +74,8 @@
 				        "authKey" :{
             				"type": "string"
             			},
-            			"finished" :{
-            				"type": "integer"
+            			"status" :{
+            				"type": "string"
             			}
             		}
             	},
