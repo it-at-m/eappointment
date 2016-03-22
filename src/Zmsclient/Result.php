@@ -66,7 +66,7 @@ class Result
         if ($body->hasFailed()) {
             throw new Exception(
                 'API-Call failed, JSON parsing with error: ' . implode('; ', $body->getMessages())
-                    . ' - Snippet: ' .substr((string)$response->getBody(), 0, 255) . '...',
+                    . ' - Snippet: ' .substr(\strip_tags((string)$response->getBody()), 0, 2000) . '...',
                 $response,
                 $this->request
             );
@@ -117,7 +117,7 @@ class Result
     {
         return $this->data;
     }
-    
+
     /**
      * Description
      *
