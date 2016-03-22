@@ -116,6 +116,7 @@ class Process extends Base
         } else {
             foreach ($requests as $request) {
                 $query = new Query\XRequest(Query\Base::UPDATE);
+                $query->addConditionXRequestId($request['id']);
                 $query->addConditionProcessId($processId);
                 $query->addValues(
                     [
