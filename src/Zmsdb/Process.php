@@ -25,24 +25,21 @@ class Process extends Base
 
     public function updateEntity(\BO\Zmsentities\Process $process)
     {
-        //\App::$log->debug('UPDATE ENTITY');
         $query = new Query\Process(Query\Base::UPDATE);
-
-        if (array_key_exists('id', $process) && $process['id'] != 0) {
+        if (array_key_exists('id', $process) && !empty($process['id'])) {
             $processId = $process['id'];
         } else {
             $processId = $this->getNewProcessId();
         }
-        $query->addConditionProcessId($processId);
-        if (array_key_exists('authKey', $process) && $process['authKey'] != 0) {
+        if (array_key_exists('authKey', $process) && !empty($process['authKey'])) {
             $authKey = $process['authKey'];
-            $query->addConditionAuthKey($authKey);
         } else {
-            $authKey = substr(md5(rand()), 0, 4);
+            $authKey = self::readAuthKeyByProcessId($processId);
         }
 
-        $process['id'] = $processId;
-        $process['authKey'] = $authKey;
+        $query->addConditionProcessId($processId);
+        $query->addConditionAuthKey($authKey);
+        
         $values = $query->reverseEntityMapping($process);
         $query->addValues($values);
         $this->writeItem($query, 'process', $query::TABLE);
@@ -51,6 +48,14 @@ class Process extends Base
         $process = $this->readEntity($processId, $authKey);
         $process['status'] = (new Status())->readProcessStatus($processId, $authKey);
         return $process;
+    }
+    
+    protected function readAuthKeyByProcessId($processId)
+    {
+        $query = new Query\Process(Query\Base::SELECT);
+        $query->addEntityMapping()->addConditionProcessId($processId);
+        $process = $this->fetchOne($query, new Entity());
+        return $process['authKey'];
     }
 
     /**
@@ -133,8 +138,8 @@ class Process extends Base
     {
         $query = new Query\Process(Query\Base::INSERT);
         $lock = $this->getLock();
+        $dateTime = new \DateTime();
         if ($lock == 1) {
-            $dateTime = new \DateTime();
             $query->addValues(
                 [
                 'BuergerID' => 'SELECT A.BuergerID+1 AS nextid
@@ -142,17 +147,19 @@ class Process extends Base
                     LEFT JOIN buerger B on A.BuergerID+1 = B.BuergerID
                     WHERE B.BuergerID IS NULL AND A.BuergerID > 10000
                     ORDER BY A.BuergerID LIMIT 1',
-                'IPTimeStamp' => $dateTime->getTimestamp()
+                'IPTimeStamp' => $dateTime->getTimestamp(),
+                'absagecode' => substr(md5(rand()), 0, 4)
                 ]
             );
         } else {
             $query->addValues(
                 [
-                'BuergerID' => null
+                'BuergerID' => null,
+                'IPTimeStamp' => $dateTime->getTimestamp(),
+                'absagecode' => substr(md5(rand()), 0, 4)
                 ]
             );
         }
-
         $this->writeItem($query);
         $lastInsertId = $this->getWriter()
             ->lastInsertId();
