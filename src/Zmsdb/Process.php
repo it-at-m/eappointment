@@ -185,7 +185,7 @@ class Process extends Base
         $resolvedCalendar = new Calendar();
         $selectedDate = $calendar->getFirstDay();
         $calendar = $resolvedCalendar->readResolvedEntity($calendar, $selectedDate);
-        if(isset($calendar['freeProcesses'])){
+        if (isset($calendar['freeProcesses'])) {
             return $calendar['freeProcesses'];
         }
         return array();
