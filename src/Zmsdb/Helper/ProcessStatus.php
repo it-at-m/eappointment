@@ -71,9 +71,8 @@ class ProcessStatus extends \BO\Zmsdb\Process
 
     protected function createConfirmedProcessEntity($process)
     {
-        $entity = new \BO\Zmsentities\Process($process);
-        $entity['status'] = 'confirmed';
-        return $entity;
+        $process['status'] = 'confirmed';
+        return $process;
     }
 
     /**

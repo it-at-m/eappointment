@@ -12,13 +12,16 @@ class Process extends Base implements MappingInterface
 
     const QUERY_DELETE = "UPDATE `buerger` process LEFT JOIN `standort` s USING(StandortID)
         SET
-            process.`Anmerkung` = CONCAT(
-                'Abgesagter Termin gebucht am: ', FROM_UNIXTIME(`IPTimeStamp`) ,' | ', `Anmerkung`
-            ),
-            process.`Name` = '(abgesagt)',
-            process.`IPadresse` = '',
-            process.`IPTimeStamp` = UNIX_TIMESTAMP() + (s.loeschdauer * 60),
-            process.`vorlaeufigeBuchung` = 1
+            process.Anmerkung = CONCAT(
+                'Abgesagter Termin gebucht am: ',
+                FROM_UNIXTIME(process.IPTimeStamp,'%d-%m-%Y %H:%i'),' | ',
+                IFNULL(process.Anmerkung,'')
+            ),           
+            process.StandortId = 0,
+            process.Name = '(abgesagt)',
+            process.IPadresse = '',
+            process.IPTimeStamp = UNIX_TIMESTAMP() + (s.loeschdauer * 60),
+            process.vorlaeufigeBuchung = 1
         WHERE
             (process.BuergerID = ? AND process.absagecode = ?)
             OR process.istFolgeterminvon = ?
@@ -140,7 +143,6 @@ class Process extends Base implements MappingInterface
     public function reverseEntityMapping(\BO\Zmsentities\Process $process)
     {
         $data = array();
-        $data['absagecode'] = $process['authKey'];
         $data['Anmerkung'] = $process->getAmendment();
         $data['StandortID'] = $process->getScopeId();
 
