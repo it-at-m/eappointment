@@ -27,9 +27,11 @@ class Process extends Schema\Entity
     public function getRequestIds()
     {
         $idList = array();
-        foreach ($this['requests'] as $request) {
-            $idList[] = $request['id'];
-        }
+        if (isset($this['requests']) && count($this['requests']) > 0) {
+            foreach ($this['requests'] as $request) {
+                $idList[] = $request['id'];
+            }
+        }        
         return $idList;
     }
 
@@ -131,5 +133,11 @@ class Process extends Schema\Entity
     {
         return new Appointment(current($this->appointments));
 
+    }
+    
+    public function getDepartmentFromProvider($provider)
+    {
+        $department = $provider['data']['authority']['id'];
+        return $department;
     }
 }
