@@ -9,23 +9,24 @@ class Mail extends Base
     /**
      * Fetch status from db
      *
-     * @return \BO\Zmsentities\Session
+     * @return \BO\Zmsentities\Mail
      */
-    public function readEntity($itemId, $processId)
+    public function readEntity($itemId, $processId, $resolveReferences = 1)
     {
-        $query = new Query\Session(Query\Base::SELECT);
+        $query = new Query\MailQueue(Query\Base::SELECT);
         $query
             ->addEntityMapping()
+            ->addResolvedReferences($resolveReferences)
             ->addConditionItemId($itemId)
             ->addConditionProcessId($processId);
+        error_log(print_r($query->getSql(), 1));
         return $this->fetchOne($query, new Entity());
     }
     
     public function writeInMailQueue(Entity $mail)
     {
-        $result = false;
         foreach ($mail->multipart as $part) {
-            $query = new Query\Mail(Query\Base::INSERT);
+            $query = new Query\MailQueue(Query\Base::INSERT);
             $query->addValues(array(
                 'processID' => $mail->process['id'],
                 'departmentID' => $mail->department['id'],
@@ -34,10 +35,14 @@ class Mail extends Base
                 'createTimestamp' => time(),
                 'subject' => $mail->subject,
             ));
-            error_log(print_r($query->getParameters(), 1));
             $result = $this->writeItem($query);
+            if ($result) {
+                $lastInsertId = $this->getWriter()->lastInsertId();
+                $mail = $this->readEntity($lastInsertId, $mail->process['id']);
+                return $mail;
+            }
         }
-        return $result;
+        return array();
     }
     
     public function writeInMailPart($data)
@@ -48,22 +53,21 @@ class Mail extends Base
             'content' => $data['content'],
             'base64' => $data['base64'],
         ));
-        error_log(print_r($query->getSql(), 1));
-        $this->writeItem($query);
-        $lastInsertId = $this->getWriter()->lastInsertId();
+        $result = $this->writeItem($query);
+        if ($result) {
+            $lastInsertId = $this->getWriter()->lastInsertId();
+        }
         return $lastInsertId;
     }
     
 
-    public function deleteEntity($itemId, $processId)
+    public function deleteFromQueue($itemId, $processId)
     {
         $query = Query\Session::QUERY_DELETE;
         $statement = $this->getWriter()->prepare($query);
-        $statement->execute(
-            array(
+        $statement->execute(array(
             $itemId,
             $processId
-            )
-        );
+        ));
     }
 }

@@ -78,6 +78,6 @@ abstract class Base
     {
         //\App::$log->debug('params', [$query->getParameters()]);
         $statement = $this->getWriter()->prepare(str_replace($table, $replace, $query->getSql()));
-        $statement->execute($query->getParameters());
+        return $statement->execute($query->getParameters());
     }
 }

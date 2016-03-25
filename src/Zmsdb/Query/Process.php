@@ -103,7 +103,7 @@ class Process extends Base implements MappingInterface
             'appointments__0__slotCount' => self::expression('(SELECT COUNT(*) + 1
                     FROM ' . self::TABLE . ' as `followingProcess` 
                     WHERE 
-                        `followingProcess`.`istFolgeterminvon` = `id`
+                        `followingProcess`.`istFolgeterminvon` = `BuergerID`
                 )'),
             'authKey' => 'process.absagecode',
             'clients__0__email' => 'process.EMail',
