@@ -134,10 +134,4 @@ class Process extends Schema\Entity
         return new Appointment(current($this->appointments));
 
     }
-    
-    public function getDepartmentFromProvider($provider)
-    {
-        $department = $provider['data']['authority']['id'];
-        return $department;
-    }
 }
