@@ -10,15 +10,16 @@ namespace BO\Zmsadmin;
   * Handle requests concerning services
   *
   */
-class Dayoff extends BaseController
+class DayoffByYear extends BaseController
 {
     /**
      * @return String
      */
     public static function render()
     {
-        \BO\Slim\Render::html('page/dayoff.twig', array(
-            'title' => 'Allgemein gültige Feiertage - Jahresauswahl',
+        \BO\Slim\Render::html('page/dayoffByYear.twig', array(
+            'title' => 'Allgemein gültige Feiertage',
+            'year' => '2016',
             'menuActive' => 'dayoff'
         ));
     }

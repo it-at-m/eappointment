@@ -1,0 +1,12 @@
+.ticketprinter-config {
+    @extend 
+        .board;
+    form {
+        @extend 
+            .form--horizontal;
+        .form-group {
+            @extend 
+                .form-group--nomaxwidth;
+        }
+    }
+}

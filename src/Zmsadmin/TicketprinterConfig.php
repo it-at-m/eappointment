@@ -14,7 +14,7 @@ class TicketprinterConfig extends BaseController
     public static function render()
     {
         \BO\Slim\Render::html('page/ticketprinterConfig.twig', array(
-            'title' => '',
+            'title' => 'Anmeldung an Warteschlange',
             'menuActive' => 'ticketprinter'
         ));
     }
