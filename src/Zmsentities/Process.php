@@ -31,7 +31,7 @@ class Process extends Schema\Entity
             foreach ($this['requests'] as $request) {
                 $idList[] = $request['id'];
             }
-        }        
+        }
         return $idList;
     }
 
