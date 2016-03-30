@@ -9,6 +9,8 @@ namespace BO\Slim;
 /**
   * Extension for Twig and Slim
   *
+  *  @SuppressWarnings(PublicMethod)
+  *  @SuppressWarnings(TooManyMethods)
   */
 class TwigExtension extends \Slim\Views\TwigExtension
 {
@@ -38,15 +40,15 @@ class TwigExtension extends \Slim\Views\TwigExtension
     public function toTextFormat($string)
     {
         $string = \strip_tags($string, '<br />');
-        $temp = str_replace(array("<br />"),"\n",$string);
-        $lines = explode("\n",$temp);
+        $temp = str_replace(array("<br />"), "\n", $string);
+        $lines = explode("\n", $temp);
         $new_lines = array();
-        foreach($lines as $i => $line)
-        {
-            if(!empty($line))
+        foreach ($lines as $line) {
+            if (!empty($line)) {
                 $new_lines[]=trim($line);
+            }
         }
-        $result = implode("\n",$new_lines);
+        $result = implode("\n", $new_lines);
         return addSlashes($result);
     }
 
