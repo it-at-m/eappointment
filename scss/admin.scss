@@ -78,6 +78,7 @@
 @import "block/useraccount-edit";
 @import "block/calldisplay-config";
 @import "block/ticketprinter-status";
+@import "block/ticketprinter-config";
 @import "block/notification-form";
 @import "block/links-edit";
 @import "block/links-list";
@@ -85,6 +86,9 @@
 @import "block/searchresults";
 @import "block/dayoff-list";
 @import "block/dayoff-edit";
+@import "block/dayoff-byyear";
+@import "block/dayoff-bydepartment";
+@import "block/dayoff-bydepartmentandyear";
 
 // Element layouts
 @import "element/button";

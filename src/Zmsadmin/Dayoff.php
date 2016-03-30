@@ -18,7 +18,7 @@ class Dayoff extends BaseController
     public static function render()
     {
         \BO\Slim\Render::html('page/dayoff.twig', array(
-            'title' => 'Administration freie Tage',
+            'title' => 'Allgemein gültige Feiertage - Jahresauswahl',
             'menuActive' => 'dayoff'
         ));
     }

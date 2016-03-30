@@ -120,22 +120,22 @@
     '\BO\Zmsadmin\Dayoff:render')
     ->name("dayoff");
 
-\App::$slim->get('/dayoff/:id/',
-    '\BO\Zmsadmin\DayoffEdit:render')
-    ->name("dayoffEdit");
-/*
 \App::$slim->get('/dayoff/:year/',
     '\BO\Zmsadmin\DayoffByYear:render')
     ->name("dayoffByYear");
 
-\App::$slim->get('/department/dayoff/',
+\App::$slim->get('/dayoff/:year/:id/',
+    '\BO\Zmsadmin\DayoffEdit:render')
+    ->name("dayoffEdit");
+    
+\App::$slim->get('/department/:id/dayoff/',
     '\BO\Zmsadmin\DayoffByDepartment:render')
     ->name("dayoffByDepartment");
 
-\App::$slim->get('/department/dayoff/:year/',
+\App::$slim->get('/department/:id/dayoff/:year/',
     '\BO\Zmsadmin\DayoffByDepartmentAndYear:render')
     ->name("dayoffByDepartmentAndYear");
-*/
+
 \App::$slim->get('/testpage/',
     '\BO\Zmsadmin\Testpage:render')
     ->name("testpage");

@@ -317,6 +317,9 @@ select > option {
     @include form--horizontal();
 }
 
+.form-group--nomaxwidth .controls{
+    max-width:  100%;
+}
 
 // Input sizes, 12er grid base
 
