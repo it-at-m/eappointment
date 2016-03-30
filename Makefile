@@ -16,5 +16,8 @@ dev: # init development system
 live: # init live system, delete unnecessary libs
 	$(COMPOSER) update --no-dev
 
+fix: # run code fixing
+	php vendor/bin/phpcbf --standard=psr2 src/
+
 watch: # Build CSS, JS and Swagger docs on changes
 	./node_modules/.bin/gulp
