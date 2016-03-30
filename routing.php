@@ -24,10 +24,14 @@
     '\BO\Zmsadmin\WorkstationClientCalled:render')
     ->name("workstationClientCalled");
 
+\App::$slim->get('/workstation/process/:id/processed',
+    '\BO\Zmsadmin\WorkstationClientProcessed:render')
+    ->name("workstationClientProcessed");
+
 \App::$slim->get('/workstation/process/:id/',
     '\BO\Zmsadmin\WorkstationClientActive:render')
     ->name("workstationClientActive");
-
+    
 \App::$slim->get('/workstation/',
     '\BO\Zmsadmin\Workstation:render')
     ->name("workstation");
