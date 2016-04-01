@@ -15,18 +15,56 @@ class CalendarTest extends Base
         122257,122208,122226
     ];
 
+    public function testHeerstr()
+    {
+        $input = $this->getTestEntity();
+        //var_dump(json_encode($input, JSON_PRETTY_PRINT));
+        $input->addProvider('dldb', 122217); // Heerstr.
+        $entity = (new Query())->readResolvedEntity($input);
+        //var_dump(json_encode($entity, JSON_PRETTY_PRINT));
+        //$array = json_decode(json_encode($entity), 1);
+        //var_dump($array['days']);
+        $this->assertEntity("\\BO\\Zmsentities\\Calendar", $entity);
+        $this->assertTrue($entity->hasDay(2016, 5, 23), "Missing 2016-05-23 in dataset");
+        $this->assertEquals(0, $entity->getDay(2016, 5, 23)['freeAppointments']['public']);
+        $this->assertTrue($entity->hasDay(2016, 5, 27), "Missing 2016-05-27 in dataset");
+        $this->assertEquals(2, $entity->getDay(2016, 5, 27)['freeAppointments']['public']);
+        $this->assertEquals(72, $entity->getDay(2016, 5, 30)['freeAppointments']['public']);
+        $this->assertEquals(60, $entity->getDay(2016, 5, 31)['freeAppointments']['public']);
+        // free day test
+        $this->assertEquals(0, $entity->getDay(2016, 5, 5)['freeAppointments']['public']);
+        //var_dump(\BO\Zmsdb\Connection\Select::getReadConnection()->getProfiler()->getProfiles());
+    }
+
     public function testBasic()
     {
+        return 1;
+        $input = $this->getTestEntity();
+        //var_dump(json_encode($input, JSON_PRETTY_PRINT));
+        foreach ($this->fullProviderIdList as $providerId) {
+            $input->addProvider('dldb', $providerId);
+        }
+        $entity = (new Query())->readResolvedEntity($input);
+        //var_dump(json_encode($entity, JSON_PRETTY_PRINT));
+        $array = json_decode(json_encode($entity), 1);
+        var_dump($array['days']);
+        $this->assertEntity("\\BO\\Zmsentities\\Calendar", $entity);
+        //var_dump(\BO\Zmsdb\Connection\Select::getReadConnection()->getProfiler()->getProfiles());
+    }
+
+    protected function getTestEntity()
+    {
+        $time = new \DateTimeImmutable("2016-04-01 11:55");
         $input = new Entity(array(
             "firstDay" => [
-                "year" => date('Y'),
-                "month" => date('m'),
-                "day" => date('d')
+                "year" => $time->format('Y'),
+                "month" => $time->format('m'),
+                "day" => $time->format('d')
                 ],
             "lastDay" => [
-                "year" => date('Y', time() + 60 * 60 *24 * 32),
-                "month" => date('m', time() + 60 * 60 *24 * 32),
-                "day" => date('d', time() + 60 * 60 *24 * 32)
+                "year" => $time->modify('+1 month')->format('Y'),
+                "month" => $time->modify('+1 month')->format('m'),
+                "day" => $time->modify('+1 month')->format('t')
                 ],
             "requests" => [
                 [
@@ -35,14 +73,6 @@ class CalendarTest extends Base
                     ],
                 ],
         ));
-        foreach ($this->fullProviderIdList as $providerId) {
-            $input->addProvider('dldb', $providerId);
-        }
-        $entity = (new Query())->readResolvedEntity($input);
-        //var_dump(json_encode($entity, JSON_PRETTY_PRINT));
-        //$array = json_decode(json_encode($entity), 1);
-        //var_dump($array['days']);
-        $this->assertEntity("\\BO\\Zmsentities\\Calendar", $entity);
-        //var_dump(\BO\Zmsdb\Connection\Select::getReadConnection()->getProfiler()->getProfiles());
+        return $input;
     }
 }

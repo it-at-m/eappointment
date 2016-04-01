@@ -88,7 +88,12 @@ class SlotList
             AND (
                 (
                     o.allexWochen
-                    AND ((UNIX_TIMESTAMP(b.Datum) - UNIX_TIMESTAMP(o.Startdatum)) / 86400 / 7) % o.allexWochen != 0
+                    -- The following line would be correct by logic, but does not work :-(
+                    -- AND ((UNIX_TIMESTAMP(b.Datum) - UNIX_TIMESTAMP(o.Startdatum)) / 86400 / 7) % o.allexWochen = 0
+                    AND (
+                        b.Datum = o.Startdatum
+                        OR ((UNIX_TIMESTAMP(b.Datum) - UNIX_TIMESTAMP(o.Startdatum)) / 86400 / 7) % o.allexWochen != 0
+                    )
                 )
                 OR (
                     o.jedexteWoche
@@ -193,9 +198,11 @@ class SlotList
         if (isset($slotData['slotnr'])) {
             $slotnumber = $slotData['slotnr'];
             $slotdate = $slotData['slotdate'];
-            $slotDebug = "$slotdate #$slotnumber @" . $slotData['slottime']
-                . " (Avail.#" . $this->slotData['availability__id'] . ")";
+            $slotDebug = "$slotdate #$slotnumber @" . $slotData['slottime'] . " on " . $this->availability;
             if (!isset($this->slots[$slotdate][$slotnumber])) {
+                error_log("Debugdata: Found database entry without a pre-generated slot $slotDebug");
+                error_log(var_export($this->slots, true));
+                //error_log(var_export($this->availability->getArrayCopy(), true));
                 throw new \Exception(
                     "Found database entry without a pre-generated slot $slotDebug"
                 );
@@ -219,11 +226,17 @@ class SlotList
 
     public function addToCalendar(\BO\Zmsentities\Calendar $calendar, $freeProcessesDate)
     {
+        //error_log("addToCalendar " . $this->availability);
+        //if (isset($this->slots['2016-05-23'])) {
+        //    error_log(var_export($this->slots['2016-05-23'], true));
+        //    error_log(var_export($this->availability->getArrayCopy(), true));
+        //}
         foreach ($this->slots as $date => $slotList) {
             if (null !== $freeProcessesDate && $date == $freeProcessesDate->format('Y-m-d')) {
                 $calendar['freeProcesses'] = $this->addFreeProcesses($calendar, $freeProcessesDate);
             }
             $datetime = new \DateTimeImmutable($date);
+            //error_log($datetime->format('c'));
             $day = $calendar->getDayByDateTime($datetime);
             foreach ($slotList as $slotInfo) {
                 $day['freeAppointments']['public'] += $slotInfo['public'];

@@ -75,6 +75,7 @@ class Calendar extends Base
             foreach ($calendar->scopes as $scope) {
                 $scope = new \BO\Zmsentities\Scope($scope);
                 $statement->execute(SlotList::getParameters($scope['id'], $monthDateTime));
+                //error_log(var_export(SlotList::getParameters($scope['id'], $monthDateTime), true));
                 $slotsRequired = $calendar['processing']['slotinfo'][$scope->getProviderId()];
                 while ($slotData = $statement->fetch(\PDO::FETCH_ASSOC)) {
                     $calendar = $this->addDayInfoToCalendar(
@@ -84,7 +85,17 @@ class Calendar extends Base
                         $slotsRequired,
                         $freeProcessesDate
                     );
+                    //error_log("|".$slotData['slottime'].":".$slotData['slotdate'].":".$slotData['availability__id']);
                 }
+                // Process the last processed slotlist missed by addDayInfoToCalendar
+                $calendar = $this->addDayInfoToCalendar(
+                    $calendar,
+                    ['availability__id' => null],
+                    $month,
+                    $slotsRequired,
+                    $freeProcessesDate
+                );
+                $calendar['processing']['slotlist'] = new SlotList();
             }
         }
         return $calendar;
@@ -100,17 +111,16 @@ class Calendar extends Base
         $slotsRequired,
         $freeProcessesDate
     ) {
-        $slotlist = & $calendar['processing']['slotlist'];
-        if (! $slotlist->isSameAvailability($slotData)) {
-            $slotlist->toReducedBySlots($slotsRequired);
+        if (! $calendar['processing']['slotlist']->isSameAvailability($slotData)) {
+            $calendar['processing']['slotlist']->toReducedBySlots($slotsRequired);
+            $calendar['processing']['slotlist']->addToCalendar($calendar, $freeProcessesDate);
             $calendar['processing']['slotlist'] = new SlotList(
                 $slotData,
                 $month->modify('first day of')->modify('00:00:00'),
                 $month->modify('last day of')->modify('23:59:59')
             );
-            $slotlist->addToCalendar($calendar, $freeProcessesDate);
         } else {
-            $slotlist->addSlotData($slotData);
+            $calendar['processing']['slotlist']->addSlotData($slotData);
         }
         return $calendar;
     }
