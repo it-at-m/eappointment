@@ -111,11 +111,12 @@ class Calendar extends Schema\Entity
             $endDate = $startDate;
         }
         $endDate = new \DateTime($endDate->format('Y-m-t'));
+        $endDate->modify('23:59:59');
         $monthList = [];
         do {
             $monthList[] = new \DateTime($currentDate->format('Y-m-1'));
             $currentDate->modify('+1 month');
-        } while ($currentDate->getTimestamp() < $endDate->getTimestamp());
+        } while ($currentDate->getTimestamp() <= $endDate->getTimestamp());
         return $monthList;
     }
 

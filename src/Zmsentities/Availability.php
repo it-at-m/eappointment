@@ -42,6 +42,10 @@ class Availability extends Schema\Entity
                 'intern' => 0,
             ],
             'slotTimeInMinutes' => 10,
+            'startDate' => 0,
+            'endDate' => 0,
+            'startTime' => "0:00",
+            'endTime' => "0:00",
         ];
     }
 
@@ -54,22 +58,38 @@ class Availability extends Schema\Entity
      */
     public function hasDate(\DateTimeInterface $dateTime)
     {
+        //$debugAvailabilityId = 0;
         $dateTime = Helper\DateTime::create($dateTime);
         $weekDayName = self::$weekdayNameList[$dateTime->format('w')];
-        $start = $this->getStartDateTime();
+        $start = $this->getStartDateTime()->modify('0:00');
         $end = $this->getEndDateTime();
+        // Synchronize timezones, cause DB entries do not have timezones
+        $start->setTimezone($dateTime->getTimezone());
+        $end->setTimezone($dateTime->getTimezone());
         if (!$this['weekday'][$weekDayName]) {
             // Wrong weekday
+            //if ($this->id == $debugAvailabilityId) {
+            //    error_log("!weekday hasDate(".$dateTime->format('c').") ".$this);
+            //}
             return false;
         }
         if ($dateTime->getTimestamp() < $start->getTimestamp() || $dateTime->getTimestamp() > $end->getTimestamp()) {
             // Out of date range
+            //if ($this->id == $debugAvailabilityId) {
+            //    error_log("!date range hasDate(".$dateTime->format('c').") ".$this);
+            //}
             return false;
         }
         if (!$this->hasWeek($dateTime)) {
             // series settings for the week do not match
+            //if ($this->id == $debugAvailabilityId) {
+            //    error_log("!series hasDate(".$dateTime->format('c').") ".$this);
+            //}
             return false;
         }
+        //if ($this->id == $debugAvailabilityId) {
+        //    error_log("true == hasDate(".$dateTime->format('c').") ".$this);
+        //}
         return true;
     }
 
@@ -212,8 +232,36 @@ class Availability extends Schema\Entity
                 ];
                 $startTime = $startTime->modify('+' . $this['slotTimeInMinutes'] . 'minute');
                 $slotnr++;
-            } while ($startTime->getTimestamp() <= $stopTime->getTimestamp());
+                // Only add a slot, if at least a minute is left, otherwise do not ("<" instead "<=")
+            } while ($startTime->getTimestamp() < $stopTime->getTimestamp());
         }
         return $slotList;
+    }
+
+    public function __toString()
+    {
+        $info = "Availability #" . $this['id'];
+        $info .= " starting " . $this->getStartDateTime()->format('Y-m-d');
+        $info .= " (" . $this->getBookableStart(new \DateTime)->format('Y-m-d') . ")";
+        $info .= " until " . $this->getEndDateTime()->format('Y-m-d');
+        $info .= " (" . $this->getBookableEnd(new \DateTime)->format('Y-m-d') . ")";
+        if ($this['repeat']['afterWeeks']) {
+            $info .= " every " . $this['repeat']['afterWeeks'] . " week(s)";
+        }
+        if ($this['repeat']['weekOfMonth']) {
+            $info .= " each " . $this['repeat']['weekOfMonth'] . ". weekOfMonth";
+        }
+        $info .= " on ";
+        $weekdays = array_filter($this['weekday'], function ($value) {
+            return $value > 0;
+        });
+        $info .= implode(',', array_keys($weekdays));
+        $info .= " from " . $this->getStartDateTime()->format('H:i');
+        $info .= " to " . $this->getEndDateTime()->format('H:i');
+        $info .= " using " . $this['slotTimeInMinutes'] . "min slots";
+        $info .= " with p{$this['workstationCount']['public']}/";
+        $info .= "c{$this['workstationCount']['callcenter']}/";
+        $info .= "i{$this['workstationCount']['intern']}";
+        return $info;
     }
 }

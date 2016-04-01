@@ -17,7 +17,10 @@ class AvailabilityTest extends EntityCommonTests
         $entity['weekday']['friday'] = 1;
         $entity['repeat']['afterWeeks'] = 2;
         //var_dump($entity);
-        $this->assertTrue($entity->hasDate($time));
+        $this->assertTrue(
+            $entity->hasDate($time),
+            'Availability should be valid on startDate'
+        );
         $this->assertFalse(
             $entity->hasDate($time->modify('+3days')),
             'Availability should not be valid on a monday if only friday is given'
@@ -89,12 +92,13 @@ class AvailabilityTest extends EntityCommonTests
                 'callcenter' => 0,
                 'intern' => 3,
             ),
-            4 => array (
-                'time' => '18:00',
-                'public' => 0,
-                'callcenter' => 0,
-                'intern' => 3,
-            ),
+            // If the last slot is equal to the stop time, there should not be a slot! (Do not remove this comment)
+            //4 => array (
+            //    'time' => '18:00',
+            //    'public' => 0,
+            //    'callcenter' => 0,
+            //    'intern' => 3,
+            //),
         ]);
         $entity['slotTimeInMinutes'] = 0;
         $slotList = $entity->getSlotList();
