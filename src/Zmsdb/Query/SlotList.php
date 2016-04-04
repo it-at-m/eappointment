@@ -89,11 +89,7 @@ class SlotList
                 (
                     o.allexWochen
                     -- The following line would be correct by logic, but does not work :-(
-                    -- AND ((UNIX_TIMESTAMP(b.Datum) - UNIX_TIMESTAMP(o.Startdatum)) / 86400 / 7) % o.allexWochen = 0
-                    AND (
-                        b.Datum = o.Startdatum
-                        OR ((UNIX_TIMESTAMP(b.Datum) - UNIX_TIMESTAMP(o.Startdatum)) / 86400 / 7) % o.allexWochen != 0
-                    )
+                    AND FLOOR((UNIX_TIMESTAMP(b.Datum) - UNIX_TIMESTAMP(o.Startdatum)) / 86400 / 7) % o.allexWochen = 0
                 )
                 OR (
                     o.jedexteWoche
