@@ -105,7 +105,7 @@ class Availability extends Schema\Entity
         $dateTime = Helper\DateTime::create($dateTime);
         $start = $this->getStartDateTime();
         if ($this['repeat']['afterWeeks']
-            && 0 === ($dateTime->getWeeks() - $start->getWeeks()) % $this['repeat']['afterWeeks']
+            && 0 === floor($dateTime->getWeeks() - $start->getWeeks()) % $this['repeat']['afterWeeks']
         ) {
             return true;
         }

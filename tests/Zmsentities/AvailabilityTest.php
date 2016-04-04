@@ -55,6 +55,13 @@ class AvailabilityTest extends EntityCommonTests
             $entity->isBookable($time->modify('+1day'), $time),
             'Availability default should be, that you cannot reserve an appointment for the next day'
         );
+        $entity['startDate'] = $time->modify('+1day')->getTimestamp();
+        $entity['repeat']['afterWeeks'] = 2;
+        $entity['repeat']['weekOfMonth'] = 0;
+        $this->assertTrue(
+            $entity->hasDate($time->modify('+3week')),
+            'Availability on afterWeeks=2 should be valid in the third week after startDate +1 day'
+        );
     }
 
     public function testSlotList()
