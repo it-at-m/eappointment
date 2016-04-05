@@ -43,10 +43,11 @@
 @import "block/header";
 @import "block/navigation";
 @import "block/breadcrumb";
+@import "block/metalinks";
 @import "block/queue-table";
 @import "block/queue-info";
 @import "block/calendar";
-@import "element/calendar-navigation";
+@import "block/calendar-navigation";
 @import "block/calendar-weektable";
 @import "block/appointment-form";
 @import "block/client-info";
@@ -83,15 +84,16 @@
 @import "block/notification-form";
 @import "block/links-edit";
 @import "block/links-list";
-@import "block/searchmask";
+@import "block/search-mask";
 @import "block/searchresults";
 @import "block/dayoff-list";
 @import "block/dayoff-edit";
 @import "block/dayoff-byyear";
 @import "block/dayoff-bydepartment";
 @import "block/dayoff-bydepartmentandyear";
+@import "block/message";
 
 // Element layouts
 @import "element/button";
 @import "element/headline";
-@import "element/message";
+

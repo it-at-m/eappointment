@@ -6,16 +6,6 @@ $navElementTitlePadding:    0.5em 0em 0.5em 0.6em;
     background-color:       $grey;
     border:                 1px solid $greyDark;
     margin-bottom:          $gridGutter;
-    .navigation__title {
-        font-size:          1em;
-        line-height:        1.2em;
-        font-weight:        bold;
-        display:            block;
-        color:              lighten($black, 25%);
-        background-color:   $greyDark;
-        margin:             0;
-        padding:            $navElementTitlePadding;
-    }
     ul {
         @extend .list-bare;
         li {
@@ -44,63 +34,18 @@ $navElementTitlePadding:    0.5em 0em 0.5em 0.6em;
             }
         }
     }
-    .searchmask {
-        .body {
-            padding:                $baseBoxElementPadding;
-            border:                 0 none;
-            background-color:       transparent;
-        }
-        .header {
-            padding:            0;
-            margin:             0;
-            background-color:   transparent;
-            .title {
-                @extend .navigation__title;
-            }
-        }
-        form {
-            margin-bottom:          0.5em;
-        }
-        .form-actions {
-            margin:             0em;
-        }
-        .button-submit {
-            margin:             0.3em 0.1em 0 0;
-        }
+    + .search-mask {
+        margin-top: -$gridGutter;
     }
 }
 
-
-
-
-.navigation_linklist {
-    ul {
-        @extend 
-            .list-bare;
-        li {
-            padding-left:       1.5em;
-            margin-bottom:      $gridGutter;
-            .title {
-                margin:         0;
-                font-weight:    normal;
-            }
-            &::before {
-                margin-left:    -1.3em;
-                float:          left;
-            }
-            &.support:before {
-                content:        "⍰";
-            }
-            &.manual:before {
-                content:        "📖";
-            }
-            &.version:before {
-                content:        "ℹ";
-            }
-            &.logo {
-                padding-left:   0;
-            }
-        }
-    }
+.navigation__title {
+    font-size:          1em;
+    line-height:        1.2em;
+    font-weight:        bold;
+    display:            block;
+    color:              lighten($black, 25%);
+    background-color:   $greyDark;
+    margin:             0;
+    padding:            $navElementTitlePadding;
 }
-

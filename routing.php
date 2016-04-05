@@ -170,12 +170,12 @@
     ->name("healthcheck");
 
 \App::$slim->notfound(function () {
-    \BO\Slim\Render::html('404.twig');
+    \BO\Slim\Render::html('\page\404.twig');
 });
 
 \App::$slim->error(function (\Exception $exception) {
     \BO\Slim\Render::lastModified(time(), '0');
-    \BO\Slim\Render::html('failed.twig', array(
+    \BO\Slim\Render::html('\page\failed.twig', array(
         "failed" => $exception->getMessage(),
         "error" => $exception,
     ));
