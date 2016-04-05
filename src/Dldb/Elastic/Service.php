@@ -124,7 +124,13 @@ class Service extends Base
         $serviceList = new Collection();
         foreach ($resultList as $result) {
             $service = new Entity($result->getData());
-            $serviceList[$service['id']] = $service;
+            if ('' != $location_csv && $service->containsLocation($location_csv)) {
+                $serviceList[$service['id']] = $service;
+            }
+            elseif (!$location_csv) {
+                $serviceList[$service['id']] = $service;
+            }
+
         }
         return $serviceList;
     }
