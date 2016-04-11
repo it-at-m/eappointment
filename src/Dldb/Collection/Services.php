@@ -8,6 +8,17 @@ namespace BO\Dldb\Collection;
 class Services extends Base
 {
 
+    public function containsLocation($locationCsv = null)
+    {
+        $list = new self();
+        foreach ($this as $service) {
+            if ($service->containsLocation($locationCsv)) {
+                $list[] = $service;
+            }
+        }
+        return $list;
+    }
+
     public function getIds()
     {
         $idList = array();
