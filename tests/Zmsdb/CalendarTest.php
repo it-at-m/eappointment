@@ -15,6 +15,20 @@ class CalendarTest extends Base
         122257,122208,122226
     ];
 
+    public function testFalkenhagener()
+    {
+        $input = $this->getTestEntity();
+        //var_dump(json_encode($input, JSON_PRETTY_PRINT));
+        $input->addProvider('dldb', 324414); // Falkenhagener Feld
+        $entity = (new Query())->readResolvedEntity($input);
+        //var_dump(json_encode($entity, JSON_PRETTY_PRINT));
+        //$array = json_decode(json_encode($entity), 1);
+        //var_dump($array['days']);
+        $this->assertEntity("\\BO\\Zmsentities\\Calendar", $entity);
+        $this->assertTrue($entity->hasDay(2016, 4, 19), "Missing 2016-04-19 in dataset");
+        $this->assertEquals(1, $entity->getDay(2016, 4, 19)['freeAppointments']['public']);
+    }
+
     public function testHeerstr()
     {
         $input = $this->getTestEntity();
