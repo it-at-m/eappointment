@@ -93,44 +93,48 @@ class Service extends Base
      *
      * @return Collection\Services
      */
-    public function searchAll($query, $service_csv = '', $location_csv = '')
+    public function searchAll($querystring, $service_csv = '', $location_csv = '')
     {
+        $query = new \Elastica\Query();
+        $locationsCsvByUser = false;
         if (! $location_csv) {
             $location_csv = $this->fetchLocationCsv($service_csv);
         }
-        $boolquery = Helper::boolFilteredQuery();
-        $boolquery->getFilter()->addMust(Helper::localeFilter($this->locale));
+        else {
+            $locationsCsvByUser = true;
+        }
+
+        $boolquery = new \Elastica\Query\Bool();
         $searchquery = new \Elastica\Query\QueryString();
-        if ('' === trim($query)) {
+        if ('' === trim($querystring)) {
             $searchquery->setQuery('*');
         } else {
-            $searchquery->setQuery($query);
+            $searchquery->setQuery($querystring);
         }
         $searchquery->setFields([
             'name^9',
             'keywords^5'
         ]);
-        $searchquery->setLowercaseExpandedTerms(false);
-        $boolquery->getQuery()->addShould($searchquery);
+
+        $boolquery->addShould($searchquery);
         $filter = null;
         if ($location_csv) {
             $filter = new \Elastica\Filter\Terms('locations.location', explode(',', $location_csv));
         }
-        $query = new \Elastica\Query\Filtered($boolquery, $filter);
+        $filteredQuery = new \Elastica\Query\Filtered($boolquery, $filter);
+        $query->setQuery($filteredQuery);
+        $query->addSort(['sort' => 'asc']);
         $resultList = $this->access()
-            ->getIndex()
-            ->getType('service')
-            ->search($query, 1000);
+        ->getIndex()
+        ->getType('service')
+        ->search($query, 1000);
         $serviceList = new Collection();
         foreach ($resultList as $result) {
             $service = new Entity($result->getData());
-            if ('' != $location_csv && $service->containsLocation($location_csv)) {
-                $serviceList[$service['id']] = $service;
-            }
-            elseif (!$location_csv) {
-                $serviceList[$service['id']] = $service;
-            }
-
+            $serviceList[$service['id']] = $service;
+        }
+        if($locationsCsvByUser){
+            $serviceList = $serviceList->containsLocation($location_csv);
         }
         return $serviceList;
     }
