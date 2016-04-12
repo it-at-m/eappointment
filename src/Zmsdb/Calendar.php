@@ -10,6 +10,7 @@ class Calendar extends Base
     public function readResolvedEntity(Entity $calendar, $freeProcessesDate = null)
     {
         $calendar['processing'] = [];
+        $calendar['freeProcesses'] = [];
         $calendar['processing']['slotlist'] = new SlotList();
         $calendar = $this->readResolvedProviders($calendar);
         $calendar = $this->readResolvedClusters($calendar);

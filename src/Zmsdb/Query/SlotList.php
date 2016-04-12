@@ -229,7 +229,10 @@ class SlotList
         //}
         foreach ($this->slots as $date => $slotList) {
             if (null !== $freeProcessesDate && $date == $freeProcessesDate->format('Y-m-d')) {
-                $calendar['freeProcesses'] = $this->addFreeProcesses($calendar, $freeProcessesDate);
+                $calendar['freeProcesses'] = array_merge(
+                    $calendar['freeProcesses'],
+                    $this->addFreeProcesses($calendar, $freeProcessesDate)
+                );
             }
             $datetime = new \DateTimeImmutable($date);
             //error_log($datetime->format('c'));
