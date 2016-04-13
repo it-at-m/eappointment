@@ -115,12 +115,12 @@ class Calendar extends Base
     ) {
         if (! $calendar['processing']['slotlist']->isSameAvailability($slotData)) {
             $calendar['processing']['slotlist']->toReducedBySlots($slotsRequired);
+            $calendar['processing']['slotlist']->addToCalendar($calendar, $freeProcessesDate);
             $calendar['processing']['slotlist'] = new SlotList(
                 $slotData,
                 $month->modify('first day of')->modify('00:00:00'),
                 $month->modify('last day of')->modify('23:59:59')
             );
-            $calendar['processing']['slotlist']->addToCalendar($calendar, $freeProcessesDate);
         } else {
             $calendar['processing']['slotlist']->addSlotData($slotData);
         }
