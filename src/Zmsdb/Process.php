@@ -2,6 +2,7 @@
 namespace BO\Zmsdb;
 
 use \BO\Zmsentities\Process as Entity;
+use \BO\Zmsentities\Collection\ProcessList;
 use BO\Zmsdb\Helper\ProcessStatus as Status;
 
 class Process extends Base
@@ -39,7 +40,7 @@ class Process extends Base
 
         $query->addConditionProcessId($processId);
         $query->addConditionAuthKey($authKey);
-        
+
         $values = $query->reverseEntityMapping($process);
         $query->addValues($values);
         $this->writeItem($query, 'process', $query::TABLE);
@@ -49,7 +50,7 @@ class Process extends Base
         $process['status'] = (new Status())->readProcessStatus($processId, $authKey);
         return $process;
     }
-    
+
     protected function readAuthKeyByProcessId($processId)
     {
         $query = new Query\Process(Query\Base::SELECT);
@@ -188,7 +189,7 @@ class Process extends Base
         if (isset($calendar['freeProcesses'])) {
             return $calendar['freeProcesses'];
         }
-        return array();
+        return new ProcessList();
     }
 
     protected function addDldbData($process, $resolveReferences)
