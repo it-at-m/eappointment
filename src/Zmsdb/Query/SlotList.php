@@ -105,7 +105,7 @@ class SlotList
 
             -- match time and date
             AND b.Uhrzeit >= o.Terminanfangszeit
-            AND b.Uhrzeit <= o.Terminendzeit
+            AND b.Uhrzeit < o.Terminendzeit
             AND b.Datum >= o.Startdatum
             AND b.Datum <= o.Endedatum
         GROUP BY o.OeffnungszeitID, b.Datum, `slotnr`
@@ -197,7 +197,7 @@ class SlotList
             $slotDebug = "$slotdate #$slotnumber @" . $slotData['slottime'] . " on " . $this->availability;
             if (!isset($this->slots[$slotdate][$slotnumber])) {
                 error_log("Debugdata: Found database entry without a pre-generated slot $slotDebug");
-                error_log(var_export($this->slots, true));
+                //error_log(var_export($this->slots, true));
                 //error_log(var_export($this->availability->getArrayCopy(), true));
                 throw new \Exception(
                     "Found database entry without a pre-generated slot $slotDebug"
@@ -229,10 +229,8 @@ class SlotList
         //}
         foreach ($this->slots as $date => $slotList) {
             if (null !== $freeProcessesDate && $date == $freeProcessesDate->format('Y-m-d')) {
-                $calendar['freeProcesses'] = array_merge(
-                    $calendar['freeProcesses'],
-                    $this->addFreeProcesses($calendar, $freeProcessesDate)
-                );
+                $freeProcesses = $this->getFreeProcesses($calendar, $freeProcessesDate);
+                $calendar['freeProcesses']->addProcess($freeProcesses);
             }
             $datetime = new \DateTimeImmutable($date);
             //error_log($datetime->format('c'));
@@ -249,7 +247,7 @@ class SlotList
     /**
      * TODO Unterscheidung nach intern/callcenter/public sollte erst nach der API erfolgen!
      */
-    public function addFreeProcesses(
+    public function getFreeProcesses(
         \BO\Zmsentities\Calendar $calendar,
         \DateTimeImmutable $freeProcessesDate = null,
         $slotType = 'public'
