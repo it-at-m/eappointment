@@ -89,8 +89,8 @@ $inuit-btn-border-color:        $btn-border-color;
 $inuit-enable-btn--full:        true;
 $inuit-enable-btn--small:       true;
 $inuit-enable-btn--large:       true;
-$inuit-btn-padding:             5px;
-$inuit-btn-padding--small:      2px;
+$inuit-btn-padding:             5px; // cant use em here so we overwrite it our button class
+$inuit-btn-padding--small:      2px; // cant use em here so we overwrite it our button class
 $inuit-btn-radius:              0px;
 
 // inuit Tables
