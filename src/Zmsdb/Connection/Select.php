@@ -67,6 +67,8 @@ class Select
     {
         $pdo = new Pdo($dataSourceName, self::$username, self::$password, self::$pdoOptions);
         $pdo->exec('SET NAMES "UTF8";');
+        $timezone = date('P');
+        $pdo->prepare('SET time_zone = ?;')->execute([$timezone]);
         return $pdo;
     }
 
