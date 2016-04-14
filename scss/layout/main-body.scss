@@ -20,6 +20,9 @@ $canvasMainbarWidth:    85% !default;
             .grid__item, 
             .five-sixths, 
             .portable--one-whole;
+        &.fullwidth {
+            @extend .one-whole;
+        }
         // we need more space in the content area, so overwrite the grid 
         @include media-query(desk) {
             width:  $canvasMainbarWidth;
