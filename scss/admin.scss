@@ -26,21 +26,23 @@
  * Import our css
  */
  
-// Global page layouts
-@import "page/mixins";
-@import "page/page";
-@import "page/canvas";
-@import "page/board";
-@import "page/lineups";
-@import "page/form";
-@import "page/list";
-@import "page/tablelist";
-@import "page/table";
-@import "page/font";
-@import "page/well";
+// Main site grid and global layout rules
+@import "layout/main";
+@import "layout/main-header";
+@import "layout/main-body";
+@import "layout/main-footer";
+@import "layout/global";
+@import "layout/table";
+@import "layout/list";
+@import "layout/form";
+@import "layout/font";
+@import "layout/tablelist";
 
-// Block layouts
-@import "block/header";
+// Page grids
+@import "page/lineups";
+
+// Block rules
+@import "block/extend/board";
 @import "block/navigation";
 @import "block/breadcrumb";
 @import "block/metalinks";
@@ -93,7 +95,10 @@
 @import "block/dayoff-bydepartmentandyear";
 @import "block/message";
 
-// Element layouts
+// Element rules
 @import "element/button";
 @import "element/headline";
+@import "element/link";
+@import "element/paragraph";
+@import "element/rule";
 

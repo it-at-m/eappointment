@@ -1,4 +1,4 @@
-.canvas_mainbar .search-mask {
+#mainbar .search-mask {
     @extend 
         .board;
     form {
@@ -10,7 +10,7 @@
     }
 }
 
-.canvas_sidebar .search-mask {
+#sidebar .search-mask {
     background-color:       $grey;
     border:                 1px solid $greyDark;
     margin-bottom:          $gridGutter;

@@ -1,0 +1,38 @@
+// Global rules
+
+.align-left {
+    text-align:         left;
+}
+
+.align-center {
+    text-align:         center;
+}
+
+.align-right {
+    text-align:         right;
+}
+
+.pull-left {
+    float:              left;
+}
+
+.pull-right {
+    float:              right;
+}
+
+.text--highlight {
+    color:              $blue;
+}
+
+.green {
+    color:              $green;
+}
+.red {
+    color:              $red;
+}
+
+.well {
+    background-color:   $grey;
+    border:             1px solid $greyBorder;
+    padding:            $baseBoxElementPadding;
+}

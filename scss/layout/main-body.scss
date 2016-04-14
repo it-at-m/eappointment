@@ -1,10 +1,11 @@
-// The base grid with a navigation and a content area
 $canvasSidebarWidth:    15% !default;
 $canvasMainbarWidth:    85% !default;
 
-.canvas {
-    @extend .grid, .grid--rev;
-    .canvas_sidebar {
+#main-body {
+    @extend 
+        .grid, 
+        .grid--rev;
+    #sidebar {
         @extend 
             .grid__item,  
             .one-sixth, 
@@ -14,7 +15,7 @@ $canvasMainbarWidth:    85% !default;
             width:  $canvasSidebarWidth; 
         }
     }
-    .canvas_mainbar {
+    #mainbar {
         @extend 
             .grid__item, 
             .five-sixths, 
@@ -25,3 +26,6 @@ $canvasMainbarWidth:    85% !default;
         }
     }
 }
+
+
+

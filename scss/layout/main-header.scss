@@ -1,5 +1,4 @@
-// Page Header
-.pageheader {
+#main-header {
     @extend 
         .grid--full,
         .grid;
@@ -10,7 +9,7 @@
     background-color:       $pageheaderBackgroundColor;
     padding:                0.75em 1em;
     margin:                 0 0 $gridGutter 0;
-    .pageheader_logo {
+    .left {
         @extend 
             .grid__item, 
             .two-twelfths, 
@@ -21,7 +20,7 @@
             max-width:      10em;
         }
     }
-    .pageheader_sitename {
+    .middle {
         @extend 
             .grid__item, 
             .six-twelfths, 
@@ -31,7 +30,7 @@
         line-height:        1.2em;
         vertical-align:     middle;
     }
-    .pageheader_userinfo {
+    .right {
         @extend 
             .grid__item, 
             .four-twelfths, 
