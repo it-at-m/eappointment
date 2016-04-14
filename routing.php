@@ -48,10 +48,10 @@
     '\BO\Zmsadmin\Pickup:render')
     ->name("pickup");
 
-\App::$slim->get('/scope/:id/pickup/handheld/',
-    '\BO\Zmsadmin\PickupHandheld:render')
-    ->name("pickup_handheld");
-    
+\App::$slim->get('/scope/:id/availability/day/',
+    '\BO\Zmsadmin\ScopeAvailabilityDay:render')
+    ->name("scopeavailabilityday");
+
 \App::$slim->get('/cluster/',
     '\BO\Zmsadmin\Cluster:render')
     ->name("cluster");
