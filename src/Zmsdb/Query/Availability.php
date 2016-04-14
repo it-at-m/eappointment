@@ -24,7 +24,7 @@ class Availability extends Base implements MappingInterface
             'repeat__afterWeeks' => 'availability.allexWochen',
             'repeat__weekOfMonth' => 'availability.jedexteWoche',
             'scope__id' => 'availability.StandortID',
-            'slotTimeInMinutes' => 'availability.Timeslot',
+            'slotTimeInMinutes' => self::expression('FLOOR(TIME_TO_SEC(`availability`.`Timeslot`) / 60)') ,
             'weekday__monday' => self::expression('`availability`.`Wochentag` & 2'),
             'weekday__tuesday' => self::expression('`availability`.`Wochentag` & 4'),
             'weekday__wednesday' => self::expression('`availability`.`Wochentag` & 8'),
