@@ -22,7 +22,7 @@ class DateTime extends \DateTimeImmutable
 
     public function getWeeks()
     {
-        $timestamp = $this->getTimestamp();
+        $timestamp = $this->modify('0:00')->getTimestamp();
         $days = $timestamp / 86400;
         $weeks = $days / 7;
         return $weeks;

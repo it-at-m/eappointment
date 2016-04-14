@@ -66,15 +66,7 @@ class AvailabilityTest extends EntityCommonTests
 
     public function testSlotList()
     {
-        $time = new \DateTimeImmutable('12:00:00');
-        $entity = new $this->entityclass([
-            'startTime' => $time->format('H:i'),
-            'endTime' => $time->modify("18:00:00")->format('H:i'),
-            'slotTimeInMinutes' => 90,
-        ]);
-        $entity['workstationCount']['intern'] = 3;
-        $slotList = $entity->getSlotList();
-        $this->assertEquals($slotList, [
+        $slotListResult = [
             0 => array (
                 'time' => '12:00',
                 'public' => 0,
@@ -106,10 +98,61 @@ class AvailabilityTest extends EntityCommonTests
             //    'callcenter' => 0,
             //    'intern' => 3,
             //),
+        ];
+        $time = new \DateTimeImmutable('12:00:00');
+        $entity = new $this->entityclass([
+            'startTime' => $time->format('H:i'),
+            'endTime' => $time->modify("18:00:00")->format('H:i'),
+            'slotTimeInMinutes' => 90,
         ]);
+        $entity['workstationCount']['intern'] = 3;
+        $slotList = $entity->getSlotList();
+        $this->assertEquals($slotList, $slotListResult);
         $entity['slotTimeInMinutes'] = 0;
         $slotList = $entity->getSlotList();
         $this->assertEquals($slotList, []);
-        //var_dump($entity);
+        //var_dump((string)$entity);
+    }
+
+    public function testSlotListRealExample()
+    {
+        $entity = new $this->entityclass([
+            'id' => '93181',
+            'weekday' =>
+            array (
+                'monday' => '0',
+                'tuesday' => '4',
+                'wednesday' => '0',
+                'thursday' => '0',
+                'friday' => '0',
+                'saturday' => '0',
+                'sunday' => '0',
+            ),
+            'repeat' =>
+            array (
+                'afterWeeks' => '2',
+                'weekOfMonth' => '0',
+            ),
+            'bookable' =>
+            array (
+                'startInDays' => '0',
+                'endInDays' => '60',
+            ),
+            'workstationCount' =>
+            array (
+                'public' => '2',
+                'callcenter' => '2',
+                'intern' => '2',
+            ),
+            'slotTimeInMinutes' => '15',
+            'startDate' => '1461024000',
+            'endDate' => '1461024000',
+            'startTime' => '12:00:00',
+            'endTime' => '16:00:00',
+            'multipleSlotsAllowed' => '0',
+        ]);
+        $slotList = $entity->getSlotList();
+        $this->assertTrue(16 == count($slotList));
+        $this->assertTrue($entity->hasDate(new \DateTime('2016-04-19')));
     }
 }
