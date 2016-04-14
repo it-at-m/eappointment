@@ -1,0 +1,24 @@
+.pickup-table-handheld {
+    @extend 
+        .board;
+    padding:                    $gridGutter;
+    font-size:                  1.3em;
+    > .body {
+        @extend 
+            .board_body--noPadding;
+    }
+    table {
+        @extend 
+            .table,
+            .table--cells;
+        td,th {
+            vertical-align:     middle;
+            text-align:         center;
+        }
+    }
+    .btn {
+        font-size:              1em;
+        margin:                 0;
+        padding:                1em;
+    }
+}
