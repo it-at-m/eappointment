@@ -27,6 +27,7 @@ class Availability extends Schema\Entity
     public function getDefaults()
     {
         return [
+            'id' => null,
             'weekday' => array_fill_keys(self::$weekdayNameList, 0),
             'repeat' => [
                 'afterWeeks' => 1,
