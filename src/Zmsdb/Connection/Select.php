@@ -118,6 +118,15 @@ class Select
     }
 
     /**
+     * Close a connection for reading data
+     *
+     */
+    public static function closeReadConnection()
+    {
+        self::$readConnection = null;
+    }
+
+    /**
      * Set the write connection.
      * Usually this function is only required to set mockups for testing
      *
@@ -143,5 +152,14 @@ class Select
             self::$writeConnection->setProfiler(self::$writeProfiler);
         }
         return self::$writeConnection;
+    }
+
+    /**
+     * Close a connection for writing data
+     *
+     */
+    public static function closeWriteConnection()
+    {
+        self::$writeConnection = null;
     }
 }
