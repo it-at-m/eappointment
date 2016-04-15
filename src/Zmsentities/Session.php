@@ -9,7 +9,7 @@ class Session extends Schema\Entity
     public function getDefaults()
     {
         return [
-            'basket' =>[
+            'basket' => [
                 'requests' => '',
                 'providers' => '',
                 'scope' => '',
@@ -20,7 +20,6 @@ class Session extends Schema\Entity
                 'telehone' => '',
                 'amendment' => '',
                 'authKey' => '',
-                'status' => 'free'
             ],
             'human' => [
                 'captcha_text' => '',
@@ -30,7 +29,11 @@ class Session extends Schema\Entity
                 'RemoteAddress' => '',
                 'referrer' => '',
                 'Step' => array()
-            ]
+            ],
+            'entry' => array(),
+            'status' => 'free',
+            'task' => '',
+            'finished' => false
         ];
     }
 }
