@@ -21,10 +21,10 @@ class SessionDelete extends BaseController
      */
     public static function render($sessionName, $sessionId)
     {
-        $message = Response\Message::create();
         $session = (new Query())->readEntity($sessionName, $sessionId);
+        $message = Response\Message::create();
         $query = new Query();
-        $query->deleteEntity($sessionName, $sessionId);
+        $result = $query->deleteEntity($sessionName, $sessionId);
         $message->data = $session;
         Render::lastModified(time(), '0');
         Render::json($message);
