@@ -40,11 +40,12 @@ class Session extends Base
     {
         $query = Query\Session::QUERY_DELETE;
         $statement = $this->getWriter()->prepare($query);
-        $statement->execute(
+        $result = $statement->execute(
             array(
             $sessionId,
             $sessionName
             )
         );
+        return ($result) ? true : false;
     }
 }
