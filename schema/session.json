@@ -15,8 +15,7 @@
 		        "clientEmail" : "max@zms-bo.de",
 		        "clientTelehone" : "030 23232323",
 		        "clientAmendment" : "Notiz zum Termin",
-		        "authKey" : "1234",
-		        "status" : "free"
+		        "authKey" : "1234"		        
 		    },
 		    "human": {
 		    	"captcha_text" : "kck6Qz",
@@ -28,7 +27,15 @@
 		        "Step" : {
 		        	"dayselect":1
 		        }
-			}
+			},
+			"entry" : {
+				"source" : "specific",
+				"provider" : "122217",
+				"request" : "120335"
+			},
+			"task" : "continue",
+			"status" : "free",
+			"finished" : true
 	    }       
     },
     "properties": {
@@ -73,9 +80,6 @@
             			},
 				        "authKey" :{
             				"type": "string"
-            			},
-            			"status" :{
-            				"type": "string"
             			}
             		}
             	},
@@ -118,7 +122,19 @@
             				}
             			}
             		}
-            	}
+            	},
+            	"entry" : {
+            		"type" : "object"
+            	},            	
+				"status" : {
+					"type": "string"
+				},
+				"task" : {
+					"type": "string"
+				},
+				"finished" : {
+					"type": "boolean"
+				}
             }
         }
     }      
