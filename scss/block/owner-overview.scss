@@ -34,6 +34,7 @@
                 @extend 
                     .clearfix;
                 padding:                $boardElementPadding;
+                border-top:             1px solid lighten($greyBorder,12%);
                 border-bottom:          1px solid $greyBorder;
             }
         }
@@ -47,9 +48,9 @@
                 border-bottom:          1px solid $greyBorder;
                 .scope-list {   
                     > li {
-                        border:         0 none;
-                        padding-left:   0;
-                        padding-right:  0;
+                        border-bottom:         0 none;
+                        padding-left:           0;
+                        padding-right:          0;
                     }
                 }
             }
