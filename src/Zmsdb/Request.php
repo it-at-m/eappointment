@@ -49,18 +49,4 @@ class Request extends Base
         }
         return (count($requests)) ? $requests : null;
     }
-
-    public function readProviderList($source, $requestIds, $resolveReferences = 0)
-    {
-        if ('dldb' !== $source) {
-            return [];
-        }
-        $requestIds = \explode(',', $requestIds);
-        $providerIds = array();
-        foreach ($requestIds as $requestId) {
-            $request = $this->readEntity($source, $requestId, 2);
-            $providerIds[$requestId] = $request->getProviderIds();
-        }
-        return $providerIds;
-    }
 }

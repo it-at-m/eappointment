@@ -3,10 +3,11 @@
 namespace BO\Zmsdb;
 
 use \BO\Zmsentities\Provider as Entity;
+use \BO\Zmsentities\Collection\ProviderList as Collection;
 
 class Provider extends Base
 {
-    public function readEntity($source, $providerId)
+    public function readEntity($source, $providerId, $resolveData = true)
     {
         if ('dldb' !== $source) {
             return new Entity();
@@ -16,26 +17,28 @@ class Provider extends Base
             ->addEntityMapping()
             ->addConditionProviderId($providerId);
         $provider = $this->fetchOne($query, new Entity());
-        $provider['data'] = Helper\DldbData::readExtendedProviderData($source, $providerId);
+        if ($resolveData) {
+            $provider['data'] = Helper\DldbData::readExtendedProviderData($source, $providerId);
+        }
         return $provider;
     }
 
-    /**
-     * TODO: Check if necessary, the list of providers should come by the calendar or process
-     */
-    public function readList($source, $providerIds)
+    public function readProviderByRequest($source, $requestIds, $resolveReferences = 0)
     {
+        $providerList = new Collection();
         if ('dldb' !== $source) {
-            return [];
-        }
-        $query = new Query\Provider(Query\Base::SELECT);
-        $query
-        ->addEntityMapping();
-        if (null !== $providerIds) {
-            $query
-            ->addConditionProviderCsv($providerIds);
+            return $providerList;
         }
 
-        return $this->fetchList($query, new Entity());
+        $requestIds = \explode(',', $requestIds);
+        $providerIds = array();
+        foreach ($requestIds as $requestId) {
+            $request = (new Request())->readEntity($source, $requestId, 1);
+            foreach ($request->getProviderIds() as $providerId) {
+                $provider = $this->readEntity($source, $providerId, false);
+                $providerList->addProvider($provider);
+            }
+        }
+        return $providerList;
     }
 }
