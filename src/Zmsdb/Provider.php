@@ -7,7 +7,7 @@ use \BO\Zmsentities\Collection\ProviderList as Collection;
 
 class Provider extends Base
 {
-    public function readEntity($source, $providerId, $resolveData = true)
+    public function readEntity($source, $providerId, $resolveReferences = 1)
     {
         if ('dldb' !== $source) {
             return new Entity();
@@ -17,7 +17,7 @@ class Provider extends Base
             ->addEntityMapping()
             ->addConditionProviderId($providerId);
         $provider = $this->fetchOne($query, new Entity());
-        if ($resolveData) {
+        if ($resolveReferences > 0) {
             $provider['data'] = Helper\DldbData::readExtendedProviderData($source, $providerId);
         }
         return $provider;
@@ -31,11 +31,10 @@ class Provider extends Base
         }
 
         $requestIds = \explode(',', $requestIds);
-        $providerIds = array();
         foreach ($requestIds as $requestId) {
             $request = (new Request())->readEntity($source, $requestId, 1);
             foreach ($request->getProviderIds() as $providerId) {
-                $provider = $this->readEntity($source, $providerId, false);
+                $provider = $this->readEntity($source, $providerId, $resolveReferences);
                 $providerList->addProvider($provider);
             }
         }
