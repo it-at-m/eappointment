@@ -50,23 +50,17 @@ class Request extends Base
         return (count($requests)) ? $requests : null;
     }
 
-    /**
-     * TODO: Check if necessary, the list of requests should come by the calendar or process
-     */
-    public function readList($source, $requestIds, $resolveReferences = 0)
+    public function readProviderList($source, $requestIds, $resolveReferences = 0)
     {
         if ('dldb' !== $source) {
             return [];
         }
-        $query = new Query\Request(Query\Base::SELECT);
-        $query
-            ->addResolvedReferences($resolveReferences)
-            ->addEntityMapping();
-        if (null !== $requestIds) {
-            $query
-                ->addConditionRequestCsv($requestIds);
+        $requestIds = \explode(',', $requestIds);
+        $providerIds = array();
+        foreach ($requestIds as $requestId) {
+            $request = $this->readEntity($source, $requestId, 2);
+            $providerIds[$requestId] = $request->getProviderIds();
         }
-
-        return $this->fetchList($query, new Entity());
+        return $providerIds;
     }
 }
