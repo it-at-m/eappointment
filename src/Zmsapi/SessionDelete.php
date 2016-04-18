@@ -24,7 +24,7 @@ class SessionDelete extends BaseController
         $session = (new Query())->readEntity($sessionName, $sessionId);
         $message = Response\Message::create();
         $query = new Query();
-        $result = $query->deleteEntity($sessionName, $sessionId);
+        $query->deleteEntity($sessionName, $sessionId);
         $message->data = $session;
         Render::lastModified(time(), '0');
         Render::json($message);
