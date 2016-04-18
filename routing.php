@@ -1564,9 +1564,9 @@
 
 /**
  *  @swagger
- *  "/request/list/{source}/{csv}/":
+ *  "/request/list/{source}/{csv}/provider/":
  *      get:
- *          description: Get a list of request by optional csv
+ *          description: Get a list of providers by request Ids
  *          parameters:
  *              -   name: source
  *                  description: request source like 'dldb'
@@ -1600,7 +1600,7 @@
  *              404:
  *                  description: "request id for source does not exists"
  */
-\App::$slim->get('/request/list/:source/(:csv/)',
+\App::$slim->get('/request/list/:source/:csv/provider/',
     '\BO\Zmsapi\RequestList:render')
     ->conditions([
         'csv' => '[0-9,]{3,}'
