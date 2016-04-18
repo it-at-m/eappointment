@@ -32,9 +32,9 @@
     '\BO\Zmsadmin\WorkstationClientActive:render')
     ->name("workstationClientActive");
     
-\App::$slim->get('/workstation/',
+\App::$slim->map('/workstation/', 
     '\BO\Zmsadmin\Workstation:render')
-    ->name("workstation");
+    ->via('GET', 'POST')->name("workstation");
 
 \App::$slim->get('/counter/',
     '\BO\Zmsadmin\Counter:render')
