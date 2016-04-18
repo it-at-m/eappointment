@@ -208,6 +208,11 @@ select > option {
     cursor:                     pointer;
 }
 
+.counter-inline {
+    display:                    inline-block;
+    float:                      left;
+}
+
 .form-input-description {
     margin:             0;
 }
