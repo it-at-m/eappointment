@@ -80,6 +80,7 @@ class Select
             $pdo->exec('SET NAMES "UTF8";');
             $timezone = date('P');
             $pdo->prepare('SET time_zone = ?;')->execute([$timezone]);
+            $pdo->exec('SET SESSION sql_mode = "STRICT_ALL_TABLES";');
         } catch (\Exception $exception) {
             // Extend exception message with connection information
             $connectInfo = "$dataSourceName;user=".self::$username.";password=".self::$password."; ";
