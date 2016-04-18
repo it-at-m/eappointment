@@ -48,6 +48,15 @@
     '\BO\Zmsadmin\Pickup:render')
     ->name("pickup");
 
+\App::$slim->map('/scope/:id/pickup/handheld/', 
+    '\BO\Zmsadmin\PickupHandheld:render')
+    ->via('GET', 'POST')
+    ->name("pickup_handheld");
+    
+\App::$slim->get('/scope/:id/pickup/keyboard/',
+    '\BO\Zmsadmin\PickupKeyboard:render')
+    ->name("pickup_keyboard");
+
 \App::$slim->get('/scope/:id/availability/day/',
     '\BO\Zmsadmin\ScopeAvailabilityDay:render')
     ->name("scopeavailabilityday");

@@ -99,6 +99,14 @@ button.link  {
         .btn--alert;
 }
 
+.button-keyboard {
+    @extend 
+        .btn;
+    width:      4em;
+    height:     4em;
+    margin:     0.4em;
+}
+
 .button-file {
     background-color:       $white;
 }

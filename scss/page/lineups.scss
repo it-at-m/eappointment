@@ -205,6 +205,22 @@
             }
         }
     }
+    &--pickupkeyboard {
+        @extend 
+            .grid;
+        .lineup_actor {
+            &--left {
+                @extend 
+                    .grid__item, 
+                    .five-twelfths;
+            }
+            &--right {
+                @extend 
+                    .grid__item, 
+                    .seven-twelfths;
+            }
+        }
+    }
 }
 
 
