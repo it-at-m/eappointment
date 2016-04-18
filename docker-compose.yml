@@ -1,0 +1,16 @@
+
+zmsdb:
+    build: .
+    volumes:
+        - .:/opt/zmsdb
+    links:
+        - mysql
+    dns:
+        - 192.168.168.33
+    environment:
+        - PS1=$
+mysql:
+    image: "mysql:5.5"
+    environment:
+        - MYSQL_ROOT_PASSWORD=zmsdb-root
+        - MYSQL_DATABASE=zmsbo

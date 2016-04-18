@@ -76,10 +76,22 @@ abstract class Base
     protected function addSelect()
     {
         $class = get_class($this);
-        $table = constant($class . '::TABLE');
+        $table = $this->getTablename();
         $alias = lcfirst(preg_replace('#^.*\\\#', '', $class));
         $this->query->from($table, $alias);
         return $this;
+    }
+
+    /**
+     * Get the table name for the query
+     *
+     * @return string
+     */
+    public function getTablename()
+    {
+        $class = get_class($this);
+        $table = constant($class . '::TABLE');
+        return $table;
     }
 
     /**

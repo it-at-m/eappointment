@@ -23,6 +23,16 @@ class Select
     public static $writeSourceName = null;
 
     /**
+     * @var String $dbname_zms
+     */
+    public static $dbname_zms = 'zmsbo';
+
+    /**
+     * @var String $dbname_dldb
+     */
+    public static $dbname_dldb = 'startinfo';
+
+    /**
      * @var String $username Login
      */
     public static $username = null;
@@ -65,10 +75,16 @@ class Select
      */
     protected static function createPdoConnection($dataSourceName)
     {
-        $pdo = new Pdo($dataSourceName, self::$username, self::$password, self::$pdoOptions);
-        $pdo->exec('SET NAMES "UTF8";');
-        $timezone = date('P');
-        $pdo->prepare('SET time_zone = ?;')->execute([$timezone]);
+        try {
+            $pdo = new Pdo($dataSourceName, self::$username, self::$password, self::$pdoOptions);
+            $pdo->exec('SET NAMES "UTF8";');
+            $timezone = date('P');
+            $pdo->prepare('SET time_zone = ?;')->execute([$timezone]);
+        } catch (\Exception $exception) {
+            // Extend exception message with connection information
+            $connectInfo = "$dataSourceName;user=".self::$username.";password=".self::$password."; ";
+            throw new \Exception($connectInfo . $exception->getMessage(), $exception->getCode(), $exception);
+        }
         return $pdo;
     }
 
