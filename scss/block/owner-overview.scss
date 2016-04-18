@@ -1,19 +1,64 @@
 .owner-overview { 
-    ul.organisation-list {
-        > li {
-            @extend 
-                .board;
-            list-style:         none;
-            margin-bottom:      2em;
+    li {
+        margin:                         0;
+    }
+    .owner-title { 
+        font-size:                      1.2em;
+        .pull-right {
+            margin-right:               $gridGutter / 2;
+            font-size:                  1rem;
         }
+    }
+    ul.organisation-list {
         .organisation-list_title {
             @extend 
                 .board_header;
+            font-size:                  1em;
         }
         .department-list {
+            .department-list_title {
+                font-size:              1em;
+                background-color:       $grey;
+                border-bottom:          1px solid $greyBorder;
+                padding:                $boardElementPadding;
+                margin:                 0;
+                
+            }
+            > li {
+                border:                 1px solid $greyBorder;
+                border-width:           0px 1px 0px 1px;
+            }
+        }
+        .scope-list {
+            > li {
+                @extend 
+                    .clearfix;
+                padding:                $boardElementPadding;
+                border-bottom:          1px solid $greyBorder;
+            }
+        }
+        .cluster-list {
+            .cluster-list_title {
+                font-weight:            bold;
+                font-size:              1em;
+            }
+            > li {
+                padding:                $boardElementPadding;
+                border-bottom:          1px solid $greyBorder;
+                .scope-list {   
+                    > li {
+                        border:         0 none;
+                        padding-left:   0;
+                        padding-right:  0;
+                    }
+                }
+            }
+        }
+        .button-edit-availabilty {
             @extend 
-                .board_body;
+                .pull-right;
         }
     }
+    
 }
 

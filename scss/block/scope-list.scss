@@ -1,4 +1,6 @@
 ul.scope-list {
+    @extend 
+        .list-bare;
     > li {
     }
     .scope-list_title {

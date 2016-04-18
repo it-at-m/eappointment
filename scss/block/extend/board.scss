@@ -8,6 +8,7 @@ $boardElementPadding:                   $baseBoxElementPadding !default;
 $boardFooterBackground:                 #F8F8F8 !default;
 $contentTopLineupBoardBodyMinHeight:    33.7em; // (calendar,appointment,clientinfo,queueinfo,...)
 $contentTopLineupBoardBodyMaxHeight:    33.7em; // (calendar,appointment,clientinfo,queueinfo,...)
+$boardHeaderBlue:                       $blue;
 
 /* ... to be @extend´ed! use the board css to extend the layout of the blocks */
 .board {
@@ -42,7 +43,7 @@ $contentTopLineupBoardBodyMaxHeight:    33.7em; // (calendar,appointment,clienti
     @extend 
         .clearfix;
     padding:                $boardElementPadding;
-    background-color:       $blue;
+    background-color:       $boardHeaderBlue;
     position:               relative;
     color:                  $white;
     margin-bottom:         0;

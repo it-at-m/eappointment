@@ -1,8 +1,8 @@
 ul.cluster-list {
+    @extend 
+        .list-bare;
     > li {
-        list-style-type:    circle;
     }
     .cluster-list_title {
-        font-style:         italic;
     }
 }
