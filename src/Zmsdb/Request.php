@@ -25,7 +25,7 @@ class Request extends Base
 
     public function readSlotsOnEntity(\BO\Zmsentities\Request $entity)
     {
-        $query = Query\Request::QUERY_SLOTS;
+        $query = Query\Request::getQuerySlots();
         $providerSlots = $this->getReader()->fetchAll(
             $query,
             ['request_id' => $entity->id]

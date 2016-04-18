@@ -12,7 +12,7 @@ class Scope extends Base implements MappingInterface
     public function addJoin()
     {
         $this->query->leftJoin(
-            new Alias(Provider::TABLE, 'provider'),
+            new Alias(Provider::getTablename(), 'provider'),
             'scope.InfoDienstleisterID',
             '=',
             'provider.id'

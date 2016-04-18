@@ -4,10 +4,12 @@ namespace BO\Zmsdb\Query;
 
 class Provider extends Base
 {
-    /**
-     * @var String TABLE mysql table reference
-     */
-    const TABLE = 'startinfo.dienstleister';
+
+    public function getTablename()
+    {
+        $dbname_dldb = \BO\Zmsdb\Connection\Select::$dbname_dldb;
+        return $dbname_dldb . '.dienstleister';
+    }
 
     public function getEntityMapping()
     {

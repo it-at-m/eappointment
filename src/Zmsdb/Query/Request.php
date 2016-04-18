@@ -5,22 +5,26 @@ namespace BO\Zmsdb\Query;
 class Request extends Base
 {
 
-    /**
-     *
-     * @var String TABLE mysql table reference
-     */
-    const TABLE = 'startinfo.dienstleistungen';
+    public function getTablename()
+    {
+        $dbname_dldb = \BO\Zmsdb\Connection\Select::$dbname_dldb;
+        return $dbname_dldb . '.dienstleistungen';
+    }
 
-    const QUERY_SLOTS = 'SELECT
+    public static function getQuerySlots()
+    {
+        $dbname_dldb = \BO\Zmsdb\Connection\Select::$dbname_dldb;
+        return 'SELECT
             x.`dienstleister` AS provider__id,
             x.`slots`
-        FROM `startinfo`.`xdienst` x
-            LEFT JOIN `startinfo`.`dienstleister` d ON x.dienstleister = d.id
+        FROM `' . $dbname_dldb . '`.`xdienst` x
+            LEFT JOIN `' . $dbname_dldb . '`.`dienstleister` d ON x.dienstleister = d.id
         WHERE
             x.`dienstleistung` = :request_id
             AND x.`termin_hide` = 0
             AND d.`zms_termin` = 1
-    ';
+            ';
+    }
 
     const QUERY_BY_PROCESSID = 'SELECT
             ba.`AnliegenID` AS id
