@@ -111,6 +111,20 @@ class Result
     /**
      * Description
      *
+     * @return \BO\Zmsentities\Schema\Entity
+     */
+    public function getCollection()
+    {
+        $entity = $this->getEntity();
+        $class = get_class($entity);
+        $alias = lcfirst(preg_replace('#^.*\\\#', '', $class));
+        $className = "\\BO\\Zmsentities\\Collection\\" . $alias . "List";
+        $collection = new $className($this->data);
+        return $collection;
+    }
+    /**
+     * Description
+     *
      * @return Array (\BO\Zmsentities\Schema\Entity)
      */
     public function getData()
