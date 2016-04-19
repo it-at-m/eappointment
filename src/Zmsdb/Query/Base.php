@@ -180,7 +180,6 @@ abstract class Base
      */
     protected static function expression($string)
     {
-        error_log(new Expression($string));
         return new Expression($string);
     }
 
