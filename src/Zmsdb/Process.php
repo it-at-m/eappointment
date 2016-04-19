@@ -151,7 +151,7 @@ class Process extends Base
         } else {
             $query->addValues(
                 [
-                'BuergerID' => NULL,
+                'BuergerID' => null,
                 'IPTimeStamp' => (int) $dateTime->getTimestamp(),
                 'absagecode' => substr(md5(rand()), 0, 4)
                 ]
