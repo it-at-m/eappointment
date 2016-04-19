@@ -10,9 +10,6 @@ namespace BO\Zmsapi\Notification;
  */
 class IcsAppointment extends Base
 {
-
-    public $content = '';
-
     /**
      * Constructor: ICSappoinment
      * Initializes the object and returns the ics string.
@@ -31,12 +28,11 @@ class IcsAppointment extends Base
                 'startTime' => $appointment->getStartTime(),
                 'endTime' => $appointment->getEndTime(),
                 'process' => $process,
-                'message' => $this->createConfirmMessage($process)
+                'message' => self::createMessage($process)
             )
         );
-            $result = \html_entity_decode(ob_get_contents());
-            $this->content = $result;
-            ob_end_clean();
-            return $this;
+        $result = \html_entity_decode(ob_get_contents());
+        ob_end_clean();
+        return $result;
     }
 }
