@@ -4,7 +4,7 @@ CREATE TABLE `zmsbo`.`mailqueue` (
 	`departmentID` INT(5) UNSIGNED NOT NULL DEFAULT '0' , 
 	`multipartID` INT(5) UNSIGNED NOT NULL DEFAULT '0' , 
 	`createIP` VARCHAR(40) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL , 
-	`createTimestamp` TIME NOT NULL DEFAULT '00:00:00' , 		
+	`createTimestamp` BIGINT(20) NOT NULL DEFAULT '0' , 		
 	`subject` VARCHAR(150) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL , 		
 PRIMARY KEY (`id`)) 
 ENGINE = MyISAM 

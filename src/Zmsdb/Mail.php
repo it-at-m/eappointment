@@ -22,6 +22,15 @@ class Mail extends Base
         return $this->fetchOne($query, new Entity());
     }
 
+    public function readList($resolveReferences = 0)
+    {
+        $query = new Query\MailQueue(Query\Base::SELECT);
+        $query
+            ->addEntityMapping()
+            ->addResolvedReferences($resolveReferences);
+        return $this->fetchList($query, new Entity());
+    }
+
     public function writeInMailQueue(Entity $mail)
     {
         foreach ($mail->multipart as $part) {
@@ -43,7 +52,7 @@ class Mail extends Base
         }
         return array();
     }
-    
+
     public function writeInMailPart($data)
     {
         $query = new Query\MailPart(Query\Base::INSERT);
@@ -58,7 +67,7 @@ class Mail extends Base
         }
         return $lastInsertId;
     }
-    
+
 
     public function deleteFromQueue($itemId, $processId)
     {
