@@ -5,7 +5,7 @@ namespace BO\Zmsdb\Query;
 class Provider extends Base
 {
 
-    public function getTablename()
+    public static function getTablename()
     {
         $dbname_dldb = \BO\Zmsdb\Connection\Select::$dbname_dldb;
         return $dbname_dldb . '.dienstleister';
@@ -34,7 +34,7 @@ class Provider extends Base
         $this->query->where('id', '=', $providerId);
         return $this;
     }
-    
+
     public function addConditionProviderCsv($providerCsv)
     {
         $providerIds = \explode(',', $providerCsv);
