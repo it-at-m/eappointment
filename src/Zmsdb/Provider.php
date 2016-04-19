@@ -25,6 +25,7 @@ class Provider extends Base
 
     public function readProviderByRequest($source, $requestIds, $resolveReferences = 0)
     {
+        $query = Query\Request::getQuerySlots();
         $providerList = new Collection();
         if ('dldb' !== $source) {
             return $providerList;
@@ -32,9 +33,9 @@ class Provider extends Base
 
         $requestIds = \explode(',', $requestIds);
         foreach ($requestIds as $requestId) {
-            $request = (new Request())->readEntity($source, $requestId, 1);
-            foreach ($request->getProviderIds() as $providerId) {
-                $provider = $this->readEntity($source, $providerId, $resolveReferences);
+            $result = $this->getReader()->fetchAll($query, ['request_id' => $requestId]);
+            foreach ($result as $item) {
+                $provider = $this->readEntity($source, $item['provider__id'], $resolveReferences);
                 $providerList->addProvider($provider);
             }
         }
