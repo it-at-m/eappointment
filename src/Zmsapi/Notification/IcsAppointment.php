@@ -8,7 +8,7 @@ namespace BO\Zmsapi\Notification;
  *
  *            A class with a structure of an ics-appointment
  */
-class IcsAppointment
+class IcsAppointment extends Base
 {
 
     public $content = '';
@@ -38,23 +38,5 @@ class IcsAppointment
             $this->content = $result;
             ob_end_clean();
             return $this;
-    }
-
-    public function createConfirmMessage($process)
-    {
-        $appointment = $process->getFirstAppointment();
-        ob_start();
-        \BO\Slim\Render::html(
-            'notification/confirmMessage.twig',
-            array(
-                'date' => $appointment->toDateTime()->format('U'),
-                'client' => $process->getFirstClient(),
-                'process' => $process,
-                'config' => \BO\Zmsdb\Config::readEntity()
-            )
-        );
-            $confirmMessage = ob_get_contents();
-            ob_end_clean();
-            return $confirmMessage;
     }
 }

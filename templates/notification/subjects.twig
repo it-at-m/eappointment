@@ -1,0 +1,7 @@
+{% block german %}
+{% if process.status == 'confirmed' %}
+Terminbestaetigung
+{% elseif process.status == 'reminded' %}
+Terminerinnerung
+{% endif %}
+{% endblock %}
