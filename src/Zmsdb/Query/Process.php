@@ -16,7 +16,7 @@ class Process extends Base implements MappingInterface
                 'Abgesagter Termin gebucht am: ',
                 FROM_UNIXTIME(process.IPTimeStamp,'%d-%m-%Y %H:%i'),' | ',
                 IFNULL(process.Anmerkung,'')
-            ),           
+            ),
             process.StandortId = 0,
             process.Name = '(abgesagt)',
             process.IPadresse = '',
@@ -26,6 +26,18 @@ class Process extends Base implements MappingInterface
             (process.BuergerID = ? AND process.absagecode = ?)
             OR process.istFolgeterminvon = ?
         ";
+
+    const QUERY_SET_LOCK = "SELECT GET_LOCK('AutoIncWithOldNum', 2)";
+    const QUERY_RELEASE_LOCK = "SELECT RELEASE_LOCK('AutoIncWithOldNum')";
+
+    public function getQueryNewProcessId()
+    {
+        return 'SELECT A.`BuergerID`+1 AS `nextid`
+            FROM `' . self::getTablename() . '` A
+                LEFT JOIN `' . self::getTablename() . '` B ON A.BuergerID+1 = B.BuergerID
+            WHERE B.`BuergerID` IS NULL AND A.`BuergerID` > 10000
+            ORDER BY A.`BuergerID` LIMIT 1';
+    }
 
     public function addJoin()
     {
@@ -102,8 +114,8 @@ class Process extends Base implements MappingInterface
             'appointments__0__scope__id' => 'process.StandortID',
             //'appointments__0__slotCount' => 'process.hatFolgetermine',
             'appointments__0__slotCount' => self::expression('(SELECT COUNT(*) + 1
-                    FROM ' . self::TABLE . ' as `followingProcess` 
-                    WHERE 
+                    FROM ' . self::TABLE . ' as `followingProcess`
+                    WHERE
                         `followingProcess`.`istFolgeterminvon` = `BuergerID`
                 )'),
             'authKey' => 'process.absagecode',
