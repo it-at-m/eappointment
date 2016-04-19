@@ -113,7 +113,7 @@ class SlotList
             -- reduce results cause processing them costs time even with query cache
             FROM_UNIXTIME(appointment__date) BETWEEN
                 DATE_ADD(:nowStart, INTERVAL availability__bookable__startInDays DAY)
-                AND DATE_ADD(:nowEnd, INTERVAL availability__bookable__endInDays DAY)
+                AND DATE_ADD(:nowEnd, INTERVAL availability__bookable__endInDays + 1 DAY)
 
         -- ordering is important for processing later on (slot reduction)
         ORDER BY o.OeffnungszeitID, b.Datum, `slotnr`
@@ -151,9 +151,10 @@ class SlotList
         return self::QUERY;
     }
 
-    public static function getParameters($scopeId, \DateTime $monthDateTime)
+    public static function getParameters($scopeId, \DateTimeInterface $monthDateTime, \DateTimeInterface $now)
     {
-        $now = new \DateTimeImmutable();
+        $now = DateTime::create($now);
+        $monthDateTime = DateTime::create($monthDateTime);
         $parameters = [
             'scope_id' => $scopeId,
             'start_process' => $monthDateTime->format('Y-m-1'),

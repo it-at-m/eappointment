@@ -19,10 +19,9 @@ class Mail extends Base
             ->addResolvedReferences($resolveReferences)
             ->addConditionItemId($itemId)
             ->addConditionProcessId($processId);
-        error_log(print_r($query->getSql(), 1));
         return $this->fetchOne($query, new Entity());
     }
-    
+
     public function writeInMailQueue(Entity $mail)
     {
         foreach ($mail->multipart as $part) {

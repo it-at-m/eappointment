@@ -8,7 +8,7 @@ use \BO\Zmsentities\Collection\ProcessList;
 class Calendar extends Base
 {
 
-    public function readResolvedEntity(Entity $calendar, $freeProcessesDate = null)
+    public function readResolvedEntity(Entity $calendar, \DateTimeInterface $now, $freeProcessesDate = null)
     {
         $calendar['processing'] = [];
         $calendar['freeProcesses'] = new ProcessList();
@@ -16,7 +16,7 @@ class Calendar extends Base
         $calendar = $this->readResolvedProviders($calendar);
         $calendar = $this->readResolvedClusters($calendar);
         $calendar = $this->readResolvedRequests($calendar);
-        $calendar = $this->readResolvedDays($calendar, $freeProcessesDate);
+        $calendar = $this->readResolvedDays($calendar, $freeProcessesDate, $now);
         unset($calendar['processing']['slotlist']);
         return $calendar;
     }
@@ -67,7 +67,7 @@ class Calendar extends Base
         return $calendar;
     }
 
-    protected function readResolvedDays(Entity $calendar, $freeProcessesDate)
+    protected function readResolvedDays(Entity $calendar, $freeProcessesDate, \DateTimeInterface $now)
     {
         $query = SlotList::getQuery();
         $monthList = $calendar->getMonthList();
@@ -76,7 +76,7 @@ class Calendar extends Base
             $month = new \DateTimeImmutable($monthDateTime->format('c'));
             foreach ($calendar->scopes as $scope) {
                 $scope = new \BO\Zmsentities\Scope($scope);
-                $statement->execute(SlotList::getParameters($scope['id'], $monthDateTime));
+                $statement->execute(SlotList::getParameters($scope['id'], $monthDateTime, $now));
                 //error_log(var_export(SlotList::getParameters($scope['id'], $monthDateTime), true));
                 $slotsRequired = $calendar['processing']['slotinfo'][$scope->getProviderId()];
                 while ($slotData = $statement->fetch(\PDO::FETCH_ASSOC)) {
