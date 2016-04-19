@@ -183,11 +183,11 @@ class Process extends Base
     }
 
     /* prüfen ob das benötigt wird begin */
-    public function readFreeProcesses(\BO\Zmsentities\Calendar $calendar)
+    public function readFreeProcesses(\BO\Zmsentities\Calendar $calendar, \DateTimeInterface $now)
     {
         $resolvedCalendar = new Calendar();
         $selectedDate = $calendar->getFirstDay();
-        $calendar = $resolvedCalendar->readResolvedEntity($calendar, $selectedDate);
+        $calendar = $resolvedCalendar->readResolvedEntity($calendar, $now, $selectedDate);
         if (isset($calendar['freeProcesses'])) {
             return $calendar['freeProcesses'];
         }

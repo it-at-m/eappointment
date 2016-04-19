@@ -17,10 +17,11 @@ class CalendarTest extends Base
 
     public function testFalkenhagener()
     {
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
         $input = $this->getTestEntity();
         //var_dump(json_encode($input, JSON_PRETTY_PRINT));
         $input->addProvider('dldb', 324414); // Falkenhagener Feld
-        $entity = (new Query())->readResolvedEntity($input);
+        $entity = (new Query())->readResolvedEntity($input, $now);
         //var_dump(json_encode($entity, JSON_PRETTY_PRINT));
         //$array = json_decode(json_encode($entity), 1);
         //var_dump($array['days']);
@@ -31,10 +32,11 @@ class CalendarTest extends Base
 
     public function testHeerstr()
     {
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
         $input = $this->getTestEntity();
         //var_dump(json_encode($input, JSON_PRETTY_PRINT));
         $input->addProvider('dldb', 122217); // Heerstr.
-        $entity = (new Query())->readResolvedEntity($input);
+        $entity = (new Query())->readResolvedEntity($input, $now);
         //var_dump(json_encode($entity, JSON_PRETTY_PRINT));
         //$array = json_decode(json_encode($entity), 1);
         //var_dump($array['days']);
@@ -50,18 +52,18 @@ class CalendarTest extends Base
         //var_dump(\BO\Zmsdb\Connection\Select::getReadConnection()->getProfiler()->getProfiles());
     }
 
-    public function testBasic()
+    public function testFullBAlist()
     {
-        return 1;
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
         $input = $this->getTestEntity();
         //var_dump(json_encode($input, JSON_PRETTY_PRINT));
         foreach ($this->fullProviderIdList as $providerId) {
             $input->addProvider('dldb', $providerId);
         }
-        $entity = (new Query())->readResolvedEntity($input);
+        $entity = (new Query())->readResolvedEntity($input, $now);
         //var_dump(json_encode($entity, JSON_PRETTY_PRINT));
-        $array = json_decode(json_encode($entity), 1);
-        var_dump($array['days']);
+        //$array = json_decode(json_encode($entity), 1);
+        //var_dump($array['days']);
         $this->assertEntity("\\BO\\Zmsentities\\Calendar", $entity);
         //var_dump(\BO\Zmsdb\Connection\Select::getReadConnection()->getProfiler()->getProfiles());
     }
