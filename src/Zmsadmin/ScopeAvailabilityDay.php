@@ -17,17 +17,19 @@ class ScopeAvailabilityDay extends BaseController
      */
     public static function render()
     {
-        $availabilityList = [];
+        $availabilityList = new AvailabilityList();
         $prefix = \App::APP_PATH . '/tests/examples/Availability01/';
-        $availabilityList[] = json_decode(file_get_contents($prefix . 'availability_79813.json'));
-        $availabilityList[] = json_decode(file_get_contents($prefix . 'availability_98495.json'));
-        $availabilityList[] = json_decode(file_get_contents($prefix . 'availability_98501.json'));
-        $availabilityList[] = json_decode(file_get_contents($prefix . 'availability_98507.json'));
-        $scope = json_decode(file_get_contents($prefix . 'scope.json'));
+        $availabilityList[] = json_decode(file_get_contents($prefix . 'availability_79813.json'), true);
+        $availabilityList[] = json_decode(file_get_contents($prefix . 'availability_98495.json'), true);
+        $availabilityList[] = json_decode(file_get_contents($prefix . 'availability_98501.json'), true);
+        $availabilityList[] = json_decode(file_get_contents($prefix . 'availability_98507.json'), true);
+        $scope = json_decode(file_get_contents($prefix . 'scope.json'), true);
         \BO\Slim\Render::html('page/availabilityday.twig', array(
             'availabilityList' => $availabilityList,
             'scope' => $scope,
-            'menuActive' => 'availability'
+            'menuActive' => 'availability',
+            'maxWorkstationCount' => $availabilityList->getMaxWorkstationCount(),
         ));
     }
 }
+
