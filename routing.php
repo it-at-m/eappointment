@@ -1479,9 +1479,9 @@
 
 /**
  *  @swagger
- *  "/provider/list/{source}/{csv}/":
+ *  "/provider/{source}/request/{csv}/":
  *      get:
- *          description: Get a list of provider by optional csv
+ *          description: Get a list of provider by request numbers
  *          parameters:
  *              -   name: source
  *                  description: request source like 'dldb'
@@ -1515,12 +1515,12 @@
  *              404:
  *                  description: "request id for source does not exists"
  */
-\App::$slim->get('/provider/list/:source/(:csv/)',
+\App::$slim->get('/provider/:source/request/:csv/',
     '\BO\Zmsapi\ProviderList:render')
     ->conditions([
         'csv' => '[0-9,]{3,}'
     ])
-    ->name("ProviderList");
+    ->name("ProviderByRequestList");
 
 /**
  *  @swagger
@@ -1561,51 +1561,6 @@
         'id' => '\d{1,11}',
      ])
     ->name("RequestGet");
-
-/**
- *  @swagger
- *  "/request/list/{source}/{csv}/provider/":
- *      get:
- *          description: Get a list of providers by request Ids
- *          parameters:
- *              -   name: source
- *                  description: request source like 'dldb'
- *                  in: path
- *                  required: true
- *                  type: string
- *              -   name: csv
- *                  required: true
- *                  description: request numbers as csv string
- *                  in: path
- *                  type: array
- *                  items:
- *                     type: string
- *                  collectionFormat: csv
- *              -   name: resolveReferences
- *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
- *                  in: query
- *                  type: integer
- *          responses:
- *              200:
- *                  description: "success"
- *                  schema:
- *                      type: object
- *                      properties:
- *                          meta:
- *                              $ref: "schema/metaresult.json"
- *                          data:
- *                              $ref: "schema/request.json"
- *              400:
- *                  description: "invalid tag value"
- *              404:
- *                  description: "request id for source does not exists"
- */
-\App::$slim->get('/request/list/:source/:csv/provider/',
-    '\BO\Zmsapi\RequestList:render')
-    ->conditions([
-        'csv' => '[0-9,]{3,}'
-    ])
-    ->name("RequestList");
 
 /**
  *  @swagger

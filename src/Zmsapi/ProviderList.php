@@ -17,11 +17,11 @@ class ProviderList extends BaseController
     /**
      * @return String
      */
-    public static function render($source, $itemIds = null)
+    public static function render($source, $requestIds = null)
     {
-        $providers = (new Query())->readList($source, $itemIds);
+        $providerList = (new Query())->readProviderByRequest($source, $requestIds);
         $message = Response\Message::create();
-        $message->data = $providers;
+        $message->data = $providerList;
         Render::lastModified(time(), '0');
         Render::json($message);
     }
