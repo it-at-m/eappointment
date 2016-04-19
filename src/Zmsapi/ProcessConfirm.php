@@ -9,6 +9,7 @@ namespace BO\Zmsapi;
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\Process as Query;
+use \BO\Zmsdb\Mail as MailQuery;
 
 /**
   * Handle requests concerning services
@@ -22,9 +23,14 @@ class ProcessConfirm extends BaseController
     {
         $message = Response\Message::create();
         $input = Validator::input()->isJson()->getValue();
-        $query = new Query();
-        $process = new \BO\Zmsentities\Process($input);
-        $message->data = $query->updateProcessStatus($process, 'confirmed');
+        $entity = new \BO\Zmsentities\Process($input);
+        $process = (new Query())->updateProcessStatus($entity, 'confirmed');
+
+        //write mail in queue
+        $mail = Notification\Mail::getEntityData($process);
+        (new MailQuery)->writeInMailQueue($mail);
+
+        $message->data = $process;
         Render::lastModified(time(), '0');
         Render::json($message);
     }

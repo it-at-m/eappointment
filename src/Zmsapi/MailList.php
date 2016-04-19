@@ -7,6 +7,7 @@
 namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
+use \BO\Zmsdb\Mail as Query;
 
 /**
   * Handle requests concerning services
@@ -18,8 +19,9 @@ class MailList extends BaseController
      */
     public static function render()
     {
+        $mailList = (new Query())->readList(1);
         $message = Response\Message::create();
-        $message->data = array(\BO\Zmsentities\Mail::createExample());
+        $message->data = $mailList;
         Render::json($message);
     }
 }
