@@ -30,7 +30,7 @@ class Process extends Base
         if (array_key_exists('id', $process) && !empty($process['id'])) {
             $processId = $process['id'];
         } else {
-            $processId = $this->getNewProcessId();
+            $processId = $this->writeNewProcess();
         }
         if (array_key_exists('authKey', $process) && !empty($process['authKey'])) {
             $authKey = $process['authKey'];
@@ -135,28 +135,24 @@ class Process extends Base
 
     }
 
-    public function getNewProcessId()
+    public function writeNewProcess()
     {
         $query = new Query\Process(Query\Base::INSERT);
-        $lock = $this->getLock();
+        $lock = $this->getLock($query);
         $dateTime = new \DateTime();
         if ($lock == 1) {
             $query->addValues(
                 [
-                'BuergerID' => 'SELECT A.BuergerID+1 AS nextid
-                    FROM buerger A
-                    LEFT JOIN buerger B on A.BuergerID+1 = B.BuergerID
-                    WHERE B.BuergerID IS NULL AND A.BuergerID > 10000
-                    ORDER BY A.BuergerID LIMIT 1',
-                'IPTimeStamp' => $dateTime->getTimestamp(),
+                'BuergerID' => $this->getNewProcessId($query),
+                'IPTimeStamp' => (int) $dateTime->getTimestamp(),
                 'absagecode' => substr(md5(rand()), 0, 4)
                 ]
             );
         } else {
             $query->addValues(
                 [
-                'BuergerID' => null,
-                'IPTimeStamp' => $dateTime->getTimestamp(),
+                'BuergerID' => NULL,
+                'IPTimeStamp' => (int) $dateTime->getTimestamp(),
                 'absagecode' => substr(md5(rand()), 0, 4)
                 ]
             );
@@ -164,20 +160,26 @@ class Process extends Base
         $this->writeItem($query);
         $lastInsertId = $this->getWriter()
             ->lastInsertId();
-        $this->releaseLock();
+        $this->releaseLock($query);
         return $lastInsertId;
     }
 
-    public function getLock()
+    public function getNewProcessId($query)
     {
         return $this->getReader()
-            ->fetchValue('SELECT GET_LOCK("AutoIncWithOldNum", 2)');
+        ->fetchValue($query->getQueryNewProcessId());
     }
 
-    public function releaseLock()
+    public function getLock($query)
     {
         return $this->getReader()
-            ->fetchValue('SELECT RELEASE_LOCK("AutoIncWithOldNum")');
+            ->fetchValue($query::QUERY_SET_LOCK);
+    }
+
+    public function releaseLock($query)
+    {
+        return $this->getReader()
+            ->fetchValue($query::QUERY_RELEASE_LOCK);
     }
 
     /* prüfen ob das benötigt wird begin */
