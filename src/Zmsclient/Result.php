@@ -117,7 +117,7 @@ class Result
     {
         $entity = $this->getEntity();
         $class = get_class($entity);
-        $alias = lcfirst(preg_replace('#^.*\\\#', '', $class));
+        $alias = ucfirst(preg_replace('#^.*\\\#', '', $class));
         $className = "\\BO\\Zmsentities\\Collection\\" . $alias . "List";
         $collection = new $className($this->data);
         return $collection;
