@@ -25,7 +25,7 @@ class CalendarGet extends BaseController
         // TODO error if json is not valid
         $query = new Query();
         $calendar = new \BO\Zmsentities\Calendar($input);
-        $message->data = $query->readResolvedEntity($calendar);
+        $message->data = $query->readResolvedEntity($calendar, \App::getNow());
         Render::lastModified(time(), '0');
         Render::json($message);
     }

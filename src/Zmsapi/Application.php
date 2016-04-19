@@ -73,4 +73,18 @@ class Application extends \BO\Slim\Application
      * dldb data path
      */
     public static $data = '/data';
+
+    
+    /**
+     * @var public static DateTimeInterface $now time to use for today (testing)
+     */
+    public static $now = null;
+
+    public static function getNow()
+    {
+        if (self::$now instanceof \DateTimeInterface) {
+            return self::$now;
+        }
+        return new \DateTimeImmutable();
+    }
 }
