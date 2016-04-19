@@ -5,7 +5,7 @@ namespace BO\Zmsdb\Query;
 class Request extends Base
 {
 
-    public function getTablename()
+    public static function getTablename()
     {
         $dbname_dldb = \BO\Zmsdb\Connection\Select::$dbname_dldb;
         return $dbname_dldb . '.dienstleistungen';
