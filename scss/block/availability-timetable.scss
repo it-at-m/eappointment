@@ -72,7 +72,8 @@ $openingBarTop:                 21rem;
                 .item-bar { 
                     border-left:        1px solid $white;
                     //min-height:         20px;
-                    min-height:         1.5rem;
+                    //min-height:         1.5rem;
+                    box-sizing:         content-box;
                     position:           absolute;
                     color:              $baseTextColor;
                     text-decoration:    none;
@@ -126,7 +127,7 @@ $openingBarTop:                 21rem;
                     .item-bar {
                         background:     rgba($appointmentBarColor, 0.2);
                         color:          $white;
-                        height:         1rem;
+                        //height:         1rem;
                         border-top:     $inuit-base-font-size solid  rgba($appointmentBarColor, 0.7);
                         border-top:     1.5rem solid rgba($appointmentBarColor, 0.7);
                         .item-bar_inner {
@@ -141,7 +142,7 @@ $openingBarTop:                 21rem;
                     border-color:       rgba($openingBarColor, 1);
                     .item-bar {
                         background:     rgba($openingBarColor, 0.2);
-                        height:         1rem;
+                        //height:         1rem;
                         border-top:     $inuit-base-font-size solid rgba($openingBarColor, 0.7);
                         border-top:     1.5rem solid rgba($openingBarColor, 0.7);
                         .item-bar_inner {
