@@ -2,7 +2,7 @@
 
 namespace BO\Zmsdb\Query;
 
-class Department extends Base
+class Department extends Base implements MappingInterface
 {
     /**
      * @var String TABLE mysql table reference
@@ -51,5 +51,12 @@ class Department extends Base
             '=',
             'department_sms.BehoerdenID'
         );
+    }
+
+
+    public function addConditionDepartmentId($departmentId)
+    {
+        $this->query->where('department.BehoerdenID', '=', $departmentId);
+        return $this;
     }
 }

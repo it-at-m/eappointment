@@ -94,15 +94,11 @@ class Process extends Base
             )
         );
         if ($status) {
-            $query = Query\XRequest::QUERY_DELETE;
-            $statement = $this->getWriter()->prepare($query);
-            $status = $status = $statement->execute(
-                array(
-                $processId
-                )
-            );
+            $query =  new Query\XRequest(Query\Base::DELETE);
+            $query->addConditionProcessId($processId);
+            $status = $this->deleteItem($query);
         }
-            return $status;
+        return $status;
     }
 
     public function writeRequestsToDb($processId, $requests)

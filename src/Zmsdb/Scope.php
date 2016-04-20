@@ -38,6 +38,16 @@ class Scope extends Base
         return $this->fetchList($query, new Entity());
     }
 
+    public function readByDepartmentId($departmentId, $resolveReferences = 0)
+    {
+        $query = new Query\Scope(Query\Base::SELECT);
+        $query
+            ->addEntityMapping()
+            ->addResolvedReferences($resolveReferences)
+            ->addConditionDepartmentId($departmentId);
+        return $this->fetchList($query, new Entity());
+    }
+
     public function readList($resolveReferences = 0)
     {
         $query = new Query\Scope(Query\Base::SELECT);
