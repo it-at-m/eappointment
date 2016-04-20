@@ -20,4 +20,3 @@ class AvailabilityList extends \ArrayObject
         return $max;
     }
 }
-

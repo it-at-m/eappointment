@@ -23,7 +23,12 @@
                 content:        "ℹ";
             }
             &.logo {
-                padding-left:   0;
+                padding-left:   $gridGutter;
+                font-size: 80%;
+
+                img.logo {
+                    max-width: 100%;
+                }
             }
         }
     }
