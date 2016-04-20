@@ -2,6 +2,9 @@
     "type": "object",
     "description": "representation of opening hours for appointments",
     "example": {
+        "department": {
+        	"id": 11
+        },
         "bookable": {
             "startInDays": 2,
             "endInDays": 60
@@ -31,6 +34,9 @@
         }
     },
     "properties": {
+        "department" : {
+        	"$ref": "department.json"
+        },
         "bookable": {
             "type": "object",
             "properties": {
