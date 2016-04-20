@@ -6,22 +6,27 @@
         @extend 
             .form--horizontal;
         input.number {
-            font-size:          1.3em;
-            padding:            0.3em 1em;
+            font-size:          1.8em;
+            padding:            0.3em 0.4em;
+            text-align:         center;
         }
         .actions {
-            margin-top:         5.6em;
+            margin-top:         1em;
         }
     }
-    table.keyboard {
-        @extend 
-            .table,
-            .table--compact;
-        width:  auto;
-        margin-left:            4em;
-        td,th {
-            vertical-align:     middle;
-            text-align:         center;
+    .keyboard {
+        text-align: center;
+        table {
+            @extend 
+                .table,
+                .table--compact;
+            background:             transparent;
+            width:                  auto;
+            margin:                 0 auto;
+            td,th {
+                vertical-align:     middle;
+                text-align:         center;
+            }
         }
     }
     .btn {
@@ -30,5 +35,8 @@
         &.button-submit {
             padding:            1.5em 2em;
         }
+    }
+    .note {
+        font-size:              1rem;
     }
 }

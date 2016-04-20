@@ -107,10 +107,19 @@ button.link  {
     width:      4em;
     height:     4em;
     margin:     0.4em;
+    .number {
+        font-size: 1.7em;
+    }
 }
 
 .button-file {
     background-color:       $white;
+}
+
+.button-pickupcall {
+ @extend 
+        .btn,
+        .btn--success;
 }
 
 .button-callnextclient {
