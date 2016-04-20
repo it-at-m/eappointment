@@ -1,6 +1,25 @@
 .client-processed {
     @extend 
         .board;
+    .form-input-counter {
+        .input-counter {
+            margin-right:   1em;
+            display:        inline-block;
+            float:          left;
+        }
+        a {
+            cursor: pointer;
+        }
+        .form-input {
+            background-color: transparent;
+            border:     0 none;
+            margin:     0;
+            min-width:  0;
+            padding:    0;
+            text-align: center;
+            width:      1.4em;
+        }
+    }
 }
 
 
