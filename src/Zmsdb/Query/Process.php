@@ -48,7 +48,7 @@ class Process extends Base implements MappingInterface
     }
 
     /**
-     * Add scope to the dataset
+     * Add Availability to the dataset
      *
      */
     protected function addJoinAvailability()

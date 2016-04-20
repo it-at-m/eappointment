@@ -9,6 +9,13 @@ class Scope extends Base implements MappingInterface
      */
     const TABLE = 'standort';
 
+    const QUERY_BY_DEPARTMENTID = 'SELECT
+            scope.`StandortID` AS id
+        FROM `zmsbo`.`standort` scope
+        WHERE
+            scope.`BehoerdenID` = :department_id
+    ';
+
     public function addJoin()
     {
         $this->query->leftJoin(
@@ -97,6 +104,12 @@ class Scope extends Base implements MappingInterface
     public function addConditionProviderId($providerId)
     {
         $this->query->where('scope.InfoDienstleisterID', '=', $providerId);
+        return $this;
+    }
+
+    public function addConditionDepartmentId($departmentId)
+    {
+        $this->query->where('scope.BehoerdenID', '=', $departmentId);
         return $this;
     }
 

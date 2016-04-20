@@ -10,8 +10,6 @@ class XRequest extends Base
      */
     const TABLE = 'buergeranliegen';
 
-    const QUERY_DELETE = "DELETE FROM `buergeranliegen` WHERE `BuergerID` = ?";
-
     public function getEntityMapping()
     {
         return [

@@ -57,7 +57,8 @@ abstract class Base
             $this->query->queryBaseStatement('REPLACE INTO');
         } elseif (self::DELETE === $queryType) {
             $this->query = new Delete($dialect);
-            $this->addTable();
+            $this->query->queryBaseStatement('DELETE '. $this::getAlias() .' FROM');
+            $this->addTableAlias();
         } elseif ($queryType instanceof \Solution10\SQL\Query) {
             $this->query = $queryType;
         }
@@ -75,11 +76,24 @@ abstract class Base
      */
     protected function addSelect()
     {
-        $class = get_class($this);
         $table = $this::getTablename();
-        $alias = lcfirst(preg_replace('#^.*\\\#', '', $class));
+        $alias = $this::getAlias();
         $this->query->from($table, $alias);
         return $this;
+    }
+
+    /**
+     * Add the alias part to the queryBaseStatement
+     * This implementation tries to guess the syntax using the constant TABLE in the class
+     * Override the method for a special implementation or required joins
+     *
+     * @return self
+     */
+    public static function getAlias()
+    {
+        $class = get_called_class();
+        $alias = lcfirst(preg_replace('#^.*\\\#', '', $class));
+        return $alias;
     }
 
     /**
@@ -103,10 +117,24 @@ abstract class Base
      */
     protected function addTable()
     {
-        $class = get_class($this);
-        $table = constant($class . '::TABLE');
-        $alias = lcfirst(preg_replace('#^.*\\\#', '', $class));
+        $table = $this::getTablename();
+        $alias = $this::getAlias();
         $this->query->table($table, $alias);
+        return $this;
+    }
+
+    /**
+     * Add the from part to the queryBaseStatement
+     * This implementation tries to guess the syntax using the constant TABLE in the class
+     * Override the method for a special implementation or required joins
+     *
+     * @return self
+     */
+    protected function addTableAlias()
+    {
+        $table = $this::getTablename();
+        $alias = $this::getAlias();
+        $this->query->table(self::expression($table .' '. $alias));
         return $this;
     }
 
