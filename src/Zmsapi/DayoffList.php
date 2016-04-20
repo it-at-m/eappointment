@@ -7,6 +7,7 @@
 namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
+use \BO\Zmsdb\DayOff as Query;
 
 /**
   * Handle requests concerning services
@@ -19,8 +20,8 @@ class DayoffList extends BaseController
     public static function render($year)
     {
         $message = Response\Message::create();
-        $year = $year; // @todo fetch data
-        $message->data = array(\BO\Zmsentities\Dayoff::createExample());
+        $dayOffList = (new Query())->readByYear($year);
+        $message->data = $dayOffList;
         Render::lastModified(time(), '0');
         Render::json($message);
     }

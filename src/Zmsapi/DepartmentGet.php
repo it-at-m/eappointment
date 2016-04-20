@@ -7,6 +7,8 @@
 namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
+use \BO\Mellon\Validator;
+use \BO\Zmsdb\Department as Query;
 
 /**
   * Handle requests concerning services
@@ -18,9 +20,10 @@ class DepartmentGet extends BaseController
      */
     public static function render($itemId)
     {
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
+        $department = (new Query())->readEntity($itemId, $resolveReferences);
         $message = Response\Message::create();
-        $message->data = \BO\Zmsentities\Department::createExample();
-        $message->data->id = $itemId;
+        $message->data = $department;
         Render::lastModified(time(), '0');
         Render::json($message);
     }
