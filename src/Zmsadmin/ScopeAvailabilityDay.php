@@ -23,6 +23,7 @@ class ScopeAvailabilityDay extends BaseController
         $availabilityList[] = json_decode(file_get_contents($prefix . 'availability_98495.json'), true);
         $availabilityList[] = json_decode(file_get_contents($prefix . 'availability_98501.json'), true);
         $availabilityList[] = json_decode(file_get_contents($prefix . 'availability_98507.json'), true);
+        $availabilityList[] = json_decode(file_get_contents($prefix . 'availability_o.json'), true);
         $scope = json_decode(file_get_contents($prefix . 'scope.json'), true);
         \BO\Slim\Render::html('page/availabilityday.twig', array(
             'availabilityList' => $availabilityList,
