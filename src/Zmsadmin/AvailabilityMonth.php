@@ -149,9 +149,9 @@ class AvailabilityMonth extends BaseController
             '2016-04-19' => array(
                 'closed' => false,
                 'holiday' => false,
-                'hasOpeningTimes' => false,
-                'hasAppointmentTimes' => false,
-                'hasConflict'=>true
+                'hasOpeningTimes' => true,
+                'hasAppointmentTimes' => true,
+                'hasConflict'=>false
             ),
             '2016-04-20' => array(
                 'closed' => false,
