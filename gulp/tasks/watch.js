@@ -5,5 +5,11 @@ gulp.task('watch', function() {
 	gulp.watch([
 		'scss/**/*.scss'
 		], ['scss']);
+	gulp.watch([
+		'js/**/*.js'
+		], ['js']);
+	gulp.watch([
+		'public/_js/index.js'
+		], ['buildinfo']);
 });
 

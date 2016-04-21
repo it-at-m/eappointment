@@ -24,7 +24,7 @@ $boardHeaderBlue:                       $blue;
     > .body {
         @extend 
             .board_body,
-            .board_body--addPadding;
+            .board_body--addPadding !optional;
         &.no-padding {
             @extend
                 .board_body--noPadding;

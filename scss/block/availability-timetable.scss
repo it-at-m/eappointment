@@ -86,6 +86,9 @@ $openingBarTop:                 21rem;
                         font-size:      $inuit-base-font-size;
                         line-height:    $inuit-base-line-height;
                     }
+                    &.selected {
+                        opacity: 0.5;
+                    }
                 }
                 &.conflict-level {
                     //top:                70px;
