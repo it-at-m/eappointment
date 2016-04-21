@@ -9,21 +9,38 @@ class Availability extends Base implements MappingInterface
      */
     const TABLE = 'oeffnungszeit';
 
+    public function addJoin()
+    {
+        $this->query->leftJoin(
+            new Alias(Scope::TABLE, 'scope'),
+            'availability.StandortID',
+            '=',
+            'scope.StandortID'
+        );
+        $scopeQuery = new Scope($this->query);
+        $scopeQuery->addEntityMappingPrefixed($this->getPrefixed('scope__'));
+        return [$scopeQuery];
+    }
+
     public function getEntityMapping()
     {
         return [
             'id' => 'availability.OeffnungszeitID',
-            'bookable__startInDays' => 'availability.Offen_ab',
-            'bookable__endInDays' => 'availability.Offen_bis',
+            'scope__id' => 'availability.StandortID',
+            'bookable__startInDays' => self::expression(
+                'IF(`availability`.`Offen_ab`, `availability`.`Offen_ab`, `scope`.`Termine_ab`)'
+            ),
+            'bookable__endInDays' => self::expression(
+                'IF(`availability`.`Offen_bis`, `availability`.`Offen_bis`, `scope`.`Termine_bis`)'
+            ),
             'description' => 'availability.kommentar',
             'startDate' => self::expression('UNIX_TIMESTAMP(`availability`.`Startdatum`)'),
-            'startTime' => self::expression('DATE_FORMAT(`availability`.`Anfangszeit`,"%H:%i")'),
+            'startTime' => 'availability.Terminanfangszeit',
             'endDate' => self::expression('UNIX_TIMESTAMP(`availability`.`Endedatum`)'),
-            'endTime' => self::expression('DATE_FORMAT(`availability`.`Endzeit`,"%H:%i")'),
+            'endTime' => 'availability.Terminendzeit',
             'multipleSlotsAllowed' => 'availability.erlaubemehrfachslots',
             'repeat__afterWeeks' => 'availability.allexWochen',
             'repeat__weekOfMonth' => 'availability.jedexteWoche',
-            'scope__id' => 'availability.StandortID',
             'slotTimeInMinutes' => self::expression('FLOOR(TIME_TO_SEC(`availability`.`Timeslot`) / 60)') ,
             'weekday__monday' => self::expression('`availability`.`Wochentag` & 2'),
             'weekday__tuesday' => self::expression('`availability`.`Wochentag` & 4'),
@@ -35,10 +52,17 @@ class Availability extends Base implements MappingInterface
             'workstationCount__callcenter' => self::expression(
                 'GREATEST(0, `availability`.`Anzahlterminarbeitsplaetze` - `availability`.`reduktionTermineCallcenter`)'
             ),
-            'workstationCount__intern' => 'availability.Anzahlterminarbeitsplaetze',
+            'workstationCount__intern' => self::expression('`availability`.`Anzahlterminarbeitsplaetze`'),
             'workstationCount__public' => self::expression(
                 'GREATEST(0, `availability`.`Anzahlterminarbeitsplaetze` - `availability`.`reduktionTermineImInternet`)'
             )
+        ];
+    }
+
+    public function getReferenceMapping()
+    {
+        return [
+            'scope__$ref' => self::expression('CONCAT("/scope/", `availability`.`StandortID`, "/")'),
         ];
     }
 
@@ -59,11 +83,39 @@ class Availability extends Base implements MappingInterface
         $time = \BO\Zmsentites\Helper\DateTime::create($time);
     }
 
+    public function addGroupBy()
+    {
+        $this->query
+            ->groupBy('id')
+            ->groupBy('process.Datum')
+            ->groupBy('slotnr');
+        return $this;
+    }
+
+    public function addOrderBy()
+    {
+        $this->query
+            ->orderBy('id', 'ASC')
+            ->orderBy('process.Datum', 'ASC')
+            ->orderBy('slotnr', 'ASC');
+        return $this;
+    }
+
     public static function getJoinExpression($process, $availability)
     {
         return self::expression("
             $availability.StandortID = $process.StandortID
             AND $availability.OeffnungszeitID IS NOT NULL
+
+            -- ignore slots out of date range
+            AND ($process.Datum IS  NULL OR $process.Datum BETWEEN :start_process AND :end_process)
+
+            -- ignore availability out of date range
+            AND $availability.Endedatum >= :start_availability
+            AND $availability.Startdatum <= :end_availability
+
+            -- ignore availability without appointment slots
+            AND $availability.Anzahlterminarbeitsplaetze != 0
 
             -- match weekday
             AND $availability.Wochentag & POW(2, DAYOFWEEK($process.Datum) - 1)
@@ -72,8 +124,9 @@ class Availability extends Base implements MappingInterface
             AND (
                 (
                     $availability.allexWochen
-                    AND ((UNIX_TIMESTAMP($process.Datum) - UNIX_TIMESTAMP($availability.Startdatum)) / 86400 / 7)
-                        % $availability.allexWochen != 0
+                    AND FLOOR(
+                        (UNIX_TIMESTAMP($process.Datum) - UNIX_TIMESTAMP($availability.Startdatum)) / 86400 / 7)
+                        % $availability.allexWochen = 0
                 )
                 OR (
                     $availability.jedexteWoche
@@ -89,7 +142,7 @@ class Availability extends Base implements MappingInterface
 
             -- match time and date
             AND $process.Uhrzeit >= $availability.Terminanfangszeit
-            AND $process.Uhrzeit <= $availability.Terminendzeit
+            AND $process.Uhrzeit < $availability.Terminendzeit
             AND $process.Datum >= $availability.Startdatum
             AND $process.Datum <= $availability.Endedatum
             ");
