@@ -52,7 +52,7 @@ class Availability extends Base implements MappingInterface
             'workstationCount__callcenter' => self::expression(
                 'GREATEST(0, `availability`.`Anzahlterminarbeitsplaetze` - `availability`.`reduktionTermineCallcenter`)'
             ),
-            'workstationCount__intern' => self::expression('`availability`.`Anzahlterminarbeitsplaetze`'),
+            'workstationCount__intern' => 'availability.Anzahlterminarbeitsplaetze',
             'workstationCount__public' => self::expression(
                 'GREATEST(0, `availability`.`Anzahlterminarbeitsplaetze` - `availability`.`reduktionTermineImInternet`)'
             )
@@ -88,13 +88,6 @@ class Availability extends Base implements MappingInterface
         return self::expression("
             $availability.StandortID = $process.StandortID
             AND $availability.OeffnungszeitID IS NOT NULL
-
-            -- ignore slots out of date range
-            AND ($process.Datum IS  NULL OR $process.Datum BETWEEN :start_process AND :end_process)
-
-            -- ignore availability out of date range
-            AND $availability.Endedatum >= :start_availability
-            AND $availability.Startdatum <= :end_availability
 
             -- ignore availability without appointment slots
             AND $availability.Anzahlterminarbeitsplaetze != 0
