@@ -12,7 +12,6 @@ class MailPart extends Base
     public function getEntityMapping()
     {
         return [
-            'id' => 'mailpart.id',
             'mime' => 'mailpart.mime',
             'content' => 'mailpart.content',
             'base64' => 'mailpart.base64'
