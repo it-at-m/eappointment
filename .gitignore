@@ -1,0 +1,7 @@
+*~
+composer.lock
+vendor
+coverage
+tags
+Makefile
+bin/*
