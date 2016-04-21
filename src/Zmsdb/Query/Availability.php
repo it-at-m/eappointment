@@ -83,24 +83,6 @@ class Availability extends Base implements MappingInterface
         $time = \BO\Zmsentites\Helper\DateTime::create($time);
     }
 
-    public function addGroupBy()
-    {
-        $this->query
-            ->groupBy('id')
-            ->groupBy('process.Datum')
-            ->groupBy('slotnr');
-        return $this;
-    }
-
-    public function addOrderBy()
-    {
-        $this->query
-            ->orderBy('id', 'ASC')
-            ->orderBy('process.Datum', 'ASC')
-            ->orderBy('slotnr', 'ASC');
-        return $this;
-    }
-
     public static function getJoinExpression($process, $availability)
     {
         return self::expression("
