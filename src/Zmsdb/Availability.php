@@ -9,10 +9,16 @@ class Availability extends Base
     public function readEntity($availabilityId, $resolveReferences = 0)
     {
         $query = new Query\Availability(Query\Base::SELECT);
-        $query->addEntityMapping()
+        $query
+            ->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
             ->addConditionAvailabilityId($availabilityId);
+
         $availability = $this->fetchOne($query, new Entity());
+        if (!isset($availability['department'])) {
+            $availability['department'] = (new Department())
+                ->readEntity($availability['scope']['department']['id'], $resolveReferences);
+        }
         return $availability;
     }
 

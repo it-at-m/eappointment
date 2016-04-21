@@ -8,6 +8,7 @@ use \Solution10\SQL\Update;
 use \Solution10\SQL\Delete;
 use \Solution10\SQL\Dialect\MySQL;
 use \Solution10\SQL\Expression;
+use \Solution10\SQL\ConditionBuilder;
 
 /**
  * Base class to construct entity specific queries

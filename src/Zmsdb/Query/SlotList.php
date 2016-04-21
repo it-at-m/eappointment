@@ -66,13 +66,12 @@ class SlotList
             standort s
             LEFT JOIN oeffnungszeit o USING(StandortID)
             LEFT JOIN buerger b ON b.StandortID = o.StandortID
-
         WHERE
             o.StandortID = :scope_id
             AND o.OeffnungszeitID IS NOT NULL
 
             -- ignore slots out of date range
-            AND (b.Datum IS  NULL OR b.Datum BETWEEN :start_process AND :end_process)
+            AND (b.Datum IS NULL OR b.Datum BETWEEN :start_process AND :end_process)
 
             -- ignore availability out of date range
             AND o.Endedatum >= :start_availability
@@ -137,13 +136,18 @@ class SlotList
     public function __construct(
         array $slotData = ['availability__id' => null],
         \DateTimeImmutable $start = null,
-        \DateTimeImmutable $stop = null
+        \DateTimeImmutable $stop = null,
+        \BO\Zmsentities\Availability $availability = null
     ) {
+        if (null !== $availability) {
+            $this->availability = $availability;
+        }
         $this->setSlotData($slotData);
         if (isset($this->availability['id'])) {
             $this->createSlots($start, $stop);
             $this->addSlotData($slotData);
         }
+
     }
 
     public static function getQuery()
@@ -170,14 +174,16 @@ class SlotList
     public function setSlotData(array $slotData)
     {
         $this->slotData = $slotData;
-        $availability = [];
-        foreach ($slotData as $key => $value) {
-            if (0 === strpos($key, 'availability__')) {
-                $newkey = str_replace('availability__', '', $key);
-                $availability[$newkey] = $value;
+        if (null === $this->availability) {
+            $availability = [];
+            foreach ($slotData as $key => $value) {
+                if (0 === strpos($key, 'availability__')) {
+                    $newkey = str_replace('availability__', '', $key);
+                    $availability[$newkey] = $value;
+                }
             }
+            $this->availability = new \BO\Zmsentities\Availability($availability);
         }
-        $this->availability = new \BO\Zmsentities\Availability($availability);
         return $this;
     }
 
