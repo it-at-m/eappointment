@@ -25,10 +25,17 @@ class Mail extends Base
         $entity->subject = self::createSubject($process);
         $entity->createIP = $process->createIP;
         $entity->department['id'] = $process['scope']['department']['id'];
-        $entity->multipart[] = array(
-            'mime' => 'text/html',
-            'content' => self::createMessage($process),
-            'base64' => true,
+        $entity->multipart = array(
+            array(
+                'mime' => 'text/html',
+                'content' => self::createMessage($process),
+                'base64' => true
+            ),
+            array(
+                'mime' => 'text/plain',
+                'content' => \html_entity_decode(self::createMessage($process)),
+                'base64' => true
+            )
         );
         return $entity;
     }
