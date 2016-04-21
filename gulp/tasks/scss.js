@@ -11,5 +11,5 @@ gulp.task('scss', [
         .pipe(sass().on('error', sass.logError))
         //.pipe(uglify())
         .pipe(sourcemaps.write('./'))
-        .pipe(gulp.dest('./public/_css/'))
+        .pipe(gulp.dest('./public/_css/'));
 });

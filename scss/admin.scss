@@ -21,6 +21,8 @@
 @import "bower_components/inuit-clearfix/_trumps.clearfix";
 @import "bower_components/inuit-responsive-tools/_tools.responsive";
 
+@import "bower_components/magic/magic";
+
 
 /**
  * Import our css
@@ -37,9 +39,17 @@
 @import "layout/form";
 @import "layout/font";
 @import "layout/tablelist";
+@import "layout/magic";
 
 // Page grids
 @import "page/lineups";
+
+// Element rules
+@import "element/button";
+@import "element/headline";
+@import "element/link";
+@import "element/paragraph";
+@import "element/rule";
 
 // Block rules
 @import "block/extend/board";
@@ -97,10 +107,4 @@
 @import "block/dayoff-bydepartmentandyear";
 @import "block/message";
 
-// Element rules
-@import "element/button";
-@import "element/headline";
-@import "element/link";
-@import "element/paragraph";
-@import "element/rule";
 

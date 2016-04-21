@@ -1,7 +1,7 @@
 .appointment-form {
     @extend 
         .board, 
-        .board--minHeight;
+        .board--minHeight !optional;
     .form-group {
         margin-bottom:      0.4em !important;
     }
