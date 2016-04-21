@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @package 115Mandant
+ * @package Zmsmessaging
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
@@ -16,10 +16,24 @@ class Application
     const IDENTIFIER = 'Zmsmessaging';
 
     const DEBUG = false;
+
     /*
      * -----------------------------------------------------------------------
      * ZMS Messaging access
      */
+
     public static $messaging = null;
 
+    /*
+     * -----------------------------------------------------------------------
+     * ZMS API access
+     */
+    public static $http = null;
+
+    public static $http_curl_config = array();
+
+    /**
+     * HTTP url for api
+     */
+    const HTTP_BASE_URL = 'http://user:pass@host.tdl';
 }

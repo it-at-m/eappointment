@@ -2,21 +2,12 @@
 // @codingStandardsIgnoreFile
 
 // initialize the static \App singleton
-include('../bootstrap.php');
+include(realpath(__DIR__) .'/../bootstrap.php');
 
-\App::$messaging = new \BO\Zmsmessaging\Mail();
-
-if (is_numeric($argv[1])) {
-   $queueId = $argv[1];
-} else {
-    error_log("No valid queueId, use: \n" . $argv[0] . " 12345 [--send,--verbose]");
-    exit (1);
-}
-
-if ('verbose' == $argv[0])
+if (preg_grep('#--?v(erbose)?#', $argv))
 {
-    echo "Teste Message fuer queueId $queueId\n";
-    if (true === \App::$messaging->sendTest($queueId)) {
+    echo "Teste Versand\n";
+    if (true === \App::$messaging->test()) {
         echo "Test Message erfolgreiche versandt.\n";
     } else {
         echo "Konnte Test Message nicht erfolgreich versenden.\n";
@@ -25,11 +16,11 @@ if ('verbose' == $argv[0])
 }
 else
 {
-    echo "Verschicke Message fuer queueId $queueId\n";
-    if (true === \App::$messaging->sendLive($queueId)) {
-        echo "Message erfolgreiche versandt.\n";
+    echo "Verschicke Messages\n";
+    if (true === \App::$messaging->init()) {
+        echo "Messages erfolgreiche versandt.\n";
     } else {
-        echo "Konnte Message nicht erfolgreich versenden.\n";
+        echo "Konnte Messages nicht erfolgreich versenden.\n";
         exit(1);
     }
 }
