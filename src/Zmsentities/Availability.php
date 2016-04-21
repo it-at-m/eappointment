@@ -2,8 +2,6 @@
 
 namespace BO\Zmsentities;
 
-use \Shrink0r\Monatic\Maybe;
-
 class Availability extends Schema\Entity
 {
     public static $schema = "availability.json";
@@ -88,10 +86,32 @@ class Availability extends Schema\Entity
             //}
             return false;
         }
+        if ($this->hasDayOff($dateTime) && $this->getDuration() > 2) {
+            return false;
+        }
         //if ($this->id == $debugAvailabilityId) {
         //    error_log("true == hasDate(".$dateTime->format('c').") ".$this);
         //}
         return true;
+    }
+
+    /**
+     * Check, if the dateTime is a dayoff date
+     *
+     * @param \DateTimeInterface $dateTime
+     *
+     * @return Bool
+     */
+    public function hasDayOff(\DateTimeInterface $dateTime)
+    {
+        if (isset($this['department']['dayoff'])) {
+            foreach ($this['department']['dayoff'] as $dayOff) {
+                if ($dayOff['date'] == $dateTime->getTimestamp()) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -146,6 +166,18 @@ class Availability extends Schema\Entity
             ->setTimestamp($this['endDate'])
             ->modify('today ' .  $this['endTime']);
         return $time;
+    }
+
+    /**
+     * Get duration of availability
+     *
+     * @return integer
+     */
+    public function getDuration()
+    {
+        $startTime = $this->getStartDateTime();
+        $endTime = $this->getEndDateTime();
+        return (int)$endTime->diff($startTime)->format("%a");
     }
 
     /**
