@@ -2,7 +2,8 @@
 // @codingStandardsIgnoreFile
 
 // initialize the static \App singleton
-require(APP_PATH . '/bootstrap.php');
+include('../bootstrap.php');
+
 \App::$messaging = new \BO\Zmsmessaging\Mail();
 
 if (is_numeric($argv[1])) {
