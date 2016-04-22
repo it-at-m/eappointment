@@ -12,11 +12,11 @@ class Availability extends Base implements MappingInterface
     public function addRequiredJoins()
     {
          $this->query->leftJoin(
-            new Alias(Scope::TABLE, 'scope'),
-            'availability.StandortID',
-            '=',
-            'scope.StandortID'
-        );
+             new Alias(Scope::TABLE, 'scope'),
+             'availability.StandortID',
+             '=',
+             'scope.StandortID'
+         );
     }
 
     public function getEntityMapping()
