@@ -20,22 +20,9 @@ class MailQueue extends Base
     public function addJoin()
     {
         return [
-            $this->addJoinMailPart(),
             $this->addJoinProcess(),
             $this->addJoinDepartment(),
         ];
-    }
-
-    protected function addJoinMailPart()
-    {
-        $this->query->leftJoin(
-            new Alias(MailPart::TABLE, 'mailpart'),
-            'mailpart.queueId',
-            '=',
-            self::TABLE .'.id'
-        );
-        $joinQuery = new MailPart($this->query);
-        return $joinQuery;
     }
 
     protected function addJoinProcess()
@@ -68,12 +55,8 @@ class MailQueue extends Base
     {
         return [
             'id' => 'mailqueue.id',
-            'process__id' => 'process.BuergerID',
-            'department__id' => 'department.BehoerdenID',
-            'multipart__0__queueId' => 'mailpart.queueId',
-            'multipart__0__mime' => 'mailpart.mime',
-            'multipart__0__content' => 'mailpart.content',
-            'multipart__0__base64' => 'mailpart.base64',
+            'process__id' => 'mailqueue.processID',
+            'department__id' => 'mailqueue.departmentID',
             'createIP' => 'mailqueue.createIP',
             'createTimestamp' => 'mailqueue.createTimestamp',
             'subject' => 'mailqueue.subject',

@@ -9,9 +9,24 @@ class MailPart extends Base
      */
     const TABLE = 'mailpart';
 
+    public function getEntityMapping()
+    {
+        return [
+            'mime' => 'mailpart.mime',
+            'content' => 'mailpart.content',
+            'base64' => 'mailpart.base64'
+        ];
+    }
+
     public function addConditionItemId($itemId)
     {
         $this->query->where('mailpart.id', '=', $itemId);
+        return $this;
+    }
+
+    public function addConditionQueueId($queueId)
+    {
+        $this->query->where('mailpart.queueId', '=', $queueId);
         return $this;
     }
 }
