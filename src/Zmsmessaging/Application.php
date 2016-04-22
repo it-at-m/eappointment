@@ -36,4 +36,12 @@ class Application
      * HTTP url for api
      */
     const HTTP_BASE_URL = 'http://user:pass@host.tdl';
+
+    /*
+     * -----------------------------------------------------------------------
+     * Logging PSR3 compatible
+     */
+    public static $log = null;
+
+    const MONOLOG_LOGLEVEL = \Monolog\Logger::WARNING;
 }

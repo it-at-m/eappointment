@@ -10,6 +10,8 @@ require(APP_PATH . '/vendor/autoload.php');
 // initialize the static \App singleton
 require(APP_PATH . '/config.php');
 
+\App::$log = new \Monolog\Logger('Zmsmessaging');
+
 \App::$http = new \BO\Zmsclient\Http(\App::HTTP_BASE_URL);
 \BO\Zmsclient\Psr7\Client::$curlopt = \App::$http_curl_config;
 
