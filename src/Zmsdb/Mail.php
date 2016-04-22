@@ -3,6 +3,7 @@
 namespace BO\Zmsdb;
 
 use \BO\Zmsentities\Mail as Entity;
+use \BO\Zmsentities\Collection\MailList as Collection;
 
 class Mail extends Base
 {
@@ -22,14 +23,25 @@ class Mail extends Base
         return $this->fetchOne($query, new Entity());
     }
 
-    public function readList($resolveReferences = 0)
+    public function readList($resolveReferences = 1)
     {
+        $mailList = new Collection();
         $query = new Query\MailQueue(Query\Base::SELECT);
         $query
             ->addEntityMapping()
             ->addResolvedReferences($resolveReferences);
-        return $this->fetchList($query, new Entity());
+        $result = $this->fetchList($query, new Entity());
+        if (count($result)) {
+            foreach ($result as $item) {
+                $multiPart = $this->readMultiPartByQueueId($item['id']);
+                $mail = $this->readEntity($item['id'], $item['process']['id'], $resolveReferences);
+                $mail->addMultiPart($multiPart);
+                $mailList->addMail($mail);
+            }
+        }
+        return $mailList;
     }
+
 
     public function writeInMailQueue(Entity $mail)
     {
@@ -80,5 +92,14 @@ class Mail extends Base
             $itemId,
             $processId
         ));
+    }
+
+    protected function readMultiPartByQueueId($queueId)
+    {
+        $query = new Query\MailPart(Query\Base::SELECT);
+        $query
+            ->addEntityMapping()
+            ->addConditionQueueId($queueId);
+        return $this->fetchList($query, new Entity());
     }
 }
