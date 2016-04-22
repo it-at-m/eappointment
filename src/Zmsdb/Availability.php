@@ -13,8 +13,8 @@ class Availability extends Base
             ->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
             ->addConditionAvailabilityId($availabilityId);
-
         $availability = $this->fetchOne($query, new Entity());
+        $availability['scope'] = (new Scope())->readEntity($availability['scope']['id'], $resolveReferences);
         if (!isset($availability['department'])) {
             $availability['department'] = (new Department())
                 ->readEntity($availability['scope']['department']['id'], $resolveReferences);
