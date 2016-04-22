@@ -19,6 +19,7 @@ class IcsAppointment extends Base
      */
     public function createIcsString(\BO\Zmsentities\Process $process)
     {
+        $entity = new \BO\Zmsentities\Ics();
         $appointment = $process->getFirstAppointment();
         ob_start();
         \BO\Slim\Render::html(
@@ -32,7 +33,8 @@ class IcsAppointment extends Base
             )
         );
         $result = \html_entity_decode(ob_get_contents());
+        $entity['content'] = $result;
         ob_end_clean();
-        return $result;
+        return $entity;
     }
 }
