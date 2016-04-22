@@ -9,7 +9,6 @@ namespace BO\Zmsapi;
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\Process as Query;
-use \BO\Zmsdb\Mail as MailQuery;
 
 /**
   * Handle requests concerning services
@@ -28,7 +27,7 @@ class ProcessConfirm extends BaseController
 
         //write mail in queue
         $mail = Notification\Mail::getEntityData($process);
-        (new MailQuery)->writeInMailQueue($mail);
+        $mail = new MailAdd($mail);
 
         $message->data = $process;
         Render::lastModified(time(), '0');

@@ -20,23 +20,26 @@ class Mail extends Base
      * */
     public static function getEntityData(\BO\Zmsentities\Process $process)
     {
+        $content = self::createMessage($process);
         $entity = new \BO\Zmsentities\Mail();
         $entity->process['id'] = $process->id;
         $entity->subject = self::createSubject($process);
         $entity->createIP = $process->createIP;
         $entity->department['id'] = $process['scope']['department']['id'];
-        $entity->multipart = array(
+        $entity->multipart = [
             array(
                 'mime' => 'text/html',
-                'content' => self::createMessage($process),
+                'content' => $content,
                 'base64' => true
             ),
             array(
                 'mime' => 'text/plain',
-                'content' => \html_entity_decode(self::createMessage($process)),
+                'content' => \html_entity_decode(
+                    strip_tags($content)
+                ),
                 'base64' => true
             )
-        );
+        ];
         return $entity;
     }
 }
