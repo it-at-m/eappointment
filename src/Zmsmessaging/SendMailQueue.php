@@ -43,12 +43,14 @@ class SendMailQueue extends BaseController
             $mail = new Entity($item);
             $process = new Process($item->process);
             $client = $process->getFirstClient();
-            $ics = $this->getIcs($subject, $process);
-
+            $ics = $this->getIcs($mail['subject'], $process);
+            var_export($ics);
             echo "Empfaenger: ". $client['familyName'] ."\n";
+            echo "E-Mail: ". $client['email'] ."\n";
             echo "Absender: ". $mail->department['email'] ."\n";
             echo "Betreff: $mail->subject\n";
-            echo "Content: ". $mail['multipart']['content'] ."\n";
+            echo "Content HTML: ". $mail['multipart'][0]['content'] ."\n";
+            echo "Content Text: ". $mail['multipart'][1]['content'] ."\n";
             echo "Ics: $ics\n\n";
         }
     }
@@ -56,7 +58,8 @@ class SendMailQueue extends BaseController
     private function getIcs($subject, $process)
     {
         if ('Terminbestaetigung' == $subject) {
-            return \App::$http->readGetResult('/process/'. $process->id .'/'. $process->authKey .'/ics/')->getData();
+            $ics = \App::$http->readGetResult('/process/'. $process->id .'/'. $process->authKey .'/ics/')->getEntity();
+            return $ics->content;
         }
         return null;
     }
