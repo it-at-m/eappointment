@@ -16,7 +16,7 @@ class MailQueue extends Base
             id=? AND
             processID=?
     ';
-    
+
     public function addJoin()
     {
         return [
@@ -25,19 +25,19 @@ class MailQueue extends Base
             $this->addJoinDepartment(),
         ];
     }
-    
+
     protected function addJoinMailPart()
     {
         $this->query->leftJoin(
             new Alias(MailPart::TABLE, 'mailpart'),
-            'mailpart.id',
+            'mailpart.queueId',
             '=',
-            self::TABLE .'.multipartID'
+            self::TABLE .'.id'
         );
         $joinQuery = new MailPart($this->query);
         return $joinQuery;
     }
-    
+
     protected function addJoinProcess()
     {
         $this->query->leftJoin(
@@ -50,7 +50,7 @@ class MailQueue extends Base
         $processQuery->addEntityMappingPrefixed($this->getPrefixed('process__'));
         return $processQuery;
     }
-    
+
     protected function addJoinDepartment()
     {
         $this->query->leftJoin(
@@ -63,24 +63,24 @@ class MailQueue extends Base
         $departmentQuery->addEntityMappingPrefixed($this->getPrefixed('department__'));
         return $departmentQuery;
     }
-    
+
     public function getEntityMapping()
     {
         return [
             'id' => 'mailqueue.id',
             'process__id' => 'process.BuergerID',
             'department__id' => 'department.BehoerdenID',
-            'multipart__0__id' => 'mailqueue.multipartID',
+            'multipart__0__queueId' => 'mailpart.queueId',
             'multipart__0__mime' => 'mailpart.mime',
             'multipart__0__content' => 'mailpart.content',
             'multipart__0__base64' => 'mailpart.base64',
             'createIP' => 'mailqueue.createIP',
             'createTimestamp' => 'mailqueue.createTimestamp',
             'subject' => 'mailqueue.subject',
-            
+
         ];
     }
-    
+
     public function getReferenceMapping()
     {
         return [
