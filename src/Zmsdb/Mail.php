@@ -33,39 +33,42 @@ class Mail extends Base
 
     public function writeInMailQueue(Entity $mail)
     {
-        foreach ($mail->multipart as $part) {
-            $query = new Query\MailQueue(Query\Base::INSERT);
-            $query->addValues(array(
-                'processID' => $mail->process['id'],
-                'departmentID' => $mail->department['id'],
-                'multipartID' => $this->writeInMailPart($part),
-                'createIP' => $mail->createIP,
-                'createTimestamp' => time(),
-                'subject' => $mail->subject,
-            ));
-            $result = $this->writeItem($query);
-            if ($result) {
-                $lastInsertId = $this->getWriter()->lastInsertId();
-                $mail = $this->readEntity($lastInsertId, $mail->process['id']);
-                return $mail;
+        $query = new Query\MailQueue(Query\Base::INSERT);
+        $query->addValues(array(
+            'processID' => $mail->process['id'],
+            'departmentID' => $mail->department['id'],
+            'createIP' => $mail->createIP,
+            'createTimestamp' => time(),
+            'subject' => $mail->subject,
+        ));
+        $result = $this->writeItem($query);
+        if ($result) {
+            $queueId = $this->getWriter()->lastInsertId();
+            foreach ($mail->multipart as $part) {
+                $this->writeInMailPart($queueId, $part);
             }
+            $mail = $this->readEntity($queueId, $mail->process['id']);
+            $status = true;
+        } else {
+            return false;
         }
-        return array();
+        return ($status) ? $mail : null;
     }
 
-    public function writeInMailPart($data)
+    public function writeInMailPart($queueId, $data)
     {
         $query = new Query\MailPart(Query\Base::INSERT);
         $query->addValues(array(
+            'queueId' => $queueId,
             'mime' => $data['mime'],
             'content' => $data['content'],
             'base64' => $data['base64'],
         ));
         $result = $this->writeItem($query);
         if ($result) {
-            $lastInsertId = $this->getWriter()->lastInsertId();
+            return true;
         }
-        return $lastInsertId;
+        return false;
     }
 
 
