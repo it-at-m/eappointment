@@ -21,9 +21,8 @@ class ProcessIcs extends BaseController
     {
         $message = Response\Message::create();
         $process = (new Query())->readEntity($itemId, $authKey, 2);
-        // @codingStandardsIgnoreStart
-        $message->data = (new Notification\IcsAppointment())->createIcsString($process);
-        // @codingStandardsIgnoreEnd
+        $ics = (new Notification\IcsAppointment())->createIcsString($process);
+        $message->data = $ics;
         Render::lastModified(time(), '0');
         Render::json($message);
     }
