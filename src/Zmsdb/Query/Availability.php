@@ -9,17 +9,14 @@ class Availability extends Base implements MappingInterface
      */
     const TABLE = 'oeffnungszeit';
 
-    public function addJoin()
+    public function addRequiredJoins()
     {
-        $this->query->leftJoin(
+         $this->query->leftJoin(
             new Alias(Scope::TABLE, 'scope'),
             'availability.StandortID',
             '=',
             'scope.StandortID'
         );
-        $scopeQuery = new Scope($this->query);
-        $scopeQuery->addEntityMappingPrefixed($this->getPrefixed('scope__'));
-        return [$scopeQuery];
     }
 
     public function getEntityMapping()

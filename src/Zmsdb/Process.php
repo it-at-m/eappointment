@@ -15,11 +15,10 @@ class Process extends Base
             ->addResolvedReferences($resolveReferences)
             ->addConditionProcessId($processId)
             ->addConditionAuthKey($authKey);
-        //\App::$log->debug($query->getSql());
-        // var_dump($this->fetchOne($query, new Entity()));
         $process = $this->fetchOne($query, new Entity());
         $process['requests'] = (new Request())->readRequestByProcessId($processId, $resolveReferences);
         $process['status'] = (new Status())->readProcessStatus($processId, $authKey);
+        $process['scope'] = (new Scope())->readEntity($process['scope']['id'], $resolveReferences);
         $process = $this->addDldbData($process, $resolveReferences);
         return $process;
     }

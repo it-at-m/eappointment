@@ -42,7 +42,6 @@ class Process extends Base implements MappingInterface
     public function addJoin()
     {
         return [
-            $this->addJoinScope(),
             $this->addJoinAvailability(),
         ];
     }
@@ -59,23 +58,6 @@ class Process extends Base implements MappingInterface
         );
         $joinQuery = new Availability($this->query);
         $joinQuery->addEntityMappingPrefixed($this->getPrefixed('appointments__0__availability__'));
-        return $joinQuery;
-    }
-
-    /**
-     * Add scope to the dataset
-     *
-     */
-    protected function addJoinScope()
-    {
-        $this->query->leftJoin(
-            new Alias(Scope::TABLE, 'scope'),
-            'process.StandortID',
-            '=',
-            'scope.StandortID'
-        );
-        $joinQuery = new Scope($this->query);
-        $joinQuery->addEntityMappingPrefixed($this->getPrefixed('scope__'));
         return $joinQuery;
     }
 
@@ -111,6 +93,7 @@ class Process extends Base implements MappingInterface
             'appointments__0__date' => self::expression(
                 'UNIX_TIMESTAMP(CONCAT(`process`.`Datum`, " ", `process`.`Uhrzeit`))'
             ),
+            'scope__id' => 'process.StandortID',
             'appointments__0__scope__id' => 'process.StandortID',
             //'appointments__0__slotCount' => 'process.hatFolgetermine',
             'appointments__0__slotCount' => self::expression('(SELECT COUNT(*) + 1
