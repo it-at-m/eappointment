@@ -27,7 +27,7 @@ class SendMailQueue extends BaseController
             $mail = new Entity($item);
             $process = new Process($item->process);
             $client = $process->getFirstClient();
-            $ics = $this->getIcs($subject, $process);
+            $ics = $this->getIcs($mail['subject'], $process);
 
             $result = $this->send($client, $mail, $ics);
             if (true !== $result) {
@@ -44,7 +44,6 @@ class SendMailQueue extends BaseController
             $process = new Process($item->process);
             $client = $process->getFirstClient();
             $ics = $this->getIcs($mail['subject'], $process);
-            var_export($ics);
             echo "Empfaenger: ". $client['familyName'] ."\n";
             echo "E-Mail: ". $client['email'] ."\n";
             echo "Absender: ". $mail->department['email'] ."\n";
@@ -53,6 +52,7 @@ class SendMailQueue extends BaseController
             echo "Content Text: ". $mail['multipart'][1]['content'] ."\n";
             echo "Ics: $ics\n\n";
         }
+        return true;
     }
 
     private function getIcs($subject, $process)
@@ -66,26 +66,26 @@ class SendMailQueue extends BaseController
 
     private function send($client, $mail, $ics = null)
     {
-        $encoding = ($mail->multipart->base64) ? 'base64' : 'quoted-printable';
-        $mail = new PHPMailer(true);
-        $mail->IsHTML(true);
-        $mail->CharSet = 'text/html; charset=UTF-8;';
-        $mail->SetLanguage("de");
-        $mail->IsSMTP(); // telling the class to use SMTP
-        $mail->Host = "localhost"; // SMTP-Server
-        $mail->Port = 25; // set the SMTP port for the GMAIL server
-        $mail->SMTPAuth = false;
-        $mail->Encoding = $encoding;
+        $encoding = ($mail['multipart'][0]['base64']) ? 'base64' : 'quoted-printable';
+        $mailer = new PHPMailer(true);
+        $mailer->IsHTML(true);
+        $mailer->CharSet = 'UTF-8';
+        $mailer->SetLanguage("de");
+        $mailer->IsSMTP(); // telling the class to use SMTP
+        $mailer->Host = "localhost"; // SMTP-Server
+        $mailer->Port = 25; // set the SMTP port for the GMAIL server
+        $mailer->SMTPAuth = false;
+        $mailer->Encoding = $encoding;
 
         try {
-            $mail->AddAddress($client->familyName, $client->email);
-            $mail->SetFrom($mail->department->email);
-            $mail->FromName = $mail->department->name;
-            $mail->Subject = $mail->subject;
-            $mail->AltBody = \strip_tags($mail['multipart']['content']);
-            $mail->MsgHTML($mail['multipart']['content']);
+            $mailer->AddAddress($client['email'], $client['email']);
+            $mailer->SetFrom($mail['department']['email']);
+            $mailer->FromName = $mail['department']['name'];
+            $mailer->Subject = $mail['subject'];
+            $mailer->AltBody = $mail['multipart'][1]['content'];
+            $mailer->MsgHTML($mail['multipart'][0]['content']);
             if (null !== $ics) {
-                $mail->AddStringAttachment(
+                $mailer->AddStringAttachment(
                     $ics,
                     "Termin.ics",
                     $encoding,
@@ -100,8 +100,8 @@ class SendMailQueue extends BaseController
             return $exception->getMessage();
         }
 
-        if (!$mail->Send()) {
-            \App::$log->debug('Zmsmessaging Failed', [$mail->ErrorInfo]);
+        if (!$mailer->Send()) {
+            \App::$log->debug('Zmsmessaging Failed', [$mailer->ErrorInfo]);
             return $message;
         } else {
             return true;
