@@ -117,7 +117,7 @@ class Calendar extends Base
             $calendar['processing']['slotlist']->toReducedBySlots($slotsRequired);
             $calendar['processing']['slotlist']->addToCalendar($calendar, $freeProcessesDate);
             if (null !== $slotData["availability__id"]) {
-                $availability = (new Availability())->readEntity($slotData["availability__id"], 2);
+                $availability = (new Availability())->readEntity($slotData["availability__id"], 1);
                 $calendar['processing']['slotlist'] = new SlotList(
                     $slotData,
                     $month->modify('first day of')->modify('00:00:00'),

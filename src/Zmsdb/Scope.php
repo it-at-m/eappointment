@@ -60,7 +60,7 @@ class Scope extends Base
     protected function addDldbData($scope, $resolveReferences)
     {
         if (isset($scope['provider'])) {
-            if ($resolveReferences >= 2 && $scope['provider']['source'] == 'dldb') {
+            if ($resolveReferences > 1 && $scope['provider']['source'] == 'dldb') {
                 $scope['provider']['data'] = Helper\DldbData::readExtendedProviderData(
                     $scope['provider']['source'],
                     $scope['provider']['id']
