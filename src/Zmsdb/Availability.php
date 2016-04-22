@@ -14,10 +14,10 @@ class Availability extends Base
             ->addResolvedReferences($resolveReferences)
             ->addConditionAvailabilityId($availabilityId);
         $availability = $this->fetchOne($query, new Entity());
-        $availability['scope'] = (new Scope())->readEntity($availability['scope']['id'], $resolveReferences);
+        $availability['scope'] = (new Scope())->readEntity($availability['scope']['id'], 1);
         if (!isset($availability['department'])) {
             $availability['department'] = (new Department())
-                ->readEntity($availability['scope']['department']['id'], $resolveReferences);
+                ->readEntity($availability['scope']['department']['id'], 1);
         }
         return $availability;
     }
