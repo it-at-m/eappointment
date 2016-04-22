@@ -18,6 +18,7 @@
         },
         "multipart": [
             {
+                "queueId": "123",
                 "mime": "text/html",
                 "content": "<h1>Title</h1><p>Message</p>",
                 "base64": false
@@ -67,6 +68,10 @@
             "items": {
                 "type": "object",
                 "properties": {
+                	"id": {
+			            "type": "integer",
+			            "description": "number of mail queue entry"
+			        },
                     "mime": {
                         "type": "string",
                         "description": "mime type used in 'Content-Type', should include charset if necessary"
