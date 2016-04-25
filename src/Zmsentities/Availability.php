@@ -271,6 +271,32 @@ class Availability extends Schema\Entity
         return $slotList;
     }
 
+    /**
+     * Update workstationCount to number of calculated appointments
+     *
+     * @return self cloned
+     */
+    public function withCalculatedSlots()
+    {
+        $availability = clone $this;
+        $startTime = Helper\DateTime::create($this['startTime']);
+        $stopTime = Helper\DateTime::create($this['endTime']);
+        $openingSeconds = $stopTime->getTimestamp() - $startTime->getTimestamp();
+        $openingMinutes = floor($openingSeconds / 60);
+        $slices = 0;
+        if ($this['slotTimeInMinutes'] > 0) {
+            $slices = floor($openingMinutes / $this['slotTimeInMinutes']);
+        }
+        $slot = new Slot([
+            'type' => 'free',
+            'intern' => $this['workstationCount']['intern'] * $slices,
+            'callcenter' => $this['workstationCount']['callcenter'] * $slices,
+            'public' => $this['workstationCount']['public'] * $slices,
+        ]);
+        $availability['workstationCount'] = $slot;
+        return $availability;
+    }
+
     public function __toString()
     {
         $info = "Availability #" . $this['id'];
