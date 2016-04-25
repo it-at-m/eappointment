@@ -17,4 +17,9 @@ class Client extends Schema\Entity
             'telephone' => ''
         ];
     }
+
+    public function hasEmail()
+    {
+        return (!empty($this->email));
+    }
 }
