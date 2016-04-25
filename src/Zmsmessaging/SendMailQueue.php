@@ -8,6 +8,8 @@
 namespace BO\Zmsmessaging;
 
 use \BO\Zmsentities\Mail as Entity;
+use \BO\Zmsentities\Client as Client;
+use \BO\Zmsentities\Ics as Ics;
 use \BO\Zmsentities\Process;
 use \PHPMailer as PHPMailer;
 use \phpmailerException as phpmailerException;
@@ -48,8 +50,8 @@ class SendMailQueue extends BaseController
             echo "E-Mail: ". $client['email'] ."\n";
             echo "Absender: ". $mail->department['email'] ."\n";
             echo "Betreff: $mail->subject\n";
-            echo "Content HTML: ". $mail['multipart'][0]['content'] ."\n";
-            echo "Content Text: ". $mail['multipart'][1]['content'] ."\n";
+            echo "Content HTML: ". $mail->getHtmlPart() ."\n";
+            echo "Content Text: ". $mail->getPlainText() ."\n";
             echo "Ics: $ics\n\n";
         }
         return true;
@@ -59,22 +61,18 @@ class SendMailQueue extends BaseController
     {
         if ('Terminbestaetigung' == $subject) {
             $ics = \App::$http->readGetResult('/process/'. $process->id .'/'. $process->authKey .'/ics/')->getEntity();
-            return $ics->content;
+            return $ics;
         }
         return null;
     }
 
-    private function send($client, $mail, $ics = null)
+    private function send(Client $client, Entity $mail, Ics $ics = null)
     {
-        $encoding = ($mail['multipart'][0]['base64']) ? 'base64' : 'quoted-printable';
+        $encoding = ($mail->isEncoding()) ? 'base64' : 'quoted-printable';
         $mailer = new PHPMailer(true);
         $mailer->IsHTML(true);
         $mailer->CharSet = 'UTF-8';
         $mailer->SetLanguage("de");
-        $mailer->IsSMTP(); // telling the class to use SMTP
-        $mailer->Host = "localhost"; // SMTP-Server
-        $mailer->Port = 25; // set the SMTP port for the GMAIL server
-        $mailer->SMTPAuth = false;
         $mailer->Encoding = $encoding;
 
         try {
@@ -82,11 +80,11 @@ class SendMailQueue extends BaseController
             $mailer->SetFrom($mail['department']['email']);
             $mailer->FromName = $mail['department']['name'];
             $mailer->Subject = $mail['subject'];
-            $mailer->AltBody = $mail['multipart'][1]['content'];
-            $mailer->MsgHTML($mail['multipart'][0]['content']);
+            $mailer->AltBody = $mail->getPlainPart();
+            $mailer->MsgHTML($mail->getHtmlPart());
             if (null !== $ics) {
                 $mailer->AddStringAttachment(
-                    $ics,
+                    $ics->getContent(),
                     "Termin.ics",
                     $encoding,
                     "text/calendar; charset=utf-8; method=REQUEST"
@@ -104,6 +102,7 @@ class SendMailQueue extends BaseController
             \App::$log->debug('Zmsmessaging Failed', [$mailer->ErrorInfo]);
             return $message;
         } else {
+            $result = \App::$http->readDeleteResult('/mails/'. $mail->id .'/')->getEntity();
             return true;
         }
     }
