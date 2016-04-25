@@ -34,9 +34,7 @@ class Mail extends Base
             ),
             array(
                 'mime' => 'text/plain',
-                'content' => \html_entity_decode(
-                    strip_tags($content)
-                ),
+                'content' => $entity->toPlainText($content),
                 'base64' => true
             )
         ];
