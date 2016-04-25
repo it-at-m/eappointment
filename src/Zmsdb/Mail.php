@@ -12,14 +12,13 @@ class Mail extends Base
      *
      * @return \BO\Zmsentities\Mail
      */
-    public function readEntity($itemId, $processId, $resolveReferences = 1)
+    public function readEntity($itemId, $resolveReferences = 1)
     {
         $query = new Query\MailQueue(Query\Base::SELECT);
         $query
             ->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
-            ->addConditionItemId($itemId)
-            ->addConditionProcessId($processId);
+            ->addConditionItemId($itemId);
         return $this->fetchOne($query, new Entity());
     }
 
@@ -34,14 +33,13 @@ class Mail extends Base
         if (count($result)) {
             foreach ($result as $item) {
                 $multiPart = $this->readMultiPartByQueueId($item['id']);
-                $mail = $this->readEntity($item['id'], $item['process']['id'], $resolveReferences);
+                $mail = $this->readEntity($item['id'], $resolveReferences);
                 $mail->addMultiPart($multiPart);
                 $mailList->addMail($mail);
             }
         }
         return $mailList;
     }
-
 
     public function writeInMailQueue(Entity $mail)
     {
@@ -59,7 +57,7 @@ class Mail extends Base
             foreach ($mail->multipart as $part) {
                 $this->writeInMailPart($queueId, $part);
             }
-            $mail = $this->readEntity($queueId, $mail->process['id']);
+            $mail = $this->readEntity($queueId);
             $status = true;
         } else {
             return false;
@@ -83,14 +81,12 @@ class Mail extends Base
         return false;
     }
 
-
-    public function deleteFromQueue($itemId, $processId)
+    public function deleteEntity($itemId)
     {
-        $query = Query\Session::QUERY_DELETE;
+        $query = Query\MailQueue::QUERY_DELETE;
         $statement = $this->getWriter()->prepare($query);
         $statement->execute(array(
-            $itemId,
-            $processId
+            $itemId
         ));
     }
 
