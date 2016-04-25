@@ -20,6 +20,9 @@ class IcsAppointment extends Base
     public function createIcsString(\BO\Zmsentities\Process $process)
     {
         $entity = new \BO\Zmsentities\Ics();
+        $mail = new \BO\Zmsentities\Mail();
+        $message = \base64_decode(self::createMessage($process));
+        $plainContent = $mail->toPlainText($message);
         $appointment = $process->getFirstAppointment();
         ob_start();
         \BO\Slim\Render::html(
@@ -29,11 +32,11 @@ class IcsAppointment extends Base
                 'startTime' => $appointment->getStartTime(),
                 'endTime' => $appointment->getEndTime(),
                 'process' => $process,
-                'message' => self::createMessage($process)
+                'message' => $plainContent
             )
         );
         $result = \html_entity_decode(ob_get_contents());
-        $entity['content'] = $result;
+        $entity['content'] = \base64_encode($result);
         ob_end_clean();
         return $entity;
     }
