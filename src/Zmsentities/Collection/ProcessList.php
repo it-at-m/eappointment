@@ -1,7 +1,7 @@
 <?php
 namespace BO\Zmsentities\Collection;
 
-class ProcessList extends BaseController
+class ProcessList extends Base
 {
 
     public function addProcess($data)
