@@ -10,11 +10,10 @@ class MailQueue extends Base
     const TABLE = 'mailqueue';
 
     const QUERY_DELETE = '
-        DELETE FROM
-            '. self::TABLE .'
+        DELETE mq,  mp FROM
+            '. self::TABLE .' mq, '. Mailpart::TABLE .' mp
         WHERE
-            id=? AND
-            processID=?
+            mq.id = mp.queueId AND mq.id=?
     ';
 
     public function addJoin()
@@ -75,12 +74,6 @@ class MailQueue extends Base
     public function addConditionItemId($itemId)
     {
         $this->query->where('mailqueue.id', '=', $itemId);
-        return $this;
-    }
-
-    public function addConditionProcessId($processId)
-    {
-        $this->query->where('mailqueue.processID', '=', $processId);
         return $this;
     }
 }
