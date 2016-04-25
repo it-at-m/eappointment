@@ -8,7 +8,8 @@ import $ from "jquery";
 
 // Import Views
 import FormView from "./element/form";
-import AvailabilityTimetableView from "./element/availability-timetable";
+import AvailabilityTimetableView from "./block/availability-timetable";
+import AvailabilityFormView from "./block/availability-form";
 
 // Bind jQuery on $ for testing
 window.$ = $;
@@ -16,6 +17,7 @@ window.$ = $;
 // Init Views
 $('form').each(function() { new FormView(this);});
 $('.availability-timetable').each(function() { new AvailabilityTimetableView(this);});
+$('.availability-form').each(function() { new AvailabilityFormView(this);});
 
 // Say hello
 console.log("Welcome to the ZMS admin interface...");

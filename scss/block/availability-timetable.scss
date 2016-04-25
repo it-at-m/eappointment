@@ -86,7 +86,21 @@ $openingBarTop:                 21rem;
                         font-size:      $inuit-base-font-size;
                         line-height:    $inuit-base-line-height;
                     }
-                    &.selected {
+                    &.selected .item-bar_inner:before{
+                        content: "✎ ";
+                        padding-right: 0.5em;
+                    }
+                    &.selected:after {
+                        content: '\A';
+                        position: absolute;
+                        width: 100%;
+                        height: 100%;
+                        background: $boardHeaderBlue;
+                        opacity: 0.1;
+                    }
+                }
+                a.item-bar { 
+                    &:hover {
                         opacity: 0.5;
                     }
                 }

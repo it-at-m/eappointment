@@ -57,8 +57,11 @@
     '\BO\Zmsadmin\PickupKeyboard:render')
     ->name("pickup_keyboard");
 
-\App::$slim->get('/scope/:id/availability/day/',
+\App::$slim->get('/scope/:scope_id/availability/day/',
     '\BO\Zmsadmin\ScopeAvailabilityDay:render')
+    ->conditions([
+        'scope_id' => '\d+'
+    ])
     ->name("scopeavailabilityday");
 
 \App::$slim->get('/cluster/',
