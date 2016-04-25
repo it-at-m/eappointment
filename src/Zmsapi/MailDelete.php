@@ -7,6 +7,7 @@
 namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
+use \BO\Zmsdb\Mail as Query;
 
 /**
   * Handle requests concerning services
@@ -18,9 +19,11 @@ class MailDelete extends BaseController
      */
     public static function render($itemId)
     {
+        $query = new Query();
         $message = Response\Message::create();
-        $message->data = \BO\Zmsentities\Mail::createExample();
-        $message->data->id = $itemId;
+        $mail = $query->readEntity($itemId);
+        $query->deleteEntity($itemId);
+        $message->data = $mail;
         Render::lastModified(time(), '0');
         Render::json($message);
     }

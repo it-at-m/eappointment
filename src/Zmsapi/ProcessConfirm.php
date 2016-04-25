@@ -27,8 +27,11 @@ class ProcessConfirm extends BaseController
         $process = (new Query())->updateProcessStatus($entity, 'confirmed');
 
         //write mail in queue
-        $entity = Notification\Mail::getEntityData($process);
-        (new Mail())->writeInMailQueue($entity);
+        $client = $process->getFirstClient();
+        if ($client->hasEmail()) {
+            $entity = Notification\Mail::getEntityData($process);
+            (new Mail())->writeInMailQueue($entity);
+        }
 
         $message->data = $process;
         Render::lastModified(time(), '0');
