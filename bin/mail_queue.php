@@ -14,7 +14,7 @@ if (preg_grep('#--?v(erbose)?#', $argv))
         exit(1);
     }
 }
-else
+else if (preg_grep('#--?s(end)?#', $argv))
 {
     echo "Verschicke Messages\n";
     if (true === \App::$messaging->init()) {
