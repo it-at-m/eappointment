@@ -1,7 +1,7 @@
 <?php
 namespace BO\Zmsentities\Collection;
 
-class DepartmentList extends BaseController
+class DepartmentList extends Base
 {
 
     public function addDepartment($department)

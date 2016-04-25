@@ -1,7 +1,7 @@
 <?php
 namespace BO\Zmsentities\Collection;
 
-class MailList extends BaseController
+class MailList extends Base
 {
 
     public function addMail($mail)

@@ -1,7 +1,7 @@
 <?php
 namespace BO\Zmsentities\Collection;
 
-class ProviderList extends BaseController
+class ProviderList extends Base
 {
 
     public function addProvider($provider)
