@@ -6,7 +6,7 @@
 
 namespace BO\Zmsentities\Collection;
 
-class BaseController extends \ArrayObject
+class Base extends \ArrayObject
 {
 
     public function sortByName()
