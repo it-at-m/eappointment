@@ -18,4 +18,13 @@ class AvailabilityList extends Base
         }
         return $max;
     }
+
+    public function withCalculatedSlots()
+    {
+        $list = clone $this;
+        foreach ($list as $key => $availability) {
+            $list[$key] = $availability->withCalculatedSlots();
+        }
+        return $list;
+    }
 }

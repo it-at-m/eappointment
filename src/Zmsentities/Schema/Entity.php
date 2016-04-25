@@ -135,4 +135,13 @@ class Entity extends \ArrayObject implements \JsonSerializable
     {
         return json_encode($this->jsonSerialize(), JSON_HEX_QUOT);
     }
+
+    public function __clone()
+    {
+        foreach ($this as $key => $property) {
+            if (is_object($property)) {
+                $this[$key] = clone $property;
+            }
+        }
+    }
 }
