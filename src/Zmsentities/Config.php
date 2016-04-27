@@ -12,6 +12,23 @@ class Config extends Schema\Entity
             'appointments' => [
                 'urlChange' => 'https://service-berlin/terminvereinbarung/termin/manage/',
                 'urlAppointments' => 'https://service-berlin/terminvereinbarung/',
+            ],
+            'notifications' => [
+                'kommandoAbsage' => 'Storno',
+                'kommandoAbfrage' => 'Berlin',
+                'number' => '0174-8882288',
+                'absage' => false,
+                'gateway' => 'mail',
+                'eMailkonfigurierbar' => false,
+                'benachrichtigungsfrist' => 10,
+                'headsUpContent' => '
+                    Sie sind in Kürze an der Reihe. Bitte kommen Sie zum Schalter. Ihre Vorgangsnr. ist
+                ',
+                'confirmationContent' => '
+                    Ihre Telefonnummer wurde erfolgreich registriert. Ihre Wartenr. lautet:
+                ',
+                'costs' => '0.15',
+                'erinnerungsvorlauf' => 180,
             ]
         ];
     }

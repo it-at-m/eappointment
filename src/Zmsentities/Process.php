@@ -82,6 +82,12 @@ class Process extends Schema\Entity
         return $this;
     }
 
+    public function updateClients($client)
+    {
+        $this->clients[0] = $client;
+        return $this;
+    }
+
     public function addAmendment($formData)
     {
         $this['amendment'] = $formData['amendment']['value'];
@@ -127,6 +133,11 @@ class Process extends Schema\Entity
             $client = new Client($data);
         }
         return $client;
+    }
+
+    public function getDepartmentId()
+    {
+        return (\array_key_exists('department', $this->scope)) ? $this->scope['department']['id'] : null;
     }
 
     public function getFirstAppointment()
