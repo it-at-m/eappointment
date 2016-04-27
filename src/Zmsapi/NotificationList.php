@@ -7,6 +7,7 @@
 namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
+use \BO\Zmsdb\Notification as Query;
 
 /**
   * Handle requests concerning services
@@ -18,8 +19,9 @@ class NotificationList extends BaseController
      */
     public static function render()
     {
+        $notificationList = (new Query())->readList(1);
         $message = Response\Message::create();
-        $message->data = array(\BO\Zmsentities\Notification::createExample());
+        $message->data = $notificationList;
         Render::json($message);
     }
 }
