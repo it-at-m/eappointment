@@ -5,7 +5,7 @@ namespace BO\Zmsdb;
 use \BO\Zmsentities\Notification as Entity;
 use \BO\Zmsentities\Collection\NotificationList as Collection;
 
-class Mail extends Base
+class Notification extends Base
 {
     /**
      * Fetch status from db
@@ -31,6 +31,11 @@ class Mail extends Base
             ->addResolvedReferences($resolveReferences);
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
+            foreach ($result as $notification) {
+                $scope = (new Scope())->readEntity($notification->getScopeId(), $resolveReferences);
+                $notification->addScope($scope);
+                $notificationList->addNotification($notification);
+            }
             $notificationList = new Collection($result);
         }
         return $notificationList;
@@ -38,23 +43,26 @@ class Mail extends Base
 
     public function writeInQueue(Entity $notification)
     {
+        $scope = (new Scope())->readEntity($notification->getScopeId());
+        if (!$scope->hasNotification()) {
+            return false;
+        }
         $query = new Query\Notification(Query\Base::INSERT);
         $query->addValues(array(
             'processID' => $notification->process['id'],
             'departmentID' => $notification->department['id'],
             'createIP' => $notification->createIP,
             'createTimestamp' => time(),
-            'subject' => $notification->subject,
+            'message' => $notification->message
         ));
         $result = $this->writeItem($query);
         if ($result) {
             $itemId = $this->getWriter()->lastInsertId();
             $notification = $this->readEntity($itemId);
-            $status = true;
         } else {
             return false;
         }
-        return ($status) ? $notification : null;
+        return true;
     }
 
     public function deleteEntity($itemId)

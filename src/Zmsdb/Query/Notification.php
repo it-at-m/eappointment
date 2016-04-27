@@ -2,7 +2,7 @@
 
 namespace BO\Zmsdb\Query;
 
-class NotificationQueue extends Base
+class Notification extends Base
 {
     /**
      * @var String TABLE mysql table reference
@@ -21,7 +21,7 @@ class NotificationQueue extends Base
     {
         $this->query->leftJoin(
             new Alias(Process::TABLE, 'process'),
-            'notificationqueue.processID',
+            'notification.processID',
             '=',
             'process.BuergerID'
         );
@@ -34,7 +34,7 @@ class NotificationQueue extends Base
     {
         $this->query->leftJoin(
             new Alias(Department::TABLE, 'department'),
-            'notificationqueue.departmentID',
+            'notification.departmentID',
             '=',
             'department.BehoerdenID'
         );
@@ -46,12 +46,17 @@ class NotificationQueue extends Base
     public function getEntityMapping()
     {
         return [
-            'id' => 'notificationqueue.id',
-            'process__id' => 'notificationqueue.processID',
-            'department__id' => 'notificationqueue.departmentID',
-            'createIP' => 'notificationqueue.createIP',
-            'createTimestamp' => 'notificationqueue.createTimestamp',
-            'subject' => 'notificationqueue.subject',
+            'id' => 'notification.id',
+            'process__id' => 'notification.processID',
+            'process__authKey' => self::expression('(SELECT absagecode
+                    FROM ' . Process::TABLE . ' as `NotificationProcess`
+                    WHERE
+                        `NotificationProcess`.`BuergerID` = `notification`.`processID`
+                )'),
+            'department__id' => 'notification.departmentID',
+            'createIP' => 'notification.createIP',
+            'createTimestamp' => 'notification.createTimestamp',
+            'message' => 'notification.message',
 
         ];
     }
@@ -66,7 +71,7 @@ class NotificationQueue extends Base
 
     public function addConditionItemId($itemId)
     {
-        $this->query->where('notificationqueue.id', '=', $itemId);
+        $this->query->where('notification.id', '=', $itemId);
         return $this;
     }
 }
