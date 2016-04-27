@@ -1,5 +1,5 @@
 <?php
-namespace BO\Zmsapi\Notification;
+namespace BO\Zmsapi\Messaging;
 
 /**
  *

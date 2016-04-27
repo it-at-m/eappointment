@@ -1,5 +1,5 @@
 <?php
-namespace BO\Zmsapi\Notification;
+namespace BO\Zmsapi\Messaging;
 
 /**
  *
@@ -24,6 +24,25 @@ class Base extends \ArrayObject
                 'config' => \BO\Zmsdb\Config::readEntity()
             )
         );
+        $message = ob_get_contents();
+        ob_end_clean();
+        return \base64_encode($message);
+    }
+
+    protected static function createNotificationMessage($process)
+    {
+        $appointment = $process->getFirstAppointment();
+        $template = 'notifications.twig';
+        ob_start();
+        \BO\Slim\Render::html(
+            'notification/'. $template,
+            array(
+                'date' => $appointment->toDateTime()->format('U'),
+                'client' => $process->getFirstClient(),
+                'process' => $process,
+                'config' => \BO\Zmsdb\Config::readEntity()
+            )
+            );
         $message = ob_get_contents();
         ob_end_clean();
         return \base64_encode($message);
