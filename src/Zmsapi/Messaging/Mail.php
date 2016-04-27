@@ -5,7 +5,7 @@
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
-namespace BO\Zmsapi\Notification;
+namespace BO\Zmsapi\Messaging;
 
 class Mail extends Base
 {
@@ -23,6 +23,7 @@ class Mail extends Base
         $content = self::createMessage($process);
         $entity = new \BO\Zmsentities\Mail();
         $entity->process['id'] = $process->id;
+        $entity->process['authKey'] = $process->authKey;
         $entity->subject = self::createSubject($process);
         $entity->createIP = $process->createIP;
         $entity->department['id'] = $process['scope']['department']['id'];
