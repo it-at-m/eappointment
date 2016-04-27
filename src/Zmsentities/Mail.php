@@ -6,6 +6,16 @@ class Mail extends Schema\Entity
 {
     public static $schema = "mail.json";
 
+    public function getProcessId()
+    {
+        return (\array_key_exists('id', $this->process)) ? $this->process['id'] : null;
+    }
+
+    public function getProcessAuthKey()
+    {
+        return (\array_key_exists('authKey', $this->process)) ? $this->process['authKey'] : null;
+    }
+
     public function addMultiPart($multiPart)
     {
         $this->multipart = $multiPart;
@@ -64,5 +74,16 @@ class Mail extends Schema\Entity
         $content = \implode("\n", $new_lines);
         $content = \html_entity_decode($content);
         return $content;
+    }
+
+    public function getFirstClient()
+    {
+        $client = null;
+        error_log(var_export($this->process, 1));
+        if (count($this->process['clients']) > 0) {
+            $data = current($this->process['clients']);
+            $client = new Client($data);
+        }
+        return $client;
     }
 }

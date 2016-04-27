@@ -18,4 +18,29 @@ class Scope extends Schema\Entity
         }
         throw new \Exception("No reference to a provider found");
     }
+
+    public function hasNotification()
+    {
+        return ($this->preferences['notifications']['enabled']);
+    }
+
+    public function getNotificationPreferences()
+    {
+        return ($this->preferences['notifications']);
+    }
+
+    public function getDepartmentId()
+    {
+        return ($this->department['id']);
+    }
+
+    public function getConfirmationContent()
+    {
+        return ($this->preferences['notifications']['confirmationContent']);
+    }
+
+    public function getHeadsUpContent()
+    {
+        return ($this->preferences['notifications']['headsUpContent']);
+    }
 }

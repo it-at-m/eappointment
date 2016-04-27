@@ -26,6 +26,7 @@
                 }
             ],
             "id": 123456,
+            "authKey": "abcd",
             "reminderTimestamp": 1447931730000,
             "scope": {
                 "id": 123
