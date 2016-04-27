@@ -42,7 +42,7 @@ class Base extends \ArrayObject
                 'process' => $process,
                 'config' => \BO\Zmsdb\Config::readEntity()
             )
-            );
+        );
         $message = ob_get_contents();
         ob_end_clean();
         return \base64_encode($message);
