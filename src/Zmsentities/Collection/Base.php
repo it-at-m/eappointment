@@ -26,4 +26,13 @@ class Base extends \ArrayObject
         });
         return $itemList;
     }
+
+    public function __clone()
+    {
+        foreach ($this as $key => $property) {
+            if (is_object($property)) {
+                $this[$key] = clone $property;
+            }
+        }
+    }
 }
