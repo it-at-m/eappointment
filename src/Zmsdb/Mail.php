@@ -41,8 +41,15 @@ class Mail extends Base
         return $mailList;
     }
 
-    public function writeInMailQueue(Entity $mail)
+    public function writeInQueue(Entity $mail)
     {
+        //write mail in queue
+        $process = (new Process())->readEntity($mail->getProcessId(), $mail->getProcessAuthKey());
+        $client = $process->getFirstClient();
+        if (!$client->hasEmail() || $client->emailSendCount > 0) {
+            return false;
+        }
+
         $query = new Query\MailQueue(Query\Base::INSERT);
         $query->addValues(array(
             'processID' => $mail->process['id'],
@@ -57,12 +64,11 @@ class Mail extends Base
             foreach ($mail->multipart as $part) {
                 $this->writeInMailPart($queueId, $part);
             }
-            $mail = $this->readEntity($queueId);
-            $status = true;
+            //$mail = $this->readEntity($queueId);
         } else {
             return false;
         }
-        return ($status) ? $mail : null;
+        return true;
     }
 
     public function writeInMailPart($queueId, $data)

@@ -55,6 +55,11 @@ class MailQueue extends Base
         return [
             'id' => 'mailqueue.id',
             'process__id' => 'mailqueue.processID',
+            'process__authKey' => self::expression('(SELECT absagecode
+                    FROM ' . Process::TABLE . ' as `MailProcess`
+                    WHERE
+                        `MailProcess`.`BuergerID` = `mailqueue`.`processID`
+                )'),
             'department__id' => 'mailqueue.departmentID',
             'createIP' => 'mailqueue.createIP',
             'createTimestamp' => 'mailqueue.createTimestamp',
@@ -67,7 +72,7 @@ class MailQueue extends Base
     {
         return [
             'department__$ref' => self::expression('CONCAT("/department/", `scope`.`BehoerdenID`, "/")'),
-            'process__$ref' => self::expression('CONCAT("/process/", `process`.`BuergerID`, "/")'),
+            'process__$ref' => self::expression('CONCAT("/process/", `process`.`BuergerID`, "/", `process`.`absagecode`, "/")'),
         ];
     }
 
