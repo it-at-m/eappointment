@@ -64,7 +64,7 @@ class Mail extends Base
             foreach ($mail->multipart as $part) {
                 $this->writeInMailPart($queueId, $part);
             }
-            //$mail = $this->readEntity($queueId);
+            $this->updateProcessClient($process, $client);
         } else {
             return false;
         }
@@ -78,7 +78,7 @@ class Mail extends Base
             'queueId' => $queueId,
             'mime' => $data['mime'],
             'content' => $data['content'],
-            'base64' => $data['base64'],
+            'base64' => ($data['base64']) ? 1 : 0,
         ));
         $result = $this->writeItem($query);
         if ($result) {
@@ -103,5 +103,16 @@ class Mail extends Base
             ->addEntityMapping()
             ->addConditionQueueId($queueId);
         return $this->fetchList($query, new Entity());
+    }
+
+    private function updateProcessClient(
+        \BO\Zmsentities\Process $process,
+        \BO\Zmsentities\Client $client
+    ) {
+        $query = new Process();
+        $client->emailSendCount += 1;
+        //update process
+        $process->updateClients($client);
+        $query->updateEntity($process);
     }
 }
