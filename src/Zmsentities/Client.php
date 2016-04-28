@@ -23,6 +23,11 @@ class Client extends Schema\Entity
         return (!empty($this->email));
     }
 
+    public function hasTelephone()
+    {
+        return (!empty($this->telephone));
+    }
+
     public function getEmailSendCount()
     {
         return $this->emailSendCount;

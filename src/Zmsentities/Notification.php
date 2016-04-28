@@ -21,6 +21,11 @@ class Notification extends Schema\Entity
         return (\array_key_exists('authKey', $this->process)) ? $this->process['authKey'] : null;
     }
 
+    public function getDepartmentId()
+    {
+        return (\array_key_exists('id', $this->department)) ? $this->department['id'] : null;
+    }
+
     public function addScope($scope)
     {
         $this->process['scope'] = $scope;
