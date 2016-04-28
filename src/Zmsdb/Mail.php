@@ -44,9 +44,10 @@ class Mail extends Base
     public function writeInQueue(Entity $mail)
     {
         //write mail in queue
-        $process = (new Process())->readEntity($mail->getProcessId(), $mail->getProcessAuthKey());
+        $process = new \BO\Zmsentities\Process($mail->process);
+        $scope =  new \BO\Zmsentities\Scope($mail->process['scope']);
         $client = $process->getFirstClient();
-        if (!$client->hasEmail() || $client->emailSendCount > 0) {
+        if (!$client->hasEmail() || !$scope->hasNotificationEnabled()) {
             return false;
         }
 

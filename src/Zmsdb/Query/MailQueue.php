@@ -71,7 +71,7 @@ class MailQueue extends Base
     public function getReferenceMapping()
     {
         return [
-            'department__$ref' => self::expression('CONCAT("/department/", `scope`.`BehoerdenID`, "/")'),
+            'department__$ref' => self::expression('CONCAT("/department/", `department`.`BehoerdenID`, "/")'),
             'process__$ref' => self::expression('CONCAT(
                 "/process/", `process`.`BuergerID`, "/", `process`.`absagecode`, "/"
             )'),
