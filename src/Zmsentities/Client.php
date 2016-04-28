@@ -22,4 +22,14 @@ class Client extends Schema\Entity
     {
         return (!empty($this->email));
     }
+
+    public function getEmailSendCount()
+    {
+        return $this->emailSendCount;
+    }
+
+    public function getNotificationsSendCount()
+    {
+        return $this->notificationsSendCount;
+    }
 }
