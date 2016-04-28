@@ -19,7 +19,7 @@ class Scope extends Schema\Entity
         throw new \Exception("No reference to a provider found");
     }
 
-    public function hasNotification()
+    public function hasNotificationEnabled()
     {
         return ($this->preferences['notifications']['enabled']);
     }
