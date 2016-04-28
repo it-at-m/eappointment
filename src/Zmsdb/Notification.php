@@ -43,8 +43,10 @@ class Notification extends Base
 
     public function writeInQueue(Entity $notification)
     {
-        $scope = (new Scope())->readEntity($notification->getScopeId());
-        if (!$scope->hasNotification()) {
+        $process = new \BO\Zmsentities\Process($notification->process);
+        $department = new \BO\Zmsentities\Department($notification->department);
+        $client = $process->getFirstClient();
+        if (!$client->hasTelephone() || !$department->hasNotificationEnabled()) {
             return false;
         }
         $query = new Query\Notification(Query\Base::INSERT);

@@ -64,8 +64,8 @@ class Notification extends Base
     public function getReferenceMapping()
     {
         return [
-            'department__$ref' => self::expression('CONCAT("/department/", `scope`.`BehoerdenID`, "/")'),
-            'process__$ref' => self::expression('CONCAT("/process/", `process`.`BuergerID`, "/")'),
+            'department__$ref' => self::expression('CONCAT("/department/", `department`.`BehoerdenID`, "/")'),
+            'process__$ref' => self::expression('CONCAT("/process/", `process`.`BuergerID`, "/", `process`.`absagecode`")'),
         ];
     }
 
