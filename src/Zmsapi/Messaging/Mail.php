@@ -22,11 +22,10 @@ class Mail extends Base
     {
         $content = self::createMessage($process);
         $entity = new \BO\Zmsentities\Mail();
-        $entity->process['id'] = $process->id;
-        $entity->process['authKey'] = $process->authKey;
+        $entity->process = $process;
         $entity->subject = self::createSubject($process);
         $entity->createIP = $process->createIP;
-        $entity->department['id'] = $process['scope']['department']['id'];
+        $entity->department = $process['scope']['department'];
         $entity->multipart = [
             array(
                 'mime' => 'text/html',

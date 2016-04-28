@@ -21,11 +21,10 @@ class Notification extends Base
     public static function getEntityData(\BO\Zmsentities\Process $process)
     {
         $entity = new \BO\Zmsentities\Notification();
-        $entity->process['id'] = $process->id;
+        $entity->process = $process;
         $entity->message = self::createNotificationMessage($process);
         $entity->createIP = $process->createIP;
-        $entity->department['id'] = $process->getDepartmentId();
-        $entity->process['scope']['id'] = $process->getScopeId();
+        $entity->department = $process['scope']['department'];
         return $entity;
     }
 }
