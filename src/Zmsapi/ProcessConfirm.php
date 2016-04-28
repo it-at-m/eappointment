@@ -28,21 +28,13 @@ class ProcessConfirm extends BaseController
         $entity = new \BO\Zmsentities\Process($input);
         $process = $query->updateProcessStatus($entity, 'confirmed');
 
-        $client = $process->getFirstClient();
-
         //write mail in queue
         $mail = Messaging\Mail::getEntityData($process);
-        $mailQueued = (new Mail())->writeInQueue($mail);
-        $client->emailSendCount += ($mailQueued) ? 1 : 0;
+        MailAdd::render($mail);
 
         //write notification in queue
         $notification = Messaging\Notification::getEntityData($process);
-        $notificationQueued = (new Notification())->writeInQueue($notification);
-        $client->notificationsSendCount += ($notificationQueued) ? 1 : 0;
-
-        //update process
-        $process->updateClients($client);
-        $process = $query->updateEntity($process);
+        NotificationAdd::render($notification);
 
         $message->data = $process;
         Render::lastModified(time(), '0');
