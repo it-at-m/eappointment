@@ -17,6 +17,9 @@
     				"type": "string"
     			}
     		}
+    	},
+    	"notifications" : {
+    		"type" : "object"
     	}     
     }
 }
