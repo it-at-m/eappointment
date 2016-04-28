@@ -8,8 +8,11 @@ use BO\Zmsdb\Helper\ProcessStatus as Status;
 class Process extends Base
 {
 
-    public function readEntity($processId, $authKey, $resolveReferences = 2)
+    public function readEntity($processId = null, $authKey = null, $resolveReferences = 2)
     {
+        if (null === $processId || null === $authKey) {
+            return null;
+        }
         $query = new Query\Process(Query\Base::SELECT);
         $query->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
@@ -18,7 +21,7 @@ class Process extends Base
         $process = $this->fetchOne($query, new Entity());
         $process['requests'] = (new Request())->readRequestByProcessId($processId, $resolveReferences);
         $process['status'] = (new Status())->readProcessStatus($processId, $authKey);
-        $process['scope'] = (new Scope())->readEntity($process['scope']['id'], $resolveReferences);
+        $process['scope'] = (new Scope())->readEntity($process->getScopeId(), $resolveReferences);
         $process = $this->addDldbData($process, $resolveReferences);
         return $process;
     }

@@ -72,7 +72,9 @@ class MailQueue extends Base
     {
         return [
             'department__$ref' => self::expression('CONCAT("/department/", `scope`.`BehoerdenID`, "/")'),
-            'process__$ref' => self::expression('CONCAT("/process/", `process`.`BuergerID`, "/", `process`.`absagecode`, "/")'),
+            'process__$ref' => self::expression('CONCAT(
+                "/process/", `process`.`BuergerID`, "/", `process`.`absagecode`, "/"
+            )'),
         ];
     }
 

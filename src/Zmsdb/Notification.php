@@ -57,8 +57,7 @@ class Notification extends Base
         ));
         $result = $this->writeItem($query);
         if ($result) {
-            $itemId = $this->getWriter()->lastInsertId();
-            $notification = $this->readEntity($itemId);
+            $this->updateProcess($notification);
         } else {
             return false;
         }
@@ -70,5 +69,17 @@ class Notification extends Base
         $query =  new Query\Notification(Query\Base::DELETE);
         $query->addConditionItemId($itemId);
         return $this->deleteItem($query);
+    }
+
+    private function updateProcess(\BO\Zmsentities\Notification $notification)
+    {
+        $query = new Process();
+        $process = $query->readEntity($notification->getProcessId(), $notification->getProcessAuthKey());
+        //error_log(var_export($process,1));
+        $client = $process->getFirstClient();
+        $client->notificationsSendCount += 1;
+        //update process
+        $process->updateClients($client);
+        $query->updateEntity($process);
     }
 }
