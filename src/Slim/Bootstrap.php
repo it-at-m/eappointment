@@ -52,7 +52,7 @@ class Bootstrap
         \App::$slim = new I18nSlim(array(
             'debug' => \App::SLIM_DEBUG,
             'log.enabled' => \App::SLIM_DEBUG,
-            'log.level' => \App::SLIM_LOGLEVEL,
+            //'log.level' => \App::SLIM_LOGLEVEL,
             'view' => new TwigView(),
             'templates.path' => \App::APP_PATH  . \App::TEMPLATE_PATH
         ));

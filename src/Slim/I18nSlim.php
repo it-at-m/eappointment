@@ -2,7 +2,7 @@
 
 namespace BO\Slim;
 
-class I18nSlim extends \Slim\Slim
+class I18nSlim extends \Slim\App
 {
     public function urlFor($name, $params = array(), $lang = null)
     {
@@ -11,6 +11,6 @@ class I18nSlim extends \Slim\Slim
         if ($params['lang'] == '' || $params['lang'] == \App::DEFAULT_LANG) {
             unset($params['lang']);
         }
-        return parent::urlFor($name, $params);
+        return parent::pathFor($name, $params);
     }
 }
