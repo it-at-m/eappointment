@@ -51,7 +51,7 @@ class Application
     /**
      * Log level for Slim
      */
-    const SLIM_LOGLEVEL = \Slim\Log::ERROR;
+    //const SLIM_LOGLEVEL = \Slim\Log::ERROR;
 
     /**
      * if debug is enabled, an exception is shown with a backtrace
