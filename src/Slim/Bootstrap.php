@@ -50,17 +50,23 @@ class Bootstrap
     {
         // configure slim
         \App::$slim = new I18nSlim(array(
-            'debug' => \App::SLIM_DEBUG,
-            'log.enabled' => \App::SLIM_DEBUG,
-            //'log.level' => \App::SLIM_LOGLEVEL,
-            'view' => new TwigView(),
-            'templates.path' => \App::APP_PATH  . \App::TEMPLATE_PATH
+            //'debug' => \App::SLIM_DEBUG,
+            //'settings' => [
+            //    'displayErrorDetails' => true,
+            //    'logger' => [
+            //        'name' => 'slim-app',
+            //        'level' => \App::MONOLOG_LOGLEVEL,
+            //    ],
+            //],
+            //'view' => new TwigView(
+            //    \App::APP_PATH  . \App::TEMPLATE_PATH,
+            //    array (
+            //        'debug' => \App::SLIM_DEBUG,
+            //        'cache' => \App::TWIG_CACHE ? \App::APP_PATH . \App::TWIG_CACHE : false,
+            //    )
+            //),
         ));
         // configure slim views with twig
-        \App::$slim->view()->parserOptions = array (
-            'debug' => \App::SLIM_DEBUG,
-            'cache' => \App::TWIG_CACHE ? \App::APP_PATH . \App::TWIG_CACHE : false,
-        );
         self::addTwigExtension(new \Slim\Views\TwigExtension());
         self::addTwigExtension(new \BO\Slim\TwigExtension());
         self::addTwigExtension(new \Twig_Extension_Debug());
