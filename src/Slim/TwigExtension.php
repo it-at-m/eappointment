@@ -12,8 +12,24 @@ namespace BO\Slim;
   *  @SuppressWarnings(PublicMethod)
   *  @SuppressWarnings(TooManyMethods)
   */
-class TwigExtension extends \Slim\Views\TwigExtension
+class TwigExtension extends \Twig_Extension
 {
+    /**
+     * @var \Slim\Interfaces\RouterInterface
+     */
+    private $router;
+
+    /**
+     * @var \Slim\Http\Request
+     */
+    private $request;
+
+    public function __construct($router, $request)
+    {
+        $this->router = $router;
+        $this->request = $request;
+    }
+
     public function getName()
     {
         return 'boslim';
@@ -76,13 +92,12 @@ class TwigExtension extends \Slim\Views\TwigExtension
 
     public function currentRoute($lang = null)
     {
-        $router = \App::$slim->router();
-        $routeInstance = $router->getCurrentRoute();
+        $routeInstance = $this->request->getAttribute('route');
         if ($routeInstance instanceof \Slim\Route) {
-            $routeParams = $routeInstance->getParams();
+            $routeParams = $routeInstance->getArguments();
             $routeParams['lang'] = ($lang !== null) ? $lang : self::currentLang();
             $route = array(
-                'name' => \App::$slim->router()->getCurrentRoute()->getName(),
+                'name' => $routeInstance->getName(),
                 'params' => $routeParams
             );
         } else {
@@ -96,14 +111,14 @@ class TwigExtension extends \Slim\Views\TwigExtension
 
     public function currentLang()
     {
-        return \App::$slim->config('lang');
+        return \App::$locale;
     }
 
-    public function urlGet($name, $params = array(), $getparams = array(), $appName = 'default')
+    public function urlGet($name, $params = array(), $getparams = array())
     {
         //$url = \Slim\Slim::getInstance($appName)->urlFor($name, $params);
         $lang = (isset($params['lang'])) ? $params['lang'] : null;
-        $url = I18nSlim::getInstance($appName)->urlFor($name, $params, $lang);
+        $url = \App::$slim->urlFor($name, $params, $lang);
         $url = preg_replace('#^.*?(https?://)#', '\1', $url); // allow http:// routes
         if ($getparams) {
             $url .= '?' . http_build_query($getparams);
@@ -173,12 +188,12 @@ class TwigExtension extends \Slim\Views\TwigExtension
         }
     }
 
-    public static function includeUrl($withUri = true)
+    public function includeUrl($withUri = true)
     {
-        $req = \App::$slim->request();
-        $uri = $req->getRootUri();
-        \App::$log->debug('uri', [$uri]);
+        $request = $this->request;
+        $uri = (string)$request->getUri();
         if ($withUri) {
+            $uri .= $request->getUri()->getBaseUrl();
             $uri = preg_replace('#^https?://[^/]+#', '', $uri); //Do not force protocoll or host
         }
         return Helper::proxySanitizeUri($uri);
