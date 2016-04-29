@@ -6,50 +6,76 @@
 
 namespace BO\Slim;
 
+use Interop\Container\ContainerInterface;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+
 class Render
 {
 
     /**
-     * @return self
+     * @var \Interop\Container\ContainerInterface $containerInterface
+     *
+     */
+    public static $container = null;
+
+    /**
+     * @var \Psr\Http\Message\RequestInterface $request;
+     *
+     */
+    public static $request = null;
+
+    /**
+     * @var \Psr\Http\Message\ResponseInterface $response;
+     *
+     */
+    public static $response = null;
+
+    /**
+     * @return \Psr\Http\Message\ResponseInterface
      */
     public static function error404()
     {
         \App::$slim->notFound();
+        return self::$response;
     }
 
     /**
-     * @return NULL
+     * @return \Psr\Http\Message\ResponseInterface
      */
     public static function html($template, $parameters = array(), $status = 200)
     {
-        \App::$slim->response->setStatus($status);
-        \App::$slim->response->headers->set('Content-Type', 'text/html; charset=utf-8');
-        \App::$slim->render($template, $parameters);
+        self::$response = self::$response->withStatus($status);
+        self::$response = self::$response->withHeader('Content-Type', 'text/html; charset=utf-8');
+        self::$response = self::$container->view->render(self::$response, $template, $parameters);
+        return self::$response;
     }
 
     /**
-     * @return NULL
+     * @return \Psr\Http\Message\ResponseInterface
      */
     public static function json($data, $status = 200)
     {
-        \App::$slim->response->setStatus($status);
-        \App::$slim->response->headers->set('Content-Type', 'application/json');
-        \App::$slim->response->setBody(json_encode($data));
+        self::$response = self::$response->withStatus($status);
+        self::$response = self::$response->withHeader('Content-Type', 'application/json');
+        self::$response->getBody()->write(json_encode($data));
+        return self::$response;
     }
 
     /**
      * @param String $date strtotime interpreted
      * @param String $expires strtotime interpreted
      *
-     * @return NULL
+     * @return \Psr\Http\Message\ResponseInterface
      */
     public static function lastModified($date, $expires = '+5 minutes')
     {
         if (!is_int($date)) {
             $date = strtotime($date);
         }
-        \App::$slim->lastModified($date);
-        \App::$slim->expires($expires);
+        self::$response = self::$container->cache->withExpires(self::$response, strtotime($expires));
+        self::$response = self::$container->cache->withLastModified(self::$response, $date);
+        return self::$response;
     }
 
     /**
@@ -68,7 +94,7 @@ class Render
         if ($parameter) {
             $url .= '?' . http_build_query($parameter);
         }
-        \App::$slim->redirect($url, $statuscode);
+        self::$response = self::$response->withStatus($statuscode)->withHeader('Location', $url);
         return $url;
     }
 }

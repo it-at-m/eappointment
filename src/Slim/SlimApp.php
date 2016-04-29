@@ -2,15 +2,15 @@
 
 namespace BO\Slim;
 
-class I18nSlim extends \Slim\App
+class SlimApp extends \Slim\App
 {
     public function urlFor($name, $params = array(), $lang = null)
     {
-        $currentLang = (null !== $lang) ? $lang : $this->config('lang');
+        $currentLang = (null !== $lang) ? $lang : \App::$locale;
         $params['lang'] = (isset($params['lang'])) ? $params['lang'] : $currentLang;
         if ($params['lang'] == '' || $params['lang'] == \App::DEFAULT_LANG) {
             unset($params['lang']);
         }
-        return parent::pathFor($name, $params);
+        return $this->getContainer()->router->pathFor($name, $params);
     }
 }
