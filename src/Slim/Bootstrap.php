@@ -53,7 +53,7 @@ class Bootstrap
             'debug' => \App::SLIM_DEBUG,
             'log.enabled' => \App::SLIM_DEBUG,
             'log.level' => \App::SLIM_LOGLEVEL,
-            'view' => new \Slim\Views\Twig(),
+            'view' => new TwigView(),
             'templates.path' => \App::APP_PATH  . \App::TEMPLATE_PATH
         ));
         // configure slim views with twig
@@ -66,11 +66,18 @@ class Bootstrap
         self::addTwigExtension(new \Twig_Extension_Debug());
 
         //self::addTwigTemplateDirectory('default', \App::APP_PATH . \App::TEMPLATE_PATH);
+        \App::$slim->get('', function () {
+            throw new Exception('Route missing');
+        })->name('noroute');
     }
 
     public static function getLanguage()
     {
-        $lang = substr(\App::$slim->request()->getResourceUri(), 1, 2);
+        $lang = '';
+        // TODO: interpreting uri on bootstrap does not work well with unit testing
+        // and may have unexpected results with routing like /energie -> "en"
+        // (difficult to debug, because this function here is well hidden)
+        //$lang = substr(\App::$slim->request()->getResourceUri(), 1, 2);
         $lang = ($lang != '' && in_array($lang, array_keys(\App::$supportedLanguages))) ? $lang : \App::DEFAULT_LANG;
         \App::$slim->config('lang', $lang);
         return $lang;
