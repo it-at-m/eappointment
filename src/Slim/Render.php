@@ -73,7 +73,10 @@ class Render
         if (!is_int($date)) {
             $date = strtotime($date);
         }
-        self::$response = self::$container->cache->withExpires(self::$response, strtotime($expires));
+        if (false === strtotime($expires)) {
+            $expires = '+' + $expires + ' seconds';
+        }
+        self::$response = self::$container->cache->withExpires(self::$response, $expires);
         self::$response = self::$container->cache->withLastModified(self::$response, $date);
         return self::$response;
     }
