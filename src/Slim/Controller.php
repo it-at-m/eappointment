@@ -19,6 +19,18 @@ abstract class Controller
     protected $containerInterface = null;
 
     /**
+     * @var \Psr\Http\Message\RequestInterface $request;
+     *
+     */
+    protected $request = null;
+
+    /**
+     * @var \Psr\Http\Message\ResponseInterface $response;
+     *
+     */
+    protected $response = null;
+
+    /**
      * @param \Interop\Container\ContainerInterface $containerInterface
      *
      */
@@ -30,7 +42,9 @@ abstract class Controller
     public function __invoke(RequestInterface $request, ResponseInterface $response, array $args)
     {
         Render::$request = $request;
+        $this->request = $request;
         Render::$response = $response;
+        $this->response = $response;
         Render::$container = $this->containerInterface;
         $className = get_class($this);
         ob_start();
