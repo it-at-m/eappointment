@@ -76,13 +76,21 @@ class TwigExtension extends \Slim\Views\TwigExtension
 
     public function currentRoute($lang = null)
     {
-        $routeInstance = \App::$slim->router()->getCurrentRoute();
-        $routeParams = $routeInstance->getParams();
-        $routeParams['lang'] = ($lang !== null) ? $lang : self::currentLang();
-        $route = array(
-            'name' => \App::$slim->router()->getCurrentRoute()->getName(),
-            'params' => $routeParams
-        );
+        $router = \App::$slim->router();
+        $routeInstance = $router->getCurrentRoute();
+        if ($routeInstance instanceof \Slim\Route) {
+            $routeParams = $routeInstance->getParams();
+            $routeParams['lang'] = ($lang !== null) ? $lang : self::currentLang();
+            $route = array(
+                'name' => \App::$slim->router()->getCurrentRoute()->getName(),
+                'params' => $routeParams
+            );
+        } else {
+            $route = array(
+                'name' => 'noroute',
+                'params' => []
+            );
+        }
         return $route;
     }
 
