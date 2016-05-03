@@ -32,7 +32,13 @@
                 "id": 123
             },
             "status": "confirmed"
-        }
+        },
+        "client": [
+            {
+                "familyName": "Max Mustermann",
+                "telephone": "030 115"
+            }
+        ]
     },
     "required": [
         "department",
@@ -60,6 +66,9 @@
         },
         "process": {
             "$ref": "process.json"
+        },
+        "client": {
+        	"$ref": "client.json"
         }
     }
 }

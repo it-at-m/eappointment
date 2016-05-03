@@ -22,10 +22,9 @@ class Mail extends Schema\Entity
         return $this;
     }
 
-    public function isEncoding()
+    public function isEncoding($string)
     {
-        $multiPart = current($this->multipart);
-        return $multiPart['base64'];
+        return (\base64_decode($string, true)) ? true : false;
     }
 
     public function getHtmlPart()
@@ -33,7 +32,7 @@ class Mail extends Schema\Entity
         foreach ($this->multipart as $part) {
             if ($part['mime'] == 'text/html') {
                 $content = $part['content'];
-                return ($this->isEncoding()) ? \base64_decode($content) : $content;
+                return ($this->isEncoding($part['content'])) ? \base64_decode($content) : $content;
             }
         }
         return null;
@@ -44,7 +43,18 @@ class Mail extends Schema\Entity
         foreach ($this->multipart as $part) {
             if ($part['mime'] == 'text/plain') {
                 $content = $part['content'];
-                return ($this->isEncoding()) ? \base64_decode($content) : $content;
+                return ($this->isEncoding($part['content'])) ? \base64_decode($content) : $content;
+            }
+        }
+        return null;
+    }
+
+    public function getIcsPart()
+    {
+        foreach ($this->multipart as $part) {
+            if ($part['mime'] == 'text/calendar') {
+                $content = $part['content'];
+                return ($this->isEncoding($part['content'])) ? \base64_decode($content) : $content;
             }
         }
         return null;

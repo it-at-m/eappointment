@@ -8,7 +8,7 @@ class Department extends Schema\Entity
 
     public function hasNotificationEnabled()
     {
-        return ($this->preferences['notifications']['enabled']);
+        return ($this->preferences['notifications']['enabled']) ? true : false;
     }
 
     public function getNotificationPreferences()
