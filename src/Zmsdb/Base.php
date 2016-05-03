@@ -49,7 +49,14 @@ abstract class Base
     public function fetchOne(Query\Base $query, \BO\Zmsentities\Schema\Entity $entity)
     {
         $query->addLimit(1);
-        $data = $this->getReader()->fetchOne($query->getSql(), $query->getParameters());
+        $sql = $query->getSql();
+        $parameters = $query->getParameters();
+        try {
+            $data = $this->getReader()->fetchOne($query->getSql(), $query->getParameters());
+        } catch (\PDOException $pdoException) {
+            $message = "SQL: $sql || Parameters=". var_export($parameters, true);
+            throw new \Exception($message, 0, $pdoException);
+        }
         if ($data) {
             $entity->exchangeArray($data);
         }
@@ -59,7 +66,14 @@ abstract class Base
     public function fetchList(Query\Base $query, \BO\Zmsentities\Schema\Entity $entity)
     {
         $resultList = [];
-        $dataList = $this->getReader()->fetchAll($query->getSql(), $query->getParameters());
+        $sql = $query->getSql();
+        $parameters = $query->getParameters();
+        try {
+            $dataList = $this->getReader()->fetchAll($sql, $parameters);
+        } catch (\PDOException $pdoException) {
+            $message = "SQL: $sql || Parameters=". var_export($parameters, true);
+            throw new \Exception($message, 0, $pdoException);
+        }
         foreach ($dataList as $data) {
             $dataEntity = clone $entity;
             $dataEntity->exchangeArray($data);
