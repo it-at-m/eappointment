@@ -4,7 +4,9 @@ CREATE TABLE `zmsbo`.`notificationqueue` (
 	`departmentID` INT(5) UNSIGNED NOT NULL DEFAULT '0' , 	
 	`createIP` VARCHAR(40) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL , 
 	`createTimestamp` BIGINT(20) NOT NULL DEFAULT '0' , 		
-	`message` VARCHAR(150) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL , 		
+	`message` VARCHAR(150) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL ,
+	`clientFamilyName` VARCHAR(150) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL ,
+	`clientTelephone` VARCHAR(50) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL ,   		
 PRIMARY KEY (`id`)) 
 ENGINE = MyISAM 
 CHARACTER SET utf8 
