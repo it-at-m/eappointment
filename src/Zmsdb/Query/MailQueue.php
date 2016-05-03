@@ -16,6 +16,13 @@ class MailQueue extends Base
             mq.id = mp.queueId AND mq.id=?
     ';
 
+    const QUERY_DELETE_BY_PROCESS = '
+        DELETE mq,  mp FROM
+            '. self::TABLE .' mq, '. Mailpart::TABLE .' mp
+        WHERE
+            mq.id = mp.queueId AND mq.processID=?
+    ';
+
     public function addJoin()
     {
         return [
@@ -64,6 +71,8 @@ class MailQueue extends Base
             'createIP' => 'mailqueue.createIP',
             'createTimestamp' => 'mailqueue.createTimestamp',
             'subject' => 'mailqueue.subject',
+            'client__email' => 'mailqueue.clientEmail',
+            'client__familyName' => 'mailqueue.clientFamilyName',
 
         ];
     }

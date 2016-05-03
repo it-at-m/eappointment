@@ -55,7 +55,9 @@ class Notification extends Base
             'departmentID' => $notification->department['id'],
             'createIP' => $notification->createIP,
             'createTimestamp' => time(),
-            'message' => $notification->message
+            'message' => $notification->message,
+            'clientFamilyName' => $client->familyName,
+            'clientTelephone' => $client->telephone,
         ));
         $result = $this->writeItem($query);
         if ($result) {
@@ -66,11 +68,17 @@ class Notification extends Base
         return true;
     }
 
-    public function deleteEntity($itemId)
+    public function deleteEntity($itemId = null, $processId = null)
     {
-        $query =  new Query\Notification(Query\Base::DELETE);
-        $query->addConditionItemId($itemId);
-        return $this->deleteItem($query);
+        if (null !== $processId) {
+            $query = Query\Notification::QUERY_DELETE_BY_PROCESS;
+            $statement = $this->getWriter()->prepare($query);
+            return $statement->execute(array($processId));
+        } else {
+            $query =  new Query\Notification(Query\Base::DELETE);
+            $query->addConditionItemId($itemId);
+            return $this->deleteItem($query);
+        }
     }
 
     private function updateProcess(\BO\Zmsentities\Notification $notification)
