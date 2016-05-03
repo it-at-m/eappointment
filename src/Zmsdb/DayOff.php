@@ -1,7 +1,7 @@
 <?php
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\DayOff as Entity;
+use \BO\Zmsentities\Dayoff as Entity;
 
 class DayOff extends Base
 {

@@ -65,7 +65,9 @@ class Notification extends Base
     {
         return [
             'department__$ref' => self::expression('CONCAT("/department/", `department`.`BehoerdenID`, "/")'),
-            'process__$ref' => self::expression('CONCAT("/process/", `process`.`BuergerID`, "/", `process`.`absagecode`")'),
+            'process__$ref' => self::expression(
+                'CONCAT("/process/", `process`.`BuergerID`, "/", `process`.`absagecode`")'
+            ),
         ];
     }
 
