@@ -17,7 +17,7 @@ class IcsAppointment extends Base
      * Parameters:
      * $process - current process with appointment data
      */
-    public function createIcsString(\BO\Zmsentities\Process $process)
+    public static function createIcsString(\BO\Zmsentities\Process $process)
     {
         $entity = new \BO\Zmsentities\Ics();
         $mail = new \BO\Zmsentities\Mail();

@@ -1,15 +1,15 @@
 {% block german %}
 {% if process.status == 'confirmed' %}
-	{% if process.scope.preferences.notifications.confirmationContent %}
-        {{ process.scope.preferences.notifications.confirmationContent }} {{ process.id }}
-    {% else %}
-        {{ config.notifications.confirmationContent }} {{ process.id }}
-    {% endif %}
+{% if process.scope.preferences.notifications.confirmationContent %}
+{{ process.scope.preferences.notifications.confirmationContent }} {{ process.id }}
+{% else %}
+{{ config.notifications.confirmationContent }} {{ process.id }}
+{% endif %}
 {% elseif process.status == 'queued' %}
-    {% if process.scope.preferences.notifications.headsUpContent %}
-        {{ process.scope.preferences.notifications.headsUpContent }} {{ process.id }}
-    {% else %}
-        {{ config.notifications.headsUpContent }} {{ process.id }}
-    {% endif %}
+{% if process.scope.preferences.notifications.headsUpContent %}
+{{ process.scope.preferences.notifications.headsUpContent }} {{ process.id }}
+{% else %}
+{{ config.notifications.headsUpContent }} {{ process.id }}
+{% endif %}
 {% endif %}
 {% endblock %}
