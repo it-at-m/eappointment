@@ -48,6 +48,7 @@ class Mail extends Base
         $scope =  new \BO\Zmsentities\Scope($mail->process['scope']);
         $client = $process->getFirstClient();
         if (!$client->hasEmail() || !$scope->hasNotificationEnabled()) {
+            error_log('Notification Enabled:'. var_export($scope->preferences['notifications'], 1));
             return false;
         }
 
@@ -58,6 +59,8 @@ class Mail extends Base
             'createIP' => $mail->createIP,
             'createTimestamp' => time(),
             'subject' => $mail->subject,
+            'clientFamilyName' => $client->familyName,
+            'clientEmail' => $client->email,
         ));
         $result = $this->writeItem($query);
         if ($result) {
@@ -78,8 +81,7 @@ class Mail extends Base
         $query->addValues(array(
             'queueId' => $queueId,
             'mime' => $data['mime'],
-            'content' => $data['content'],
-            'base64' => ($data['base64']) ? 1 : 0,
+            'content' => $data['content']
         ));
         $result = $this->writeItem($query);
         if ($result) {
@@ -88,13 +90,17 @@ class Mail extends Base
         return false;
     }
 
-    public function deleteEntity($itemId)
+    public function deleteEntity($itemId = null, $processId = null)
     {
-        $query = Query\MailQueue::QUERY_DELETE;
-        $statement = $this->getWriter()->prepare($query);
-        $statement->execute(array(
-            $itemId
-        ));
+        if (null !== $processId) {
+            $query = Query\MailQueue::QUERY_DELETE_BY_PROCESS;
+            $statement = $this->getWriter()->prepare($query);
+            return $statement->execute(array($processId));
+        } else {
+            $query = Query\MailQueue::QUERY_DELETE;
+            $statement = $this->getWriter()->prepare($query);
+            return $statement->execute(array($itemId));
+        }
     }
 
     protected function readMultiPartByQueueId($queueId)
