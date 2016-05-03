@@ -19,6 +19,10 @@ class Config extends Schema\Entity
                 'number' => '0174-8882288',
                 'absage' => false,
                 'gateway' => 'mail',
+                'gatewayUrl' => '
+                    http://gateway.mobile-marketing-system.de/send_sms.php?
+                    username=KU-CFP5&password=beraterunterwegs&route=route1&text=
+                ',
                 'eMailkonfigurierbar' => false,
                 'benachrichtigungsfrist' => 10,
                 'headsUpContent' => '
@@ -31,5 +35,10 @@ class Config extends Schema\Entity
                 'erinnerungsvorlauf' => 180,
             ]
         ];
+    }
+
+    public function getNotificationPreferences()
+    {
+        return $this->notifications;
     }
 }

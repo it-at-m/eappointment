@@ -31,4 +31,19 @@ class Notification extends Schema\Entity
         $this->process['scope'] = $scope;
         return $this;
     }
+
+    public function isEncoding()
+    {
+        return (\base64_decode($this->message, true)) ? true : false;
+    }
+
+    public function getMessage()
+    {
+        return ($this->isEncoding()) ? \base64_decode($this->message) : $this->message;
+    }
+
+    public function getIdentification()
+    {
+        return $this->department['preferences']['notifications']['identification'];
+    }
 }

@@ -27,6 +27,15 @@ class Base extends \ArrayObject
         return $itemList;
     }
 
+    public function sortByCustomKey($key)
+    {
+        $itemList = clone $this;
+        $itemList->uasort(function ($a, $b) use ($key) {
+            return ($a[$key] - $b[$key]);
+        });
+            return $itemList;
+    }
+
     public function __clone()
     {
         foreach ($this as $key => $property) {

@@ -40,7 +40,13 @@
             },
             "status": "confirmed"
         },
-        "subject": "Example Mail"
+        "subject": "Example Mail",
+        "client": [
+            {
+                "familyName": "Max Mustermann",
+                "email": "max@service.berlin.de"
+            }
+        ]
     },
     "required": [
         "department",
@@ -80,11 +86,6 @@
                     "content": {
                         "type": "string",
                         "description": "content to transfer"
-                    },
-                    "base64": {
-                        "type": "boolean",
-                        "description": "every content gets encoded to base64, set this to true, if content is already base64",
-                        "default": false
                     }
                 }
             }
@@ -95,6 +96,9 @@
         "subject": {
             "type": "string",
             "description": "Subject part for the mail"
+        },
+        "client": {
+        	"$ref": "client.json"
         }
     }
 }
