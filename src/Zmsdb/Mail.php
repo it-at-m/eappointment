@@ -48,7 +48,6 @@ class Mail extends Base
         $scope =  new \BO\Zmsentities\Scope($mail->process['scope']);
         $client = $process->getFirstClient();
         if (!$client->hasEmail() || !$scope->hasNotificationEnabled()) {
-            error_log('Notification Enabled:'. var_export($scope->preferences['notifications'], 1));
             return false;
         }
 
