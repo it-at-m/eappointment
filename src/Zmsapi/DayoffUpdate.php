@@ -23,7 +23,7 @@ class DayoffUpdate extends BaseController
         $input = Validator::input()->isJson()->getValue();
         $list = array();
         foreach ($input as $dayoff) {
-            $list[] = new \BO\Zmsentities\Dayoff($dayoff);
+            $list[] = new \BO\Zmsentities\DayOff($dayoff);
         }
         $message->data = $list;
         $year = $year; // @todo update data

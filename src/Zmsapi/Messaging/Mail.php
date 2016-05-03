@@ -29,13 +29,15 @@ class Mail extends Base
         $entity->multipart = [
             array(
                 'mime' => 'text/html',
-                'content' => $content,
-                'base64' => true
+                'content' => $content
             ),
             array(
                 'mime' => 'text/plain',
-                'content' => $entity->toPlainText($content),
-                'base64' => true
+                'content' => $entity->toPlainText($content)
+            ),
+            array(
+                'mime' => 'text/calendar',
+                'content' => IcsAppointment::createIcsString($process)->content
             )
         ];
         return $entity;
