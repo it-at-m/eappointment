@@ -21,7 +21,7 @@ class SessionGet extends BaseController
      */
     public static function render($sessionName, $sessionId)
     {
-        $message = Response\Message::create();
+        $message = Response\Message::create(Render::$request);
         $session = (new Query())->readEntity($sessionName, $sessionId);
         $message->data = $session;
         // $message->data = \BO\Zmsentities\Session::createExample();

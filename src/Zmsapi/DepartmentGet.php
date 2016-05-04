@@ -22,7 +22,7 @@ class DepartmentGet extends BaseController
     {
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $department = (new Query())->readEntity($itemId, $resolveReferences);
-        $message = Response\Message::create();
+        $message = Response\Message::create(Render::$request);
         $message->data = $department;
         Render::lastModified(time(), '0');
         Render::json($message);

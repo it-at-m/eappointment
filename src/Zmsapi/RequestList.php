@@ -18,7 +18,7 @@ class RequestList extends BaseController
      */
     public static function render()
     {
-        $message = Response\Message::create();
+        $message = Response\Message::create(Render::$request);
         $message->data = array(\BO\Zmsentities\Request::createExample());
         Render::json($message);
     }

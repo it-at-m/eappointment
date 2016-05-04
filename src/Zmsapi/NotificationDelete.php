@@ -20,7 +20,7 @@ class NotificationDelete extends BaseController
     public static function render($itemId)
     {
         $query = new Query();
-        $message = Response\Message::create();
+        $message = Response\Message::create(Render::$request);
         $notification = $query->readEntity($itemId);
         $query->deleteEntity($itemId);
         $message->data = $notification;

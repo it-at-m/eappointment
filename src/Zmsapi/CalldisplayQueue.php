@@ -19,7 +19,7 @@ class CalldisplayQueue extends BaseController
      */
     public static function render()
     {
-        $message = Response\Message::create();
+        $message = Response\Message::create(Render::$request);
         Validator::input()->isJson()->getValue();
         $message->data = array(\BO\Zmsentities\Queue::createExample());
         Render::lastModified(time(), '0');

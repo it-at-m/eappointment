@@ -18,7 +18,7 @@ class OrganisationHash extends BaseController
      */
     public static function render($itemId)
     {
-        $message = Response\Message::create();
+        $message = Response\Message::create(Render::$request);
         $itemId = $itemId; // @todo fetch data
         $message->data = \BO\Zmsentities\Ticketprinter::createExample();
         Render::lastModified(time(), '0');

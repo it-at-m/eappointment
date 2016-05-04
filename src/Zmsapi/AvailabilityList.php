@@ -20,7 +20,7 @@ class AvailabilityList extends BaseController
     public static function render($scopeId)
     {
         $availabilities = (new Query())->readList($scopeId, 1);
-        $message = Response\Message::create();
+        $message = Response\Message::create(Render::$request);
         $message->data = $availabilities;
         Render::lastModified(time(), '0');
         Render::json($message);

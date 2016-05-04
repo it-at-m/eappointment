@@ -21,7 +21,7 @@ class ProcessFree extends BaseController
      */
     public static function render()
     {
-        $message = Response\Message::create();
+        $message = Response\Message::create(Render::$request);
         $input = Validator::input()->isJson()->getValue();
         $query = new Query();
         $calendar = new \BO\Zmsentities\Calendar($input);

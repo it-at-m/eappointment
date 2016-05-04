@@ -18,7 +18,7 @@ class WorkstationDelete extends BaseController
      */
     public static function render($loginname)
     {
-        $message = Response\Message::create();
+        $message = Response\Message::create(Render::$request);
         $message->data = \BO\Zmsentities\Workstation::createExample();
         $message->data->useraccount['id'] = $loginname;
         Render::lastModified(time(), '0');

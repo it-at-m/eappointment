@@ -19,7 +19,7 @@ class WorkstationUpdate extends BaseController
      */
     public static function render()
     {
-        $message = Response\Message::create();
+        $message = Response\Message::create(Render::$request);
         $input = Validator::input()->isJson()->getValue();
         $message->data = new \BO\Zmsentities\Workstation($input);
         Render::lastModified(time(), '0');

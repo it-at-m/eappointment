@@ -20,7 +20,7 @@ class MailAdd extends BaseController
      */
     public static function render($input = null)
     {
-        $message = Response\Message::create();
+        $message = Response\Message::create(Render::$request);
         $input = (null === $input) ? Validator::input()->isJson()->getValue() : $input;
         $entity = new \BO\Zmsentities\Mail($input);
         (new Query())->writeInQueue($entity);

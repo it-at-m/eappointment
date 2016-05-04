@@ -22,7 +22,7 @@ class SessionDelete extends BaseController
     public static function render($sessionName, $sessionId)
     {
         $session = (new Query())->readEntity($sessionName, $sessionId);
-        $message = Response\Message::create();
+        $message = Response\Message::create(Render::$request);
         $query = new Query();
         $query->deleteEntity($sessionName, $sessionId);
         $message->data = $session;

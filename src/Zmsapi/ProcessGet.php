@@ -22,7 +22,7 @@ class ProcessGet extends BaseController
     {
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         $process = (new Query())->readEntity($itemId, $authKey, $resolveReferences);
-        $message = Response\Message::create();
+        $message = Response\Message::create(Render::$request);
         $message->data = $process;
         Render::lastModified(time(), '0');
         Render::json($message);

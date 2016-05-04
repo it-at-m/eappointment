@@ -18,7 +18,7 @@ class UseraccountList extends BaseController
      */
     public static function render()
     {
-        $message = Response\Message::create();
+        $message = Response\Message::create(Render::$request);
         $message->data = array(\BO\Zmsentities\Useraccount::createExample());
         Render::json($message);
     }

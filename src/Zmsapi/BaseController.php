@@ -9,6 +9,6 @@ namespace BO\Zmsapi;
 /**
  * @SuppressWarnings(NumberOfChildren)
  */
-abstract class BaseController
+abstract class BaseController extends \BO\Slim\Controller
 {
 }
