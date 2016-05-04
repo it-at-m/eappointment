@@ -20,7 +20,7 @@ class NotificationList extends BaseController
     public static function render()
     {
         $notificationList = (new Query())->readList(2);
-        $message = Response\Message::create();
+        $message = Response\Message::create(Render::$request);
         $message->data = $notificationList;
         Render::json($message);
     }

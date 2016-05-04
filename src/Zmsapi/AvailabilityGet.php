@@ -24,7 +24,7 @@ class AvailabilityGet extends BaseController
     {
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         $availability = (new Query())->readEntity($itemId, $resolveReferences);
-        $message = Response\Message::create();
+        $message = Response\Message::create(Render::$request);
         $message->data = $availability;
         Render::lastModified(time(), '0');
         Render::json($message);

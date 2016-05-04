@@ -20,7 +20,7 @@ class ProviderGet extends BaseController
     public static function render($source, $itemId)
     {
         $provider = (new Query())->readEntity($source, $itemId);
-        $message = Response\Message::create();
+        $message = Response\Message::create(Render::$request);
         $message->data = $provider;
         Render::lastModified(time(), '0');
         Render::json($message);

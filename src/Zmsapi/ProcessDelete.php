@@ -20,7 +20,7 @@ class ProcessDelete extends BaseController
     public static function render($itemId, $authKey)
     {
         $query = new Query();
-        $message = Response\Message::create();
+        $message = Response\Message::create(Render::$request);
         $process = $query->readEntity($itemId, $authKey);
         $query->deleteEntity($itemId, $authKey);
 

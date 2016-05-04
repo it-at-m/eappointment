@@ -18,7 +18,7 @@ class WorkstationGet extends BaseController
      */
     public static function render()
     {
-        $message = Response\Message::create();
+        $message = Response\Message::create(Render::$request);
         $message->data = \BO\Zmsentities\Workstation::createExample();
         Render::lastModified(time(), '0');
         Render::json($message);

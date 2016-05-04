@@ -17,12 +17,24 @@ class Message implements \JsonSerializable
      */
     public $data = null;
 
-    public static function create()
+    /**
+     * @var \Psr\Http\Message\RequestInterface $request;
+     *
+     */
+    protected $request = null;
+
+    protected function __construct(\Psr\Http\Message\RequestInterface $request)
     {
-        $message = new self();
-        $message->meta = new \BO\Zmsentities\Metaresult();
-        $message->meta->error = false;
-        $message->setUpdateMetaData();
+        $this->request = $request;
+        $this->meta = new \BO\Zmsentities\Metaresult();
+        $this->meta->error = false;
+        $this->setUpdateMetaData();
+    }
+
+
+    public static function create(\Psr\Http\Message\RequestInterface $request)
+    {
+        $message = new self($request);
         return $message;
     }
 
@@ -35,9 +47,9 @@ class Message implements \JsonSerializable
 
     public function jsonSerialize()
     {
-        $schema = \App::$slim->request->getScheme();
+        $schema = $this->request->getUri()->getScheme();
         $schema .= '://';
-        $schema .= \App::$slim->request->getHost();
+        $schema .= $this->request->getUri()->getHost();
         $schema .= \App::$slim->urlFor('index');
         $message = [
             '$schema' => $schema,

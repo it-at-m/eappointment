@@ -18,7 +18,7 @@ class OwnerList extends BaseController
      */
     public static function render()
     {
-        $message = Response\Message::create();
+        $message = Response\Message::create(Render::$request);
         $message->data = array(\BO\Zmsentities\Owner::createExample());
         Render::json($message);
     }

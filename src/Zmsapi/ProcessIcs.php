@@ -19,7 +19,7 @@ class ProcessIcs extends BaseController
      */
     public static function render($itemId, $authKey)
     {
-        $message = Response\Message::create();
+        $message = Response\Message::create(Render::$request);
         $process = (new Query())->readEntity($itemId, $authKey, 2);
         $ics = (new Messaging\IcsAppointment())->createIcsString($process);
         $message->data = $ics;

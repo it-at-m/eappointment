@@ -19,7 +19,7 @@ class TicketprinterWaitingnumber extends BaseController
      */
     public static function render($scopeId)
     {
-        $message = Response\Message::create();
+        $message = Response\Message::create(Render::$request);
         $input = Validator::input()->isJson()->getValue();
         $scopeId = $scopeId; // @todo fetch data
         $input = $input;

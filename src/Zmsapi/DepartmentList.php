@@ -22,7 +22,7 @@ class DepartmentList extends BaseController
     {
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $departmentList = (new Query())->readList($resolveReferences);
-        $message = Response\Message::create();
+        $message = Response\Message::create(Render::$request);
         $message->data = $departmentList;
         Render::lastModified(time(), '0');
         Render::json($message);

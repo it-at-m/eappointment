@@ -18,7 +18,7 @@ class ClusterQueue extends BaseController
      */
     public static function render($itemId)
     {
-        $message = Response\Message::create();
+        $message = Response\Message::create(Render::$request);
         $itemId = $itemId; // @todo fetch data
         $message->data = array(\BO\Zmsentities\Queue::createExample());
         Render::lastModified(time(), '0');

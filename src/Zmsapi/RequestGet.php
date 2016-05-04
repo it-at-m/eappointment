@@ -20,7 +20,7 @@ class RequestGet extends BaseController
     public static function render($source, $itemId)
     {
         $request = (new Query())->readEntity($source, $itemId);
-        $message = Response\Message::create();
+        $message = Response\Message::create(Render::$request);
         $message->data = $request;
         Render::lastModified(time(), '0');
         Render::json($message);

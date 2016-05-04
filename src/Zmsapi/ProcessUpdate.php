@@ -21,7 +21,7 @@ class ProcessUpdate extends BaseController
     public static function render($itemId, $authKey)
     {
         $query = new Query();
-        $message = Response\Message::create();
+        $message = Response\Message::create(Render::$request);
         $input = Validator::input()->isJson()->getValue();
         $process = new \BO\Zmsentities\Process($input);
         $process->id = $itemId;

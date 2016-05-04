@@ -20,7 +20,7 @@ class MailDelete extends BaseController
     public static function render($itemId)
     {
         $query = new Query();
-        $message = Response\Message::create();
+        $message = Response\Message::create(Render::$request);
         $mail = $query->readEntity($itemId);
         $query->deleteEntity($itemId);
         $message->data = $mail;

@@ -23,7 +23,7 @@ class SessionUpdate extends BaseController
     public static function render()
     {
         $query = new Query();
-        $message = Response\Message::create();
+        $message = Response\Message::create(Render::$request);
         $input = Validator::input()->isJson()->getValue();
         $sessionData = new \BO\Zmsentities\Session($input);
         $message->data = $query->updateEntity($sessionData);

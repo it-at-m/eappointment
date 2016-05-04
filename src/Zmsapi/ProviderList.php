@@ -20,7 +20,7 @@ class ProviderList extends BaseController
     public static function render($source, $requestIds = null)
     {
         $providerList = (new Query())->readProviderByRequest($source, $requestIds);
-        $message = Response\Message::create();
+        $message = Response\Message::create(Render::$request);
         $message->data = $providerList;
         Render::lastModified(time(), '0');
         Render::json($message);

@@ -9,8 +9,8 @@
  * -------------------------------------------------------------------------*/
 
 \App::$slim->get('/',
-    '\BO\Zmsapi\Index:render')
-    ->name("index");
+    '\BO\Zmsapi\Index')
+    ->setName("index");
 
 
 /* ---------------------------------------------------------------------------
@@ -50,12 +50,9 @@
  *              404:
  *                  description: "availability id does not exists"
  */
-\App::$slim->get('/availability/:id/',
-    '\BO\Zmsapi\AvailabilityGet:render')
-    ->conditions([
-        'id' => '\d{1,11}',
-     ])
-    ->name("AvailabilityGet");
+\App::$slim->get('/availability/{id:\d{1,11}}/',
+    '\BO\Zmsapi\AvailabilityGet')
+    ->setName("AvailabilityGet");
 
 /**
  *  @swagger
@@ -90,12 +87,9 @@
  *              404:
  *                  description: "availability id does not exists"
  */
-\App::$slim->post('/availability/:id/',
-    '\BO\Zmsapi\AvailabilityUpdate:render')
-    ->conditions([
-        'id' => '\d{1,11}',
-     ])
-    ->name("AvailabilityUpdate");
+\App::$slim->post('/availability/{id:\d{1,11}}/',
+    '\BO\Zmsapi\AvailabilityUpdate')
+    ->setName("AvailabilityUpdate");
 
 /**
  *  @swagger
@@ -125,12 +119,9 @@
  *              404:
  *                  description: "availability id does not exists"
  */
-\App::$slim->delete('/availability/:id/',
-    '\BO\Zmsapi\AvailabilityDelete:render')
-    ->conditions([
-        'id' => '\d{1,11}',
-     ])
-    ->name("AvailabilityDelete");
+\App::$slim->delete('/availability/{id:\d{1,11}}/',
+    '\BO\Zmsapi\AvailabilityDelete')
+    ->setName("AvailabilityDelete");
 
 /**
 *  @swagger
@@ -169,8 +160,8 @@
 *                              $ref: "schema/calendar.json"
 */
 \App::$slim->post('/calendar/',
-    '\BO\Zmsapi\CalendarGet:render')
-    ->name("CalendarGet");
+    '\BO\Zmsapi\CalendarGet')
+    ->setName("CalendarGet");
 
 /**
 *  @swagger
@@ -207,8 +198,8 @@
 *                              $ref: "schema/metaresult.json"
 */
 \App::$slim->post('/calldisplay/',
-    '\BO\Zmsapi\CalldisplayGet:render')
-    ->name("CalldisplayGet");
+    '\BO\Zmsapi\CalldisplayGet')
+    ->setName("CalldisplayGet");
 
 /**
 *  @swagger
@@ -247,8 +238,8 @@
 *                              $ref: "schema/metaresult.json"
 */
 \App::$slim->post('/calldisplay/queue/',
-    '\BO\Zmsapi\CalldisplayQueue:render')
-    ->name("CalldisplayQueue");
+    '\BO\Zmsapi\CalldisplayQueue')
+    ->setName("CalldisplayQueue");
 
 /**
  *  @swagger
@@ -282,12 +273,9 @@
  *              404:
  *                  description: "cluster id does not exists"
  */
-\App::$slim->get('/cluster/:id/',
-    '\BO\Zmsapi\ClusterGet:render')
-    ->conditions([
-        'id' => '\d{1,11}',
-     ])
-    ->name("ClusterGet");
+\App::$slim->get('/cluster/{id:\d{1,11}}/',
+    '\BO\Zmsapi\ClusterGet')
+    ->setName("ClusterGet");
 
 /**
  *  @swagger
@@ -323,12 +311,9 @@
  *              404:
  *                  description: "cluster id does not exists"
  */
-\App::$slim->post('/cluster/:id/',
-    '\BO\Zmsapi\ClusterUpdate:render')
-    ->conditions([
-        'id' => '\d{1,11}',
-     ])
-    ->name("ClusterUpdate");
+\App::$slim->post('/cluster/{id:\d{1,11}}/',
+    '\BO\Zmsapi\ClusterUpdate')
+    ->setName("ClusterUpdate");
 
 /**
  *  @swagger
@@ -351,12 +336,9 @@
  *              404:
  *                  description: "cluster id does not exists"
  */
-\App::$slim->delete('/cluster/:id/',
-    '\BO\Zmsapi\ClusterDelete:render')
-    ->conditions([
-        'id' => '\d{1,11}',
-     ])
-    ->name("ClusterDelete");
+\App::$slim->delete('/cluster/{id:\d{1,11}}/',
+    '\BO\Zmsapi\ClusterDelete')
+    ->setName("ClusterDelete");
 
 /**
  *  @swagger
@@ -388,12 +370,9 @@
  *              404:
  *                  description: "cluster id does not exists"
  */
-\App::$slim->get('/cluster/:id/queue/',
-    '\BO\Zmsapi\ClusterQueue:render')
-    ->conditions([
-        'id' => '\d{1,11}',
-     ])
-    ->name("ClusterQueue");
+\App::$slim->get('/cluster/{id:\d{1,11}}/queue/',
+    '\BO\Zmsapi\ClusterQueue')
+    ->setName("ClusterQueue");
 
 /**
  *  @swagger
@@ -429,12 +408,9 @@
  *              404:
  *                  description: "year out of range"
  */
-\App::$slim->get('/dayoff/:year/',
-    '\BO\Zmsapi\DayoffList:render')
-    ->conditions([
-        'year' => '2\d{3,3}',
-     ])
-    ->name("DayoffList");
+\App::$slim->get('/dayoff/{year:2\d{3,3}}/',
+    '\BO\Zmsapi\DayoffList')
+    ->setName("DayoffList");
 
 /**
  *  @swagger
@@ -473,12 +449,9 @@
  *              404:
  *                  description: "year out of range"
  */
-\App::$slim->post('/dayoff/:year/',
-    '\BO\Zmsapi\DayoffUpdate:render')
-    ->conditions([
-        'year' => '2\d{3,3}',
-     ])
-    ->name("DayoffUpdate");
+\App::$slim->post('/dayoff/{year:2\d{3,3}}/',
+    '\BO\Zmsapi\DayoffUpdate')
+    ->setName("DayoffUpdate");
 
 /**
  *  @swagger
@@ -508,8 +481,8 @@
  *                                  $ref: "schema/department.json"
  */
 \App::$slim->get('/department/',
-    '\BO\Zmsapi\DepartmentList:render')
-    ->name("DepartmentList");
+    '\BO\Zmsapi\DepartmentList')
+    ->setName("DepartmentList");
 
 /**
  *  @swagger
@@ -543,12 +516,9 @@
  *              404:
  *                  description: "department id does not exists"
  */
-\App::$slim->get('/department/:id/',
-    '\BO\Zmsapi\DepartmentGet:render')
-    ->conditions([
-        'id' => '\d{1,11}',
-     ])
-    ->name("DepartmentGet");
+\App::$slim->get('/department/{id:\d{1,11}}/',
+    '\BO\Zmsapi\DepartmentGet')
+    ->setName("DepartmentGet");
 
 /**
  *  @swagger
@@ -584,12 +554,9 @@
  *              404:
  *                  description: "department id does not exists"
  */
-\App::$slim->post('/department/:id/',
-    '\BO\Zmsapi\DepartmentUpdate:render')
-    ->conditions([
-        'id' => '\d{1,11}',
-     ])
-    ->name("DepartmentUpdate");
+\App::$slim->post('/department/{id:\d{1,11}}/',
+    '\BO\Zmsapi\DepartmentUpdate')
+    ->setName("DepartmentUpdate");
 
 /**
  *  @swagger
@@ -612,12 +579,9 @@
  *              404:
  *                  description: "department id does not exists"
  */
-\App::$slim->delete('/department/:id/',
-    '\BO\Zmsapi\DepartmentDelete:render')
-    ->conditions([
-        'id' => '\d{1,11}',
-     ])
-    ->name("DepartmentDelete");
+\App::$slim->delete('/department/{id:\d{1,11}}/',
+    '\BO\Zmsapi\DepartmentDelete')
+    ->setName("DepartmentDelete");
 
 /**
  *  @swagger
@@ -647,8 +611,8 @@
  *                                  $ref: "schema/mail.json"
  */
 \App::$slim->get('/mails/',
-    '\BO\Zmsapi\MailList:render')
-    ->name("MailList");
+    '\BO\Zmsapi\MailList')
+    ->setName("MailList");
 
 
 
@@ -684,8 +648,8 @@
  *                  description: "Missing required properties in the notification"
  */
 \App::$slim->post('/mails/',
-    '\BO\Zmsapi\MailAdd:render')
-    ->name("MailAdd");
+    '\BO\Zmsapi\MailAdd')
+    ->setName("MailAdd");
 
 /**
  *  @swagger
@@ -708,12 +672,9 @@
  *              404:
  *                  description: "could not find mail or mail already sent"
  */
-\App::$slim->delete('/mails/:id/',
-    '\BO\Zmsapi\MailDelete:render')
-    ->conditions([
-        'id' => '\d{1,11}',
-     ])
-    ->name("MailDelete");
+\App::$slim->delete('/mails/{id:\d{1,11}}/',
+    '\BO\Zmsapi\MailDelete')
+    ->setName("MailDelete");
 
 
 /**
@@ -744,8 +705,8 @@
  *                                  $ref: "schema/notification.json"
  */
 \App::$slim->get('/notification/',
-    '\BO\Zmsapi\NotificationList:render')
-    ->name("NotificationList");
+    '\BO\Zmsapi\NotificationList')
+    ->setName("NotificationList");
 
 
 
@@ -772,8 +733,8 @@
  *                  description: "Missing required properties in the notification"
  */
 \App::$slim->post('/notification/',
-    '\BO\Zmsapi\NotificationAdd:render')
-    ->name("NotificationAdd");
+    '\BO\Zmsapi\NotificationAdd')
+    ->setName("NotificationAdd");
 
 /**
  *  @swagger
@@ -796,12 +757,9 @@
  *              404:
  *                  description: "could not find notification or notification already sent"
  */
-\App::$slim->delete('/notification/:id/',
-    '\BO\Zmsapi\NotificationDelete:render')
-    ->conditions([
-        'id' => '\d{1,11}',
-     ])
-    ->name("NotificationDelete");
+\App::$slim->delete('/notification/{id:\d{1,11}}/',
+    '\BO\Zmsapi\NotificationDelete')
+    ->setName("NotificationDelete");
 
 
 /**
@@ -832,8 +790,8 @@
  *                                  $ref: "schema/owner.json"
  */
 \App::$slim->get('/owner/',
-    '\BO\Zmsapi\OwnerList:render')
-    ->name("OwnerList");
+    '\BO\Zmsapi\OwnerList')
+    ->setName("OwnerList");
 
 /**
  *  @swagger
@@ -867,12 +825,9 @@
  *              404:
  *                  description: "owner id does not exists"
  */
-\App::$slim->get('/owner/:id/',
-    '\BO\Zmsapi\OwnerGet:render')
-    ->conditions([
-        'id' => '\d{1,11}',
-     ])
-    ->name("OwnerGet");
+\App::$slim->get('/owner/{id:\d{1,11}}/',
+    '\BO\Zmsapi\OwnerGet')
+    ->setName("OwnerGet");
 
 /**
  *  @swagger
@@ -908,12 +863,9 @@
  *              404:
  *                  description: "owner id does not exists"
  */
-\App::$slim->post('/owner/:id/',
-    '\BO\Zmsapi\OwnerUpdate:render')
-    ->conditions([
-        'id' => '\d{1,11}',
-     ])
-    ->name("OwnerUpdate");
+\App::$slim->post('/owner/{id:\d{1,11}}/',
+    '\BO\Zmsapi\OwnerUpdate')
+    ->setName("OwnerUpdate");
 
 /**
  *  @swagger
@@ -936,12 +888,9 @@
  *              404:
  *                  description: "owner id does not exists"
  */
-\App::$slim->delete('/owner/:id/',
-    '\BO\Zmsapi\OwnerDelete:render')
-    ->conditions([
-        'id' => '\d{1,11}',
-     ])
-    ->name("OwnerDelete");
+\App::$slim->delete('/owner/{id:\d{1,11}}/',
+    '\BO\Zmsapi\OwnerDelete')
+    ->setName("OwnerDelete");
 
 
 /**
@@ -972,8 +921,8 @@
  *                                  $ref: "schema/organisation.json"
  */
 \App::$slim->get('/organisation/',
-    '\BO\Zmsapi\OrganisationList:render')
-    ->name("OrganisationList");
+    '\BO\Zmsapi\OrganisationList')
+    ->setName("OrganisationList");
 
 /**
  *  @swagger
@@ -1007,12 +956,9 @@
  *              404:
  *                  description: "organisation id does not exists"
  */
-\App::$slim->get('/organisation/:id/',
-    '\BO\Zmsapi\OrganisationGet:render')
-    ->conditions([
-        'id' => '\d{1,11}',
-     ])
-    ->name("OrganisationGet");
+\App::$slim->get('/organisation/{id:\d{1,11}}/',
+    '\BO\Zmsapi\OrganisationGet')
+    ->setName("OrganisationGet");
 
 /**
  *  @swagger
@@ -1048,12 +994,9 @@
  *              404:
  *                  description: "organisation id does not exists"
  */
-\App::$slim->post('/organisation/:id/',
-    '\BO\Zmsapi\OrganisationUpdate:render')
-    ->conditions([
-        'id' => '\d{1,11}',
-     ])
-    ->name("OrganisationUpdate");
+\App::$slim->post('/organisation/{id:\d{1,11}}/',
+    '\BO\Zmsapi\OrganisationUpdate')
+    ->setName("OrganisationUpdate");
 
 /**
  *  @swagger
@@ -1076,12 +1019,9 @@
  *              404:
  *                  description: "organisation id does not exists"
  */
-\App::$slim->delete('/organisation/:id/',
-    '\BO\Zmsapi\OrganisationDelete:render')
-    ->conditions([
-        'id' => '\d{1,11}',
-     ])
-    ->name("OrganisationDelete");
+\App::$slim->delete('/organisation/{id:\d{1,11}}/',
+    '\BO\Zmsapi\OrganisationDelete')
+    ->setName("OrganisationDelete");
 
 /**
  *  @swagger
@@ -1111,12 +1051,9 @@
  *              404:
  *                  description: "organisation id does not exists"
  */
-\App::$slim->get('/organisation/:id/hash/',
-    '\BO\Zmsapi\OrganisationHash:render')
-    ->conditions([
-        'id' => '\d{1,11}',
-     ])
-    ->name("OrganisationHash");
+\App::$slim->get('/organisation/{id:\d{1,11}}/hash/',
+    '\BO\Zmsapi\OrganisationHash')
+    ->setName("OrganisationHash");
 
 /**
  *  @swagger
@@ -1153,12 +1090,9 @@
  *              404:
  *                  description: "process id does not exists"
  */
-\App::$slim->get('/process/:id/:authKey/',
-    '\BO\Zmsapi\ProcessGet:render')
-    ->conditions([
-        'id' => '\d{1,11}',
-     ])
-    ->name("ProcessGet");
+\App::$slim->get('/process/{id:\d{1,11}}/{authKey}/',
+    '\BO\Zmsapi\ProcessGet')
+    ->setName("ProcessGet");
 
 
 /**
@@ -1196,12 +1130,9 @@
  *              404:
  *                  description: "process id does not exists"
  */
-\App::$slim->get('/process/:id/:authKey/ics/',
-    '\BO\Zmsapi\ProcessIcs:render')
-    ->conditions([
-        'id' => '\d{1,11}',
-     ])
-    ->name("ProcessIcs");
+\App::$slim->get('/process/{id:\d{1,11}}/{authKey}/ics/',
+    '\BO\Zmsapi\ProcessIcs')
+    ->setName("ProcessIcs");
 
 
 /**
@@ -1243,12 +1174,9 @@
  *              404:
  *                  description: "process id does not exists"
  */
-\App::$slim->post('/process/:id/:authKey/',
-    '\BO\Zmsapi\ProcessUpdate:render')
-    ->conditions([
-        'id' => '\d{1,11}',
-    ])
-    ->name("ProcessUpdate");
+\App::$slim->post('/process/{id:\d{1,11}}/{authKey}/',
+    '\BO\Zmsapi\ProcessUpdate')
+    ->setName("ProcessUpdate");
 
 /**
  *  @swagger
@@ -1281,12 +1209,9 @@
  *              404:
  *                  description: "process id does not exists"
  */
-\App::$slim->delete('/process/:id/:authKey/',
-    '\BO\Zmsapi\ProcessDelete:render')
-    ->conditions([
-        'id' => '\d{1,11}',
-    ])
-    ->name("ProcessDelete");
+\App::$slim->delete('/process/{id:\d{1,11}}/{authKey}/',
+    '\BO\Zmsapi\ProcessDelete')
+    ->setName("ProcessDelete");
 
 /**
  *  @swagger
@@ -1324,8 +1249,8 @@
  *                          $ref: "schema/process.json"
  */
 \App::$slim->post('/process/status/free/',
-    '\BO\Zmsapi\ProcessFree:render')
-    ->name("ProcessFree");
+    '\BO\Zmsapi\ProcessFree')
+    ->setName("ProcessFree");
 
 /**
  *  @swagger
@@ -1366,8 +1291,8 @@
  *                                  type: object
  */
 \App::$slim->get('/process/status/reserved/',
-    '\BO\Zmsapi\ProcessReservedList:render')
-    ->name("ProcessReservedList");
+    '\BO\Zmsapi\ProcessReservedList')
+    ->setName("ProcessReservedList");
 
 /**
  *  @swagger
@@ -1399,8 +1324,8 @@
  *                  description: "Could not find any processes, returns empty list"
  */
 \App::$slim->post('/process/status/reserved/',
-    '\BO\Zmsapi\ProcessReserve:render')
-    ->name("ProcessReserve");
+    '\BO\Zmsapi\ProcessReserve')
+    ->setName("ProcessReserve");
 
 /**
  *  @swagger
@@ -1434,8 +1359,8 @@
  *                  description: "authkey does not match"
  */
 \App::$slim->post('/process/status/confirmed/',
-    '\BO\Zmsapi\ProcessConfirm:render')
-    ->name("ProcessConfirm");
+    '\BO\Zmsapi\ProcessConfirm')
+    ->setName("ProcessConfirm");
 
 /**
  *  @swagger
@@ -1470,12 +1395,9 @@
  *              404:
  *                  description: "provider id for source does not exists"
  */
-\App::$slim->get('/provider/:source/:id/',
-    '\BO\Zmsapi\ProviderGet:render')
-    ->conditions([
-        'id' => '\d{1,11}',
-     ])
-    ->name("ProviderGet");
+\App::$slim->get('/provider/{source}/{id:\d{1,11}}/',
+    '\BO\Zmsapi\ProviderGet')
+    ->setName("ProviderGet");
 
 /**
  *  @swagger
@@ -1515,12 +1437,9 @@
  *              404:
  *                  description: "request id for source does not exists"
  */
-\App::$slim->get('/provider/:source/request/:csv/',
-    '\BO\Zmsapi\ProviderList:render')
-    ->conditions([
-        'csv' => '[0-9,]{3,}'
-    ])
-    ->name("ProviderByRequestList");
+\App::$slim->get('/provider/{source}/request/{csv:[0-9,]{3,}}/',
+    '\BO\Zmsapi\ProviderList')
+    ->setName("ProviderByRequestList");
 
 /**
  *  @swagger
@@ -1555,12 +1474,9 @@
  *              404:
  *                  description: "request id for source does not exists"
  */
-\App::$slim->get('/request/:source/:id/',
-    '\BO\Zmsapi\RequestGet:render')
-    ->conditions([
-        'id' => '\d{1,11}',
-     ])
-    ->name("RequestGet");
+\App::$slim->get('/request/{source}/{id:\d{1,11}}/',
+    '\BO\Zmsapi\RequestGet')
+    ->setName("RequestGet");
 
 /**
  *  @swagger
@@ -1592,8 +1508,8 @@
  *                  description: "no scopes defined yet"
  */
 \App::$slim->get('/scope/',
-    '\BO\Zmsapi\ScopeList:render')
-    ->name("ScopeList");
+    '\BO\Zmsapi\ScopeList')
+    ->setName("ScopeList");
 
 /**
  *  @swagger
@@ -1627,12 +1543,9 @@
  *              404:
  *                  description: "scope id does not exists"
  */
-\App::$slim->get('/scope/:id/',
-    '\BO\Zmsapi\ScopeGet:render')
-    ->conditions([
-        'id' => '\d{1,11}',
-     ])
-    ->name("ScopeGet");
+\App::$slim->get('/scope/{id:\d{1,11}}/',
+    '\BO\Zmsapi\ScopeGet')
+    ->setName("ScopeGet");
 
 /**
  *  @swagger
@@ -1666,12 +1579,9 @@
  *              404:
  *                  description: "scope id does not exists"
  */
-\App::$slim->get('/scope/provider/:id/',
-    '\BO\Zmsapi\ScopeByProviderList:render')
-    ->conditions([
-        'id' => '\d{1,11}',
-    ])
-    ->name("ScopeByProviderList");
+\App::$slim->get('/scope/provider/{id}/',
+    '\BO\Zmsapi\ScopeByProviderList:\d{1,11}')
+    ->setName("ScopeByProviderList");
 
 /**
  *  @swagger
@@ -1705,12 +1615,9 @@
  *              404:
  *                  description: "scope id does not exists"
  */
-\App::$slim->get('/scope/cluster/:id/',
-    '\BO\Zmsapi\ScopeByClusterList:render')
-    ->conditions([
-        'id' => '\d{1,11}',
-    ])
-    ->name("ScopeByClusterList");
+\App::$slim->get('/scope/cluster/{id:\d{1,11}}/',
+    '\BO\Zmsapi\ScopeByClusterList')
+    ->setName("ScopeByClusterList");
 
 /**
  *  @swagger
@@ -1746,12 +1653,9 @@
  *              404:
  *                  description: "scope id does not exists"
  */
-\App::$slim->get('/scope/:id/availability/',
-    '\BO\Zmsapi\AvailabilityList:render')
-    ->conditions([
-        'id' => '\d{1,11}',
-     ])
-    ->name("AvailabilityList");
+\App::$slim->get('/scope/{id:\d{1,11}}/availability/',
+    '\BO\Zmsapi\AvailabilityList')
+    ->setName("AvailabilityList");
 
 /**
  *  @swagger
@@ -1787,12 +1691,9 @@
  *              404:
  *                  description: "scope id does not exists"
  */
-\App::$slim->get('/scope/:id/queue/',
-    '\BO\Zmsapi\ScopeQueue:render')
-    ->conditions([
-        'id' => '\d{1,11}',
-     ])
-    ->name("ScopeQueue");
+\App::$slim->get('/scope/{id:\d{1,11}}/queue/',
+    '\BO\Zmsapi\ScopeQueue')
+    ->setName("ScopeQueue");
 
 /**
  *  @swagger
@@ -1830,12 +1731,9 @@
  *              404:
  *                  description: "process id does not exists"
  */
-\App::$slim->post('/scope/:id/',
-    '\BO\Zmsapi\ScopeUpdate:render')
-    ->conditions([
-        'id' => '\d{1,11}',
-     ])
-    ->name("ScopeUpdate");
+\App::$slim->post('/scope/{id:\d{1,11}}/',
+    '\BO\Zmsapi\ScopeUpdate')
+    ->setName("ScopeUpdate");
 
 /**
  *  @swagger
@@ -1858,12 +1756,9 @@
  *              404:
  *                  description: "scope id does not exists"
  */
-\App::$slim->delete('/scope/:id/',
-    '\BO\Zmsapi\ScopeDelete:render')
-    ->conditions([
-        'id' => '\d{1,11}',
-     ])
-    ->name("ScopeDelete");
+\App::$slim->delete('/scope/{id:\d{1,11}}/',
+    '\BO\Zmsapi\ScopeDelete')
+    ->setName("ScopeDelete");
 
 /**
  *  @swagger
@@ -1877,8 +1772,8 @@
  *                      $ref: "schema/status.json"
  */
 \App::$slim->get('/status/',
-    '\BO\Zmsapi\StatusGet:render')
-    ->name("StatusGet");
+    '\BO\Zmsapi\StatusGet')
+    ->setName("StatusGet");
 
 /**
  *  @swagger
@@ -1916,12 +1811,9 @@
  *              404:
  *                  description: "ticketprinter id does not exists"
  */
-\App::$slim->get('/ticketprinter/:id/waitingnumber/',
-    '\BO\Zmsapi\TicketprinterWaitingnumber:render')
-    ->conditions([
-        'id' => '\d{1,11}',
-     ])
-    ->name("TicketprinterWaitingnumber:");
+\App::$slim->get('/ticketprinter/{id:\d{1,11}}/waitingnumber/',
+    '\BO\Zmsapi\TicketprinterWaitingnumber')
+    ->setName("TicketprinterWaitingnumber:");
 
 /**
  *  @swagger
@@ -1951,8 +1843,8 @@
  *                                  $ref: "schema/useraccount.json"
  */
 \App::$slim->get('/useraccount/',
-    '\BO\Zmsapi\UseraccountList:render')
-    ->name("UseraccountList");
+    '\BO\Zmsapi\UseraccountList')
+    ->setName("UseraccountList");
 
 /**
  *  @swagger
@@ -1986,9 +1878,9 @@
  *              404:
  *                  description: "useraccount loginname does not exists"
  */
-\App::$slim->get('/useraccount/:loginname/',
-    '\BO\Zmsapi\UseraccountGet:render')
-    ->name("UseraccountGet");
+\App::$slim->get('/useraccount/{loginname}/',
+    '\BO\Zmsapi\UseraccountGet')
+    ->setName("UseraccountGet");
 
 /**
  *  @swagger
@@ -2024,9 +1916,9 @@
  *              404:
  *                  description: "useraccount loginname does not exists"
  */
-\App::$slim->post('/useraccount/:loginname/',
-    '\BO\Zmsapi\UseraccountUpdate:render')
-    ->name("UseraccountUpdate");
+\App::$slim->post('/useraccount/{loginname}/',
+    '\BO\Zmsapi\UseraccountUpdate')
+    ->setName("UseraccountUpdate");
 
 /**
  *  @swagger
@@ -2049,9 +1941,9 @@
  *              404:
  *                  description: "useraccount loginname does not exists"
  */
-\App::$slim->delete('/useraccount/:loginname/',
-    '\BO\Zmsapi\UseraccountDelete:render')
-    ->name("UseraccountDelete");
+\App::$slim->delete('/useraccount/{loginname}/',
+    '\BO\Zmsapi\UseraccountDelete')
+    ->setName("UseraccountDelete");
 
 /**
  *  @swagger
@@ -2081,8 +1973,8 @@
  *                  description: "login required"
  */
 \App::$slim->get('/workstation/',
-    '\BO\Zmsapi\WorkstationGet:render')
-    ->name("WorkstationGet");
+    '\BO\Zmsapi\WorkstationGet')
+    ->setName("WorkstationGet");
 
 /**
  *  @swagger
@@ -2114,8 +2006,8 @@
  *                  description: "login required"
  */
 \App::$slim->post('/workstation/',
-    '\BO\Zmsapi\WorkstationUpdate:render')
-    ->name("WorkstationUpdate");
+    '\BO\Zmsapi\WorkstationUpdate')
+    ->setName("WorkstationUpdate");
 
 /**
  *  @swagger
@@ -2146,9 +2038,9 @@
  *              404:
  *                  description: "useraccount loginname does not exists"
  */
-\App::$slim->post('/workstation/:loginname/',
-    '\BO\Zmsapi\WorkstationLogin:render')
-    ->name("WorkstationLogin");
+\App::$slim->post('/workstation/{loginname}/',
+    '\BO\Zmsapi\WorkstationLogin')
+    ->setName("WorkstationLogin");
 
 /**
  *  @swagger
@@ -2179,9 +2071,9 @@
  *              404:
  *                  description: "useraccount loginname does not exists"
  */
-\App::$slim->delete('/workstation/:loginname/',
-    '\BO\Zmsapi\WorkstationDelete:render')
-    ->name("WorkstationDelete");
+\App::$slim->delete('/workstation/{loginname}/',
+    '\BO\Zmsapi\WorkstationDelete')
+    ->setName("WorkstationDelete");
 
 
 /**
@@ -2220,13 +2112,9 @@
 *                          data:
 *                              $ref: "schema/session.json"
 */
-\App::$slim->get('/session/:name/:id/',
-    '\BO\Zmsapi\SessionGet:render')
-    ->conditions([
-        'name' => '[a-zA-Z]{3,20}',
-        'id' => '[a-z0-9]{20,40}',
-    ])
-    ->name("SessionGet");
+\App::$slim->get('/session/{name:[a-zA-Z]{3,20}}/{id:[a-z0-9]{20,40}}/',
+    '\BO\Zmsapi\SessionGet')
+    ->setName("SessionGet");
 
 /**
  *  @swagger
@@ -2261,8 +2149,8 @@
  *                              $ref: "schema/session.json"
  */
 \App::$slim->post('/session/',
-    '\BO\Zmsapi\SessionUpdate:render')
-    ->name("SessionUpdate");
+    '\BO\Zmsapi\SessionUpdate')
+    ->setName("SessionUpdate");
 
 /**
  *  @swagger
@@ -2300,37 +2188,35 @@
  *                          data:
  *                              $ref: "schema/session.json"
  */
-\App::$slim->delete('/session/:name/:id/',
-    '\BO\Zmsapi\SessionDelete:render')
-    ->conditions([
-        'name' => '[a-zA-Z]{3,20}',
-        'id' => '[a-z0-9]{20,40}',
-    ])
-    ->name("SessionDelete");
+\App::$slim->delete('/session/{name:[a-zA-Z]{3,20}}/{id:[a-z0-9]{20,40}}/',
+    '\BO\Zmsapi\SessionDelete')
+    ->setName("SessionDelete");
 
 /* ---------------------------------------------------------------------------
  * maintenance
  * -------------------------------------------------------------------------*/
 
 \App::$slim->get('/healthcheck/',
-    '\BO\Zmsapi\Healthcheck:render')
-    ->name("healthcheck");
+    '\BO\Zmsapi\Healthcheck')
+    ->setName("healthcheck");
 
-\App::$slim->notfound(function () {
-    $message = \BO\Zmsapi\Response\Message::create();
-    $message->meta->error = true;
-    $message->meta->message = "Could not find a resource with the given URL";
-    \BO\Slim\Render::lastModified(time(), '0');
-    \BO\Slim\Render::json($message, 404);
-    \App::$slim->stop();
-});
+\App::$slim->getContainer()->notFoundHandler = function() {
+    return function () {
+        $message = \BO\Zmsapi\Response\Message::create();
+        $message->meta->error = true;
+        $message->meta->message = "Could not find a resource with the given URL";
+        \BO\Slim\Render::lastModified(time(), '0');
+        return \BO\Slim\Render::json($message, 404);
+    };
+};
 
-\App::$slim->error(function (\Exception $exception) {
-    $message = \BO\Zmsapi\Response\Message::create();
-    $message->meta->error = true;
-    $message->meta->message = $exception->getMessage();
-    $message->meta->trace = $exception->getTrace();
-    \BO\Slim\Render::lastModified(time(), '0');
-    \BO\Slim\Render::json($message, 500);
-    \App::$slim->stop();
-});
+\App::$slim->getContainer()->errorHandler = function() {
+    return function (\Exception $exception) {
+        $message = \BO\Zmsapi\Response\Message::create();
+        $message->meta->error = true;
+        $message->meta->message = $exception->getMessage();
+        $message->meta->trace = $exception->getTrace();
+        \BO\Slim\Render::lastModified(time(), '0');
+        return \BO\Slim\Render::json($message, 500);
+    };
+};

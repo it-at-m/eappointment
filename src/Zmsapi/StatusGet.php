@@ -23,10 +23,10 @@ class StatusGet extends BaseController
         $status['version']['major'] = \App::VERSION_MAJOR;
         $status['version']['minor'] = \App::VERSION_MINOR;
         $status['version']['patch'] = \App::VERSION_PATCH;
-        $message = Response\Message::create();
+        $message = Response\Message::create(Render::$request);
         $message->data = $status;
         //throw new \Exception("Test");
-        Render::lastModified(time(), '10');
+        Render::lastModified(time(), '0');
         Render::json($message);
     }
 }

@@ -20,7 +20,7 @@ class MailList extends BaseController
     public static function render()
     {
         $mailList = (new Query())->readList(1);
-        $message = Response\Message::create();
+        $message = Response\Message::create(Render::$request);
         $message->data = $mailList;
         Render::json($message);
     }

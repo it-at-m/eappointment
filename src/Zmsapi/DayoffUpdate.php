@@ -19,7 +19,7 @@ class DayoffUpdate extends BaseController
      */
     public static function render($year)
     {
-        $message = Response\Message::create();
+        $message = Response\Message::create(Render::$request);
         $input = Validator::input()->isJson()->getValue();
         $list = array();
         foreach ($input as $dayoff) {

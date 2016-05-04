@@ -20,7 +20,7 @@ class CalendarGet extends BaseController
      */
     public static function render()
     {
-        $message = Response\Message::create();
+        $message = Response\Message::create(Render::$request);
         $input = Validator::input()->isJson()->getValue();
         // TODO error if json is not valid
         $query = new Query();

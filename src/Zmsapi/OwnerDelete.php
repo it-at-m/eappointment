@@ -18,7 +18,7 @@ class OwnerDelete extends BaseController
      */
     public static function render($itemId)
     {
-        $message = Response\Message::create();
+        $message = Response\Message::create(Render::$request);
         $message->data = \BO\Zmsentities\Owner::createExample();
         $message->data->id = $itemId;
         Render::lastModified(time(), '0');
