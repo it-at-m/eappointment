@@ -1,6 +1,8 @@
 <?php
 namespace BO\Zmsapi\Messaging;
 
+use \BO\Zmsdb\Config;
+
 /**
  *
  * @package ZMS API
@@ -21,7 +23,7 @@ class Base extends \ArrayObject
                 'date' => $appointment->toDateTime()->format('U'),
                 'client' => $process->getFirstClient(),
                 'process' => $process,
-                'config' => \BO\Zmsdb\Config::readEntity()
+                'config' => (new Config())->readEntity()
             )
         );
         $message = ob_get_contents();
@@ -40,7 +42,7 @@ class Base extends \ArrayObject
                 'date' => $appointment->toDateTime()->format('U'),
                 'client' => $process->getFirstClient(),
                 'process' => $process,
-                'config' => \BO\Zmsdb\Config::readEntity()
+                'config' => (new Config())->readEntity()
             )
         );
         $message = ob_get_contents();
@@ -59,7 +61,7 @@ class Base extends \ArrayObject
                 'date' => $appointment->toDateTime()->format('U'),
                 'client' => $process->getFirstClient(),
                 'process' => $process,
-                'config' => \BO\Zmsdb\Config::readEntity()
+                'config' => (new Config())->readEntity()
             )
         );
         $subject = ob_get_contents();
