@@ -124,15 +124,13 @@ class SendQueue extends BaseController
         $mailer->SetFrom($message['department']['email']);
         $mailer->FromName = $message['department']['name'];
         if (null !== $message->getIcsPart()) {
-            $mailer->Ical = $message->getIcsPart();
-            /* depricated
+            //$mailer->Ical = $message->getIcsPart();
             $mailer->AddStringAttachment(
-                ,
+                $message->getIcsPart(),
                 "Termin.ics",
                 $encoding,
                 "text/calendar; charset=utf-8; method=REQUEST"
             );
-            */
         }
         $mailer->CharSet = 'UTF-8';
         $mailer->SetLanguage("de");
