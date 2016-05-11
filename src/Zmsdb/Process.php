@@ -5,6 +5,10 @@ use \BO\Zmsentities\Process as Entity;
 use \BO\Zmsentities\Collection\ProcessList;
 use BO\Zmsdb\Helper\ProcessStatus as Status;
 
+/**
+ *
+ * @SuppressWarnings(CouplingBetweenObjects)
+ */
 class Process extends Base
 {
 
