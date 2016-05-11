@@ -19,7 +19,10 @@ class Mail extends Base
             ->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
             ->addConditionItemId($itemId);
-        return $this->fetchOne($query, new Entity());
+        $mail = $this->fetchOne($query, new Entity());
+        $multiPart = $this->readMultiPartByQueueId($itemId);
+        $mail->addMultiPart($multiPart);
+        return $mail;
     }
 
     public function readList($resolveReferences = 1)
@@ -32,9 +35,7 @@ class Mail extends Base
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
             foreach ($result as $item) {
-                $multiPart = $this->readMultiPartByQueueId($item['id']);
                 $mail = $this->readEntity($item['id'], $resolveReferences);
-                $mail->addMultiPart($multiPart);
                 $mailList->addMail($mail);
             }
         }
@@ -61,6 +62,7 @@ class Mail extends Base
             'clientFamilyName' => $client->familyName,
             'clientEmail' => $client->email,
         ));
+
         $result = $this->writeItem($query);
         if ($result) {
             $queueId = $this->getWriter()->lastInsertId();
@@ -71,10 +73,10 @@ class Mail extends Base
         } else {
             return false;
         }
-        return true;
+        return $queueId;
     }
 
-    public function writeInMailPart($queueId, $data)
+    protected function writeInMailPart($queueId, $data)
     {
         $query = new Query\MailPart(Query\Base::INSERT);
         $query->addValues(array(
