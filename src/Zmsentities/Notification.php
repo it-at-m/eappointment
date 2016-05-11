@@ -46,4 +46,9 @@ class Notification extends Schema\Entity
     {
         return $this->department['preferences']['notifications']['identification'];
     }
+
+    public function hasId($itemId)
+    {
+        return (\array_key_exists('id', $this) && $itemId == $this->id) ? true : false;
+    }
 }
