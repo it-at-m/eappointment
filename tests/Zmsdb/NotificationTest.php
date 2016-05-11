@@ -20,6 +20,9 @@ class NotificationTest extends Base
 
         $deleteTest = $query->deleteEntity($queueId);
         $this->assertTrue($deleteTest, "Failed to delete Notification from Database.");
+
+        $entity = $query->readEntity($queueId);
+        $this->assertFalse($entity->hasId($queueId), "Deleted Notification still exists in Database.");
     }
 
     public function testCollection()
