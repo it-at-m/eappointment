@@ -13,6 +13,7 @@ class IpAddress extends \RKA\Middleware\IpAddress
      * @var array
      */
     protected $headersToInspect = [
+        'X-Remote-Ip',
         'X-Forwarded-For',
         'X-Forwarded',
         'X-Cluster-Client-Ip',
