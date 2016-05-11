@@ -143,8 +143,8 @@ class Process extends Base implements MappingInterface
         $data['StandortID'] = $process->getScopeId();
 
         $appointment = $process->getFirstAppointment();
-        $datetime = $appointment->toDateTime();
-        if (null !== $datetime) {
+        if (null !== $appointment) {
+            $datetime = $appointment->toDateTime();
             $data['Datum'] = $datetime->format('Y-m-d');
             $data['Uhrzeit'] = $datetime->format('H:i');
         }
