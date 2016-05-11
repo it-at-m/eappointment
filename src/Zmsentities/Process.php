@@ -142,7 +142,12 @@ class Process extends Schema\Entity
 
     public function getFirstAppointment()
     {
-        return new Appointment(current($this->appointments));
+        $appointment = null;
+        if (count($this->appointments) > 0) {
+            $data = current($this->appointments);
+            $appointment = new Appointment($data);
+        }
+        return $appointment;
 
     }
 }

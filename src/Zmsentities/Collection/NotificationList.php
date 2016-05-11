@@ -12,4 +12,14 @@ class NotificationList extends Base
 
         return $this;
     }
+
+    public function hasNotification($itemId)
+    {
+        foreach ($this as $notification) {
+            if ($notification->id == $itemId) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

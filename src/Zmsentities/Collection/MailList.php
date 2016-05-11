@@ -12,4 +12,14 @@ class MailList extends Base
 
         return $this;
     }
+
+    public function hasMail($itemId)
+    {
+        foreach ($this as $mail) {
+            if ($mail->id == $itemId) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
