@@ -29,3 +29,4 @@ tests: now # run tests
 
 fix: #f fix code 
 	php vendor/bin/phpcbf --standard=psr2 src/
+	php vendor/bin/phpcbf --standard=psr2 tests/
