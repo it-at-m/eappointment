@@ -61,11 +61,12 @@ class Notification extends Base
         ));
         $result = $this->writeItem($query);
         if ($result) {
+            $queueId = $this->getWriter()->lastInsertId();
             $this->updateProcess($notification);
         } else {
             return false;
         }
-        return true;
+        return $queueId;
     }
 
     public function deleteEntity($itemId = null, $processId = null)
