@@ -84,6 +84,7 @@ class Bootstrap
         $container = \App::$slim->getContainer();
         // Configure caching
         \App::$slim->add(new \Slim\HttpCache\Cache('public', 86400));
+        \App::$slim->add(new Middleware\IpAddress());
         // configure slim views with twig
         $container['view'] = function () {
             return self::getTwigView();
