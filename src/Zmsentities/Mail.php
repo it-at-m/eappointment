@@ -24,7 +24,7 @@ class Mail extends Schema\Entity
 
     public function isEncoding($string)
     {
-        return (\base64_decode($string, true)) ? true : false;
+        return (\base64_encode(\base64_decode($string, true)) === $string) ? true : false;
     }
 
     public function getHtmlPart()
@@ -43,6 +43,7 @@ class Mail extends Schema\Entity
         foreach ($this->multipart as $part) {
             if ($part['mime'] == 'text/plain') {
                 $content = $part['content'];
+                error_log($this->isEncoding($content));
                 return ($this->isEncoding($content)) ? \base64_decode($content) : $content;
             }
         }
