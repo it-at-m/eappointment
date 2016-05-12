@@ -4,19 +4,19 @@ namespace BO\Zmsentities\Collection;
 class NotificationList extends Base
 {
 
-    public function addNotification($notification)
+    public function addEntity($entity)
     {
-        if ($notification instanceof \BO\Zmsentities\Notification) {
-            $this[] = clone $notification;
+        if ($entity instanceof \BO\Zmsentities\Notification) {
+            $this[] = clone $entity;
         }
 
         return $this;
     }
 
-    public function hasNotification($itemId)
+    public function hasEntity($itemId)
     {
-        foreach ($this as $notification) {
-            if ($notification->id == $itemId) {
+        foreach ($this as $entity) {
+            if ($entity->id == $itemId) {
                 return true;
             }
         }

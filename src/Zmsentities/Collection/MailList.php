@@ -4,19 +4,19 @@ namespace BO\Zmsentities\Collection;
 class MailList extends Base
 {
 
-    public function addMail($mail)
+    public function addEntity($entity)
     {
-        if ($mail instanceof \BO\Zmsentities\Mail) {
-            $this[] = clone $mail;
+        if ($entity instanceof \BO\Zmsentities\Mail) {
+            $this[] = clone $entity;
         }
 
         return $this;
     }
 
-    public function hasMail($itemId)
+    public function hasEntity($itemId)
     {
-        foreach ($this as $mail) {
-            if ($mail->id == $itemId) {
+        foreach ($this as $entity) {
+            if ($entity->id == $itemId) {
                 return true;
             }
         }

@@ -43,7 +43,6 @@ class Mail extends Schema\Entity
         foreach ($this->multipart as $part) {
             if ($part['mime'] == 'text/plain') {
                 $content = $part['content'];
-                error_log($this->isEncoding($content));
                 return ($this->isEncoding($content)) ? \base64_decode($content) : $content;
             }
         }

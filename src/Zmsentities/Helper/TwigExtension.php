@@ -68,7 +68,7 @@ class TwigExtension extends \Twig_Extension
     public function toGermanDateFromTs($timestamp)
     {
         $datetime = \DateTime::createFromFormat('U', $timestamp);
-        $datetime->setTimezone(new \DateTimeZone(\App::TIMEZONE));
+        $datetime->setTimezone(new \DateTimeZone('Europe/Berlin'));
         return array(
             'date' => strftime('%a. %d. %B %Y', $datetime->getTimestamp()),
             'time' => strftime('%H:%M Uhr', $datetime->getTimestamp())
