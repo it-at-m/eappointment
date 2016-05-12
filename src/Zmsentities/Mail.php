@@ -32,7 +32,7 @@ class Mail extends Schema\Entity
         foreach ($this->multipart as $part) {
             if ($part['mime'] == 'text/html') {
                 $content = $part['content'];
-                return ($this->isEncoding($content)) ? $content : \base64_decode($content);
+                return ($this->isEncoding($content)) ? \base64_decode($content) : $content;
             }
         }
         return null;
@@ -43,7 +43,7 @@ class Mail extends Schema\Entity
         foreach ($this->multipart as $part) {
             if ($part['mime'] == 'text/plain') {
                 $content = $part['content'];
-                return ($this->isEncoding($content)) ? $content : \base64_decode($content);
+                return ($this->isEncoding($content)) ? \base64_decode($content) : $content;
             }
         }
         return null;
@@ -54,7 +54,7 @@ class Mail extends Schema\Entity
         foreach ($this->multipart as $part) {
             if ($part['mime'] == 'text/calendar') {
                 $content = $part['content'];
-                return ($this->isEncoding($content)) ? $content : \base64_decode($content);
+                return ($this->isEncoding($content)) ? \base64_decode($content) : $content;
             }
         }
         return null;
@@ -89,7 +89,6 @@ class Mail extends Schema\Entity
     public function getFirstClient()
     {
         $client = null;
-        error_log(var_export($this->process, 1));
         if (count($this->process['clients']) > 0) {
             $data = current($this->process['clients']);
             $client = new Client($data);
@@ -100,5 +99,30 @@ class Mail extends Schema\Entity
     public function hasId($itemId)
     {
         return (\array_key_exists('id', $this) && $itemId == $this->id) ? true : false;
+    }
+
+    public function toResolvedEntity(Process $process, Config $config)
+    {
+        $entity = clone $this;
+        $content = Helper\Messaging::createMessage($process, $config);
+        $entity->process = $process;
+        $entity->subject = Helper\Messaging::createSubject($process, $config);
+        $entity->createIP = $process->createIP;
+        $entity->department = $process->getDepartment();
+        $entity->multipart = [
+            array(
+                'mime' => 'text/html',
+                'content' => $content
+            ),
+            array(
+                'mime' => 'text/plain',
+                'content' => $this->toPlainText($content)
+            ),
+            array(
+                'mime' => 'text/calendar',
+                'content' => Helper\Messaging::createIcs($process, $config)->getContent()
+            )
+        ];
+        return $entity;
     }
 }
