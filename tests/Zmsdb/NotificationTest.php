@@ -18,22 +18,14 @@ class NotificationTest extends Base
         $this->assertEquals("80410", $entity->getProcessId());
         $this->assertEquals("f22c", $entity->getProcessAuthKey());
 
+        $collection = $query->readList(1);
+        $this->assertTrue($collection->hasEntity($queueId), "Missing Test Entity with ID 1234 in collection");
+
         $deleteTest = $query->deleteEntity($queueId);
         $this->assertTrue($deleteTest, "Failed to delete Notification from Database.");
 
         $entity = $query->readEntity($queueId);
         $this->assertFalse($entity->hasId($queueId), "Deleted Notification still exists in Database.");
-    }
-
-    public function testCollection()
-    {
-        $input = $this->getTestEntity();
-        $query = new Query();
-
-        $notificationList = $query->readList(1);
-        $notificationList->addNotification($input);
-        $this->assertEntityList("\\BO\\Zmsentities\\Notification", $notificationList);
-        $this->assertTrue($notificationList->hasNotification(1234), "Missing Test Notification with ID 1234 in collection");
     }
 
     protected function getTestEntity()

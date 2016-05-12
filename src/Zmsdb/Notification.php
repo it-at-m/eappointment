@@ -34,7 +34,7 @@ class Notification extends Base
             foreach ($result as $notification) {
                 $scope = (new Scope())->readEntity($notification->getScopeId(), $resolveReferences);
                 $notification->addScope($scope);
-                $notificationList->addNotification($notification);
+                $notificationList->addEntity($notification);
             }
             $notificationList = new Collection($result);
         }
