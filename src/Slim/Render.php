@@ -9,6 +9,9 @@ namespace BO\Slim;
 use Interop\Container\ContainerInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use \Slim\Http\Headers;
+use \Slim\Http\Request;
+use \Slim\Http\Response;
 
 class Render
 {
@@ -70,15 +73,30 @@ class Render
      */
     public static function lastModified($date, $expires = '+5 minutes')
     {
+        self::$response = self::getCachableResponse(self::$response, $date, $expires);
+        return self::$response;
+    }
+
+    /**
+     * @param String $date strtotime interpreted
+     * @param String $expires strtotime interpreted
+     *
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public static function getCachableResponse(
+        \Psr\Http\Message\ResponseInterface $response,
+        $date,
+        $expires = '+5 minutes'
+    ) {
         if (!is_int($date)) {
             $date = strtotime($date);
         }
         if (false === strtotime($expires)) {
             $expires = '+' + $expires + ' seconds';
         }
-        self::$response = self::$container->cache->withExpires(self::$response, $expires);
-        self::$response = self::$container->cache->withLastModified(self::$response, $date);
-        return self::$response;
+        $response = \App::$slim->getContainer()->cache->withExpires($response, $expires);
+        $response = \App::$slim->getContainer()->cache->withLastModified($response, $date);
+        return $response;
     }
 
     /**
@@ -91,13 +109,13 @@ class Render
      */
     public static function redirect($route_name, $arguments, $parameter, $statuscode = 302)
     {
+        $response = new Response($statuscode);
         $url = \App::$slim->urlFor($route_name, $arguments);
         $url = Helper::proxySanitizeUri($url);
         $url = preg_replace('#^.*?(https?://)#', '\1', $url); // allow http:// routes
         if ($parameter) {
             $url .= '?' . http_build_query($parameter);
         }
-        self::$response = self::$response->withStatus($statuscode)->withHeader('Location', $url);
-        return $url;
+        return $response->withHeader('Location', $url);
     }
 }
