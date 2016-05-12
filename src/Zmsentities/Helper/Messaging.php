@@ -12,6 +12,7 @@ class Messaging
     protected static function twigView()
     {
         $path = realpath(__DIR__) .'/../../../';
+        require($path . '/vendor/autoload.php');
         $templatePath = $path .'/templates/';
         $templateDldbPath = $path .'/vendor/bo/clientdldb/templates';
         $loader = new \Twig_Loader_Filesystem($templatePath);
@@ -31,8 +32,7 @@ class Messaging
         $message = self::twigView()->render(
             'messaging/' . $template,
             array(
-                'date' => $appointment->toDateTime()
-                    ->format('U'),
+                'date' => $appointment->toDateTime()->format('U'),
                 'client' => $process->getFirstClient(),
                 'process' => $process,
                 'config' => $config
@@ -48,8 +48,7 @@ class Messaging
         $message = self::twigView()->render(
             'messaging/' . $template,
             array(
-                'date' => $appointment->toDateTime()
-                    ->format('U'),
+                'date' => $appointment->toDateTime()->format('U'),
                 'client' => $process->getFirstClient(),
                 'process' => $process,
                 'config' => $config
@@ -65,8 +64,7 @@ class Messaging
         $subject = self::twigView()->render(
             'messaging/' . $template,
             array(
-                'date' => $appointment->toDateTime()
-                    ->format('U'),
+                'date' => $appointment->toDateTime()->format('U'),
                 'client' => $process->getFirstClient(),
                 'process' => $process,
                 'config' => $config
@@ -76,7 +74,7 @@ class Messaging
             return $subject;
     }
 
-    public static function createIcs(\BO\Zmsentities\Process $process, \BO\Zmsentities\Config $config)
+    public static function createIcs(\BO\Zmsentities\Process $process, \BO\Zmsentities\Config $config, $now = false)
     {
         $ics = new \BO\Zmsentities\Ics();
         $template = 'icsappointment.twig';
@@ -90,6 +88,7 @@ class Messaging
                 'startTime' => $appointment->getStartTime(),
                 'endTime' => $appointment->getEndTime(),
                 'process' => $process,
+                'timestamp' => (!$now) ? time() : $now,
                 'message' => $plainContent
             )
         );

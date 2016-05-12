@@ -8,12 +8,11 @@ class Ics extends Schema\Entity
 
     public function getContent()
     {
-        $content = $this->content;
-        return ($this->isEncoding()) ? $content : \base64_decode($content);
+        return $this->content;
     }
 
     public function isEncoding()
     {
-        return (\base64_decode($this->content, true)) ? true : false;
+        return (\base64_encode(\base64_decode($this->content, true)) === $this->content) ? true : false;
     }
 }
