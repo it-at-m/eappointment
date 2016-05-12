@@ -114,7 +114,7 @@ class SendQueue extends BaseController
 
     protected function createMailer($message)
     {
-        $encoding = ($message->isEncoding($message->getHtmlPart())) ? 'base64' : 'quoted-printable';
+        $encoding = 'base64';
         $mailer = new PHPMailer(true);
         $mailer->IsHTML(true);
         $mailer->Subject = $message['subject'];
@@ -143,7 +143,6 @@ class SendQueue extends BaseController
         $preferences = (new \BO\Zmsentities\Config())->getNotificationPreferences();
         $sender = $message->getIdentification();
         if ('mail' == $preferences['gateway']) {
-            //$encoding = ($message->isEncoding()) ? 'base64' : 'quoted-printable';
             $mailer = new PHPMailer(true);
             $mailer->Subject = $message->getMessage();
             $mailer->Body = '&nbsp;';
@@ -154,7 +153,6 @@ class SendQueue extends BaseController
             $mailer->FromName = $sender;
             $mailer->CharSet = 'UTF-8';
             $mailer->SetLanguage("de");
-            //$mailer->Encoding = $encoding;
         } else {
             $url = $preferences['gatewayUrl'] .
                 urlencode($message->getMessage()) .
