@@ -18,6 +18,9 @@ class MailTest extends Base
         $this->assertEquals("Das ist ein Plaintext Test", $entity->getPlainPart());
         $this->assertEquals("max@service.berlin.de", $entity->getFirstClient()['email']);
 
+        $collection = $query->readList(1);
+        $this->assertTrue($collection->hasEntity($queueId), "Missing Test Entity with ID 1234 in collection");
+
         $deleteTest = $query->deleteEntity($queueId);
         $this->assertTrue($deleteTest, "Failed to delete Mail from Database.");
 
@@ -25,16 +28,6 @@ class MailTest extends Base
         $this->assertFalse($entity->hasId($queueId), "Deleted Mail still exists in Database.");
     }
 
-    public function testCollection()
-    {
-        $input = $this->getTestEntity();
-        $query = new Query();
-
-        $mailList = $query->readList(1);
-        $mailList->addMail($input);
-        $this->assertEntityList("\\BO\\Zmsentities\\Mail", $mailList);
-        $this->assertTrue($mailList->hasMail(1234), "Missing Test Notification with ID 1234 in collection");
-    }
     protected function getTestEntity()
     {
         $input = new Entity(array(

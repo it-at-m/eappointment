@@ -1,0 +1,33 @@
+<?php
+
+namespace BO\Zmsdb\Tests;
+
+use \BO\Zmsdb\Config as Config;
+use \BO\Zmsdb\Process;
+use \BO\Zmsentities\Ics as Entity;
+
+class IcsTest extends Base
+{
+    public function testBasic()
+    {
+        setlocale(LC_ALL, 'de_DE');
+        $testEntity = $this->getTestEntity();
+        $testTimestamp = 1463062089; // 12.5.2016, 16:08:09 GMT+2:00 DST saved in base64 ics string below
+        $process = (new Process())->readEntity(169530, 'b3b0'); //process from testDB import
+        $config = (new Config())->readEntity();
+
+        $ics = \BO\Zmsentities\Helper\Messaging::createIcs($process, $config, $testTimestamp);
+
+        $this->assertEntity("\\BO\\Zmsentities\\Ics", $ics);
+        $this->assertEquals($testEntity->content, $ics->getContent());
+        $this->assertTrue($ics->isEncoding(), "The ICS String ist not base64 encoded!");
+    }
+
+    protected function getTestEntity()
+    {
+        $input = new Entity(array(
+            "content" => "QkVHSU46VkNBTEVOREFSClgtTE9UVVMtQ0hBUlNFVDpVVEYtOApWRVJTSU9OOjIuMApQUk9ESUQ6Wk1TLUJlcmxpbgpCRUdJTjpWVElNRVpPTkUKVFpJRDpFdXJvcGUvQmVybGluClgtTElDLUxPQ0FUSU9OOkV1cm9wZS9CZXJsaW4KQkVHSU46REFZTElHSFQKVFpPRkZTRVRGUk9NOiswMTAwClRaT0ZGU0VUVE86KzAyMDAKVFpOQU1FOkNFU1QKRFRTVEFSVDoxOTcwMDMyOVQwMjAwMDAKUlJVTEU6RlJFUT1ZRUFSTFk7SU5URVJWQUw9MTtCWURBWT0tMVNVO0JZTU9OVEg9MwpFTkQ6REFZTElHSFQKQkVHSU46U1RBTkRBUkQKVFpPRkZTRVRGUk9NOiswMjAwClRaT0ZGU0VUVE86KzAxMDAKVFpOQU1FOkNFVApEVFNUQVJUOjE5NzAxMDI1VDAzMDAwMApSUlVMRTpGUkVRPVlFQVJMWTtJTlRFUlZBTD0xO0JZREFZPS0xU1U7QllNT05USD0xMApFTkQ6U1RBTkRBUkQKRU5EOlZUSU1FWk9ORQpNRVRIT0Q6UFVCTElTSApCRUdJTjpWRVZFTlQKVUlEOmZyYXVuaG9mZXJfaW0xNDYzMDYyMDg5CkNMQVNTOlBVQkxJQwpEVFNUQVJUO1RaSUQ9RXVyb3BlL0JlcmxpbjoyMDE2MDQwOFQwOTEwMDAKRFRFTkQ7VFpJRD1FdXJvcGUvQmVybGluOjIwMTYwNDA4VDA5MjAwMApEVFNUQU1QOjIwMTYwNTEyVDE2MDgwOVoKTE9DQVRJT046QsO8cmdlcmFtdCBSYXRoYXVzIFRpZXJnYXJ0ZW4gTWF0aGlsZGUtSmFjb2ItUGxhdHosIDEwNTUxIEJlcmxpbgpTVU1NQVJZOkJlcmxpbi1UZXJtaW46IDE2OTUzMApERVNDUklQVElPTjogU2VociBnZWVocnRlL3IgRnJhdSBvZGVyIEhlcnIgWjY1NjM1IFxuXG4gaGllcm1pdCBiZXN0w6R0aWdlbiB3aXIgSWhuZW4gSWhyZW4gZ2VidWNodGVuIFRlcm1pbiBhbSBGci4gMDguIEFwcmlsIDIwMTYgdW0gMDk6MTAgVWhyXG4gT3J0OiBCw7xyZ2VyYW10IFJhdGhhdXMgVGllcmdhcnRlbiBNYXRoaWxkZS1KYWNvYi1QbGF0eiwgMTA1NTEgQmVybGluXG4gKELDvHJnZXJhbXQgKSBcblxuIElocmUgVm9yZ2FuZ3NudW1tZXIgaXN0IGRpZSAiMTY5NTMwIlxuIElociBDb2RlIHp1ciBUZXJtaW5hYnNhZ2Ugb2RlciAtw6RuZGVydW5nIGxhdXRldCAiYjNiMCJcblxuIFphaGx1bmdzaGlud2VpczogQW0gU3RhbmRvcnQga2FubiBudXIgbWl0IGdpcm9jYXJkIChtaXQgUElOKSBiZXphaGx0IHdlcmRlbi5cblxuIFNpZSBoYWJlbiBmb2xnZW5kZSBEaWVuc3RsZWlzdHVuZyBhdXNnZXfDpGhsdDogXG4gXG5Bbm1lbGR1bmcgZWluZXIgV29obnVuZ1xuICBcblZvcmF1c3NldHp1bmdlblxuICBcbi0gIHBlcnPDtm5saWNoZSBWb3JzcHJhY2hlIG9kZXIgVmVydHJldHVuZyBkdXJjaCBlaW5lIGFuZGVyZSBQZXJzb24gICBJaHJlIHBlcnPDtm5saWNoZSBWb3JzcHJhY2hlIGlzdCBlcmZvcmRlcmxpY2ggb2RlciBzaWUgd2VyZGVuIGR1cmNoIGVpbmUgYW5kZXJlIFBlcnNvbiB2ZXJ0cmV0ZW4uXG4gQmVpIGRlciBBYmdhYmUgZGVzIEFubWVsZGVmb3JtdWxhcnMgdW5kIGRlciDDvGJyaWdlbiBlcmZvcmRlcmxpY2hlbiBVbnRlcmxhZ2VuIGvDtm5uZW4gU2llIHNpY2ggZHVyY2ggZWluZSBnZWVpZ25ldGUgUGVyc29uIHZlcnRyZXRlbiBsYXNzZW4uIERpZSB2b24gSWhuZW4gYmVhdWZ0cmFndGUgUGVyc29uIG11c3MgaW4gZGVyIExhZ2Ugc2VpbiwgZGllIHp1ciBvcmRudW5nc2dlbcOkw59lbiBGw7xocnVuZyBkZXMgTWVsZGVyZWdpc3RlcnMgZXJmb3JkZXJsaWNoZW4gQXVza8O8bmZ0ZSB6dSBlcnRlaWxlbi4gRGFzIEFubWVsZGVmb3JtdWxhciBtw7xzc2VuIFNpZSBlaWdlbmjDpG5kaWcgdW50ZXJzY2hyZWliZW4uICAgICAgXG5HZWLDvGhyZW5cbiBnZWLDvGhyZW5mcmVpOyBkYXMgZ2lsdCBhdWNoIGbDvHIgZGllIE1lbGRlYmVzdMOkdGlndW5nLiBcbiBTb2xsdGVuIFNpZSBkZW4gVGVybWluIG5pY2h0IHdhaHJuZWhtZW4ga8O2bm5lbiwgc2FnZW4gU2llIGlobiBiaXR0ZSBhYi4gXG5cbiBEaWVzIGvDtm5uZW4gU2llIMO8YmVyIHVuc2VyZSBJbnRlcm5ldGJ1Y2h1bmdzc2VpdGUgaHR0cHM6Ly9zZXJ2aWNlLWJlcmxpbi90ZXJtaW52ZXJlaW5iYXJ1bmcvdGVybWluL21hbmFnZS8xNjk1MzAvIHVudGVyIEFuZ2FiZSBJaHJlciBWb3JnYW5nc251bW1lciAiMTY5NTMwIiB1bmQgSWhyZXMgcGVyc8O2bmxpY2hlbiBBYnNhZ2UtQ29kZXMgImIzYjAiIGVybGVkaWdlbi5cblxuIFxuIE1pdCBmcmV1bmRsaWNoZW0gR3J1w59cbiBJaHJlIFRlcm1pbnZlcndhbHR1bmcgZGVzIExhbmRlcyBCZXJsaW4gXG5cbiBodHRwczovL3NlcnZpY2UtYmVybGluL3Rlcm1pbnZlcmVpbmJhcnVuZy8gCkJFR0lOOlZBTEFSTQpBQ1RJT046RElTUExBWQpUUklHR0VSOi1QMUQKREVTQ1JJUFRJT046RXJpbm5lcnVuZwpFTkQ6VkFMQVJNCkVORDpWRVZFTlQKRU5EOlZDQUxFTkRBUgo="
+        ));
+        return $input;
+    }
+}

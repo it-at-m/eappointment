@@ -36,7 +36,7 @@ class Mail extends Base
         if (count($result)) {
             foreach ($result as $item) {
                 $mail = $this->readEntity($item['id'], $resolveReferences);
-                $mailList->addMail($mail);
+                $mailList->addEntity($mail);
             }
         }
         return $mailList;
