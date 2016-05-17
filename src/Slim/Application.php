@@ -23,18 +23,9 @@ class Application
     /**
      * Settings for region
      */
-    const DEFAULT_LANG = 'de';
-
     const CHARSET = 'UTF-8';
 
     const TIMEZONE = 'Europe/Berlin';
-
-    public static $supportedLanguages = array();
-
-    public static $lcTimes = array(
-        'de' => 'de_DE',
-        'en' => 'en_GB'
-    );
 
     /*
      * -----------------------------------------------------------------------
