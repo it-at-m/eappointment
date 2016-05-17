@@ -111,7 +111,7 @@ class TwigExtension extends \Twig_Extension
 
     public function currentLang()
     {
-        return \App::$locale;
+        return \BO\Slim\Language::$current;
     }
 
     public function urlGet($name, $params = array(), $getparams = array())

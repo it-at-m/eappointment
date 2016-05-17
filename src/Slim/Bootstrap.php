@@ -35,16 +35,6 @@ class Bootstrap
         ini_set('default_charset', $charset);
         date_default_timezone_set($timezone);
         mb_internal_encoding($charset);
-
-        $language = self::getLanguage();
-        setlocale(LC_ALL, \App::$lcTimes[$language]);
-
-        // Specify the location of the translation tables
-        bindtextdomain('dldb-'.$language, \App::APP_PATH. '/locale');
-        bind_textdomain_codeset('dldb-'.$language, $charset);
-
-        // Choose domain
-        textdomain('dldb-'.$language);
     }
 
     protected function configureLogger(
@@ -114,19 +104,6 @@ class Bootstrap
             ]
         );
         return $view;
-    }
-
-    public static function getLanguage()
-    {
-        $lang = '';
-        // TODO: interpreting uri on bootstrap does not work well with unit testing
-        // and may have unexpected results with routing like /energie -> "en"
-        // (difficult to debug, because this function here is well hidden)
-        //$lang = substr(\App::$slim->request()->getResourceUri(), 1, 2);
-        $lang = ($lang != '' && in_array($lang, array_keys(\App::$supportedLanguages))) ? $lang : \App::DEFAULT_LANG;
-        \App::$locale = $lang;
-
-        return $lang;
     }
 
     public static function addTwigExtension($extension)
