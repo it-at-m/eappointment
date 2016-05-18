@@ -155,4 +155,12 @@ class Process extends Schema\Entity
         return $appointment;
 
     }
+
+    public function addFromSlotList($scope, $requests, $appointment)
+    {
+        $this->scope = $scope;
+        $this->requests = $requests;
+        $this->addAppointment($appointment);
+        return $this;
+    }
 }

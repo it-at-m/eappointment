@@ -14,4 +14,17 @@ class Slot extends Schema\Entity
             'callcenter' => 0,
         ];
     }
+
+    public function setSlotData($workstationCount, Helper\DateTime $slotTime = null)
+    {
+        $this->time = (null !== $slotTime) ? $slotTime->format('H:i') : null;
+        $this->public += $workstationCount['public'];
+        $this->callcenter += $workstationCount['callcenter'];
+        $this->intern += $workstationCount['intern'];
+        return $this;
+    }
+    public function hasTime()
+    {
+        return isset($this['slottime']);
+    }
 }
