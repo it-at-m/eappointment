@@ -2,7 +2,7 @@
 namespace BO\Zmsdb;
 
 use \BO\Zmsentities\Process as Entity;
-use \BO\Zmsentities\Collection\ProcessList;
+use \BO\Zmsentities\Collection\ProcessList as Collection;
 use BO\Zmsdb\Helper\ProcessStatus as Status;
 
 /**
@@ -198,7 +198,7 @@ class Process extends Base
         if (isset($calendar['freeProcesses'])) {
             return $calendar['freeProcesses'];
         }
-        return new ProcessList();
+        return new Collection();
     }
 
     protected function addDldbData($process, $resolveReferences)

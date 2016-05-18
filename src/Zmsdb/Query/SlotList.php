@@ -66,6 +66,7 @@ class SlotList
             standort s
             LEFT JOIN oeffnungszeit o USING(StandortID)
             LEFT JOIN buerger b ON b.StandortID = o.StandortID
+            LEFT JOIN feiertage f ON f.BehoerdenID = s.BehoerdenID
         WHERE
             o.StandortID = :scope_id
             AND o.OeffnungszeitID IS NOT NULL
@@ -107,6 +108,9 @@ class SlotList
             AND b.Uhrzeit < o.Terminendzeit
             AND b.Datum >= o.Startdatum
             AND b.Datum <= o.Endedatum
+
+            -- match day off
+            AND f.Datum <> b.Datum
         GROUP BY o.OeffnungszeitID, b.Datum, `slotnr`
         HAVING
             -- reduce results cause processing them costs time even with query cache
@@ -129,9 +133,9 @@ class SlotList
     protected $availability = null;
 
     /**
-     * @var array $slots
+     * @var Array $slots
      */
-    protected $slots = [];
+    protected $slots = array();
 
     public function __construct(
         array $slotData = ['availability__id' => null],
@@ -187,65 +191,51 @@ class SlotList
         return $this;
     }
 
-    public function isSameAvailability(array $slotData)
-    {
-        return $this->slotData['availability__id'] == $slotData['availability__id']
-            //&& $this->slotData['day'] == $slotData['day']
-            //&& $this->slotData['month'] == $slotData['month']
-            //&& $this->slotData['year'] == $slotData['year']
-        ;
-    }
-
     public function addSlotData(array $slotData)
     {
         if (isset($slotData['slotnr'])) {
             $slotnumber = $slotData['slotnr'];
             $slotdate = $slotData['slotdate'];
             $slotDebug = "$slotdate #$slotnumber @" . $slotData['slottime'] . " on " . $this->availability;
-            if (!isset($this->slots[$slotdate][$slotnumber])) {
+            $slotList = $this->slots[$slotdate];
+            if (null === $slotList->getSlot($slotnumber)) {
                 error_log("Debugdata: Found database entry without a pre-generated slot $slotDebug");
-                //error_log(var_export($this->slots, true));
-                //error_log(var_export($this->availability->getArrayCopy(), true));
                 throw new \Exception(
                     "Found database entry without a pre-generated slot $slotDebug"
                 );
             }
-            $slot =& $this->slots[$slotdate][$slotnumber];
-            if (isset($slot['slottime'])) {
+            $slot = $slotList->getSlot($slotnumber);
+            if ($slot->hasTime()) {
                 throw new \Exception(
                     "Found two database entries for the same slot $slotDebug"
                 );
             }
-            $slot['slottime'] = $slotData['slottime'];
-            $slot['public'] -= $slotData['availability__workstationCount__public'];
-            $slot['public'] += $slotData['freeAppointments__public'];
-            $slot['callcenter'] -= $slotData['availability__workstationCount__callcenter'];
-            $slot['callcenter'] += $slotData['freeAppointments__callcenter'];
-            $slot['intern'] -= $slotData['availability__workstationCount__intern'];
-            $slot['intern'] += $slotData['freeAppointments__intern'];
+            $workstationCount = array(
+                'public' =>
+                    $slotData['freeAppointments__public'] - $slotData['availability__workstationCount__public'],
+                'callcenter' =>
+                    $slotData['freeAppointments__callcenter'] - $slotData['availability__workstationCount__callcenter'],
+                'intern' =>
+                    $slotData['freeAppointments__intern'] - $slotData['availability__workstationCount__intern']
+            );
+            $slotTime = new DateTime($slotData['slottime']);
+            $slotList->writeSlot($slotnumber, $slotTime, $workstationCount);
         }
         return $this;
     }
 
     public function addToCalendar(\BO\Zmsentities\Calendar $calendar, $freeProcessesDate)
     {
-        //error_log("addToCalendar " . $this->availability);
-        //if (isset($this->slots['2016-05-23'])) {
-        //    error_log(var_export($this->slots['2016-05-23'], true));
-        //    error_log(var_export($this->availability->getArrayCopy(), true));
-        //}
         foreach ($this->slots as $date => $slotList) {
             if (null !== $freeProcessesDate && $date == $freeProcessesDate->format('Y-m-d')) {
                 $freeProcesses = $this->getFreeProcesses($calendar, $freeProcessesDate);
-                $calendar['freeProcesses']->addProcess($freeProcesses);
+                $calendar['freeProcesses']->addProcesses($freeProcesses);
             }
             $datetime = new \DateTimeImmutable($date);
             //error_log($datetime->format('c'));
             $day = $calendar->getDayByDateTime($datetime);
             foreach ($slotList as $slotInfo) {
-                $day['freeAppointments']['public'] += $slotInfo['public'];
-                $day['freeAppointments']['intern'] += $slotInfo['intern'];
-                $day['freeAppointments']['callcenter'] += $slotInfo['callcenter'];
+                $day = $slotList->addFreeAppointments($day, $slotInfo);
             }
         }
         return $calendar;
@@ -260,82 +250,16 @@ class SlotList
         $slotType = 'public'
     ) {
 
-        $scopeReader = new \BO\Zmsdb\Scope();
-        $freeProcesses = array();
+        $scope = (new \BO\Zmsdb\Scope())->readEntity($this->slotData['appointment__scope__id'], 2);
         $selectedDate = $freeProcessesDate->format('Y-m-d');
         $slotList = $this->slots[$selectedDate];
-        $scope = $scopeReader->readEntity($this->slotData['appointment__scope__id'], 2);
-        foreach ($slotList as $slotInfo) {
-            if ($slotInfo[$slotType] > 0) {
-                $appointment = new \BO\Zmsentities\Appointment();
-                $appointmentDateTime = \DateTime::createFromFormat(
-                    'Y-m-d H:i',
-                    $selectedDate .' '. $slotInfo['time']
-                );
-                $appointment['scope'] = $scope;
-                $appointment['availability'] = $this->availability;
-                $appointment['date'] = $appointmentDateTime->format('U');
-                $appointment['slotCount'] = $slotInfo[$slotType];
-
-                $process = new \BO\Zmsentities\Process();
-                $process['scope'] = $scope;
-                $process['requests'] = $calendar['requests'];
-                $process->addAppointment($appointment);
-
-                $freeProcesses[] = $process;
-            }
-        }
-        return $freeProcesses;
-    }
-
-    /**
-     * Reduce available slots
-     * On given amount of required slots reduce the amount of available slots by comparing continous slots available
-     *
-     * @param Int $slotsRequired
-     * @return self
-     */
-    public function toReducedBySlots($slotsRequired)
-    {
-        $slotsRequired = $slotsRequired;
-        if (count($this->slots) && $slotsRequired > 1) {
-            foreach ($this->slots as $date => $slotList) {
-                $slotLength = count($slotList);
-                $slotKeys = array_keys($slotList);
-                sort($slotKeys);
-                for ($slotIndex = 0; $slotIndex < $slotLength; $slotIndex++) {
-                    if ($slotIndex + $slotsRequired < $slotLength) {
-                        for ($slotRelative = 1; $slotRelative < $slotsRequired; $slotRelative++) {
-                            if ($slotIndex + $slotRelative < $slotLength) {
-                                $this->slots[$date][$slotKeys[$slotIndex]] = self::takeLowerSlotValue(
-                                    $this->slots[$date][$slotKeys[$slotIndex]],
-                                    $this->slots[$date][$slotKeys[$slotIndex + $slotRelative]]
-                                );
-                            }
-                        }
-                    } else {
-                        $this->slots[$date][$slotIndex]['public'] = 0;
-                        $this->slots[$date][$slotIndex]['intern'] = 0;
-                        $this->slots[$date][$slotIndex]['callcenter'] = 0;
-                    }
-                }
-            }
-        }
-        return $this;
-    }
-
-    /**
-     * Compare two slots and return the lower values
-     * @param array $slotA
-     * @param array $slotB
-     * @return array $slotA modified
-     */
-    protected static function takeLowerSlotValue($slotA, $slotB)
-    {
-        foreach (['public', 'intern', 'callcenter'] as $type) {
-            $slotA[$type] = $slotA[$type] < $slotB[$type] ? $slotA[$type] : $slotB[$type];
-        }
-        return $slotA;
+        return $slotList->getFreeProcesses(
+            $selectedDate,
+            $scope,
+            $this->availability,
+            $slotType,
+            $calendar['requests']
+        );
     }
 
     /**
@@ -353,5 +277,38 @@ class SlotList
             }
             $time = $time->modify('+1day');
         } while ($time->getTimestamp() <= $stopDate->getTimestamp());
+    }
+
+    public function isSameAvailability(array $slotData)
+    {
+        return $this->slotData['availability__id'] == $slotData['availability__id'];
+    }
+
+    /**
+     * Reduce available slots
+     * On given amount of required slots reduce the amount of available slots by comparing continous slots available
+     *
+     * @param Int $slotsRequired
+     * @return self
+     */
+    public function toReducedBySlots($slotsRequired)
+    {
+        if (count($this->slots) && $slotsRequired > 1) {
+            foreach ($this->slots as $slotList) {
+                $slotLength = count($slotList);
+                for ($slotIndex = 0; $slotIndex < $slotLength; $slotIndex++) {
+                    if ($slotIndex + $slotsRequired < $slotLength) {
+                        for ($slotRelative = 1; $slotRelative < $slotsRequired; $slotRelative++) {
+                            if ($slotIndex + $slotRelative < $slotLength) {
+                                $slotList->takeLowerSlotValue($slotIndex, $slotIndex + $slotRelative);
+                            }
+                        }
+                    } else {
+                        $slotList->setEmptySlotValues($slotIndex);
+                    }
+                }
+            }
+        }
+        return $this;
     }
 }

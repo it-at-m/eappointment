@@ -3,7 +3,6 @@ namespace BO\Zmsdb;
 
 use \BO\Zmsentities\Calendar as Entity;
 use \BO\Zmsdb\Query\SlotList;
-use \BO\Zmsentities\Collection\ProcessList;
 
 class Calendar extends Base
 {
@@ -11,7 +10,7 @@ class Calendar extends Base
     public function readResolvedEntity(Entity $calendar, \DateTimeInterface $now, $freeProcessesDate = null)
     {
         $calendar['processing'] = [];
-        $calendar['freeProcesses'] = new ProcessList();
+        $calendar['freeProcesses'] = new \BO\Zmsentities\Collection\ProcessList();
         $calendar['processing']['slotlist'] = new SlotList();
         $calendar = $this->readResolvedProviders($calendar);
         $calendar = $this->readResolvedClusters($calendar);
