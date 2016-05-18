@@ -66,31 +66,31 @@ class AvailabilityTest extends EntityCommonTests
 
     public function testSlotList()
     {
-        $slotListResult = [
-            0 => array (
+        $slotListResult = new \BO\Zmsentities\Collection\SlotList(array(
+            new \BO\Zmsentities\Slot(array(
                 'time' => '12:00',
                 'public' => 0,
                 'callcenter' => 0,
                 'intern' => 3,
-            ),
-            1 => array (
+            )),
+            new \BO\Zmsentities\Slot(array(
                 'time' => '13:30',
                 'public' => 0,
                 'callcenter' => 0,
                 'intern' => 3,
-            ),
-            2 => array (
+            )),
+            new \BO\Zmsentities\Slot(array(
                 'time' => '15:00',
                 'public' => 0,
                 'callcenter' => 0,
                 'intern' => 3,
-            ),
-            3 => array (
+            )),
+            new \BO\Zmsentities\Slot(array(
                 'time' => '16:30',
                 'public' => 0,
                 'callcenter' => 0,
                 'intern' => 3,
-            ),
+            )),
             // If the last slot is equal to the stop time, there should not be a slot! (Do not remove this comment)
             //4 => array (
             //    'time' => '18:00',
@@ -98,7 +98,7 @@ class AvailabilityTest extends EntityCommonTests
             //    'callcenter' => 0,
             //    'intern' => 3,
             //),
-        ];
+        ));
         $time = new \DateTimeImmutable('12:00:00');
         $entity = new $this->entityclass([
             'startTime' => $time->format('H:i'),
@@ -110,7 +110,7 @@ class AvailabilityTest extends EntityCommonTests
         $this->assertEquals($slotList, $slotListResult);
         $entity['slotTimeInMinutes'] = 0;
         $slotList = $entity->getSlotList();
-        $this->assertEquals($slotList, []);
+        $this->assertEquals($slotList, new \BO\Zmsentities\Collection\SlotList());
         //var_dump((string)$entity);
     }
 
