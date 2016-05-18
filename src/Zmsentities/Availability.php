@@ -254,15 +254,10 @@ class Availability extends Schema\Entity
         $startTime = Helper\DateTime::create($this['startTime']);
         $stopTime = Helper\DateTime::create($this['endTime']);
         $slotnr = 0;
-        $slotList = array();
+        $slotList = new Collection\SlotList();
         if ($this['slotTimeInMinutes'] > 0) {
             do {
-                $slotList[$slotnr] = [
-                    'time' => $startTime->format('H:i'),
-                    'public' => $this['workstationCount']['public'],
-                    'callcenter' => $this['workstationCount']['callcenter'],
-                    'intern' => $this['workstationCount']['intern'],
-                ];
+                $slotList->addSlot($slotnr, $startTime, $this['workstationCount']);
                 $startTime = $startTime->modify('+' . $this['slotTimeInMinutes'] . 'minute');
                 $slotnr++;
                 // Only add a slot, if at least a minute is left, otherwise do not ("<" instead "<=")

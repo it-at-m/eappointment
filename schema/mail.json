@@ -36,7 +36,57 @@
             "authKey":"1234",
             "reminderTimestamp": 1447931730000,
             "scope": {
-                "id": 123
+                "id": 151,
+                "preferences": {
+                    "appointment": {
+                        "deallocationDuration": "5",
+                        "endInDaysDefault": "60",
+                        "multipleSlotsEnabled": "1",
+                        "reservationDuration": "5",
+                        "startInDaysDefault": "0"
+                    },
+                    "client": {
+                        "alternateAppointmentUrl": "",
+                        "amendmentActivated": "0",
+                        "amendmentLabel": "",
+                        "emailRequired": "1",
+                        "telephoneActivated": "1",
+                        "telephoneRequired": "1"
+                    },
+                    "notifications": {
+                        "confirmationContent": "",
+                        "confirmationEnabled": "0",
+                        "enabled": "1",
+                        "headsUpContent": "",
+                        "headsUpTime": "0"
+                    },
+                    "pickup": {
+                        "alternateName": "Ausgabe",
+                        "isDefault": "0"
+                    },
+                    "queue": {
+                        "callCountMax": "0",
+                        "callDisplayText": "Herzlich Willkommen \r\nin Berlin Reinickendorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-reinickendorf/org/buergeramt/",
+                        "firstNumber": "1000",
+                        "lastNumber": "1999",
+                        "processingTimeAverage": "00:15:00",
+                        "publishWaitingTimeEnabled": "1",
+                        "statisticsEnabled": "1"
+                    },
+                    "survey": {
+                        "emailContent": "",
+                        "enabled": "0",
+                        "label": ""
+                    },
+                    "ticketprinter": {
+                        "deactivatedText": "",
+                        "notificationsAmendmentEnabled": "0",
+                        "notificationsDelay": "0"
+                    },
+                    "workstation": {
+                        "emergencyEnabled": "0"
+                    }
+                }
             },
             "status": "confirmed"
         },

@@ -4,7 +4,7 @@ namespace BO\Zmsentities\Collection;
 class ProcessList extends Base
 {
 
-    public function addProcess($data)
+    public function addProcesses($data)
     {
         foreach ($data as $process) {
             if ($process instanceof \BO\Zmsentities\Process) {
