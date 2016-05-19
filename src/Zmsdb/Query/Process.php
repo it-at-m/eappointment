@@ -136,6 +136,16 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
+    public function addConditionIsReserved()
+    {
+        $this->query
+            ->where('process.name', 'NOT IN', array('dereferenced','(abgesagt)'))
+            ->where('process.vorlaeufigeBuchung', '=', 1)
+            ->where('process.StandortID', '<>', 1)
+            ->where('process.istFolgeterminvon', 'is', null);
+        return $this;
+    }
+
     public function reverseEntityMapping(\BO\Zmsentities\Process $process)
     {
         $data = array();

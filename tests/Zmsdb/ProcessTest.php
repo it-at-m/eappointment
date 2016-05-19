@@ -3,7 +3,6 @@
 namespace BO\Zmsdb\Tests;
 
 use \BO\Zmsdb\Process as Query;
-use \BO\Zmsdb\Status;
 use \BO\Zmsentities\Process as Entity;
 use \BO\Zmsentities\Calendar;
 
@@ -47,6 +46,15 @@ class ProcessTest extends Base
             $firstProcess->hasAppointment($now->format('U'), $firstProcess->getScopeId()),
             "Missing Appointment Date (". $firstDay .") in first free Process"
         );
+    }
+
+    public function testStatusReserved()
+    {
+        $query = new Query();
+        $processList = $query->readReservedProcesses();
+        $firstProcess = $processList->getFirstProcess();
+        $process = $query->readEntity($firstProcess->id, $firstProcess->authKey);
+        $this->assertEquals('reserved', $process->getStatus());
     }
 
     protected function getTestCalendarEntity()

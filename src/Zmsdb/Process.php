@@ -189,7 +189,6 @@ class Process extends Base
             ->fetchValue($query::QUERY_RELEASE_LOCK);
     }
 
-    /* prüfen ob das benötigt wird begin */
     public function readFreeProcesses(\BO\Zmsentities\Calendar $calendar, \DateTimeInterface $now)
     {
         $resolvedCalendar = new Calendar();
@@ -199,6 +198,26 @@ class Process extends Base
             return $calendar['freeProcesses'];
         }
         return new Collection();
+    }
+
+    public function readReservedProcesses($resolveReferences = 2)
+    {
+        $processList = new Collection();
+        $query = new Query\Process(Query\Base::SELECT);
+        $query
+            ->addResolvedReferences($resolveReferences)
+            ->addEntityMapping()
+            ->addConditionIsReserved();
+        $resultData = $this->fetchList($query, new Entity());
+        foreach ($resultData as $process) {
+            if (2 == $resolveReferences) {
+                $process['requests'] = (new Request())->readRequestByProcessId($process->id, $resolveReferences);
+                $process['status'] = (new Status())->readProcessStatus($process->id, $process->authKey);
+                $process['scope'] = (new Scope())->readEntity($process->getScopeId(), $resolveReferences);
+            }
+            $processList->addProcess($process);
+        }
+        return $processList;
     }
 
     protected function addDldbData($process, $resolveReferences)
