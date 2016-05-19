@@ -3,14 +3,17 @@
 namespace BO\Zmsdb\Tests;
 
 use \BO\Zmsdb\Process as Query;
+use \BO\Zmsdb\Status;
 use \BO\Zmsentities\Process as Entity;
+use \BO\Zmsentities\Calendar;
 
 class ProcessTest extends Base
 {
     public function testBasic()
     {
-        $input = $this->getTestEntity();
         $query = new Query();
+        $input = $this->getTestProcessEntity();
+
         $process = $query->updateEntity($input);
         $process = $query->readEntity($process->id, $process->authKey);
 
@@ -26,10 +29,32 @@ class ProcessTest extends Base
 
         $process = $query->readEntity($process->id, $process->authKey);
         $this->assertEquals('deleted', $process->getStatus());
-
     }
 
-    protected function getTestEntity()
+    public function testStatusFree()
+    {
+        $query = new Query();
+        $now = new \DateTimeImmutable("2016-05-30 08:00");
+
+        $calendar = $this->getTestCalendarEntity();
+        $firstDay = $now->format('Y-m-d');
+        $lastDay = date('Y-m-t', strtotime("+1 month", strtotime($firstDay)));
+        $calendar->addFirstAndLastDay($firstDay, $lastDay);
+
+        $processList = $query->readFreeProcesses($calendar, $now);
+        $firstProcess = $processList->getFirstProcess();
+        $this->assertTrue(
+            $firstProcess->hasAppointment($now->format('U'), $firstProcess->getScopeId()),
+            "Missing Appointment Date (". $firstDay .") in first free Process"
+        );
+    }
+
+    protected function getTestCalendarEntity()
+    {
+        return (new Calendar())->getExample();
+    }
+
+    protected function getTestProcessEntity()
     {
          $input = new Entity(array(
             "amendment"=>"",
@@ -185,7 +210,7 @@ class ProcessTest extends Base
                 ]
             ],
             "status"=>"reserved"
-        ));
-        return $input;
+         ));
+         return $input;
     }
 }
