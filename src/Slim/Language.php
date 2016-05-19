@@ -21,12 +21,18 @@ class Language
         // Detect current language based on request URI
         $lang_ids = array_keys(self::$languages);
         $lang_ids = array_diff($lang_ids, array(self::$default));
-        $url = \App::$slim->request()->getResourceUri();
-        if (preg_match('~^/('.implode('|', $lang_ids).')/~', $url, $matches)) {
-            self::$current = $matches[1];
-        } else {
+        if (null !== \App::$slim->router()->getCurrentRoute()) {
+            $url = \App::$slim->request()->getResourceUri();
+            if (preg_match('~^/('.implode('|', $lang_ids).')/~', $url, $matches)) {
+                self::$current = $matches[1];
+            } else {
+                self::$current = self::$default;
+            }
+        }
+        else {
             self::$current = self::$default;
         }
+
         self::setTextDomain();
     }
 
