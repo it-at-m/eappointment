@@ -56,7 +56,7 @@ class Language
     {
         $domain = 'dldb-'.self::$current;
         putenv('LANG='. self::$current);
-        setlocale(LC_ALL, self::$current);
+        setlocale(LC_ALL, self::$languages[self::$current]['locale']);
         // Specify the location of the translation tables
         bindtextdomain($domain, \App::APP_PATH. '/locale');
         bind_textdomain_codeset($domain, \App::CHARSET);
