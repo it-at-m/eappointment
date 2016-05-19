@@ -54,14 +54,19 @@
         },
         "requests": [
             {
-            "id": "123456",
-            "name": "Abmeldung einer Wohnung",
+            "id": "120703",
+            "name": "Personalausweis beantragen",
             "source": "dldb"
             }
         ],
+        "providers": [
+        	{
+        		"id": 122217
+        	}
+        ],
         "scopes": [
             {
-                "id": 1234
+                "id": 141
             }
         ]
     },

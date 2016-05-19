@@ -70,6 +70,11 @@ class Process extends Schema\Entity
         return $this;
     }
 
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
     public function addClient($formData)
     {
         $client = new Client();

@@ -6,10 +6,18 @@ class ProcessList extends Base
 
     public function addProcesses($data)
     {
-        foreach ($data as $process) {
-            if ($process instanceof \BO\Zmsentities\Process) {
-                $this[] = clone $process;
+        foreach ($data as $entity) {
+            if ($entity instanceof \BO\Zmsentities\Process) {
+                $this[] = clone $entity;
             }
+        }
+        return $this;
+    }
+
+    public function addProcess($entity)
+    {
+        if ($entity instanceof \BO\Zmsentities\Process) {
+            $this[] = clone $entity;
         }
         return $this;
     }
@@ -22,5 +30,10 @@ class ProcessList extends Base
             $list[$appointment['date']][] = clone $process;
         }
         return $list;
+    }
+
+    public function getFirstProcess()
+    {
+        return current($this);
     }
 }

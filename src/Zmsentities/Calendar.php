@@ -57,8 +57,8 @@ class Calendar extends Schema\Entity
      */
     public function addFirstAndLastDay($firstDay, $lastDay)
     {
-        $firstDay = $this->getDayByDateTime(new \DateTime($firstDay));
-        $lastDay = $this->getDayByDateTime(new \DateTime($lastDay));
+        $firstDay = $this->getDayByDateTime(Helper\DateTime::create($firstDay));
+        $lastDay = $this->getDayByDateTime(Helper\DateTime::create($lastDay));
         $this->firstDay = array('year' => $firstDay->year, 'month' => $firstDay->month, 'day' => $firstDay->day);
         $this->lastDay = array('year' => $lastDay->year, 'month' => $lastDay->month, 'day' => $lastDay->day);
         return $this;
@@ -110,11 +110,11 @@ class Calendar extends Schema\Entity
             $currentDate = $endDate;
             $endDate = $startDate;
         }
-        $endDate = new \DateTime($endDate->format('Y-m-t'));
+        $endDate = Helper\DateTime::create($endDate->format('Y-m-t'));
         $endDate->modify('23:59:59');
         $monthList = [];
         do {
-            $monthList[] = new \DateTime($currentDate->format('Y-m-1'));
+            $monthList[] = Helper\DateTime::create($currentDate->format('Y-m-1'));
             $currentDate->modify('+1 month');
         } while ($currentDate->getTimestamp() <= $endDate->getTimestamp());
         return $monthList;
@@ -152,21 +152,26 @@ class Calendar extends Schema\Entity
 
     public function getDateTimeFromDate($date)
     {
-        return \DateTime::createFromFormat('Y-m-d', $date['year']. '-'. $date['month'] .'-'. $date['day']);
+        $date = Helper\DateTime::createFromFormat('Y-m-d', $date['year']. '-'. $date['month'] .'-'. $date['day']);
+        return Helper\DateTime::create($date);
     }
 
     public function getFirstDay()
     {
-        $dateTime = \DateTimeImmutable::createFromFormat(
-            'Y-m-d',
-            $this['firstDay']['year']. '-'. $this['firstDay']['month'] .'-'. $this['firstDay']['day']
-        );
+        $dateTime = $this->getDateTimeFromDate(array(
+            'year' => $this['firstDay']['year'],
+            'month' => $this['firstDay']['month'],
+            'day' => $this['firstDay']['day']
+        ));
         return $dateTime->modify('00:00:00');
     }
 
-    public function getDateTimeFromTs($timestamp)
+    public function getDateTimeFromTs($timestamp, $timezone = null)
     {
-        return new \DateTime('@' . $timestamp);
+        $dateTime = new Helper\DateTime('@' . $timestamp);
+        $dateTime = $dateTime->setTimezone($timezone);
+        $dateTime = Helper\DateTime::create($dateTime);
+        return $dateTime;
     }
 
     /**
