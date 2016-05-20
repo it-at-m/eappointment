@@ -106,7 +106,7 @@ class Availability extends Schema\Entity
     {
         if (isset($this['department']['dayoff'])) {
             foreach ($this['department']['dayoff'] as $dayOff) {
-                if ($dayOff['date'] == $dateTime->getTimestamp()) {
+                if ($dayOff['date'] == $dateTime->format('U')) {
                     return true;
                 }
             }
@@ -253,13 +253,11 @@ class Availability extends Schema\Entity
     {
         $startTime = Helper\DateTime::create($this['startTime']);
         $stopTime = Helper\DateTime::create($this['endTime']);
-        $slotnr = 0;
         $slotList = new Collection\SlotList();
         if ($this['slotTimeInMinutes'] > 0) {
             do {
-                $slotList->addSlot($slotnr, $startTime, $this['workstationCount']);
+                $slotList->addSlot($startTime, $this['workstationCount']);
                 $startTime = $startTime->modify('+' . $this['slotTimeInMinutes'] . 'minute');
-                $slotnr++;
                 // Only add a slot, if at least a minute is left, otherwise do not ("<" instead "<=")
             } while ($startTime->getTimestamp() < $stopTime->getTimestamp());
         }
