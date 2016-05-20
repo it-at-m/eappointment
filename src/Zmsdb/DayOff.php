@@ -1,7 +1,8 @@
 <?php
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\Dayoff as Entity;
+use \BO\Zmsentities\DayOff as Entity;
+use \BO\Zmsentities\Collection\DayOffList as Collection;
 
 class DayOff extends Base
 {
@@ -16,10 +17,17 @@ class DayOff extends Base
 
     public function readByYear($year)
     {
+        $dayOffList = new Collection();
         $query = new Query\DayOff(Query\Base::SELECT);
         $query
             ->addEntityMapping()
             ->addConditionYear($year);
-        return $this->fetchList($query, new Entity());
+        $result = $this->fetchList($query, new Entity());
+        if (count($result)) {
+            foreach ($result as $entity) {
+                $dayOffList->addEntity($entity);
+            }
+        }
+        return $dayOffList;
     }
 }
