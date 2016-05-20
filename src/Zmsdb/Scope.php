@@ -3,6 +3,7 @@
 namespace BO\Zmsdb;
 
 use \BO\Zmsentities\Scope as Entity;
+use \BO\Zmsentities\Collection\ScopeList as Collection;
 
 class Scope extends Base
 {
@@ -20,22 +21,36 @@ class Scope extends Base
 
     public function readByClusterId($clusterId, $resolveReferences = 0)
     {
+        $scopeList = new Collection();
         $query = new Query\Scope(Query\Base::SELECT);
         $query
             ->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
             ->addConditionClusterId($clusterId);
-        return $this->fetchList($query, new Entity());
+        $result = $this->fetchList($query, new Entity());
+        if (count($result)) {
+            foreach ($result as $entity) {
+                $scopeList->addEntity($entity);
+            }
+        }
+        return $scopeList;
     }
 
     public function readByProviderId($providerId, $resolveReferences = 0)
     {
+        $scopeList = new Collection();
         $query = new Query\Scope(Query\Base::SELECT);
         $query
             ->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
             ->addConditionProviderId($providerId);
-        return $this->fetchList($query, new Entity());
+        $result = $this->fetchList($query, new Entity());
+        if (count($result)) {
+            foreach ($result as $entity) {
+                $scopeList->addEntity($entity);
+            }
+        }
+        return $scopeList;
     }
 
     public function readByDepartmentId($departmentId, $resolveReferences = 0)

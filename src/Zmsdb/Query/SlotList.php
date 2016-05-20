@@ -66,7 +66,6 @@ class SlotList
             standort s
             LEFT JOIN oeffnungszeit o USING(StandortID)
             LEFT JOIN buerger b ON b.StandortID = o.StandortID
-            LEFT JOIN feiertage f ON f.BehoerdenID = s.BehoerdenID
         WHERE
             o.StandortID = :scope_id
             AND o.OeffnungszeitID IS NOT NULL
@@ -109,8 +108,6 @@ class SlotList
             AND b.Datum >= o.Startdatum
             AND b.Datum <= o.Endedatum
 
-            -- match day off
-            AND f.Datum <> b.Datum
         GROUP BY o.OeffnungszeitID, b.Datum, `slotnr`
         HAVING
             -- reduce results cause processing them costs time even with query cache
@@ -196,20 +193,28 @@ class SlotList
         if (isset($slotData['slotnr'])) {
             $slotnumber = $slotData['slotnr'];
             $slotdate = $slotData['slotdate'];
+            $slotList = (!isset($this->slots[$slotdate])) ?
+                new \BO\Zmsentities\Collection\SlotList() :
+                $this->slots[$slotdate];
+
+            //check in entity collection if slot exists => if not then ignore it
+            //I want to create a test if dayoff matches with processes, to avoid such exceptions
+            /*
+            $slot = $slotList->getSlot($slotnumber);
             $slotDebug = "$slotdate #$slotnumber @" . $slotData['slottime'] . " on " . $this->availability;
-            $slotList = $this->slots[$slotdate];
-            if (null === $slotList->getSlot($slotnumber)) {
+            if (null === $slot) {
                 error_log("Debugdata: Found database entry without a pre-generated slot $slotDebug");
                 throw new \Exception(
                     "Found database entry without a pre-generated slot $slotDebug"
                 );
             }
-            $slot = $slotList->getSlot($slotnumber);
+
             if ($slot->hasTime()) {
                 throw new \Exception(
                     "Found two database entries for the same slot $slotDebug"
                 );
             }
+            */
             $workstationCount = array(
                 'public' =>
                     $slotData['freeAppointments__public'] - $slotData['availability__workstationCount__public'],
