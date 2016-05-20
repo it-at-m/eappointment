@@ -12,7 +12,7 @@ class DayOff extends Base implements MappingInterface
     public function getEntityMapping()
     {
         return [
-            'date' => self::expression('UNIX_TIMESTAMP(CONVERT_TZ(`dayOff`.`Datum`, "+00:00", @@global.time_zone))'),
+            'date' => self::expression('UNIX_TIMESTAMP(`dayOff`.`Datum`)'),
             'name' => 'dayOff.Feiertag'
         ];
     }
