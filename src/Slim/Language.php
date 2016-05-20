@@ -28,8 +28,7 @@ class Language
             } else {
                 self::$current = self::$default;
             }
-        }
-        else {
+        } else {
             self::$current = self::$default;
         }
 
