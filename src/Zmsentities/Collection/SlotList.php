@@ -39,25 +39,27 @@ class SlotList extends Base
     {
         $slotKeys = array_keys((array)$this);
         sort($slotKeys);
-        if (isset($this[$slotKeys[$index]])) {
-            return $this[$slotKeys[$index]];
+        if (!isset($slotKeys[$index]) || !isset($this[$slotKeys[$index]])) {
+            return null;
         }
-        return null;
+        return $this[$slotKeys[$index]];
     }
 
-    public function addSlot($slotnr, \BO\Zmsentities\Helper\DateTime $startTime, $workstationCount)
+    public function addSlot(\BO\Zmsentities\Helper\DateTime $startTime, $workstationCount)
     {
         $slot = new \BO\Zmsentities\Slot();
         $slot->setSlotData($workstationCount, $startTime);
-        $this[$slotnr] = $slot;
+        $this[] = $slot;
         return $this;
     }
 
     public function writeSlot($slotnr, \BO\Zmsentities\Helper\DateTime $startTime, $workstationCount)
     {
         $slot = $this->getSlot($slotnr);
-        $slot->setSlotData($workstationCount, $startTime);
-        $this[$slotnr] = $slot;
+        if (null !== $slot) {
+            $slot->setSlotData($workstationCount, $startTime);
+            $this[$slotnr] = $slot;
+        }
         return $this;
     }
 
