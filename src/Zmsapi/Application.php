@@ -60,13 +60,12 @@ class Application extends \BO\Slim\Application
     public static $locale = 'de';
 
     public static $supportedLanguages = array(
-        'de' => 'Deutsch',
-        'en' => 'English'
-    );
-
-    public static $lcTimes = array(
-        'de' => 'de_DE.UTF-8',
-        'en' => 'en_GB.UTF-8'
+        // Default language
+        'de' => array(
+            'name'    => 'Deutsch',
+            'locale'  => 'de_DE.utf-8',
+            'default' => true,
+        )
     );
 
     /**
