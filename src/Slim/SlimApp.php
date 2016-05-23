@@ -6,9 +6,9 @@ class SlimApp extends \Slim\App
 {
     public function urlFor($name, $params = array(), $lang = null)
     {
-        $currentLang = (null !== $lang) ? $lang : Language::$current;
+        $currentLang = (null !== $lang) ? $lang : \App::$language->getCurrent();
         $params['lang'] = (isset($params['lang'])) ? $params['lang'] : $currentLang;
-        if ($params['lang'] == '' || $params['lang'] == Language::$default) {
+        if ($params['lang'] == '' || $params['lang'] == \App::$language->getDefault()) {
             unset($params['lang']);
         }
         return $this->getContainer()->router->pathFor($name, $params);

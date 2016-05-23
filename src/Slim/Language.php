@@ -2,66 +2,85 @@
 
 namespace BO\Slim;
 
+use Psr\Http\Message\RequestInterface;
+
 class Language
 {
 
-    public static $languages = array();
+    public static $supportedLanguages = array();
 
-    public static $current = '';
-    public static $default = '';
+    public $current = '';
+    protected $default = '';
 
-    public static function getLanguage()
+    protected static $instance = null;
+
+    /**
+     * @var \Psr\Http\Message\RequestInterface $request;
+     *
+     */
+    protected $request = null;
+
+    public function __construct(RequestInterface $request, array $supportedLanguages)
     {
-        if (empty(self::$languages)) {
-            return false;
+        if (self::$instance) {
+            throw new Exception('\BO\Slim\Language is a singleton, do not init twice');
         }
+        self::$instance = $this;
 
-        self::getDefault();
-
-        // Detect current language based on request URI
-        $lang_ids = array_keys(self::$languages);
-        $lang_ids = array_diff($lang_ids, array(self::$default));
-        if (null !== \App::$slim->router()->getCurrentRoute()) {
-            $url = \App::$slim->request()->getResourceUri();
-            if (preg_match('~^/('.implode('|', $lang_ids).')/~', $url, $matches)) {
-                self::$current = $matches[1];
-            } else {
-                self::$current = self::$default;
-            }
-        } else {
-            self::$current = self::$default;
-        }
-
-        self::setTextDomain();
-    }
-
-    public static function getCurrent($lang)
-    {
-        return ($lang != '') ? $lang : self::$current;
-    }
-
-    protected static function getDefault()
-    {
-        // Find default language
-        if (! self::$default) {
-            foreach (self::$languages as $lang_id => $lang_data) {
+        $this->request = $request;
+        self::$supportedLanguages = $supportedLanguages;
+        if (! $this->default) {
+            foreach (self::$supportedLanguages as $lang_id => $lang_data) {
                 if (isset($lang_data['default']) && $lang_data['default']) {
-                    self::$default = $lang_id;
+                    $this->default = $lang_id;
                     break;
                 }
             }
-            if (! self::$default) {
-                reset(self::$languages);
-                self::$default = key(self::$languages);
+            if (! $this->default) {
+                reset(self::$supportedLanguages);
+                $this->default = key(self::$supportedLanguages);
             }
         }
+        $default = $this->getDefault();
+
+        // Detect current language based on request URI
+        $lang_ids = array_keys(self::$supportedLanguages);
+        $lang_ids = array_diff($lang_ids, array($default));
+        if (null !== $this->request) {
+            $url = $this->request->getUri()->getPath();
+            if (preg_match('~^/('.implode('|', $lang_ids).')/~', $url, $matches)) {
+                $this->current = $matches[1];
+            } else {
+                $this->current = $default;
+            }
+        } else {
+            $this->current = $default;
+        }
+
+        $this->setTextDomain();
     }
 
-    protected static function setTextDomain()
+    public function getCurrent($lang = '')
     {
-        $domain = 'dldb-'.self::$current;
-        \putenv('LANG='. self::$current);
-        \setlocale(LC_ALL, self::$languages[self::$current]['locale']);
+        return ($lang != '') ? $lang : $this->current;
+    }
+
+    public function getDefault()
+    {
+        // Find default language
+        return $this->default;
+    }
+
+    protected function setTextDomain()
+    {
+        $domain = 'dldb-'.$this->current;
+        \putenv('LANG='. $this->current);
+        if (!isset(self::$supportedLanguages[$this->current]['locale'])) {
+            var_dump(self::$supportedLanguages[$this->current]);
+            throw new \Exception("Unsupported type of language");
+        }
+        $locale = self::$supportedLanguages[$this->current]['locale'];
+        \setlocale(LC_ALL, $locale);
         // Specify the location of the translation tables
         \bindtextdomain($domain, \App::APP_PATH. '/locale');
         \bind_textdomain_codeset($domain, \App::CHARSET);

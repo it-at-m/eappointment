@@ -71,4 +71,19 @@ class Application
     public static $log = null;
 
     const MONOLOG_LOGLEVEL = \Monolog\Logger::WARNING;
+
+    /**
+     * @var \BO\Slim\Language $language
+     *
+     */
+    public static $language = null;
+
+    public static $supportedLanguages = array(
+        // Default language
+        'de' => array(
+            'name'    => 'Deutsch',
+            'locale'  => 'de_DE.utf-8',
+            'default' => true,
+        )
+    );
 }

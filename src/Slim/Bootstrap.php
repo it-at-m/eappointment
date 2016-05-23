@@ -6,6 +6,11 @@
 
 namespace BO\Slim;
 
+/**
+ * @SuppressWarnings(Coupling)
+ * Bootstrapping connects the classes, so coupling should be ignored
+ *
+ */
 class Bootstrap
 {
     protected static $instance = null;
@@ -32,9 +37,12 @@ class Bootstrap
         $charset = \App::CHARSET,
         $timezone = \App::TIMEZONE
     ) {
+        $container = \App::$slim->getContainer();
         ini_set('default_charset', $charset);
         date_default_timezone_set($timezone);
         mb_internal_encoding($charset);
+        \App::$language = new \BO\Slim\Language($container['request'], \App::$supportedLanguages);
+        return \App::$language;
     }
 
     protected function configureLogger(
@@ -63,13 +71,6 @@ class Bootstrap
                     'level' => \App::MONOLOG_LOGLEVEL,
                 ],
             ],
-            //'view' => new TwigView(
-            //    \App::APP_PATH  . \App::TEMPLATE_PATH,
-            //    array (
-            //        'debug' => \App::SLIM_DEBUG,
-            //        'cache' => \App::TWIG_CACHE ? \App::APP_PATH . \App::TWIG_CACHE : false,
-            //    )
-            //),
         ));
         $container = \App::$slim->getContainer();
         // Configure caching
