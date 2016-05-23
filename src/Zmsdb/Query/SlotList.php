@@ -66,6 +66,7 @@ class SlotList
             standort s
             LEFT JOIN oeffnungszeit o USING(StandortID)
             LEFT JOIN buerger b ON b.StandortID = o.StandortID
+            LEFT JOIN feiertage f ON f.BehoerdenID = s.BehoerdenID
         WHERE
             o.StandortID = :scope_id
             AND o.OeffnungszeitID IS NOT NULL
@@ -108,6 +109,8 @@ class SlotList
             AND b.Datum >= o.Startdatum
             AND b.Datum <= o.Endedatum
 
+            -- match day off
+            AND f.Datum <> b.Datum
         GROUP BY o.OeffnungszeitID, b.Datum, `slotnr`
         HAVING
             -- reduce results cause processing them costs time even with query cache
@@ -199,7 +202,6 @@ class SlotList
 
             //check in entity collection if slot exists => if not then ignore it
             //I want to create a test if dayoff matches with processes, to avoid such exceptions
-            /*
             $slot = $slotList->getSlot($slotnumber);
             $slotDebug = "$slotdate #$slotnumber @" . $slotData['slottime'] . " on " . $this->availability;
             if (null === $slot) {
@@ -214,7 +216,7 @@ class SlotList
                     "Found two database entries for the same slot $slotDebug"
                 );
             }
-            */
+
             $workstationCount = array(
                 'public' =>
                     $slotData['freeAppointments__public'] - $slotData['availability__workstationCount__public'],
