@@ -15,6 +15,17 @@ class CalendarTest extends Base
         122257,122208,122226
     ];
 
+public function testDayOffBASpandau()
+    {
+        //Bürgeramt Spandau with Day Off on 2016-05-25
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $freeProcessesDate = new \DateTimeImmutable("2016-05-25");
+        $input = $this->getTestEntity();
+        $input->addProvider('dldb', '122281');
+        $entity = (new Query())->readResolvedEntity($input, $now, $freeProcessesDate);
+        $this->assertEquals(0, count($entity['freeProcesses']));
+    }
+
     public function testFalkenhagener()
     {
         $now = new \DateTimeImmutable("2016-04-01 11:55");
