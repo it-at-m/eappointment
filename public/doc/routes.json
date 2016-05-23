@@ -1,0 +1,2691 @@
+{
+	"/availability/{id}/": {
+		"get": {
+			"description": "Get an availability by id",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "availability number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/availability.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "availability id does not exists"
+				}
+			}
+		},
+		"post": {
+			"description": "Update an availability",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "availability number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "availability",
+					"description": "availability data to update",
+					"in": "body",
+					"schema": {
+						"$ref": "schema/availability.json"
+					}
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/availability.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "availability id does not exists"
+				}
+			}
+		},
+		"delete": {
+			"description": "Deletes an availability",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "availability number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success, returns deleted object",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/availability.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "availability id does not exists"
+				}
+			}
+		}
+	},
+	"/calendar/": {
+		"post": {
+			"description": "Get a list of available days for appointments",
+			"parameters": [
+				{
+					"name": "calendar",
+					"description": "data for finding available days",
+					"required": true,
+					"in": "body",
+					"schema": {
+						"$ref": "schema/calendar.json"
+					}
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "get an updated calendar objects with updated days list",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/calendar.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "Could not find any available days",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/calendar.json"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"/calldisplay/": {
+		"post": {
+			"description": "Get preferences for a calldisplay",
+			"parameters": [
+				{
+					"name": "calldisplay",
+					"description": "data containing scopes and clusters",
+					"required": true,
+					"in": "body",
+					"schema": {
+						"$ref": "schema/calldisplay.json"
+					}
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "get an updated calendar objects with updated days list",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/calldisplay.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "Could not find a given cluster or scope, see metaresult",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"/calldisplay/queue/": {
+		"post": {
+			"description": "Get queue for a calldisplay",
+			"parameters": [
+				{
+					"name": "calldisplay",
+					"description": "data containing scopes and clusters",
+					"required": true,
+					"in": "body",
+					"schema": {
+						"$ref": "schema/calldisplay.json"
+					}
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "get a list of queue entries",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/queue.json"
+								}
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "Could not find a given cluster or scope, see metaresult",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"/cluster/{id}/": {
+		"get": {
+			"description": "Get an cluster by id",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "cluster number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/cluster.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "cluster id does not exists"
+				}
+			}
+		},
+		"post": {
+			"description": "Update an cluster",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "cluster number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "cluster",
+					"description": "cluster data to update",
+					"required": true,
+					"in": "body",
+					"schema": {
+						"$ref": "schema/cluster.json"
+					}
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/cluster.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "cluster id does not exists"
+				}
+			}
+		},
+		"delete": {
+			"description": "Deletes an cluster",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "cluster number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success"
+				},
+				"404": {
+					"description": "cluster id does not exists"
+				}
+			}
+		}
+	},
+	"/cluster/{id}/queue/": {
+		"get": {
+			"description": "Get a waiting queue for a cluster",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "cluster number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/queue.json"
+								}
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "cluster id does not exists"
+				}
+			}
+		}
+	},
+	"/dayoff/{year}/": {
+		"get": {
+			"description": "Get a list of common free days for a given year",
+			"parameters": [
+				{
+					"name": "year",
+					"description": "year for the free days",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/dayoff.json"
+								}
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "year out of range"
+				}
+			}
+		},
+		"post": {
+			"description": "Update list of common free days",
+			"parameters": [
+				{
+					"name": "year",
+					"description": "year for the free days",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "dayoff",
+					"description": "dayoff data to update",
+					"in": "body",
+					"schema": {
+						"type": "array",
+						"items": {
+							"$ref": "schema/dayoff.json"
+						}
+					}
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/dayoff.json"
+								}
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "year out of range"
+				}
+			}
+		}
+	},
+	"/department/": {
+		"get": {
+			"description": "Get a list of organisations",
+			"parameters": [
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/department.json"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"/department/{id}/": {
+		"get": {
+			"description": "Get an department by id",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "department number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/department.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "department id does not exists"
+				}
+			}
+		},
+		"post": {
+			"description": "Update an department",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "department number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "department",
+					"description": "department data to update",
+					"required": true,
+					"in": "body",
+					"schema": {
+						"$ref": "schema/department.json"
+					}
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/department.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "department id does not exists"
+				}
+			}
+		},
+		"delete": {
+			"description": "Deletes an department",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "department number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success"
+				},
+				"404": {
+					"description": "department id does not exists"
+				}
+			}
+		}
+	},
+	"/mails/": {
+		"get": {
+			"description": "get a list of mails in the send queue",
+			"parameters": [
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "returns a list, might be empty",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/mail.json"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"post": {
+			"description": "Add a mail to the send queue",
+			"parameters": [
+				{
+					"name": "notification",
+					"description": "mail data to send",
+					"required": true,
+					"in": "body",
+					"schema": {
+						"$ref": "schema/mail.json"
+					}
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "mail accepted",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/mail.json"
+								}
+							}
+						}
+					}
+				},
+				"400": {
+					"description": "Missing required properties in the notification"
+				}
+			}
+		}
+	},
+	"/mails/{id}/": {
+		"delete": {
+			"description": "delete a mail in the send queue",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "mail number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "succesfully deleted"
+				},
+				"404": {
+					"description": "could not find mail or mail already sent"
+				}
+			}
+		}
+	},
+	"/notification/": {
+		"get": {
+			"description": "get a list of notifications in the send queue",
+			"parameters": [
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "returns a list, might be empty",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/notification.json"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"post": {
+			"description": "Add a notification to the send queue",
+			"parameters": [
+				{
+					"name": "notification",
+					"description": "notification data to send",
+					"required": true,
+					"in": "body",
+					"schema": {
+						"$ref": "schema/notification.json"
+					}
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "notification accepted"
+				},
+				"400": {
+					"description": "Missing required properties in the notification"
+				}
+			}
+		}
+	},
+	"/notification/{id}/": {
+		"delete": {
+			"description": "delete a notification in the send queue",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "notification number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "succesfully deleted"
+				},
+				"404": {
+					"description": "could not find notification or notification already sent"
+				}
+			}
+		}
+	},
+	"/owner/": {
+		"get": {
+			"description": "Get a list of owners",
+			"parameters": [
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/owner.json"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"/owner/{id}/": {
+		"get": {
+			"description": "Get an owner by id",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "owner number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/owner.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "owner id does not exists"
+				}
+			}
+		},
+		"post": {
+			"description": "Update an owner",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "owner number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "owner",
+					"description": "owner data to update",
+					"required": true,
+					"in": "body",
+					"schema": {
+						"$ref": "schema/owner.json"
+					}
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/owner.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "owner id does not exists"
+				}
+			}
+		},
+		"delete": {
+			"description": "Deletes an owner",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "owner number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success"
+				},
+				"404": {
+					"description": "owner id does not exists"
+				}
+			}
+		}
+	},
+	"/organisation/": {
+		"get": {
+			"description": "Get a list of organisations",
+			"parameters": [
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/organisation.json"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"/organisation/{id}/": {
+		"get": {
+			"description": "Get an organisation by id",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "organisation number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/organisation.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "organisation id does not exists"
+				}
+			}
+		},
+		"post": {
+			"description": "Update an organisation",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "organisation number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "organisation",
+					"description": "organisation data to update",
+					"required": true,
+					"in": "body",
+					"schema": {
+						"$ref": "schema/organisation.json"
+					}
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/organisation.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "organisation id does not exists"
+				}
+			}
+		},
+		"delete": {
+			"description": "Deletes an organisation",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "organisation number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success"
+				},
+				"404": {
+					"description": "organisation id does not exists"
+				}
+			}
+		}
+	},
+	"/organisation/{id}/hash/": {
+		"get": {
+			"description": "Get a hash to identify a ticketprinter. Usually a browser requests a hash once and stores it in a cookie.",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "organisation number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/ticketprinter.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "organisation id does not exists"
+				}
+			}
+		}
+	},
+	"/process/{id}/{authKey}/": {
+		"get": {
+			"description": "Get a process",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "process number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "authKey",
+					"description": "authentication key",
+					"in": "path",
+					"required": true,
+					"type": "string"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/process.json"
+							}
+						}
+					}
+				},
+				"403": {
+					"description": "authkey does not match"
+				},
+				"404": {
+					"description": "process id does not exists"
+				}
+			}
+		},
+		"post": {
+			"description": "Update a process but does not send any mails or notifications on status changes",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "process number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "authKey",
+					"description": "authentication key",
+					"in": "path",
+					"required": true,
+					"type": "string"
+				},
+				{
+					"name": "process",
+					"description": "process data to update",
+					"required": true,
+					"in": "body",
+					"schema": {
+						"$ref": "schema/process.json"
+					}
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success, there might be changes on the object or added information. Use the response for further action with the process",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/process.json"
+							}
+						}
+					}
+				},
+				"400": {
+					"description": "Invalid input"
+				},
+				"403": {
+					"description": "forbidden, authkey does not match or status changes, only data may be changed"
+				},
+				"404": {
+					"description": "process id does not exists"
+				}
+			}
+		},
+		"delete": {
+			"description": "Deletes a process but does not send any mails or notifications",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "process number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "authKey",
+					"description": "authentication key",
+					"in": "path",
+					"required": true,
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success, there might be changes on the object or added information. Use the response for further action with the process",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/process.json"
+							}
+						}
+					}
+				},
+				"403": {
+					"description": "authkey does not match"
+				},
+				"404": {
+					"description": "process id does not exists"
+				}
+			}
+		}
+	},
+	"/process/{id}/{authKey}/ics/": {
+		"get": {
+			"description": "Get an ICS-File for a process",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "process number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "authKey",
+					"description": "authentication key",
+					"in": "path",
+					"required": true,
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "object",
+								"properties": {
+									"content": {
+										"type": "string",
+										"description": "base64 encoded ICS file"
+									}
+								}
+							}
+						}
+					}
+				},
+				"403": {
+					"description": "authkey does not match"
+				},
+				"404": {
+					"description": "process id does not exists"
+				}
+			}
+		}
+	},
+	"/process/status/free/": {
+		"post": {
+			"description": "Get a list of free processes for a given day",
+			"parameters": [
+				{
+					"name": "calendar",
+					"description": "data for finding available processes, try to restrict data to one day, if possible",
+					"required": true,
+					"in": "body",
+					"schema": {
+						"$ref": "schema/calendar.json"
+					}
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "get a list of available processes",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/process.json"
+								}
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "Could not find any available processes, returns empty list",
+					"schema": {
+						"type": "array",
+						"items": {
+							"$ref": "schema/process.json"
+						}
+					}
+				}
+			}
+		}
+	},
+	"/process/status/reserved/": {
+		"get": {
+			"description": "Get a list of reserved processes",
+			"parameters": [
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "get a list of processes",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/process.json"
+								}
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "Could not find any processes, returns empty list",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"type": "object"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"post": {
+			"description": "Try to reserve the appointments in a process",
+			"parameters": [
+				{
+					"name": "process",
+					"description": "process data to update",
+					"required": true,
+					"in": "body",
+					"schema": {
+						"$ref": "schema/process.json"
+					}
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "get a list of processes",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/process.json"
+							}
+						}
+					}
+				},
+				"400": {
+					"description": "Invalid input"
+				},
+				"403": {
+					"description": "authkey does not match"
+				},
+				"404": {
+					"description": "Could not find any processes, returns empty list"
+				}
+			}
+		}
+	},
+	"/process/status/confirmed/": {
+		"post": {
+			"description": "Try to confirm a process, changes status from reservered to confirmed",
+			"parameters": [
+				{
+					"name": "process",
+					"description": "process data to update",
+					"required": true,
+					"in": "body",
+					"schema": {
+						"$ref": "schema/process.json"
+					}
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "process is confirmed, notifications and mails sent according to preferences",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/process.json"
+								}
+							}
+						}
+					}
+				},
+				"302": {
+					"description": "Redirects to /processes/status/reserved/ since the given process does not exists in the list (any longer)"
+				},
+				"400": {
+					"description": "Invalid input"
+				},
+				"403": {
+					"description": "authkey does not match"
+				}
+			}
+		}
+	},
+	"/provider/{source}/{id}/": {
+		"get": {
+			"description": "Get an provider by id",
+			"parameters": [
+				{
+					"name": "source",
+					"description": "provider source like 'dldb'",
+					"in": "path",
+					"required": true,
+					"type": "string"
+				},
+				{
+					"name": "id",
+					"description": "provider number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/provider.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "provider id for source does not exists"
+				}
+			}
+		}
+	},
+	"/provider/list/{source}/{csv}/": {
+		"get": {
+			"description": "Get a list of provider by optional csv",
+			"parameters": [
+				{
+					"name": "source",
+					"description": "request source like 'dldb'",
+					"in": "path",
+					"required": true,
+					"type": "string"
+				},
+				{
+					"name": "csv",
+					"required": true,
+					"description": "request numbers as csv string",
+					"in": "path",
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"collectionFormat": "csv"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/provider.json"
+							}
+						}
+					}
+				},
+				"400": {
+					"description": "invalid tag value"
+				},
+				"404": {
+					"description": "request id for source does not exists"
+				}
+			}
+		}
+	},
+	"/request/{source}/{id}/": {
+		"get": {
+			"description": "Get an request by id",
+			"parameters": [
+				{
+					"name": "source",
+					"description": "request source like 'dldb'",
+					"in": "path",
+					"required": true,
+					"type": "string"
+				},
+				{
+					"name": "id",
+					"description": "request number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/request.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "request id for source does not exists"
+				}
+			}
+		}
+	},
+	"/request/list/{source}/{csv}/": {
+		"get": {
+			"description": "Get a list of request by optional csv",
+			"parameters": [
+				{
+					"name": "source",
+					"description": "request source like 'dldb'",
+					"in": "path",
+					"required": true,
+					"type": "string"
+				},
+				{
+					"name": "csv",
+					"required": true,
+					"description": "request numbers as csv string",
+					"in": "path",
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"collectionFormat": "csv"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/request.json"
+							}
+						}
+					}
+				},
+				"400": {
+					"description": "invalid tag value"
+				},
+				"404": {
+					"description": "request id for source does not exists"
+				}
+			}
+		}
+	},
+	"/scope/": {
+		"get": {
+			"description": "Get a list of scopes",
+			"parameters": [
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "returns a list",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/scope.json"
+								}
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "no scopes defined yet"
+				}
+			}
+		}
+	},
+	"/scope/{id}/": {
+		"get": {
+			"description": "Get a scope",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "scope number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/scope.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "scope id does not exists"
+				}
+			}
+		},
+		"post": {
+			"description": "Update a scope",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "scope number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "scope",
+					"description": "scope content",
+					"in": "body",
+					"required": true,
+					"schema": {
+						"$ref": "schema/scope.json"
+					}
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/scope.json"
+							}
+						}
+					}
+				},
+				"400": {
+					"description": "Invalid input"
+				},
+				"404": {
+					"description": "process id does not exists"
+				}
+			}
+		},
+		"delete": {
+			"description": "Delete a scope",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "scope number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success"
+				},
+				"404": {
+					"description": "scope id does not exists"
+				}
+			}
+		}
+	},
+	"/scope/provider/{id}/": {
+		"get": {
+			"description": "Get a list of scope by provider ID",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "provider number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/scope.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "scope id does not exists"
+				}
+			}
+		}
+	},
+	"/scope/cluster/{id}/": {
+		"get": {
+			"description": "Get a list of scope by cluster ID",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "cluster number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/scope.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "scope id does not exists"
+				}
+			}
+		}
+	},
+	"/scope/{id}/availability/": {
+		"get": {
+			"description": "Get a list of availability entries",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "scope number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/availability.json"
+								}
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "scope id does not exists"
+				}
+			}
+		}
+	},
+	"/scope/{id}/queue/": {
+		"get": {
+			"description": "Get a waiting queue for a scope",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "scope number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/queue.json"
+								}
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "scope id does not exists"
+				}
+			}
+		}
+	},
+	"/status/": {
+		"get": {
+			"description": "Get status of api",
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"$ref": "schema/status.json"
+					}
+				}
+			}
+		}
+	},
+	"/ticketprinter/{id}/waitingnumber/": {
+		"get": {
+			"description": "Get a waitingNumber according to scope preferences",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "scope number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "ticketprinter",
+					"description": "ticketprinter data, a valid hash is required",
+					"in": "body",
+					"required": true,
+					"schema": {
+						"$ref": "schema/ticketprinter.json"
+					}
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/process.json"
+							}
+						}
+					}
+				},
+				"403": {
+					"description": "hash is not valid"
+				},
+				"404": {
+					"description": "ticketprinter id does not exists"
+				}
+			}
+		}
+	},
+	"/useraccount/": {
+		"get": {
+			"description": "Get a list of useraccounts",
+			"parameters": [
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/useraccount.json"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"/useraccount/{loginname}/": {
+		"get": {
+			"description": "Get an useraccount by loginname",
+			"parameters": [
+				{
+					"name": "loginname",
+					"description": "useraccount number",
+					"in": "path",
+					"required": true,
+					"type": "string"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/useraccount.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "useraccount loginname does not exists"
+				}
+			}
+		},
+		"post": {
+			"description": "Update an useraccount",
+			"parameters": [
+				{
+					"name": "loginname",
+					"description": "useraccount number",
+					"in": "path",
+					"required": true,
+					"type": "string"
+				},
+				{
+					"name": "useraccount",
+					"description": "useraccount data to update",
+					"required": true,
+					"in": "body",
+					"schema": {
+						"$ref": "schema/useraccount.json"
+					}
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/useraccount.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "useraccount loginname does not exists"
+				}
+			}
+		},
+		"delete": {
+			"description": "Deletes an useraccount",
+			"parameters": [
+				{
+					"name": "loginname",
+					"description": "useraccount number",
+					"in": "path",
+					"required": true,
+					"type": "string"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success"
+				},
+				"404": {
+					"description": "useraccount loginname does not exists"
+				}
+			}
+		}
+	},
+	"/workstation/": {
+		"get": {
+			"description": "Get the current workstation based on authkey",
+			"parameters": [
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/workstation.json"
+							}
+						}
+					}
+				},
+				"401": {
+					"description": "login required"
+				}
+			}
+		},
+		"post": {
+			"description": "Update a workstation, e.g. to change the scope",
+			"parameters": [
+				{
+					"name": "workstation",
+					"description": "workstation data to update",
+					"required": true,
+					"in": "body",
+					"schema": {
+						"$ref": "schema/workstation.json"
+					}
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/workstation.json"
+							}
+						}
+					}
+				},
+				"401": {
+					"description": "login required"
+				}
+			}
+		}
+	},
+	"/workstation/{loginname}/": {
+		"post": {
+			"description": "Create a workstation for an username, used to login",
+			"parameters": [
+				{
+					"name": "loginname",
+					"description": "useraccount identifier, usually the unique loginname",
+					"in": "path",
+					"required": true,
+					"type": "string"
+				},
+				{
+					"name": "password",
+					"description": "password to verify user",
+					"in": "formData",
+					"required": true,
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/workstation.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "useraccount loginname does not exists"
+				}
+			}
+		},
+		"delete": {
+			"operationId": "WorkstationDelete",
+			"description": "Logout a user and delete his workstation entry",
+			"parameters": [
+				{
+					"name": "loginname",
+					"description": "useraccount number",
+					"in": "path",
+					"required": true,
+					"type": "string"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/workstation.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "useraccount loginname does not exists"
+				}
+			}
+		}
+	},
+	"/session/{name}/{id}/": {
+		"get": {
+			"description": "Get current Session",
+			"parameters": [
+				{
+					"name": "name",
+					"description": "name from session (3 - 20 letters)",
+					"required": true,
+					"in": "path",
+					"type": "string"
+				},
+				{
+					"name": "id",
+					"description": "id from session (20 - 40 chars)",
+					"required": true,
+					"in": "path",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "get a session by id and name",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/session.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "Could not find any available session",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/session.json"
+							}
+						}
+					}
+				}
+			}
+		},
+		"delete": {
+			"description": "delete a session",
+			"parameters": [
+				{
+					"name": "name",
+					"description": "name from session (3 - 20 letters)",
+					"required": true,
+					"in": "path",
+					"type": "string"
+				},
+				{
+					"name": "id",
+					"description": "id from session (20 - 40 chars)",
+					"required": true,
+					"in": "path",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "session deleted successfully",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/session.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "Could not find any available session",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/session.json"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"/session/": {
+		"post": {
+			"description": "Update current Session",
+			"parameters": [
+				{
+					"name": "session",
+					"description": "session content",
+					"in": "body",
+					"required": true,
+					"schema": {
+						"$ref": "schema/session.json"
+					}
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "get an updated session object",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/session.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "Could not find any available session",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/session.json"
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
