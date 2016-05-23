@@ -32,5 +32,3 @@ $execSqlFile($migrations . '/28300-create-config-table.sql');
 
 $defaults = new \BO\Zmsentities\Config();
 $config = (new \BO\Zmsdb\Config())->updateEntity($defaults);
-echo "\nUpdated Config from DB\n";
-var_dump($config->getArrayCopy());

@@ -16,7 +16,7 @@ class MailTest extends Base
 
         $this->assertEntity("\\BO\\Zmsentities\\Mail", $entity);
         $this->assertEquals("Das ist ein Plaintext Test", $entity->getPlainPart());
-        $this->assertEquals("max@service.berlin.de", $entity->getFirstClient()['email']);
+        $this->assertEquals("Max Mustermann", $entity->getFirstClient()['familyName']);
 
         $collection = $query->readList(1);
         $this->assertTrue($collection->hasEntity($queueId), "Missing Test Entity with ID 1234 in collection");
@@ -58,7 +58,7 @@ class MailTest extends Base
                 ],
                 [
                     "mime" => "text/calendar",
-                    "content" =>  "Hier steht ein IcsString",
+                    "content" =>  "QkVHSU46VkNBTEVOREFSDQpWRVJTSU9OOjIuMA0KUFJPRElEOmh0dHA6Ly93d3cuZXhhbXBsZS5jb20vY2FsZW5kYXJhcHBsaWNhdGlvbi8NCk1FVEhPRDpQVUJMSVNIDQpCRUdJTjpWRVZFTlQNClVJRDptYXhAc2VydmljZS5iZXJsaW4uZGUNCk9SR0FOSVpFUjtDTj0iTWF4eCBNdXN0ZXJtYW5uLCBFeGFtcGxlIEluYy4iOk1BSUxUTzptYXgubXVzdGVybWFubkBtdXN0ZXJtYWlsLmRlDQpMT0NBVElPTjpTb21ld2hlcmUNClNVTU1BUlk6RWluZSBLdXJ6aW5mbw0KREVTQ1JJUFRJT046QmVzY2hyZWlidW5nIGRlcyBUZXJtaW5lcw0KQ0xBU1M6UFVCTElDDQpEVFNUQVJUOjIwMTYwOTEwVDIyMDAwMFoNCkRURU5EOjIwMTYwOTE5VDIxNTkwMFoNCkRUU1RBTVA6MjAxNjA4MTJUMTI1OTAwWg0KRU5EOlZFVkVOVA0KRU5EOlZDQUxFTkRBUg==",
                     "base64" => false
                 ]
             ),
@@ -66,7 +66,7 @@ class MailTest extends Base
                 "clients" => array(
                     [
                         "familyName" => "Max Mustermann",
-                        "email" => "max@service.berlin.de",
+                        "email" => "torsten.kunst@berlinonline.de",
                         "telephone" => "030 115"
                     ]
                 ),
