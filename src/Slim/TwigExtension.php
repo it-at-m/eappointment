@@ -15,19 +15,13 @@ namespace BO\Slim;
 class TwigExtension extends \Twig_Extension
 {
     /**
-     * @var \Slim\Interfaces\RouterInterface
+     * @var \Slim\Http\Container
      */
-    private $router;
+    private $container;
 
-    /**
-     * @var \Slim\Http\Request
-     */
-    private $request;
-
-    public function __construct($router, $request)
+    public function __construct($container)
     {
-        $this->router = $router;
-        $this->request = $request;
+        $this->container = $container;
     }
 
     public function getName()
@@ -45,6 +39,7 @@ class TwigExtension extends \Twig_Extension
             new \Twig_SimpleFunction('isValueInArray', array($this, 'isValueInArray')),
             new \Twig_SimpleFunction('remoteInclude', array($this, 'remoteInclude'), $safe),
             new \Twig_SimpleFunction('includeUrl', array($this, 'includeUrl')),
+            new \Twig_SimpleFunction('baseUrl', array($this, 'baseUrl')),
             new \Twig_SimpleFunction('currentLang', array($this, 'currentLang')),
             new \Twig_SimpleFunction('currentRoute', array($this, 'currentRoute')),
             new \Twig_SimpleFunction('formatDateTime', array($this, 'formatDateTime')),
@@ -90,14 +85,16 @@ class TwigExtension extends \Twig_Extension
         );
     }
 
-    public function currentRoute($lang = null)
+    public function currentRoute($lang = null, $multiLanguage = true)
     {
-        $routeInstance = $this->request->getAttribute('route');
-        if ($routeInstance instanceof \Slim\Route) {
-            $routeParams = $routeInstance->getArguments();
+        if ($this->container->get('currentRoute')) {
+            $routeParams = $this->container->get('currentRouteParams');
             $routeParams['lang'] = ($lang !== null) ? $lang : self::currentLang();
+            $routeName = ($multiLanguage) ?
+                $lang . '__'. $this->container->get('currentRoute') :
+                $this->container->get('currentRoute');
             $route = array(
-                'name' => $routeInstance->getName(),
+                'name' => $routeName,
                 'params' => $routeParams
             );
         } else {
@@ -114,16 +111,14 @@ class TwigExtension extends \Twig_Extension
         return \App::$language->getCurrent();
     }
 
-    public function urlGet($name, $params = array(), $getparams = array())
+    public function urlGet($routeName, $params = array(), $getparams = array())
     {
-        //$url = \Slim\Slim::getInstance($appName)->urlFor($name, $params);
         $lang = (isset($params['lang'])) ? $params['lang'] : null;
-        $url = \App::$slim->urlFor($name, $params, $lang);
+        $url = \App::$slim->urlFor($routeName, $params, $lang);
         $url = preg_replace('#^.*?(https?://)#', '\1', $url); // allow http:// routes
         if ($getparams) {
             $url .= '?' . http_build_query($getparams);
         }
-        //\App::$log->info("urlGet", [$name, $url, $params, $getparams]);
         return Helper::proxySanitizeUri($url);
     }
 
@@ -190,12 +185,21 @@ class TwigExtension extends \Twig_Extension
 
     public function includeUrl($withUri = true)
     {
-        $request = $this->request;
-        $uri = (string)$request->getUri();
-        if ($withUri) {
-            $uri .= $request->getUri()->getBaseUrl();
-            $uri = preg_replace('#^https?://[^/]+#', '', $uri); //Do not force protocoll or host
+        if (null === \App::$includeUrl) {
+            $request = $this->container['request'];
+            $uri = (string)$request->getUri()->getBasePath();
+            if ($withUri) {
+                $uri = $request->getUri()->getBaseUrl();
+                $uri = preg_replace('#^https?://[^/]+#', '', $uri); //Do not force protocoll or host
+            }
+            return Helper::proxySanitizeUri($uri);
+        } else {
+            return \App::$includeUrl;
         }
-        return Helper::proxySanitizeUri($uri);
+    }
+
+    public function baseUrl()
+    {
+        return $this->includeUrl(false);
     }
 }

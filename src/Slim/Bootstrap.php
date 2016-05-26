@@ -65,6 +65,7 @@ class Bootstrap
                 return new \Slim\HttpCache\CacheProvider();
             },
             'settings' => [
+                'determineRouteBeforeAppMiddleware' => true,
                 'displayErrorDetails' => true,
                 'logger' => [
                     'name' => 'slim-app',
@@ -76,6 +77,7 @@ class Bootstrap
         // Configure caching
         \App::$slim->add(new \Slim\HttpCache\Cache('public', 86400));
         \App::$slim->add(new Middleware\IpAddress());
+        \App::$slim->add('BO\Slim\Middleware\Route:getInfo');
         // configure slim views with twig
         $container['view'] = function () {
             return self::getTwigView();
@@ -85,10 +87,13 @@ class Bootstrap
             $container['request']->getUri()
         ));
         self::addTwigExtension(new \BO\Slim\TwigExtension(
+            $container
+        ));
+        self::addTwigExtension(new \Twig_Extension_Debug());
+        self::addTwigFilter(new \BO\Slim\TwigFilter(
             $container['router'],
             $container['request']
         ));
-        self::addTwigExtension(new \Twig_Extension_Debug());
 
         //self::addTwigTemplateDirectory('default', \App::APP_PATH . \App::TEMPLATE_PATH);
         \App::$slim->get('__noroute', function () {
@@ -102,6 +107,7 @@ class Bootstrap
             \App::APP_PATH  . \App::TEMPLATE_PATH,
             [
                 'cache' => \App::TWIG_CACHE ? \App::APP_PATH . \App::TWIG_CACHE : false,
+                'debug' => \App::SLIM_DEBUG,
             ]
         );
         return $view;
@@ -115,8 +121,8 @@ class Bootstrap
 
     public static function addTwigFilter($filter)
     {
-        $twig = \App::$slim->getContainer()->view->getInstance();
-        $twig->addFilter($filter);
+        $twig = \App::$slim->getContainer()->view;
+        $twig->addExtension($filter);
     }
 
     public static function addTwigTemplateDirectory($namespace, $path)
