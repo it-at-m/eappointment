@@ -27,6 +27,7 @@ class Application
 
     const TIMEZONE = 'Europe/Berlin';
 
+    public static $includeUrl = null;
     /*
      * -----------------------------------------------------------------------
      * Slim

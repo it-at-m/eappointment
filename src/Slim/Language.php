@@ -48,7 +48,7 @@ class Language
         $lang_ids = array_diff($lang_ids, array($default));
         if (null !== $this->request) {
             $url = $this->request->getUri()->getPath();
-            if (preg_match('~^/('.implode('|', $lang_ids).')/~', $url, $matches)) {
+            if (preg_match('~^('.implode('|', $lang_ids).')/~', $url, $matches)) {
                 $this->current = $matches[1];
             } else {
                 $this->current = $default;
@@ -61,6 +61,11 @@ class Language
     }
 
     public function getCurrent($lang = '')
+    {
+        return ($lang != '') ? $lang : $this->current;
+    }
+
+    public function getCurrentLocale($lang = '')
     {
         return ($lang != '') ? $lang : $this->current;
     }
