@@ -10,8 +10,14 @@ namespace BO\Dldb;
   * Extension for Twig and Slim
   *
   */
-class TwigExtension extends \Slim\Views\TwigExtension
+class TwigExtension extends \BO\Slim\TwigExtension
 {
+
+    public function __construct($container)
+    {
+        parent::__construct($container);
+    }
+
     public function getName()
     {
         return 'dldb';
