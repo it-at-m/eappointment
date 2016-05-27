@@ -9,6 +9,8 @@ namespace BO\Zmsapi;
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\Process as Query;
+use \BO\Zmsdb\Mail as MailQuery;
+use \BO\Zmsdb\Notification as NotificationQuery;
 use \BO\Zmsdb\Config as Config;
 
 /**
@@ -30,11 +32,11 @@ class ProcessConfirm extends BaseController
 
         //write mail in queue
         $mail = (new \BO\Zmsentities\Mail())->toResolvedEntity($process, $config);
-        MailAdd::render($mail);
+        (new MailQuery())->writeInQueue($mail);
 
         //write notification in queue
         $notification = (new \BO\Zmsentities\Notification())->toResolvedEntity($process, $config);
-        NotificationAdd::render($notification);
+        (new NotificationQuery())->writeInQueue($notification);
 
         $message->data = $process;
         Render::lastModified(time(), '0');
