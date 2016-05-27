@@ -116,6 +116,6 @@ class Render
         if ($parameter) {
             $url .= '?' . http_build_query($parameter);
         }
-        return $response->withHeader('Location', $url);
+        return $response->withRedirect($url);
     }
 }

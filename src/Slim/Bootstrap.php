@@ -86,14 +86,10 @@ class Bootstrap
             $container['router'],
             $container['request']->getUri()
         ));
-        self::addTwigExtension(new \BO\Slim\TwigExtension(
+        self::addTwigExtension(new \BO\Slim\TwigExtensionsAndFilter(
             $container
         ));
         self::addTwigExtension(new \Twig_Extension_Debug());
-        self::addTwigFilter(new \BO\Slim\TwigFilter(
-            $container['router'],
-            $container['request']
-        ));
 
         //self::addTwigTemplateDirectory('default', \App::APP_PATH . \App::TEMPLATE_PATH);
         \App::$slim->get('__noroute', function () {
@@ -122,7 +118,7 @@ class Bootstrap
     public static function addTwigFilter($filter)
     {
         $twig = \App::$slim->getContainer()->view;
-        $twig->addExtension($filter);
+        $twig->getEnvironment()->addFilter($filter);
     }
 
     public static function addTwigTemplateDirectory($namespace, $path)
