@@ -81,7 +81,6 @@ class Language
         $domain = 'dldb-'.$this->current;
         \putenv('LANG='. $this->current);
         if (!isset(self::$supportedLanguages[$this->current]['locale'])) {
-            var_dump(self::$supportedLanguages[$this->current]);
             throw new \Exception("Unsupported type of language");
         }
         $locale = self::$supportedLanguages[$this->current]['locale'];

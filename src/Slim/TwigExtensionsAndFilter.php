@@ -10,30 +10,8 @@ namespace BO\Slim;
   * Extension for Twig and Slim
   *
   */
-class TwigFilter extends \Twig_Extension
+class TwigExtensionsAndFilter extends TwigExtension
 {
-
-    /**
-     * @var \Slim\Interfaces\RouterInterface
-     */
-    private $router;
-
-    /**
-     * @var string|\Slim\Http\Uri
-     */
-    private $uri;
-
-    public function __construct($router, $uri)
-    {
-        $this->router = $router;
-        $this->uri = $uri;
-    }
-
-    public function getName()
-    {
-        return 'slim';
-    }
-
     public function getFilters()
     {
         return array(

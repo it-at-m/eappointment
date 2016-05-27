@@ -26,7 +26,7 @@ class TwigExtension extends \Twig_Extension
 
     public function getName()
     {
-        return 'boslim';
+        return 'boslimExtension';
     }
 
     public function getFunctions()
@@ -146,6 +146,8 @@ class TwigExtension extends \Twig_Extension
                     );
                 }
                 $azList[$currentPrefix]['sublist'][] = $item;
+                uasort($azList[$currentPrefix]['sublist'], array($this,'sortByName'));
+                ksort($azList);
             }
         }
         return $azList;
@@ -158,14 +160,6 @@ class TwigExtension extends \Twig_Extension
             return true;
         }
         return false;
-    }
-
-    protected static function sortFirstChar($string)
-    {
-        $firstChar = mb_substr($string, 0, 1);
-        $firstChar = mb_strtoupper($firstChar);
-        $firstChar = strtr($firstChar, array('Ä' => 'A', 'Ö' => 'O', 'Ü' => 'U'));
-        return $firstChar;
     }
 
     public static function remoteInclude($uri)
@@ -201,5 +195,33 @@ class TwigExtension extends \Twig_Extension
     public function baseUrl()
     {
         return $this->includeUrl(false);
+    }
+
+    protected static function toSortableString($string)
+    {
+        $string = strtr($string, array(
+            'Ä' => 'Ae',
+            'Ö' => 'Oe',
+            'Ü' => 'Ue',
+            'ä' => 'ae',
+            'ö' => 'oe',
+            'ü' => 'ue',
+            'ß' => 'ss',
+            '€' => 'E',
+        ));
+        return $string;
+    }
+
+    protected static function sortByName($a, $b)
+    {
+        return strcmp(self::toSortableString(strtolower($a['name'])), strtolower(self::toSortableString($b['name'])));
+    }
+
+    protected static function sortFirstChar($string)
+    {
+        $firstChar = mb_substr($string, 0, 1);
+        $firstChar = mb_strtoupper($firstChar);
+        $firstChar = strtr($firstChar, array('Ä' => 'A', 'Ö' => 'O', 'Ü' => 'U'));
+        return $firstChar;
     }
 }
