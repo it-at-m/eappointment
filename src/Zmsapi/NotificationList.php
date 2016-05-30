@@ -7,6 +7,7 @@
 namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
+use \BO\Mellon\Validator;
 use \BO\Zmsdb\Notification as Query;
 
 /**
@@ -19,7 +20,8 @@ class NotificationList extends BaseController
      */
     public static function render()
     {
-        $notificationList = (new Query())->readList(2);
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
+        $notificationList = (new Query())->readList($resolveReferences);
         $message = Response\Message::create(Render::$request);
         $message->data = $notificationList;
         Render::json($message);

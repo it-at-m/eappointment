@@ -7,6 +7,7 @@
 namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
+use \BO\Mellon\Validator;
 use \BO\Zmsdb\Availability as Query;
 
 /**
@@ -19,7 +20,8 @@ class AvailabilityList extends BaseController
      */
     public static function render($scopeId)
     {
-        $availabilities = (new Query())->readList($scopeId, 1);
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
+        $availabilities = (new Query())->readList($scopeId, $resolveReferences);
         $message = Response\Message::create(Render::$request);
         $message->data = $availabilities;
         Render::lastModified(time(), '0');

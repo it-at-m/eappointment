@@ -8,6 +8,7 @@ namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
+use \BO\Zmsdb\Ticketprinter as Query;
 
 /**
   * Handle requests concerning services
