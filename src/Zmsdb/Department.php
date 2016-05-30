@@ -25,8 +25,8 @@ class Department extends Base
         $department = $this->fetchOne($query, new Entity());
         if (1 < $resolveReferences) {
             $department['scopes'] = (new Scope())->readByDepartmentId($departmentId, $resolveReferences);
-            $department['dayoff']  = (new DayOff())->readByDepartmentId($departmentId);
         }
+        $department['dayoff']  = (new DayOff())->readByDepartmentId($departmentId);
         $departmentCache[$departmentId] = $department;
         return $department;
     }
