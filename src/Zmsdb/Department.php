@@ -25,8 +25,8 @@ class Department extends Base
         $department = $this->fetchOne($query, new Entity());
         if (1 < $resolveReferences) {
             $department['scopes'] = (new Scope())->readByDepartmentId($departmentId, $resolveReferences);
+            $department['dayoff']  = (new DayOff())->readByDepartmentId($departmentId);
         }
-        $department['dayoff']  = (new DayOff())->readByDepartmentId($departmentId);
         $departmentCache[$departmentId] = $department;
         return $department;
     }
@@ -40,6 +40,24 @@ class Department extends Base
         if (count($result)) {
             foreach ($result as $department) {
                 $department = $this->readEntity($department['id'], $resolveReferences);
+                $departmentList->addDepartment($department);
+            }
+        }
+        return $departmentList;
+    }
+
+    public function readByOrganisationId($organisationId, $resolveReferences = 0)
+    {
+        $departmentList = new Collection();
+        $query = new Query\Department(Query\Base::SELECT);
+        $query
+            ->addEntityMapping()
+            ->addResolvedReferences($resolveReferences)
+            ->addConditionOrganisationId($organisationId);
+        $result = $this->fetchList($query, new Entity());
+        if (count($result)) {
+            foreach ($result as $entity) {
+                $department = $this->readEntity($entity['id'], $resolveReferences);
                 $departmentList->addDepartment($department);
             }
         }

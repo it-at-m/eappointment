@@ -14,6 +14,11 @@ use \Solution10\SQL\Expression;
  * Usually used with the interface MappingInterface
  * Further, it allows to react to resolveReferences as parameter to calling methods
  */
+
+/**
+ * @SuppressWarnings(NumberOfChildren)
+ *
+ */
 abstract class Base
 {
     /**

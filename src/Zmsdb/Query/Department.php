@@ -53,10 +53,15 @@ class Department extends Base implements MappingInterface
         );
     }
 
-
     public function addConditionDepartmentId($departmentId)
     {
         $this->query->where('department.BehoerdenID', '=', $departmentId);
+        return $this;
+    }
+
+    public function addConditionOrganisationId($organisationId)
+    {
+        $this->query->where('department.OrganisationsID', '=', $organisationId);
         return $this;
     }
 }
