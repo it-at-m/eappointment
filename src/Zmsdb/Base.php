@@ -2,6 +2,11 @@
 
 namespace BO\Zmsdb;
 
+/**
+ * @SuppressWarnings(NumberOfChildren)
+ *
+ */
+
 abstract class Base
 {
     /**

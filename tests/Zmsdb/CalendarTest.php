@@ -15,7 +15,7 @@ class CalendarTest extends Base
         122257,122208,122226
     ];
 
-public function testDayOffBASpandau()
+    public function testDayOffBASpandau()
     {
         //Bürgeramt Spandau with Day Off on 2016-05-25
         $now = new \DateTimeImmutable("2016-04-01 11:55");

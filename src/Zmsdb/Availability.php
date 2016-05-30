@@ -31,4 +31,19 @@ class Availability extends Base
             ->addConditionScopeId($scopeId);
         return $this->fetchList($query, new Entity());
     }
+
+    /**
+     * remove an availability
+     *
+     * @param
+     * availabilityId
+     *
+     * @return Resource Status
+     */
+    public function deleteEntity($availabilityId)
+    {
+        $query =  new Query\Availability(Query\Base::DELETE);
+        $query->addConditionAvailabilityId($availabilityId);
+        return $this->deleteItem($query);
+    }
 }
