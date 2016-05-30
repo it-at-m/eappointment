@@ -7,6 +7,7 @@
 namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
+use \BO\Mellon\Validator;
 use \BO\Zmsdb\Mail as Query;
 
 /**
@@ -19,7 +20,8 @@ class MailList extends BaseController
      */
     public static function render()
     {
-        $mailList = (new Query())->readList(1);
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
+        $mailList = (new Query())->readList($resolveReferences);
         $message = Response\Message::create(Render::$request);
         $message->data = $mailList;
         Render::json($message);

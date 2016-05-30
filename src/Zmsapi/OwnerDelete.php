@@ -7,6 +7,7 @@
 namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
+use \BO\Zmsdb\Owner as Query;
 
 /**
   * Handle requests concerning services
@@ -18,9 +19,11 @@ class OwnerDelete extends BaseController
      */
     public static function render($itemId)
     {
+        $query = new Query();
         $message = Response\Message::create(Render::$request);
-        $message->data = \BO\Zmsentities\Owner::createExample();
-        $message->data->id = $itemId;
+        $entity = $query->readEntity($itemId);
+        $query->deleteEntity($itemId);
+        $message->data = $entity;
         Render::lastModified(time(), '0');
         Render::json($message);
     }
