@@ -7,6 +7,8 @@
 namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
+use \BO\Mellon\Validator;
+use \BO\Zmsdb\Organisation as Query;
 
 /**
   * Handle requests concerning services
@@ -18,8 +20,11 @@ class OrganisationList extends BaseController
      */
     public static function render()
     {
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
+        $list = (new Query())->readList($resolveReferences);
         $message = Response\Message::create(Render::$request);
-        $message->data = array(\BO\Zmsentities\Organisation::createExample());
+        $message->data = $list;
+        Render::lastModified(time(), '0');
         Render::json($message);
     }
 }

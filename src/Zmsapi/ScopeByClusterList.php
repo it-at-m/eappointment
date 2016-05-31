@@ -7,6 +7,7 @@
 namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
+use \BO\Mellon\Validator;
 use \BO\Zmsdb\Scope as Query;
 
 /**
@@ -19,7 +20,8 @@ class ScopeByClusterList extends BaseController
      */
     public static function render($itemId)
     {
-        $scope = (new Query())->readByClusterId($itemId, 1);
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
+        $scope = (new Query())->readByClusterId($itemId, $resolveReferences);
         $message = Response\Message::create(Render::$request);
         $message->data = $scope;
         Render::lastModified(time(), '0');
