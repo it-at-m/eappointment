@@ -13,4 +13,17 @@ class Application extends \BO\Slim\Application
      *
      */
     const IDENTIFIER = 'Zmsadmin';
+    
+    /*
+     * -----------------------------------------------------------------------
+     * ZMS API access
+     */
+    public static $http = null;
+    
+    public static $http_curl_config = array();
+    
+    /**
+     * HTTP url for api
+     */
+    const HTTP_BASE_URL = 'http://user:pass@host.tdl';
 }
