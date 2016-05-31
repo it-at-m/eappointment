@@ -7,6 +7,7 @@
 namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
+use \BO\Zmsdb\Scope as Query;
 
 /**
   * Handle requests concerning services
@@ -18,9 +19,11 @@ class ScopeDelete extends BaseController
      */
     public static function render($itemId)
     {
+        $query = new Query();
         $message = Response\Message::create(Render::$request);
-        $message->data = \BO\Zmsentities\Scope::createExample();
-        $message->data->id = $itemId;
+        $department = $query->readEntity($itemId);
+        $query->deleteEntity($itemId);
+        $message->data = $department;
         Render::lastModified(time(), '0');
         Render::json($message);
     }

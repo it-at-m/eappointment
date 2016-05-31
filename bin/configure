@@ -14,5 +14,5 @@ ln -sf $ROOT/bin/test $ROOT/.git/hooks/pre-commit
 
 if [ ! -e $ROOT/config.php ]
 then	
-    cp --parents $ROOT/config.example.php $ROOT/config.php
+    cp $ROOT/config.example.php $ROOT/config.php
 fi
