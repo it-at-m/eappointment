@@ -1,4 +1,13 @@
 
+COMPOSER=php -d suhosin.executor.include.whitelist=phar bin/composer.phar
+
+help:
+	grep -P "^\w+:" Makefile|sort|perl -pe 's/^(\w+):([^\#]+)(\#\s*(.*))?/\1\n\t\4\n/'
+
+now: # Dummy target
+
+build: css js # Build javascript and css
+
 default:
 	node_modules/.bin/gulp
 
@@ -7,3 +16,8 @@ fix: # run code fixing
 
 watch:
 	node_modules/.bin/gulp watch
+	
+dev: # init development system
+	$(COMPOSER) update --dev
+	npm install
+	node_modules/.bin/bower --config.directory=vendor install

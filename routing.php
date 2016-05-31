@@ -8,192 +8,141 @@
  * html, basic routes
  * -------------------------------------------------------------------------*/
 
-\App::$slim->get('/',
-    '\BO\Zmsadmin\Index:render')
-    ->name("pagesindex");
+\App::$slim->get('/', '\BO\Zmsadmin\Index')->setName("pagesindex");
 
-\App::$slim->get('/',
-    '\BO\Zmsadmin\Index:render')
-    ->name("login");
+\App::$slim->get('/login/', '\BO\Zmsadmin\Index')->setName("login");
     
-\App::$slim->get('/workstation/process/:id/precall/',
-    '\BO\Zmsadmin\WorkstationClientPreCall:render')
-    ->name("workstationClientPreCall");
+\App::$slim->get('/workstation/process/{id:\d+}/precall/', '\BO\Zmsadmin\WorkstationClientPreCall')
+    ->setName("workstationClientPreCall");
 
-\App::$slim->get('/workstation/process/:id/called/',
-    '\BO\Zmsadmin\WorkstationClientCalled:render')
-    ->name("workstationClientCalled");
+\App::$slim->get('/workstation/process/{id:\d+}/called/', '\BO\Zmsadmin\WorkstationClientCalled')
+    ->setName("workstationClientCalled");
 
-\App::$slim->get('/workstation/process/:id/processed',
-    '\BO\Zmsadmin\WorkstationClientProcessed:render')
-    ->name("workstationClientProcessed");
+\App::$slim->get('/workstation/process/{id:\d+}/processed', '\BO\Zmsadmin\WorkstationClientProcessed')
+    ->setName("workstationClientProcessed");
 
-\App::$slim->get('/workstation/process/:id/',
-    '\BO\Zmsadmin\WorkstationClientActive:render')
-    ->name("workstationClientActive");
+\App::$slim->get('/workstation/process/{id:\d+}/', '\BO\Zmsadmin\WorkstationClientActive')
+    ->setName("workstationClientActive");
     
-\App::$slim->map('/workstation/', 
-    '\BO\Zmsadmin\Workstation:render')
-    ->via('GET', 'POST')->name("workstation");
+\App::$slim->map(['GET', 'POST'], '/workstation/', '\BO\Zmsadmin\Workstation')
+    ->setName("workstation");
 
-\App::$slim->get('/counter/',
-    '\BO\Zmsadmin\Counter:render')
-    ->name("counter");
+\App::$slim->get('/counter/', '\BO\Zmsadmin\Counter')
+    ->setName("counter");
 
-\App::$slim->get('/scope/',
-    '\BO\Zmsadmin\Scope:render')
-    ->name("scope");
+\App::$slim->get('/scope/', '\BO\Zmsadmin\Scope')
+    ->setName("scope");
 
-\App::$slim->get('/scope/:id/pickup/',
-    '\BO\Zmsadmin\Pickup:render')
-    ->name("pickup");
+\App::$slim->get('/scope/{id:\d+}/pickup/', '\BO\Zmsadmin\Pickup')
+    ->setName("pickup");
 
-\App::$slim->map('/scope/:id/pickup/handheld/', 
-    '\BO\Zmsadmin\PickupHandheld:render')
-    ->via('GET', 'POST')
-    ->name("pickup_handheld");
+\App::$slim->map(['GET', 'POST'], '/scope{id/pickup/handheld/', '\BO\Zmsadmin\PickupHandheld')
+    ->setName("pickup_handheld");
     
-\App::$slim->get('/scope/:id/pickup/keyboard/',
-    '\BO\Zmsadmin\PickupKeyboard:render')
-    ->name("pickup_keyboard");
+\App::$slim->get('/scope/{id:\d+}/pickup/keyboard/', '\BO\Zmsadmin\PickupKeyboard')
+    ->setName("pickup_keyboard");
 
-\App::$slim->get('/scope/:scope_id/availability/day/',
-    '\BO\Zmsadmin\ScopeAvailabilityDay:render')
-    ->conditions([
-        'scope_id' => '\d+'
-    ])
-    ->name("scopeavailabilityday");
+\App::$slim->get('/scope/{scope_id:\d+}/availability/day/', '\BO\Zmsadmin\ScopeAvailabilityDay')
+    ->setName("scopeavailabilityday");
 
-\App::$slim->get('/cluster/',
-    '\BO\Zmsadmin\Cluster:render')
-    ->name("cluster");
+\App::$slim->get('/cluster/', '\BO\Zmsadmin\Cluster')
+    ->setName("cluster");
 
-\App::$slim->get('/department/',
-    '\BO\Zmsadmin\Department:render')
-    ->name("department");
+\App::$slim->get('/department/', '\BO\Zmsadmin\Department')
+    ->setName("department");
 
-\App::$slim->get('/organisation/',
-    '\BO\Zmsadmin\Organisation:render')
-    ->name("organisation");
+\App::$slim->get('/organisation/', '\BO\Zmsadmin\Organisation')
+    ->setName("organisation");
 
-\App::$slim->get('/owner/',
-    '\BO\Zmsadmin\Owner:render')
-    ->name("owner");
+\App::$slim->get('/owner/', '\BO\Zmsadmin\Owner')
+    ->setName("owner");
 
-\App::$slim->get('/owner/:id/',
-    '\BO\Zmsadmin\OwnerEdit:render')
-    ->name("ownerEdit");
+\App::$slim->get('/owner/{id:\d+}/', '\BO\Zmsadmin\OwnerEdit')
+    ->setName("ownerEdit");
     
-\App::$slim->get('/availability/day/',
-    '\BO\Zmsadmin\Availability:render')
-    ->name("availability_day");
+\App::$slim->get('/availability/day/', '\BO\Zmsadmin\Availability')
+    ->setName("availability_day");
 
-\App::$slim->get('/availability/month/',
-    '\BO\Zmsadmin\AvailabilityMonth:render')
-    ->name("availability_month");
+\App::$slim->get('/availability/month/', '\BO\Zmsadmin\AvailabilityMonth')
+    ->setName("availability_month");
 
-\App::$slim->get('/calendar/:year/kw/:weeknr/',
-    '\BO\Zmsadmin\CalendarWeek:render')
-    ->name("calendar_week");
+\App::$slim->get('/calendar{year/kw{weeknr/', '\BO\Zmsadmin\CalendarWeek')
+    ->setName("calendar_week");
 
-\App::$slim->get('/profile/',
-    '\BO\Zmsadmin\Profile:render')
-    ->name("profile");
+\App::$slim->get('/profile/', '\BO\Zmsadmin\Profile')
+    ->setName("profile");
 
-\App::$slim->get('/useraccount/',
-    '\BO\Zmsadmin\Useraccount:render')
-    ->name("useraccount");
+\App::$slim->get('/useraccount/', '\BO\Zmsadmin\Useraccount')
+    ->setName("useraccount");
 
-\App::$slim->get('/department/:id/useraccount/',
-    '\BO\Zmsadmin\UseraccountByDepartment:render')
-    ->name("useraccountByDdepartment");
+\App::$slim->get('/department/{id:\d+}/useraccount/', '\BO\Zmsadmin\UseraccountByDepartment')
+    ->setName("useraccountByDdepartment");
 
-\App::$slim->get('/useraccount/:id/',
-    '\BO\Zmsadmin\UseraccountEdit:render')
-    ->name("useraccountEdit");
+\App::$slim->get('/useraccount/{id:\d+}/', '\BO\Zmsadmin\UseraccountEdit')
+    ->setName("useraccountEdit");
 
-\App::$slim->get('/calldisplay/',
-    '\BO\Zmsadmin\Calldisplay:render')
-    ->name("calldisplay");
+\App::$slim->get('/calldisplay/', '\BO\Zmsadmin\Calldisplay')
+    ->setName("calldisplay");
 
-\App::$slim->get('/scope/ticketprinter/',
-    '\BO\Zmsadmin\TicketprinterConfig:render')
-    ->name("ticketprinter");
+\App::$slim->get('/scope/ticketprinter/', '\BO\Zmsadmin\TicketprinterConfig')
+    ->setName("ticketprinter");
     
-\App::$slim->get('/scope/:id/ticketprinter/',
-    '\BO\Zmsadmin\TicketprinterStatusByScope:render')
-    ->name("ticketprinterStatusByScope");
+\App::$slim->get('/scope/{id:\d+}/ticketprinter/', '\BO\Zmsadmin\TicketprinterStatusByScope')
+    ->setName("ticketprinterStatusByScope");
 
-\App::$slim->get('/notification/',
-    '\BO\Zmsadmin\Notification:render')
-    ->name("notification");
+\App::$slim->get('/notification/', '\BO\Zmsadmin\Notification')
+    ->setName("notification");
 
-\App::$slim->get('/links/',
-    '\BO\Zmsadmin\Links:render')
-    ->name("links");
+\App::$slim->get('/links/', '\BO\Zmsadmin\Links')
+    ->setName("links");
 
-\App::$slim->get('/search/',
-    '\BO\Zmsadmin\Search:render')
-    ->name("search");
+\App::$slim->get('/search/', '\BO\Zmsadmin\Search')
+    ->setName("search");
 
-\App::$slim->get('/dayoff/',
-    '\BO\Zmsadmin\Dayoff:render')
-    ->name("dayoff");
+\App::$slim->get('/dayoff/', '\BO\Zmsadmin\Dayoff')
+    ->setName("dayoff");
 
-\App::$slim->get('/dayoff/:year/',
-    '\BO\Zmsadmin\DayoffByYear:render')
-    ->name("dayoffByYear");
+\App::$slim->get('/dayoff/{year:\d+}/', '\BO\Zmsadmin\DayoffByYear')
+    ->setName("dayoffByYear");
 
-\App::$slim->get('/dayoff/:year/:id/',
-    '\BO\Zmsadmin\DayoffEdit:render')
-    ->name("dayoffEdit");
+\App::$slim->get('/dayoff/{year:\d+}/{id:\d+}/', '\BO\Zmsadmin\DayoffEdit')
+    ->setName("dayoffEdit");
     
-\App::$slim->get('/department/:id/dayoff/',
-    '\BO\Zmsadmin\DayoffByDepartment:render')
-    ->name("dayoffByDepartment");
+\App::$slim->get('/department/{id:\d+}/dayoff/', '\BO\Zmsadmin\DayoffByDepartment')
+    ->setName("dayoffByDepartment");
 
-\App::$slim->get('/department/:id/dayoff/:year/',
-    '\BO\Zmsadmin\DayoffByDepartmentAndYear:render')
-    ->name("dayoffByDepartmentAndYear");
+\App::$slim->get('/department/{id:\d+}/dayoff/{year:\d+}/', '\BO\Zmsadmin\DayoffByDepartmentAndYear')
+    ->setName("dayoffByDepartmentAndYear");
 
-\App::$slim->get('/testpage/',
-    '\BO\Zmsadmin\Testpage:render')
-    ->name("testpage");
+\App::$slim->get('/testpage/', '\BO\Zmsadmin\Testpage')
+    ->setName("testpage");
 
-
-//\App::$slim->get('/dienstleistung/:service_id',
-//    '\BO\D115Mandant\Controller\ServiceDetail:render')
-//    ->conditions([
-//        'service_id' => '\d{3,10}',
-//        ])
-//    ->name("servicedetail");
+//\App::$slim->get('/dienstleistung{service_id:\d+}', '\BO\D115Mandant\Controller\ServiceDetail')
+//    ->setName("servicedetail");
 
 /* ---------------------------------------------------------------------------
  * externals
  * -------------------------------------------------------------------------*/
 
 // external link to stadplan
-\App::$slim->get('http://www.Berlin.de/stadtplan/',
-    function () {})
-    ->name("citymap");
+\App::$slim->get('http://www.Berlin.de/stadtplan/', function () {})
+    ->setName("citymap");
 
 /* ---------------------------------------------------------------------------
  * maintenance
  * -------------------------------------------------------------------------*/
 
-\App::$slim->get('/healthcheck/',
-    '\BO\Zmsadmin\Healthcheck:render')
-    ->name("healthcheck");
+\App::$slim->get('/healthcheck/', '\BO\Zmsappointment\Healthcheck')
+    ->setName("healthcheck");    
 
-\App::$slim->notfound(function () {
-    \BO\Slim\Render::html('\page\404.twig');
-});
+\App::$slim->getContainer()->notFoundHandler = function() {
+    return function () {
+        return \BO\Slim\Render::html('404.twig');
+    };
+};
 
-\App::$slim->error(function (\Exception $exception) {
-    \BO\Slim\Render::lastModified(time(), '0');
-    \BO\Slim\Render::html('\page\failed.twig', array(
-        "failed" => $exception->getMessage(),
-        "error" => $exception,
-    ));
-    \App::$slim->stop();
-});
+\App::$slim->getContainer()->errorHandler = function() {
+    return function (\Exception $exception) {
+        return \BO\Zmsappointment\Helper\Render::error($exception);
+    };
+};

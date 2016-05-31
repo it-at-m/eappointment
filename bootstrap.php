@@ -16,4 +16,4 @@ require(APP_PATH . '/config.php');
 //\BO\Slim\Bootstrap::addTwigTemplateDirectory('dldb', APP_PATH . '/vendor/bo/clientdldb/templates');
 
 // load routing
-require(\App::APP_PATH . '/routing.php');
+\BO\Slim\Bootstrap::loadRouting(\App::APP_PATH . '/routing.php');
