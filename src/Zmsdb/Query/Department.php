@@ -8,6 +8,46 @@ class Department extends Base implements MappingInterface
      * @var String TABLE mysql table reference
      */
     const TABLE = 'behoerde';
+    
+    const QUERY_MAIL_UPDATE = '
+        UPDATE 
+            email
+        SET
+            absenderadresse=?
+        WHERE
+            BehoerdenID=?
+    ';
+    
+    const QUERY_NOTIFICATIONS_UPDATE = '
+        UPDATE
+            sms
+        SET
+            enabled=?,
+            Absender=?,
+            internetbestaetigung=?,
+            interneterinnerung=?
+        WHERE
+            BehoerdenID=?
+    ';
+    
+    const QUERY_MAIL_INSERT = '
+        REPLACE INTO
+            email
+        SET
+            BehoerdenID=?,
+            absenderadresse=?       
+    ';
+    
+    const QUERY_NOTIFICATIONS_INSERT = '
+        REPLACE INTO
+            sms
+        SET
+            BehoerdenID=?,
+            enabled=?,
+            Absender=?,
+            internetbestaetigung=?,
+            interneterinnerung=?
+    ';
 
     public function getEntityMapping()
     {
@@ -63,5 +103,17 @@ class Department extends Base implements MappingInterface
     {
         $this->query->where('department.OrganisationsID', '=', $organisationId);
         return $this;
+    }
+    
+    public function reverseEntityMapping(\BO\Zmsentities\Department $entity)
+    {
+        $data = array();
+        $data['Adresse'] = $entity->toAddress();
+        $data['Name'] = $entity->name;
+        $data['Ansprechpartner'] = $entity->getContactPerson();
+        $data = array_filter($data, function ($value) {
+            return ($value !== null && $value !== false && $value !== '');
+        });
+        return $data;
     }
 }
