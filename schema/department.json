@@ -3,6 +3,14 @@
     "description": "subunit in organisation like \"Bürgeramt\", \"Standesamt\", \"Vertrieb\"",
     "example": {
         "id": 123,
+        "contact": {
+            "country": "Germany",            
+            "name": "Flughafen Schönefeld, Landebahn",
+            "postalCode": "15831",
+            "region": "Brandenburg",
+            "street": "Zaunstraße",
+            "streetNumber": "1"
+        },
         "dayoff": [
             {
                 "date": 1447921381000,
@@ -49,8 +57,14 @@
         "id": {
             "type": "integer"
         },
+        "contact": {
+            "type": "object",
+            "items": {
+                "$ref": "concact.json"
+            }
+        },
         "dayoff": {
-            "type": "array",
+            "type": "object",
             "items": {
                 "$ref": "dayoff.json"
             }
