@@ -84,7 +84,11 @@ $downloads = array(
 foreach ($downloads as $download) {
     $dest = $destinationPath . DIRECTORY_SEPARATOR . $download['file'];
 
-    $oldContentJson = file_get_contents($dest);
+    if (file_exists($dest)) {
+        $oldContentJson = file_get_contents($dest);
+    } else {
+        $oldContentJson = '{}';
+    }
     $oldContent = json_decode($oldContentJson, true);
 
     $request = Request::get($baseDomain . $download['url']);
