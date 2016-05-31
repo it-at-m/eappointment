@@ -15,5 +15,8 @@ require(APP_PATH . '/config.php');
 //\BO\Slim\Bootstrap::addTwigExtension(new \BO\Dldb\TwigExtension());
 //\BO\Slim\Bootstrap::addTwigTemplateDirectory('dldb', APP_PATH . '/vendor/bo/clientdldb/templates');
 
+\App::$http = new \BO\Zmsclient\Http(\App::HTTP_BASE_URL);
+\BO\Zmsclient\Psr7\Client::$curlopt = \App::$http_curl_config;
+
 // load routing
 \BO\Slim\Bootstrap::loadRouting(\App::APP_PATH . '/routing.php');
