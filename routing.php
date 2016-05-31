@@ -76,7 +76,7 @@
     ->setName("useraccount");
 
 \App::$slim->get('/department/{id:\d+}/useraccount/', '\BO\Zmsadmin\UseraccountByDepartment')
-    ->setName("useraccountByDdepartment");
+    ->setName("useraccountByDepartment");
 
 \App::$slim->get('/useraccount/{id:\d+}/', '\BO\Zmsadmin\UseraccountEdit')
     ->setName("useraccountEdit");
