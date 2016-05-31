@@ -10,6 +10,6 @@ namespace BO\Zmsadmin;
  * @SuppressWarnings(Children)
  *
  */
-abstract class BaseController
+abstract class BaseController extends \BO\Slim\Controller
 {
 }
