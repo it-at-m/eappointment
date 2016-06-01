@@ -4,5 +4,5 @@ namespace BO\Zmsentities\Tests;
 
 class DayoffTest extends EntityCommonTests
 {
-    public $entityclass = '\BO\Zmsentities\Dayoff';
+    public $entityclass = '\BO\Zmsentities\DayOff';
 }
