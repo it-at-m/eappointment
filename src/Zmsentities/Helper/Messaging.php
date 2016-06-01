@@ -11,10 +11,8 @@ class Messaging
 {
     protected static function twigView()
     {
-        $path = realpath(__DIR__) .'/../../../';
-        require($path . '/vendor/autoload.php');
-        $templatePath = $path .'/templates/';
-        $templateDldbPath = $path .'/vendor/bo/clientdldb/templates';
+        $templatePath = TemplateFinder::getTemplatePath();
+        $templateDldbPath = \BO\Dldb\Helper\TemplateFinder::getTemplatePath();
         $loader = new \Twig_Loader_Filesystem($templatePath);
         $loader->addPath($templateDldbPath, 'dldb');
         $twig = new \Twig_Environment($loader, array(
