@@ -1,6 +1,10 @@
+#!/usr/bin/env php
 <?php
-
-require(__DIR__ . '/../config.php');
+$dir = realpath(__DIR__);
+do {
+    $dir = dirname($dir);
+} while ($dir != '/' && !file_exists("$dir/config.php"));
+require("$dir/config.php");
 $dsn = \BO\Zmsdb\Connection\Select::$writeSourceName;
 $dbname_zms =& \BO\Zmsdb\Connection\Select::$dbname_zms;
 $dbname_dldb =& \BO\Zmsdb\Connection\Select::$dbname_dldb;
