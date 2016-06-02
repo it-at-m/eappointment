@@ -11,11 +11,17 @@ class Department extends Schema\Entity
         return ($this->preferences['notifications']['enabled']) ? true : false;
     }
 
+    public function setNotificationPreferences($status = true)
+    {
+        $this->preferences['notifications']['enabled'] = $status;
+        return $this;
+    }
+
     public function getNotificationPreferences()
     {
         return ($this->preferences['notifications']);
     }
-    
+
     public function toContact($address = array(), $contactPerson = null)
     {
         $address = explode(' ', str_replace(',', '', $address));
@@ -26,7 +32,7 @@ class Department extends Schema\Entity
         $this->contact['name'] = $contactPerson;
         return $this;
     }
-    
+
     public function toAddress()
     {
         $address =
@@ -36,9 +42,14 @@ class Department extends Schema\Entity
             $this->contact['region'];
         return $address;
     }
-    
+
     public function getContactPerson()
     {
         return $this->contact['name'];
+    }
+
+    public function getContact()
+    {
+        return new Contact($this->contact);
     }
 }
