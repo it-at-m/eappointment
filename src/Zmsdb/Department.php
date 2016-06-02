@@ -78,7 +78,7 @@ class Department extends Base
         $query->addConditionDepartmentId($departmentId);
         return $this->deleteItem($query);
     }
-    
+
     /**
      * update a department
      *
@@ -94,7 +94,7 @@ class Department extends Base
         $query->addValues($values);
         $this->writeItem($query);
         $lastInsertId = $this->getWriter()->lastInsertId();
-        
+
         $this->writeDepartmentMail($lastInsertId, $entity->email);
         $query->writeDepartmentNotifications(
             $lastInsertId,
@@ -102,7 +102,7 @@ class Department extends Base
         );
         return $this->readEntity($lastInsertId);
     }
-    
+
     /**
      * update a department
      *
@@ -118,10 +118,10 @@ class Department extends Base
         $values = $query->reverseEntityMapping($entity);
         $query->addValues($values);
         $this->writeItem($query, 'department', $query::TABLE);
-        if (!$this->updateDepartmentMail($departmentId, $entity->email)) {
+        if (false === $this->updateDepartmentMail($departmentId, $entity->email)) {
             $this->writeDepartmentMail($departmentId, $entity->email);
         }
-        if (!$this->updateDepartmentNotifications(
+        if (false === $this->updateDepartmentNotifications(
             $departmentId,
             $entity->getNotificationPreferences()
         )) {
@@ -132,7 +132,7 @@ class Department extends Base
         }
         return $this->readEntity($departmentId);
     }
-    
+
     /**
      * create mail preferences of a department
      *
@@ -146,15 +146,15 @@ class Department extends Base
     {
         $query = Query\Department::QUERY_MAIL_INSERT;
         $statement = $this->getWriter()->prepare($query);
-        $statement->execute(
+        $result = $statement->execute(
             array(
                 $departmentId,
                 $email
             )
         );
-        return (0 == $statement->rowCount()) ? false : true;
+        return $result;
     }
-    
+
     /**
      * create notification preferences of a department
      *
@@ -168,18 +168,18 @@ class Department extends Base
     {
         $query = Query\Department::QUERY_NOTIFICATIONS_INSERT;
         $statement = $this->getWriter()->prepare($query);
-        $statement->execute(
+        $result = $statement->execute(
             array(
                 $departmentId,
-                $preferences['enabled'],
+                ($preferences['enabled']) ? 1 : 0,
                 $preferences['identification'],
-                $preferences['sendConfirmationEnabled'],
-                $preferences['sendReminderEnabled']
+                ($preferences['sendConfirmationEnabled']) ? 1 : 0,
+                ($preferences['sendReminderEnabled']) ? 1 : 0
             )
         );
-        return (0 == $statement->rowCount()) ? false : true;
+        return $result;
     }
-    
+
     /**
      * update mail preferences of a department
      *
@@ -193,15 +193,15 @@ class Department extends Base
     {
         $query = Query\Department::QUERY_MAIL_UPDATE;
         $statement = $this->getWriter()->prepare($query);
-        $statement->execute(
+        $result = $statement->execute(
             array(
                 $email,
                 $departmentId
             )
         );
-        return (0 == $statement->rowCount()) ? false : true;
+        return $result;
     }
-    
+
     /**
      * update notification preferences of a department
      *
@@ -215,15 +215,15 @@ class Department extends Base
     {
         $query = Query\Department::QUERY_NOTIFICATIONS_UPDATE;
         $statement = $this->getWriter()->prepare($query);
-        $statement->execute(
+        $result = $statement->execute(
             array(
-                $preferences['enabled'],
+                ($preferences['enabled']) ? 1 : 0,
                 $preferences['identification'],
-                $preferences['sendConfirmationEnabled'],
-                $preferences['sendReminderEnabled'],
+                ($preferences['sendConfirmationEnabled']) ? 1 : 0,
+                ($preferences['sendReminderEnabled']) ? 1 : 0,
                 $departmentId
             )
         );
-        return (0 == $statement->rowCount()) ? false : true;
+        return $result;
     }
 }

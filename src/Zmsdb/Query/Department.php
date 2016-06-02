@@ -8,16 +8,16 @@ class Department extends Base implements MappingInterface
      * @var String TABLE mysql table reference
      */
     const TABLE = 'behoerde';
-    
+
     const QUERY_MAIL_UPDATE = '
-        UPDATE 
+        UPDATE
             email
         SET
             absenderadresse=?
         WHERE
             BehoerdenID=?
     ';
-    
+
     const QUERY_NOTIFICATIONS_UPDATE = '
         UPDATE
             sms
@@ -29,15 +29,16 @@ class Department extends Base implements MappingInterface
         WHERE
             BehoerdenID=?
     ';
-    
+
     const QUERY_MAIL_INSERT = '
         REPLACE INTO
             email
         SET
             BehoerdenID=?,
-            absenderadresse=?       
+            serveradresse="localhost",
+            absenderadresse=?
     ';
-    
+
     const QUERY_NOTIFICATIONS_INSERT = '
         REPLACE INTO
             sms
@@ -104,7 +105,7 @@ class Department extends Base implements MappingInterface
         $this->query->where('department.OrganisationsID', '=', $organisationId);
         return $this;
     }
-    
+
     public function reverseEntityMapping(\BO\Zmsentities\Department $entity)
     {
         $data = array();
