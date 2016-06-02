@@ -17,6 +17,9 @@ fix: # run code fixing
 watch:
 	node_modules/.bin/gulp watch
 	
+live: # init live system
+	$(COMPOSER) update --no-dev
+
 dev: # init development system
 	$(COMPOSER) update --dev
 	npm install
