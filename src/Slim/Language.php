@@ -29,35 +29,28 @@ class Language
 
         $this->request = $request;
         self::$supportedLanguages = $supportedLanguages;
-        if (! $this->default) {
-            foreach (self::$supportedLanguages as $lang_id => $lang_data) {
-                if (isset($lang_data['default']) && $lang_data['default']) {
-                    $this->default = $lang_id;
-                    break;
-                }
-            }
-            if (! $this->default) {
-                reset(self::$supportedLanguages);
-                $this->default = key(self::$supportedLanguages);
-            }
+        $this->current = $this->getLanguageFromRequest();
+        if (!$this->current) {
+            $this->current = $this->getDefault();
         }
-        $default = $this->getDefault();
 
+        $this->setTextDomain();
+    }
+
+    protected function getLanguageFromRequest()
+    {
+        $current = '';
+        $default = $this->getDefault();
         // Detect current language based on request URI
         $lang_ids = array_keys(self::$supportedLanguages);
         $lang_ids = array_diff($lang_ids, array($default));
         if (null !== $this->request) {
             $url = $this->request->getUri()->getPath();
             if (preg_match('~^('.implode('|', $lang_ids).')/~', $url, $matches)) {
-                $this->current = $matches[1];
-            } else {
-                $this->current = $default;
+                $current = $matches[1];
             }
-        } else {
-            $this->current = $default;
         }
-
-        $this->setTextDomain();
+        return $current;
     }
 
     public function getCurrent($lang = '')
@@ -72,7 +65,18 @@ class Language
 
     public function getDefault()
     {
-        // Find default language
+        if (! $this->default) {
+            foreach (self::$supportedLanguages as $lang_id => $lang_data) {
+                if (isset($lang_data['default']) && $lang_data['default']) {
+                    $this->default = $lang_id;
+                    break;
+                }
+            }
+            if (! $this->default) {
+                reset(self::$supportedLanguages);
+                $this->default = key(self::$supportedLanguages);
+            }
+        }
         return $this->default;
     }
 
