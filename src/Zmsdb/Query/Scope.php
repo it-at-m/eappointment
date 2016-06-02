@@ -87,6 +87,8 @@ class Scope extends Base implements MappingInterface
             'status__queue__lastGivenNumber' => 'scope.letztewartenr',
             'status__queue__lastGivenNumberTimestamp' => 'scope.wartenrdatum',
             'status__ticketprinter__deactivated' => 'scope.wartenrsperre',
+            'provider__id' => 'scope.InfoDienstleisterID',
+            'department__id' => 'scope.BehoerdenID'
         ];
     }
 

@@ -47,7 +47,14 @@ class Scope extends Base
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
             foreach ($result as $entity) {
-                $scopeList->addEntity($entity);
+                if (0 == $resolveReferences) {
+                    $scopeList[] = array(
+                        'id' => $entity->id,
+                        '$ref' => '/scope/'. $entity->id .'/'
+                    );
+                } else {
+                    $scopeList->addEntity($entity);
+                }
             }
         }
         return $scopeList;
@@ -64,7 +71,14 @@ class Scope extends Base
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
             foreach ($result as $entity) {
-                $scopeList->addEntity($entity);
+                if (0 == $resolveReferences) {
+                    $scopeList[] = array(
+                        'id' => $entity->id,
+                        '$ref' => '/scope/'. $entity->id .'/'
+                    );
+                } else {
+                    $scopeList->addEntity($entity);
+                }
             }
         }
         return $scopeList;

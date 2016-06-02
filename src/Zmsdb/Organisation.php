@@ -15,10 +15,9 @@ class Organisation extends Base
             ->addResolvedReferences($resolveReferences)
             ->addConditionOrganisationId($itemId);
         $organisation = $this->fetchOne($query, new Entity());
-        if (1 <= $resolveReferences) {
-            $organisation['departments'] = (new Department())->readByOrganisationId($itemId, $resolveReferences);
-            $organisation['ticketprinters'] = (new Ticketprinter())->readByOrganisationId($itemId, $resolveReferences);
-        }
+        $organisation['departments'] = (new Department())->readByOrganisationId($itemId, $resolveReferences);
+        $organisation['ticketprinters'] = (new Ticketprinter())->readByOrganisationId($itemId, $resolveReferences);
+
         return $organisation;
     }
 
@@ -33,7 +32,7 @@ class Organisation extends Base
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
             foreach ($result as $organisation) {
-                $entity = $this->readEntity($organisation->id, $resolveReferences);
+                $entity = $this->readEntity($organisation->id, $resolveReferences - 1);
                 $organisationList->addEntity($entity);
             }
         }

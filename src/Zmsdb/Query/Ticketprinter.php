@@ -37,14 +37,16 @@ class Ticketprinter extends Base implements MappingInterface
 
     public function addConditionOrganisationId($organisationId)
     {
-        $this->query->where('organisation.OrganisationsID', '=', $organisationId);
+        $this->query->where('ticketprinter.organisationsid', '=', $organisationId);
         return $this;
     }
 
     public function getReferenceMapping()
     {
         return [
-            'organisation__$ref' => self::expression('CONCAT("/organisation/", `organisation`.`OrganisationsID`, "/")'),
+            'organisation__$ref' => self::expression(
+                'CONCAT("/organisation/", `ticketprinter`.`organisationsid`, "/")'
+            ),
         ];
     }
 }

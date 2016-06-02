@@ -43,7 +43,7 @@ class Calendar extends Base
     {
         $scopeReader = new Scope($this->getWriter(), $this->getReader());
         foreach ($calendar['clusters'] as $cluster) {
-            $scopeList = $scopeReader->readByClusterId($cluster['id']);
+            $scopeList = $scopeReader->readByClusterId($cluster['id'], 1);
             foreach ($scopeList as $scope) {
                 $calendar['scopes'][] = $scope;
             }
@@ -58,7 +58,7 @@ class Calendar extends Base
         $calendar['scopes'] = array();
         foreach ($calendar['providers'] as $key => $provider) {
             $calendar['providers'][$key] = $providerReader->readEntity('dldb', $provider['id']);
-            $scopeList = $scopeReader->readByProviderId($provider['id']);
+            $scopeList = $scopeReader->readByProviderId($provider['id'], 1);
             foreach ($scopeList as $scope) {
                 $calendar['scopes'][] = $scope;
             }
