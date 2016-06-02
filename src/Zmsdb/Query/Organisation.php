@@ -29,7 +29,15 @@ class Organisation extends Base implements MappingInterface
             'contact__name' => 'organisation.Organisationsname',
             'name' => 'organisation.Organisationsname',
             'id' => 'organisation.OrganisationsID',
+            'owner__id' => 'organisation.KundenID',
             'preferences__ticketPrinterProtectionEnabled' => 'organisation.kioskpasswortschutz'
+        ];
+    }
+
+    public function getReferenceMapping()
+    {
+        return [
+            'owner__$ref' => self::expression('CONCAT("/owner/", `organisation`.`KundenID`, "/")'),
         ];
     }
 
@@ -43,5 +51,18 @@ class Organisation extends Base implements MappingInterface
     {
         $this->query->where('organisation.KundenID', '=', $ownerId);
         return $this;
+    }
+
+    public function addJoin()
+    {
+        $this->query->leftJoin(
+            new Alias(Owner::getTablename(), 'owner'),
+            'organisation.KundenID',
+            '=',
+            'owner.KundenID'
+        );
+        $ownerQuery = new Owner($this->query);
+        $ownerQuery->addEntityMappingPrefixed($this->getPrefixed('owner__'));
+        return [$ownerQuery];
     }
 }

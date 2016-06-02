@@ -79,6 +79,7 @@ class Department extends Base implements MappingInterface
             'email' => 'department_email.absenderadresse',
             'id' => 'department.BehoerdenID',
             'name' => 'department.Name',
+            'organisation__id' => 'department.OrganisationsID',
             'preferences__notifications__enabled' => 'department_sms.enabled',
             'preferences__notifications__identification' => 'department_sms.Absender',
             'preferences__notifications__sendConfirmationEnabled' => 'department_sms.internetbestaetigung',
@@ -118,7 +119,7 @@ class Department extends Base implements MappingInterface
     public function getReferenceMapping()
     {
         return [
-            'organisation__$ref' => self::expression('CONCAT("/organisation/", `organisation`.`OrganisationID`, "/")'),
+            'organisation__$ref' => self::expression('CONCAT("/organisation/", `department`.`OrganisationsID`, "/")'),
         ];
     }
 

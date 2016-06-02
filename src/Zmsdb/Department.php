@@ -23,9 +23,7 @@ class Department extends Base
             ->addResolvedReferences($resolveReferences)
             ->addConditionDepartmentId($departmentId);
         $department = $this->fetchOne($query, new Entity());
-        if (1 < $resolveReferences) {
-            $department['scopes'] = (new Scope())->readByDepartmentId($departmentId, $resolveReferences);
-        }
+        $department['scopes'] = (new Scope())->readByDepartmentId($departmentId, $resolveReferences);
         $department['dayoff']  = (new DayOff())->readByDepartmentId($departmentId);
         $departmentCache[$departmentId] = $department;
         return $department;
@@ -39,7 +37,7 @@ class Department extends Base
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
             foreach ($result as $department) {
-                $department = $this->readEntity($department['id'], $resolveReferences);
+                $department = $this->readEntity($department['id'], $resolveReferences - 1);
                 $departmentList->addDepartment($department);
             }
         }
@@ -52,12 +50,11 @@ class Department extends Base
         $query = new Query\Department(Query\Base::SELECT);
         $query
             ->addEntityMapping()
-            ->addResolvedReferences($resolveReferences)
             ->addConditionOrganisationId($organisationId);
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
             foreach ($result as $entity) {
-                $department = $this->readEntity($entity['id'], $resolveReferences);
+                $department = $this->readEntity($entity['id'], $resolveReferences - 1);
                 $departmentList->addDepartment($department);
             }
         }
