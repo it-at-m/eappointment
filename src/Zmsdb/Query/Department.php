@@ -50,6 +50,14 @@ class Department extends Base implements MappingInterface
             interneterinnerung=?
     ';
 
+    const QUERY_MAIL_DELETE = '
+        DELETE FROM email WHERE BehoerdenID=?
+    ';
+
+    const QUERY_NOTIFICATIONS_DELETE = '
+        DELETE FROM sms WHERE BehoerdenID=?
+    ';
+
     public function getEntityMapping()
     {
         return [

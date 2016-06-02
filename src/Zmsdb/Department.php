@@ -76,7 +76,26 @@ class Department extends Base
     {
         $query =  new Query\Department(Query\Base::DELETE);
         $query->addConditionDepartmentId($departmentId);
-        return $this->deleteItem($query);
+        $entityDelete = $this->deleteItem($query);
+
+        $query = Query\Department::QUERY_MAIL_DELETE;
+        $statement = $this->getWriter()->prepare($query);
+        $emailDelete = $statement->execute(
+            array(
+                $departmentId,
+            )
+        );
+        $query = Query\Department::QUERY_NOTIFICATIONS_DELETE;
+        $statement = $this->getWriter()->prepare($query);
+        $notificationsDelete = $statement->execute(
+            array(
+                $departmentId,
+            )
+        );
+        if ($entityDelete && $emailDelete && $notificationsDelete) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -96,7 +115,7 @@ class Department extends Base
         $lastInsertId = $this->getWriter()->lastInsertId();
 
         $this->writeDepartmentMail($lastInsertId, $entity->email);
-        $query->writeDepartmentNotifications(
+        $this->writeDepartmentNotifications(
             $lastInsertId,
             $entity->getNotificationPreferences()
         );
