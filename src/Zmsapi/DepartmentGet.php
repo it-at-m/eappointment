@@ -20,7 +20,7 @@ class DepartmentGet extends BaseController
      */
     public static function render($itemId)
     {
-        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $department = (new Query())->readEntity($itemId, $resolveReferences);
         $message = Response\Message::create(Render::$request);
         $message->data = $department;
