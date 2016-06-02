@@ -19,6 +19,7 @@
             }
         ],
         "id": 456,
+        "owner": 23,
         "name": "Flughafen",
         "preferences": {
             "ticketPrinterProtectionEnabled": false
@@ -39,6 +40,9 @@
             "items": {
                 "$ref": "cluster.json"
             }
+        },
+        "owner": {
+            "$ref": "owner.json"
         },
         "contact": {
             "$ref": "contact.json"
