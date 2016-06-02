@@ -14,11 +14,11 @@ require(APP_PATH . '/config.php');
 \BO\Slim\Bootstrap::addTwigTemplateDirectory('dldb', APP_PATH . '/vendor/bo/clientdldb/templates');
 
 // Set option for environment, routing, logging and templating
-\BO\Zmsdb\Connection\Select::$enableProfiling = \APP::DEBUG;
-\BO\Zmsdb\Connection\Select::$readSourceName = \APP::DB_DSN_READONLY;
-\BO\Zmsdb\Connection\Select::$writeSourceName = \APP::DB_DSN_READWRITE;
-\BO\Zmsdb\Connection\Select::$username = \APP::DB_USERNAME;
-\BO\Zmsdb\Connection\Select::$password = \APP::DB_PASSWORD;
+\BO\Zmsdb\Connection\Select::$enableProfiling = \App::DEBUG;
+\BO\Zmsdb\Connection\Select::$readSourceName = \App::DB_DSN_READONLY;
+\BO\Zmsdb\Connection\Select::$writeSourceName = \App::DB_DSN_READWRITE;
+\BO\Zmsdb\Connection\Select::$username = \App::DB_USERNAME;
+\BO\Zmsdb\Connection\Select::$password = \App::DB_PASSWORD;
 \BO\Zmsdb\Connection\Select::$pdoOptions = [
     \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
 ];
