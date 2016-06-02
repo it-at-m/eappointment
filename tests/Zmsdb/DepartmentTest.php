@@ -1,0 +1,55 @@
+<?php
+
+namespace BO\Zmsdb\Tests;
+
+use \BO\Zmsdb\Department as Query;
+use \BO\Zmsentities\Department as Entity;
+
+class DepartmentTest extends Base
+{
+    public function testBasic()
+    {
+        $query = new Query();
+        $input = $this->getTestEntity();
+        $entity = $query->writeEntity($input);
+        $this->assertEntity("\\BO\\Zmsentities\\Department", $entity);
+        $this->assertEquals(1, $entity->getContact()->streetNumber);
+        $this->assertEquals('service@berlinonline.de', $entity->email);
+        $this->assertEquals(true, $entity->hasNotificationEnabled());
+
+        $entity->contact['streetNumber'] = 2;
+        $entity->email = "max@berlinonline.de";
+        $entity->setNotificationPreferences(false);
+        $entity = $query->updateEntity($entity->id, $entity);
+        $this->assertEquals(2, $entity->getContact()->streetNumber);
+        $this->assertEquals('max@berlinonline.de', $entity->email);
+        $this->assertEquals(false, $entity->hasNotificationEnabled());
+
+        $deleteTest = $query->deleteEntity($entity->id);
+        $this->assertTrue($deleteTest, "Failed to delete Department from Database.");
+    }
+
+    protected function getTestEntity()
+    {
+        return $input = new Entity(array(
+            'email' => 'service@berlinonline.de',
+            'preferences' => [
+                'notifications' => [
+                    'enabled' => true,
+                    'identification' => 'service@berlinonline.de',
+                    'sendConfirmationEnabled' => false,
+                    'sendReminderEnabled' => false
+                ]
+            ],
+            'name' => 'Muster Bürgeramt',
+            'contact' => [
+                'country' => 'Germany',
+                'name' => 'Max Mustermann',
+                'postalCode' => '10178',
+                'region' => 'Berlin',
+                'street' => 'Musterallee',
+                'streetNumber' => '1'
+            ]
+        ));
+    }
+}
