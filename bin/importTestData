@@ -3,8 +3,15 @@
 $dir = realpath(__DIR__);
 do {
     $dir = dirname($dir);
+    if (file_exists("$dir/autoload.php")) {
+        require_once("$dir/autoload.php");
+    }
 } while ($dir != '/' && !file_exists("$dir/config.php"));
-require("$dir/config.php");
+if (file_exists("$dir/bootstrap.php") {
+    require("$dir/bootstrap.php");
+} else {
+    require("$dir/config.php");
+}
 $dsn = \BO\Zmsdb\Connection\Select::$writeSourceName;
 $dbname_zms =& \BO\Zmsdb\Connection\Select::$dbname_zms;
 $dbname_dldb =& \BO\Zmsdb\Connection\Select::$dbname_dldb;
