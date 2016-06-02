@@ -1,6 +1,6 @@
 <?php
 /**
- * @package 115Mandant
+ * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -13,15 +13,34 @@ class Application extends \BO\Slim\Application
      *
      */
     const IDENTIFIER = 'Zmsadmin';
-    
+
+    /**
+     * language preferences
+     */
+    public static $locale = 'de';
+
+    public static $supportedLanguages = array(
+        // Default language
+        'de' => array(
+            'name'    => 'Deutsch',
+            'locale'  => 'de_DE.utf-8',
+            'default' => true,
+        ),
+        // Other languages
+        'en' => array(
+            'name'    => 'English',
+            'locale'  => 'en_GB.utf-8',
+        )
+    );
+
     /*
      * -----------------------------------------------------------------------
      * ZMS API access
      */
     public static $http = null;
-    
+
     public static $http_curl_config = array();
-    
+
     /**
      * HTTP url for api
      */

@@ -11,7 +11,7 @@
 \App::$slim->get('/', '\BO\Zmsadmin\Index')->setName("pagesindex");
 
 \App::$slim->get('/login/', '\BO\Zmsadmin\Index')->setName("login");
-    
+
 \App::$slim->get('/workstation/process/{id:\d+}/precall/', '\BO\Zmsadmin\WorkstationClientPreCall')
     ->setName("workstationClientPreCall");
 
@@ -23,7 +23,7 @@
 
 \App::$slim->get('/workstation/process/{id:\d+}/', '\BO\Zmsadmin\WorkstationClientActive')
     ->setName("workstationClientActive");
-    
+
 \App::$slim->map(['GET', 'POST'], '/workstation/', '\BO\Zmsadmin\Workstation')
     ->setName("workstation");
 
@@ -38,7 +38,7 @@
 
 \App::$slim->map(['GET', 'POST'], '/scope{id/pickup/handheld/', '\BO\Zmsadmin\PickupHandheld')
     ->setName("pickup_handheld");
-    
+
 \App::$slim->get('/scope/{id:\d+}/pickup/keyboard/', '\BO\Zmsadmin\PickupKeyboard')
     ->setName("pickup_keyboard");
 
@@ -51,7 +51,7 @@
 \App::$slim->map(['GET', 'POST'], '/department/[{id:\d+}/]', '\BO\Zmsadmin\Department')
     ->setName("department");
 
-\App::$slim->get('/organisation/', '\BO\Zmsadmin\Organisation')
+\App::$slim->get('/organisation/{id:\d+}/', '\BO\Zmsadmin\Organisation')
     ->setName("organisation");
 
 \App::$slim->get('/owner/', '\BO\Zmsadmin\Owner')
@@ -59,7 +59,7 @@
 
 \App::$slim->get('/owner/{id:\d+}/', '\BO\Zmsadmin\OwnerEdit')
     ->setName("ownerEdit");
-    
+
 \App::$slim->get('/availability/day/', '\BO\Zmsadmin\Availability')
     ->setName("availability_day");
 
@@ -86,7 +86,7 @@
 
 \App::$slim->get('/scope/ticketprinter/', '\BO\Zmsadmin\TicketprinterConfig')
     ->setName("ticketprinter");
-    
+
 \App::$slim->get('/scope/{id:\d+}/ticketprinter/', '\BO\Zmsadmin\TicketprinterStatusByScope')
     ->setName("ticketprinterStatusByScope");
 
@@ -107,7 +107,7 @@
 
 \App::$slim->get('/dayoff/{year:\d+}/{id:\d+}/', '\BO\Zmsadmin\DayoffEdit')
     ->setName("dayoffEdit");
-    
+
 \App::$slim->get('/department/{id:\d+}/dayoff/', '\BO\Zmsadmin\DayoffByDepartment')
     ->setName("dayoffByDepartment");
 
@@ -133,7 +133,7 @@
  * -------------------------------------------------------------------------*/
 
 \App::$slim->get('/healthcheck/', '\BO\Zmsappointment\Healthcheck')
-    ->setName("healthcheck");    
+    ->setName("healthcheck");
 
 \App::$slim->getContainer()->notFoundHandler = function() {
     return function () {

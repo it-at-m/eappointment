@@ -22,7 +22,7 @@ class Department extends BaseController
         )->getEntity();
         \BO\Slim\Render::html('page/department.twig', array(
             'title' => 'Standort',
-            'department' => $department,
+            'department' => $department->getArrayCopy(),
             'menuActive' => 'owner'
         ));
     }
