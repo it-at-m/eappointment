@@ -3,6 +3,9 @@
 $dir = realpath(__DIR__);
 do {
     $dir = dirname($dir);
+    if (file_exists("$dir/autoload.php")) {
+        require_once("$dir/autoload.php");
+    }
 } while ($dir != '/' && !file_exists("$dir/config.php"));
 require("$dir/config.php");
 $dsn = \BO\Zmsdb\Connection\Select::$writeSourceName;
