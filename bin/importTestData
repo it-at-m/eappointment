@@ -7,7 +7,7 @@ do {
         require_once("$dir/autoload.php");
     }
 } while ($dir != '/' && !file_exists("$dir/config.php"));
-if (file_exists("$dir/bootstrap.php") {
+if (file_exists("$dir/bootstrap.php")) {
     require("$dir/bootstrap.php");
 } else {
     require("$dir/config.php");
@@ -17,7 +17,7 @@ $dbname_zms =& \BO\Zmsdb\Connection\Select::$dbname_zms;
 $dbname_dldb =& \BO\Zmsdb\Connection\Select::$dbname_dldb;
 $fixtures = realpath(__DIR__ . '/../tests/Zmsdb/fixtures/');
 
-\BO\Zmsdb\Connection\Select::$writeSourceName = str_replace("$dbname_zms", "mysql", $dsn);
+\BO\Zmsdb\Connection\Select::$writeSourceName = str_replace("$dbname_zms", "information_schema", $dsn);
 $pdo = BO\Zmsdb\Connection\Select::getWriteConnection();
 $pdo->exec("CREATE DATABASE IF NOT EXISTS `$dbname_zms`;");
 $pdo->exec("CREATE DATABASE IF NOT EXISTS `$dbname_dldb`;");
