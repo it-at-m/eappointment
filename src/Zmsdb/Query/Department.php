@@ -86,6 +86,19 @@ class Department extends Base implements MappingInterface
         ];
     }
 
+    public function addJoin()
+    {
+        $this->query->leftJoin(
+            new Alias(Organisation::getTablename(), 'organisation'),
+            'department.OrganisationsID',
+            '=',
+            'organisation.OrganisationsID'
+        );
+        $organisationQuery = new Organisation($this->query);
+        $organisationQuery->addEntityMappingPrefixed($this->getPrefixed('organisation__'));
+        return [$organisationQuery];
+    }
+
     public function addRequiredJoins()
     {
         $this->query->leftJoin(
@@ -100,6 +113,13 @@ class Department extends Base implements MappingInterface
             '=',
             'department_sms.BehoerdenID'
         );
+    }
+
+    public function getReferenceMapping()
+    {
+        return [
+            'organisation__$ref' => self::expression('CONCAT("/organisation/", `organisation`.`OrganisationID`, "/")'),
+        ];
     }
 
     public function addConditionDepartmentId($departmentId)
