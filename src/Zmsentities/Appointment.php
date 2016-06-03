@@ -46,9 +46,10 @@ class Appointment extends Schema\Entity
 
     public function toDateTime()
     {
-        $date = (!$this['date']) ? time() : $this->date;
-        $date = \DateTime::createFromFormat("U", $date);
-        $date->setTimeZone(new \DateTimeZone('Europe/Berlin'));
+        $date = \DateTime::createFromFormat("U", $this->date);
+        if ($date) {
+            $date->setTimeZone(new \DateTimeZone('Europe/Berlin'));
+        }
         return $date;
     }
 
