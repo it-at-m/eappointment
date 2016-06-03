@@ -212,9 +212,12 @@ class TwigExtension extends \Twig_Extension
         return $string;
     }
 
-    protected static function sortByName($a, $b)
+    protected static function sortByName($left, $right)
     {
-        return strcmp(self::toSortableString(strtolower($a['name'])), strtolower(self::toSortableString($b['name'])));
+        return strcmp(
+            self::toSortableString(strtolower($left['name'])),
+            strtolower(self::toSortableString($right['name']))
+        );
     }
 
     protected static function sortFirstChar($string)
