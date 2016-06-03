@@ -72,7 +72,7 @@ class Result
             );
         }
         $result = $body->getValue();
-        if (!array_key_exists("meta", $result)) {
+        if (!$result || !array_key_exists("meta", $result)) {
             throw new Exception(
                 'Missing "meta" value on result, API-Call failed.',
                 $response,
