@@ -1,0 +1,32 @@
+#!/usr/bin/env php
+<?php
+$dir = realpath(__DIR__);
+do {
+    $dir = dirname($dir);
+    if (file_exists("$dir/autoload.php")) {
+        require_once("$dir/autoload.php");
+    }
+} while ($dir != '/' && !file_exists("$dir/config.php"));
+if (file_exists("$dir/bootstrap.php")) {
+    require("$dir/bootstrap.php");
+} else {
+    require("$dir/config.php");
+}
+$updateOption = count(preg_grep('#^--update$#', $argv)) == 1;
+$migrationFiles = preg_grep('#^[^-]#', array_slice($argv, 1));
+
+echo "Checking for open migrations...\n\n";
+
+if ($migrationFiles) {
+    $added = \BO\Zmsdb\Cli\Db::startMigrations($migrationFiles, $updateOption);
+} else {
+    $migrations = realpath(__DIR__ . '/../migrations/');
+    $added = \BO\Zmsdb\Cli\Db::startMigrations($migrations, $updateOption);
+}
+if (!$updateOption && $added) {
+    echo "\nUse the following command to activate listed migrations:\n\n\t"
+        . $argv[0]
+        . " --update "
+        . implode(' ', array_slice($argv, 1))
+        . "\n\n";
+}

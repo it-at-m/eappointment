@@ -61,19 +61,29 @@ class Db
         self::startExecuteSqlFile($fixtures . '/mysql_zmsbo.sql');
     }
 
-    public static function startMigrations($migrationPath)
+    public static function startMigrations($migrationList, $commit = true)
     {
-        $migrationList = glob($migrationPath . '/*.sql');
+        if (!is_array($migrationList)) {
+            $migrationList = glob($migrationList . '/*.sql');
+        }
         sort($migrationList);
         $pdo = self::startUsingDatabase();
         $migrationsDoneList = $pdo->fetchPairs('SELECT filename, changeTimestamp FROM migrations');
+        $addedMigrations = 0;
         foreach ($migrationList as $migrationFile) {
             $migrationName = basename($migrationFile);
             if (!array_key_exists($migrationName, $migrationsDoneList)) {
-                self::startExecuteSqlFile($migrationFile);
-                $pdo->prepare('INSERT INTO `migrations` SET `filename` = :filename')
-                    ->execute(['filename' => $migrationName]);
+                $addedMigrations++;
+                if (!$commit) {
+                    echo "$addedMigrations. Add migration $migrationName\n";
+                } else {
+                    self::startExecuteSqlFile($migrationFile);
+                    $pdo->prepare('INSERT INTO `migrations` SET `filename` = :filename')
+                        ->execute(['filename' => $migrationName]);
+                }
             }
         }
+        echo "\nFound " . count($migrationsDoneList) . " completed migrations and added $addedMigrations migrations.\n";
+        return $addedMigrations;
     }
 }
