@@ -46,6 +46,11 @@ class Http
         if ($port) {
             $this->uri = $this->uri->withPort($port);
         }
+        $user = parse_url($baseUrl, PHP_URL_USER);
+        $pass = parse_url($baseUrl, PHP_URL_PASS);
+        if ($user) {
+            $this->uri = $this->uri->withUserInfo($user, $pass);
+        }
         if (null === $client) {
             $client = new Psr7\Client();
         }
