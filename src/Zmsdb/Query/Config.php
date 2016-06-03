@@ -17,7 +17,7 @@ class Config extends Base
         VALUES (
             ?,
             ?,
-            ?
+            FROM_UNIXTIME(?)
         )
     ';
 }

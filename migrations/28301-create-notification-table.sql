@@ -1,4 +1,5 @@
-CREATE TABLE `zmsbo`.`notificationqueue` ( 
+DROP TABLE IF EXISTS `notificationqueue`;
+CREATE TABLE `notificationqueue` ( 
 	`id` INT(5) UNSIGNED NOT NULL AUTO_INCREMENT , 
 	`processID` INT(5) NOT NULL DEFAULT '0' , 
 	`departmentID` INT(5) UNSIGNED NOT NULL DEFAULT '0' , 	
@@ -8,6 +9,6 @@ CREATE TABLE `zmsbo`.`notificationqueue` (
 	`clientFamilyName` VARCHAR(150) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL ,
 	`clientTelephone` VARCHAR(50) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL ,   		
 PRIMARY KEY (`id`)) 
-ENGINE = MyISAM 
+ENGINE = InnoDB 
 CHARACTER SET utf8 
 COLLATE utf8_unicode_ci;
