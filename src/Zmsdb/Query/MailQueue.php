@@ -11,14 +11,14 @@ class MailQueue extends Base
 
     const QUERY_DELETE = '
         DELETE mq,  mp FROM
-            '. self::TABLE .' mq, '. Mailpart::TABLE .' mp
+            '. self::TABLE .' mq, '. MailPart::TABLE .' mp
         WHERE
             mq.id = mp.queueId AND mq.id=?
     ';
 
     const QUERY_DELETE_BY_PROCESS = '
         DELETE mq,  mp FROM
-            '. self::TABLE .' mq, '. Mailpart::TABLE .' mp
+            '. self::TABLE .' mq, '. MailPart::TABLE .' mp
         WHERE
             mq.id = mp.queueId AND mq.processID=?
     ';
