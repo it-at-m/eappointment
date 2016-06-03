@@ -1,8 +1,9 @@
-CREATE TABLE IF NOT EXISTS `zmsbo`.`config` ( 
+DROP TABLE IF EXISTS `config`;
+CREATE TABLE IF NOT EXISTS `config` ( 
 	`name` VARCHAR(150) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL , 
 	`value` VARCHAR(250) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL , 
-	`changeTimestamp` BIGINT(20) NOT NULL DEFAULT '0' , 
+	`changeTimestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, 
 PRIMARY KEY (`name`)) 
-ENGINE = MyISAM 
+ENGINE = InnoDB 
 CHARACTER SET utf8 
 COLLATE utf8_unicode_ci;

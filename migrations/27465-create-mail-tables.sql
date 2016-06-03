@@ -1,4 +1,5 @@
-CREATE TABLE `zmsbo`.`mailqueue` ( 
+DROP TABLE IF EXISTS `mailqueue`;
+CREATE TABLE `mailqueue` ( 
 	`id` INT(5) UNSIGNED NOT NULL AUTO_INCREMENT , 
 	`processID` INT(5) NOT NULL DEFAULT '0' , 
 	`departmentID` INT(5) UNSIGNED NOT NULL DEFAULT '0' , 	
@@ -8,14 +9,15 @@ CREATE TABLE `zmsbo`.`mailqueue` (
 	`clientFamilyName` VARCHAR(150) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL ,
 	`clientEmail` VARCHAR(150) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL ,  
 PRIMARY KEY (`id`)) 
-ENGINE = MyISAM 
+ENGINE = InnoDB 
 CHARACTER SET utf8 
 COLLATE utf8_unicode_ci;
 
-CREATE TABLE `zmsbo`.`mailpart` ( 
+DROP TABLE IF EXISTS `mailpart`;
+CREATE TABLE `mailpart` ( 
 	`id` INT(5) UNSIGNED NOT NULL AUTO_INCREMENT , 
 	`queueId` INT(5) UNSIGNED NOT NULL DEFAULT '0' , 
 	`mime` VARCHAR(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL , 
 	`content` TEXT CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL , 
 PRIMARY KEY (`id`)) 
-ENGINE = MyISAM;
+ENGINE = InnoDB;
