@@ -35,7 +35,7 @@ class MailQueue extends Base
     {
         $this->query->leftJoin(
             new Alias(Process::TABLE, 'process'),
-            'mailqueue.processID',
+            'mailQueue.processID',
             '=',
             'process.BuergerID'
         );
@@ -48,7 +48,7 @@ class MailQueue extends Base
     {
         $this->query->leftJoin(
             new Alias(Department::TABLE, 'department'),
-            'mailqueue.departmentID',
+            'mailQueue.departmentID',
             '=',
             'department.BehoerdenID'
         );
@@ -60,19 +60,19 @@ class MailQueue extends Base
     public function getEntityMapping()
     {
         return [
-            'id' => 'mailqueue.id',
-            'process__id' => 'mailqueue.processID',
+            'id' => 'mailQueue.id',
+            'process__id' => 'mailQueue.processID',
             'process__authKey' => self::expression('(SELECT absagecode
                     FROM ' . Process::TABLE . ' as `MailProcess`
                     WHERE
-                        `MailProcess`.`BuergerID` = `mailqueue`.`processID`
+                        `MailProcess`.`BuergerID` = `mailQueue`.`processID`
                 )'),
-            'department__id' => 'mailqueue.departmentID',
-            'createIP' => 'mailqueue.createIP',
-            'createTimestamp' => 'mailqueue.createTimestamp',
-            'subject' => 'mailqueue.subject',
-            'client__email' => 'mailqueue.clientEmail',
-            'client__familyName' => 'mailqueue.clientFamilyName',
+            'department__id' => 'mailQueue.departmentID',
+            'createIP' => 'mailQueue.createIP',
+            'createTimestamp' => 'mailQueue.createTimestamp',
+            'subject' => 'mailQueue.subject',
+            'client__email' => 'mailQueue.clientEmail',
+            'client__familyName' => 'mailQueue.clientFamilyName',
 
         ];
     }
@@ -89,7 +89,7 @@ class MailQueue extends Base
 
     public function addConditionItemId($itemId)
     {
-        $this->query->where('mailqueue.id', '=', $itemId);
+        $this->query->where('mailQueue.id', '=', $itemId);
         return $this;
     }
 }
