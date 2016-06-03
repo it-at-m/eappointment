@@ -12,20 +12,20 @@ class MailPart extends Base
     public function getEntityMapping()
     {
         return [
-            'mime' => 'mailpart.mime',
-            'content' => 'mailpart.content'
+            'mime' => 'mailPart.mime',
+            'content' => 'mailPart.content'
         ];
     }
 
     public function addConditionItemId($itemId)
     {
-        $this->query->where('mailpart.id', '=', $itemId);
+        $this->query->where('mailPart.id', '=', $itemId);
         return $this;
     }
 
     public function addConditionQueueId($queueId)
     {
-        $this->query->where('mailpart.queueId', '=', $queueId);
+        $this->query->where('mailPart.queueId', '=', $queueId);
         return $this;
     }
 }
