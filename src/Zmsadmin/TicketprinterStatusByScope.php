@@ -1,6 +1,6 @@
 <?php
 /**
- * @package 115Mandant
+ * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
