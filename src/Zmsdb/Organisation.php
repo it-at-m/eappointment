@@ -15,10 +15,12 @@ class Organisation extends Base
             ->addResolvedReferences($resolveReferences)
             ->addConditionOrganisationId($itemId);
         $organisation = $this->fetchOne($query, new Entity());
-        $organisation['departments'] = (new Department())->readByOrganisationId($itemId, $resolveReferences);
-        $organisation['ticketprinters'] = (new Ticketprinter())->readByOrganisationId($itemId, $resolveReferences);
-
-        return $organisation;
+        if (isset($organisation['id'])) {
+            $organisation['departments'] = (new Department())->readByOrganisationId($itemId, $resolveReferences);
+            $organisation['ticketprinters'] = (new Ticketprinter())->readByOrganisationId($itemId, $resolveReferences);
+            return $organisation;
+        }
+        return array();
     }
 
     public function readByOwnerId($ownerId, $resolveReferences = 0)
@@ -57,7 +59,7 @@ class Organisation extends Base
     }
 
     /**
-     * remove an organisatoin
+     * remove an organisation
      *
      * @param
      * itemId
@@ -69,5 +71,41 @@ class Organisation extends Base
         $query =  new Query\Organisation(Query\Base::DELETE);
         $query->addConditionOrganisationId($itemId);
         return $this->deleteItem($query);
+    }
+
+    /**
+     * write a organisation
+     *
+     * @param
+     * organisationId
+     *
+     * @return Entity
+     */
+    public function writeEntity(\BO\Zmsentities\Organisation $entity)
+    {
+        $query = new Query\Organisation(Query\Base::INSERT);
+        $values = $query->reverseEntityMapping($entity);
+        $query->addValues($values);
+        $this->writeItem($query);
+        $lastInsertId = $this->getWriter()->lastInsertId();
+        return $this->readEntity($lastInsertId);
+    }
+
+    /**
+     * update a organisation
+     *
+     * @param
+     * organisationId
+     *
+     * @return Entity
+     */
+    public function updateEntity($organisationId, \BO\Zmsentities\Organisation $entity)
+    {
+        $query = new Query\Organisation(Query\Base::UPDATE);
+        $query->addConditionOrganisationId($organisationId);
+        $values = $query->reverseEntityMapping($entity);
+        $query->addValues($values);
+        $this->writeItem($query, 'organisation', $query::TABLE);
+        return $this->readEntity($organisationId);
     }
 }

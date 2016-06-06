@@ -13,15 +13,12 @@ class DepartmentTest extends Base
         $input = $this->getTestEntity();
         $entity = $query->writeEntity($input);
         $this->assertEntity("\\BO\\Zmsentities\\Department", $entity);
-        $this->assertEquals(1, $entity->getContact()->streetNumber);
         $this->assertEquals('service@berlinonline.de', $entity->email);
         $this->assertEquals(true, $entity->hasNotificationEnabled());
 
-        $entity->contact['streetNumber'] = 2;
         $entity->email = "max@berlinonline.de";
         $entity->setNotificationPreferences(false);
         $entity = $query->updateEntity($entity->id, $entity);
-        $this->assertEquals(2, $entity->getContact()->streetNumber);
         $this->assertEquals('max@berlinonline.de', $entity->email);
         $this->assertEquals(false, $entity->hasNotificationEnabled());
 
@@ -45,10 +42,10 @@ class DepartmentTest extends Base
             'contact' => [
                 'country' => 'Germany',
                 'name' => 'Max Mustermann',
-                'postalCode' => '10178',
-                'region' => 'Berlin',
-                'street' => 'Musterallee',
-                'streetNumber' => '1'
+                'postalCode' => '',
+                'region' => '',
+                'street' => 'Musterallee 1, 10178 Berlin',
+                'streetNumber' => ''
             ]
         ));
     }
