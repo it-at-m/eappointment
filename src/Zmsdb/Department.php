@@ -236,10 +236,10 @@ class Department extends Base
         $statement = $this->getWriter()->prepare($query);
         $result = $statement->execute(
             array(
-                ($preferences['enabled']) ? 1 : 0,
+                (isset($preferences['enabled'])) ? 1 : 0,
                 $preferences['identification'],
-                ($preferences['sendConfirmationEnabled']) ? 1 : 0,
-                ($preferences['sendReminderEnabled']) ? 1 : 0,
+                (isset($preferences['sendConfirmationEnabled'])) ? 1 : 0,
+                (isset($preferences['sendReminderEnabled'])) ? 1 : 0,
                 $departmentId
             )
         );
