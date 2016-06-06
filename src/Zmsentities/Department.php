@@ -25,12 +25,14 @@ class Department extends Schema\Entity
     public function toContact($address = array(), $contactPerson = null)
     {
         $address = explode(' ', str_replace(',', '', $address));
-        $this->contact['street'] = trim($address[0]);
-        $this->contact['streetNumber'] = trim($address[1]);
-        $this->contact['postalCode'] = trim($address[2]);
-        $this->contact['region'] = trim($address[3]);
-        $this->contact['name'] = $contactPerson;
-        return $this;
+        $contact = new Contact();
+        $contact['street'] = trim($address[0]);
+        $contact['streetNumber'] = trim($address[1]);
+        $contact['postalCode'] = trim($address[2]);
+        $contact['region'] = trim($address[3]);
+        $contact['name'] = $contactPerson;
+        $this->contact = $contact;
+        return $this->contact;
     }
 
     public function toAddress()
