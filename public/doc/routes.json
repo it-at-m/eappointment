@@ -1669,9 +1669,9 @@
 			}
 		}
 	},
-	"/provider/list/{source}/{csv}/": {
+	"/provider/{source}/request/{csv}/": {
 		"get": {
-			"description": "Get a list of provider by optional csv",
+			"description": "Get a list of provider by request numbers",
 			"parameters": [
 				{
 					"name": "source",
@@ -1761,59 +1761,6 @@
 							}
 						}
 					}
-				},
-				"404": {
-					"description": "request id for source does not exists"
-				}
-			}
-		}
-	},
-	"/request/list/{source}/{csv}/": {
-		"get": {
-			"description": "Get a list of request by optional csv",
-			"parameters": [
-				{
-					"name": "source",
-					"description": "request source like 'dldb'",
-					"in": "path",
-					"required": true,
-					"type": "string"
-				},
-				{
-					"name": "csv",
-					"required": true,
-					"description": "request numbers as csv string",
-					"in": "path",
-					"type": "array",
-					"items": {
-						"type": "string"
-					},
-					"collectionFormat": "csv"
-				},
-				{
-					"name": "resolveReferences",
-					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
-					"in": "query",
-					"type": "integer"
-				}
-			],
-			"responses": {
-				"200": {
-					"description": "success",
-					"schema": {
-						"type": "object",
-						"properties": {
-							"meta": {
-								"$ref": "schema/metaresult.json"
-							},
-							"data": {
-								"$ref": "schema/request.json"
-							}
-						}
-					}
-				},
-				"400": {
-					"description": "invalid tag value"
 				},
 				"404": {
 					"description": "request id for source does not exists"
@@ -2164,6 +2111,152 @@
 				},
 				"404": {
 					"description": "scope id does not exists"
+				}
+			}
+		}
+	},
+	"/session/{name}/{id}/": {
+		"get": {
+			"description": "Get current Session",
+			"parameters": [
+				{
+					"name": "name",
+					"description": "name from session (3 - 20 letters)",
+					"required": true,
+					"in": "path",
+					"type": "string"
+				},
+				{
+					"name": "id",
+					"description": "id from session (20 - 40 chars)",
+					"required": true,
+					"in": "path",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "get a session by id and name",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/session.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "Could not find any available session",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/session.json"
+							}
+						}
+					}
+				}
+			}
+		},
+		"delete": {
+			"description": "delete a session",
+			"parameters": [
+				{
+					"name": "name",
+					"description": "name from session (3 - 20 letters)",
+					"required": true,
+					"in": "path",
+					"type": "string"
+				},
+				{
+					"name": "id",
+					"description": "id from session (20 - 40 chars)",
+					"required": true,
+					"in": "path",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "session deleted successfully",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/session.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "Could not find any available session",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/session.json"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"/session/": {
+		"post": {
+			"description": "Update current Session",
+			"parameters": [
+				{
+					"name": "session",
+					"description": "session content",
+					"in": "body",
+					"required": true,
+					"schema": {
+						"$ref": "schema/session.json"
+					}
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "get an updated session object",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/session.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "Could not find any available session",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/session.json"
+							}
+						}
+					}
 				}
 			}
 		}
@@ -2538,152 +2631,6 @@
 				},
 				"404": {
 					"description": "useraccount loginname does not exists"
-				}
-			}
-		}
-	},
-	"/session/{name}/{id}/": {
-		"get": {
-			"description": "Get current Session",
-			"parameters": [
-				{
-					"name": "name",
-					"description": "name from session (3 - 20 letters)",
-					"required": true,
-					"in": "path",
-					"type": "string"
-				},
-				{
-					"name": "id",
-					"description": "id from session (20 - 40 chars)",
-					"required": true,
-					"in": "path",
-					"type": "string"
-				}
-			],
-			"responses": {
-				"200": {
-					"description": "get a session by id and name",
-					"schema": {
-						"type": "object",
-						"properties": {
-							"meta": {
-								"$ref": "schema/metaresult.json"
-							},
-							"data": {
-								"$ref": "schema/session.json"
-							}
-						}
-					}
-				},
-				"404": {
-					"description": "Could not find any available session",
-					"schema": {
-						"type": "object",
-						"properties": {
-							"meta": {
-								"$ref": "schema/metaresult.json"
-							},
-							"data": {
-								"$ref": "schema/session.json"
-							}
-						}
-					}
-				}
-			}
-		},
-		"delete": {
-			"description": "delete a session",
-			"parameters": [
-				{
-					"name": "name",
-					"description": "name from session (3 - 20 letters)",
-					"required": true,
-					"in": "path",
-					"type": "string"
-				},
-				{
-					"name": "id",
-					"description": "id from session (20 - 40 chars)",
-					"required": true,
-					"in": "path",
-					"type": "string"
-				}
-			],
-			"responses": {
-				"200": {
-					"description": "session deleted successfully",
-					"schema": {
-						"type": "object",
-						"properties": {
-							"meta": {
-								"$ref": "schema/metaresult.json"
-							},
-							"data": {
-								"$ref": "schema/session.json"
-							}
-						}
-					}
-				},
-				"404": {
-					"description": "Could not find any available session",
-					"schema": {
-						"type": "object",
-						"properties": {
-							"meta": {
-								"$ref": "schema/metaresult.json"
-							},
-							"data": {
-								"$ref": "schema/session.json"
-							}
-						}
-					}
-				}
-			}
-		}
-	},
-	"/session/": {
-		"post": {
-			"description": "Update current Session",
-			"parameters": [
-				{
-					"name": "session",
-					"description": "session content",
-					"in": "body",
-					"required": true,
-					"schema": {
-						"$ref": "schema/session.json"
-					}
-				}
-			],
-			"responses": {
-				"200": {
-					"description": "get an updated session object",
-					"schema": {
-						"type": "object",
-						"properties": {
-							"meta": {
-								"$ref": "schema/metaresult.json"
-							},
-							"data": {
-								"$ref": "schema/session.json"
-							}
-						}
-					}
-				},
-				"404": {
-					"description": "Could not find any available session",
-					"schema": {
-						"type": "object",
-						"properties": {
-							"meta": {
-								"$ref": "schema/metaresult.json"
-							},
-							"data": {
-								"$ref": "schema/session.json"
-							}
-						}
-					}
 				}
 			}
 		}

@@ -3,7 +3,7 @@ var fs   = require('fs');
 var gutil = require('gulp-util');
 var swaggerJSDoc = require('swagger-jsdoc');
 
-gulp.task('routes-swagger', [], function () {
+gulp.task('routes-swagger', [], function (done) {
     var options = {
         swaggerDefinition: {
             info: {
@@ -17,6 +17,9 @@ gulp.task('routes-swagger', [], function () {
     fs.writeFile('public/doc/routes.json', JSON.stringify(swaggerSpec.paths, null, "\t"), function (error) {
         if (error) {
             gutil.log(gutil.colors.red(error));
+        } else {
+            gutil.log(gutil.colors.green("Succesfully generated routes include."));
+            done();
         }
     });
 });

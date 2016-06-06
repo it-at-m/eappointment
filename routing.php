@@ -1761,6 +1761,122 @@
     ->setName("ScopeDelete");
 
 /**
+*  @swagger
+*  "/session/{name}/{id}/":
+*      get:
+*          description: Get current Session
+*          parameters:
+*              -   name: name
+*                  description: name from session (3 - 20 letters)
+*                  required: true
+*                  in: path
+*                  type: string
+*              -   name: id
+*                  description: id from session (20 - 40 chars)
+*                  required: true
+*                  in: path
+*                  type: string
+*          responses:
+*              200:
+*                  description: get a session by id and name
+*                  schema:
+*                      type: object
+*                      properties:
+*                          meta:
+*                              $ref: "schema/metaresult.json"
+*                          data:
+*                              $ref: "schema/session.json"
+*              404:
+*                  description: "Could not find any available session"
+*                  schema:
+*                      type: object
+*                      properties:
+*                          meta:
+*                              $ref: "schema/metaresult.json"
+*                          data:
+*                              $ref: "schema/session.json"
+*/
+\App::$slim->get('/session/{name:[a-zA-Z]{3,20}}/{id:[a-z0-9]{20,40}}/',
+    '\BO\Zmsapi\SessionGet')
+    ->setName("SessionGet");
+
+/**
+ *  @swagger
+ *  "/session/":
+ *      post:
+ *          description: Update current Session
+ *          parameters:
+ *              -   name: session
+ *                  description: session content
+ *                  in: body
+ *                  required: true
+ *                  schema:
+ *                      $ref: "schema/session.json"
+ *          responses:
+ *              200:
+ *                  description: get an updated session object
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/session.json"
+ *              404:
+ *                  description: "Could not find any available session"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/session.json"
+ */
+\App::$slim->post('/session/',
+    '\BO\Zmsapi\SessionUpdate')
+    ->setName("SessionUpdate");
+
+/**
+ *  @swagger
+ *  "/session/{name}/{id}/":
+ *      delete:
+ *          description: delete a session
+ *          parameters:
+ *              -   name: name
+ *                  description: name from session (3 - 20 letters)
+ *                  required: true
+ *                  in: path
+ *                  type: string
+ *              -   name: id
+ *                  description: id from session (20 - 40 chars)
+ *                  required: true
+ *                  in: path
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: session deleted successfully
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/session.json"
+ *              404:
+ *                  description: "Could not find any available session"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/session.json"
+ */
+\App::$slim->delete('/session/{name:[a-zA-Z]{3,20}}/{id:[a-z0-9]{20,40}}/',
+    '\BO\Zmsapi\SessionDelete')
+    ->setName("SessionDelete");
+
+/**
  *  @swagger
  *  "/status/":
  *      get:
@@ -2075,122 +2191,6 @@
     '\BO\Zmsapi\WorkstationDelete')
     ->setName("WorkstationDelete");
 
-
-/**
-*  @swagger
-*  "/session/{name}/{id}/":
-*      get:
-*          description: Get current Session
-*          parameters:
-*              -   name: name
-*                  description: name from session (3 - 20 letters)
-*                  required: true
-*                  in: path
-*                  type: string
-*              -   name: id
-*                  description: id from session (20 - 40 chars)
-*                  required: true
-*                  in: path
-*                  type: string
-*          responses:
-*              200:
-*                  description: get a session by id and name
-*                  schema:
-*                      type: object
-*                      properties:
-*                          meta:
-*                              $ref: "schema/metaresult.json"
-*                          data:
-*                              $ref: "schema/session.json"
-*              404:
-*                  description: "Could not find any available session"
-*                  schema:
-*                      type: object
-*                      properties:
-*                          meta:
-*                              $ref: "schema/metaresult.json"
-*                          data:
-*                              $ref: "schema/session.json"
-*/
-\App::$slim->get('/session/{name:[a-zA-Z]{3,20}}/{id:[a-z0-9]{20,40}}/',
-    '\BO\Zmsapi\SessionGet')
-    ->setName("SessionGet");
-
-/**
- *  @swagger
- *  "/session/":
- *      post:
- *          description: Update current Session
- *          parameters:
- *              -   name: session
- *                  description: session content
- *                  in: body
- *                  required: true
- *                  schema:
- *                      $ref: "schema/session.json"
- *          responses:
- *              200:
- *                  description: get an updated session object
- *                  schema:
- *                      type: object
- *                      properties:
- *                          meta:
- *                              $ref: "schema/metaresult.json"
- *                          data:
- *                              $ref: "schema/session.json"
- *              404:
- *                  description: "Could not find any available session"
- *                  schema:
- *                      type: object
- *                      properties:
- *                          meta:
- *                              $ref: "schema/metaresult.json"
- *                          data:
- *                              $ref: "schema/session.json"
- */
-\App::$slim->post('/session/',
-    '\BO\Zmsapi\SessionUpdate')
-    ->setName("SessionUpdate");
-
-/**
- *  @swagger
- *  "/session/{name}/{id}/":
- *      delete:
- *          description: delete a session
- *          parameters:
- *              -   name: name
- *                  description: name from session (3 - 20 letters)
- *                  required: true
- *                  in: path
- *                  type: string
- *              -   name: id
- *                  description: id from session (20 - 40 chars)
- *                  required: true
- *                  in: path
- *                  type: string
- *          responses:
- *              200:
- *                  description: session deleted successfully
- *                  schema:
- *                      type: object
- *                      properties:
- *                          meta:
- *                              $ref: "schema/metaresult.json"
- *                          data:
- *                              $ref: "schema/session.json"
- *              404:
- *                  description: "Could not find any available session"
- *                  schema:
- *                      type: object
- *                      properties:
- *                          meta:
- *                              $ref: "schema/metaresult.json"
- *                          data:
- *                              $ref: "schema/session.json"
- */
-\App::$slim->delete('/session/{name:[a-zA-Z]{3,20}}/{id:[a-z0-9]{20,40}}/',
-    '\BO\Zmsapi\SessionDelete')
-    ->setName("SessionDelete");
 
 /* ---------------------------------------------------------------------------
  * maintenance
