@@ -15,7 +15,8 @@ class Organisation extends Base implements MappingInterface
             'contact__city' => self::expression(
                 'TRIM(" " FROM SUBSTRING_INDEX(`organisation`.`Anschrift`, " ", -1))'
             ),
-            'contact__street' => self::expression('SUBSTRING_INDEX(`organisation`.`Anschrift`, " ", 1)'),
+            'contact__street' => 'organisation.Anschrift',
+            /*
             'contact__streetNumber' => self::expression(
                 'TRIM("," FROM SUBSTRING_INDEX(SUBSTRING_INDEX(`organisation`.`Anschrift`, ",", 1), " ", -1))'
             ),
@@ -25,6 +26,7 @@ class Organisation extends Base implements MappingInterface
             'contact__region' => self::expression(
                 'TRIM(" " FROM SUBSTRING_INDEX(`organisation`.`Anschrift`, " ", -1))'
             ),
+            */
             'contact__country' => self::expression('"Germany"'),
             'contact__name' => 'organisation.Organisationsname',
             'name' => 'organisation.Organisationsname',
@@ -64,5 +66,17 @@ class Organisation extends Base implements MappingInterface
         $ownerQuery = new Owner($this->query);
         $ownerQuery->addEntityMappingPrefixed($this->getPrefixed('owner__'));
         return [$ownerQuery];
+    }
+
+    public function reverseEntityMapping(\BO\Zmsentities\Organisation $entity)
+    {
+        $data = array();
+        $data['Organisationsname'] = $entity->name;
+        $data['Anschrift'] = $entity->contact['street'];
+        $data['kioskpasswortschutz'] = ($entity->getPreference('ticketPrinterProtectionEnabled')) ? 1 : 0;
+        $data = array_filter($data, function ($value) {
+            return ($value !== null && $value !== false);
+        });
+            return $data;
     }
 }

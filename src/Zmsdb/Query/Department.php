@@ -64,7 +64,8 @@ class Department extends Base implements MappingInterface
             'contact__city' => self::expression(
                 'TRIM(" " FROM SUBSTRING_INDEX(`department`.`Adresse`, " ", -1))'
             ),
-            'contact__street' => self::expression('SUBSTRING_INDEX(`department`.`Adresse`, " ", 1)'),
+            'contact__street' => 'department.Adresse',
+            /*
             'contact__streetNumber' => self::expression(
                 'TRIM("," FROM SUBSTRING_INDEX(SUBSTRING_INDEX(`department`.`Adresse`, ",", 1), " ", -1))'
             ),
@@ -74,6 +75,7 @@ class Department extends Base implements MappingInterface
             'contact__region' => self::expression(
                 'TRIM(" " FROM SUBSTRING_INDEX(`department`.`Adresse`, " ", -1))'
             ),
+            */
             'contact__country' => self::expression('"Germany"'),
             'contact__name' => 'department.Ansprechpartner',
             'email' => 'department_email.absenderadresse',
@@ -138,7 +140,7 @@ class Department extends Base implements MappingInterface
     public function reverseEntityMapping(\BO\Zmsentities\Department $entity)
     {
         $data = array();
-        $data['Adresse'] = $entity->toAddress();
+        $data['Adresse'] = $entity->contact['street'];
         $data['Name'] = $entity->name;
         $data['Ansprechpartner'] = $entity->getContactPerson();
         $data = array_filter($data, function ($value) {

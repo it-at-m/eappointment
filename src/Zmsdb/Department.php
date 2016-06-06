@@ -99,7 +99,7 @@ class Department extends Base
     }
 
     /**
-     * update a department
+     * write a department
      *
      * @param
      * departmentId
@@ -236,10 +236,10 @@ class Department extends Base
         $statement = $this->getWriter()->prepare($query);
         $result = $statement->execute(
             array(
-                (isset($preferences['enabled'])) ? 1 : 0,
+                (isset($preferences['enabled']) && $preferences['enabled']) ? 1 : 0,
                 $preferences['identification'],
-                (isset($preferences['sendConfirmationEnabled'])) ? 1 : 0,
-                (isset($preferences['sendReminderEnabled'])) ? 1 : 0,
+                (isset($preferences['sendConfirmationEnabled']) && $preferences['sendConfirmationEnabled']) ? 1 : 0,
+                (isset($preferences['sendReminderEnabled']) && $preferences['sendReminderEnabled']) ? 1 : 0,
                 $departmentId
             )
         );
