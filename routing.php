@@ -137,7 +137,7 @@
 
 \App::$slim->getContainer()->notFoundHandler = function() {
     return function () {
-        return \BO\Slim\Render::html('404.twig');
+        return \BO\Slim\Render::html('page/404.twig');
     };
 };
 
