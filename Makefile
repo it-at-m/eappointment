@@ -19,5 +19,11 @@ live: # init live system, delete unnecessary libs
 fix: # run code fixing
 	php vendor/bin/phpcbf --standard=psr2 src/
 
-watch: # Build CSS, JS and Swagger docs on changes
+build: # Build CSS, JS and Swagger docs on changes
 	./node_modules/.bin/gulp
+
+validate: # Build CSS, JS and Swagger docs on changes
+	./node_modules/.bin/gulp validate
+
+watch: build # Build CSS, JS and Swagger docs on changes
+	./node_modules/.bin/gulp watch
