@@ -174,7 +174,7 @@ class TwigExtension extends \Twig_Extension
             // Varnish does not support https
             $uri = preg_replace('#^(https?:)?//#', 'http://', $uri);
             if (\App::SLIM_DEBUG) {
-                $prepend = "<!-- replaced uri=$uri --> " + $prepend;
+                $prepend = "<!-- replaced uri=$uri --> " . $prepend;
             }
             return $prepend . '<esi:include src="' . $uri . '" />' . $append;
         } else {
