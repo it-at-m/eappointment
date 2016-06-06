@@ -23,10 +23,13 @@ class Department extends Base
             ->addResolvedReferences($resolveReferences)
             ->addConditionDepartmentId($departmentId);
         $department = $this->fetchOne($query, new Entity());
-        $department['scopes'] = (new Scope())->readByDepartmentId($departmentId, $resolveReferences);
-        $department['dayoff']  = (new DayOff())->readByDepartmentId($departmentId);
-        $departmentCache[$departmentId] = $department;
-        return $department;
+        if (isset($department['id'])) {
+            $department['scopes'] = (new Scope())->readByDepartmentId($departmentId, $resolveReferences);
+            $department['dayoff']  = (new DayOff())->readByDepartmentId($departmentId);
+            $departmentCache[$departmentId] = $department;
+            return $department;
+        }
+        return array();
     }
 
     public function readList($resolveReferences = 0)
