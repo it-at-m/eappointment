@@ -59,19 +59,13 @@
             "type": "integer"
         },
         "organisation": {
-            "type": "object",
-            "items": {
-                "$ref": "organisation.json"
-            }
+            "$ref": "organisation.json"
         },
         "contact": {
-            "type": "object",
-            "items": {
-                "$ref": "concact.json"
-            }
+            "$ref": "contact.json"
         },
         "dayoff": {
-            "type": "object",
+            "type": "array",
             "items": {
                 "$ref": "dayoff.json"
             }
