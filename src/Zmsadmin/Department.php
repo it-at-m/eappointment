@@ -24,7 +24,7 @@ class Department extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-    
+
         $department = \App::$http->readGetResult(
             '/department/'. $args['id'] .'/'
         )->getEntity();
