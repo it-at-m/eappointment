@@ -51,7 +51,7 @@
 \App::$slim->map(['GET', 'POST'], '/department/[{id:\d+}/]', '\BO\Zmsadmin\Department')
     ->setName("department");
 
-\App::$slim->get('/organisation/{id:\d+}/', '\BO\Zmsadmin\Organisation')
+\App::$slim->map(['GET', 'POST'], '/organisation/{id:\d+}/', '\BO\Zmsadmin\Organisation')
     ->setName("organisation");
 
 \App::$slim->get('/owner/', '\BO\Zmsadmin\Owner')
