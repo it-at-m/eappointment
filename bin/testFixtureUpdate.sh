@@ -15,6 +15,6 @@ cp $CACHE/amtshelfer_standorte_en.json $DIR/../tests/Dldb/fixtures/locations_en.
 cp $CACHE/amtshelfer_dienstleistungen.json $DIR/../tests/Dldb/fixtures/services_de.json
 cp $CACHE/amtshelfer_dienstleistungen_en.json $DIR/../tests/Dldb/fixtures/services_en.json
 cp $CACHE/amtshelfer_settings.json $DIR/../tests/Dldb/fixtures/settings.json
-cp $CACHE/amtshelfer_themen.json $DIR/../tests/Dldb/fixtures/topics_de.json
+cp $CACHE/amtshelfer_themen.json $DIR/../tests/Dldb/fixtures/topic_de.json
 cp $CACHE/amtshelfer_behoerden.json $DIR/../tests/Dldb/fixtures/authorities_de.json
 
