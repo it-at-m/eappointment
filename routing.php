@@ -48,8 +48,11 @@
 \App::$slim->get('/cluster/', '\BO\Zmsadmin\Cluster')
     ->setName("cluster");
 
-\App::$slim->map(['GET', 'POST'], '/department/[{id:\d+}/]', '\BO\Zmsadmin\Department')
+\App::$slim->map(['GET', 'POST'], '/department/{id:\d+}/', '\BO\Zmsadmin\Department')
     ->setName("department");
+
+\App::$slim->map(['GET', 'POST'], '/department/add/{organisation_id:\d+}/', '\BO\Zmsadmin\DepartmentAdd')
+    ->setName("department_add");
 
 \App::$slim->map(['GET', 'POST'], '/organisation/{id:\d+}/', '\BO\Zmsadmin\Organisation')
     ->setName("organisation");

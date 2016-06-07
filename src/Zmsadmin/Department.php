@@ -24,7 +24,6 @@ class Department extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-
         $department = \App::$http->readGetResult(
             '/department/'. $args['id'] .'/'
         )->getEntity();
@@ -37,7 +36,6 @@ class Department extends BaseController
         if (array_key_exists('save', $input)) {
             $entity = new Entity($input);
             $entity->id = $args['id'];
-            $entity->contact = $entity->toContact($entity->contact['address'], $entity->contact['name']);
             $department = \App::$http->readPostResult(
                 '/department/'. $entity->id .'/',
                 $entity
@@ -46,6 +44,13 @@ class Department extends BaseController
             $department = \App::$http->readDeleteResult(
                 '/department/'. $args['id'] .'/'
             )->getEntity();
+            return \BO\Slim\Render::redirect(
+                'owner',
+                array(),
+                array(
+                    'success' => 'department_deleted'
+                )
+            );
         }
 
         return \BO\Slim\Render::withHtml($response, 'page/department.twig', array(
