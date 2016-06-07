@@ -190,10 +190,10 @@ class Department extends Base
         $result = $statement->execute(
             array(
                 $departmentId,
-                ($preferences['enabled']) ? 1 : 0,
+                (isset($preferences['enabled'])) ? 1 : 0,
                 $preferences['identification'],
-                ($preferences['sendConfirmationEnabled']) ? 1 : 0,
-                ($preferences['sendReminderEnabled']) ? 1 : 0
+                (isset($preferences['sendConfirmationEnabled'])) ? 1 : 0,
+                (isset($preferences['sendReminderEnabled'])) ? 1 : 0
             )
         );
         return $result;
@@ -234,15 +234,15 @@ class Department extends Base
     {
         $query = Query\Department::QUERY_NOTIFICATIONS_UPDATE;
         $statement = $this->getWriter()->prepare($query);
-        $result = $statement->execute(
-            array(
-                (isset($preferences['enabled']) && $preferences['enabled']) ? 1 : 0,
-                $preferences['identification'],
-                (isset($preferences['sendConfirmationEnabled']) && $preferences['sendConfirmationEnabled']) ? 1 : 0,
-                (isset($preferences['sendReminderEnabled']) && $preferences['sendReminderEnabled']) ? 1 : 0,
-                $departmentId
-            )
+        error_log(var_export($preferences, 1));
+        $values = array(
+            (isset($preferences['enabled'])) ? 1 : 0,
+            $preferences['identification'],
+            (isset($preferences['sendConfirmationEnabled'])) ? 1 : 0,
+            (isset($preferences['sendReminderEnabled'])) ? 1 : 0,
+            $departmentId
         );
+        $result = $statement->execute($values);
         return $result;
     }
 }

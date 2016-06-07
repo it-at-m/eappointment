@@ -81,25 +81,11 @@ class Department extends Base implements MappingInterface
             'email' => 'department_email.absenderadresse',
             'id' => 'department.BehoerdenID',
             'name' => 'department.Name',
-            'organisation__id' => 'department.OrganisationsID',
             'preferences__notifications__enabled' => 'department_sms.enabled',
             'preferences__notifications__identification' => 'department_sms.Absender',
             'preferences__notifications__sendConfirmationEnabled' => 'department_sms.internetbestaetigung',
             'preferences__notifications__sendReminderEnabled' => 'department_sms.interneterinnerung',
         ];
-    }
-
-    public function addJoin()
-    {
-        $this->query->leftJoin(
-            new Alias(Organisation::getTablename(), 'organisation'),
-            'department.OrganisationsID',
-            '=',
-            'organisation.OrganisationsID'
-        );
-        $organisationQuery = new Organisation($this->query);
-        $organisationQuery->addEntityMappingPrefixed($this->getPrefixed('organisation__'));
-        return [$organisationQuery];
     }
 
     public function addRequiredJoins()
@@ -116,13 +102,6 @@ class Department extends Base implements MappingInterface
             '=',
             'department_sms.BehoerdenID'
         );
-    }
-
-    public function getReferenceMapping()
-    {
-        return [
-            'organisation__$ref' => self::expression('CONCAT("/organisation/", `department`.`OrganisationsID`, "/")'),
-        ];
     }
 
     public function addConditionDepartmentId($departmentId)
