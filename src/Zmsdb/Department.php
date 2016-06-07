@@ -234,7 +234,6 @@ class Department extends Base
     {
         $query = Query\Department::QUERY_NOTIFICATIONS_UPDATE;
         $statement = $this->getWriter()->prepare($query);
-        error_log(var_export($preferences, 1));
         $values = array(
             (isset($preferences['enabled'])) ? 1 : 0,
             $preferences['identification'],
