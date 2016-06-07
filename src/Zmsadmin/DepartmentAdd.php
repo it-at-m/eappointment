@@ -6,8 +6,6 @@
 
 namespace BO\Zmsadmin;
 
-use BO\Mellon\Validator;
-use BO\Slim\Render;
 use BO\Zmsentities\Department as Entity;
 
 /**
@@ -24,27 +22,30 @@ class DepartmentAdd extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        try {
-            $input = $request->getParsedBody();
-            if (array_key_exists('save', $input)) {
+
+        $input = $request->getParsedBody();
+        if (array_key_exists('save', $input)) {
+            try {
                 $entity = new Entity($input);
                 $department = \App::$http->readPostResult(
                     '/department/'. $entity->id .'/',
                     $entity
                 )->getEntity();
-                return \BO\Slim\Render::redirect(
+                return Helper\Render::redirect(
                     'department',
                     array(
                         'id' => $department->id
                     ),
-                    array()
+                    array(
+                        'success' => 'department_created'
+                    )
                 );
+            } catch (\Exception $exception) {
+                return Helper\Render::error($exception);
             }
-        } catch (\Exception $exception) {
-            return \BO\Zmsappointment\Helper\Render::error($exception);
         }
 
-        return \BO\Slim\Render::withHtml($response, 'page/department.twig', array(
+        return Helper\Render::checkedHtml(self::$errorHandler, $response, 'page/department.twig', array(
             'title' => 'Standort',
             'action' => 'add',
             'menuActive' => 'owner'

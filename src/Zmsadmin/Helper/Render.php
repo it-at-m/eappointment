@@ -13,7 +13,7 @@ class Render extends \BO\Slim\Render
     /**
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public static function checkedHtml($errorHandler, $template, $parameters = array(), $status = 200)
+    public static function checkedHtml($errorHandler, $response, $template, $parameters = array(), $status = 200)
     {
         $errorResponse = $errorHandler->getErrorResponse();
         if ($errorResponse instanceof \Slim\Http\Response) {
@@ -29,7 +29,8 @@ class Render extends \BO\Slim\Render
                 $parameters['success'] = $errorResponse['success'];
             }
         }
-        return \BO\Slim\Render::html($template, $parameters, $status);
+
+        return \BO\Slim\Render::withHtml($response, $template, $parameters, $status);
     }
 
     /**

@@ -6,8 +6,6 @@
 
 namespace BO\Zmsadmin;
 
-use BO\Mellon\Validator;
-use BO\Slim\Render;
 use BO\Zmsentities\Department as Entity;
 
 /**
@@ -34,26 +32,19 @@ class Department extends BaseController
 
         $input = $request->getParsedBody();
         if (array_key_exists('save', $input)) {
-            $entity = new Entity($input);
-            $entity->id = $args['id'];
-            $department = \App::$http->readPostResult(
-                '/department/'. $entity->id .'/',
-                $entity
-            )->getEntity();
-        } elseif (array_key_exists('delete', $input)) {
-            $department = \App::$http->readDeleteResult(
-                '/department/'. $args['id'] .'/'
-            )->getEntity();
-            return \BO\Slim\Render::redirect(
-                'owner',
-                array(),
-                array(
-                    'success' => 'department_deleted'
-                )
-            );
+            try {
+                $entity = new Entity($input);
+                $entity->id = $args['id'];
+                $department = \App::$http->readPostResult(
+                    '/department/'. $entity->id .'/',
+                    $entity
+                )->getEntity();
+                self::$errorHandler->success = 'department_saved';
+            } catch (\Exception $exception) {
+                return Helper\Render::error($exception);
+            }
         }
-
-        return \BO\Slim\Render::withHtml($response, 'page/department.twig', array(
+        return Helper\Render::checkedHtml(self::$errorHandler, $response, 'page/department.twig', array(
             'title' => 'Standort',
             'department' => $department->getArrayCopy(),
             'menuActive' => 'owner'

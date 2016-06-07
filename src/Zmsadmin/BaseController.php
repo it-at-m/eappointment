@@ -26,13 +26,13 @@ abstract class BaseController extends \BO\Slim\Controller
      */
     public function __construct(\Interop\Container\ContainerInterface $containerInterface)
     {
+        self::$errorHandler = new ErrorHandler();
+        self::$errorHandler->callingClass = (new \ReflectionClass(get_called_class()))->getShortName();
         parent::__construct($containerInterface);
     }
 
     public function __invoke(RequestInterface $request, ResponseInterface $response, array $args)
     {
-        self::$errorHandler = new ErrorHandler($request);
-        self::$errorHandler->callingClass = (new \ReflectionClass(get_called_class()))->getShortName();
         return parent::__invoke($request, $response, $args);
     }
 }
