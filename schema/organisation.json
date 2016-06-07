@@ -40,10 +40,7 @@
             "items": {
                 "$ref": "cluster.json"
             }
-        },
-        "owner": {
-            "$ref": "owner.json"
-        },
+        },        
         "contact": {
             "$ref": "contact.json"
         },

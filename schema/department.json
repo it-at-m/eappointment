@@ -3,7 +3,6 @@
     "description": "subunit in organisation like \"Bürgeramt\", \"Standesamt\", \"Vertrieb\"",
     "example": {
         "id": 123,
-        "organisation": 123,
         "contact": {
             "country": "Germany",            
             "name": "Flughafen Schönefeld, Landebahn",
@@ -57,10 +56,7 @@
     "properties": {
         "id": {
             "type": "integer"
-        },
-        "organisation": {
-            "$ref": "organisation.json"
-        },
+        },        
         "contact": {
             "$ref": "contact.json"
         },
