@@ -23,8 +23,6 @@ class Organisation extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $input = $request->getParsedBody();
-
         $organisation = \App::$http->readGetResult(
             '/organisation/'. $args['id'] .'/'
         )->getEntity();
@@ -33,14 +31,15 @@ class Organisation extends BaseController
             return \BO\Slim\Render::withError($response, 'page/404.twig', array());
         }
 
-        if (array_key_exists('save', $input)) {
+        $input = $request->getParsedBody();
+        if (array_key_exists('save', (array)$input)) {
             $entity = new Entity($input);
             $entity->id = $args['id'];
             $organisation = \App::$http->readPostResult(
                 '/organisation/'. $entity->id .'/',
                 $entity
             )->getEntity();
-        } elseif (array_key_exists('delete', $input)) {
+        } elseif (array_key_exists('delete', (array)$input)) {
             $organisation = \App::$http->readDeleteResult(
                 '/organisation/'. $args['id'] .'/'
             )->getEntity();
