@@ -560,6 +560,39 @@
 
 /**
  *  @swagger
+ *  "/department/":
+ *      post:
+ *          description: Add a new department
+ *          parameters:
+ *              -   name: department
+ *                  description: department data to add
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/department.json"
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/department.json"
+ *              404:
+ *                  description: "Missing required properties in the department"
+ */
+\App::$slim->post('/department/',
+    '\BO\Zmsapi\DepartmentAdd')
+    ->setName("DepartmentAdd");
+
+/**
+ *  @swagger
  *  "/department/{id}/":
  *      delete:
  *          description: Deletes an department
