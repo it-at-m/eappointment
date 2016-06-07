@@ -17,9 +17,9 @@ class Owner extends BaseController
      */
     public static function render()
     {
-        \BO\Slim\Render::html('page/owner.twig', array(
+        Helper\Render::checkedHtml(self::$errorHandler, 'page/owner.twig', array(
             'title' => 'Behörden und Standorte',
-            'menuActive' => 'owner'
+            'menuActive' => 'owner',
         ));
     }
 }
