@@ -22,7 +22,7 @@ fix: # run code fixing
 build: # Build CSS, JS and Swagger docs on changes
 	./node_modules/.bin/gulp
 
-validate: # Build CSS, JS and Swagger docs on changes
+validate: # validate JSON Schemes
 	./node_modules/.bin/gulp validate
 
 watch: build # Build CSS, JS and Swagger docs on changes
