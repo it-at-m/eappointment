@@ -54,6 +54,9 @@
 \App::$slim->map(['GET', 'POST'], '/department/add/{organisation_id:\d+}/', '\BO\Zmsadmin\DepartmentAdd')
     ->setName("department_add");
 
+    \App::$slim->get('/department/delete/{id:\d+}/', '\BO\Zmsadmin\DepartmentDelete')
+    ->setName("department_delete");
+
 \App::$slim->map(['GET', 'POST'], '/organisation/{id:\d+}/', '\BO\Zmsadmin\Organisation')
     ->setName("organisation");
 

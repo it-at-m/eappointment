@@ -17,8 +17,10 @@ class ErrorBase
      *
      * @return boolean
      */
-    protected function hasExampleError()
+    /*
+    protected function testCheck()
     {
         return (true) ? true : false;
     }
+    */
 }

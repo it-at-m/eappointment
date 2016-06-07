@@ -19,17 +19,6 @@ class ErrorHandler extends ErrorChecks
     public $success = '';
     public $callingClass = '';
 
-    protected $request = null;
-
-    /**
-     *
-     * @return self
-     */
-    public function __construct(RequestInterface $request)
-    {
-        $this->request = $request;
-    }
-
     public function getErrorResponse()
     {
         $errorMethode = 'handle' . $this->callingClass;
@@ -43,7 +32,10 @@ class ErrorHandler extends ErrorChecks
         $error = Validator::param('error')->isString()->getValue();
         if (null !== $error) {
             return $error;
+        } elseif ('' != $this->error) {
+            return $this->error;
         }
+        //only to define error check functions
         $errorList = [
             //'is_overaged'       => ['call' => 'isInvalidSession', 'redirect' => 'termin'],
         ];
@@ -56,7 +48,10 @@ class ErrorHandler extends ErrorChecks
         $notice = Validator::param('notice')->isString()->getValue();
         if (null !== $notice) {
             return $notice;
+        } elseif ('' != $this->notice) {
+            return $this->notice;
         }
+        //only to define notice check functions
         $noticeList = [
             //'is_finished' => ['call' => 'isFinished']
         ];
@@ -69,7 +64,10 @@ class ErrorHandler extends ErrorChecks
         $success = Validator::param('success')->isString()->getValue();
         if (null !== $success) {
             return $success;
+        } elseif ('' != $this->success) {
+            return $this->success;
         }
+        //only to define success check functions
         $successList = [
             //'is_finished' => ['call' => 'isFinished']
         ];

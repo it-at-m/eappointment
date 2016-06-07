@@ -15,9 +15,12 @@ class Owner extends BaseController
     /**
      * @return String
      */
-    public static function render()
-    {
-        Helper\Render::checkedHtml(self::$errorHandler, 'page/owner.twig', array(
+    public function __invoke(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        Helper\Render::checkedHtml(self::$errorHandler, $response, 'page/owner.twig', array(
             'title' => 'Behörden und Standorte',
             'menuActive' => 'owner',
         ));

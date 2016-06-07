@@ -31,4 +31,25 @@ class ErrorChecks extends ErrorBase
             );
         }
     }
+
+    public function handleDepartment()
+    {
+        $error = $this->hasErrors(array(), 'department');
+        $notice = $this->hasNotices(array(), 'department');
+        $success = $this->hasSuccesses(array(), 'department');
+
+        if ($error instanceof \Slim\Http\Response) {
+            return $error;
+        } elseif ($notice instanceof \Slim\Http\Response) {
+            return $notice;
+        } elseif ($success instanceof \Slim\Http\Response) {
+            return $success;
+        } else {
+            return array(
+                'error' => $error,
+                'notice' => $notice,
+                'success' => $success
+            );
+        }
+    }
 }
