@@ -13,7 +13,11 @@ class Department extends Schema\Entity
 
     public function setNotificationPreferences($status = true)
     {
-        $this->preferences['notifications']['enabled'] = $status;
+        if ($status) {
+            $this->preferences['notifications']['enabled'] = 1;
+        } else {
+            unset($this->preferences['notifications']['enabled']);
+        }
         return $this;
     }
 
