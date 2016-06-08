@@ -37,10 +37,12 @@ class Render
     /**
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public static function error404()
+    public static function withHtml(ResponseInterface $response, $template, $parameters = array(), $status = 200)
     {
-        \App::$slim->notFound();
-        return self::$response;
+        $response  = $response->withStatus($status);
+        $response  = $response->withHeader('Content-Type', 'text/html; charset=utf-8');
+        $response  = \App::$slim->getContainer()->view->render($response, $template, $parameters);
+        return $response ;
     }
 
     /**
@@ -48,9 +50,7 @@ class Render
      */
     public static function html($template, $parameters = array(), $status = 200)
     {
-        self::$response = self::$response->withStatus($status);
-        self::$response = self::$response->withHeader('Content-Type', 'text/html; charset=utf-8');
-        self::$response = self::$container->view->render(self::$response, $template, $parameters);
+        self::$response = self::withHtml(self::$response, $template, $parameters, $status);
         return self::$response;
     }
 
@@ -66,6 +66,21 @@ class Render
     }
 
     /**
+     * Add `Last-Modified` header to PSR7 response object
+     *
+     * @param  ResponseInterface $response A PSR7 response object
+     * @param  int|string        $time     A UNIX timestamp or a valid `strtotime()` string
+     *
+     * @return ResponseInterface           A new PSR7 response object with `Last-Modified` header
+     * @throws InvalidArgumentException if the last modified date cannot be parsed
+     */
+    public static function withLastModified(ResponseInterface $response, $date, $expires = '+5 minutes')
+    {
+        $response = self::getCachableResponse($response, $date, $expires);
+        return $response;
+    }
+
+    /**
      * @param String $date strtotime interpreted
      * @param String $expires strtotime interpreted
      *
@@ -73,7 +88,7 @@ class Render
      */
     public static function lastModified($date, $expires = '+5 minutes')
     {
-        self::$response = self::getCachableResponse(self::$response, $date, $expires);
+        self::$response = self::withLastModified(self::$response, $date, $expires);
         return self::$response;
     }
 
