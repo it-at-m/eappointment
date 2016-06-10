@@ -1514,6 +1514,39 @@
 /**
  *  @swagger
  *  "/scope/":
+ *      post:
+ *          description: Add a new scope
+ *          parameters:
+ *              -   name: scope
+ *                  description: scope data to add
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/scope.json"
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/scope.json"
+ *              404:
+ *                  description: "Missing required properties in the scope"
+ */
+\App::$slim->post('/scope/',
+    '\BO\Zmsapi\ScopeAdd')
+    ->setName("ScopeAdd");
+
+/**
+ *  @swagger
+ *  "/scope/":
  *      get:
  *          description: Get a list of scopes
  *          parameters:
