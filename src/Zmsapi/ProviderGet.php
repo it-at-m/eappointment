@@ -7,6 +7,7 @@
 namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
+use \BO\Mellon\Validator;
 use \BO\Zmsdb\Provider as Query;
 
 /**
@@ -19,7 +20,8 @@ class ProviderGet extends BaseController
      */
     public static function render($source, $itemId)
     {
-        $provider = (new Query())->readEntity($source, $itemId);
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
+        $provider = (new Query())->readEntity($source, $itemId, $resolveReferences);
         $message = Response\Message::create(Render::$request);
         $message->data = $provider;
         Render::lastModified(time(), '0');
