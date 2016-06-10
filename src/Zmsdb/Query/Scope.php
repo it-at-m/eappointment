@@ -43,16 +43,19 @@ class Scope extends Base implements MappingInterface
     public function getEntityMapping()
     {
         return [
-            'contact__email' => 'scope.emailstandortadmin',
             'hint' => self::expression('CONCAT(`scope`.`standortinfozeile`, " ", `scope`.`Hinweis`)'),
             'id' => 'scope.StandortID',
+            'name' => 'scope.Bezeichnung',
+            'contact__street' => 'scope.Adresse',
+            'contact__email' => 'scope.emailstandortadmin',
+            'contact__country' => self::expression('"Germany"'),
             'preferences__appointment__deallocationDuration' => 'scope.loeschdauer',
             'preferences__appointment__endInDaysDefault' => 'scope.Termine_bis',
             'preferences__appointment__multipleSlotsEnabled' => 'scope.mehrfachtermine',
             'preferences__appointment__reservationDuration' => 'scope.reservierungsdauer',
             'preferences__appointment__startInDaysDefault' => 'scope.Termine_ab',
             'preferences__client__alternateAppointmentUrl' => 'scope.qtv_url',
-            'preferences__client__amendmentActivated' => 'scope.anmerkungPflichtfeld',
+            'preferences__client__amendmentRequired' => 'scope.anmerkungPflichtfeld',
             'preferences__client__amendmentLabel' => 'scope.anmerkungLabel',
             'preferences__client__emailRequired' => 'scope.emailPflichtfeld',
             'preferences__client__telephoneActivated' => 'scope.telefonaktiviert',
@@ -128,5 +131,65 @@ class Scope extends Base implements MappingInterface
         );
         $this->query->where('cluster_scope.clusterID', '=', $clusterId);
         return $this;
+    }
+
+    public function reverseEntityMapping(\BO\Zmsentities\Scope $entity)
+    {
+        $data = array();
+        $data['BehoerdenID'] = $entity->getDepartmentId();
+        $data['InfoDienstleisterID'] = $entity->getProviderId();
+        $data['emailstandortadmin'] = $entity->getContactEMail();
+        $data['standortinfozeile'] = '';
+        $data['Hinweis'] = $entity->hint;
+        $data['Bezeichnung'] = $entity->getName();
+        $data['standortkuerzel'] = $entity->shortName;
+        $data['Adresse'] = $entity->contact['street'];
+        $data['loeschdauer'] = $entity->getPreference('appointment', 'deallocationDuration');
+        $data['Termine_bis'] = $entity->getPreference('appointment', 'endInDaysDefault');
+        $data['Termine_ab'] = $entity->getPreference('appointment', 'startInDaysDefault');
+        $data['mehrfachtermine'] = $entity->getPreference('appointment', 'multipleSlotsEnabled');
+        $data['reservierungsdauer'] = $entity->getPreference('appointment', 'reservationDuration');
+        $data['qtv_url'] = $entity->getPreference('client', 'alternateAppointmentUrl');
+        $data['anmerkungPflichtfeld'] = $entity->getPreference('client', 'amendmentRequired');
+        $data['anmerkungLabel'] = $entity->getPreference('client', 'amendmentLabel');
+        $data['emailPflichtfeld'] = $entity->getPreference('client', 'emailRequired');
+        $data['telefonaktiviert'] = $entity->getPreference('client', 'telephoneActivated');
+        $data['telefonPflichtfeld'] = $entity->getPreference('client', 'telephoneRequired');
+        $data['smsbestaetigungstext'] = $entity->getPreference('notifications', 'confirmationContent');
+        $data['smswmsbestaetigung'] = $entity->getPreference('notifications', 'confirmationEnabled');
+        $data['smswarteschlange'] = $entity->getPreference('notifications', 'enabled');
+        $data['smsbenachrichtigungstext'] = $entity->getPreference('notifications', 'headsUpContent');
+        $data['smsbenachrichtigungsfrist'] = $entity->getPreference('notifications', 'headsUpTime');
+        $data['ausgabeschaltername'] = $entity->getPreference('pickup', 'alternateName');
+        $data['defaultabholerstandort'] = $entity->getPreference('pickup', 'isDefault');
+        $data['anzahlwiederaufruf'] = $entity->getPreference('queue', 'callCountMax');
+        $data['aufrufanzeigetext'] = $entity->getPreference('queue', 'callDisplayText');
+        $data['startwartenr'] = $entity->getPreference('queue', 'firstNumber');
+        $data['endwartenr'] = $entity->getPreference('queue', 'lastNumber');
+        $data['Bearbeitungszeit'] = $entity->getPreference('queue', 'processingTimeAverage');
+        $data['wartezeitveroeffentlichen'] = $entity->getPreference('queue', 'publishWaitingTimeEnabled');
+        $data['ohnestatistik'] = (0 == $entity->getPreference('queue', 'statisticsEnabled')) ? 1 : 0;
+        $data['kundenbef_emailtext'] = $entity->getPreference('survey', 'emailContent');
+        $data['kundenbefragung'] = $entity->getPreference('survey', 'enabled');
+        $data['kundenbef_label'] = $entity->getPreference('survey', 'label');
+        $data['wartenrhinweis'] = $entity->getPreference('ticketprinter', 'deactivatedText');
+        $data['smsnachtrag'] = $entity->getPreference('ticketprinter', 'notificationsAmendmentEnabled');
+        $data['smskioskangebotsfrist'] = $entity->getPreference('ticketprinter', 'notificationsDelay');
+        $data['notruffunktion'] = $entity->getPreference('workstation', 'emergencyEnabled');
+        $data['notrufantwort'] = $entity->getStatus('emergency', 'acceptedByWorkstation');
+        $data['notrufausgeloest'] = $entity->getStatus('emergency', 'activated');
+        $data['notrufinitiierung'] = $entity->getStatus('emergency', 'calledByWorkstation');
+        $data['virtuellesachbearbeiterzahl'] = $entity->getStatus('queue', 'ghostWorkstationCount');
+        $data['vergebenewartenummern'] = $entity->getStatus('queue', 'givenNumberCount');
+        $data['letztewartenr'] = $entity->getStatus('queue', 'lastGivenNumber');
+        $data['wartenrdatum'] = (null !== $entity->getStatus('queue', 'lastGivenNumberTimestamp')) ?
+            date('Y-m-d', ($entity->getStatus('queue', 'lastGivenNumberTimestamp') / 1000)) :
+            null;
+        $data['wartenrsperre'] = $entity->getStatus('ticketprinter', 'deactivated');
+
+        $data = array_filter($data, function ($value) {
+            return ($value !== null && $value !== false && $value !== '');
+        });
+            return $data;
     }
 }
