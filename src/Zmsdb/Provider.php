@@ -7,7 +7,7 @@ use \BO\Zmsentities\Collection\ProviderList as Collection;
 
 class Provider extends Base
 {
-    public function readEntity($source, $providerId, $resolveReferences = 1)
+    public function readEntity($source, $providerId, $resolveReferences = 0)
     {
         if ('dldb' !== $source) {
             return new Entity();
@@ -23,7 +23,24 @@ class Provider extends Base
         return $provider;
     }
 
-    public function readProviderByRequest($source, $requestIds, $resolveReferences = 0)
+    public function readList($source, $isAssigned = null, $resolveReferences = 0)
+    {
+        $providerList = new Collection();
+        $query = new Query\Provider(Query\Base::SELECT);
+        $query
+            ->addEntityMapping()
+            ->addConditionIsAssigned($isAssigned);
+        $result = $this->fetchList($query, new Entity());
+        if (count($result)) {
+            foreach ($result as $item) {
+                $provider = $this->readEntity($source, $item['id'], $resolveReferences);
+                $providerList->addProvider($provider);
+            }
+        }
+        return $providerList;
+    }
+
+    public function readListByRequest($source, $requestIds, $resolveReferences = 0)
     {
         $query = Query\Request::getQuerySlots();
         $providerList = new Collection();

@@ -29,6 +29,30 @@ class Provider extends Base
         ];
     }
 
+    public function addConditionIsAssigned($isAssigned)
+    {
+        $dbname_zmsbo_scope = \BO\Zmsdb\Connection\Select::$dbname_zms .'.'. Scope::TABLE;
+        //error_log(var_export($isNotAssigned,1));
+        if (true === $isAssigned) {
+            $this->query->leftJoin(
+                new Alias($dbname_zmsbo_scope, 'scope'),
+                'provider.id',
+                '=',
+                'scope.InfoDienstleisterID'
+            );
+            $this->query->where('scope.InfoDienstleisterID', 'IS NOT', null);
+        } elseif (false === $isAssigned) {
+            $this->query->leftJoin(
+                new Alias($dbname_zmsbo_scope, 'scope'),
+                'provider.id',
+                '=',
+                'scope.InfoDienstleisterID'
+            );
+            $this->query->where('scope.InfoDienstleisterID', 'IS', null);
+        }
+        return $this;
+    }
+
     public function addConditionProviderId($providerId)
     {
         $this->query->where('id', '=', $providerId);
