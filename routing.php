@@ -30,7 +30,7 @@
 \App::$slim->get('/counter/', '\BO\Zmsadmin\Counter')
     ->setName("counter");
 
-\App::$slim->get('/scope/', '\BO\Zmsadmin\Scope')
+\App::$slim->map(['GET', 'POST'], '/scope/{id:\d+}/', '\BO\Zmsadmin\Scope')
     ->setName("scope");
 
 \App::$slim->get('/scope/{id:\d+}/pickup/', '\BO\Zmsadmin\Pickup')

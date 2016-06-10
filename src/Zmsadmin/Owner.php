@@ -20,9 +20,15 @@ class Owner extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        Helper\Render::checkedHtml(self::$errorHandler, $response, 'page/owner.twig', array(
-            'title' => 'Behörden und Standorte',
-            'menuActive' => 'owner',
-        ));
+    
+        return Helper\Render::checkedHtml(
+            self::$errorHandler,
+            $response,
+            'page/owner.twig',
+            array(
+                'title' => 'Behörden und Standorte',
+                'menuActive' => 'owner',
+            )
+        );
     }
 }

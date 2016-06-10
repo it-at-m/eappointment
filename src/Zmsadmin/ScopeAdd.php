@@ -6,13 +6,13 @@
 
 namespace BO\Zmsadmin;
 
-use BO\Zmsentities\Department as Entity;
+use BO\Zmsentities\Scope as Entity;
 
 /**
   * Handle requests concerning services
   *
   */
-class Department extends BaseController
+class ScopeAdd extends BaseController
 {
     /**
      * @return String
@@ -22,31 +22,32 @@ class Department extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $department = \App::$http->readGetResult(
-            '/department/'. $args['id'] .'/'
-        )->getEntity();
-
-        if (!isset($department['id'])) {
-            return Helper\Render::withError($response, 'page/404.twig', array());
-        }
-
+    
         $input = $request->getParsedBody();
         if (array_key_exists('save', $input)) {
             try {
                 $entity = new Entity($input);
-                $entity->id = $args['id'];
-                $department = \App::$http->readPostResult(
-                    '/department/'. $entity->id .'/',
+                $scope = \App::$http->readPostResult(
+                    '/scope/'. $entity->id .'/',
                     $entity
                 )->getEntity();
-                self::$errorHandler->success = 'department_saved';
+                return Helper\Render::redirect(
+                    'scope',
+                    array(
+                        'id' => $scope->id
+                    ),
+                    array(
+                        'success' => 'scope_created'
+                    )
+                );
             } catch (\Exception $exception) {
                 return Helper\Render::error($exception);
             }
         }
-        return Helper\Render::checkedHtml(self::$errorHandler, $response, 'page/department.twig', array(
+
+        return Helper\Render::checkedHtml(self::$errorHandler, $response, 'page/scope.twig', array(
             'title' => 'Standort',
-            'department' => $department->getArrayCopy(),
+            'action' => 'add',
             'menuActive' => 'owner'
         ));
     }
