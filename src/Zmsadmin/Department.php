@@ -27,7 +27,7 @@ class Department extends BaseController
         )->getEntity();
 
         if (!isset($department['id'])) {
-            return \BO\Slim\Render::withError($response, 'page/404.twig', array());
+            return Helper\Render::withError($response, 'page/404.twig', array());
         }
 
         $input = $request->getParsedBody();

@@ -52,4 +52,25 @@ class ErrorChecks extends ErrorBase
             );
         }
     }
+
+    public function handleScope()
+    {
+        $error = $this->hasErrors(array(), 'scope');
+        $notice = $this->hasNotices(array(), 'scope');
+        $success = $this->hasSuccesses(array(), 'scope');
+
+        if ($error instanceof \Slim\Http\Response) {
+            return $error;
+        } elseif ($notice instanceof \Slim\Http\Response) {
+            return $notice;
+        } elseif ($success instanceof \Slim\Http\Response) {
+            return $success;
+        } else {
+            return array(
+                'error' => $error,
+                'notice' => $notice,
+                'success' => $success
+            );
+        }
+    }
 }
