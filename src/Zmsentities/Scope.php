@@ -31,7 +31,15 @@ class Scope extends Schema\Entity
 
     public function getDepartmentId()
     {
-        return ($this->department['id']);
+        if (array_key_exists('department', $this)) {
+            if (array_key_exists('id', $this['department'])) {
+                return $this['department']['id'];
+            } elseif (array_key_exists('$ref', $this['department'])) {
+                $departmentId = preg_replace('#^.*/(\d+)/$#', '$1', $this['department']['$ref']);
+                return $departmentId;
+            }
+        }
+        throw new \Exception("No reference to a department found");
     }
 
     public function getConfirmationContent()
@@ -42,5 +50,40 @@ class Scope extends Schema\Entity
     public function getHeadsUpContent()
     {
         return ($this->preferences['notifications']['headsUpContent']);
+    }
+
+    public function getPreference($preferenceKey, $index)
+    {
+        if (array_key_exists($preferenceKey, $this->preferences)) {
+            if (array_key_exists($index, $this->preferences[$preferenceKey])) {
+                return $this->preferences[$preferenceKey][$index];
+            }
+        }
+        return null;
+    }
+
+    public function getStatus($statusKey, $index)
+    {
+        if (array_key_exists($statusKey, $this->status)) {
+            if (array_key_exists($index, $this->status[$statusKey])) {
+                return $this->status[$statusKey][$index];
+            }
+        }
+        return null;
+    }
+
+    public function getContactEmail()
+    {
+        if (array_key_exists('email', $this->contact)) {
+            return $this->contact['email'];
+        }
+        return null;
+    }
+
+    public function getName()
+    {
+        if (array_key_exists('name', $this->contact)) {
+            return $this->contact['name'];
+        }
     }
 }
