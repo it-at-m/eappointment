@@ -94,6 +94,39 @@ class Scope extends Base
     }
 
     /**
+     * write a scope
+     *
+     * @return Entity
+     */
+    public function writeEntity(\BO\Zmsentities\Scope $entity)
+    {
+        $query = new Query\Scope(Query\Base::INSERT);
+        $values = $query->reverseEntityMapping($entity);
+        $query->addValues($values);
+        $this->writeItem($query);
+        $lastInsertId = $this->getWriter()->lastInsertId();
+        return $this->readEntity($lastInsertId);
+    }
+
+    /**
+     * update a scope
+     *
+     * @param
+     * scopeId
+     *
+     * @return Entity
+     */
+    public function updateEntity($scopeId, \BO\Zmsentities\Scope $entity)
+    {
+        $query = new Query\Scope(Query\Base::UPDATE);
+        $query->addConditionScopeId($scopeId);
+        $values = $query->reverseEntityMapping($entity);
+        $query->addValues($values);
+        $this->writeItem($query, 'scope', $query::TABLE);
+        return $this->readEntity($scopeId);
+    }
+
+    /**
      * remove a scope
      *
      * @param
