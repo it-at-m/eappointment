@@ -1434,6 +1434,42 @@
 
 /**
  *  @swagger
+ *  "/provider/{source}/":
+ *      get:
+ *          description: Get a list of provider by source
+ *          parameters:
+ *              -   name: source
+ *                  description: provider source like 'dldb'
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *              -   name: isAssigned
+ *                  description: "get a list of provider that are already assigned to a scope"
+ *                  in: query
+ *                  type: boolean
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/provider.json"
+ *              404:
+ *                  description: "provider id for source does not exists"
+ */
+\App::$slim->get('/provider/{source}/',
+    '\BO\Zmsapi\ProviderList')
+    ->setName("ProviderList");
+
+/**
+ *  @swagger
  *  "/provider/{source}/request/{csv}/":
  *      get:
  *          description: Get a list of provider by request numbers
