@@ -6,6 +6,8 @@
 
 namespace BO\Zmsentities\Collection;
 
+use \BO\Zmsentities\Helper\Sorter;
+
 class Base extends \ArrayObject
 {
 
@@ -13,7 +15,7 @@ class Base extends \ArrayObject
     {
         $itemList = clone $this;
         $itemList->uasort(function ($a, $b) {
-            return strcmp(Sorter::toSortableString($a->getName()), Sorter::toSortableString($b->getName()));
+            return strcmp(Sorter::toSortableString($a->name), Sorter::toSortableString($b->name));
         });
         return $itemList;
     }
