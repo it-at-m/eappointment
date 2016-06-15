@@ -3,6 +3,7 @@
 namespace BO\Zmsdb;
 
 use \BO\Zmsentities\Mail as Entity;
+use \BO\Zmsentities\MailPart;
 use \BO\Zmsentities\Collection\MailList as Collection;
 
 class Mail extends Base
@@ -82,7 +83,8 @@ class Mail extends Base
         $query->addValues(array(
             'queueId' => $queueId,
             'mime' => $data['mime'],
-            'content' => $data['content']
+            'content' => $data['content'],
+            'base64' => $data['base64'] ? 1 : 0
         ));
         $result = $this->writeItem($query);
         if ($result) {
@@ -110,7 +112,7 @@ class Mail extends Base
         $query
             ->addEntityMapping()
             ->addConditionQueueId($queueId);
-        return $this->fetchList($query, new Entity());
+        return $this->fetchList($query, new MailPart());
     }
 
     private function updateProcessClient(

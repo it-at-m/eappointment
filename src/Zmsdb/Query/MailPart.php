@@ -13,7 +13,8 @@ class MailPart extends Base
     {
         return [
             'mime' => 'mailPart.mime',
-            'content' => 'mailPart.content'
+            'content' => 'mailPart.content',
+            'base64' => 'mailPart.base64',
         ];
     }
 

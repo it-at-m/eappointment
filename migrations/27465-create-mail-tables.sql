@@ -19,5 +19,6 @@ CREATE TABLE `mailpart` (
 	`queueId` INT(5) UNSIGNED NOT NULL DEFAULT '0' , 
 	`mime` VARCHAR(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL , 
 	`content` TEXT CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL , 
+	`base64` INT(1) UNSIGNED NOT NULL DEFAULT '0' , 
 PRIMARY KEY (`id`)) 
 ENGINE = InnoDB;
