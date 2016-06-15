@@ -23,7 +23,7 @@ class Messaging
         return $twig;
     }
 
-    public static function createMessage(\BO\Zmsentities\Process $process, \BO\Zmsentities\Config $config)
+    public static function getMailContent(\BO\Zmsentities\Process $process, \BO\Zmsentities\Config $config)
     {
         $appointment = $process->getFirstAppointment();
         $template = $process->status . 'Message.twig';
@@ -36,10 +36,10 @@ class Messaging
                 'config' => $config
             )
         );
-            return \base64_encode($message);
+            return $message;
     }
 
-    public static function createNotificationMessage(\BO\Zmsentities\Process $process, \BO\Zmsentities\Config $config)
+    public static function getNotificationContent(\BO\Zmsentities\Process $process, \BO\Zmsentities\Config $config)
     {
         $appointment = $process->getFirstAppointment();
         $template = 'notifications.twig';
@@ -52,10 +52,10 @@ class Messaging
                 'config' => $config
             )
         );
-            return \base64_encode($message);
+            return $message;
     }
 
-    public static function createSubject(\BO\Zmsentities\Process $process, \BO\Zmsentities\Config $config)
+    public static function getMailSubject(\BO\Zmsentities\Process $process, \BO\Zmsentities\Config $config)
     {
         $appointment = $process->getFirstAppointment();
         $template = 'subjects.twig';
@@ -72,12 +72,12 @@ class Messaging
             return $subject;
     }
 
-    public static function createIcs(\BO\Zmsentities\Process $process, \BO\Zmsentities\Config $config, $now = false)
+    public static function getMailIcs(\BO\Zmsentities\Process $process, \BO\Zmsentities\Config $config, $now = false)
     {
         $ics = new \BO\Zmsentities\Ics();
         $template = 'icsappointment.twig';
-        $message = \base64_decode(self::createMessage($process, $config));
-        $plainContent = (new \BO\Zmsentities\Mail())->toPlainText($message);
+        $message = self::getMailContent($process, $config);
+        $plainContent = self::getPlainText($message);
         $appointment = $process->getFirstAppointment();
         $icsString = self::twigView()->render(
             'messaging/' . $template,
@@ -91,7 +91,33 @@ class Messaging
             )
         );
         $result = \html_entity_decode($icsString);
-        $ics->content = \base64_encode($result);
+        $ics->content = $result;
         return $ics;
+    }
+
+    public static function getPlainText($content)
+    {
+        $replaceThis = array(
+            '<br />' => '\n',
+            '<li>' => '\n- ',
+            '</li>' => '',
+            '<h2>' => '\n',
+            '</h2>' => '\n',
+        );
+
+        $content = \preg_replace('!\s+!m', ' ', $content);
+        $content = \str_replace(array_keys($replaceThis), $replaceThis, $content);
+        $content = \strip_tags($content);
+
+        $lines = \explode("\n", $content);
+        $new_lines = array();
+        foreach ($lines as $line) {
+            if (!empty($line)) {
+                $new_lines[]=$line;
+            }
+        }
+        $content = \implode("\n", $new_lines);
+        $content = \html_entity_decode($content);
+        return $content;
     }
 }

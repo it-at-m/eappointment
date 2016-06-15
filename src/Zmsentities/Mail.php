@@ -22,17 +22,12 @@ class Mail extends Schema\Entity
         return $this;
     }
 
-    public function isEncoding($string)
-    {
-        return (\base64_encode(\base64_decode($string, true)) === $string) ? true : false;
-    }
-
     public function getHtmlPart()
     {
         foreach ($this->multipart as $part) {
-            if ($part['mime'] == 'text/html') {
-                $content = $part['content'];
-                return ($this->isEncoding($content)) ? \base64_decode($content) : $content;
+            $mailpart = new MailPart($part);
+            if ($mailpart->isHtml()) {
+                return $mailpart->getContent();
             }
         }
         return null;
@@ -41,9 +36,9 @@ class Mail extends Schema\Entity
     public function getPlainPart()
     {
         foreach ($this->multipart as $part) {
-            if ($part['mime'] == 'text/plain') {
-                $content = $part['content'];
-                return ($this->isEncoding($content)) ? \base64_decode($content) : $content;
+            $mailpart = new MailPart($part);
+            if ($mailpart->isText()) {
+                return $mailpart->getContent();
             }
         }
         return null;
@@ -52,38 +47,12 @@ class Mail extends Schema\Entity
     public function getIcsPart()
     {
         foreach ($this->multipart as $part) {
-            if ($part['mime'] == 'text/calendar') {
-                $content = $part['content'];
-                return ($this->isEncoding($content)) ? \base64_decode($content) : $content;
+            $mailpart = new MailPart($part);
+            if ($mailpart->isIcs()) {
+                return $mailpart->getContent();
             }
         }
         return null;
-    }
-
-    public function toPlainText($content)
-    {
-        $replaceThis = array(
-            '<br />' => '\n',
-            '<li>' => '\n- ',
-            '</li>' => '',
-            '<h2>' => '\n',
-            '</h2>' => '\n',
-            );
-
-        $content = \preg_replace('!\s+!m', ' ', $content);
-        $content = \str_replace(array_keys($replaceThis), $replaceThis, $content);
-        $content = \strip_tags($content);
-
-        $lines = \explode("\n", $content);
-        $new_lines = array();
-        foreach ($lines as $line) {
-            if (!empty($line)) {
-                $new_lines[]=$line;
-            }
-        }
-        $content = \implode("\n", $new_lines);
-        $content = \html_entity_decode($content);
-        return $content;
     }
 
     public function getFirstClient()
@@ -101,26 +70,29 @@ class Mail extends Schema\Entity
         return (\array_key_exists('id', $this) && $itemId == $this->id) ? true : false;
     }
 
-    public function toResolvedEntity(Process $process, Config $config)
+    public function getResolvedEntity(Process $process, Config $config)
     {
         $entity = clone $this;
-        $content = Helper\Messaging::createMessage($process, $config);
+        $content = Helper\Messaging::getMailContent($process, $config);
         $entity->process = $process;
-        $entity->subject = Helper\Messaging::createSubject($process, $config);
+        $entity->subject = Helper\Messaging::getMailSubject($process, $config);
         $entity->createIP = $process->createIP;
         $entity->department = $process->getDepartment();
         $entity->multipart = [
             array(
                 'mime' => 'text/html',
-                'content' => $content
+                'content' => $content,
+                'base64' => false
             ),
             array(
                 'mime' => 'text/plain',
-                'content' => $this->toPlainText($content)
+                'content' => Helper\Messaging::getPlainText($content),
+                'base64' => false
             ),
             array(
                 'mime' => 'text/calendar',
-                'content' => Helper\Messaging::createIcs($process, $config)->getContent()
+                'content' => Helper\Messaging::getMailIcs($process, $config)->getContent(),
+                'base64' => false
             )
         ];
         return $entity;

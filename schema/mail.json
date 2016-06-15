@@ -123,21 +123,7 @@
             "type": "array",
             "description": "message parts to send",
             "items": {
-                "type": "object",
-                "properties": {
-                	"id": {
-			            "type": "integer",
-			            "description": "number of mail queue entry"
-			        },
-                    "mime": {
-                        "type": "string",
-                        "description": "mime type used in 'Content-Type', should include charset if necessary"
-                    },
-                    "content": {
-                        "type": "string",
-                        "description": "content to transfer"
-                    }
-                }
+                "$ref": "mailpart.json"
             }
         },
         "process": {

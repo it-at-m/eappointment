@@ -52,11 +52,11 @@ class Notification extends Schema\Entity
         return (\array_key_exists('id', $this) && $itemId == $this->id) ? true : false;
     }
 
-    public function toResolvedEntity(Process $process, Config $config)
+    public function getResolvedEntity(Process $process, Config $config)
     {
         $entity = clone $this;
         $entity->process = $process;
-        $entity->message = Helper\Messaging::createNotificationMessage($process, $config);
+        $entity->message = Helper\Messaging::getNotificationContent($process, $config);
         $entity->createIP = $process->createIP;
         $entity->department = $process['scope']['department'];
         return $entity;
