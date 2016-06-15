@@ -21,12 +21,8 @@ DTSTART:19701025T030000
 RRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=-1SU;BYMONTH=10
 END:STANDARD
 END:VTIMEZONE
-{# METHOD:REQUEST #}
 METHOD:PUBLISH
 BEGIN:VEVENT
-UID:fraunhofer_im{{ timestamp|date("U") }}
-{# SEQUENCE:0 #}
-{# ORGANIZER:Fraunhofer HHI #}
 CLASS:PUBLIC
 DTSTART;TZID=Europe/Berlin:{{ startTime|date("Ymd") }}T{{ startTime|date("His") }}
 DTEND;TZID=Europe/Berlin:{{ endTime|date("Ymd") }}T{{ endTime|date("His") }}
