@@ -19,6 +19,7 @@ fix: # run code fixing
 	php vendor/bin/phpcbf --standard=psr2 src/
 
 tests: now # run tests
-	vendor/bin/phpmd src/ text phpmd.rules.xml
-	vendor/bin/phpcs --standard=psr2 src/
+	bin/tests
+
+coverage:
 	php -dzend_extension=xdebug.so vendor/bin/phpunit --coverage-html public/_tests/coverage/
