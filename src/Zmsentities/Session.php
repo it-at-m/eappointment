@@ -36,4 +36,14 @@ class Session extends Schema\Entity
             'finished' => false
         ];
     }
+
+    public function getRequests()
+    {
+        return $this['basket']['requests'];
+    }
+
+    public function getProviders()
+    {
+        return $this['basket']['providers'];
+    }
 }
