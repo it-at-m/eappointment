@@ -44,11 +44,11 @@ class Appointment extends Schema\Entity
         return new Availability($data);
     }
 
-    public function toDateTime()
+    public function toDateTime($timezone = 'Europe/Berlin')
     {
         $date = \DateTime::createFromFormat("U", $this->date);
         if ($date) {
-            $date->setTimeZone(new \DateTimeZone('Europe/Berlin'));
+            $date->setTimeZone(new \DateTimeZone($timezone));
         }
         return $date;
     }
