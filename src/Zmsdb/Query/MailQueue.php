@@ -61,13 +61,6 @@ class MailQueue extends Base
     {
         return [
             'id' => 'mailQueue.id',
-            'process__id' => 'mailQueue.processID',
-            'process__authKey' => self::expression('(SELECT absagecode
-                    FROM ' . Process::TABLE . ' as `MailProcess`
-                    WHERE
-                        `MailProcess`.`BuergerID` = `mailQueue`.`processID`
-                )'),
-            'department__id' => 'mailQueue.departmentID',
             'createIP' => 'mailQueue.createIP',
             'createTimestamp' => 'mailQueue.createTimestamp',
             'subject' => 'mailQueue.subject',
