@@ -6,9 +6,7 @@ class ScopeList extends Base
 
     public function addEntity($entity)
     {
-        if ($entity instanceof \BO\Zmsentities\Scope) {
-            $this[] = clone $entity;
-        }
+        $this[] = clone $entity;
         return $this;
     }
 

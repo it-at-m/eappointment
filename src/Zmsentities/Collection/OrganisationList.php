@@ -5,9 +5,7 @@ class OrganisationList extends Base
 {
     public function addEntity($entity)
     {
-        if ($entity instanceof \BO\Zmsentities\Organisation) {
-            $this[] = clone $entity;
-        }
+        $this[] = clone $entity;
         return $this;
     }
 }

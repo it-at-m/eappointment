@@ -4,21 +4,9 @@ namespace BO\Zmsentities\Collection;
 class ProcessList extends Base
 {
 
-    public function addProcesses($data)
+    public function addEntity($entity)
     {
-        foreach ($data as $entity) {
-            if ($entity instanceof \BO\Zmsentities\Process) {
-                $this[] = clone $entity;
-            }
-        }
-        return $this;
-    }
-
-    public function addProcess($entity)
-    {
-        if ($entity instanceof \BO\Zmsentities\Process) {
-            $this[] = clone $entity;
-        }
+        $this[] = clone $entity;
         return $this;
     }
 
