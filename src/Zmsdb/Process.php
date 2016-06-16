@@ -215,7 +215,9 @@ class Process extends Base
                 $process['status'] = (new Status())->readProcessStatus($process->id, $process->authKey);
                 $process['scope'] = (new Scope())->readEntity($process->getScopeId(), $resolveReferences);
             }
-            $processList->addProcess($process);
+            if ($process instanceof Entity) {
+                $processList->addEntity($process);
+            }
         }
         return $processList;
     }

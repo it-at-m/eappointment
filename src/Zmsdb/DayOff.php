@@ -16,7 +16,9 @@ class DayOff extends Base
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
             foreach ($result as $entity) {
-                $dayOffList->addEntity($entity);
+                if ($entity instanceof Entity) {
+                    $dayOffList->addEntity($entity);
+                }
             }
         }
         return $dayOffList;
@@ -32,7 +34,9 @@ class DayOff extends Base
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
             foreach ($result as $entity) {
-                $dayOffList->addEntity($entity);
+                if ($entity instanceof Entity) {
+                    $dayOffList->addEntity($entity);
+                }
             }
         }
         return $dayOffList;

@@ -41,7 +41,9 @@ class Department extends Base
         if (count($result)) {
             foreach ($result as $department) {
                 $department = $this->readEntity($department['id'], $resolveReferences - 1);
-                $departmentList->addDepartment($department);
+                if ($department instanceof Entity) {
+                    $departmentList->addDepartment($department);
+                }
             }
         }
         return $departmentList;
@@ -58,7 +60,9 @@ class Department extends Base
         if (count($result)) {
             foreach ($result as $entity) {
                 $department = $this->readEntity($entity['id'], $resolveReferences - 1);
-                $departmentList->addDepartment($department);
+                if ($department instanceof Entity) {
+                    $departmentList->addDepartment($department);
+                }
             }
         }
         return $departmentList;

@@ -45,7 +45,9 @@ class Ticketprinter extends Base
         if (count($result)) {
             foreach ($result as $ticketprinter) {
                 $entity = $this->readEntity($ticketprinter['id'], $resolveReferences - 1);
-                $ticketprinterList->addEntity($entity);
+                if ($entity instanceof Entity) {
+                    $ticketprinterList->addEntity($entity);
+                }
             }
         }
         return $ticketprinterList;
