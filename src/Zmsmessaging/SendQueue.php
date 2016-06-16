@@ -18,74 +18,69 @@ class SendQueue
 
     public function __construct($type = "mails")
     {
-        $this->messagesQueue = \App::$http->readGetResult('/'. $type .'/')
-            ->getCollection()
-            ->sortByCustomKey('createTimestamp');
+        $queueList = \App::$http->readGetResult('/'. $type .'/')->getCollection();
+        if (null !== $queueList) {
+            $this->messagesQueue = $queueList->sortByCustomKey('createTimestamp');
+        }
+
     }
 
     public function startMailTransmission()
     {
-        foreach ($this->messagesQueue as $item) {
-            $mail = new \BO\Zmsentities\Mail($item);
-            $result = $this->startTransmission($mail);
-            if (true !== $result) {
-                return false;
+        $resultList = array();
+        if (count($this->messagesQueue)) {
+            foreach ($this->messagesQueue as $item) {
+                $mail = new \BO\Zmsentities\Mail($item);
+                $result = $this->startTransmission($mail);
+                if ($result instanceof \PHPMailer) {
+                    $resultList[] = array(
+                        'id' => $result->getLastMessageID(),
+                        'recipients' => $result->getAllRecipientAddresses(),
+                        'mime' => $result->getMailMIME(),
+                        'customHeaders' => $result->getCustomHeaders(),
+                    );
+                } else {
+                    $resultList[] = array(
+                        'errorInfo' => $result->ErrorInfo
+                    );
+                }
             }
+        } else {
+            $resultList[] = array(
+                'errorInfo' => 'No mail entry found in Database...'
+            );
         }
-        return $result;
+        return $resultList;
     }
 
     public function startNotificationTransmission()
     {
-        foreach ($this->messagesQueue as $item) {
-            $notification = new \BO\Zmsentities\Notification($item);
-            $result = $this->startTransmission($notification);
-            if (true !== $result) {
-                return false;
+        $resultList = array();
+        if (count($this->messagesQueue)) {
+            foreach ($this->messagesQueue as $item) {
+                $notification = new \BO\Zmsentities\Notification($item);
+                $result = $this->startTransmission($notification);
+                if ($result instanceof \PHPMailer) {
+                    $resultList[] = array(
+                        'id' => $result->getLastMessageID(),
+                        'recipients' => $result->getAllRecipientAddresses(),
+                        'mime' => $result->getMailMIME(),
+                        'customHeaders' => $result->getCustomHeaders(),
+                    );
+                } elseif ('viaGateway' == $result) {
+                    $resultList[] = array('viaGateway' => true, 'item' => $item);
+                } else {
+                    $resultList[] = array(
+                        'errorInfo' => $mailer->ErrorInfo
+                    );
+                }
             }
+        } else {
+            $resultList[] = array(
+                'errorInfo' => 'No notification entry found in Database...'
+            );
         }
-        return $result;
-    }
-
-    public function testMail()
-    {
-        foreach ($this->messagesQueue as $item) {
-            $message = new \BO\Zmsentities\Mail($item);
-            echo "Empfaenger: ". $item->client['familyName'] ."\n";
-            echo "E-Mail: ". $item->client['email'] ."\n";
-            echo "Absender: ". $message->department['email'] ."\n";
-            echo "Betreff: $message->subject\n";
-            echo "Content HTML: ". $message->getHtmlPart() ."\n";
-            echo "Content Text: ". $message->getPlainPart() ."\n";
-            echo "Ics: ". $message->getIcsPart() ."\n\n";
-        }
-        return true;
-    }
-
-    public function testNotification()
-    {
-        $preferences = (new \BO\Zmsentities\Config())->getNotificationPreferences();
-        foreach ($this->messagesQueue as $item) {
-            $message = new \BO\Zmsentities\Notification($item);
-            $sender = $message->getIdentification();
-            echo "Absender: ". $sender ."\n";
-            echo "Empfaenger: SMS=". preg_replace(
-                '/^0049/',
-                '+49',
-                $message->client['telephone']
-            ) .'@example.com' ."\n"
-            ;
-            echo "Message: ". $message->getMessage() ."\n";
-
-            $url = $preferences['gatewayUrl'] .
-                urlencode($message->getMessage()) .
-                '&sender='. urlencode($sender) .
-                '&recipient=' .
-                urlencode($message->client['telephone'])
-            ;
-            echo "URL Gateway: " . $url ."\n\n";
-        }
-        return true;
+        return $resultList;
     }
 
     protected function startTransmission($message)
@@ -104,13 +99,13 @@ class SendQueue
             return $exception->getMessage();
         }
 
-        if (!$mailer->Send()) {
-            \App::$log->debug('Zmsmessaging Failed', [$mailer->ErrorInfo]);
-            return $message;
-        } else {
-            $this->deleteFromQueue($message);
-            return true;
+        if (null !== $mailer && 'viaGateway' != $mailer) {
+            if (!$mailer->Send()) {
+                \App::$log->debug('Zmsmessaging Failed', [$mailer->ErrorInfo]);
+            }
         }
+        $this->deleteFromQueue($message);
+        return $mailer;
     }
 
     protected function createMailer($message)
@@ -158,6 +153,16 @@ class SendQueue
         $preferences = (new \BO\Zmsentities\Config())->getNotificationPreferences();
         $sender = $message->getIdentification();
         if ('mail' == $preferences['gateway']) {
+            $url = $preferences['gatewayUrl'] .
+            urlencode($message->getMessage()) .
+            '&sender='. urlencode($sender) .
+            '&recipient=' .
+            urlencode($message->client['telephone'])
+            ;
+            $request = fopen($url, 'r');
+            fclose($request);
+            return 'viaGateway';
+        } else {
             $mailer = new PHPMailer(true);
             $mailer->Subject = $message->getMessage();
             $mailer->Body = '&nbsp;';
@@ -168,17 +173,9 @@ class SendQueue
             $mailer->FromName = $sender;
             $mailer->CharSet = 'UTF-8';
             $mailer->SetLanguage("de");
-        } else {
-            $url = $preferences['gatewayUrl'] .
-                urlencode($message->getMessage()) .
-                '&sender='. urlencode($sender) .
-                '&recipient=' .
-                urlencode($message->client['telephone'])
-            ;
-            $request = fopen($url, 'r');
-            fclose($request);
+            return $mailer;
         }
-        return $mailer;
+
     }
 
 
