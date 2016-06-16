@@ -5,4 +5,5 @@ require(__DIR__ . '/../vendor/autoload.php');
     CURLOPT_TIMEOUT => 3,
     //CURLOPT_VERBOSE => true,
 ];
-\BO\Zmsclient\Tests\Base::$http_baseurl = 'https://localhost/terminvereinbarung/api/2';
+$baseurl = getenv('ZMS_API_URL') ? getenv('ZMS_API_URL') :  'https://localhost/terminvereinbarung/api/2';
+\BO\Zmsclient\Tests\Base::$http_baseurl = $baseurl;
