@@ -35,7 +35,7 @@ class Base extends \ArrayObject
         $itemList->uasort(function ($a, $b) use ($key) {
             return ($a[$key] - $b[$key]);
         });
-            return $itemList;
+        return $itemList;
     }
 
     public function __clone()
