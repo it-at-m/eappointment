@@ -7,11 +7,12 @@
 */
 namespace BO\Zmsmessaging;
 
-use \BO\Zmsentities\Ics as Ics;
+use \BO\Zmsentities\Ics;
+use \BO\Zmsentities\MailPart;
 use \PHPMailer as PHPMailer;
 use \phpmailerException as phpmailerException;
 
-class SendQueue extends BaseController
+class SendQueue
 {
     protected $messagesQueue = null;
 
@@ -115,26 +116,40 @@ class SendQueue extends BaseController
     protected function createMailer($message)
     {
         $encoding = 'base64';
+        foreach ($message->multipart as $part) {
+            $entity = new MailPart($part);
+            if ($entity->isText()) {
+                $textPart = $entity->getContent();
+            }
+            if ($entity->isHtml()) {
+                $htmlPart = $entity->getContent();
+            }
+            if ($entity->isIcs()) {
+                $icsPart = $entity->getContent();
+            }
+        }
+
         $mailer = new PHPMailer(true);
+
+        $mailer->CharSet = 'UTF-8';
+        $mailer->SetLanguage("de");
+        $mailer->Encoding = $encoding;
+        $mailer->addCustomHeader('Content-Transfer-Encoding', $encoding);
         $mailer->IsHTML(true);
         $mailer->Subject = $message['subject'];
-        $mailer->AltBody = $message->getPlainPart();
-        $mailer->MsgHTML($message->getHtmlPart());
+        $mailer->AltBody = $textPart;
+        $mailer->Body = $htmlPart;
         $mailer->AddAddress($message->client['email'], $message->client['familyName']);
         $mailer->SetFrom($message['department']['email']);
         $mailer->FromName = $message['department']['name'];
         if (null !== $message->getIcsPart()) {
-            //$mailer->Ical = $message->getIcsPart();
             $mailer->AddStringAttachment(
-                $message->getIcsPart(),
+                $icsPart,
                 "Termin.ics",
                 $encoding,
                 "text/calendar; charset=utf-8; method=REQUEST"
             );
         }
-        $mailer->CharSet = 'UTF-8';
-        $mailer->SetLanguage("de");
-        $mailer->Encoding = $encoding;
         return $mailer;
     }
 
