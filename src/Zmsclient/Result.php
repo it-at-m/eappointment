@@ -106,7 +106,9 @@ class Result
      */
     public function getEntity()
     {
-        return reset($this->data);
+        if (null !== $this->data) {
+            return reset($this->data);
+        }
     }
     /**
      * Description
@@ -116,11 +118,12 @@ class Result
     public function getCollection()
     {
         $entity = $this->getEntity();
-        $class = get_class($entity);
-        $alias = ucfirst(preg_replace('#^.*\\\#', '', $class));
-        $className = "\\BO\\Zmsentities\\Collection\\" . $alias . "List";
-        $collection = new $className($this->data);
-        return $collection;
+        if (null !== $entity) {
+            $class = get_class($entity);
+            $alias = ucfirst(preg_replace('#^.*\\\#', '', $class));
+            $className = "\\BO\\Zmsentities\\Collection\\" . $alias . "List";
+            return new $className($this->data);
+        }
     }
     /**
      * Description
