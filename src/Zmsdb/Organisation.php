@@ -35,7 +35,9 @@ class Organisation extends Base
         if (count($result)) {
             foreach ($result as $organisation) {
                 $entity = $this->readEntity($organisation->id, $resolveReferences - 1);
-                $organisationList->addEntity($entity);
+                if ($entity instanceof Entity) {
+                    $organisationList->addEntity($entity);
+                }
             }
         }
         return $organisationList;
@@ -52,7 +54,9 @@ class Organisation extends Base
         if (count($result)) {
             foreach ($result as $organisation) {
                 $organisation = new Entity($organisation);
-                $organisationList->addEntity($organisation);
+                if ($entity instanceof Entity) {
+                    $organisationList->addEntity($entity);
+                }
             }
         }
         return $organisationList;

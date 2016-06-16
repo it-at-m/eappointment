@@ -34,7 +34,9 @@ class Provider extends Base
         if (count($result)) {
             foreach ($result as $item) {
                 $provider = $this->readEntity($source, $item['id'], $resolveReferences);
-                $providerList->addProvider($provider);
+                if ($provider instanceof Entity) {
+                    $providerList->addEntity($provider);
+                }
             }
         }
         return $providerList;
@@ -53,7 +55,9 @@ class Provider extends Base
             $result = $this->getReader()->fetchAll($query, ['request_id' => $requestId]);
             foreach ($result as $item) {
                 $provider = $this->readEntity($source, $item['provider__id'], $resolveReferences);
-                $providerList->addProvider($provider);
+                if ($provider instanceof Entity) {
+                    $providerList->addEntity($provider);
+                }
             }
         }
         return $providerList;

@@ -47,9 +47,11 @@ class Owner extends Base
             ->addEntityMapping();
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
-            foreach ($result as $owner) {
-                $owner = $this->readEntity($owner->id, $resolveReferences);
-                $ownerList->addEntity($owner);
+            foreach ($result as $entity) {
+                $entity = $this->readEntity($entity->id, $resolveReferences);
+                if ($entity instanceof Entity) {
+                    $ownerList->addEntity($entity);
+                }
             }
         }
         return $ownerList;

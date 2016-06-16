@@ -36,8 +36,10 @@ class Mail extends Base
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
             foreach ($result as $item) {
-                $mail = $this->readEntity($item['id'], $resolveReferences);
-                $mailList->addEntity($mail);
+                $entity = $this->readEntity($item['id'], $resolveReferences);
+                if ($entity instanceof Entity) {
+                    $mailList->addEntity($entity);
+                }
             }
         }
         return $mailList;

@@ -236,7 +236,11 @@ class SlotList
         foreach ($this->slots as $date => $slotList) {
             if (null !== $freeProcessesDate && $date == $freeProcessesDate->format('Y-m-d')) {
                 $freeProcesses = $this->getFreeProcesses($calendar, $freeProcessesDate);
-                $calendar['freeProcesses']->addProcesses($freeProcesses);
+                foreach ($freeProcesses as $process) {
+                    if ($process instanceof \BO\Zmsentities\Process) {
+                        $calendar['freeProcesses']->addEntity($process);
+                    }
+                }
             }
             $datetime = new \DateTimeImmutable($date);
             //error_log($datetime->format('c'));
