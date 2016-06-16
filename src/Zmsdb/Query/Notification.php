@@ -54,13 +54,6 @@ class Notification extends Base
     {
         return [
             'id' => 'notification.id',
-            'process__id' => 'notification.processID',
-            'process__authKey' => self::expression('(SELECT absagecode
-                    FROM ' . Process::TABLE . ' as `NotificationProcess`
-                    WHERE
-                        `NotificationProcess`.`BuergerID` = `notification`.`processID`
-                )'),
-            'department__id' => 'notification.departmentID',
             'createIP' => 'notification.createIP',
             'createTimestamp' => 'notification.createTimestamp',
             'message' => 'notification.message',
