@@ -9,6 +9,16 @@ namespace BO\Zmsentities\Helper;
 
 class Messaging
 {
+    protected static $templates = array(
+        'notification' => array(
+            'confirmed' => 'notification_confirmation.twig',
+            'queued' => 'notification_headsup.twig',
+        ),
+        'mail' => array(
+            'confirmed' => 'mail_confirmation.twig'
+        )
+    );
+
     protected static function twigView()
     {
         $templatePath = TemplateFinder::getTemplatePath();
@@ -26,7 +36,7 @@ class Messaging
     public static function getMailContent(\BO\Zmsentities\Process $process, \BO\Zmsentities\Config $config)
     {
         $appointment = $process->getFirstAppointment();
-        $template = $process->status . 'Message.twig';
+        $template = self::getTemplateByProcessStatus('mail', $process->status);
         $message = self::twigView()->render(
             'messaging/' . $template,
             array(
@@ -42,7 +52,7 @@ class Messaging
     public static function getNotificationContent(\BO\Zmsentities\Process $process, \BO\Zmsentities\Config $config)
     {
         $appointment = $process->getFirstAppointment();
-        $template = 'notifications.twig';
+        $template = self::getTemplateByProcessStatus('notification', $process->status);
         $message = self::twigView()->render(
             'messaging/' . $template,
             array(
@@ -53,6 +63,16 @@ class Messaging
             )
         );
             return $message;
+    }
+
+    protected static function getTemplateByProcessStatus($type, $status)
+    {
+        if (array_key_exists($type, self::$templates)) {
+            if (array_key_exists($status, self::$templates[$type])) {
+                return self::$templates[$type][$status];
+            }
+        }
+        return null;
     }
 
     public static function getMailSubject(\BO\Zmsentities\Process $process, \BO\Zmsentities\Config $config)
