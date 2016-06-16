@@ -5,9 +5,7 @@ class TicketprinterList extends Base
 {
     public function addEntity($entity)
     {
-        if ($entity instanceof \BO\Zmsentities\Ticketprinter) {
-            $this[] = clone $entity;
-        }
+        this[] = clone $entity;
         return $this;
     }
 }

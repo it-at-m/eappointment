@@ -4,11 +4,9 @@ namespace BO\Zmsentities\Collection;
 class ProviderList extends Base
 {
 
-    public function addProvider($provider)
+    public function addEntity($provider)
     {
-        if ($provider instanceof \BO\Zmsentities\Provider) {
-            $this[] = clone $provider;
-        }
+        $this[] = clone $provider;
         return $this;
     }
 

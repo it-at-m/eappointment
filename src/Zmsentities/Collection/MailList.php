@@ -6,10 +6,7 @@ class MailList extends Base
 
     public function addEntity($entity)
     {
-        if ($entity instanceof \BO\Zmsentities\Mail) {
-            $this[] = clone $entity;
-        }
-
+        $this[] = clone $entity;
         return $this;
     }
 
