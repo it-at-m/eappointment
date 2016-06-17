@@ -69,17 +69,18 @@ class Notification extends Base
         return $queueId;
     }
 
-    public function deleteEntity($itemId = null, $processId = null)
+    public function deleteEntity($itemId)
     {
-        if (null !== $processId) {
-            $query = Query\Notification::QUERY_DELETE_BY_PROCESS;
-            $statement = $this->getWriter()->prepare($query);
-            return $statement->execute(array($processId));
-        } else {
-            $query =  new Query\Notification(Query\Base::DELETE);
-            $query->addConditionItemId($itemId);
-            return $this->deleteItem($query);
-        }
+        $query =  new Query\Notification(Query\Base::DELETE);
+        $query->addConditionItemId($itemId);
+        return $this->deleteItem($query);
+    }
+
+    public function deleteEntityByProcess($processId)
+    {
+        $query = Query\Notification::QUERY_DELETE_BY_PROCESS;
+        $statement = $this->getWriter()->prepare($query);
+        return $statement->execute(array($processId));
     }
 
     private function updateProcess(\BO\Zmsentities\Notification $notification)
