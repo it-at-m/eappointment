@@ -82,16 +82,17 @@ class SlotList extends Base
         $processList = new ProcessList();
         foreach ($this as $slotInfo) {
             if ($slotInfo[$slotType] > 0) {
-                $appointment = new \BO\Zmsentities\Appointment();
-                $process = new \BO\Zmsentities\Process();
-                $appointment->addFromSlotList(
-                    $scope,
-                    $availability,
-                    $selectedDate,
-                    $slotInfo[$slotType],
-                    $slotInfo['time']
-                );
-                $process->addFromSlotList($scope, $requests, $appointment);
+                $appointment = new \BO\Zmsentities\Appointment(array(
+                    'scope' => $scope,
+                    'availability' => $availability,
+                    'slotCount' => $slotInfo[$slotType]
+                ));
+                $appointment->setDateByString($selectedDate .' '. $slotInfo['time']);
+                $process = new \BO\Zmsentities\Process(array(
+                    'scope' => $scope,
+                    'requests' => $requests
+                ));
+                $process->addAppointment($appointment);
                 $processList[] = $process;
             }
         }
