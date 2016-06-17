@@ -123,7 +123,7 @@ class Department extends Base implements MappingInterface
         $data['Name'] = $entity->name;
         $data['Ansprechpartner'] = $entity->getContactPerson();
         $data = array_filter($data, function ($value) {
-            return ($value !== null && $value !== false && $value !== '');
+            return ($value !== null && $value !== false);
         });
         return $data;
     }
