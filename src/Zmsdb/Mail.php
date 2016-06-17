@@ -95,17 +95,18 @@ class Mail extends Base
         return false;
     }
 
-    public function deleteEntity($itemId = null, $processId = null)
+    public function deleteEntity($itemId)
     {
-        if (null !== $processId) {
-            $query = Query\MailQueue::QUERY_DELETE_BY_PROCESS;
-            $statement = $this->getWriter()->prepare($query);
-            return $statement->execute(array($processId));
-        } else {
-            $query = Query\MailQueue::QUERY_DELETE;
-            $statement = $this->getWriter()->prepare($query);
-            return $statement->execute(array($itemId));
-        }
+        $query = Query\MailQueue::QUERY_DELETE;
+        $statement = $this->getWriter()->prepare($query);
+        return $statement->execute(array($itemId));
+    }
+
+    public function deleteEntityByProcess($processId)
+    {
+        $query = Query\MailQueue::QUERY_DELETE_BY_PROCESS;
+        $statement = $this->getWriter()->prepare($query);
+        return $statement->execute(array($processId));
     }
 
     protected function readMultiPartByQueueId($queueId)

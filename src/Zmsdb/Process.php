@@ -105,9 +105,9 @@ class Process extends Base
             $status = $this->deleteItem($query);
             //delete mail and notification from queue by processId
             $mail =  new Mail();
-            $mail->deleteEntity(null, $processId);
+            $mail->deleteEntityByProcess($processId);
             $notification =  new Notification();
-            $notification->deleteEntity(null, $processId);
+            $notification->deleteEntityByProcess($processId);
         }
         return $status;
     }
