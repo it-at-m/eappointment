@@ -118,11 +118,15 @@ class Department extends Base
         $this->writeItem($query);
         $lastInsertId = $this->getWriter()->lastInsertId();
 
-        $this->writeDepartmentMail($lastInsertId, $entity->email);
+        $this->writeDepartmentMail(
+            $lastInsertId,
+            $entity->email
+        );
         $this->writeDepartmentNotifications(
             $lastInsertId,
             $entity->getNotificationPreferences()
         );
+
         return $this->readEntity($lastInsertId);
     }
 
@@ -141,18 +145,16 @@ class Department extends Base
         $values = $query->reverseEntityMapping($entity);
         $query->addValues($values);
         $this->writeItem($query, 'department', $query::TABLE);
-        if (false === $this->updateDepartmentMail($departmentId, $entity->email)) {
-            $this->writeDepartmentMail($departmentId, $entity->email);
-        }
-        if (false === $this->updateDepartmentNotifications(
+
+        $this->updateDepartmentMail(
+            $departmentId,
+            $entity->email
+        );
+        $this->updateDepartmentNotifications(
             $departmentId,
             $entity->getNotificationPreferences()
-        )) {
-            $this->writeDepartmentNotifications(
-                $departmentId,
-                $entity->getNotificationPreferences()
-            );
-        }
+        );
+
         return $this->readEntity($departmentId);
     }
 
@@ -215,14 +217,10 @@ class Department extends Base
     protected function updateDepartmentMail($departmentId, $email)
     {
         $query = Query\Department::QUERY_MAIL_UPDATE;
-        $statement = $this->getWriter()->prepare($query);
-        $result = $statement->execute(
-            array(
-                $email,
-                $departmentId
-            )
-        );
-        return $result;
+        return $this->getWriter()->fetchAffected($query, array(
+            $email,
+            $departmentId
+        ));
     }
 
     /**
@@ -237,15 +235,12 @@ class Department extends Base
     protected function updateDepartmentNotifications($departmentId, $preferences)
     {
         $query = Query\Department::QUERY_NOTIFICATIONS_UPDATE;
-        $statement = $this->getWriter()->prepare($query);
-        $values = array(
+        return $this->getWriter()->fetchAffected($query, array(
             (isset($preferences['enabled'])) ? 1 : 0,
             $preferences['identification'],
             (isset($preferences['sendConfirmationEnabled'])) ? 1 : 0,
             (isset($preferences['sendReminderEnabled'])) ? 1 : 0,
             $departmentId
-        );
-        $result = $statement->execute($values);
-        return $result;
+        ));
     }
 }
