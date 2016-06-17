@@ -10,10 +10,10 @@ class ProviderList extends Base
         return $this;
     }
 
-    public function hasProvider($providerIds)
+    public function hasProvider($providerIdCsv)
     {
-        $providerIds = explode(',', $providerIds);
-        foreach ($providerIds as $providerId) {
+        $providerIdCsv = explode(',', $providerIdCsv);
+        foreach ($providerIdCsv as $providerId) {
             if (in_array($providerId, $this->getIds())) {
                 return true;
             }
