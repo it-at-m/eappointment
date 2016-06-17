@@ -7,6 +7,9 @@
  */
 namespace BO\Zmsadmin;
 
+use BO\Zmsentities\Scope as Entity;
+use BO\Mellon\Validator;
+
 /**
  * Handle requests concerning services
  */
@@ -22,7 +25,7 @@ class Scope extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-
+        $scopeId = Validator::value($args['id'])->isNumber()->getValue();
         $providerAssigned = \App::$http->readGetResult(
             '/provider/dldb/',
             array(
@@ -37,7 +40,7 @@ class Scope extends BaseController
             )
         )->getCollection()->sortByName();
 
-        $scope = \App::$http->readGetResult('/scope/' . $args['id'] . '/')
+        $scope = \App::$http->readGetResult('/scope/' . $scopeId . '/')
             ->getEntity();
 
         if (! isset($scope['id'])) {
@@ -48,7 +51,7 @@ class Scope extends BaseController
         if (is_array($input) && array_key_exists('save', $input)) {
             try {
                 $entity = new Entity($input);
-                $entity->id = $args['id'];
+                $entity->id = $scopeId;
                 $scope = \App::$http->readPostResult('/scope/' . $entity->id . '/', $entity)
                     ->getEntity();
                 self::$errorHandler->success = 'scope_saved';
