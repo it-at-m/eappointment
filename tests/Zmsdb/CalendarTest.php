@@ -26,6 +26,18 @@ class CalendarTest extends Base
         $this->assertEquals(0, count($entity['freeProcesses']));
     }
 
+    public function testOverallDayOff()
+    {
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $freeProcessesDate = new \DateTimeImmutable("2016-05-16");
+        $input = $this->getTestEntity();
+        foreach ($this->fullProviderIdList as $providerId) {
+            $input->addProvider('dldb', $providerId);
+        }
+        $entity = (new Query())->readResolvedEntity($input, $now, $freeProcessesDate);
+        $this->assertEquals(0, count($entity['freeProcesses']));
+    }
+
     public function testFalkenhagener()
     {
         $now = new \DateTimeImmutable("2016-04-01 11:55");
@@ -67,16 +79,11 @@ class CalendarTest extends Base
     {
         $now = new \DateTimeImmutable("2016-04-01 11:55");
         $input = $this->getTestEntity();
-        //var_dump(json_encode($input, JSON_PRETTY_PRINT));
         foreach ($this->fullProviderIdList as $providerId) {
             $input->addProvider('dldb', $providerId);
         }
         $entity = (new Query())->readResolvedEntity($input, $now);
-        //var_dump(json_encode($entity, JSON_PRETTY_PRINT));
-        //$array = json_decode(json_encode($entity), 1);
-        //var_dump($array['days']);
         $this->assertEntity("\\BO\\Zmsentities\\Calendar", $entity);
-        //var_dump(\BO\Zmsdb\Connection\Select::getReadConnection()->getProfiler()->getProfiles());
     }
 
     protected function getTestEntity()
