@@ -42,7 +42,7 @@ class Provider extends Base
         return $providerList;
     }
 
-    public function readListByRequest($source, $requestIds, $resolveReferences = 0)
+    public function readListByRequest($source, $requestIdCsv, $resolveReferences = 0)
     {
         $query = Query\Request::getQuerySlots();
         $providerList = new Collection();
@@ -50,8 +50,8 @@ class Provider extends Base
             return $providerList;
         }
 
-        $requestIds = \explode(',', $requestIds);
-        foreach ($requestIds as $requestId) {
+        $requestIdCsv = \explode(',', $requestIdCsv);
+        foreach ($requestIdCsv as $requestId) {
             $result = $this->getReader()->fetchAll($query, ['request_id' => $requestId]);
             foreach ($result as $item) {
                 $provider = $this->readEntity($source, $item['provider__id'], $resolveReferences);
