@@ -66,7 +66,6 @@ class SlotList
             standort s
             LEFT JOIN oeffnungszeit o USING(StandortID)
             LEFT JOIN buerger b ON b.StandortID = o.StandortID
-            LEFT JOIN feiertage f ON f.BehoerdenID = s.BehoerdenID
         WHERE
             o.StandortID = :scope_id
             AND o.OeffnungszeitID IS NOT NULL
@@ -110,7 +109,8 @@ class SlotList
             AND b.Datum <= o.Endedatum
 
             -- match day off
-            AND f.Datum <> b.Datum
+            AND b.Datum NOT IN (SELECT Datum FROM feiertage f WHERE f.BehoerdenID = s.BehoerdenID OR f.BehoerdenID = 0)
+
         GROUP BY o.OeffnungszeitID, b.Datum, `slotnr`
         HAVING
             -- reduce results cause processing them costs time even with query cache
