@@ -8,6 +8,7 @@ namespace BO\Zmsadmin;
 
 use BO\Slim\Render;
 use BO\Zmsentities\Organisation as Entity;
+use BO\Mellon\Validator;
 
 /**
   * Handle requests concerning services
@@ -23,8 +24,9 @@ class Organisation extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        $organisationId = Validator::value($args['id'])->isNumber()->getValue();
         $organisation = \App::$http->readGetResult(
-            '/organisation/'. $args['id'] .'/'
+            '/organisation/'. $organisationId .'/'
         )->getEntity();
 
         if (!isset($organisation['id'])) {
@@ -34,14 +36,14 @@ class Organisation extends BaseController
         $input = $request->getParsedBody();
         if (array_key_exists('save', (array)$input)) {
             $entity = new Entity($input);
-            $entity->id = $args['id'];
+            $entity->id = $organisationId;
             $organisation = \App::$http->readPostResult(
                 '/organisation/'. $entity->id .'/',
                 $entity
             )->getEntity();
         } elseif (array_key_exists('delete', (array)$input)) {
             $organisation = \App::$http->readDeleteResult(
-                '/organisation/'. $args['id'] .'/'
+                '/organisation/'. $organisationId .'/'
             )->getEntity();
         }
 
