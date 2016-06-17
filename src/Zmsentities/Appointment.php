@@ -66,16 +66,10 @@ class Appointment extends Schema\Entity
         return $time->modify('+' . $availability->slotTimeInMinutes . ' minutes');
     }
 
-    public function addFromSlotList($scope, $availability, $selectedDate, $slotCount, $slotTime)
+    public function setDateByString($dateString, $format = 'Y-m-d H:i')
     {
-        $appointmentDateTime = \DateTime::createFromFormat(
-            'Y-m-d H:i',
-            $selectedDate .' '. $slotTime
-        );
-        $this->scope = $scope;
-        $this->availability = $availability;
+        $appointmentDateTime = \DateTime::createFromFormat($format, $dateString);
         $this->date = $appointmentDateTime->format('U');
-        $this->slotCount = $slotCount;
         return $this;
     }
 }
