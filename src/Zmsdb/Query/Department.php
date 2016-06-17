@@ -45,9 +45,9 @@ class Department extends Base implements MappingInterface
         SET
             BehoerdenID=?,
             enabled=?,
-            Absender=?,
-            internetbestaetigung=?,
-            interneterinnerung=?
+            Absender=?
+             internetbestaetigung=?
+             interneterinnerung=?
     ';
 
     const QUERY_MAIL_DELETE = '
