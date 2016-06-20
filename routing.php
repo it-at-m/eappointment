@@ -36,7 +36,7 @@
 \App::$slim->get('/scope/{id:\d+}/pickup/', '\BO\Zmsadmin\Pickup')
     ->setName("pickup");
 
-\App::$slim->map(['GET', 'POST'], '/scope{id/pickup/handheld/', '\BO\Zmsadmin\PickupHandheld')
+\App::$slim->map(['GET', 'POST'], '/scope/{id:\d+}/pickup/handheld/', '\BO\Zmsadmin\PickupHandheld')
     ->setName("pickup_handheld");
 
 \App::$slim->get('/scope/{id:\d+}/pickup/keyboard/', '\BO\Zmsadmin\PickupKeyboard')

@@ -35,6 +35,9 @@
         &.button-submit {
             padding:            1.5em 2em;
         }
+        &.disabled {
+            background: #ccc;
+        }
     }
     .note {
         font-size:              1rem;
