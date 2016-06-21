@@ -12,7 +12,7 @@ class SlotList
     const QUERY = 'SELECT
 
             -- collect some important settings, especially from the scope, use the appointment key
-            UNIX_TIMESTAMP(CONCAT(b.Datum, " ", b.Uhrzeit)) AS appointment__date,
+            FLOOR(UNIX_TIMESTAMP(CONCAT(b.Datum, " ", b.Uhrzeit))) AS appointment__date,
             s.StandortID AS appointment__scope__id,
             s.mehrfachtermine AS appointment__scope__preferences__appointment__multipleSlotsEnabled,
 
@@ -40,8 +40,8 @@ class SlotList
             o.allexWochen AS availability__repeat__afterWeeks,
             o.jedexteWoche AS availability__repeat__weekOfMonth,
             FLOOR(TIME_TO_SEC(o.Timeslot) / 60) AS availability__slotTimeInMinutes,
-            UNIX_TIMESTAMP(o.Startdatum) AS availability__startDate,
-            UNIX_TIMESTAMP(o.Endedatum) AS availability__endDate,
+            FLOOR(UNIX_TIMESTAMP(o.Startdatum)) AS availability__startDate,
+            FLOOR(UNIX_TIMESTAMP(o.Endedatum)) AS availability__endDate,
             o.Terminanfangszeit	 AS availability__startTime,
             o.Terminendzeit	 AS availability__endTime,
 
@@ -88,7 +88,12 @@ class SlotList
                 (
                     o.allexWochen
                     -- The following line would be correct by logic, but does not work :-(
-                    AND FLOOR((UNIX_TIMESTAMP(b.Datum) - UNIX_TIMESTAMP(o.Startdatum)) / 86400 / 7) % o.allexWochen = 0
+                        AND FLOOR(
+                            (FLOOR(UNIX_TIMESTAMP(b.Datum))
+                            - FLOOR(UNIX_TIMESTAMP(o.Startdatum)))
+                            / 86400
+                            / 7
+                        ) % o.allexWochen = 0
                 )
                 OR (
                     o.jedexteWoche
