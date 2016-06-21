@@ -52,7 +52,7 @@ class Notification extends Schema\Entity
         return (\array_key_exists('id', $this) && $itemId == $this->id) ? true : false;
     }
 
-    public function getResolvedEntity(Process $process, Config $config)
+    public function toResolvedEntity(Process $process, Config $config)
     {
         $entity = clone $this;
         $entity->process = $process;
