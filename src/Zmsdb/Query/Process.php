@@ -20,7 +20,7 @@ class Process extends Base implements MappingInterface
             process.StandortId = 0,
             process.Name = '(abgesagt)',
             process.IPadresse = '',
-            process.IPTimeStamp = UNIX_TIMESTAMP() + (s.loeschdauer * 60),
+            process.IPTimeStamp = FLOOR(UNIX_TIMESTAMP()) + (s.loeschdauer * 60),
             process.vorlaeufigeBuchung = 1
         WHERE
             (process.BuergerID = ? AND process.absagecode = ?)
@@ -91,7 +91,7 @@ class Process extends Base implements MappingInterface
             'amendment' => 'process.Anmerkung',
             'id' => 'process.BuergerID',
             'appointments__0__date' => self::expression(
-                'UNIX_TIMESTAMP(CONCAT(`process`.`Datum`, " ", `process`.`Uhrzeit`))'
+                'FLOOR(UNIX_TIMESTAMP(CONCAT(`process`.`Datum`, " ", `process`.`Uhrzeit`)))'
             ),
             'scope__id' => 'process.StandortID',
             'appointments__0__scope__id' => 'process.StandortID',

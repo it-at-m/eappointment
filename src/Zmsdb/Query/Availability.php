@@ -31,9 +31,9 @@ class Availability extends Base implements MappingInterface
                 'IF(`availability`.`Offen_bis`, `availability`.`Offen_bis`, `scope`.`Termine_bis`)'
             ),
             'description' => 'availability.kommentar',
-            'startDate' => self::expression('UNIX_TIMESTAMP(`availability`.`Startdatum`)'),
+            'startDate' => self::expression('FLOOR(UNIX_TIMESTAMP(`availability`.`Startdatum`))'),
             'startTime' => 'availability.Terminanfangszeit',
-            'endDate' => self::expression('UNIX_TIMESTAMP(`availability`.`Endedatum`)'),
+            'endDate' => self::expression('FLOOR(UNIX_TIMESTAMP(`availability`.`Endedatum`))'),
             'endTime' => 'availability.Terminendzeit',
             'multipleSlotsAllowed' => 'availability.erlaubemehrfachslots',
             'repeat__afterWeeks' => 'availability.allexWochen',
@@ -97,7 +97,12 @@ class Availability extends Base implements MappingInterface
                 (
                     $availability.allexWochen
                     AND FLOOR(
-                        (UNIX_TIMESTAMP($process.Datum) - UNIX_TIMESTAMP($availability.Startdatum)) / 86400 / 7)
+                        (
+                            FLOOR(UNIX_TIMESTAMP($process.Datum))
+                            - FLOOR(UNIX_TIMESTAMP($availability.Startdatum)))
+                            / 86400
+                            / 7
+                        )
                         % $availability.allexWochen = 0
                 )
                 OR (
