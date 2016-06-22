@@ -7,16 +7,21 @@ use \BO\Zmsentities\Collection\ScopeList as Collection;
 
 class Scope extends Base
 {
-    public function readEntity($scopeId, $resolveReferences = 0)
+    public static $cache = [];
+
+    public function readEntity($scopeId, $resolveReferences = 0, $disableCache = false)
     {
-        $query = new Query\Scope(Query\Base::SELECT);
-        $query
-            ->addEntityMapping()
-            ->addResolvedReferences($resolveReferences)
-            ->addConditionScopeId($scopeId);
-        $scope = $this->fetchOne($query, new Entity());
-        $scope = $this->addDldbData($scope, $resolveReferences);
-        return $scope;
+        if (!$disableCache && !array_key_exists($scopeId, self::$cache)) {
+            $query = new Query\Scope(Query\Base::SELECT);
+            $query
+                ->addEntityMapping()
+                ->addResolvedReferences($resolveReferences)
+                ->addConditionScopeId($scopeId);
+            $scope = $this->fetchOne($query, new Entity());
+            $scope = $this->addDldbData($scope, $resolveReferences);
+            self::$cache[$scopeId] = $scope;
+        }
+        return self::$cache[$scopeId];
     }
 
     public function readByClusterId($clusterId, $resolveReferences = 0)
