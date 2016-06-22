@@ -35,6 +35,7 @@ class CalendarTest extends Base
             $input->addProvider('dldb', $providerId);
         }
         $entity = (new Query())->readResolvedEntity($input, $now, $freeProcessesDate);
+        $this->assertEntity("\\BO\\Zmsentities\\Calendar", $entity);
         $this->assertEquals(0, count($entity['freeProcesses']));
     }
 
@@ -73,18 +74,6 @@ class CalendarTest extends Base
         // free day test
         // not implemented yet $this->assertEquals(0, $entity->getDay(2016, 5, 5)['freeAppointments']['public']);
         //var_dump(\BO\Zmsdb\Connection\Select::getReadConnection()->getProfiler()->getProfiles());
-    }
-
-    public function testFullBAlist()
-    {
-        //$now = new \DateTimeImmutable("2016-04-01 11:55");
-        //$input = $this->getTestEntity();
-        //foreach ($this->fullProviderIdList as $providerId) {
-        //    $input->addProvider('dldb', $providerId);
-        //}
-        //$entity = (new Query())->readResolvedEntity($input, $now);
-        //$this->assertEntity("\\BO\\Zmsentities\\Calendar", $entity);
-        error_log("\nDISABLED: testFullBAlist!\n");
     }
 
     protected function getTestEntity()

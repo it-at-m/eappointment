@@ -133,6 +133,11 @@ class SlotList
     protected $slotData = null;
 
     /**
+     * @var \BO\Zmsentities\Scope $scope
+     */
+    protected $scope = null;
+
+    /**
      * @var \BO\Zmsentities\Availability $availability
      */
     protected $availability = null;
@@ -146,11 +151,11 @@ class SlotList
         array $slotData = ['availability__id' => null],
         \DateTimeImmutable $start = null,
         \DateTimeImmutable $stop = null,
-        \BO\Zmsentities\Availability $availability = null
+        \BO\Zmsentities\Availability $availability = null,
+        \BO\Zmsentities\Scope $scope = null
     ) {
-        if (null !== $availability) {
-            $this->availability = $availability;
-        }
+        $this->availability = $availability;
+        $this->scope = $scope;
         $this->setSlotData($slotData);
         if (isset($this->availability['id'])) {
             $this->createSlots($start, $stop);
@@ -180,6 +185,11 @@ class SlotList
         return $parameters;
     }
 
+    /**
+     * To avoid a db query for availability,
+     * we use the scope data to add missing values
+     * and try to use availability data in query result
+     */
     public function setSlotData(array $slotData)
     {
         $this->slotData = $slotData;
@@ -193,6 +203,7 @@ class SlotList
             }
             $this->availability = new \BO\Zmsentities\Availability($availability);
         }
+        $this->availability['department'] = $this->scope['department'];
         return $this;
     }
 
@@ -208,8 +219,8 @@ class SlotList
             //check in entity collection if slot exists => if not then ignore it
             //I want to create a test if dayoff matches with processes, to avoid such exceptions
             $slot = $slotList->getSlot($slotnumber);
-            $slotDebug = "$slotdate #$slotnumber @" . $slotData['slottime'] . " on " . $this->availability;
             if (null === $slot) {
+                $slotDebug = "$slotdate #$slotnumber @" . $slotData['slottime'] . " on " . $this->availability;
                 error_log("Debugdata: Found database entry without a pre-generated slot $slotDebug");
                 throw new \Exception(
                     "Found database entry without a pre-generated slot $slotDebug"
@@ -217,6 +228,7 @@ class SlotList
             }
 
             if ($slot->hasTime()) {
+                $slotDebug = "$slotdate #$slotnumber @" . $slotData['slottime'] . " on " . $this->availability;
                 throw new \Exception(
                     "Found two database entries for the same slot $slotDebug"
                 );
@@ -232,21 +244,18 @@ class SlotList
             );
             $slotTime = new DateTime($slotData['slottime']);
             $slotList->writeSlot($slotnumber, $slotTime, $workstationCount);
+        } else {
+            throw new \Exception(
+                "Found empty slot: " . var_export($slotData, true)
+            );
         }
         return $this;
     }
 
-    public function addToCalendar(\BO\Zmsentities\Calendar $calendar, $freeProcessesDate)
+    public function addToCalendar(\BO\Zmsentities\Calendar $calendar, $freeProcessesDate, $slotType = 'public')
     {
         foreach ($this->slots as $date => $slotList) {
-            if (null !== $freeProcessesDate && $date == $freeProcessesDate->format('Y-m-d')) {
-                $freeProcesses = $this->getFreeProcesses($calendar, $freeProcessesDate);
-                foreach ($freeProcesses as $process) {
-                    if ($process instanceof \BO\Zmsentities\Process) {
-                        $calendar['freeProcesses']->addEntity($process);
-                    }
-                }
-            }
+            $this->addFreeProcessesToCalendar($calendar, $freeProcessesDate, $date, $slotType);
             $datetime = new \DateTimeImmutable($date);
             //error_log($datetime->format('c'));
             $day = $calendar->getDayByDateTime($datetime);
@@ -255,6 +264,22 @@ class SlotList
             }
         }
         return $calendar;
+    }
+
+    protected function addFreeProcessesToCalendar(
+        \BO\Zmsentities\Calendar $calendar,
+        $freeProcessesDate,
+        $date,
+        $slotType = 'public'
+    ) {
+        if (null !== $freeProcessesDate && $date == $freeProcessesDate->format('Y-m-d')) {
+            $freeProcesses = $this->getFreeProcesses($calendar, $freeProcessesDate, $slotType);
+            foreach ($freeProcesses as $process) {
+                if ($process instanceof \BO\Zmsentities\Process) {
+                    $calendar['freeProcesses']->addEntity($process);
+                }
+            }
+        }
     }
 
     /**
@@ -266,12 +291,11 @@ class SlotList
         $slotType = 'public'
     ) {
 
-        $scope = (new \BO\Zmsdb\Scope())->readEntity($this->slotData['appointment__scope__id'], 2);
         $selectedDate = $freeProcessesDate->format('Y-m-d');
         $slotList = $this->slots[$selectedDate];
         return $slotList->getFreeProcesses(
             $selectedDate,
-            $scope,
+            $this->scope,
             $this->availability,
             $slotType,
             $calendar['requests']

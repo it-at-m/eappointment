@@ -12,9 +12,9 @@ class Department extends Base
      */
     public static $departmentCache = array();
 
-    public function readEntity($departmentId, $resolveReferences = 0)
+    public function readEntity($departmentId, $resolveReferences = 0, $disableCache = false)
     {
-        if (array_key_exists($departmentId, self::$departmentCache)) {
+        if (!$disableCache && array_key_exists($departmentId, self::$departmentCache)) {
             return $departmentCache[$departmentId];
         }
         $query = new Query\Department(Query\Base::SELECT);
