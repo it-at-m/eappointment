@@ -105,8 +105,9 @@ class Availability extends Schema\Entity
     public function hasDayOff(\DateTimeInterface $dateTime)
     {
         if (isset($this['department']['dayoff'])) {
+            $timeStamp = $dateTime->getTimestamp();
             foreach ($this['department']['dayoff'] as $dayOff) {
-                if ($dayOff['date'] == $dateTime->format('U')) {
+                if ($dayOff['date'] == $timeStamp) {
                     return true;
                 }
             }

@@ -6,7 +6,12 @@ class DateTime extends \DateTimeImmutable
 {
     public static function create($time = 'now', \DateTimeZone $timezone = null)
     {
-        if ($time instanceof \DateTimeInterface) {
+        if ($time instanceof \BO\Zmsentities\Helper\DateTime) {
+            if (null !== $timezone) {
+                $dateTime = $dateTime->setTimezone($timezone);
+            }
+            return $time;
+        } elseif ($time instanceof \DateTimeInterface) {
             $dateTime = new self();
             if (null !== $timezone) {
                 $dateTime = $dateTime->setTimezone($timezone);
