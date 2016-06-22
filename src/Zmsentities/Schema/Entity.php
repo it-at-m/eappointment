@@ -18,6 +18,12 @@ class Entity extends \ArrayObject implements \JsonSerializable
     protected $jsonSchema = null;
 
     /**
+     * @var Array $schemaCache for not loading and interpreting a schema twice
+     *
+     */
+    protected static $schemaCache = [];
+
+    /**
      * Read the json schema and let array act like an object
      */
     public function __construct($input = [], $flags = \ArrayObject::ARRAY_AS_PROPS, $iterator_class = "ArrayIterator")
@@ -118,7 +124,10 @@ class Entity extends \ArrayObject implements \JsonSerializable
     protected static function readJsonSchema()
     {
         $class = get_called_class();
-        return Loader::asArray($class::$schema);
+        if (!array_key_exists($class, self::$schemaCache)) {
+            self::$schemaCache[$class] = Loader::asArray($class::$schema);
+        }
+        return self::$schemaCache[$class];
     }
 
     public function jsonSerialize()
