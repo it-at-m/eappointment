@@ -11,7 +11,7 @@ class ClientTest extends Base
 {
     public function testStatus()
     {
-        $uri = new Uri('https://localhost/terminvereinbarung/api/2/status/');
+        $uri = new Uri(self::$http_baseurl . '/status/');
         $request = new Request('GET', $uri);
         $response = Client::readResponse($request);
         $bodyContent = (string)$response->getBody();
