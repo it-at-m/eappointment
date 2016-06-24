@@ -3,5 +3,4 @@ node_modules
 config.php
 **.swp
 .sass-cache
-composer.lock
 bower_components
