@@ -91,7 +91,7 @@ class TwigExtension extends \Twig_Extension
 
     public function currentRoute($lang = null, $multiLanguage = true)
     {
-        if ($this->container->get('currentRoute')) {
+        if ($this->container->has('currentRoute')) {
             $routeParams = $this->container->get('currentRouteParams');
             $routeParams['lang'] = ($lang !== null) ? $lang : self::currentLang();
             $routeName = ($multiLanguage) ?
