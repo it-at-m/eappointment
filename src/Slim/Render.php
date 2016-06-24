@@ -103,7 +103,9 @@ class Render
         $date,
         $expires = '+5 minutes'
     ) {
-        if (!is_int($date)) {
+        if (!$date) {
+            $date = time();
+        } elseif (!is_int($date)) {
             $date = strtotime($date);
         }
         if (false === strtotime($expires)) {
