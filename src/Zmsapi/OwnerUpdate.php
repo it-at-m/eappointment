@@ -23,8 +23,7 @@ class OwnerUpdate extends BaseController
         $message = Response\Message::create(Render::$request);
         $input = Validator::input()->isJson()->getValue();
         $entity = new \BO\Zmsentities\Owner($input);
-        $message->data = (new Query)->updateEntity($entity);
-        $message->data->id = $itemId;
+        $message->data = (new Query)->updateEntity($itemId, $entity);
         Render::lastModified(time(), '0');
         Render::json($message);
     }
