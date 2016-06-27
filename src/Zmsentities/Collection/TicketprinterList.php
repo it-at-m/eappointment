@@ -5,7 +5,7 @@ class TicketprinterList extends Base
 {
     public function addEntity($entity)
     {
-        this[] = clone $entity;
+        $this[] = clone $entity;
         return $this;
     }
 }

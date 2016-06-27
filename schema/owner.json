@@ -15,6 +15,7 @@
         },
         "id": 7,
         "name": "Berlin-Brandenburg",
+        "url": "http://service.berlin.de",
         "organisations": [
             {
                 "id": 456
@@ -30,6 +31,9 @@
         },
         "name": {
             "type": "string"
+        },
+        "url": {
+        	"type": "string"
         },
         "organisations": {
             "type": "array",
