@@ -106,7 +106,7 @@ class Department extends Base
      * write a department
      *
      * @param
-     * departmentId
+     * Department $entity
      *
      * @return Entity
      */
