@@ -188,7 +188,7 @@ class Scope extends Base implements MappingInterface
         $data['wartenrsperre'] = $entity->getStatus('ticketprinter', 'deactivated');
 
         $data = array_filter($data, function ($value) {
-            return ($value !== null && $value !== false && $value !== '');
+            return ($value !== null && $value !== false);
         });
             return $data;
     }
