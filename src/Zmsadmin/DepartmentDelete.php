@@ -24,12 +24,13 @@ class DepartmentDelete extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        $entityId = Validator::value($args['id'])->isNumber()->getValue();
         try {
             \App::$http->readDeleteResult(
-                '/department/'. $args['id'] .'/'
+                '/department/'. $entityId .'/'
             )->getEntity();
             return Helper\Render::redirect(
-                'owner',
+                'owner_overview',
                 array(),
                 array(
                     'success' => 'department_deleted'

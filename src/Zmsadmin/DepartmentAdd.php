@@ -7,6 +7,7 @@
 namespace BO\Zmsadmin;
 
 use BO\Zmsentities\Department as Entity;
+use BO\Mellon\Validator;
 
 /**
   * Handle requests concerning services
@@ -24,13 +25,11 @@ class DepartmentAdd extends BaseController
     ) {
 
         $input = $request->getParsedBody();
-        if (array_key_exists('save', $input)) {
+        if (is_array($input) && array_key_exists('save', $input)) {
             try {
                 $entity = new Entity($input);
-                $department = \App::$http->readPostResult(
-                    '/department/'. $entity->id .'/',
-                    $entity
-                )->getEntity();
+                $department = \App::$http->readPostResult('/department/add/', $entity)
+                    ->getEntity();
                 return Helper\Render::redirect(
                     'department',
                     array(

@@ -51,7 +51,7 @@
 \App::$slim->map(['GET', 'POST'], '/department/{id:\d+}/', '\BO\Zmsadmin\Department')
     ->setName("department");
 
-\App::$slim->map(['GET', 'POST'], '/department/add/{organisation_id:\d+}/', '\BO\Zmsadmin\DepartmentAdd')
+\App::$slim->map(['GET', 'POST'], '/department/add/', '\BO\Zmsadmin\DepartmentAdd')
     ->setName("department_add");
 
     \App::$slim->get('/department/delete/{id:\d+}/', '\BO\Zmsadmin\DepartmentDelete')
@@ -60,11 +60,24 @@
 \App::$slim->map(['GET', 'POST'], '/organisation/{id:\d+}/', '\BO\Zmsadmin\Organisation')
     ->setName("organisation");
 
-\App::$slim->get('/owner/', '\BO\Zmsadmin\Owner')
+\App::$slim->map(['GET', 'POST'], '/organisation/add/', '\BO\Zmsadmin\OrganisationAdd')
+    ->setName("organisation_add");
+
+\App::$slim->get('/organisation/delete/{id:\d+}/', '\BO\Zmsadmin\OrganisationDelete')
+    ->setName("organisation_delete");
+
+
+\App::$slim->get('/owner/', '\BO\Zmsadmin\OwnerOverview')
+    ->setName("owner_overview");
+
+\App::$slim->map(['GET', 'POST'], '/owner/{id:\d+}/', '\BO\Zmsadmin\Owner')
     ->setName("owner");
 
-\App::$slim->get('/owner/{id:\d+}/', '\BO\Zmsadmin\OwnerEdit')
-    ->setName("ownerEdit");
+\App::$slim->map(['GET', 'POST'], '/owner/add/', '\BO\Zmsadmin\OwnerAdd')
+    ->setName("owner_add");
+
+\App::$slim->get('/owner/delete/{id:\d+}/', '\BO\Zmsadmin\OwnerDelete')
+    ->setName("owner_delete");
 
 \App::$slim->get('/availability/day/', '\BO\Zmsadmin\Availability')
     ->setName("availability_day");
