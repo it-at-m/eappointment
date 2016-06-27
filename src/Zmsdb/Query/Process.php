@@ -35,8 +35,14 @@ class Process extends Base implements MappingInterface
         return 'SELECT A.`BuergerID`+1 AS `nextid`
             FROM `' . self::getTablename() . '` A
                 LEFT JOIN `' . self::getTablename() . '` B ON A.BuergerID+1 = B.BuergerID
-            WHERE B.`BuergerID` IS NULL AND A.`BuergerID` > 10000
+            WHERE B.`BuergerID` IS NULL AND A.`BuergerID` > 100000
             ORDER BY A.`BuergerID` LIMIT 1';
+    }
+
+    public function getFirstSixDigitProcessId()
+    {
+        return 'SELECT * FROM `' . self::getTablename() . '` A
+            WHERE A.`BuergerID` = 100000';
     }
 
     public function addJoin()

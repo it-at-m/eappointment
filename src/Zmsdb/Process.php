@@ -173,8 +173,15 @@ class Process extends Base
 
     public function getNewProcessId($query)
     {
+        if (!$this->getReader()->fetchValue(
+            $query->getFirstSixDigitProcessId()
+        )
+        ) {
+            return 100000;
+        }
         return $this->getReader()
-        ->fetchValue($query->getQueryNewProcessId());
+           ->fetchValue($query->getQueryNewProcessId());
+
     }
 
     public function getLock($query)
