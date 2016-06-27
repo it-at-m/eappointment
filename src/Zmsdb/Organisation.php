@@ -63,13 +63,13 @@ class Organisation extends Base
     }
 
     /**
-     * remove an organisation
-     *
-     * @param
-     * itemId
-     *
-     * @return Resource Status
-     */
+    * remove an organisation
+    *
+    * @param
+    * itemId
+    *
+    * @return Resource Status
+    */
     public function deleteEntity($itemId)
     {
         $query =  new Query\Organisation(Query\Base::DELETE);
