@@ -13,6 +13,7 @@ use \BO\Zmsdb\Owner as Query;
 /**
   * Handle requests concerning services
   */
+
 class OwnerGet extends BaseController
 {
     /**

@@ -561,7 +561,7 @@
 
 /**
  *  @swagger
- *  "/department/":
+ *  "/department/add/":
  *      post:
  *          description: Add a new department
  *          parameters:
@@ -588,7 +588,7 @@
  *              404:
  *                  description: "Missing required properties in the department"
  */
-\App::$slim->post('/department/',
+\App::$slim->post('/department/add/',
     '\BO\Zmsapi\DepartmentAdd')
     ->setName("DepartmentAdd");
 
@@ -903,6 +903,40 @@
 
 /**
  *  @swagger
+ *  "/owner/add/":
+ *      post:
+ *          description: Add a new owner
+ *          parameters:
+ *              -   name: owner
+ *                  description: owner data to add
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/owner.json"
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/department.json"
+ *              404:
+ *                  description: "Missing required properties in the owner"
+ */
+\App::$slim->post('/owner/add/',
+    '\BO\Zmsapi\OwnerAdd')
+    ->setName("OwnerAdd");
+
+
+/**
+ *  @swagger
  *  "/owner/{id}/":
  *      delete:
  *          description: Deletes an owner
@@ -1088,6 +1122,39 @@
 \App::$slim->get('/organisation/{id:\d{1,11}}/hash/',
     '\BO\Zmsapi\OrganisationHash')
     ->setName("OrganisationHash");
+
+/**
+ *  @swagger
+ *  "/organisation/add/":
+ *      post:
+ *          description: Add a new organisation
+ *          parameters:
+ *              -   name: organisation
+ *                  description: organisation data to add
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/organisation.json"
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/organisation.json"
+ *              404:
+ *                  description: "Missing required properties in the organisation"
+ */
+\App::$slim->post('/organisation/add/',
+    '\BO\Zmsapi\OrganisationAdd')
+    ->setName("OrganisationAdd");
 
 /**
  *  @swagger

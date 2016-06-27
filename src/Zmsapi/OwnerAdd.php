@@ -13,17 +13,17 @@ use \BO\Zmsdb\Owner as Query;
 /**
   * Handle requests concerning services
   */
-class OwnerUpdate extends BaseController
+class OwnerAdd extends BaseController
 {
     /**
      * @return String
      */
-    public static function render($itemId)
+    public static function render()
     {
         $message = Response\Message::create(Render::$request);
         $input = Validator::input()->isJson()->getValue();
         $entity = new \BO\Zmsentities\Owner($input);
-        $message->data = (new Query)->updateEntity($itemId, $entity);
+        $message->data = (new Query())->writeEntity($entity);
         Render::lastModified(time(), '0');
         Render::json($message);
     }
