@@ -23,6 +23,7 @@
  *  "/availability/{id}/":
  *      get:
  *          description: Get an availability by id
+ *          x-since: 2.4.0
  *          parameters:
  *              -   name: id
  *                  description: availability number
