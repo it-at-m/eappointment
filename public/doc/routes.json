@@ -2,6 +2,7 @@
 	"/availability/{id}/": {
 		"get": {
 			"description": "Get an availability by id",
+			"x-since": "2.4.0",
 			"parameters": [
 				{
 					"name": "id",
@@ -571,6 +572,45 @@
 							}
 						}
 					}
+				}
+			}
+		},
+		"post": {
+			"description": "Add a new department",
+			"parameters": [
+				{
+					"name": "department",
+					"description": "department data to add",
+					"required": true,
+					"in": "body",
+					"schema": {
+						"$ref": "schema/department.json"
+					}
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/department.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "Missing required properties in the department"
 				}
 			}
 		}
@@ -1669,6 +1709,51 @@
 			}
 		}
 	},
+	"/provider/{source}/": {
+		"get": {
+			"description": "Get a list of provider by source",
+			"parameters": [
+				{
+					"name": "source",
+					"description": "provider source like 'dldb'",
+					"in": "path",
+					"required": true,
+					"type": "string"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				},
+				{
+					"name": "isAssigned",
+					"description": "get a list of provider that are already assigned to a scope",
+					"in": "query",
+					"type": "boolean"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/provider.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "provider id for source does not exists"
+				}
+			}
+		}
+	},
 	"/provider/{source}/request/{csv}/": {
 		"get": {
 			"description": "Get a list of provider by request numbers",
@@ -1769,6 +1854,45 @@
 		}
 	},
 	"/scope/": {
+		"post": {
+			"description": "Add a new scope",
+			"parameters": [
+				{
+					"name": "scope",
+					"description": "scope data to add",
+					"required": true,
+					"in": "body",
+					"schema": {
+						"$ref": "schema/scope.json"
+					}
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/scope.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "Missing required properties in the scope"
+				}
+			}
+		},
 		"get": {
 			"description": "Get a list of scopes",
 			"parameters": [

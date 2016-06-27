@@ -1,6 +1,4 @@
 node_modules
 vendor
 config.php
-
-composer.lock
 tags
