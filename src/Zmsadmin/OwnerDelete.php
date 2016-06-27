@@ -8,13 +8,13 @@ namespace BO\Zmsadmin;
 
 use BO\Mellon\Validator;
 use BO\Slim\Render;
-use BO\Zmsentities\Department as Entity;
+use BO\Zmsentities\Owner as Entity;
 
 /**
   * Handle requests concerning services
   *
   */
-class DepartmentDelete extends BaseController
+class OwnerDelete extends BaseController
 {
     /**
      * @return String
@@ -25,15 +25,16 @@ class DepartmentDelete extends BaseController
         array $args
     ) {
         $entityId = Validator::value($args['id'])->isNumber()->getValue();
+
         try {
             \App::$http->readDeleteResult(
-                '/department/'. $entityId .'/'
+                '/owner/'. $entityId .'/'
             )->getEntity();
             return Helper\Render::redirect(
                 'owner_overview',
                 array(),
                 array(
-                    'success' => 'department_deleted'
+                    'success' => 'owner_deleted'
                 )
             );
         } catch (\Exception $exception) {

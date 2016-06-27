@@ -6,14 +6,14 @@
 
 namespace BO\Zmsadmin;
 
-use BO\Zmsentities\Department as Entity;
+use BO\Zmsentities\Owner as Entity;
 use BO\Mellon\Validator;
 
 /**
   * Handle requests concerning services
   *
   */
-class DepartmentAdd extends BaseController
+class OwnerAdd extends BaseController
 {
     /**
      * @return String
@@ -28,15 +28,15 @@ class DepartmentAdd extends BaseController
         if (is_array($input) && array_key_exists('save', $input)) {
             try {
                 $entity = new Entity($input);
-                $department = \App::$http->readPostResult('/department/add/', $entity)
+                $entity = \App::$http->readPostResult('/owner/add/', $entity)
                     ->getEntity();
                 return Helper\Render::redirect(
-                    'department',
+                    'owner',
                     array(
-                        'id' => $department->id
+                        'id' => $entity->id
                     ),
                     array(
-                        'success' => 'department_created'
+                        'success' => 'owner_created'
                     )
                 );
             } catch (\Exception $exception) {
@@ -44,8 +44,8 @@ class DepartmentAdd extends BaseController
             }
         }
 
-        return Helper\Render::checkedHtml(self::$errorHandler, $response, 'page/department.twig', array(
-            'title' => 'Standort',
+        return Helper\Render::checkedHtml(self::$errorHandler, $response, 'page/owner.twig', array(
+            'title' => 'Kunde',
             'action' => 'add',
             'menuActive' => 'owner'
         ));

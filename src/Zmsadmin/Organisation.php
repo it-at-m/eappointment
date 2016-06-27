@@ -6,7 +6,6 @@
 
 namespace BO\Zmsadmin;
 
-use BO\Slim\Render;
 use BO\Zmsentities\Organisation as Entity;
 use BO\Mellon\Validator;
 
@@ -19,38 +18,44 @@ class Organisation extends BaseController
     /**
      * @return String
      */
+
     public function __invoke(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $organisationId = Validator::value($args['id'])->isNumber()->getValue();
-        $organisation = \App::$http->readGetResult(
-            '/organisation/'. $organisationId .'/'
-        )->getEntity();
 
-        if (!isset($organisation['id'])) {
-            return \BO\Slim\Render::withError($response, 'page/404.twig', array());
+        $entityId = Validator::value($args['id'])->isNumber()->getValue();
+        $entity = \App::$http->readGetResult('/organisation/'. $entityId .'/')->getEntity();
+
+        if (null === $entity || !$entity->hasId()) {
+            return \BO\Slim\Render::withHtml($response, 'page/404.twig', array());
         }
 
         $input = $request->getParsedBody();
-        if (array_key_exists('save', (array)$input)) {
-            $entity = new Entity($input);
-            $entity->id = $organisationId;
-            $organisation = \App::$http->readPostResult(
-                '/organisation/'. $entity->id .'/',
-                $entity
-            )->getEntity();
-        } elseif (array_key_exists('delete', (array)$input)) {
-            $organisation = \App::$http->readDeleteResult(
-                '/organisation/'. $organisationId .'/'
-            )->getEntity();
+        if (array_key_exists('save', (array) $input)) {
+            try {
+                $entity = new Entity($input);
+                $entity->id = $entityId;
+                $entity = \App::$http->readPostResult(
+                    '/organisation/'. $entity->id .'/',
+                    $entity
+                )->getEntity();
+                self::$errorHandler->success = 'organisation_saved';
+            } catch (\Exception $exception) {
+                return Helper\Render::error($exception);
+            }
         }
 
-        return \BO\Slim\Render::withHtml($response, 'page/organisation.twig', array(
-            'title' => 'Bezirk - Einrichtung und Administration',
-            'organisation' => $organisation->getArrayCopy(),
-            'menuActive' => 'owner'
-        ));
+        return Helper\Render::checkedHtml(
+            self::$errorHandler,
+            $response,
+            'page/organisation.twig',
+            array(
+                'title' => 'Bezirk - Einrichtung und Administration',
+                'organisation' => $entity->getArrayCopy(),
+                'menuActive' => 'owner'
+            )
+        );
     }
 }

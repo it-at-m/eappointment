@@ -78,7 +78,6 @@ class Render extends \BO\Slim\Render
         self::html(
             'page/failed.twig',
             array(
-                "basket" => $_SESSION['basket'],
                 "title" => "Bitte entschuldigen Sie den Fehler",
                 "debug" => \App::DEBUG,
                 "failed" => $exception->getMessage(),
