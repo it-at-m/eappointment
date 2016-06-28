@@ -118,7 +118,6 @@ class Location extends Base
                     ]
                 ]);
                 $limit = 5;
-                $sort = false;
             }
         } elseif ('' === trim($querystring)) {
             // if empty, find all and trust in the filter

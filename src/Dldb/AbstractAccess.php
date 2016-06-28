@@ -70,8 +70,9 @@ class AbstractAccess
             $actionType = 'search';
             $instanceName = $this->getInstanceOnName($functionName, 6);
             $actionName = substr($functionName, 6 + strlen($instanceName));
-            if (!$actionName) {
-                $actionName = 'All';
+            if (! $actionName) {
+                $actionType = "read";
+                $actionName = 'SearchResultList';
             }
         }
         $accessInstance = $this->getInstanceCompatibilities();

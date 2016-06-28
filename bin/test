@@ -8,4 +8,4 @@ echo "Testing application"
 cd $ROOT
 $ROOT/vendor/bin/phpcs --standard=psr2 src/ || exit 1
 $ROOT/vendor/bin/phpmd src/ text phpmd.rules.xml || exit 1
-#$ROOT/vendor/bin/phpunit || exit 1
+$ROOT/vendor/bin/phpunit || exit 1

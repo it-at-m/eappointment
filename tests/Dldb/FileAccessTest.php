@@ -24,15 +24,15 @@ class FileTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayHasKey(LOCATION_SINGLE, $locationList);
         $serviceList = $access->fromService()->fetchList(LOCATION_CSV);
         $this->assertArrayHasKey(SERVICE_SINGLE, $serviceList);
-        $authorityList = $access->fromAuthority()->fetchList([SERVICE_SINGLE]);
+        $authorityList = $access->fromAuthority()->fetchList(SERVICE_SINGLE);
         $this->assertArrayHasKey(12675, $authorityList);
         $serviceList = $access->fromService()->fetchFromCsv(SERVICE_CSV);
         $this->assertArrayHasKey(SERVICE_SINGLE, $serviceList);
         $locationList = $access->fromLocation()->fetchFromCsv(LOCATION_CSV);
         $this->assertArrayHasKey(LOCATION_SINGLE, $locationList);
-        $results = $access->fromLocation()->searchAll('Spandau', SERVICE_CSV);
+        $results = $access->fromLocation()->readSearchResultList('Spandau', SERVICE_CSV);
         $this->assertTrue(count($results) > 0, "No locations found");
-        $results = $access->fromService()->searchAll('Pass', LOCATION_CSV);
+        $results = $access->fromService()->readSearchResultList('Pass', LOCATION_CSV);
         $this->assertTrue(count($results) > 0, "No services found");
 
         $topicList = $access->fromTopic()->fetchList();
@@ -57,7 +57,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
         $officeList = $access->fromOffice()->fetchList();
         $this->assertArrayHasKey('auslandsamt', $officeList);
 
-        $authorityList = $access->fromAuthority()->fetchOffice('auslandsamt');
+        $authorityList = $access->fromAuthority()->readListByOfficePath('auslandsamt');
         $this->assertArrayHasKey(12760, $authorityList);
 
         $translatedLocation = $access->fromLocation('en')->fetchId(121885);
@@ -78,7 +78,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayHasKey(LOCATION_SINGLE, $locationList);
         $serviceList = $access->fetchServiceList(LOCATION_CSV);
         $this->assertArrayHasKey(SERVICE_SINGLE, $serviceList);
-        $authorityList = $access->fetchAuthorityList([SERVICE_SINGLE]);
+        $authorityList = $access->fetchAuthorityList(SERVICE_SINGLE);
         $this->assertArrayHasKey(12675, $authorityList);
         $serviceList = $access->fetchServiceFromCsv(SERVICE_CSV);
         $this->assertArrayHasKey(SERVICE_SINGLE, $serviceList);
