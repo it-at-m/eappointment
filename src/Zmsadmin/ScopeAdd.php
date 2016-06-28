@@ -23,12 +23,25 @@ class ScopeAdd extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        $providerAssigned = \App::$http->readGetResult(
+            '/provider/dldb/',
+            array(
+                'isAssigned' => true
+            )
+        )->getCollection()->sortByName();
+
+        $providerNotAssigned = \App::$http->readGetResult(
+            '/provider/dldb/',
+            array(
+                'isAssigned' => false
+            )
+        )->getCollection()->sortByName();
 
         $input = $request->getParsedBody();
         if (is_array($input) && array_key_exists('save', $input)) {
             try {
                 $entity = new Entity($input);
-                $entity = \App::$http->readPostResult('/scope/'. $entity->id .'/', $entity)
+                $entity = \App::$http->readPostResult('/scope/add/', $entity)
                     ->getEntity();
                 return Helper\Render::redirect(
                     'scope',
@@ -47,7 +60,12 @@ class ScopeAdd extends BaseController
         return Helper\Render::checkedHtml(self::$errorHandler, $response, 'page/scope.twig', array(
             'title' => 'Standort',
             'action' => 'add',
-            'menuActive' => 'owner'
+            'menuActive' => 'owner',
+            'parentId' => Validator::value($args['parent_id'])->isNumber()->getValue(),
+            'providerList' => array(
+                'notAssigned' => $providerNotAssigned,
+                'assigned' => $providerAssigned
+            )
         ));
     }
 }
