@@ -6,6 +6,11 @@ class Scope extends Schema\Entity
 
     public static $schema = "scope.json";
 
+    public function hasId()
+    {
+        return (array_key_exists('id', $this)) ? true : false;
+    }
+
     public function getProviderId()
     {
         if (array_key_exists('provider', $this)) {
@@ -52,19 +57,19 @@ class Scope extends Schema\Entity
         return ($this->preferences['notifications']['headsUpContent']);
     }
 
-    public function getPreference($preferenceKey, $index)
+    public function getPreference($preferenceKey, $index, $isCheckBox = false)
     {
-        if (array_key_exists($preferenceKey, $this->preferences)) {
+        if (isset($this->preferences) && array_key_exists($preferenceKey, $this->preferences)) {
             if (array_key_exists($index, $this->preferences[$preferenceKey])) {
-                return $this->preferences[$preferenceKey][$index];
+                return ($isCheckBox) ? 1 : $this->preferences[$preferenceKey][$index];
             }
         }
-        return null;
+        return ($isCheckBox) ? 0 : null;
     }
 
     public function getStatus($statusKey, $index)
     {
-        if (array_key_exists($statusKey, $this->status)) {
+        if (isset($this->status) && array_key_exists($statusKey, $this->status)) {
             if (array_key_exists($index, $this->status[$statusKey])) {
                 return $this->status[$statusKey][$index];
             }
@@ -74,7 +79,7 @@ class Scope extends Schema\Entity
 
     public function getContactEmail()
     {
-        if (array_key_exists('email', $this->contact)) {
+        if (isset($this->contact) && array_key_exists('email', $this->contact)) {
             return $this->contact['email'];
         }
         return null;
