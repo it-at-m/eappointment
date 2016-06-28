@@ -27,6 +27,11 @@ RUN test -f /.dockerinit && echo "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.s
 RUN apt-get install -yqq locales
 RUN echo "de_DE.UTF-8 UTF-8" >> /etc/locale.gen && locale-gen
 
+RUN apt-get install -yqq libbz2-dev
+
+# Install PHP extensions
+RUN docker-php-ext-install bz2
+
 # Clean up
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* && rm -rf /usr/src
 
