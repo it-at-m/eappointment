@@ -57,6 +57,16 @@ class Owner extends Base
         return $ownerList;
     }
 
+    public function readByOrganisationId($organisationId, $resolveReferences = 0)
+    {
+        $query = new Query\Owner(Query\Base::SELECT);
+        $query
+            ->addEntityMapping()
+            ->addResolvedReferences($resolveReferences)
+            ->addConditionOrganisationId($organisationId);
+        return $this->fetchOne($query, new Entity());
+    }
+
     /**
     * remove an owner
     *
