@@ -47,7 +47,8 @@ class OrganisationAdd extends BaseController
         return Helper\Render::checkedHtml(self::$errorHandler, $response, 'page/organisation.twig', array(
             'title' => 'Kunde',
             'action' => 'add',
-            'menuActive' => 'organisation'
+            'menuActive' => 'organisation',
+            'parentId' => Validator::value($args['parent_id'])->isNumber()->getValue()
         ));
     }
 }

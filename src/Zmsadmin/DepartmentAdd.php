@@ -47,7 +47,8 @@ class DepartmentAdd extends BaseController
         return Helper\Render::checkedHtml(self::$errorHandler, $response, 'page/department.twig', array(
             'title' => 'Standort',
             'action' => 'add',
-            'menuActive' => 'owner'
+            'menuActive' => 'owner',
+            'parentId' => Validator::value($args['parent_id'])->isNumber()->getValue()
         ));
     }
 }
