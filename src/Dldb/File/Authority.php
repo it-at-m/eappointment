@@ -37,7 +37,7 @@ class Authority extends Base
                 ->fromService($this->locale)
                 ->fetchFromCsv($service_csv);
             $authoritylist = $authoritylist->toListWithAssociatedLocations($locationlist);
-            $authoritylist = new Collection(array_filter((array) $authoritylist, function ($item) use($servicelist) {
+            $authoritylist = new Collection(array_filter((array) $authoritylist, function ($item) use ($servicelist) {
                 $authority = new Entity($item);
                 if ($authority->isInServiceList($servicelist)) {
                     return $authority;

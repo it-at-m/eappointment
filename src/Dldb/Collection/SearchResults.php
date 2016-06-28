@@ -25,8 +25,8 @@ class SearchResults extends Base
         foreach ($this as $results) {
             foreach ($results as $data) {
                 if (count($data)) {
-                   $item = Entity::create($data);
-                   $list[] = $item;
+                    $item = Entity::create($data);
+                    $list[] = $item;
                 }
             }
             $list;
@@ -43,12 +43,12 @@ class SearchResults extends Base
         return null;
     }
 
-    public function sortByType(Array $order)
+    public function sortByType(array $order)
     {
         $list = new self();
-        foreach($order as $type){
-            foreach($this as $item){
-                if($item->getType() == $type){
+        foreach ($order as $type) {
+            foreach ($this as $item) {
+                if ($item->getType() == $type) {
                     $list[] = $item;
                 }
             }

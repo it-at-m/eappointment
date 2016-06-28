@@ -67,7 +67,7 @@ class ElasticSearch
     /**
      * Due to backward compatibility, the first parameter has two possible meanings
      *
-     * @param String $importDirOrLocationFile            
+     * @param String $importDirOrLocationFile
      * @param String $servicesFile
      *            (optional)
      */
