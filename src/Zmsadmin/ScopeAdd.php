@@ -7,6 +7,7 @@
 namespace BO\Zmsadmin;
 
 use BO\Zmsentities\Scope as Entity;
+use BO\Mellon\Validator;
 
 /**
   * Handle requests concerning services
@@ -22,19 +23,17 @@ class ScopeAdd extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-    
+
         $input = $request->getParsedBody();
-        if (array_key_exists('save', $input)) {
+        if (is_array($input) && array_key_exists('save', $input)) {
             try {
                 $entity = new Entity($input);
-                $scope = \App::$http->readPostResult(
-                    '/scope/'. $entity->id .'/',
-                    $entity
-                )->getEntity();
+                $entity = \App::$http->readPostResult('/scope/'. $entity->id .'/', $entity)
+                    ->getEntity();
                 return Helper\Render::redirect(
                     'scope',
                     array(
-                        'id' => $scope->id
+                        'id' => $entity->id
                     ),
                     array(
                         'success' => 'scope_created'
