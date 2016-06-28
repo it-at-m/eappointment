@@ -87,7 +87,7 @@ class Scope extends Schema\Entity
 
     public function getName()
     {
-        if (array_key_exists('name', $this->contact)) {
+        if (isset($this->contact) && array_key_exists('name', $this->contact)) {
             return $this->contact['name'];
         }
     }
