@@ -25,7 +25,6 @@ class Scope extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $scopeId = Validator::value($args['id'])->isNumber()->getValue();
         $providerAssigned = \App::$http->readGetResult(
             '/provider/dldb/',
             array(
@@ -40,19 +39,19 @@ class Scope extends BaseController
             )
         )->getCollection()->sortByName();
 
-        $scope = \App::$http->readGetResult('/scope/' . $scopeId . '/')
-            ->getEntity();
+        $entityId = Validator::value($args['id'])->isNumber()->getValue();
+        $entity = \App::$http->readGetResult('/scope/' . $entityId . '/')->getEntity();
 
-        if (! isset($scope['id'])) {
-            return Helper\Render::withError($response, 'page/404.twig', array());
+        if (!$entity->hasId()) {
+            return Helper\Render::withHtml($response, 'page/404.twig', array());
         }
 
         $input = $request->getParsedBody();
         if (is_array($input) && array_key_exists('save', $input)) {
             try {
                 $entity = new Entity($input);
-                $entity->id = $scopeId;
-                $scope = \App::$http->readPostResult('/scope/' . $entity->id . '/', $entity)
+                $entity->id = $entityId;
+                $entity = \App::$http->readPostResult('/scope/' . $entity->id . '/', $entity)
                     ->getEntity();
                 self::$errorHandler->success = 'scope_saved';
             } catch (\Exception $exception) {
@@ -67,7 +66,7 @@ class Scope extends BaseController
             array(
                 'title' => 'Standort',
                 'menuActive' => 'owner',
-                'scope' => $scope->getArrayCopy(),
+                'scope' => $entity->getArrayCopy(),
                 'providerList' => array(
                     'notAssigned' => $providerNotAssigned,
                     'assigned' => $providerAssigned

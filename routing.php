@@ -36,6 +36,12 @@
 \App::$slim->get('/scope/{id:\d+}/pickup/', '\BO\Zmsadmin\Pickup')
     ->setName("pickup");
 
+\App::$slim->map(['GET', 'POST'], '/scope/add/', '\BO\Zmsadmin\ScopeAdd')
+    ->setName("scope_add");
+
+\App::$slim->get('/scope/delete/{id:\d+}/', '\BO\Zmsadmin\ScopeDelete')
+    ->setName("scope_delete");
+
 \App::$slim->map(['GET', 'POST'], '/scope/{id:\d+}/pickup/handheld/', '\BO\Zmsadmin\PickupHandheld')
     ->setName("pickup_handheld");
 
