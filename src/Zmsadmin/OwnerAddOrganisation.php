@@ -13,7 +13,7 @@ use BO\Mellon\Validator;
   * Handle requests concerning services
   *
   */
-class OrganisationAdd extends BaseController
+class OwnerAddOrganisation extends BaseController
 {
     /**
      * @return String
@@ -25,10 +25,11 @@ class OrganisationAdd extends BaseController
     ) {
 
         $input = $request->getParsedBody();
+        $parentId = Validator::value($args['id'])->isNumber()->getValue();
         if (is_array($input) && array_key_exists('save', $input)) {
             try {
                 $entity = new Entity($input);
-                $entity = \App::$http->readPostResult('/organisation/add/', $entity)
+                $entity = \App::$http->readPostResult('/owner/'. $parentId .'/organisation/', $entity)
                     ->getEntity();
                 return Helper\Render::redirect(
                     'organisation',
@@ -47,8 +48,7 @@ class OrganisationAdd extends BaseController
         return Helper\Render::checkedHtml(self::$errorHandler, $response, 'page/organisation.twig', array(
             'title' => 'Kunde',
             'action' => 'add',
-            'menuActive' => 'organisation',
-            'parentId' => Validator::value($args['parent_id'])->isNumber()->getValue()
+            'menuActive' => 'organisation'
         ));
     }
 }

@@ -13,7 +13,7 @@ use BO\Mellon\Validator;
   * Handle requests concerning services
   *
   */
-class ScopeAdd extends BaseController
+class DepartmentAddScope extends BaseController
 {
     /**
      * @return String
@@ -37,11 +37,12 @@ class ScopeAdd extends BaseController
             )
         )->getCollection()->sortByName();
 
+        $parentId = Validator::value($args['id'])->isNumber()->getValue();
         $input = $request->getParsedBody();
         if (is_array($input) && array_key_exists('save', $input)) {
             try {
                 $entity = new Entity($input);
-                $entity = \App::$http->readPostResult('/scope/add/', $entity)
+                $entity = \App::$http->readPostResult('/department/'. $parentId .'/scope/', $entity)
                     ->getEntity();
                 return Helper\Render::redirect(
                     'scope',
@@ -61,7 +62,6 @@ class ScopeAdd extends BaseController
             'title' => 'Standort',
             'action' => 'add',
             'menuActive' => 'owner',
-            'parentId' => Validator::value($args['parent_id'])->isNumber()->getValue(),
             'providerList' => array(
                 'notAssigned' => $providerNotAssigned,
                 'assigned' => $providerAssigned
