@@ -36,11 +36,11 @@
 \App::$slim->get('/scope/{id:\d+}/pickup/', '\BO\Zmsadmin\Pickup')
     ->setName("pickup");
 
-\App::$slim->map(['GET', 'POST'], '/scope/add/{parent_id:\d+}/', '\BO\Zmsadmin\ScopeAdd')
-    ->setName("scope_add");
+\App::$slim->map(['GET', 'POST'], '/department/{id:\d+}/scope/', '\BO\Zmsadmin\DepartmentAddScope')
+    ->setName("departmentAddScope");
 
 \App::$slim->get('/scope/delete/{id:\d+}/', '\BO\Zmsadmin\ScopeDelete')
-    ->setName("scope_delete");
+    ->setName("scopeDelete");
 
 \App::$slim->map(['GET', 'POST'], '/scope/{id:\d+}/pickup/handheld/', '\BO\Zmsadmin\PickupHandheld')
     ->setName("pickup_handheld");
@@ -57,20 +57,20 @@
 \App::$slim->map(['GET', 'POST'], '/department/{id:\d+}/', '\BO\Zmsadmin\Department')
     ->setName("department");
 
-\App::$slim->map(['GET', 'POST'], '/department/add/{parent_id:\d+}/', '\BO\Zmsadmin\DepartmentAdd')
-    ->setName("department_add");
+\App::$slim->map(['GET', 'POST'], '/organisation/{id:\d+}/department/', '\BO\Zmsadmin\OrganisationAddDepartment')
+    ->setName("organisationAddDepartment");
 
     \App::$slim->get('/department/delete/{id:\d+}/', '\BO\Zmsadmin\DepartmentDelete')
-    ->setName("department_delete");
+    ->setName("departmentDelete");
 
 \App::$slim->map(['GET', 'POST'], '/organisation/{id:\d+}/', '\BO\Zmsadmin\Organisation')
     ->setName("organisation");
 
-\App::$slim->map(['GET', 'POST'], '/organisation/add/{parent_id:\d+}/', '\BO\Zmsadmin\OrganisationAdd')
-    ->setName("organisation_add");
+\App::$slim->map(['GET', 'POST'], '/owner/{id:\d+}/organisation/', '\BO\Zmsadmin\OwnerAddOrganisation')
+    ->setName("ownerAddOrganisation");
 
 \App::$slim->get('/organisation/delete/{id:\d+}/', '\BO\Zmsadmin\OrganisationDelete')
-    ->setName("organisation_delete");
+    ->setName("organisationDelete");
 
 
 \App::$slim->get('/owner/', '\BO\Zmsadmin\OwnerOverview')
@@ -83,7 +83,7 @@
     ->setName("owner_add");
 
 \App::$slim->get('/owner/delete/{id:\d+}/', '\BO\Zmsadmin\OwnerDelete')
-    ->setName("owner_delete");
+    ->setName("ownerDelete");
 
 \App::$slim->get('/availability/day/', '\BO\Zmsadmin\Availability')
     ->setName("availability_day");
