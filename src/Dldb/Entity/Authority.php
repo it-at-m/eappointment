@@ -112,7 +112,7 @@ class Authority extends Base
 
         foreach ($servicelist as $service) {
             if (array_key_exists('authorities', $service)) {
-                foreach($service['authorities'] as $authority){
+                foreach ($service['authorities'] as $authority) {
                     if ($authority['id'] == $this['id']) {
                         return true;
                     }

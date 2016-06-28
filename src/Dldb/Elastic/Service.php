@@ -99,8 +99,7 @@ class Service extends Base
         $locationsCsvByUser = false;
         if (! $location_csv) {
             $location_csv = $this->fetchLocationCsv($service_csv);
-        }
-        else {
+        } else {
             $locationsCsvByUser = true;
         }
 
@@ -133,7 +132,7 @@ class Service extends Base
             $service = new Entity($result->getData());
             $serviceList[$service['id']] = $service;
         }
-        if($locationsCsvByUser){
+        if ($locationsCsvByUser) {
             $serviceList = $serviceList->containsLocation($location_csv);
         }
         return $serviceList;

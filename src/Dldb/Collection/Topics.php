@@ -16,5 +16,4 @@ class Topics extends Base
         }
         return $nameList;
     }
-
 }

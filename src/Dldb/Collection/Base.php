@@ -4,6 +4,7 @@
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 namespace BO\Dldb\Collection;
+
 use \BO\Dldb\Helper\Sorter;
 
 class Base extends \ArrayObject
