@@ -116,9 +116,12 @@ class Department extends Base implements MappingInterface
         return $this;
     }
 
-    public function reverseEntityMapping(\BO\Zmsentities\Department $entity)
+    public function reverseEntityMapping(\BO\Zmsentities\Department $entity, $parentId = null)
     {
         $data = array();
+        if (null !== $parentId) {
+            $data['OrganisationsID'] = $parentId;
+        }
         $data['Adresse'] = $entity->contact['street'];
         $data['Name'] = $entity->name;
         $data['Ansprechpartner'] = $entity->getContactPerson();

@@ -110,10 +110,15 @@ class Department extends Base
      *
      * @return Entity
      */
-    public function writeEntity(\BO\Zmsentities\Department $entity)
+    public function writeEntity(\BO\Zmsentities\Department $entity, $parentId)
     {
         $query = new Query\Department(Query\Base::INSERT);
-        $values = $query->reverseEntityMapping($entity);
+        $values = $query->reverseEntityMapping($entity, $parentId);
+
+        //get owner by organisation
+        $owner = (new Owner())->readByOrganisationId($parentId);
+        $values['KundenID'] = $owner->id;
+
         $query->addValues($values);
         $this->writeItem($query);
         $lastInsertId = $this->getWriter()->lastInsertId();

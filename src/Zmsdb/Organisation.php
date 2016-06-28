@@ -85,10 +85,10 @@ class Organisation extends Base
      *
      * @return Entity
      */
-    public function writeEntity(\BO\Zmsentities\Organisation $entity)
+    public function writeEntity(\BO\Zmsentities\Organisation $entity, $parentId)
     {
         $query = new Query\Organisation(Query\Base::INSERT);
-        $values = $query->reverseEntityMapping($entity);
+        $values = $query->reverseEntityMapping($entity, $parentId);
         $query->addValues($values);
         $this->writeItem($query);
         $lastInsertId = $this->getWriter()->lastInsertId();
@@ -103,11 +103,11 @@ class Organisation extends Base
      *
      * @return Entity
      */
-    public function updateEntity($organisationId, \BO\Zmsentities\Organisation $entity)
+    public function updateEntity($organisationId, \BO\Zmsentities\Organisation $entity, $parentId)
     {
         $query = new Query\Organisation(Query\Base::UPDATE);
         $query->addConditionOrganisationId($organisationId);
-        $values = $query->reverseEntityMapping($entity);
+        $values = $query->reverseEntityMapping($entity, $parentId);
         $query->addValues($values);
         $this->writeItem($query, 'organisation', $query::TABLE);
         return $this->readEntity($organisationId);

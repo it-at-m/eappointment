@@ -109,10 +109,10 @@ class Scope extends Base
      *
      * @return Entity
      */
-    public function writeEntity(\BO\Zmsentities\Scope $entity)
+    public function writeEntity(\BO\Zmsentities\Scope $entity, $parentId)
     {
         $query = new Query\Scope(Query\Base::INSERT);
-        $values = $query->reverseEntityMapping($entity);
+        $values = $query->reverseEntityMapping($entity, $parentId);
         $query->addValues($values);
         $this->writeItem($query);
         $lastInsertId = $this->getWriter()->lastInsertId();
@@ -127,11 +127,11 @@ class Scope extends Base
      *
      * @return Entity
      */
-    public function updateEntity($scopeId, \BO\Zmsentities\Scope $entity)
+    public function updateEntity($scopeId, \BO\Zmsentities\Scope $entity, $parentId)
     {
         $query = new Query\Scope(Query\Base::UPDATE);
         $query->addConditionScopeId($scopeId);
-        $values = $query->reverseEntityMapping($entity);
+        $values = $query->reverseEntityMapping($entity, $parentId);
         $query->addValues($values);
         $this->writeItem($query, 'scope', $query::TABLE);
         return $this->readEntity($scopeId);

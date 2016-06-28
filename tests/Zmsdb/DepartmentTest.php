@@ -11,7 +11,7 @@ class DepartmentTest extends Base
     {
         $query = new Query();
         $input = $this->getTestEntity();
-        $entity = $query->writeEntity($input);
+        $entity = $query->writeEntity($input, 75);
         $this->assertEntity("\\BO\\Zmsentities\\Department", $entity);
         $this->assertEquals('service@berlinonline.de', $entity->email);
         $this->assertEquals(true, $entity->hasNotificationEnabled());

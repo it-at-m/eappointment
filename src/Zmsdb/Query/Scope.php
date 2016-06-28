@@ -45,7 +45,7 @@ class Scope extends Base implements MappingInterface
         return [
             'hint' => self::expression('CONCAT(`scope`.`standortinfozeile`, " | ", `scope`.`Hinweis`)'),
             'id' => 'scope.StandortID',
-            'name' => 'scope.Bezeichnung',
+            'contact__name' => 'scope.Bezeichnung',
             'contact__street' => 'scope.Adresse',
             'contact__email' => 'scope.emailstandortadmin',
             'contact__country' => self::expression('"Germany"'),
@@ -135,10 +135,10 @@ class Scope extends Base implements MappingInterface
         return $this;
     }
 
-    public function reverseEntityMapping(\BO\Zmsentities\Scope $entity)
+    public function reverseEntityMapping(\BO\Zmsentities\Scope $entity, $parentId = null)
     {
         $data = array();
-        $data['BehoerdenID'] = $entity->getDepartmentId();
+        $data['BehoerdenID'] = (null !== $parentId) ? $parentId : $entity->getDepartmentId();
         $data['InfoDienstleisterID'] = $entity->getProviderId();
         $data['emailstandortadmin'] = $entity->getContactEMail();
         $data['standortinfozeile'] = trim(current($entity->hint));

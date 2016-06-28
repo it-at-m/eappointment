@@ -47,9 +47,12 @@ class Organisation extends Base implements MappingInterface
         return $this;
     }
 
-    public function reverseEntityMapping(\BO\Zmsentities\Organisation $entity)
+    public function reverseEntityMapping(\BO\Zmsentities\Organisation $entity, $parentId = null)
     {
         $data = array();
+        if (null !== $parentId) {
+            $data['KundenID'] = $parentId;
+        }
         $data['Organisationsname'] = $entity->name;
         $data['Anschrift'] = $entity->contact['street'];
         $data['kioskpasswortschutz'] = ($entity->getPreference('ticketPrinterProtectionEnabled')) ? 1 : 0;
