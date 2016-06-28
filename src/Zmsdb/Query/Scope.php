@@ -43,7 +43,7 @@ class Scope extends Base implements MappingInterface
     public function getEntityMapping()
     {
         return [
-            'hint' => self::expression('CONCAT(`scope`.`standortinfozeile`, " ", `scope`.`Hinweis`)'),
+            'hint' => self::expression('CONCAT(`scope`.`standortinfozeile`, " | ", `scope`.`Hinweis`)'),
             'id' => 'scope.StandortID',
             'name' => 'scope.Bezeichnung',
             'contact__street' => 'scope.Adresse',
@@ -71,7 +71,9 @@ class Scope extends Base implements MappingInterface
             'preferences__queue__callDisplayText' => 'scope.aufrufanzeigetext',
             'preferences__queue__firstNumber' => 'scope.startwartenr',
             'preferences__queue__lastNumber' => 'scope.endwartenr',
-            'preferences__queue__processingTimeAverage' => 'scope.Bearbeitungszeit',
+            'preferences__queue__processingTimeAverage' => self::expression(
+                'FLOOR(TIME_TO_SEC(`scope`.`Bearbeitungszeit`) / 60)'
+            ),
             'preferences__queue__publishWaitingTimeEnabled' => 'scope.wartezeitveroeffentlichen',
             'preferences__queue__statisticsEnabled' =>  self::expression('NOT `scope`.`ohnestatistik`'),
             'preferences__survey__emailContent' => 'scope.kundenbef_emailtext',
@@ -139,43 +141,43 @@ class Scope extends Base implements MappingInterface
         $data['BehoerdenID'] = $entity->getDepartmentId();
         $data['InfoDienstleisterID'] = $entity->getProviderId();
         $data['emailstandortadmin'] = $entity->getContactEMail();
-        $data['standortinfozeile'] = '';
-        $data['Hinweis'] = $entity->hint;
+        $data['standortinfozeile'] = trim(current($entity->hint));
+        $data['Hinweis'] = trim(end($entity->hint));
         $data['Bezeichnung'] = $entity->getName();
         $data['standortkuerzel'] = $entity->shortName;
         $data['Adresse'] = $entity->contact['street'];
         $data['loeschdauer'] = $entity->getPreference('appointment', 'deallocationDuration');
         $data['Termine_bis'] = $entity->getPreference('appointment', 'endInDaysDefault');
         $data['Termine_ab'] = $entity->getPreference('appointment', 'startInDaysDefault');
-        $data['mehrfachtermine'] = $entity->getPreference('appointment', 'multipleSlotsEnabled');
+        $data['mehrfachtermine'] = $entity->getPreference('appointment', 'multipleSlotsEnabled', true);
         $data['reservierungsdauer'] = $entity->getPreference('appointment', 'reservationDuration');
         $data['qtv_url'] = $entity->getPreference('client', 'alternateAppointmentUrl');
-        $data['anmerkungPflichtfeld'] = $entity->getPreference('client', 'amendmentRequired');
-        $data['anmerkungLabel'] = $entity->getPreference('client', 'amendmentLabel');
-        $data['emailPflichtfeld'] = $entity->getPreference('client', 'emailRequired');
-        $data['telefonaktiviert'] = $entity->getPreference('client', 'telephoneActivated');
-        $data['telefonPflichtfeld'] = $entity->getPreference('client', 'telephoneRequired');
+        $data['anmerkungPflichtfeld'] = $entity->getPreference('client', 'amendmentRequired', true);
+        $data['anmerkungLabel'] = $entity->getPreference('client', 'amendmentLabel', true);
+        $data['emailPflichtfeld'] = $entity->getPreference('client', 'emailRequired', true);
+        $data['telefonaktiviert'] = $entity->getPreference('client', 'telephoneActivated', true);
+        $data['telefonPflichtfeld'] = $entity->getPreference('client', 'telephoneRequired', true);
         $data['smsbestaetigungstext'] = $entity->getPreference('notifications', 'confirmationContent');
-        $data['smswmsbestaetigung'] = $entity->getPreference('notifications', 'confirmationEnabled');
-        $data['smswarteschlange'] = $entity->getPreference('notifications', 'enabled');
+        $data['smswmsbestaetigung'] = $entity->getPreference('notifications', 'confirmationEnabled', true);
+        $data['smswarteschlange'] = $entity->getPreference('notifications', 'enabled', true);
         $data['smsbenachrichtigungstext'] = $entity->getPreference('notifications', 'headsUpContent');
         $data['smsbenachrichtigungsfrist'] = $entity->getPreference('notifications', 'headsUpTime');
         $data['ausgabeschaltername'] = $entity->getPreference('pickup', 'alternateName');
-        $data['defaultabholerstandort'] = $entity->getPreference('pickup', 'isDefault');
+        $data['defaultabholerstandort'] = $entity->getPreference('pickup', 'isDefault', true);
         $data['anzahlwiederaufruf'] = $entity->getPreference('queue', 'callCountMax');
         $data['aufrufanzeigetext'] = $entity->getPreference('queue', 'callDisplayText');
         $data['startwartenr'] = $entity->getPreference('queue', 'firstNumber');
         $data['endwartenr'] = $entity->getPreference('queue', 'lastNumber');
-        $data['Bearbeitungszeit'] = $entity->getPreference('queue', 'processingTimeAverage');
-        $data['wartezeitveroeffentlichen'] = $entity->getPreference('queue', 'publishWaitingTimeEnabled');
+        $data['Bearbeitungszeit'] = gmdate("H:i", $entity->getPreference('queue', 'processingTimeAverage') * 60);
+        $data['wartezeitveroeffentlichen'] = $entity->getPreference('queue', 'publishWaitingTimeEnabled', true);
         $data['ohnestatistik'] = (0 == $entity->getPreference('queue', 'statisticsEnabled')) ? 1 : 0;
         $data['kundenbef_emailtext'] = $entity->getPreference('survey', 'emailContent');
-        $data['kundenbefragung'] = $entity->getPreference('survey', 'enabled');
+        $data['kundenbefragung'] = $entity->getPreference('survey', 'enabled', true);
         $data['kundenbef_label'] = $entity->getPreference('survey', 'label');
         $data['wartenrhinweis'] = $entity->getPreference('ticketprinter', 'deactivatedText');
-        $data['smsnachtrag'] = $entity->getPreference('ticketprinter', 'notificationsAmendmentEnabled');
+        $data['smsnachtrag'] = $entity->getPreference('ticketprinter', 'notificationsAmendmentEnabled', true);
         $data['smskioskangebotsfrist'] = $entity->getPreference('ticketprinter', 'notificationsDelay');
-        $data['notruffunktion'] = $entity->getPreference('workstation', 'emergencyEnabled');
+        $data['notruffunktion'] = $entity->getPreference('workstation', 'emergencyEnabled', true);
         $data['notrufantwort'] = $entity->getStatus('emergency', 'acceptedByWorkstation');
         $data['notrufausgeloest'] = $entity->getStatus('emergency', 'activated');
         $data['notrufinitiierung'] = $entity->getStatus('emergency', 'calledByWorkstation');
