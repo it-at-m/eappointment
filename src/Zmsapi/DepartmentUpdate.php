@@ -18,12 +18,12 @@ class DepartmentUpdate extends BaseController
     /**
      * @return String
      */
-    public static function render($itemId)
+    public static function render($itemId, $parentId)
     {
         $message = Response\Message::create(Render::$request);
         $input = Validator::input()->isJson()->getValue();
         $entity = new \BO\Zmsentities\Department($input);
-        $message->data = (new Query())->updateEntity($itemId, $entity);
+        $message->data = (new Query())->updateEntity($itemId, $entity, $parentId);
         Render::lastModified(time(), '0');
         Render::json($message);
     }

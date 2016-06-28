@@ -561,10 +561,15 @@
 
 /**
  *  @swagger
- *  "/department/add/":
+ *  "/organisation/{id}/department/":
  *      post:
  *          description: Add a new department
  *          parameters:
+ *              -   name: id
+ *                  description: organisation number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
  *              -   name: department
  *                  description: department data to add
  *                  required: true
@@ -588,9 +593,9 @@
  *              404:
  *                  description: "Missing required properties in the department"
  */
-\App::$slim->post('/department/add/',
-    '\BO\Zmsapi\DepartmentAdd')
-    ->setName("DepartmentAdd");
+\App::$slim->post('/organisation/{id:\d{1,11}}/department/',
+    '\BO\Zmsapi\OrganisationAddDepartment')
+    ->setName("OrganisationAddDepartment");
 
 /**
  *  @swagger
@@ -903,7 +908,7 @@
 
 /**
  *  @swagger
- *  "/owner/add/":
+ *  "/owner/":
  *      post:
  *          description: Add a new owner
  *          parameters:
@@ -930,7 +935,7 @@
  *              404:
  *                  description: "Missing required properties in the owner"
  */
-\App::$slim->post('/owner/add/',
+\App::$slim->post('/owner/',
     '\BO\Zmsapi\OwnerAdd')
     ->setName("OwnerAdd");
 
@@ -1125,10 +1130,15 @@
 
 /**
  *  @swagger
- *  "/organisation/add/":
+ *  "/owner/{id}/organisation/":
  *      post:
  *          description: Add a new organisation
  *          parameters:
+ *              -   name: id
+ *                  description: owner number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
  *              -   name: organisation
  *                  description: organisation data to add
  *                  required: true
@@ -1152,9 +1162,9 @@
  *              404:
  *                  description: "Missing required properties in the organisation"
  */
-\App::$slim->post('/organisation/add/',
-    '\BO\Zmsapi\OrganisationAdd')
-    ->setName("OrganisationAdd");
+\App::$slim->post('/owner/{id:\d{1,11}}/organisation/',
+    '\BO\Zmsapi\OwnerAddOrganisation')
+    ->setName("OwnerAddOrganisation");
 
 /**
  *  @swagger
@@ -1617,10 +1627,15 @@
 
 /**
  *  @swagger
- *  "/scope/add/":
+ *  "/department/{id}/scope/":
  *      post:
  *          description: Add a new scope
  *          parameters:
+ *              -   name: parentId
+ *                  description: department number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
  *              -   name: scope
  *                  description: scope data to add
  *                  required: true
@@ -1644,9 +1659,9 @@
  *              404:
  *                  description: "Missing required properties in the scope"
  */
-\App::$slim->post('/scope/add/',
-    '\BO\Zmsapi\ScopeAdd')
-    ->setName("ScopeAdd");
+\App::$slim->post('/department/{id:\d{1,11}}/scope/',
+    '\BO\Zmsapi\DepartmentAddScope')
+    ->setName("DepartmentAddScope");
 
 /**
  *  @swagger
