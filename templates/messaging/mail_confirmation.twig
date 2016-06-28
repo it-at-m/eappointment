@@ -4,7 +4,7 @@
 hiermit bestätigen wir Ihnen Ihren gebuchten Termin am {{ toGermanDateFromTs(date).date }} um {{ toGermanDateFromTs(date).time }}<br />
 Ort: {{ process.scope.provider.name ~ " " ~ process.scope.provider.contact.street ~", " ~ process.scope.provider.contact.postalCode ~ " " ~ process.scope.provider.contact.city }}<br />
 {% if process.scope.hint %}
-({{  process.scope.hint }})
+({{ process.scope.hint|split('|')|first }} {{ process.scope.hint|split('|')|last}})
 {% endif %}<br /><br />
 Ihre Vorgangsnummer ist die <strong>"{{ process.id }}"</strong><br />
 Ihr Code zur Terminabsage oder -änderung lautet <strong>"{{ process.authKey }}"</strong><br /><br />
