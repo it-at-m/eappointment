@@ -13,7 +13,7 @@ define('LOCATION_JSON', FIXTURES . DIRECTORY_SEPARATOR . 'locations_de.json');
 define('SERVICE_JSON', FIXTURES . DIRECTORY_SEPARATOR . 'services_de.json');
 define('TOPICS_JSON', FIXTURES . DIRECTORY_SEPARATOR . 'topic_de.json');
 define('SETTINGS_JSON', FIXTURES . DIRECTORY_SEPARATOR . 'settings.json');
-define('AUTHORITY_JSON', FIXTURES . DIRECTORY_SEPARATOR . 'authoriy_de.json');
+define('AUTHORITY_JSON', FIXTURES . DIRECTORY_SEPARATOR . 'authority_de.json');
 define('ES_HOST', 'localhost');
 define('ES_PORT', '9200');
 define('ES_TRANSPORT', 'Http');
