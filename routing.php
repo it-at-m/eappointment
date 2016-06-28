@@ -1617,7 +1617,7 @@
 
 /**
  *  @swagger
- *  "/scope/":
+ *  "/scope/add/":
  *      post:
  *          description: Add a new scope
  *          parameters:
@@ -1644,7 +1644,7 @@
  *              404:
  *                  description: "Missing required properties in the scope"
  */
-\App::$slim->post('/scope/',
+\App::$slim->post('/scope/add/',
     '\BO\Zmsapi\ScopeAdd')
     ->setName("ScopeAdd");
 
