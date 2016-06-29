@@ -3,30 +3,72 @@
 namespace BO\Zmsdb\Tests;
 
 use \BO\Zmsdb\Scope as Query;
+use \BO\Zmsentities\Scope as Entity;
 
 class ScopeTest extends Base
 {
     public function testBasic()
     {
         $entity = (new Query())->readEntity(141, 1);
-        //var_dump(json_encode($entity, JSON_PRETTY_PRINT));
         $this->assertEntity("\\BO\\Zmsentities\\Scope", $entity);
-        //var_dump(\BO\Zmsdb\Connection\Select::getReadConnection()->getProfiler()->getProfiles());
+        $this->assertEquals('Bürgeramt Heerstraße', $entity->getName());
     }
 
     public function testCluster()
     {
-        $entityList = (new Query())->readByClusterId(109, 1);
-        //var_dump(json_encode($entityList, JSON_PRETTY_PRINT));
+        $entityList = (new Query())->readByClusterId(109);
         $this->assertEntityList("\\BO\\Zmsentities\\Scope", $entityList);
-        //var_dump(\BO\Zmsdb\Connection\Select::getReadConnection()->getProfiler()->getProfiles());
+
+        $entityList = (new Query())->readByClusterId(109, 1);
+        $this->assertEntityList("\\BO\\Zmsentities\\Scope", $entityList);
     }
 
     public function testProvider()
     {
-        $entityList = (new Query())->readByProviderId(122217, 1);
-        //var_dump(json_encode($entityList, JSON_PRETTY_PRINT));
+        $entityList = (new Query())->readByProviderId(122217);
         $this->assertEntityList("\\BO\\Zmsentities\\Scope", $entityList);
-        //var_dump(\BO\Zmsdb\Connection\Select::getReadConnection()->getProfiler()->getProfiles());
+
+        $entityList = (new Query())->readByProviderId(122217, 1);
+        $this->assertEntityList("\\BO\\Zmsentities\\Scope", $entityList);
+    }
+
+    public function testDepartment()
+    {
+        $entityList = (new Query())->readByDepartmentId(78);
+        $this->assertEntityList("\\BO\\Zmsentities\\Scope", $entityList);
+
+        $entityList = (new Query())->readByDepartmentId(78, 1);
+        $this->assertEntityList("\\BO\\Zmsentities\\Scope", $entityList);
+    }
+
+    public function testReadList()
+    {
+        $query = new Query();
+        $input = $this->getTestEntity();
+        $entityList = $query->readList(1);
+        $entityList->addEntity($input);
+        $this->assertEntityList("\\BO\\Zmsentities\\Scope", $entityList);
+        $this->assertEquals(true, $entityList->hasEntity('141')); //Herrstraße exists
+        $this->assertEquals(true, $entityList->hasEntity('123')); //Test Entity exists
+    }
+
+    public function testWriteEntity()
+    {
+        $query = new Query();
+        $input = $this->getTestEntity();
+        $entity = $query->writeEntity($input, 74); //with parent Bürgeramt Otto-Suhr-Allee
+        $this->assertEquals('Flughafen Schönefeld, Landebahn', $entity->getName());
+
+        $entity->contact['name'] = 'Flughafen Schönefeld, Nachsicht';
+        $entity = $query->updateEntity($entity->id, $entity, 74); //with parent Bürgeramt Otto-Suhr-Allee
+        $this->assertEquals('Flughafen Schönefeld, Nachsicht', $entity->getName());
+
+        $deleteTest = $query->deleteEntity($entity->id);
+        $this->assertTrue($deleteTest, "Failed to delete Scope from Database.");
+    }
+
+    protected function getTestEntity()
+    {
+        return $input = (new Entity())->getExample();
     }
 }
