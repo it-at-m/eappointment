@@ -40,10 +40,12 @@
     },
     "properties": {
         "name": {
-            "type": "string"
+            "type": "string",
+             "description": "name of session"
         },
         "id": {
-            "type": "string"
+            "type": "string",
+             "description": "id of session"
         },
         "content": {
             "type": "object",
