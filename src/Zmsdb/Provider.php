@@ -23,7 +23,7 @@ class Provider extends Base
         return $provider;
     }
 
-    public function readList($source, $isAssigned = null, $resolveReferences = 0)
+    public function readList($source, $isAssigned = false, $resolveReferences = 0)
     {
         $providerList = new Collection();
         $query = new Query\Provider(Query\Base::SELECT);

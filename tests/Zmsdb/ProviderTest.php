@@ -8,9 +8,27 @@ class ProviderTest extends Base
 {
     public function testBasic()
     {
-        $entity = (new Query())->readEntity('dldb', 122280);
-        //var_dump(json_encode($entity, JSON_PRETTY_PRINT));
+        $entity = (new Query())->readEntity('dldb', 122280, 1);
         $this->assertEntity("\\BO\\Zmsentities\\Provider", $entity);
-        //var_dump(\BO\Zmsdb\Connection\Select::getReadConnection()->getProfiler()->getProfiles());
+        $this->assertEquals(true, array_key_exists('data', $entity));
+
+        $entity = (new Query())->readEntity('test', 122280, 1);
+        $this->assertEntity("\\BO\\Zmsentities\\Provider", $entity);
+    }
+
+    public function testReadList()
+    {
+        $query = new Query();
+        $collection = $query->readList('dldb');
+        $this->assertEntityList("\\BO\\Zmsentities\\Provider", $collection);
+        $this->assertEquals(true, $collection->hasEntity('121364')); //Kfz-Zulassungsbehörde-Friedr.-Kreuzberg
+    }
+
+    public function testReadListByRequest()
+    {
+        $query = new Query();
+        $collection = $query->readListByRequest('dldb', '120335');
+        $this->assertEntityList("\\BO\\Zmsentities\\Provider", $collection);
+        $this->assertEquals(true, $collection->hasEntity('122210')); //Bürgeramt Halemweg (Außenstelle)
     }
 }

@@ -14,7 +14,9 @@ class OrganisationTest extends Base
 
         $this->assertEntity("\\BO\\Zmsentities\\Organisation", $entity);
         $this->assertEquals('Treptow-Köpenick', $entity->name);
-        $this->assertNotEmpty($entity);
+
+        $entity = $query->readEntity(0); //check empty array return
+        $this->assertEquals(0, count($entity));
     }
 
     public function testReadByOwnerId()

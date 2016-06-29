@@ -15,7 +15,7 @@ class Department extends Base
     public function readEntity($departmentId, $resolveReferences = 0, $disableCache = false)
     {
         if (!$disableCache && array_key_exists($departmentId, self::$departmentCache)) {
-            return $departmentCache[$departmentId];
+            return self::$departmentCache[$departmentId];
         }
         $query = new Query\Department(Query\Base::SELECT);
         $query
@@ -26,7 +26,7 @@ class Department extends Base
         if (isset($department['id'])) {
             $department['scopes'] = (new Scope())->readByDepartmentId($departmentId, $resolveReferences);
             $department['dayoff']  = (new DayOff())->readByDepartmentId($departmentId);
-            $departmentCache[$departmentId] = $department;
+            self::$departmentCache[$departmentId] = $department;
             return $department;
         }
         return array();
@@ -96,10 +96,7 @@ class Department extends Base
                 $departmentId,
             )
         );
-        if ($entityDelete && $emailDelete && $notificationsDelete) {
-            return true;
-        }
-        return false;
+        return ($entityDelete && $emailDelete && $notificationsDelete) ? true : false;
     }
 
     /**

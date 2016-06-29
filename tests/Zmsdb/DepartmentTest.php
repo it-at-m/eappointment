@@ -14,6 +14,7 @@ class DepartmentTest extends Base
         $entity = $query->writeEntity($input, 75);
         $entity = $query->readEntity($entity->id);
 
+        $this->assertNotEmpty($entity);
         $this->assertEntity("\\BO\\Zmsentities\\Department", $entity);
         $this->assertEquals('service@berlinonline.de', $entity->email);
         $this->assertEquals(true, $entity->hasNotificationEnabled());
@@ -26,11 +27,26 @@ class DepartmentTest extends Base
 
         $deleteTest = $query->deleteEntity($entity->id);
         $this->assertTrue($deleteTest, "Failed to delete Department from Database.");
+
+        $entity = $query->readEntity(0); //check empty array return
+        $this->assertEquals(0, count($entity));
+    }
+
+    public function testReadList()
+    {
+        $query = new Query();
+        $input = $this->getTestEntity();
+        $collection = $query->readList();
+        $collection->addDepartment($input);
+        $this->assertEntityList("\\BO\\Zmsentities\\Department", $collection);
+        $this->assertEquals(true, $collection->hasEntity('72')); //Bürgeramt Egon-Erwin-Kirsch-Straße
+        $this->assertEquals(true, $collection->hasEntity('123')); //Test Entity exists
     }
 
     protected function getTestEntity()
     {
         return $input = new Entity(array(
+            'id' => 123,
             'email' => 'service@berlinonline.de',
             'preferences' => [
                 'notifications' => [
