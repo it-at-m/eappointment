@@ -12,8 +12,8 @@ class ScopeList extends Base
 
     public function hasEntity($entityId)
     {
-        foreach ($this as $scopeId) {
-            if ($entityId == $scopeId) {
+        foreach ($this as $scope) {
+            if ($entityId == $scope->id) {
                 return true;
             }
         }
