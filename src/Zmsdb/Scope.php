@@ -55,10 +55,11 @@ class Scope extends Base
         if (count($result)) {
             foreach ($result as $entity) {
                 if (0 == $resolveReferences) {
-                    $scopeList[] = array(
+                    $entity = new Entity(array(
                         'id' => $entity->id,
                         '$ref' => '/scope/'. $entity->id .'/'
-                    );
+                    ));
+                    $scopeList->addEntity($entity);
                 } else {
                     if ($entity instanceof Entity) {
                         $scopeList->addEntity($entity);
@@ -81,10 +82,11 @@ class Scope extends Base
         if (count($result)) {
             foreach ($result as $entity) {
                 if (0 == $resolveReferences) {
-                    $scopeList[] = array(
+                    $entity = new Entity(array(
                         'id' => $entity->id,
                         '$ref' => '/scope/'. $entity->id .'/'
-                    );
+                    ));
+                    $scopeList->addEntity($entity);
                 } else {
                     if ($entity instanceof Entity) {
                         $scopeList->addEntity($entity);
@@ -97,11 +99,20 @@ class Scope extends Base
 
     public function readList($resolveReferences = 0)
     {
+        $scopeList = new Collection();
         $query = new Query\Scope(Query\Base::SELECT);
         $query
             ->addEntityMapping()
             ->addResolvedReferences($resolveReferences);
-        return $this->fetchList($query, new Entity());
+        $result = $this->fetchList($query, new Entity());
+        if (count($result)) {
+            foreach ($result as $entity) {
+                if ($entity instanceof Entity) {
+                    $scopeList->addEntity($entity);
+                }
+            }
+        }
+        return $scopeList;
     }
 
     /**
