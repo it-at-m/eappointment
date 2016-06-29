@@ -35,6 +35,12 @@ class Ticketprinter extends Base implements MappingInterface
         return [$organisationQuery];
     }
 
+    public function addConditionTicketprinterId($ticketprinterId)
+    {
+        $this->query->where('ticketprinter.kioskid', '=', $ticketprinterId);
+        return $this;
+    }
+
     public function addConditionOrganisationId($organisationId)
     {
         $this->query->where('ticketprinter.organisationsid', '=', $organisationId);
@@ -48,5 +54,20 @@ class Ticketprinter extends Base implements MappingInterface
                 'CONCAT("/organisation/", `ticketprinter`.`organisationsid`, "/")'
             ),
         ];
+    }
+
+    public function reverseEntityMapping(\BO\Zmsentities\Ticketprinter $entity, $parentId = null)
+    {
+        $data = array();
+        if (null !== $parentId) {
+            $data['organisationsid'] = $parentId;
+        }
+        $data['zugelassen'] = ($entity->enabled) ? 1 : 0;
+        $data['cookiecode'] = $entity->hash;
+        $data['name'] = $entity->name;
+        $data = array_filter($data, function ($value) {
+            return ($value !== null && $value !== false);
+        });
+            return $data;
     }
 }

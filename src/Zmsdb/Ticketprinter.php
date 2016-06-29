@@ -24,7 +24,6 @@ class Ticketprinter extends Base
             ->addResolvedReferences($resolveReferences)
             ->addConditionTicketprinterId($itemId);
         $ticketprinter = $this->fetchOne($query, new Entity());
-        $ticketprinter['organisations'] = (new Organisation())->readByTicketprinterId($itemId, $resolveReferences);
         return $ticketprinter;
     }
 
@@ -54,6 +53,29 @@ class Ticketprinter extends Base
     }
 
     /**
+     * write a ticketprinter
+     *
+     * @param
+     * entity
+     *
+     * @return Entity
+     */
+    public function writeEntity(Entity $entity, $parentId)
+    {
+        $query = new Query\Ticketprinter(Query\Base::INSERT);
+        $values = $query->reverseEntityMapping($entity, $parentId);
+
+        //get owner by organisation
+        $owner = (new Owner())->readByOrganisationId($parentId);
+        $values['kundenid'] = $owner->id;
+
+        $query->addValues($values);
+        $this->writeItem($query);
+        $lastInsertId = $this->getWriter()->lastInsertId();
+        return $this->readEntity($lastInsertId);
+    }
+
+    /**
      * read list of owners by organisation
      *
      * @param
@@ -74,8 +96,8 @@ class Ticketprinter extends Base
                 $entity = $this->readEntity($ticketprinter['id'], $resolveReferences - 1);
                 $ticketprinterList->addEntity($entity);
             }
+            return $ticketprinterList;
         }
-        return $ticketprinterList;
     }
 
      /**
