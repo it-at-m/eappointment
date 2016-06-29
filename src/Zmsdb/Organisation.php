@@ -53,7 +53,7 @@ class Organisation extends Base
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
             foreach ($result as $organisation) {
-                $organisation = new Entity($organisation);
+                $entity = new Entity($organisation);
                 if ($entity instanceof Entity) {
                     $organisationList->addEntity($entity);
                 }
