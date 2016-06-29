@@ -51,32 +51,29 @@ class Mail extends Base
         $process = new \BO\Zmsentities\Process($mail->process);
         $scope =  new \BO\Zmsentities\Scope($mail->process['scope']);
         $client = $process->getFirstClient();
-        if (!$client->hasEmail() || !$scope->hasNotificationEnabled()) {
-            return false;
-        }
+        if ($client->hasEmail() && $scope->hasNotificationEnabled()) {
+            $query = new Query\MailQueue(Query\Base::INSERT);
+            $query->addValues(array(
+                'processID' => $mail->process['id'],
+                'departmentID' => $mail->department['id'],
+                'createIP' => $mail->createIP,
+                'createTimestamp' => time(),
+                'subject' => $mail->subject,
+                'clientFamilyName' => $client->familyName,
+                'clientEmail' => $client->email,
+            ));
 
-        $query = new Query\MailQueue(Query\Base::INSERT);
-        $query->addValues(array(
-            'processID' => $mail->process['id'],
-            'departmentID' => $mail->department['id'],
-            'createIP' => $mail->createIP,
-            'createTimestamp' => time(),
-            'subject' => $mail->subject,
-            'clientFamilyName' => $client->familyName,
-            'clientEmail' => $client->email,
-        ));
-
-        $result = $this->writeItem($query);
-        if ($result) {
-            $queueId = $this->getWriter()->lastInsertId();
-            foreach ($mail->multipart as $part) {
-                $this->writeInMailPart($queueId, $part);
+            $result = $this->writeItem($query);
+            if ($result) {
+                $queueId = $this->getWriter()->lastInsertId();
+                foreach ($mail->multipart as $part) {
+                    $this->writeInMailPart($queueId, $part);
+                }
+                $this->updateProcessClient($process, $client);
+                return $queueId;
             }
-            $this->updateProcessClient($process, $client);
-        } else {
-            return false;
         }
-        return $queueId;
+        return false;
     }
 
     protected function writeInMailPart($queueId, $data)
@@ -88,11 +85,7 @@ class Mail extends Base
             'content' => $data['content'],
             'base64' => $data['base64'] ? 1 : 0
         ));
-        $result = $this->writeItem($query);
-        if ($result) {
-            return true;
-        }
-        return false;
+        return $this->writeItem($query);
     }
 
     public function deleteEntity($itemId)

@@ -28,6 +28,26 @@ class ProcessTest extends Base
 
         $process = $query->readEntity($process->id, $process->authKey);
         $this->assertEquals('deleted', $process->getStatus());
+
+        $process = $query->readEntity(); //check null
+        $this->assertEquals(null, $process);
+    }
+
+    public function testWriteProcessUnLocked()
+    {
+        $query = new Query();
+        $input = $this->getTestProcessEntity();
+        $input->id = $query->writeNewProcess(true);
+        $process = $query->updateEntity($input);
+
+        $this->assertEntity("\\BO\\Zmsentities\\Process", $process);
+        $this->assertEquals(array('120686'), $process->getRequestIds());
+
+        $deleteTest = $query->deleteEntity($process->id, $process->authKey);
+        $this->assertTrue($deleteTest, "Failed to delete Process from Database.");
+
+        $process = $query->readEntity($process->id, $process->authKey);
+        $this->assertEquals('deleted', $process->getStatus());
     }
 
     public function testStatusFree()

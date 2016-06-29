@@ -12,14 +12,16 @@ class MailTest extends Base
         $input = $this->getTestEntity();
         $query = new Query();
         $queueId = $query->writeInQueue($input);
-        $entity = $query->readEntity($queueId);
 
+        $entity = $query->readEntity($queueId);
         $this->assertEntity("\\BO\\Zmsentities\\Mail", $entity);
         $this->assertEquals('Das ist ein Plaintext Test', $entity->getPlainPart());
         $this->assertEquals("Max Mustermann", $entity->getFirstClient()['familyName']);
 
         $collection = $query->readList(1);
-        $this->assertTrue($collection->hasEntity($queueId), "Missing Test Entity with ID 1234 in collection");
+        $collection->addEntity($input);
+        $this->assertEntityList("\\BO\\Zmsentities\\Mail", $collection);
+        $this->assertEquals(true, $collection->hasEntity('1234')); //Test Entity exists
 
         $deleteTest = $query->deleteEntity($queueId);
         $this->assertTrue($deleteTest, "Failed to delete Mail from Database.");

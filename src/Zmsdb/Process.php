@@ -41,7 +41,7 @@ class Process extends Base
         if (array_key_exists('authKey', $process) && !empty($process['authKey'])) {
             $authKey = $process['authKey'];
         } else {
-            $authKey = self::readAuthKeyByProcessId($processId);
+            $authKey = $this->readAuthKeyByProcessId($processId);
         }
 
         $query->addConditionProcessId($processId);
@@ -57,7 +57,7 @@ class Process extends Base
         return $process;
     }
 
-    protected function readAuthKeyByProcessId($processId)
+    public function readAuthKeyByProcessId($processId)
     {
         $query = new Query\Process(Query\Base::SELECT);
         $query->addEntityMapping()->addConditionProcessId($processId);
@@ -142,12 +142,12 @@ class Process extends Base
 
     }
 
-    public function writeNewProcess()
+    public function writeNewProcess($forceUnLocked = false)
     {
         $query = new Query\Process(Query\Base::INSERT);
         $lock = $this->getLock($query);
         $dateTime = new \DateTime();
-        if ($lock == 1) {
+        if ($lock == 1 && false === $forceUnLocked) {
             $query->addValues(
                 [
                 'BuergerID' => $this->getNewProcessId($query),
@@ -173,15 +173,11 @@ class Process extends Base
 
     public function getNewProcessId($query)
     {
-        if (!$this->getReader()->fetchValue(
-            $query->getFirstSixDigitProcessId()
-        )
-        ) {
-            return 100000;
+        $newProcessId = 100000;
+        if ($this->getReader()->fetchValue($query->getFirstSixDigitProcessId())) {
+            $newProcessId = $this->getReader()->fetchValue($query->getQueryNewProcessId());
         }
-        return $this->getReader()
-           ->fetchValue($query->getQueryNewProcessId());
-
+        return $newProcessId;
     }
 
     public function getLock($query)
@@ -201,10 +197,7 @@ class Process extends Base
         $resolvedCalendar = new Calendar();
         $selectedDate = $calendar->getFirstDay();
         $calendar = $resolvedCalendar->readResolvedEntity($calendar, $now, $selectedDate);
-        if (isset($calendar['freeProcesses'])) {
-            return $calendar['freeProcesses'];
-        }
-        return new Collection();
+        return (isset($calendar['freeProcesses'])) ? $calendar['freeProcesses'] : new Collection();
     }
 
     public function readReservedProcesses($resolveReferences = 2)
