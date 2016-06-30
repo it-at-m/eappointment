@@ -20,4 +20,8 @@ class Config extends Base
             FROM_UNIXTIME(?)
         )
     ';
+
+    const QUERY_DELETE_PROPERTY = '
+        DELETE FROM config WHERE name = ?
+    ';
 }
