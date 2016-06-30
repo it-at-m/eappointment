@@ -55,6 +55,6 @@ class OrganisationTest extends Base
 
     protected function getTestEntity()
     {
-        return $input = (new Entity())->getExample();
+        return $input = (new Entity())->createExample();
     }
 }

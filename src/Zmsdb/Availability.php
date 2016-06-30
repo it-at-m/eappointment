@@ -2,6 +2,7 @@
 namespace BO\Zmsdb;
 
 use \BO\Zmsentities\Availability as Entity;
+use \BO\Zmsentities\Collection\AvailabilityList as Collection;
 
 class Availability extends Base
 {
@@ -16,10 +17,10 @@ class Availability extends Base
                 ->addResolvedReferences($resolveReferences)
                 ->addConditionAvailabilityId($availabilityId);
             $availability = $this->fetchOne($query, new Entity());
-            $availability['scope'] = (new Scope())->readEntity($availability['scope']['id'], 1);
+            $availability['scope'] = (new Scope())->readEntity($availability['scope']['id'], $resolveReferences);
             if (!isset($availability['department'])) {
                 $availability['department'] = (new Department())
-                    ->readEntity($availability['scope']['department']['id'], 1);
+                    ->readEntity($availability['scope']['department']['id'], $resolveReferences);
             }
             self::$cache[$availabilityId] = $availability;
         }
@@ -28,12 +29,56 @@ class Availability extends Base
 
     public function readList($scopeId, $resolveReferences = 0)
     {
+        $collection = new Collection();
         $query = new Query\Availability(Query\Base::SELECT);
         $query
             ->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
             ->addConditionScopeId($scopeId);
-        return $this->fetchList($query, new Entity());
+        $result = $this->fetchList($query, new Entity());
+        if (count($result)) {
+            foreach ($result as $entity) {
+                if ($entity instanceof Entity) {
+                    $collection->addEntity($entity);
+                }
+            }
+        }
+        return $collection;
+    }
+
+    /**
+     * write an availability
+     *
+     * @param
+     * entityId
+     *
+     * @return lastInsertId()
+     */
+    public function writeEntity(\BO\Zmsentities\Availability $entity)
+    {
+        $query = new Query\Availability(Query\Base::INSERT);
+        $values = $query->reverseEntityMapping($entity);
+        $query->addValues($values);
+        $this->writeItem($query);
+        return $this->getWriter()->lastInsertId();
+    }
+
+    /**
+     * update an availability
+     *
+     * @param
+     * entityId
+     *
+     * @return Entity
+     */
+    public function updateEntity($entityId, \BO\Zmsentities\Availability $entity)
+    {
+        $query = new Query\Availability(Query\Base::UPDATE);
+        $query->addConditionAvailabilityId($entityId);
+        $values = $query->reverseEntityMapping($entity);
+        $query->addValues($values);
+        $this->writeItem($query, 'availability', $query::TABLE);
+        return $this->readEntity($entityId);
     }
 
     /**

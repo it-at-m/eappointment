@@ -71,13 +71,41 @@ class Availability extends Base implements MappingInterface
 
     public function addConditionScopeId($scopeId)
     {
-        $this->query->where('StandortID', '=', $scopeId);
+        $this->query->where('scope.StandortID', '=', $scopeId);
         return $this;
     }
 
     public function addConditionTime(\DateTimeInterface $time)
     {
         $time = \BO\Zmsentites\Helper\DateTime::create($time);
+    }
+
+    public function reverseEntityMapping(\BO\Zmsentities\Availability $entity)
+    {
+        $data = array();
+        $data['StandortID'] = $entity->scope['id'];
+        $data['Offen_ab'] = $entity->bookable['startInDays'];
+        $data['Offen_bis'] = $entity->bookable['endInDays'];
+        $data['kommentar'] = $entity->description;
+        $data['Startdatum'] = (new \DateTimeImmutable('@'. $entity->startDate/1000))->format('Y-m-d');
+        $data['Endedatum'] = (new \DateTimeImmutable('@'. $entity->endDate/1000))->format('Y-m-d');
+        $data['Terminanfangszeit'] = $entity->startTime;
+        $data['Terminendzeit'] = $entity->endTime;
+        $data['allexWochen'] = (isset($entity->repeat['afterWeeks'])) ? 1 : 0;
+        $data['jedexteWoche'] = (isset($entity->repeat['weekOfMonth'])) ? 1 : 0;
+        $data['Timeslot'] = gmdate("H:i", $entity->slotTimeInMinutes * 60);
+        ;
+        $data['Wochentag'] = current((array_filter(array_values($entity->weekday))));
+        $data['Anzahlterminarbeitsplaetze'] = $entity->workstationCount['intern'];
+        $data['reduktionTermineImInternet'] =
+            $entity->workstationCount['intern'] - $entity->workstationCount['public'];
+        $data['reduktionTermineCallcenter'] =
+            $entity->workstationCount['intern'] - $entity->workstationCount['callcenter'];
+
+        $data = array_filter($data, function ($value) {
+            return ($value !== null && $value !== false);
+        });
+            return $data;
     }
 
     public static function getJoinExpression($process, $availability)
