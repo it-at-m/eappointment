@@ -10,7 +10,9 @@
 
 \App::$slim->get('/', '\BO\Zmsadmin\Index')->setName("pagesindex");
 
-\App::$slim->get('/login/', '\BO\Zmsadmin\Index')->setName("login");
+\App::$slim->map(['GET', 'POST'], '/login/', '\BO\Zmsadmin\Index')->setName("login");
+
+\App::$slim->get('/logout/', '\BO\Zmsadmin\Logout')->setName("logout");
 
 \App::$slim->get('/workstation/process/{id:\d+}/precall/', '\BO\Zmsadmin\WorkstationClientPreCall')
     ->setName("workstationClientPreCall");
