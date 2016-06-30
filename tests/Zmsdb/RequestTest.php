@@ -22,8 +22,11 @@ class RequestTest extends Base
         */
         $connection = null;
         $entity = (new Query($connection, $connection))->readEntity('dldb', 120335);
-        //var_dump(json_encode($entity, JSON_PRETTY_PRINT));
         $this->assertEntity("\\BO\\Zmsentities\\Request", $entity);
         $this->assertEquals(120335, $entity['id']);
+
+        //source not dldb
+        $entity = (new Query())->readEntity('test', 122280, 1);
+        $this->assertEntity("\\BO\\Zmsentities\\Request", $entity);
     }
 }

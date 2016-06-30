@@ -63,12 +63,7 @@ class Config extends Base
     protected function fetchData($querySql)
     {
         $splittedHash = array();
-        try {
-            $dataList = $this->getReader()->fetchAll($querySql);
-        } catch (\PDOException $pdoException) {
-            $message = "SQL:". $querySql;
-            throw new \Exception($message, 0, $pdoException);
-        }
+        $dataList = $this->getReader()->fetchAll($querySql);
         foreach ($dataList as $data) {
             if (is_array($data['name'])) {
                 $hash = (new Entity())->getUnflattenedArray($data['name']);

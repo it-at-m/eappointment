@@ -46,27 +46,24 @@ class Notification extends Base
         $process = new \BO\Zmsentities\Process($notification->process);
         $department = new \BO\Zmsentities\Department($notification->department);
         $client = $process->getFirstClient();
-        if (!$client->hasTelephone() || !$department->hasNotificationEnabled()) {
-            return false;
+        if ($client->hasTelephone() && $department->hasNotificationEnabled()) {
+            $query = new Query\Notification(Query\Base::INSERT);
+            $query->addValues(array(
+                'processID' => $notification->process['id'],
+                'departmentID' => $notification->department['id'],
+                'createIP' => $notification->createIP,
+                'createTimestamp' => time(),
+                'message' => $notification->message,
+                'clientFamilyName' => $client->familyName,
+                'clientTelephone' => $client->telephone,
+            ));
+            $result = $this->writeItem($query);
+            if ($result) {
+                $queueId = $this->getWriter()->lastInsertId();
+                $this->updateProcess($notification);
+                return $queueId;
+            }
         }
-        $query = new Query\Notification(Query\Base::INSERT);
-        $query->addValues(array(
-            'processID' => $notification->process['id'],
-            'departmentID' => $notification->department['id'],
-            'createIP' => $notification->createIP,
-            'createTimestamp' => time(),
-            'message' => $notification->message,
-            'clientFamilyName' => $client->familyName,
-            'clientTelephone' => $client->telephone,
-        ));
-        $result = $this->writeItem($query);
-        if ($result) {
-            $queueId = $this->getWriter()->lastInsertId();
-            $this->updateProcess($notification);
-        } else {
-            return false;
-        }
-        return $queueId;
     }
 
     public function deleteEntity($itemId)

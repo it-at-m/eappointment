@@ -73,7 +73,6 @@ class Mail extends Base
                 return $queueId;
             }
         }
-        return false;
     }
 
     protected function writeInMailPart($queueId, $data)
