@@ -30,5 +30,9 @@ class ProviderTest extends Base
         $collection = $query->readListByRequest('dldb', '120335');
         $this->assertEntityList("\\BO\\Zmsentities\\Provider", $collection);
         $this->assertEquals(true, $collection->hasEntity('122210')); //Bürgeramt Halemweg (Außenstelle)
+
+        $collection = $query->readListByRequest('test', '120335'); //dldb not source
+        $this->assertEntityList("\\BO\\Zmsentities\\Provider", $collection);
+        $this->assertEquals(false, $collection->hasEntity('122210')); //Bürgeramt Halemweg (Außenstelle)
     }
 }
