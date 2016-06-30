@@ -57,6 +57,38 @@
 
 /**
  *  @swagger
+ *  "/availability/":
+ *      post:
+ *          description: Create an availability
+ *          parameters:
+ *              -   name: availability
+ *                  description: availability data to update
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/availability.json"
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/availability.json"
+ *              404:
+ *                  description: "availability id does not exists"
+ */
+\App::$slim->post('/availability/',
+    '\BO\Zmsapi\AvailabilityAdd')
+    ->setName("AvailabilityAdd");
+
+/**
+ *  @swagger
  *  "/availability/{id}/":
  *      post:
  *          description: Update an availability
@@ -1631,7 +1663,7 @@
  *      post:
  *          description: Add a new scope
  *          parameters:
- *              -   name: parentId
+ *              -   name: id
  *                  description: department number
  *                  in: path
  *                  required: true
