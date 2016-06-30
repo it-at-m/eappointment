@@ -41,4 +41,25 @@ class Config extends Schema\Entity
     {
         return $this->notifications;
     }
+
+    public function getPreference($type, $key)
+    {
+        $result = null;
+        if (array_key_exists($type, $this)) {
+            if (array_key_exists($key, $this[$type])) {
+                $result = $this[$type][$key];
+            }
+        }
+        return $result;
+    }
+
+    public function setPreference($type, $key, $value)
+    {
+        if (array_key_exists($type, $this)) {
+            if (array_key_exists($key, $this[$type])) {
+                $this[$type][$key] = $value;
+            }
+        }
+        return $this;
+    }
 }
