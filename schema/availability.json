@@ -2,9 +2,6 @@
     "type": "object",
     "description": "representation of opening hours for appointments",
     "example": {
-        "department": {
-        	"id": 11
-        },
         "bookable": {
             "startInDays": 2,
             "endInDays": 60
@@ -19,13 +16,13 @@
             "afterWeeks": 0
         },
         "scope": {
-            "id": 1234
+            "id": 141
         },
         "slotTimeInMinutes": 12,
         "startDate": 1447919543000,
         "startTime": "10:00",
         "weekday": {
-            "thursday": true
+            "thursday": 16
         },
         "workstationCount": {
             "callcenter": 8,
@@ -34,9 +31,6 @@
         }
     },
     "properties": {
-        "department" : {
-        	"$ref": "department.json"
-        },
         "bookable": {
             "type": "object",
             "properties": {
