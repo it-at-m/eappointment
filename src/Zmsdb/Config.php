@@ -45,6 +45,21 @@ class Config extends Base
         return ($result) ? $this->readEntity() : null;
     }
 
+    /**
+     * remove config data
+     *
+     *
+     * @return Resource Status
+     */
+    public function deleteProperty($property)
+    {
+        $query = Query\Config::QUERY_DELETE_PROPERTY;
+        $statement = $this->getWriter()->prepare($query);
+        return $statement->execute(array(
+            $property
+        ));
+    }
+
     protected function fetchData($querySql)
     {
         $splittedHash = array();
