@@ -48,8 +48,11 @@
 \App::$slim->get('/scope/{id:\d+}/pickup/keyboard/', '\BO\Zmsadmin\PickupKeyboard')
     ->setName("pickup_keyboard");
 
-\App::$slim->get('/scope/{scope_id:\d+}/availability/day/', '\BO\Zmsadmin\ScopeAvailabilityDay')
-    ->setName("scopeavailabilityday");
+\App::$slim->get('/scope/{id:\d+}/availability/day/', '\BO\Zmsadmin\ScopeAvailabilityDay')
+    ->setName("scopeAvailabilityDay");
+
+\App::$slim->get('/scope/{id:\d+}/availability/month/', '\BO\Zmsadmin\ScopeAvailabilityMonth')
+    ->setName("scopeAvailabilityMonth");
 
 \App::$slim->get('/cluster/', '\BO\Zmsadmin\Cluster')
     ->setName("cluster");
