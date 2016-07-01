@@ -18,4 +18,15 @@ class OwnerList extends Base
         }
         return false;
     }
+
+    public function getOrganisationsByOwnerId($entityId)
+    {
+        $result = null;
+        foreach ($this as $entity) {
+            if ($entityId == $entity->id) {
+                $result = $entity->organisations;
+            }
+        }
+        return $result;
+    }
 }
