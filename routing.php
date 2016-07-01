@@ -8,11 +8,12 @@
  * html, basic routes
  * -------------------------------------------------------------------------*/
 
-\App::$slim->get('/', '\BO\Zmsadmin\Index')->setName("pagesindex");
-
-\App::$slim->map(['GET', 'POST'], '/login/', '\BO\Zmsadmin\Index')->setName("login");
+\App::$slim->map(['GET', 'POST'], '/', '\BO\Zmsadmin\Index')->setName("index");
 
 \App::$slim->get('/logout/', '\BO\Zmsadmin\Logout')->setName("logout");
+
+\App::$slim->get('/workstation/{loginName}/', '\BO\Zmsadmin\WorkstationLogin')
+    ->setName("workstationLogin");
 
 \App::$slim->get('/workstation/process/{id:\d+}/precall/', '\BO\Zmsadmin\WorkstationClientPreCall')
     ->setName("workstationClientPreCall");
