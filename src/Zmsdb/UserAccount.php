@@ -16,6 +16,17 @@ class UserAccount extends Base
         return $this->fetchOne($query, new Entity());
     }
 
+    public function readEntityByAuthKey($xAuthKey, $resolveReferences = 0)
+    {
+        $query = new Query\UserAccount(Query\Base::SELECT);
+        $query
+            ->addEntityMapping()
+            ->addResolvedReferences($resolveReferences)
+            ->addConditionXauthKey($xAuthKey);
+        return $this->fetchOne($query, new Entity());
+    }
+
+
     /**
      * update a userAccount
      *
@@ -31,6 +42,6 @@ class UserAccount extends Base
         $values = $query->reverseEntityMapping($entity);
         $query->addValues($values);
         $this->writeItem($query, 'userAccount', $query::TABLE);
-        return $this->readEntity($userAccountId);
+        return $this->readEntity($loginName);
     }
 }
