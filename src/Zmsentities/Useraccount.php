@@ -6,23 +6,23 @@ class Useraccount extends Schema\Entity
 {
     public static $schema = "useraccount.json";
 
-    private $allRights = array(
-        90 => 'superuser',
-        70 => 'organisation',
-        50 => 'department',
-        40 => 'cluster',
-        30 => 'useraccount',
-        20 => 'scope',
-        15 => 'availability',
-        10 => 'ticketprinter',
-        0 => 'sms'
-    );
-
-    public function getRights()
+    public function hasId()
     {
-        if (array_key_exists($this-right, $this->allRights)) {
-            return array_slice($this->allRights, $this->right);
+        return (array_key_exists('id', $this)) ? true : false;
+    }
+
+    public function testRights()
+    {
+        if ($this->hasId()) {
+            $requiredRights = func_get_args();
+            foreach ($requiredRights as $required) {
+                if (!array_key_exists($required, array_filter($this->rights))) {
+                    throw new Exception\UserAccountMissingRights();
+                }
+            }
+        } else {
+            throw new Exception\UserAccountMissingLogin();
         }
-        return null;
+        return $this;
     }
 }
