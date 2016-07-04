@@ -26,38 +26,41 @@ class Index extends BaseController
         array $args
     ) {
         $form = LoginForm::fromParameters();
-        if ($form->hasFailed()) {
-            $validate = Validator::param('form_validate')->isBool()->getValue();
-            $loginData = ($validate) ? $form->getStatus() : null;
-            self::$errorHandler->error = 'login_failed';
-            return Helper\Render::checkedHtml(
+        if (!$form->hasFailed()) {
+            $form = $form->getValues();
+            $userAccount = new \BO\Zmsentities\UserAccount(array(
+                'id' => $form['loginName']->getValue(),
+                'password' => md5($form['password']->getValue())
+            ));
+
+            try {
+                $workstation = \App::$http->readPostResult(
+                    '/workstation/'. $userAccount->id .'/',
+                    $userAccount
+                )->getEntity();
+                Auth::setKey($workstation->authKey);
+            } catch (\Exception $exception) {
+                return Render::error($response, $exception);
+            }
+            return Helper\Render::checkedRedirect(
                 self::$errorHandler,
-                $response,
-                'page/index.twig',
-                array(
-                    'title' => 'Anmeldung',
-                    'loginData' => $loginData
-                )
+                'workstation',
+                array(),
+                array()
             );
         }
 
-        $form = $form->getValues();
-        $userAccount = new \BO\Zmsentities\UserAccount(array(
-            'id' => $form['loginName']->getValue(),
-            'password' => md5($form['password']->getValue())
-        ));
-        $workstation = \App::$http->readPostResult(
-            '/workstation/'. $userAccount->id .'/',
-            $userAccount
-        )->getEntity();
-
-        Auth::setKey($workstation->authKey, \App::IDENTIFIER);
-
-        return Helper\Render::checkedRedirect(
+        $validate = Validator::param('form_validate')->isBool()->getValue();
+        $loginData = ($validate) ? $form->getStatus() : null;
+        self::$errorHandler->error = ($loginData) ? 'login_failed' : '';
+        return Helper\Render::checkedHtml(
             self::$errorHandler,
-            'workstation',
-            array(),
-            array()
+            $response,
+            'page/index.twig',
+            array(
+                'title' => 'Anmeldung',
+                'loginData' => $loginData
+            )
         );
     }
 }
