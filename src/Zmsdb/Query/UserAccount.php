@@ -14,7 +14,15 @@ class UserAccount extends Base implements MappingInterface
         return [
             'lastlogin' => 'userAccount.Datum',
             'id' => 'userAccount.Name',
-            'rights' => 'userAccount.Berechtigung'
+            'rights__superuser' => self::expression('`userAccount`.`Berechtigung` = 90'),
+            'rights__organisation' => self::expression('`userAccount`.`Berechtigung` >= 70'),
+            'rights__department' => self::expression('`userAccount`.`Berechtigung` >= 50'),
+            'rights__cluster' => self::expression('`userAccount`.`Berechtigung` >= 40'),
+            'rights__useraccount' => self::expression('`userAccount`.`Berechtigung` >= 30'),
+            'rights__scope' => self::expression('`userAccount`.`Berechtigung` >= 20'),
+            'rights__availability' => self::expression('`userAccount`.`Berechtigung` >= 15'),
+            'rights__ticketprinter' => self::expression('`userAccount`.`Berechtigung` >= 10'),
+            'rights__sms' => self::expression('`userAccount`.`Berechtigung` >= 0'),
         ];
     }
 
@@ -23,6 +31,13 @@ class UserAccount extends Base implements MappingInterface
         $this->query->where('userAccount.Name', '=', $loginName);
         return $this;
     }
+
+    public function addConditionXauthKey($xAuthKey)
+    {
+        $this->query->where('userAccount.SessionID', '=', $xAuthKey);
+        return $this;
+    }
+
 
     public function reverseEntityMapping(\BO\Zmsentities\UserAccount $entity)
     {

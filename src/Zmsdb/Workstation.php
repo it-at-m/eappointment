@@ -45,9 +45,4 @@ class Workstation extends Base
         $workstation->authKey = $authKey;
         return ($result) ? $workstation : null;
     }
-
-    public function readEntityByAuthkey($xauthKey)
-    {
-
-    }
 }
