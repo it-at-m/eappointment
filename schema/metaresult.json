@@ -28,6 +28,10 @@
         "server": {
             "type": "string",
             "description": "identifier for the responding server"
+        },
+        "exception": {
+        	"type": "string",
+            "description": "name of thrown exception"
         }
     }
 }

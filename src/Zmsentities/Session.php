@@ -36,7 +36,8 @@ class Session extends Schema\Entity
                 'entry' => array(),
                 'status' => 'free',
                 'task' => '',
-                'finished' => false
+                'finished' => false,
+                'X-Authkey' => ''
             )
         ];
     }

@@ -35,7 +35,8 @@
 			},
 			"task" : "continue",
 			"status" : "free",
-			"finished" : true
+			"finished" : true,
+			"X-Authkey" : "abc12345678def"
 	    }       
     },
     "properties": {
@@ -136,6 +137,9 @@
 				},
 				"finished" : {
 					"type": "boolean"
+				},
+				"X-Authkey" : {
+					"type": "string"
 				}
             }
         }
