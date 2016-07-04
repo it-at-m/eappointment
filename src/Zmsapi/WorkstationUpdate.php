@@ -17,11 +17,12 @@ class WorkstationUpdate extends BaseController
     /**
      * @return String
      */
-    public static function render()
+    public static function render($loginName)
     {
         $message = Response\Message::create(Render::$request);
         $input = Validator::input()->isJson()->getValue();
-        $message->data = new \BO\Zmsentities\Workstation($input);
+        $entity = new \BO\Zmsentities\Workstation($input);
+        $message->data = (new Query)->updateEntity($loginName, $entity);
         Render::lastModified(time(), '0');
         Render::json($message);
     }
