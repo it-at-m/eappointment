@@ -6,6 +6,8 @@
 
 namespace BO\Zmsadmin;
 
+use \BO\Zmsclient\Auth;
+
 /**
   * Handle requests concerning services
   *
@@ -21,12 +23,25 @@ class Logout extends BaseController
         array $args
     ) {
 
+        session_destroy();
+        setcookie(
+            session_name(),
+            null,
+            time() - 42000,
+            "/"
+        );
+        session_regenerate_id(true);
+
+        $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
+        \App::$http->readDeleteResult('/workstation/'. $workstation->useraccount['id'] .'/')->getEntity();
+
         return Helper\Render::checkedRedirect(
             self::$errorHandler,
-            'login',
+            'index',
             array(
                 'title' => 'Anmeldung'
-            )
+            ),
+            array()
         );
     }
 }
