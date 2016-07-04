@@ -2432,6 +2432,7 @@
         $message = \BO\Zmsapi\Response\Message::create();
         $message->meta->error = true;
         $message->meta->message = $exception->getMessage();
+        $message->meta->exception = (new \ReflectionClass($exception))->getShortName();
         $message->meta->trace = $exception->getTrace();
         \BO\Slim\Render::lastModified(time(), '0');
         return \BO\Slim\Render::json($message, 500);
