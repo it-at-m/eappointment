@@ -81,6 +81,10 @@ class Http
     public function getAuthorizedRequest(\Psr\Http\Message\RequestInterface $request)
     {
         // @todo implement authorization
+        $xAuthKey = Auth::getKey();
+        if (null !== $xAuthKey) {
+            $request = $request->withHeader('X-Authkey', $xAuthKey);
+        }
         return $request;
     }
 
