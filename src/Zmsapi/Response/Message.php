@@ -28,6 +28,7 @@ class Message implements \JsonSerializable
         $this->request = $request;
         $this->meta = new \BO\Zmsentities\Metaresult();
         $this->meta->error = false;
+        $this->meta->exception = null;
         $this->setUpdateMetaData();
     }
 
