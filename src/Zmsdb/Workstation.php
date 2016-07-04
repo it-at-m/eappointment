@@ -45,4 +45,35 @@ class Workstation extends Base
         $workstation->authKey = $authKey;
         return ($result) ? $workstation : null;
     }
+
+    public function readUpdatedLogoutEntity($loginName)
+    {
+        $query = Query\Workstation::QUERY_LOGOUT;
+        $statement = $this->getWriter()->prepare($query);
+        $result = $statement->execute(
+            array(
+                $loginName
+            )
+        );
+        $workstation = $this->readEntity($loginName);
+        return ($result) ? $workstation : null;
+    }
+
+    /**
+     * update a workstation
+     *
+     * @param
+     * userAccountId
+     *
+     * @return Entity
+     */
+    public function updateEntity($loginName, \BO\Zmsentities\Workstation $entity)
+    {
+        $query = new Query\Workstation(Query\Base::UPDATE);
+        $query->addConditionLoginName($loginName);
+        $values = $query->reverseEntityMapping($entity);
+        $query->addValues($values);
+        $this->writeItem($query, 'workstation', $query::TABLE);
+        return $this->readEntity($loginName);
+    }
 }

@@ -19,6 +19,15 @@ class Workstation extends Base implements MappingInterface
             Name=?
     ';
 
+    const QUERY_LOGOUT = '
+        UPDATE
+            '. self::TABLE .'
+        SET
+            SessionID=""
+        WHERE
+            Name=?
+    ';
+
     public function getEntityMapping()
     {
         return [
@@ -41,5 +50,19 @@ class Workstation extends Base implements MappingInterface
     {
         $this->query->where('workstation.Passworthash', '=', $password);
         return $this;
+    }
+
+    public function reverseEntityMapping(\BO\Zmsentities\UserAccount $entity)
+    {
+        $data = array();
+        $data['aufrufzusatz'] = $entity->hint;
+        $data['Kalenderansicht'] = $entity->getQueuePreference('appointmentsOnly', true);
+        $data['clusteransicht'] = $entity->getQueuePreference('clusterEnabled', true);
+        $data['StandortID'] = $entity->scope['id'];
+
+        $data = array_filter($data, function ($value) {
+            return ($value !== null && $value !== false);
+        });
+            return $data;
     }
 }
