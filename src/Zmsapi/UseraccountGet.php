@@ -25,7 +25,7 @@ class UseraccountGet extends BaseController
         $query = new Query();
         $message = Response\Message::create(Render::$request);
         $userAccount = $query->readEntity($loginName, $resolveReferences);
-        if (false === $userAccount->hasLoginName()) {
+        if (false === $userAccount->hasId()) {
             $status = 404;
             $message->meta->error = 'No Useraccount found';
         }
