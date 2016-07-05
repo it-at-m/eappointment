@@ -25,4 +25,15 @@ class Useraccount extends Schema\Entity
         }
         return $this;
     }
+
+    public function addDepartment($departmentId)
+    {
+        $this->departments[] = $departmentId;
+        return $this;
+    }
+
+    public function getDepartments()
+    {
+        return current($this->departments[]);
+    }
 }
