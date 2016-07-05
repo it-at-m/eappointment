@@ -20,17 +20,15 @@ class UseraccountGet extends BaseController
      */
     public static function render($loginName)
     {
-        $status = 200;
-        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
+        $userAccount = Helper\User::checkRights('useraccount');
+
         $query = new Query();
-        $message = Response\Message::create(Render::$request);
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $userAccount = $query->readEntity($loginName, $resolveReferences);
-        if (false === $userAccount->hasId()) {
-            $status = 404;
-            $message->meta->error = 'No Useraccount found';
-        }
-        $message->data = $userAccount;
+
+        $message = Response\Message::create(Render::$request);
+        $message->data = $userAccount->hasId() ? $userAccount : null;
         Render::lastModified(time(), '0');
-        Render::json($message, $status);
+        Render::json($message, Helper\User::getStatus($userAccount));
     }
 }

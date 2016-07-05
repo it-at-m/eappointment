@@ -22,19 +22,16 @@ class WorkstationLogin extends BaseController
     {
         $query = new Query();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
-        $message = Response\Message::create(Render::$request);
         $input = Validator::input()->isJson()->getValue();
 
+        $workstation = null;
         if ($query->isUserExisting($loginName, $input['password'])) {
-            $status = 200;
             $workstation = $query->readUpdatedLoginEntity($loginName, $input['password'], $resolveReferences);
-            $message->data = $workstation;
-        } else {
-            $status = 404;
-            $message->data = null;
         }
 
+        $message = Response\Message::create(Render::$request);
+        $message->data = $workstation;
         Render::lastModified(time(), '0');
-        Render::json($message, $status);
+        Render::json($message, Helper\User::getStatus($workstation));
     }
 }

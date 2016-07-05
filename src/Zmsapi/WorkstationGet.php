@@ -9,7 +9,6 @@ namespace BO\Zmsapi;
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\Workstation as Query;
-use \BO\Zmsdb\UserAccount;
 
 /**
   * Handle requests concerning services
@@ -21,27 +20,15 @@ class WorkstationGet extends BaseController
      */
     public static function render()
     {
-        $status = 200;
-        $message = Response\Message::create(Render::$request);
+        $userAccount = Helper\User::checkRights('organisation', 'department', 'cluster', 'useraccount');
+
         $query = new Query();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
-        $xAuthKey = Render::$request->getHeader('X-AuthKey');
-        if (!current($xAuthKey)) {
-            $status = 401;
-        }
-
-        $userAccount = (new UserAccount())
-            ->readEntityByAuthKey(current($xAuthKey))
-            ->testRights(
-                'organisation',
-                'department',
-                'cluster',
-                'useraccount'
-            );
-
         $workstation = $query->readEntity($userAccount->id, $resolveReferences);
-        $message->data = $workstation;
+
+        $message = Response\Message::create(Render::$request);
+        $message->data = ($workstation->hasId() ? $workstation : null);
         Render::lastModified(time(), '0');
-        Render::json($message, $status);
+        Render::json($message, Helper\User::getStatus($workstation, true));
     }
 }

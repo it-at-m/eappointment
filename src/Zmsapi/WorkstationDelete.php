@@ -7,6 +7,7 @@
 namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
+use \BO\Mellon\Validator;
 use \BO\Zmsdb\Workstation as Query;
 
 /**
@@ -19,19 +20,14 @@ class WorkstationDelete extends BaseController
      */
     public static function render($loginname)
     {
-        $status = 200;
+        Helper\User::checkRights('organisation', 'department', 'cluster', 'useraccount');
+
         $query = new Query();
-        $message = Response\Message::create(Render::$request);
         $workstation = $query->readUpdatedLogoutEntity($loginname);
-        $xAuthKey = Render::$request->getHeader('X-AuthKey');
-        if (!current($xAuthKey)) {
-            $status = 401;
-        }
-        if (null === $workstation) {
-            $status = 404;
-        }
+
+        $message = Response\Message::create(Render::$request);
         $message->data = $workstation;
         Render::lastModified(time(), '0');
-        Render::json($message, $status);
+        Render::json($message, Helper\User::getStatus($workstation));
     }
 }

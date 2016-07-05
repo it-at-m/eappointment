@@ -7,6 +7,8 @@
 namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
+use \BO\Mellon\Validator;
+use \BO\Zmsdb\Cluster as Query;
 
 /**
   * Handle requests concerning services
@@ -18,9 +20,10 @@ class ClusterGet extends BaseController
      */
     public static function render($itemId)
     {
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
+        $cluster = (new Query())->readEntity($itemId, $resolveReferences);
         $message = Response\Message::create(Render::$request);
-        $message->data = \BO\Zmsentities\Cluster::createExample();
-        $message->data->id = $itemId;
+        $message->data = $cluster;
         Render::lastModified(time(), '0');
         Render::json($message);
     }
