@@ -38,6 +38,13 @@ class Index extends BaseController
                     $userAccount
                 )->getEntity();
                 Auth::setKey($workstation->authKey);
+
+                $workstation->name = $form['workstation']->getValue();
+                $workstation->scope['id'] = $form['scope']->getValue();
+                $userAccount->addDepartment($form['department']->getValue());
+                $workstation->useraccount = $userAccount;
+                $workstation = \App::$http->readPostResult('/workstation/', $workstation)->getEntity();
+                error_log(var_export($workstation, 1));
             } catch (\Exception $exception) {
                 return Helper\Render::error($request, $exception);
             }

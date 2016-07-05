@@ -39,6 +39,9 @@ class LoginForm
         if (Validator::param('workstationCounter')->isDeclared()->hasFailed()) {
             $collection['workstation'] = Validator::param('workstation')
                 ->isNumber('Bitte wählen Sie eine Platznummer aus oder den Tresen');
+        } else {
+            $collection['workstation'] = Validator::param('workstationCounter')
+                ->isNumber('Bitte wählen Sie eine Platznummer aus oder den Tresen');
         }
 
         // return validated collection
