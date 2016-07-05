@@ -67,13 +67,13 @@ class Workstation extends Base
      *
      * @return Entity
      */
-    public function updateEntity($loginName, \BO\Zmsentities\Workstation $entity)
+    public function updateEntity(\BO\Zmsentities\Workstation $entity)
     {
         $query = new Query\Workstation(Query\Base::UPDATE);
-        $query->addConditionLoginName($loginName);
+        $query->addConditionWorkstationId($entity->id);
         $values = $query->reverseEntityMapping($entity);
         $query->addValues($values);
         $this->writeItem($query, 'workstation', $query::TABLE);
-        return $this->readEntity($loginName);
+        return $this->readEntity($entity->useraccount['id']);
     }
 }

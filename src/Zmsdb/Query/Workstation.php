@@ -36,7 +36,7 @@ class Workstation extends Base implements MappingInterface
             'name' => 'workstation.Arbeitsplatznr',
             'queue__appointmentsOnly' => 'workstation.Kalenderansicht',
             'queue__clusterEnabled' => 'workstation.clusteransicht',
-            'scope__id' => 'workstation.StandortID',
+            'scope__id' => 'workstation.StandortID'
         ];
     }
 
@@ -46,19 +46,27 @@ class Workstation extends Base implements MappingInterface
         return $this;
     }
 
+    public function addConditionWorkstationId($workstationId)
+    {
+        $this->query->where('workstation.NutzerID', '=', $workstationId);
+        return $this;
+    }
+
     public function addConditionPassword($password)
     {
         $this->query->where('workstation.Passworthash', '=', md5($password));
         return $this;
     }
 
-    public function reverseEntityMapping(\BO\Zmsentities\UserAccount $entity)
+    public function reverseEntityMapping(\BO\Zmsentities\Workstation $entity)
     {
         $data = array();
         $data['aufrufzusatz'] = $entity->hint;
         $data['Kalenderansicht'] = $entity->getQueuePreference('appointmentsOnly', true);
         $data['clusteransicht'] = $entity->getQueuePreference('clusterEnabled', true);
         $data['StandortID'] = $entity->scope['id'];
+        $data['BehoerdenID'] = current($entity->useraccount['departments']);
+        $data['Arbeitsplatznr'] = $entity->name;
 
         $data = array_filter($data, function ($value) {
             return ($value !== null && $value !== false);
