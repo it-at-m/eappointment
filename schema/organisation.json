@@ -34,13 +34,7 @@
             }
         ]
     },
-    "properties": {
-        "clusters": {
-            "type": "array",
-            "items": {
-                "$ref": "cluster.json"
-            }
-        },        
+    "properties": {        
         "contact": {
             "$ref": "contact.json"
         },

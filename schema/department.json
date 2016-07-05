@@ -56,9 +56,15 @@
     "properties": {
         "id": {
             "type": "integer"
-        },        
+        },
         "contact": {
             "$ref": "contact.json"
+        },
+        "clusters": {
+            "type": "array",
+            "items": {
+                "$ref": "cluster.json"
+            }
         },
         "dayoff": {
             "type": "array",
