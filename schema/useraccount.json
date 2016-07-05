@@ -3,6 +3,7 @@
     "example": {
         "lastLogin": 1447926465000,
         "id": "johndoe",
+        "password": "secret",
         "rights": {
             "scope": true,
             "ticketprinter": true
@@ -19,7 +20,7 @@
         },
         "password": {
             "type": "string",
-            "description": "this field is only used on changing the password"
+            "description": "this field is only used on changing the password and login"
         },
         "rights": {
             "type": "object",
