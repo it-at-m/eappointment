@@ -7,6 +7,8 @@
 namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
+use \BO\Mellon\Validator;
+use \BO\Zmsdb\Cluster as Query;
 
 /**
   * Handle requests concerning services
@@ -18,9 +20,11 @@ class ClusterDelete extends BaseController
      */
     public static function render($itemId)
     {
+        $query = new Query();
         $message = Response\Message::create(Render::$request);
-        $message->data = \BO\Zmsentities\Cluster::createExample();
-        $message->data->id = $itemId;
+        $cluster = $query->readEntity($itemId);
+        $query->deleteEntity($itemId);
+        $message->data = $cluster;
         Render::lastModified(time(), '0');
         Render::json($message);
     }

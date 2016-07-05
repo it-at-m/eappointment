@@ -7,6 +7,8 @@
 namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
+use \BO\Mellon\Validator;
+use \BO\Zmsdb\UserAccount as Query;
 
 /**
   * Handle requests concerning services

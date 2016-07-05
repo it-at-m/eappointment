@@ -8,6 +8,7 @@ namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
+use \BO\Zmsdb\UserAccount as Query;
 
 /**
   * Handle requests concerning services
@@ -19,11 +20,16 @@ class UseraccountUpdate extends BaseController
      */
     public static function render($itemId)
     {
-        $message = Response\Message::create(Render::$request);
+        $userAccount = Helper\User::checkRights('useraccount');
+
+        $query = new Query();
         $input = Validator::input()->isJson()->getValue();
-        $message->data = new \BO\Zmsentities\Useraccount($input);
-        $message->data->id = $itemId;
+        $entity = new \BO\Zmsentities\UserAccount($input);
+        $userAccount = $query->updateEntity($itemId, $entity);
+
+        $message = Response\Message::create(Render::$request);
+        $message->data = ($userAccount->hasId()) ? $userAccount : null;
         Render::lastModified(time(), '0');
-        Render::json($message);
+        Render::json($message, Helper\User::getStatus($userAccount));
     }
 }
