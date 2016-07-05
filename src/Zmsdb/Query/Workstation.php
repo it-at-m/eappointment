@@ -48,7 +48,7 @@ class Workstation extends Base implements MappingInterface
 
     public function addConditionPassword($password)
     {
-        $this->query->where('workstation.Passworthash', '=', $password);
+        $this->query->where('workstation.Passworthash', '=', md5($password));
         return $this;
     }
 
