@@ -2353,11 +2353,12 @@
  *                  in: path
  *                  required: true
  *                  type: string
- *              -   name: password
- *                  description: password to verify user
- *                  in: formData
+ *              -   name: useraccount
+ *                  description: useraccount data to update
  *                  required: true
- *                  type: string
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/useraccount.json"
  *          responses:
  *              200:
  *                  description: "success"
