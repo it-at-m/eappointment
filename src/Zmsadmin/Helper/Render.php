@@ -63,7 +63,7 @@ class Render extends \BO\Slim\Render
      *
      * @return string
      */
-    public static function error($exception)
+    public static function error($request, $exception)
     {
         if ($exception instanceof \Slim\Exception\Stop) {
             return true;
@@ -87,9 +87,9 @@ class Render extends \BO\Slim\Render
                 "trace" => $exception->getTraceAsString(),
                 "servertime" => $servertime,
                 "uniqueid" => $uniqueId,
-                "requesturi" => self::$request->getUri(),
-                "requestdata" => htmlspecialchars(json_encode(self::$request, JSON_HEX_QUOT)),
-                "requestmethod" => self::$request->getMethod()
+                "requesturi" => $request->getUri(),
+                "requestdata" => htmlspecialchars(json_encode($request, JSON_HEX_QUOT)),
+                "requestmethod" => $request->getMethod()
             )
         );
     }

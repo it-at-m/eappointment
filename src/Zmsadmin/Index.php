@@ -30,9 +30,8 @@ class Index extends BaseController
             $form = $form->getValues();
             $userAccount = new \BO\Zmsentities\UserAccount(array(
                 'id' => $form['loginName']->getValue(),
-                'password' => md5($form['password']->getValue())
+                'password' => $form['password']->getValue()
             ));
-
             try {
                 $workstation = \App::$http->readPostResult(
                     '/workstation/'. $userAccount->id .'/',
@@ -40,7 +39,7 @@ class Index extends BaseController
                 )->getEntity();
                 Auth::setKey($workstation->authKey);
             } catch (\Exception $exception) {
-                return Render::error($response, $exception);
+                return Helper\Render::error($request, $exception);
             }
             return Helper\Render::checkedRedirect(
                 self::$errorHandler,
