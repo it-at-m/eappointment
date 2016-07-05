@@ -56,6 +56,8 @@ class Index extends BaseController
             );
         }
 
+        $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences'=>1))->getCollection();
+        $organisationList = $ownerList->getOrganisationsByOwnerId(23);
         $validate = Validator::param('form_validate')->isBool()->getValue();
         $loginData = ($validate) ? $form->getStatus() : null;
         self::$errorHandler->error = ($loginData) ? 'login_failed' : '';
@@ -65,7 +67,8 @@ class Index extends BaseController
             'page/index.twig',
             array(
                 'title' => 'Anmeldung',
-                'loginData' => $loginData
+                'loginData' => $loginData,
+                'organisationList' => $organisationList->sortByName()
             )
         );
     }
