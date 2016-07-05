@@ -44,13 +44,13 @@ class Index extends BaseController
                 $userAccount->addDepartment($form['department']->getValue());
                 $workstation->useraccount = $userAccount;
                 $workstation = \App::$http->readPostResult('/workstation/', $workstation)->getEntity();
-                error_log(var_export($workstation, 1));
+                $redirectTo = ($workstation->name == 0) ? 'counter' : 'workstation';
             } catch (\Exception $exception) {
                 return Helper\Render::error($request, $exception);
             }
             return Helper\Render::checkedRedirect(
                 self::$errorHandler,
-                'workstation',
+                $redirectTo,
                 array(),
                 array()
             );
