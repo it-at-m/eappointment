@@ -35,8 +35,16 @@ class Scope extends Base
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
             foreach ($result as $entity) {
-                if ($entity instanceof Entity) {
+                if (0 == $resolveReferences) {
+                    $entity = new Entity(array(
+                        'id' => $entity->id,
+                        '$ref' => '/scope/'. $entity->id .'/'
+                    ));
                     $scopeList->addEntity($entity);
+                } else {
+                    if ($entity instanceof Entity) {
+                        $scopeList->addEntity($entity);
+                    }
                 }
             }
         }

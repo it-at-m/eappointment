@@ -36,6 +36,7 @@ class UserAccount extends Base implements MappingInterface
     public function addConditionXauthKey($xAuthKey)
     {
         $this->query->where('userAccount.SessionID', '=', $xAuthKey);
+        $this->query->where('userAccount.SessionID', '<>', '');
         return $this;
     }
 

@@ -24,6 +24,7 @@ class Department extends Base
             ->addConditionDepartmentId($departmentId);
         $department = $this->fetchOne($query, new Entity());
         if (isset($department['id'])) {
+            $department['clusters'] = (new Cluster())->readByDepartmentId($departmentId, $resolveReferences);
             $department['scopes'] = (new Scope())->readByDepartmentId($departmentId, $resolveReferences);
             $department['dayoff']  = (new DayOff())->readByDepartmentId($departmentId);
             self::$departmentCache[$departmentId] = $department;
