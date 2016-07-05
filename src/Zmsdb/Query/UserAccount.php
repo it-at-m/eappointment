@@ -23,6 +23,7 @@ class UserAccount extends Base implements MappingInterface
             'rights__availability' => self::expression('`userAccount`.`Berechtigung` >= 15'),
             'rights__ticketprinter' => self::expression('`userAccount`.`Berechtigung` >= 10'),
             'rights__sms' => self::expression('`userAccount`.`Berechtigung` >= 0'),
+            'departments__0' => 'userAccount.BehoerdenID'
         ];
     }
 
@@ -45,6 +46,7 @@ class UserAccount extends Base implements MappingInterface
         $data['id'] = $entity->loginName;
         $data['Passworthash'] = $entity->password;
         $data['Berechtigung'] = $entity->getRights();
+        $data['BehoerdenID'] = $entity->getDepartments();
 
         $data = array_filter($data, function ($value) {
             return ($value !== null && $value !== false);
