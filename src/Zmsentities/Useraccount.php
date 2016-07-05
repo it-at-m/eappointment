@@ -11,10 +11,9 @@ class Useraccount extends Schema\Entity
         return (array_key_exists('id', $this)) ? true : false;
     }
 
-    public function testRights()
+    public function testRights(array $requiredRights)
     {
         if ($this->hasId()) {
-            $requiredRights = func_get_args();
             foreach ($requiredRights as $required) {
                 if (!array_key_exists($required, array_filter($this->rights))) {
                     throw new Exception\UserAccountMissingRights();

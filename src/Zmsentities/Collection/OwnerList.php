@@ -21,12 +21,15 @@ class OwnerList extends Base
 
     public function getOrganisationsByOwnerId($entityId)
     {
-        $result = null;
+        $organisationList = new OrganisationList();
         foreach ($this as $entity) {
             if ($entityId == $entity->id) {
-                $result = $entity->organisations;
+                foreach ($entity->organisations as $organisation) {
+                    $organisation = new \BO\Zmsentities\Organisation($organisation);
+                    $organisationList->addEntity($organisation);
+                }
             }
         }
-        return $result;
+        return $organisationList;
     }
 }
