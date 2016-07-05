@@ -23,7 +23,8 @@ class UserAccount extends Base
             ->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
             ->addConditionXauthKey($xAuthKey);
-        return $this->fetchOne($query, new Entity());
+        $userAccount = $this->fetchOne($query, new Entity());
+        return $userAccount;
     }
 
 

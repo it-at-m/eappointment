@@ -23,7 +23,11 @@ class Workstation extends Base implements MappingInterface
         UPDATE
             '. self::TABLE .'
         SET
-            SessionID=""
+            SessionID="",
+            StandortID="",
+            BehoerdenID="",
+            Arbeitsplatznr="",
+            aufrufzusatz=""
         WHERE
             Name=?
     ';
