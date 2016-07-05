@@ -36,6 +36,7 @@ class OwnerOverview extends BaseController
             array(
                 'title' => 'Behörden und Standorte',
                 'menuActive' => 'owner',
+                'owner' => current($ownerList),
                 'itemList' => $organisationList->sortByName(),
             )
         );
