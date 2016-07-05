@@ -7,7 +7,12 @@
         "rights": {
             "scope": true,
             "ticketprinter": true
-        }
+        },
+        "departments": [
+            {
+                "id": 141
+            }
+        ]
     },
     "properties": {
         "lastLogin": {
@@ -52,6 +57,13 @@
                 "useraccount": {
                     "type": "boolean"
                 }
+            }
+        },
+        "departments": {
+        	"type": "array",
+        	"description": "list of assigned departments",
+            "items": {
+                "$ref": "department.json"
             }
         }
     }
