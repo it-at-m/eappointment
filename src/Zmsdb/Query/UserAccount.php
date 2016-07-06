@@ -23,7 +23,27 @@ class UserAccount extends Base implements MappingInterface
             'rights__availability' => self::expression('`userAccount`.`Berechtigung` >= 15'),
             'rights__ticketprinter' => self::expression('`userAccount`.`Berechtigung` >= 10'),
             'rights__sms' => self::expression('`userAccount`.`Berechtigung` >= 0'),
-            'departments__0' => 'userAccount.BehoerdenID'
+            'departments__0__id' => 'userAccount.BehoerdenID'
+        ];
+    }
+
+    public function addJoin()
+    {
+        $this->query->leftJoin(
+            new Alias(Department::TABLE, 'department'),
+            'userAccount.BehoerdenID',
+            '=',
+            'department.BehoerdenID'
+        );
+        $departmentQuery = new Department($this->query);
+        $departmentQuery->addEntityMappingPrefixed($this->getPrefixed('departments__0__'));
+        return [$departmentQuery];
+    }
+
+    public function getReferenceMapping()
+    {
+        return [
+            'departments__0__$ref' => self::expression('CONCAT("/department/", `userAccount`.`BehoerdenID`, "/")'),
         ];
     }
 
@@ -36,7 +56,6 @@ class UserAccount extends Base implements MappingInterface
     public function addConditionXauthKey($xAuthKey)
     {
         $this->query->where('userAccount.SessionID', '=', $xAuthKey);
-        $this->query->where('userAccount.SessionID', '<>', '');
         return $this;
     }
 

@@ -13,7 +13,8 @@ class UserAccount extends Base
             ->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
             ->addConditionLoginName($loginname);
-        return $this->fetchOne($query, new Entity());
+        $userAccount = $this->fetchOne($query, new Entity());
+        return $userAccount;
     }
 
     public function readEntityByAuthKey($xAuthKey, $resolveReferences = 0)
@@ -23,8 +24,7 @@ class UserAccount extends Base
             ->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
             ->addConditionXauthKey($xAuthKey);
-        $userAccount = $this->fetchOne($query, new Entity());
-        return $userAccount;
+        return ($xAuthKey) ? $this->fetchOne($query, new Entity()) : new Entity();
     }
 
 
