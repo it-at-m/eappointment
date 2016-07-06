@@ -67,7 +67,7 @@ class Cluster extends Base
         if (count($result)) {
             foreach ($result as $entity) {
                 $entity = $this->readEntity($entity->id, $resolveReferences);
-                if ($entity instanceof Entity) {
+                if ($entity instanceof Entity && !$clusterList->hasEntity($entity->id)) {
                     $clusterList->addEntity($entity);
                 }
             }
