@@ -8,6 +8,7 @@
 namespace BO\Zmsadmin\Helper;
 
 use \BO\Mellon\Validator;
+use \BO\Zmsclient\Auth;
 
 class LoginForm
 {
@@ -47,5 +48,29 @@ class LoginForm
         // return validated collection
         $collection = Validator::collection($collection);
         return $collection;
+    }
+
+    public static function setLoginRedirect($form)
+    {
+        $formData = $form->getValues();
+        $userAccount = new \BO\Zmsentities\UserAccount(array(
+            'id' => $formData['loginName']->getValue(),
+            'password' => $formData['password']->getValue()
+        ));
+        $workstation = \App::$http->readPostResult(
+            '/workstation/'. $userAccount->id .'/',
+            $userAccount
+        )->getEntity();
+
+        if (isset($workstation->authKey)) {
+            Auth::setKey($workstation->authKey);
+            $workstation->name = $formData['workstation']->getValue();
+            $workstation->scope['id'] = $formData['scope']->getValue();
+            $userAccount->addDepartment($formData['department']->getValue());
+            $workstation->useraccount = $userAccount;
+            $workstation = \App::$http->readPostResult('/workstation/', $workstation)->getEntity();
+            return (0 == $workstation->name) ? 'counter' : 'workstation';
+        }
+        return false;
     }
 }
