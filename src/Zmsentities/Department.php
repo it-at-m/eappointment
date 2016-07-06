@@ -45,4 +45,22 @@ class Department extends Schema\Entity
     {
         return new Contact($this->contact);
     }
+
+    public function withOutClusterDuplicates()
+    {
+        $clusterScopeList = new Collection\ScopeList();
+        foreach ($this->clusters as $cluster) {
+            foreach ($cluster['scopes'] as $clusterScope) {
+                $clusterScopeList->addEntity(new Scope($clusterScope));
+            }
+        }
+        $scopeList = new Collection\ScopeList();
+        foreach ($this->scopes as $scope) {
+            if (!$clusterScopeList->hasEntity($scope['id'])) {
+                $scopeList->addEntity(new Scope($scope));
+            }
+        }
+        $this->scopes = $scopeList;
+        return $this;
+    }
 }
