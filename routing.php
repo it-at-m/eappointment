@@ -1659,6 +1659,43 @@
 
 /**
  *  @swagger
+ *  "/request/{source}/provider/{id}/":
+ *      get:
+ *          description: Get a list of requests by provider ID
+ *          parameters:
+ *              -   name: source
+ *                  description: name of source
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: id
+ *                  description: number of provider
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/request.json"
+ *              404:
+ *                  description: "provider id does not exists"
+ */
+\App::$slim->get('/request/{source}/provider/{id:\d{1,11}}/',
+    '\BO\Zmsapi\RequestsByProvider')
+    ->setName("RequestsByProvider");
+
+/**
+ *  @swagger
  *  "/department/{id}/scope/":
  *      post:
  *          description: Add a new scope
@@ -1796,8 +1833,8 @@
  *              404:
  *                  description: "scope id does not exists"
  */
-\App::$slim->get('/scope/provider/{id}/',
-    '\BO\Zmsapi\ScopeByProviderList:\d{1,11}')
+\App::$slim->get('/scope/provider/{id:\d{1,11}}/',
+    '\BO\Zmsapi\ScopeByProviderList')
     ->setName("ScopeByProviderList");
 
 /**
