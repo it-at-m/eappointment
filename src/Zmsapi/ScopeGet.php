@@ -21,11 +21,15 @@ class ScopeGet extends BaseController
      */
     public static function render($itemId)
     {
-        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
-        $scope = (new Query())->readEntity($itemId, $resolveReferences);
+        Helper\User::checkRights('scope');
+
+        $query = new Query();
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
+        $scope = $query->readEntity($itemId, $resolveReferences);
+
         $message = Response\Message::create(Render::$request);
         $message->data = $scope;
         Render::lastModified(time(), '0');
-        Render::json($message);
+        Render::json($message, Helper\User::getStatus($scope));
     }
 }
