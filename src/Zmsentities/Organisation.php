@@ -11,6 +11,17 @@ class Organisation extends Schema\Entity
         return (array_key_exists('id', $this)) ? true : false;
     }
 
+    public function hasDepartment($departmentId)
+    {
+        $hasDepartment = false;
+        foreach ($this->departments as $department) {
+            if ($departmentId == $department['id']) {
+                $hasDepartment = true;
+            }
+        }
+        return $hasDepartment;
+    }
+
     public function getPreference($name)
     {
         if (array_key_exists('preferences', $this) && array_key_exists($name, $this->preferences)) {
