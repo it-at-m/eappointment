@@ -22,6 +22,34 @@ class Workstation extends Schema\Entity
         }
     }
 
+    public function getSelectedDepartment()
+    {
+        $department = new Department();
+        if (array_key_exists('departments', $this->useraccount)) {
+            $department = new Department(current($this->useraccount['departments']));
+        }
+        return $department;
+    }
+
+    public function getUseraccountRights()
+    {
+        $rights = null;
+        if (array_key_exists('rights', $this->useraccount)) {
+            $rights = $this->useraccount['rights'];
+        }
+        return $rights;
+    }
+
+    public function hasSuperUseraccount()
+    {
+        $isSuperuser = false;
+        $userRights = $this->getUseraccountRights();
+        if ($userRights['superuser']) {
+            $isSuperuser = true;
+        }
+        return $isSuperuser;
+    }
+
     public function getAuthKey()
     {
         return bin2hex(openssl_random_pseudo_bytes(16));
