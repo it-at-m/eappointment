@@ -21,8 +21,13 @@ class Counter extends BaseController
         array $args
     ) {
 
-        $entity = \App::$http->readGetResult('/workstation/')->getEntity();
-        if (!$entity->hasId()) {
+        $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
+        $provider = \App::$http->readGetResult(
+            '/provider/dldb/'. $workstation->getProviderOfGivenScope() .'/'
+        )->getEntity();
+        $requestList = \App::$http->readGetResult('/request/dldb/provider/'. $provider->id .'/')->getCollection();
+
+        if (!$workstation->hasId()) {
             return Helper\Render::checkedRedirect(
                 self::$errorHandler,
                 'index',
@@ -39,7 +44,8 @@ class Counter extends BaseController
             array(
                 'title' => 'Tresen',
                 'menuActive' => 'counter',
-                'workstation' => $entity->getArrayCopy()
+                'workstation' => $workstation->getArrayCopy(),
+                'requestList' => $requestList->sortByName()
             )
         );
     }
