@@ -20,11 +20,15 @@ class DepartmentList extends BaseController
      */
     public static function render()
     {
+        Helper\User::checkRights('department');
+
+        $query = new Query();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
-        $departmentList = (new Query())->readList($resolveReferences);
+        $departmentList = $query->readList($resolveReferences);
+
         $message = Response\Message::create(Render::$request);
         $message->data = $departmentList;
         Render::lastModified(time(), '0');
-        Render::json($message);
+        Render::json($message, Helper\User::getStatus($departmentList));
     }
 }
