@@ -24,13 +24,15 @@ class Department extends Base
             ->addConditionDepartmentId($departmentId);
         $department = $this->fetchOne($query, new Entity());
         if (isset($department['id'])) {
-            $department['clusters'] = (new Cluster())->readByDepartmentId($departmentId, $resolveReferences);
-            $department['scopes'] = (new Scope())->readByDepartmentId($departmentId, $resolveReferences);
+            $department['clusters'] = (new Cluster())
+                ->readByDepartmentId($departmentId, $resolveReferences);
+            $department['scopes'] = (new Scope())
+                ->readByDepartmentId($departmentId, $resolveReferences);
             $department['dayoff']  = (new DayOff())->readByDepartmentId($departmentId);
             self::$departmentCache[$departmentId] = $department;
-            return $department;
+            return $department->withOutClusterDuplicates();
         }
-        return array();
+        return null;
     }
 
     public function readList($resolveReferences = 0)
@@ -41,7 +43,7 @@ class Department extends Base
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
             foreach ($result as $department) {
-                $department = $this->readEntity($department['id'], $resolveReferences - 1);
+                $department = $this->readEntity($department['id'], $resolveReferences);
                 if ($department instanceof Entity) {
                     $departmentList->addDepartment($department);
                 }
