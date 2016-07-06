@@ -15,7 +15,7 @@ class Base extends \ArrayObject
     {
         $itemList = clone $this;
         $itemList->uasort(function ($a, $b) {
-            return strcmp(Sorter::toSortableString($a->name), Sorter::toSortableString($b->name));
+            return strcmp(Sorter::toSortableString(ucfirst($a->name)), Sorter::toSortableString(ucfirst($b->name)));
         });
         return $itemList;
     }
