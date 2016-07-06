@@ -2,6 +2,7 @@
 namespace BO\Zmsdb;
 
 use \BO\Zmsentities\Request as Entity;
+use \BO\Zmsentities\Collection\RequestList as Collection;
 
 class Request extends Base
 {
@@ -20,7 +21,7 @@ class Request extends Base
         if ($resolveReferences >= 1 && $request['source'] == 'dldb') {
             $request['data'] = Helper\DldbData::readExtendedRequestData($source, $requestId);
         }
-        return $request;
+        return ($request->hasId()) ? $request : null;
     }
 
     public function readSlotsOnEntity(\BO\Zmsentities\Request $entity)
@@ -48,5 +49,18 @@ class Request extends Base
             }
         }
         return (count($requests)) ? $requests : null;
+    }
+
+    public function readListByProvider($source, $providerId, $resolveReferences = 0)
+    {
+        $requestList = new Collection();
+        $provider = (new Provider())->readEntity($source, $providerId, $resolveReferences);
+        foreach ($provider->data['services'] as $request) {
+            $request = $this->readEntity($source, $request['service'], $resolveReferences - 1);
+            if ($request instanceof Entity) {
+                $requestList->addEntity($request);
+            }
+        }
+        return $requestList;
     }
 }
