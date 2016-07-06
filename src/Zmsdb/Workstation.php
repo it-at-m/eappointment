@@ -14,7 +14,10 @@ class Workstation extends Base
             ->addConditionLoginName($loginName)
             ->addResolvedReferences($resolveReferences);
         $workstation = $this->fetchOne($query, new Entity());
-        $workstation->useraccount = (new UserAccount)->readEntity($loginName);
+        $workstation->useraccount = (new UserAccount)->readEntity($loginName, $resolveReferences);
+        if ($resolveReferences > 0) {
+            $workstation->scope = (new Scope)->readEntity($workstation->scope['id'], $resolveReferences);
+        }
         return $workstation;
     }
 

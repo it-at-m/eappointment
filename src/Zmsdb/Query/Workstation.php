@@ -24,8 +24,8 @@ class Workstation extends Base implements MappingInterface
             '. self::TABLE .'
         SET
             SessionID="",
-            StandortID="",
-            BehoerdenID="",
+            StandortID=0,
+            BehoerdenID=0,
             Arbeitsplatznr="",
             aufrufzusatz=""
         WHERE
@@ -41,6 +41,27 @@ class Workstation extends Base implements MappingInterface
             'queue__appointmentsOnly' => 'workstation.Kalenderansicht',
             'queue__clusterEnabled' => 'workstation.clusteransicht',
             'scope__id' => 'workstation.StandortID'
+        ];
+    }
+
+    public function addJoin()
+    {
+        $this->query->leftJoin(
+            new Alias(Scope::TABLE, 'scope'),
+            'workstation.StandortID',
+            '=',
+            'scope.StandortID'
+        );
+        $scopeQuery = new Scope($this->query);
+        $scopeQuery->addEntityMappingPrefixed($this->getPrefixed('scope__'));
+
+        return [$scopeQuery];
+    }
+
+    public function getReferenceMapping()
+    {
+        return [
+            'scope__$ref' => self::expression('CONCAT("/scope/", `workstation`.`StandortID`, "/")'),
         ];
     }
 
