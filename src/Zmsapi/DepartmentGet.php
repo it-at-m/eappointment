@@ -20,11 +20,15 @@ class DepartmentGet extends BaseController
      */
     public static function render($itemId)
     {
+        Helper\User::checkRights('department');
+
+        $query = new Query();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
-        $department = (new Query())->readEntity($itemId, $resolveReferences);
+        $department = $query->readEntity($itemId, $resolveReferences);
+
         $message = Response\Message::create(Render::$request);
         $message->data = $department;
         Render::lastModified(time(), '0');
-        Render::json($message);
+        Render::json($message, Helper\User::getStatus($department));
     }
 }

@@ -22,7 +22,7 @@ class User
     public static function getStatus($entity, $loginRequired = false)
     {
         $xAuthKey = Render::$request->getHeader('X-AuthKey');
-        if (!current($xAuthKey) || !$entity->hasId()) {
+        if (!current($xAuthKey) || null === $entity) {
             return ($loginRequired) ? 401 : 404;
         }
         return 200;
