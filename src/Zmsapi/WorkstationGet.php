@@ -27,7 +27,7 @@ class WorkstationGet extends BaseController
         $workstation = $query->readEntity($userAccount->id, $resolveReferences);
 
         $message = Response\Message::create(Render::$request);
-        $message->data = ($workstation->hasId() ? $workstation : null);
+        $message->data = $workstation;
         Render::lastModified(time(), '0');
         Render::json($message, Helper\User::getStatus($workstation, true));
     }
