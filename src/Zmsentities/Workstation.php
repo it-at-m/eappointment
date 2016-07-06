@@ -31,6 +31,11 @@ class Workstation extends Schema\Entity
         return $department;
     }
 
+    public function getProviderOfGivenScope()
+    {
+        return $this->scope['provider']['id'];
+    }
+
     public function getUseraccountRights()
     {
         $rights = null;
