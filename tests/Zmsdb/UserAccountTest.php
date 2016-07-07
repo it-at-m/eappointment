@@ -31,6 +31,14 @@ class UserAccountTest extends Base
         $this->assertEntity("\\BO\\Zmsentities\\UserAccount", $userAccount);
     }
 
+    public function testReadList()
+    {
+        $query = new Query();
+        $entityList = $query->readList();
+        $this->assertEntityList("\\BO\\Zmsentities\\UserAccount", $entityList);
+        $this->assertEquals(true, $entityList->hasEntity('berlinonline')); //superuser bo
+    }
+
     public function testDublicate()
     {
         $query = new Query();
