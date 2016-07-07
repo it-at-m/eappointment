@@ -3,6 +3,7 @@
 namespace BO\Zmsdb;
 
 use \BO\Zmsentities\UserAccount as Entity;
+use \BO\Zmsentities\Collection\UserAccountList as Collection;
 
 class UserAccount extends Base
 {
@@ -15,6 +16,33 @@ class UserAccount extends Base
             ->addConditionLoginName($loginname);
         $userAccount = $this->fetchOne($query, new Entity());
         return $userAccount;
+    }
+
+    /**
+     * read list of useraccounts
+     *
+     * @param
+     * resolveReferences
+     *
+     * @return Resource Collection
+     */
+    public function readList($resolveReferences = 0)
+    {
+        $collection = new Collection();
+        $query = new Query\UserAccount(Query\Base::SELECT);
+        $query
+            ->addResolvedReferences($resolveReferences)
+            ->addEntityMapping();
+        $result = $this->fetchList($query, new Entity());
+        if (count($result)) {
+            foreach ($result as $entity) {
+                $entity = $this->readEntity($entity->id, $resolveReferences);
+                if ($entity instanceof Entity) {
+                    $collection->addEntity($entity);
+                }
+            }
+        }
+        return $collection;
     }
 
     public function readEntityByAuthKey($xAuthKey, $resolveReferences = 0)
