@@ -18,4 +18,16 @@ class ClusterList extends Base
         }
         return false;
     }
+
+    public function hasScope($scopeId)
+    {
+        foreach ($this as $entity) {
+            foreach ($entity['scopes'] as $scope) {
+                if ($scopeId == $scope->id) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }
