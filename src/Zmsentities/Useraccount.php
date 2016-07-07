@@ -2,7 +2,7 @@
 
 namespace BO\Zmsentities;
 
-class Useraccount extends Schema\Entity
+class UserAccount extends Schema\Entity
 {
     public static $schema = "useraccount.json";
 

@@ -8,6 +8,10 @@ namespace BO\Zmsentities\Collection;
 
 use \BO\Zmsentities\Helper\Sorter;
 
+/**
+ * @SuppressWarnings(NumberOfChildren)
+ *
+ */
 class Base extends \ArrayObject
 {
 
