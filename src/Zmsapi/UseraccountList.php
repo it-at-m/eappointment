@@ -20,8 +20,15 @@ class UseraccountList extends BaseController
      */
     public static function render()
     {
+        Helper\User::checkRights('useraccount');
+
+        $query = new Query();
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
+        $collection = $query->readList($resolveReferences);
+
         $message = Response\Message::create(Render::$request);
-        $message->data = array(\BO\Zmsentities\Useraccount::createExample());
+        $message->data = $collection;
+        Render::lastModified(time(), '0');
         Render::json($message);
     }
 }
