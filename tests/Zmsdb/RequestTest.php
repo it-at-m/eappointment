@@ -29,4 +29,13 @@ class RequestTest extends Base
         $entity = (new Query())->readEntity('test', 122280, 1);
         $this->assertEntity("\\BO\\Zmsentities\\Request", $entity);
     }
+
+    public function testListByProvider()
+    {
+        //Dienstleister Bürgeramt I in Köpenick
+        $collection = (new Query())->readListByProvider('dldb', 122208, 1);
+        $this->assertEntityList("\\BO\\Zmsentities\\Request", $collection);
+        $this->assertEquals(true, $collection->hasEntity('120335')); //Abmeldung einer Wohnung
+
+    }
 }

@@ -149,7 +149,7 @@ class Department extends Base
         $query->addConditionDepartmentId($departmentId);
         $values = $query->reverseEntityMapping($entity);
         $query->addValues($values);
-        $this->writeItem($query, 'department', $query::TABLE);
+        $this->writeItem($query);
 
         $this->updateDepartmentMail(
             $departmentId,

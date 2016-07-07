@@ -77,7 +77,7 @@ class Availability extends Base
         $query->addConditionAvailabilityId($entityId);
         $values = $query->reverseEntityMapping($entity);
         $query->addValues($values);
-        $this->writeItem($query, 'availability', $query::TABLE);
+        $this->writeItem($query);
         return $this->readEntity($entityId);
     }
 

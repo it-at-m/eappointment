@@ -109,7 +109,7 @@ class Organisation extends Base
         $query->addConditionOrganisationId($organisationId);
         $values = $query->reverseEntityMapping($entity, $parentId);
         $query->addValues($values);
-        $this->writeItem($query, 'organisation', $query::TABLE);
+        $this->writeItem($query);
         return $this->readEntity($organisationId);
     }
 }

@@ -42,7 +42,7 @@ class UserAccount extends Base
         $query->addConditionLoginName($loginName);
         $values = $query->reverseEntityMapping($entity);
         $query->addValues($values);
-        $this->writeItem($query, 'userAccount', $query::TABLE);
+        $this->writeItem($query);
         return $this->readEntity($loginName);
     }
 }

@@ -54,7 +54,6 @@ class Workstation extends Base implements MappingInterface
         );
         $scopeQuery = new Scope($this->query);
         $scopeQuery->addEntityMappingPrefixed($this->getPrefixed('scope__'));
-
         return [$scopeQuery];
     }
 

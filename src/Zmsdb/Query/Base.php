@@ -56,7 +56,7 @@ abstract class Base
             $this->addTable();
         } elseif (self::UPDATE === $queryType) {
             $this->query = new Update($dialect);
-            $this->addTable();
+            $this->addTableAlias();
         } elseif (self::REPLACE === $queryType) {
             $this->query = new INSERT($dialect);
             $this->query->queryBaseStatement('REPLACE INTO');

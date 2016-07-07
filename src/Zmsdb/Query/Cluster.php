@@ -38,7 +38,7 @@ class Cluster extends Base
         return $this;
     }
 
-    public function reverseEntityMapping(\BO\Zmsentities\Owner $entity)
+    public function reverseEntityMapping(\BO\Zmsentities\Cluster $entity)
     {
         $data = array();
         $data['name'] = $entity->name;

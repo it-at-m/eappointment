@@ -122,7 +122,7 @@ class Cluster extends Base
         $query->addConditionClusterId($clusterId);
         $values = $query->reverseEntityMapping($entity);
         $query->addValues($values);
-        $this->writeItem($query, 'cluster', $query::TABLE);
+        $this->writeItem($query);
         return $this->readEntity($clusterId);
     }
 }
