@@ -93,15 +93,14 @@ abstract class Base
      *
      * @return \PDO
      */
-    public function writeItem(Query\Base $query, $table = '', $replace = '')
+    public function writeItem(Query\Base $query)
     {
-        $statement = $this->getWriter()->prepare(str_replace($table, $replace, $query->getSql()));
+        $statement = $this->getWriter()->prepare($query->getSql());
         return $statement->execute($query->getParameters());
     }
 
     public function deleteItem(Query\Base $query)
     {
-        //error_log($query->getSql());
         $statement = $this->getWriter()->prepare($query->getSql());
         return $statement->execute($query->getParameters());
     }

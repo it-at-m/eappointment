@@ -27,6 +27,26 @@ class UserAccount extends Base
         return ($xAuthKey) ? $this->fetchOne($query, new Entity()) : new Entity();
     }
 
+    /**
+     * write an userAccount
+     *
+     * @param
+     * entity
+     *
+     * @return Entity
+     */
+    public function writeEntity(\BO\Zmsentities\UserAccount $entity)
+    {
+        if (count($this->readEntity($entity->id))) {
+            return null;
+        }
+        $query = new Query\UserAccount(Query\Base::INSERT);
+        $values = $query->reverseEntityMapping($entity);
+        $query->addValues($values);
+        $this->writeItem($query);
+        return $this->readEntity($entity->id, 1);
+    }
+
 
     /**
      * update a userAccount
@@ -43,6 +63,21 @@ class UserAccount extends Base
         $values = $query->reverseEntityMapping($entity);
         $query->addValues($values);
         $this->writeItem($query);
-        return $this->readEntity($loginName);
+        return $this->readEntity($loginName, 1);
+    }
+
+    /**
+     * remove an user
+     *
+     * @param
+     * itemId
+     *
+     * @return Resource Status
+     */
+    public function deleteEntity($loginName)
+    {
+        $query =  new Query\UserAccount(Query\Base::DELETE);
+        $query->addConditionLoginName($loginName);
+        return $this->deleteItem($query);
     }
 }

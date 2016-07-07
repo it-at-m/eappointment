@@ -12,8 +12,8 @@ class UserAccount extends Base implements MappingInterface
     public function getEntityMapping()
     {
         return [
-            'lastLogin' => 'userAccount.Datum',
             'id' => 'userAccount.Name',
+            'lastLogin' => 'userAccount.Datum',
             'rights__superuser' => self::expression('`userAccount`.`Berechtigung` = 90'),
             'rights__organisation' => self::expression('`userAccount`.`Berechtigung` >= 70'),
             'rights__department' => self::expression('`userAccount`.`Berechtigung` >= 50'),
@@ -63,10 +63,13 @@ class UserAccount extends Base implements MappingInterface
     public function reverseEntityMapping(\BO\Zmsentities\UserAccount $entity)
     {
         $data = array();
-        $data['id'] = $entity->loginName;
-        $data['Passworthash'] = $entity->password;
-        $data['Berechtigung'] = $entity->getRights();
-        $data['BehoerdenID'] = $entity->getDepartments();
+        $data['Name'] = $entity->id;
+        $data['Passworthash'] = $entity->getEncryptedPassword();
+        $data['Berechtigung'] = $entity->getRightsLevel();
+        $data['BehoerdenID'] = $entity->getDepartmentId();
+        //default values because of strict mode
+        $data['notrufinitiierung'] = 0;
+        $data['notrufantwort'] = 0;
 
         $data = array_filter($data, function ($value) {
             return ($value !== null && $value !== false);
