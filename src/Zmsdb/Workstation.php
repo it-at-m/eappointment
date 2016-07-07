@@ -15,9 +15,6 @@ class Workstation extends Base
             ->addResolvedReferences($resolveReferences);
         $workstation = $this->fetchOne($query, new Entity());
         $workstation->useraccount = (new UserAccount)->readEntity($loginName, $resolveReferences);
-        if ($resolveReferences > 0) {
-            $workstation->scope = (new Scope)->readEntity($workstation->scope['id'], $resolveReferences);
-        }
         return $workstation;
     }
 
@@ -32,21 +29,26 @@ class Workstation extends Base
         return ($workstation->hasId()) ? true : false;
     }
 
-    public function readUpdatedLoginEntity($loginName)
+    public function readUpdatedLoginEntity($loginName, $password)
     {
-        $query = Query\Workstation::QUERY_LOGIN;
-        $statement = $this->getWriter()->prepare($query);
-        $authKey = (new \BO\Zmsentities\Workstation())->getAuthKey();
-        $result = $statement->execute(
-            array(
-                $authKey,
-                (new \DateTimeImmutable())->format('Y-m-d'),
-                $loginName
-            )
-        );
-        $workstation = $this->readEntity($loginName);
-        $workstation->authKey = $authKey;
-        return ($result) ? $workstation : null;
+        $workstation = new Entity();
+        if ($this->isUserExisting($loginName, $password)) {
+            $query = Query\Workstation::QUERY_LOGIN;
+            $statement = $this->getWriter()->prepare($query);
+            $authKey = (new \BO\Zmsentities\Workstation())->getAuthKey();
+            $result = $statement->execute(
+                array(
+                    $authKey,
+                    (new \DateTimeImmutable())->format('Y-m-d'),
+                    $loginName
+                )
+            );
+            if ($result) {
+                $workstation = $this->readEntity($loginName);
+                $workstation->authKey = $authKey;
+            }
+        }
+        return $workstation;
     }
 
     public function readUpdatedLogoutEntity($loginName)
@@ -76,7 +78,7 @@ class Workstation extends Base
         $query->addConditionWorkstationId($entity->id);
         $values = $query->reverseEntityMapping($entity);
         $query->addValues($values);
-        $this->writeItem($query, 'workstation', $query::TABLE);
+        $this->writeItem($query);
         return $this->readEntity($entity->useraccount['id']);
     }
 }

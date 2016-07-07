@@ -152,7 +152,7 @@ class Scope extends Base
         $query->addConditionScopeId($scopeId);
         $values = $query->reverseEntityMapping($entity, $parentId);
         $query->addValues($values);
-        $this->writeItem($query, 'scope', $query::TABLE);
+        $this->writeItem($query);
         return $this->readEntity($scopeId);
     }
 

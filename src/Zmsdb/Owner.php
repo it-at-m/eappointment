@@ -114,7 +114,7 @@ class Owner extends Base
         $query->addConditionOwnerId($ownerId);
         $values = $query->reverseEntityMapping($entity);
         $query->addValues($values);
-        $this->writeItem($query, 'owner', $query::TABLE);
+        $this->writeItem($query);
         return $this->readEntity($ownerId);
     }
 }

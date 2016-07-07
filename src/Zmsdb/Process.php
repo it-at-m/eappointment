@@ -49,7 +49,7 @@ class Process extends Base
 
         $values = $query->reverseEntityMapping($process);
         $query->addValues($values);
-        $this->writeItem($query, 'process', $query::TABLE);
+        $this->writeItem($query);
         $this->writeRequestsToDb($processId, $process['requests']);
 
         $process = $this->readEntity($processId, $authKey);

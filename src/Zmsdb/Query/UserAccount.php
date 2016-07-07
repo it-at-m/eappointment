@@ -12,7 +12,7 @@ class UserAccount extends Base implements MappingInterface
     public function getEntityMapping()
     {
         return [
-            'lastlogin' => 'userAccount.Datum',
+            'lastLogin' => 'userAccount.Datum',
             'id' => 'userAccount.Name',
             'rights__superuser' => self::expression('`userAccount`.`Berechtigung` = 90'),
             'rights__organisation' => self::expression('`userAccount`.`Berechtigung` >= 70'),
@@ -23,7 +23,7 @@ class UserAccount extends Base implements MappingInterface
             'rights__availability' => self::expression('`userAccount`.`Berechtigung` >= 15'),
             'rights__ticketprinter' => self::expression('`userAccount`.`Berechtigung` >= 10'),
             'rights__sms' => self::expression('`userAccount`.`Berechtigung` >= 0'),
-            'departments__0__id' => 'userAccount.BehoerdenID'
+            'departments__0__id' => 'userAccount.BehoerdenID',
         ];
     }
 
