@@ -59,4 +59,9 @@ class Workstation extends Schema\Entity
     {
         return bin2hex(openssl_random_pseudo_bytes(16));
     }
+
+    public function hasAuthKey()
+    {
+        return (isset($this->authKey)) ? true : false;
+    }
 }
