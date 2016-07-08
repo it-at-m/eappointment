@@ -66,7 +66,7 @@ class LoginForm
             Auth::setKey($workstation->authKey);
             $workstation->name = $formData['workstation']->getValue();
             $workstation->scope['id'] = $formData['scope']->getValue();
-            $userAccount->addDepartment($formData['department']->getValue());
+            $userAccount->addDepartmentId($formData['department']->getValue());
             $workstation->useraccount = $userAccount;
             $workstation = \App::$http->readPostResult('/workstation/', $workstation)->getEntity();
             return (0 == $workstation->name) ? 'counter' : 'workstation';
