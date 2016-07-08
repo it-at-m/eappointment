@@ -47,6 +47,7 @@ class Mail extends Base
 
     public function writeInQueue(Entity $mail)
     {
+        $queueId = null;
         //write mail in queue
         $process = new \BO\Zmsentities\Process($mail->process);
         $scope =  new \BO\Zmsentities\Scope($mail->process['scope']);
@@ -70,9 +71,9 @@ class Mail extends Base
                     $this->writeInMailPart($queueId, $part);
                 }
                 $this->updateProcessClient($process, $client);
-                return $queueId;
             }
         }
+        return $queueId;
     }
 
     protected function writeInMailPart($queueId, $data)
