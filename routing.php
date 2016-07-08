@@ -2254,6 +2254,39 @@
 
 /**
  *  @swagger
+ *  "/useraccount/":
+ *      post:
+ *          description: add a new useraccount
+ *          parameters:
+ *              -   name: useraccount
+ *                  description: useraccount data to update
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/useraccount.json"
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/useraccount.json"
+ *              404:
+ *                  description: "Missing required properties in the useraccount"
+ */
+\App::$slim->post('/useraccount/',
+    '\BO\Zmsapi\UseraccountAdd')
+    ->setName("UseraccounAdd");
+
+/**
+ *  @swagger
  *  "/useraccount/{loginname}/":
  *      post:
  *          description: Update an useraccount

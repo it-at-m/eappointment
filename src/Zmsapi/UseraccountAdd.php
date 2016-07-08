@@ -13,18 +13,19 @@ use \BO\Zmsdb\UserAccount as Query;
 /**
   * Handle requests concerning services
   */
-class UseraccountDelete extends BaseController
+class UseraccountAdd extends BaseController
 {
     /**
      * @return String
      */
-    public static function render($loginName)
+    public static function render()
     {
         //$userAccount = Helper\User::checkRights('useraccount');
 
         $query = new Query();
-        $userAccount = $query->readEntity($loginName);
-        $query->deleteEntity($loginName);
+        $input = Validator::input()->isJson()->getValue();
+        $entity = new \BO\Zmsentities\UserAccount($input);
+        $userAccount = $query->writeEntity($entity);
 
         $message = Response\Message::create(Render::$request);
         $message->data = $userAccount;
