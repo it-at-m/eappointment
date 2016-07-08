@@ -23,12 +23,12 @@ class LoginForm
         // loginName
         $collection['loginName'] = Validator::param('loginName')->isString()
             ->isBiggerThan(2, "Es muss ein aussagekräftiger Name eingegeben werden")
-            ->isSmallerThan(50, "Der Name sollte 50 Zeichen nicht überschreiten");
+            ->isSmallerThan(250, "Der Name sollte 250 Zeichen nicht überschreiten");
 
         // password
         $collection['password'] = Validator::param('password')->isString()
             ->isBiggerThan(2, "Es muss ein aussagekräftiges Passwort eingegeben werden")
-            ->isSmallerThan(50, "Das Passwort sollte 50 Zeichen nicht überschreiten");
+            ->isSmallerThan(250, "Das Passwort sollte 250 Zeichen nicht überschreiten");
 
         // department
         $collection['department'] = Validator::param('department')->isNumber('Bitte wählen Sie eine Behörde aus');
@@ -39,10 +39,10 @@ class LoginForm
         // workstation
         if (Validator::param('workstationCounter')->isDeclared()->hasFailed()) {
             $collection['workstation'] = Validator::param('workstation')
-                ->isNumber('Bitte wählen Sie eine Platznummer aus oder den Tresen');
+                ->isString('Bitte wählen Sie einen Arbeitsplatz oder den Tresen aus');
         } else {
             $collection['workstation'] = Validator::param('workstationCounter')
-                ->isNumber('Bitte wählen Sie eine Platznummer aus oder den Tresen');
+                ->isNumber('Bitte wählen Sie einen Arbeitsplatz oder den Tresen aus');
         }
 
         // return validated collection
