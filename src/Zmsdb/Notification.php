@@ -43,10 +43,14 @@ class Notification extends Base
 
     public function writeInQueue(Entity $notification)
     {
+        $queueId = null;
         $process = new \BO\Zmsentities\Process($notification->process);
         $department = new \BO\Zmsentities\Department($notification->department);
         $client = $process->getFirstClient();
-        if ($client->hasTelephone() && $department->hasNotificationEnabled()) {
+        if ($client->hasTelephone()
+            && $department->hasNotificationEnabled()
+            && $notification->hasProperties('id', 'message', 'process')
+        ) {
             $query = new Query\Notification(Query\Base::INSERT);
             $query->addValues(array(
                 'processID' => $notification->process['id'],
@@ -61,9 +65,9 @@ class Notification extends Base
             if ($result) {
                 $queueId = $this->getWriter()->lastInsertId();
                 $this->updateProcess($notification);
-                return $queueId;
             }
         }
+        return $queueId;
     }
 
     public function deleteEntity($itemId)
@@ -84,11 +88,11 @@ class Notification extends Base
     {
         $query = new Process();
         $process = $query->readEntity($notification->getProcessId(), $notification->getProcessAuthKey());
-        //error_log(var_export($process,1));
-        $client = $process->getFirstClient();
-        $client->notificationsSendCount += 1;
-        //update process
-        $process->updateClients($client);
-        $query->updateEntity($process);
+        if ($process->hasId()) {
+            $client = $process->getFirstClient();
+            $client->notificationsSendCount += 1;
+            $process->updateClients($client);
+            $query->updateEntity($process);
+        }
     }
 }
