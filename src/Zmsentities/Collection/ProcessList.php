@@ -3,13 +3,6 @@ namespace BO\Zmsentities\Collection;
 
 class ProcessList extends Base
 {
-
-    public function addEntity($entity)
-    {
-        $this[] = clone $entity;
-        return $this;
-    }
-
     public function toProcessListByTime()
     {
         $list = new self();
