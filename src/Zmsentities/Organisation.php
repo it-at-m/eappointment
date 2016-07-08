@@ -4,6 +4,8 @@ namespace BO\Zmsentities;
 
 class Organisation extends Schema\Entity
 {
+    const PRIMARY = 'id';
+
     public static $schema = "organisation.json";
 
     public function hasId()

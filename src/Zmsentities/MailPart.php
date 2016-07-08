@@ -4,6 +4,8 @@ namespace BO\Zmsentities;
 
 class MailPart extends Schema\Entity
 {
+    const PRIMARY = 'id';
+
     public static $schema = "mailpart.json";
 
     public function isBase64Encoded()

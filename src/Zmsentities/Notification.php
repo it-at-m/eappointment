@@ -4,6 +4,8 @@ namespace BO\Zmsentities;
 
 class Notification extends Schema\Entity
 {
+    const PRIMARY = 'id';
+
     public static $schema = "notification.json";
 
     public function getScopeId()

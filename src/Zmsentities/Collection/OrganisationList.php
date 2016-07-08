@@ -9,16 +9,6 @@ class OrganisationList extends Base
         return $this;
     }
 
-    public function hasEntity($entityId)
-    {
-        foreach ($this as $entity) {
-            if ($entityId == $entity->id) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public function getByDepartmentId($departmentId)
     {
         $organisationList = new self();

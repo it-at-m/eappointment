@@ -50,4 +50,14 @@ class Base extends \ArrayObject
             }
         }
     }
+
+    public function hasEntity($entityId)
+    {
+        foreach ($this as $entity) {
+            if ($entityId == $entity->{$entity::PRIMARY}) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

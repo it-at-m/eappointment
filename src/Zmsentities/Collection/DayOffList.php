@@ -11,16 +11,6 @@ class DayOffList extends Base
         return $this;
     }
 
-    public function hasEntity($itemId)
-    {
-        foreach ($this as $entity) {
-            if ($entity->id == $itemId) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public function hasEntityByDate($date)
     {
         $date = new \BO\Zmsentities\Helper\DateTime($date);

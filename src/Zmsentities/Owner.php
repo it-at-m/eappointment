@@ -4,6 +4,8 @@ namespace BO\Zmsentities;
 
 class Owner extends Schema\Entity
 {
+    const PRIMARY = 'id';
+
     public static $schema = "owner.json";
 
     public function hasId()

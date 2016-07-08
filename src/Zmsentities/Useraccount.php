@@ -4,6 +4,8 @@ namespace BO\Zmsentities;
 
 class UserAccount extends Schema\Entity
 {
+    const PRIMARY = 'id';
+
     public static $schema = "useraccount.json";
 
     public function hasId()
@@ -34,7 +36,7 @@ class UserAccount extends Schema\Entity
         return $this;
     }
 
-    public function addDepartment($departmentId)
+    public function addDepartmentId($departmentId)
     {
         $this->departments[] = $departmentId;
         return $this;
