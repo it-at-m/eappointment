@@ -8,11 +8,6 @@ class Workstation extends Schema\Entity
 
     public static $schema = "workstation.json";
 
-    public function hasId()
-    {
-        return (array_key_exists('id', $this)) ? true : false;
-    }
-
     public function getQueuePreference($key, $isBoolean = false)
     {
         if (array_key_exists($key, $this)) {

@@ -8,11 +8,6 @@ class Department extends Schema\Entity
 
     public static $schema = "department.json";
 
-    public function hasId()
-    {
-        return (array_key_exists('id', $this)) ? true : false;
-    }
-
     public function hasNotificationEnabled()
     {
         if (isset($this->preferences['notifications'])) {

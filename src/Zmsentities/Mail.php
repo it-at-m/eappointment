@@ -67,11 +67,6 @@ class Mail extends Schema\Entity
         return $client;
     }
 
-    public function hasId($itemId)
-    {
-        return (\array_key_exists('id', $this) && $itemId == $this->id) ? true : false;
-    }
-
     public function toResolvedEntity(Process $process, Config $config)
     {
         $entity = clone $this;
