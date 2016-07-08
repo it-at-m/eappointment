@@ -19,12 +19,14 @@ class NotificationDelete extends BaseController
      */
     public static function render($itemId)
     {
+        Helper\User::checkRights('department');
+
         $query = new Query();
         $message = Response\Message::create(Render::$request);
         $notification = $query->readEntity($itemId);
         $query->deleteEntity($itemId);
         $message->data = $notification;
         Render::lastModified(time(), '0');
-        Render::json($message);
+        Render::json($message, Helper\User::getStatus($notification));
     }
 }
