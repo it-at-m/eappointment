@@ -7,12 +7,15 @@ use \BO\Zmsentities\Collection\UserAccountList as Collection;
 
 class UserAccount extends Base
 {
-    public function readIsUserExisting($loginName)
+    public function readIsUserExisting($loginName, $password = false)
     {
         $query = new Query\UserAccount(Query\Base::SELECT);
         $query
             ->addEntityMapping()
             ->addConditionLoginName($loginName);
+        if ($password) {
+            $query->addConditionPassword($password);
+        }
         $userAccount = $this->fetchOne($query, new Entity());
         return ($userAccount->hasId()) ? true : false;
     }

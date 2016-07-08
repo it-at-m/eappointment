@@ -77,12 +77,6 @@ class Workstation extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionPassword($password)
-    {
-        $this->query->where('workstation.Passworthash', '=', md5($password));
-        return $this;
-    }
-
     public function reverseEntityMapping(\BO\Zmsentities\Workstation $entity)
     {
         $data = array();
