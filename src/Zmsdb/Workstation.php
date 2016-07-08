@@ -31,11 +31,11 @@ class Workstation extends Base
                     $authKey,
                     (new \DateTimeImmutable())->format('Y-m-d'),
                     $loginName,
-                    $password
+                    md5($password)
                 )
             );
             if ($result) {
-                $workstation = $this->readEntity($loginName);
+                $workstation = $this->readEntity($loginName, 1);
                 $workstation->authKey = $authKey;
             }
         }
