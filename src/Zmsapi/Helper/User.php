@@ -12,13 +12,10 @@ class User
 {
     public static function checkRights()
     {
+        $xAuthKey = Render::$request->getHeader('X-AuthKey');
+        $userAccount = (new UserAccount())->readEntityByAuthKey(current($xAuthKey));
         if (\App::RIGHTSCHECK_ENABLED) {
-            $xAuthKey = Render::$request->getHeader('X-AuthKey');
-            $userAccount = (new UserAccount())
-                ->readEntityByAuthKey(current($xAuthKey))
-                ->testRights(func_get_args());
-        } else {
-            $userAccount = new \BO\Zmsentities\UserAccount();
+            $userAccount->testRights(func_get_args());
         }
         return $userAccount;
     }
@@ -27,10 +24,9 @@ class User
     {
         $status = 200;
         $xAuthKey = Render::$request->getHeader('X-AuthKey');
-        $userAccount = new \BO\Zmsentities\UserAccount();
+        $userAccount = (new UserAccount())->readEntityByAuthKey(current($xAuthKey));
 
         if ($loginRequired && \App::RIGHTSCHECK_ENABLED) {
-            $userAccount = (new UserAccount())->readEntityByAuthKey(current($xAuthKey));
             $status = 401;
         } elseif (null === $userAccount && \App::RIGHTSCHECK_ENABLED) {
             $status = 403;
