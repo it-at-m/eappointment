@@ -22,7 +22,7 @@ class Workstation extends Base
     {
         $userAccount = new UserAccount();
         $workstation = new Entity();
-        if ($userAccount->readIsUserExisting($loginName)) {
+        if ($userAccount->readIsUserExisting($loginName, $password)) {
             $query = Query\Workstation::QUERY_LOGIN;
             $statement = $this->getWriter()->prepare($query);
             $authKey = (new \BO\Zmsentities\Workstation())->getAuthKey();

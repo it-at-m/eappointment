@@ -26,6 +26,7 @@ class UserAccount extends Base implements MappingInterface
             'rights__ticketprinter' => self::expression('`userAccount`.`Berechtigung` >= 10'),
             'rights__sms' => self::expression('`userAccount`.`Berechtigung` >= 0'),
             'departments__0__id' => 'userAccount.BehoerdenID',
+            'scope__0__id' => 'userAccount.StandortID',
         ];
     }
 
@@ -52,6 +53,12 @@ class UserAccount extends Base implements MappingInterface
     public function addConditionLoginName($loginName)
     {
         $this->query->where('userAccount.Name', '=', $loginName);
+        return $this;
+    }
+
+    public function addConditionPassword($password)
+    {
+        $this->query->where('userAccount.Passworthash', '=', md5($password));
         return $this;
     }
 
