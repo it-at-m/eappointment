@@ -23,7 +23,7 @@ class LoginTest extends Base
 
         $workstation->scope['id'] = 141; //Bürgeramt Heerstraße
         $workstation->name = 12; //Arbeitsplatznummer
-        $userAccount->addDepartment(72); //Bürgeramt Egon-Erwin-Kisch-Str.
+        $userAccount->addDepartmentId(72); //Bürgeramt Egon-Erwin-Kisch-Str.
 
         $workstation->useraccount = $userAccount;
         $xAuthKey = $workstation->authKey;
