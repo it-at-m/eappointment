@@ -7,6 +7,16 @@ use \BO\Zmsentities\Collection\UserAccountList as Collection;
 
 class UserAccount extends Base
 {
+    public function readIsUserExisting($loginName)
+    {
+        $query = new Query\UserAccount(Query\Base::SELECT);
+        $query
+            ->addEntityMapping()
+            ->addConditionLoginName($loginName);
+        $userAccount = $this->fetchOne($query, new Entity());
+        return ($userAccount->hasId()) ? true : false;
+    }
+
     public function readEntity($loginname, $resolveReferences = 0)
     {
         $query = new Query\UserAccount(Query\Base::SELECT);
@@ -65,14 +75,16 @@ class UserAccount extends Base
      */
     public function writeEntity(\BO\Zmsentities\UserAccount $entity)
     {
-        if (count($this->readEntity($entity->id))) {
-            return null;
-        }
         $query = new Query\UserAccount(Query\Base::INSERT);
-        $values = $query->reverseEntityMapping($entity);
-        $query->addValues($values);
-        $this->writeItem($query);
-        return $this->readEntity($entity->id, 1);
+        if ($this->readIsUserExisting($entity->id) || !$entity->hasProperties('id', 'password', 'rights')) {
+            $userAccount = new \BO\Zmsentities\UserAccount();
+        } else {
+            $values = $query->reverseEntityMapping($entity);
+            $query->addValues($values);
+            $this->writeItem($query);
+            $userAccount = $this->readEntity($entity->id, 1);
+        }
+        return $userAccount;
     }
 
 
