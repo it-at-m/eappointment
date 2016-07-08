@@ -4,6 +4,8 @@ namespace BO\Zmsentities;
 
 class Appointment extends Schema\Entity
 {
+    const PRIMARY = 'id';
+
     public static $schema = "appointment.json";
 
     public function toDate($lang)

@@ -4,6 +4,8 @@ namespace BO\Zmsentities;
 
 class Mail extends Schema\Entity
 {
+    const PRIMARY = 'id';
+
     public static $schema = "mail.json";
 
     public function getProcessId()

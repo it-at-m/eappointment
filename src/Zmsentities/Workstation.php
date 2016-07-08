@@ -4,6 +4,8 @@ namespace BO\Zmsentities;
 
 class Workstation extends Schema\Entity
 {
+    const PRIMARY = 'id';
+
     public static $schema = "workstation.json";
 
     public function hasId()

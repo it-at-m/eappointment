@@ -3,6 +3,7 @@ namespace BO\Zmsentities;
 
 class Process extends Schema\Entity
 {
+    const PRIMARY = 'id';
 
     public static $schema = "process.json";
 

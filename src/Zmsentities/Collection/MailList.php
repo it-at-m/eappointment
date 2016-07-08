@@ -9,14 +9,4 @@ class MailList extends Base
         $this[] = clone $entity;
         return $this;
     }
-
-    public function hasEntity($itemId)
-    {
-        foreach ($this as $entity) {
-            if ($entity->id == $itemId) {
-                return true;
-            }
-        }
-        return false;
-    }
 }

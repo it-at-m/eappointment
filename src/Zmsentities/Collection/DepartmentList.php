@@ -8,14 +8,4 @@ class DepartmentList extends Base
         $this[] = clone $department;
         return $this;
     }
-
-    public function hasEntity($entityId)
-    {
-        foreach ($this as $entity) {
-            if ($entityId == $entity->id) {
-                return true;
-            }
-        }
-        return false;
-    }
 }

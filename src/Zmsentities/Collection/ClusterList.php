@@ -9,16 +9,6 @@ class ClusterList extends Base
         return $this;
     }
 
-    public function hasEntity($entityId)
-    {
-        foreach ($this as $entity) {
-            if ($entityId == $entity->id) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public function hasScope($scopeId)
     {
         foreach ($this as $entity) {
