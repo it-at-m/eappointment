@@ -13,27 +13,17 @@ class UserAccount extends Schema\Entity
         return (array_key_exists('id', $this)) ? true : false;
     }
 
-    public function getEncryptedPassword()
+    public function hasProperties()
     {
-        $password = null;
-        if (array_key_exists('password', $this)) {
-            $password = md5($this->password);
-        }
-        return $password;
-    }
-
-    public function testRights(array $requiredRights)
-    {
-        if ($this->hasId()) {
-            foreach ($requiredRights as $required) {
-                if (!array_key_exists($required, array_filter($this->rights))) {
-                    throw new Exception\UserAccountMissingRights();
-                }
+        $result = true;
+        $requiredProperties = func_get_args();
+        foreach ($requiredProperties as $property) {
+            if (!array_key_exists($property, $this)) {
+                throw new Exception\UserAccountMissingProperties();
+                $result = false;
             }
-        } else {
-            throw new Exception\UserAccountMissingLogin();
         }
-        return $this;
+        return $result;
     }
 
     public function addDepartmentId($departmentId)
@@ -62,15 +52,17 @@ class UserAccount extends Schema\Entity
         return $this;
     }
 
-    public function getRightsLevel()
+    public function testRights(array $requiredRights)
     {
-        $rightsLevel = null;
-        foreach ($this->rights as $right => $value) {
-            $level = array_search($right, Helper\RightsManager::getPossibleRights(), true);
-            if (true === $value && $level > $rightsLevel) {
-                $rightsLevel = $level;
+        if ($this->hasId()) {
+            foreach ($requiredRights as $required) {
+                if (!array_key_exists($required, array_filter($this->rights))) {
+                    throw new Exception\UserAccountMissingRights();
+                }
             }
+        } else {
+            throw new Exception\UserAccountMissingLogin();
         }
-        return $rightsLevel;
+        return $this;
     }
 }
