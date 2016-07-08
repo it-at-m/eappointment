@@ -8,11 +8,6 @@ class UserAccount extends Schema\Entity
 
     public static $schema = "useraccount.json";
 
-    public function hasId()
-    {
-        return (array_key_exists('id', $this)) ? true : false;
-    }
-
     public function hasProperties()
     {
         $result = true;

@@ -7,11 +7,6 @@ class Scope extends Schema\Entity
 
     public static $schema = "scope.json";
 
-    public function hasId()
-    {
-        return (array_key_exists('id', $this)) ? true : false;
-    }
-
     public function getProviderId()
     {
         if (array_key_exists('provider', $this)) {

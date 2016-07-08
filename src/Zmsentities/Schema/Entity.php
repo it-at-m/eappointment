@@ -153,4 +153,9 @@ class Entity extends \ArrayObject implements \JsonSerializable
             }
         }
     }
+
+    public function hasId()
+    {
+        return (array_key_exists('id', $this) && !empty($this->id)) ? true : false;
+    }
 }

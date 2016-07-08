@@ -49,11 +49,6 @@ class Notification extends Schema\Entity
         return $this->department['preferences']['notifications']['identification'];
     }
 
-    public function hasId($itemId)
-    {
-        return (\array_key_exists('id', $this) && $itemId == $this->id) ? true : false;
-    }
-
     public function toResolvedEntity(Process $process, Config $config)
     {
         $entity = clone $this;
@@ -62,5 +57,18 @@ class Notification extends Schema\Entity
         $entity->createIP = $process->createIP;
         $entity->department = $process['scope']['department'];
         return $entity;
+    }
+
+    public function hasProperties()
+    {
+        $result = true;
+        $requiredProperties = func_get_args();
+        foreach ($requiredProperties as $property) {
+            if (!array_key_exists($property, $this)) {
+                throw new Exception\NotificationMissingProperties();
+                $result = false;
+            }
+        }
+        return $result;
     }
 }
