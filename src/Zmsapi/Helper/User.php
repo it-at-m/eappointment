@@ -21,10 +21,13 @@ class User
 
     public static function getStatus($entity, $loginRequired = false)
     {
+        $status = 200;
         $xAuthKey = Render::$request->getHeader('X-AuthKey');
-        if (!current($xAuthKey) && !$entity->hasId()) {
-            return ($loginRequired) ? 401 : 404;
+        if ($loginRequired && !current($xAuthKey)) {
+            $status = 401;
+        } elseif (!$entity->hasId()) {
+            $status = 404;
         }
-        return 200;
+        return $status;
     }
 }
