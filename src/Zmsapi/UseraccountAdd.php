@@ -20,7 +20,7 @@ class UseraccountAdd extends BaseController
      */
     public static function render()
     {
-        //$userAccount = Helper\User::checkRights('useraccount');
+        $userAccount = Helper\User::checkRights('useraccount');
 
         $query = new Query();
         $input = Validator::input()->isJson()->getValue();

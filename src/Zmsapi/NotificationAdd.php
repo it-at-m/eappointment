@@ -20,12 +20,14 @@ class NotificationAdd extends BaseController
      */
     public static function render()
     {
+        Helper\User::checkRights('department');
+
         $message = Response\Message::create(Render::$request);
         $input = Validator::input()->isJson()->getValue();
         $entity = new \BO\Zmsentities\Notification($input);
         (new Query())->writeInQueue($entity);
         $message->data = $entity;
         Render::lastModified(time(), '0');
-        Render::json($message);
+        Render::json($message, Helper\User::getStatus($entity));
     }
 }
