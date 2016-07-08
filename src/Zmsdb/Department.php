@@ -45,7 +45,7 @@ class Department extends Base
             foreach ($result as $department) {
                 $department = $this->readEntity($department['id'], $resolveReferences);
                 if ($department instanceof Entity) {
-                    $departmentList->addDepartment($department);
+                    $departmentList->addEntity($department);
                 }
             }
         }
@@ -64,7 +64,7 @@ class Department extends Base
             foreach ($result as $entity) {
                 $department = $this->readEntity($entity['id'], $resolveReferences - 1);
                 if ($department instanceof Entity) {
-                    $departmentList->addDepartment($department);
+                    $departmentList->addEntity($department);
                 }
             }
         }

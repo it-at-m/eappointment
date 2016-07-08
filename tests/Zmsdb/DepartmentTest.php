@@ -37,7 +37,7 @@ class DepartmentTest extends Base
         $query = new Query();
         $input = $this->getTestEntity();
         $collection = $query->readList();
-        $collection->addDepartment($input);
+        $collection->addEntity($input);
         $this->assertEntityList("\\BO\\Zmsentities\\Department", $collection);
         $this->assertEquals(true, $collection->hasEntity('72')); //Bürgeramt Egon-Erwin-Kirsch-Straße
         $this->assertEquals(true, $collection->hasEntity('123')); //Test Entity exists
