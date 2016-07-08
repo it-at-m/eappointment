@@ -34,6 +34,11 @@ class Application extends \BO\Slim\Application
     const DEBUG = false;
 
     /**
+     * @var Bool RIGHTSCHECK_ENABLED
+     */
+    const RIGHTSCHECK_ENABLED = true;
+
+    /**
      * @var String DB_DSN_READONLY
      */
     const DB_DSN_READONLY = 'mysql:dbname=zmsbo;host=127.0.0.1';
@@ -73,7 +78,7 @@ class Application extends \BO\Slim\Application
      */
     public static $data = '/data';
 
-    
+
     /**
      * @var public static DateTimeInterface $now time to use for today (testing)
      */
