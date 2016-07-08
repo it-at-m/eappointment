@@ -18,21 +18,11 @@ class Workstation extends Base
         return $workstation;
     }
 
-    public function readIsUserExisting($loginName, $password)
-    {
-        $query = new Query\Workstation(Query\Base::SELECT);
-        $query
-            ->addEntityMapping()
-            ->addConditionLoginName($loginName)
-            ->addConditionPassword($password);
-        $workstation = $this->fetchOne($query, new Entity());
-        return ($workstation->hasId()) ? true : false;
-    }
-
     public function readUpdatedLoginEntity($loginName, $password)
     {
+        $userAccount = new UserAccount();
         $workstation = new Entity();
-        if ($this->readIsUserExisting($loginName, $password)) {
+        if ($userAccount->readIsUserExisting($loginName)) {
             $query = Query\Workstation::QUERY_LOGIN;
             $statement = $this->getWriter()->prepare($query);
             $authKey = (new \BO\Zmsentities\Workstation())->getAuthKey();
@@ -40,7 +30,8 @@ class Workstation extends Base
                 array(
                     $authKey,
                     (new \DateTimeImmutable())->format('Y-m-d'),
-                    $loginName
+                    $loginName,
+                    $password
                 )
             );
             if ($result) {

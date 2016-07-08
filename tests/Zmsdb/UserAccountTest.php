@@ -44,7 +44,7 @@ class UserAccountTest extends Base
         $query = new Query();
         $input = $this->getTestEntity();
         $userAccount = $query->writeEntity($input);
-        $this->assertEquals(null, $userAccount);
+        $this->assertTrue(!$userAccount->hasId(), "Dublicate UserAccount Entry found in DB.");
     }
 
     public function testDelete()

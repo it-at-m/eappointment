@@ -16,7 +16,8 @@ class Workstation extends Base implements MappingInterface
             SessionID=?,
             Datum=?
         WHERE
-            Name=?
+            Name=? AND
+            Passworthash = ?
     ';
 
     const QUERY_LOGOUT = '

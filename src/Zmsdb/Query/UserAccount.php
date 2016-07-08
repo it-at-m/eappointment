@@ -2,6 +2,8 @@
 
 namespace BO\Zmsdb\Query;
 
+use BO\Zmsdb\Helper\RightsLevelManager;
+
 class UserAccount extends Base implements MappingInterface
 {
     /**
@@ -64,8 +66,8 @@ class UserAccount extends Base implements MappingInterface
     {
         $data = array();
         $data['Name'] = $entity->id;
-        $data['Passworthash'] = $entity->getEncryptedPassword();
-        $data['Berechtigung'] = $entity->getRightsLevel();
+        $data['Passworthash'] = (isset($entity->password)) ? md5($entity->password) : null;
+        $data['Berechtigung'] = RightsLevelManager::getLevel($entity->rights);
         $data['BehoerdenID'] = $entity->getDepartmentId();
         //default values because of strict mode
         $data['notrufinitiierung'] = 0;
