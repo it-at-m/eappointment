@@ -3,13 +3,6 @@ namespace BO\Zmsentities\Collection;
 
 class ProviderList extends Base
 {
-
-    public function addEntity($provider)
-    {
-        $this[] = clone $provider;
-        return $this;
-    }
-
     public function hasProvider($providerIdCsv)
     {
         $providerIdCsv = explode(',', $providerIdCsv);

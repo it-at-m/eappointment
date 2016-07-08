@@ -14,7 +14,6 @@ use \BO\Zmsentities\Helper\Sorter;
  */
 class Base extends \ArrayObject
 {
-
     public function sortByName()
     {
         $itemList = clone $this;
@@ -59,5 +58,11 @@ class Base extends \ArrayObject
             }
         }
         return false;
+    }
+
+    public function addEntity(\BO\Zmsentities\Schema\Entity $entity)
+    {
+        $this->offsetSet(null, $entity);
+        return $this;
     }
 }

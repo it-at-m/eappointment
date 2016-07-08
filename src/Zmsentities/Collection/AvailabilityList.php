@@ -27,10 +27,4 @@ class AvailabilityList extends Base
         }
         return $list;
     }
-
-    public function addEntity($entity)
-    {
-        $this[] = clone $entity;
-        return $this;
-    }
 }

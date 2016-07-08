@@ -3,14 +3,6 @@ namespace BO\Zmsentities\Collection;
 
 class DayOffList extends Base
 {
-
-    public function addEntity($entity)
-    {
-
-        $this[] = clone $entity;
-        return $this;
-    }
-
     public function hasEntityByDate($date)
     {
         $date = new \BO\Zmsentities\Helper\DateTime($date);
