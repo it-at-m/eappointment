@@ -22,7 +22,6 @@ watch:
 	node_modules/.bin/gulp watch
 	
 live: # init live system
-	git checkout composer.lock
 	$(COMPOSER) install --no-dev
 
 dev: # init development system
