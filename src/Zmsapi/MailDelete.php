@@ -24,7 +24,8 @@ class MailDelete extends BaseController
         $mail = $query->readEntity($itemId);
         if (!array_key_exists('id', $mail)) {
             $status = 404;
-            $message->meta->error = 'Not found';
+            $message->meta->error = true;
+            $message->meta->message = 'Not found';
         } else {
             $status = 200;
             $message->data = $mail;
