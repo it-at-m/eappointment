@@ -22,7 +22,6 @@ class SendQueue
         if (null !== $queueList) {
             $this->messagesQueue = $queueList->sortByCustomKey('createTimestamp');
         }
-
     }
 
     public function startMailTransmission()
@@ -71,7 +70,7 @@ class SendQueue
                     $resultList[] = array('viaGateway' => true, 'item' => $item);
                 } else {
                     $resultList[] = array(
-                        'errorInfo' => $mailer->ErrorInfo
+                        'errorInfo' => $result->ErrorInfo
                     );
                 }
             }
@@ -175,7 +174,6 @@ class SendQueue
             $mailer->SetLanguage("de");
             return $mailer;
         }
-
     }
 
 
