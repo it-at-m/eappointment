@@ -125,12 +125,6 @@
             "items": {
                 "$ref": "scope.json"
             }
-        },
-        "useraccounts": {
-            "type": "array",
-            "items": {
-                "$ref": "useraccount.json"
-            }
         }
     }
 }
