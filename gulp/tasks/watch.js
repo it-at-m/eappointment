@@ -6,6 +6,7 @@ gulp.task('watch', function() {
         'public/doc/style.less',
         'public/doc/swagger.yaml',
         'public/doc/schema/*.json',
+        'public/doc/partials/swagger/*.hbs',
         '!public/doc/swagger.json',
         'routing.php'
     ], [

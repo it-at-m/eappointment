@@ -127,6 +127,46 @@
 			}
 		}
 	},
+	"/availability/": {
+		"post": {
+			"description": "Create an availability",
+			"parameters": [
+				{
+					"name": "availability",
+					"description": "availability data to update",
+					"in": "body",
+					"schema": {
+						"$ref": "schema/availability.json"
+					}
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/availability.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "availability id does not exists"
+				}
+			}
+		}
+	},
 	"/calendar/": {
 		"post": {
 			"description": "Get a list of available days for appointments",
@@ -574,45 +614,6 @@
 					}
 				}
 			}
-		},
-		"post": {
-			"description": "Add a new department",
-			"parameters": [
-				{
-					"name": "department",
-					"description": "department data to add",
-					"required": true,
-					"in": "body",
-					"schema": {
-						"$ref": "schema/department.json"
-					}
-				},
-				{
-					"name": "X-Authkey",
-					"description": "authentication key to identify user for testing access rights",
-					"in": "header",
-					"type": "string"
-				}
-			],
-			"responses": {
-				"200": {
-					"description": "success",
-					"schema": {
-						"type": "object",
-						"properties": {
-							"meta": {
-								"$ref": "schema/metaresult.json"
-							},
-							"data": {
-								"$ref": "schema/department.json"
-							}
-						}
-					}
-				},
-				"404": {
-					"description": "Missing required properties in the department"
-				}
-			}
 		}
 	},
 	"/department/{id}/": {
@@ -728,6 +729,54 @@
 				},
 				"404": {
 					"description": "department id does not exists"
+				}
+			}
+		}
+	},
+	"/organisation/{id}/department/": {
+		"post": {
+			"description": "Add a new department",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "organisation number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "department",
+					"description": "department data to add",
+					"required": true,
+					"in": "body",
+					"schema": {
+						"$ref": "schema/department.json"
+					}
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/department.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "Missing required properties in the department"
 				}
 			}
 		}
@@ -968,6 +1017,45 @@
 							}
 						}
 					}
+				}
+			}
+		},
+		"post": {
+			"description": "Add a new owner",
+			"parameters": [
+				{
+					"name": "owner",
+					"description": "owner data to add",
+					"required": true,
+					"in": "body",
+					"schema": {
+						"$ref": "schema/owner.json"
+					}
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/department.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "Missing required properties in the owner"
 				}
 			}
 		}
@@ -1279,6 +1367,54 @@
 				},
 				"404": {
 					"description": "organisation id does not exists"
+				}
+			}
+		}
+	},
+	"/owner/{id}/organisation/": {
+		"post": {
+			"description": "Add a new organisation",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "owner number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "organisation",
+					"description": "organisation data to add",
+					"required": true,
+					"in": "body",
+					"schema": {
+						"$ref": "schema/organisation.json"
+					}
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/organisation.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "Missing required properties in the organisation"
 				}
 			}
 		}
@@ -1853,10 +1989,63 @@
 			}
 		}
 	},
-	"/scope/": {
+	"/request/{source}/provider/{id}/": {
+		"get": {
+			"description": "Get a list of requests by provider ID",
+			"parameters": [
+				{
+					"name": "source",
+					"description": "name of source",
+					"in": "path",
+					"required": true,
+					"type": "string"
+				},
+				{
+					"name": "id",
+					"description": "number of provider",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/request.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "provider id does not exists"
+				}
+			}
+		}
+	},
+	"/department/{id}/scope/": {
 		"post": {
 			"description": "Add a new scope",
 			"parameters": [
+				{
+					"name": "id",
+					"description": "department number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
 				{
 					"name": "scope",
 					"description": "scope data to add",
@@ -1892,7 +2081,9 @@
 					"description": "Missing required properties in the scope"
 				}
 			}
-		},
+		}
+	},
+	"/scope/": {
 		"get": {
 			"description": "Get a list of scopes",
 			"parameters": [
@@ -2485,6 +2676,45 @@
 					}
 				}
 			}
+		},
+		"post": {
+			"description": "add a new useraccount",
+			"parameters": [
+				{
+					"name": "useraccount",
+					"description": "useraccount data to update",
+					"required": true,
+					"in": "body",
+					"schema": {
+						"$ref": "schema/useraccount.json"
+					}
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/useraccount.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "Missing required properties in the useraccount"
+				}
+			}
 		}
 	},
 	"/useraccount/{loginname}/": {
@@ -2693,11 +2923,13 @@
 					"type": "string"
 				},
 				{
-					"name": "password",
-					"description": "password to verify user",
-					"in": "formData",
+					"name": "useraccount",
+					"description": "useraccount data to update",
 					"required": true,
-					"type": "string"
+					"in": "body",
+					"schema": {
+						"$ref": "schema/useraccount.json"
+					}
 				}
 			],
 			"responses": {

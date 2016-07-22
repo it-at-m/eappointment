@@ -24,6 +24,11 @@ gulp.task('bootprint-swagger', ['validate-swagger'], function () {
                         ]
                     }
                 })
+                .merge({
+                    handlebars: {
+                        partials: 'public/doc/partials'
+                    }
+                })
                 .build('public/doc/swagger.json', 'public/doc/')
                 .generate()
                 .done();
