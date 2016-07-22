@@ -1,6 +1,6 @@
 {
     "type": "object",
-    "description": "content of a notification to send to a client",
+    "description": "A notification is a message to send to a client. Compared to a mail, it is a short text message, usually a SMS.",
     "example": {
         "id": 1234,
         "createIP": "145.15.3.10",
@@ -43,8 +43,10 @@
     "required": [
         "department",
         "message",
-        "process"
+        "process",
+        "client"
     ],
+    "additionalProperties": false,
     "properties": {
         "id": {
             "type": "integer"
@@ -62,7 +64,7 @@
         },
         "message": {
             "type": "string",
-            "description": "Short message to send"
+            "description": "Short message to send. Beware, on using SMS, long messages might generate multiple SMS messages."
         },
         "process": {
             "$ref": "process.json"

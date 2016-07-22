@@ -1,6 +1,6 @@
 {
     "type": "object",
-    "description": "data for a calldisplay",
+    "description": "A calldisplay is a device to call people in a waiting room to a workstation. Usually it is a display on wall showing process ids together with a room number.\nThe clusters are resolved to fill the list of scopes. The text displayed on the calldisplay depends on the given scopes. If only one scope is present, a text can be displayed on the display. On multiple scopes, no text and no image is displayed.",
     "example": {
         "scopes": [
             {
@@ -8,9 +8,15 @@
             }
         ]
     },
+    "required": [
+        "serverTime",
+        "scopes"
+    ],
+    "additionalProperties": false,
     "properties": {
         "image": {
             "type": "object",
+            "description": "A symbolic image for the scope",
             "properties": {
                 "data": {
                     "type": "string",

@@ -1,6 +1,6 @@
 {
     "type": "object",
-    "description": "reference to a service",
+    "description": "A request is usually a representation of a service offered by a provider.",
     "example": {
         "id": "123456",
         "link": "http://service.berlin.de/dienstleistung/120335/",
@@ -12,6 +12,7 @@
         "name",
         "source"
     ],
+    "additionalProperties": false,
     "properties": {
         "id": {
             "type": "string",
@@ -20,6 +21,10 @@
         "link": {
             "type": "string",
             "description": "URI with detailed information for the request"
+        },
+        "data": {
+            "type": "object",
+            "description": "source dependant additional properties"
         },
         "name": {
             "type": "string",

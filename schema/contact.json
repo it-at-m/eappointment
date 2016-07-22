@@ -1,4 +1,5 @@
 {
+    "description": "A contact is a collection of contact informations to find or to contact a natural person or an entity.",
     "type": "object",
     "example": {
         "city": "Schönefeld",
@@ -11,17 +12,21 @@
         "street": "Zaunstraße",
         "streetNumber": "1"
     },
+    "additionalProperties": false,
     "properties": {
         "city": {
             "type": "string"
         },
         "country": {
+            "description": "Name of the country or the ISO 3166-1 country code like 'de'.",
             "type": "string"
         },
         "lat": {
+            "description": "Latitute of a geo coordinate as wgs84 or etrs89",
             "type": "number"
         },
         "lon": {
+            "description": "Longitude of a geo coordinate as wgs84 or etrs89",
             "type": "number"
         },
         "name": {

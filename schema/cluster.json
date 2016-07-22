@@ -1,6 +1,6 @@
 {
     "type": "object",
-    "description": "group of scopes",
+    "description": "A cluster is a way to group different scopes.",
     "example": {
         "callDisplayText": "Herzlich Willkommen,\nDie aufgerufenen Plätze finden Sie den im Gang rechts.",
         "hint": "Warteraum in der 3. Etage",
@@ -16,6 +16,7 @@
         ],
         "shortNameEnabled": true
     },
+    "additionalProperties": false,
     "properties": {
         "callDisplayText": {
             "type": "string",

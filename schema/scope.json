@@ -1,6 +1,6 @@
 {
     "type": "object",
-    "description": "unit for processing services for clients",
+    "description": "A scope is the central unit for processing requests for clients. It is usally a building or a special location offering workstations to serve the clients. According to the availabilities a scope has, appointments are possible. With a calldisplay and a ticketprinter it can serve clients without an appointment.",
     "example": {
         "contact": {
             "city": "Schönefeld",
@@ -97,6 +97,11 @@
             }
         }
     },
+    "required": [
+        "provider",
+        "shortName"
+    ],
+    "additionalProperties": false,
     "properties": {
         "contact": {
             "$ref": "contact.json"
@@ -112,9 +117,11 @@
         },
         "preferences": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "appointment": {
                     "type": "object",
+                    "additionalProperties": false,
                     "properties": {
                         "deallocationDuration": {
                             "type": "integer",
@@ -145,6 +152,7 @@
                 },
                 "client": {
                     "type": "object",
+                    "additionalProperties": false,
                     "properties": {
                         "alternateAppointmentUrl": {
                             "type": "string",
@@ -180,6 +188,7 @@
                 },
                 "notifications": {
                     "type": "object",
+                    "additionalProperties": false,
                     "properties": {
                         "enabled": {
                             "type": "boolean",
@@ -200,6 +209,7 @@
                 },
                 "pickup": {
                     "type": "object",
+                    "additionalProperties": false,
                     "properties": {
                         "alternateName": {
                             "type": "string",
@@ -215,6 +225,7 @@
                 },
                 "queue": {
                     "type": "object",
+                    "additionalProperties": false,
                     "properties": {
                         "callCountMax": {
                             "type": "integer",
@@ -255,6 +266,7 @@
                 },
                 "survey": {
                     "type": "object",
+                    "additionalProperties": false,
                     "properties": {
                         "emailContent": {
                             "type": "string",
@@ -275,6 +287,7 @@
                 },
                 "ticketprinter": {
                     "type": "object",
+                    "additionalProperties": false,
                     "properties": {
                         "confirmationEnabled": {
                             "type": "boolean",
@@ -305,6 +318,7 @@
                 },
                 "workstation": {
                     "type": "object",
+                    "additionalProperties": false,
                     "properties": {
                         "emergencyEnabled": {
                             "type": "boolean",
@@ -325,6 +339,7 @@
         },
         "status": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "emergency": {
                     "type": "object",

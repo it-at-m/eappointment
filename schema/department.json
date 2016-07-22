@@ -1,6 +1,6 @@
 {
     "type": "object",
-    "description": "subunit in organisation like \"Bürgeramt\", \"Standesamt\", \"Vertrieb\"",
+    "description": "A department is a subunit in an organisation like \"Bürgeramt\", \"Standesamt\", \"Vertrieb\".",
     "example": {
         "id": 123,
         "contact": {
@@ -53,6 +53,7 @@
             }
         ]
     },
+    "additionalProperties": false,
     "properties": {
         "id": {
             "type": "integer"
@@ -96,9 +97,11 @@
         },
         "preferences": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "notifications": {
                     "type": "object",
+                    "additionalProperties": false,
                     "properties": {
                         "enabled": {
                             "type": "boolean",

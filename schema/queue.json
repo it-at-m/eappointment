@@ -1,6 +1,6 @@
 {
     "type": "object",
-    "description": "waiting queue entry with clients",
+    "description": "A queue represents a waiting queue for processes/clients.",
     "example": {
         "arrivalTime": 1447922893000,
         "callCount": 1,
@@ -16,6 +16,7 @@
         "number",
         "waitingTime"
     ],
+    "additionalProperties": false,
     "properties": {
         "arrivalTime": {
             "type": "integer",
@@ -28,6 +29,14 @@
         "callTime": {
             "type": "integer",
             "description": "unix timestamp of last call"
+        },
+        "destination": {
+            "type": "string",
+            "description": "Text to display on calling the queued item, usually a room number."
+        },
+        "destinationHint": {
+            "type": "string",
+            "description": "Small hint to display on calling the queued item."
         },
         "number": {
             "type": "string",

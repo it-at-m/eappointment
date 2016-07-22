@@ -1,6 +1,6 @@
 {
     "type": "object",
-    "description": "top organisation units",
+    "description": "An organisation is the top unit to group departments with their scopes.",
     "example": {
         "contact": {
             "city": "Schönefeld",
@@ -34,7 +34,8 @@
             }
         ]
     },
-    "properties": {        
+    "additionalProperties": false,
+    "properties": {
         "contact": {
             "$ref": "contact.json"
         },
@@ -52,6 +53,7 @@
         },
         "preferences": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "ticketPrinterProtectionEnabled": {
                     "type": "boolean",

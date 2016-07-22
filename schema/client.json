@@ -1,6 +1,6 @@
 {
     "type": "object",
-    "description": "representation of a client who intends to take a service",
+    "description": "A client is usually a customer in a scope who intends to get his request solved. Usually the client has an appointment, if not he got a process number from a ticket printer and his familyName is set to 'Spontankunde'.",
     "example": {
         "familyName": "Max Mustermann",
         "email": "max@service.berlin.de",
@@ -9,9 +9,7 @@
         "surveyAccepted": false,
         "telephone": "030 115"
     },
-    "required": [
-        "familyName"
-    ],
+    "additionalProperties": false,
     "properties": {
         "email": {
             "type": "string",
@@ -23,6 +21,7 @@
         },
         "familyName": {
             "type": "string",
+            "default": "Spontankunde",
             "description": "name of the client"
         },
         "notificationsSendCount": {
