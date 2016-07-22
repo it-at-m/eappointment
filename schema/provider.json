@@ -1,6 +1,6 @@
 {
     "type": "object",
-    "description": "reference to a service provider with a mapping in a standard contact schema",
+    "description": "A provider usually represents an organisational entity offering services to clients. In most cases, it is a building or a special location hosting an organisation which provides the services. A service is represented by a request in the ZMS.",
     "example": {
         "contact": {
             "city": "Schönefeld",
@@ -18,6 +18,12 @@
         "source": "dldb",
         "link": "https://service.berlin.de/standort/122280/"
     },
+    "required": [
+        "id",
+        "source",
+        "name"
+    ],
+    "additionalProperties": false,
     "properties": {
         "contact": {
             "$ref": "contact.json"
@@ -29,6 +35,10 @@
         "link": {
             "type": "string",
             "description": "URI with detailed information for the provider"
+        },
+        "data": {
+            "type": "object",
+            "description": "source dependant additional properties"
         },
         "name": {
             "type": "string",

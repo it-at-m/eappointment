@@ -1,6 +1,6 @@
 {
     "type": "object",
-    "description": "system to print waiting numbers for clients",
+    "description": "A ticketprinter is a system to print waiting numbers for clients. Usually it has a touch screen and a printing device.",
     "example": {
         "enabled": true,
         "hash": "e744a234c1",
@@ -8,6 +8,7 @@
         "lastUpdate": 1447925326000,
         "name": "Eingangsbereich links"
     },
+    "additionalProperties": false,
     "properties": {
         "enabled": {
             "type": "boolean",

@@ -20,6 +20,12 @@
             "type": "timestamp"
         }
     },
+    "required": [
+        "year",
+        "month",
+        "day"
+    ],
+    "additionalProperties": false,
     "properties": {
         "year": {
             "type": "integer"

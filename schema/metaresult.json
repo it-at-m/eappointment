@@ -1,6 +1,6 @@
 {
     "type": "object",
-    "description": "meta informations on a request",
+    "description": "The meta result is used in HTTP-API-requests and has only debugging purposes.",
     "example": {
         "error": false,
         "generated": "2015-11-20T18:01:04+01:00",

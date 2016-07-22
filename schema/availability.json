@@ -1,6 +1,6 @@
 {
     "type": "object",
-    "description": "representation of opening hours for appointments",
+    "description": "An Availability is a representation of opening hours for a scope. It defines the time a scope offers appointments and a ticket printer is able to serve process numbers.",
     "example": {
         "bookable": {
             "startInDays": 2,
@@ -30,16 +30,26 @@
             "public": 3
         }
     },
+    "required": [
+        "startDate",
+        "endDate",
+        "scope",
+        "type",
+        "weekday"
+    ],
+    "additionalProperties": false,
     "properties": {
         "bookable": {
             "type": "object",
             "properties": {
                 "startInDays": {
                     "type": "integer",
+                    "default": 1,
                     "description": "number of days relative to today to start offering appointments"
                 },
                 "endInDays": {
                     "type": "integer",
+                    "default": 60,
                     "description": "maximum number of days in the future to offer appointments"
                 }
             }
@@ -54,6 +64,7 @@
         },
         "endTime": {
             "type": "string",
+            "default": "23:59",
             "description": "format '0:00' or '16:30'"
         },
         "id": {
@@ -61,6 +72,7 @@
         },
         "multipleSlotsAllowed": {
             "type": "boolean",
+            "default": true,
             "description": "an appointment is allowed to take more than one time slot"
         },
         "type": {
@@ -85,7 +97,8 @@
         },
         "slotTimeInMinutes": {
             "type": "integer",
-            "description": ""
+            "default": 10,
+            "description": "Multiplicated with a slotCount from an appointment this gives the duration in minutes for a appointment/process."
         },
         "startDate": {
             "type": "integer",
@@ -99,24 +112,31 @@
             "type": "object",
             "properties": {
                 "monday": {
+                    "default": false,
                     "type": "boolean"
                 },
                 "tuesday": {
+                    "default": false,
                     "type": "boolean"
                 },
                 "wednesday": {
+                    "default": false,
                     "type": "boolean"
                 },
                 "thursday": {
+                    "default": false,
                     "type": "boolean"
                 },
                 "friday": {
+                    "default": false,
                     "type": "boolean"
                 },
                 "saturday": {
+                    "default": false,
                     "type": "boolean"
                 },
                 "sunday": {
+                    "default": false,
                     "type": "boolean"
                 }
             }
@@ -126,14 +146,17 @@
             "properties": {
                 "callcenter": {
                     "type": "integer",
+                    "default": 0,
                     "description": "number of workstations to handle appointments if handed out to the client by a callcenter"
                 },
                 "intern": {
                     "type": "integer",
+                    "default": 0,
                     "description": "maximum of workstations expected to handle appointments"
                 },
                 "public": {
                     "type": "integer",
+                    "default": 0,
                     "description": "number of workstations to offer appointments for booking using a public website"
                 }
             }

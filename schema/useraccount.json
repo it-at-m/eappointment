@@ -1,4 +1,5 @@
 {
+    "description": "An useraccount represents an user for the ZMS. It contains the rights the user has for processing data with the ZMS. Usually a user creates a workstation entity if he/she begins with the work.",
     "type": "object",
     "example": {
         "lastLogin": 1447926465000,
@@ -14,6 +15,11 @@
             }
         ]
     },
+    "required": [
+        "id",
+        "rights"
+    ],
+    "additionalProperties": false,
     "properties": {
         "lastLogin": {
             "type": "integer",
@@ -60,8 +66,8 @@
             }
         },
         "departments": {
-        	"type": "array",
-        	"description": "list of assigned departments",
+            "type": "array",
+            "description": "list of assigned departments",
             "items": {
                 "$ref": "department.json"
             }

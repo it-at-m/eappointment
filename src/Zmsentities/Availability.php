@@ -42,11 +42,12 @@ class Availability extends Schema\Entity
                 'callcenter' => 0,
                 'intern' => 0,
             ],
+            'multipleSlotsAllowed' => true,
             'slotTimeInMinutes' => 10,
             'startDate' => 0,
             'endDate' => 0,
             'startTime' => "0:00",
-            'endTime' => "0:00",
+            'endTime' => "23:59",
         ];
     }
 

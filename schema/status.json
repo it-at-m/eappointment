@@ -1,6 +1,6 @@
 {
     "type": "object",
-    "description": "status informations for the api",
+    "description": "A list of status informations for the API and the application.",
     "example": {
         "generated": "2015-11-20T18:01:04+01:00",
         "version": {

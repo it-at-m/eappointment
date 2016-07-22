@@ -1,6 +1,6 @@
 {
     "type": "object",
-    "description": "process a service for a client",
+    "description": "A process represents a request from one or more clients, usually including an appointment. Compared to an appointment, the process has additional information about the status of the request from the client.",
     "example": {
         "amendment": "Beispiel Termin",
         "appointments": [
@@ -47,6 +47,7 @@
         "id",
         "authKey"
     ],
+    "additionalProperties": false,
     "properties": {
         "amendment": {
             "type": "string",
