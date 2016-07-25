@@ -159,6 +159,5 @@ class Process extends Schema\Entity
             $appointment = new Appointment($data);
         }
         return $appointment;
-
     }
 }
