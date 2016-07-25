@@ -3,6 +3,7 @@
 namespace BO\Zmsdb\Query;
 
 use BO\Zmsentities\Helper\DateTime;
+use BO\Zmsentities\Slot;
 
 /**
  * Calculate Slots for available booking times
@@ -226,23 +227,23 @@ class SlotList
                 );
             }
 
-            if ($slot->hasTime()) {
+            if ($slot->type !== Slot::FREE) {
                 $slotDebug = "$slotdate #$slotnumber @" . $slotData['slottime'] . " on " . $this->availability;
+                error_log("Debugdata: Found two database entries for the same slot $slotDebug <=> $slot");
                 throw new \Exception(
-                    "Found two database entries for the same slot $slotDebug"
+                    "Found two database entries for the same slot $slotDebug <=> ".$slot
                 );
             }
 
-            $workstationCount = array(
-                'public' =>
-                    $slotData['freeAppointments__public'] - $slotData['availability__workstationCount__public'],
-                'callcenter' =>
-                    $slotData['freeAppointments__callcenter'] - $slotData['availability__workstationCount__callcenter'],
-                'intern' =>
-                    $slotData['freeAppointments__intern'] - $slotData['availability__workstationCount__intern']
-            );
-            $slotTime = new DateTime($slotData['slottime']);
-            $slotList->writeSlot($slotnumber, $slotTime, $workstationCount);
+            $slot->public +=
+                    $slotData['freeAppointments__public'] - $slotData['availability__workstationCount__public'];
+            $slot->callcenter +=
+                    $slotData['freeAppointments__callcenter'] - $slotData['availability__workstationCount__callcenter'];
+            $slot->intern +=
+                    $slotData['freeAppointments__intern'] - $slotData['availability__workstationCount__intern'];
+            $slot->time = new DateTime($slotData['slottime']);
+            $slot->type = Slot::TIMESLICE;
+            $slotList[$slotnumber] = $slot;
         } else {
             throw new \Exception(
                 "Found empty slot: " . var_export($slotData, true)
@@ -256,11 +257,8 @@ class SlotList
         foreach ($this->slots as $date => $slotList) {
             $this->addFreeProcessesToCalendar($calendar, $freeProcessesDate, $date, $slotType);
             $datetime = new \DateTimeImmutable($date);
-            //error_log($datetime->format('c'));
             $day = $calendar->getDayByDateTime($datetime);
-            foreach ($slotList as $slotInfo) {
-                $day = $slotList->addFreeAppointments($day, $slotInfo);
-            }
+            $day['freeAppointments'] = $slotList->getSummerizedSlot();
         }
         return $calendar;
     }
@@ -309,10 +307,11 @@ class SlotList
         \DateTimeInterface $stopDate
     ) {
         $time = DateTime::create($startDate);
+        $slotlist = $this->availability->getSlotList();
         do {
             $date = $time->format('Y-m-d');
             if ($this->availability->hasDate($time)) {
-                $this->slots[$date] = $this->availability->getSlotList();
+                $this->slots[$date] = clone $slotlist;
             }
             $time = $time->modify('+1day');
         } while ($time->getTimestamp() <= $stopDate->getTimestamp());
