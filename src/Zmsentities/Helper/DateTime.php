@@ -51,4 +51,9 @@ class DateTime extends \DateTimeImmutable
         $lastDay = $this->modify('last day of this month');
         return $weekOfMonth == $lastDay->getWeekOfMonth();
     }
+
+    public function __toString()
+    {
+        return $this->format('c');
+    }
 }

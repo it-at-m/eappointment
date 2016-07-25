@@ -78,9 +78,9 @@ class SlotList extends Base
                     'slotCount' => $slot[$slotType]
                 ));
                 if (!$slot->hasTime()) {
-                    throw new \Exception("Time on slot not set: ".htmlspecialchars(var_export($slot, 1)));
+                    throw new \Exception("Time on slot not set: $slot");
                 }
-                $appointment->setDateByString($selectedDate .' '. $slot['time']);
+                $appointment->setDateByString($selectedDate .' '. $slot->getTimeString());
                 $process = new \BO\Zmsentities\Process(array(
                     'scope' => $scope,
                     'requests' => $requests
