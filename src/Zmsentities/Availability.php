@@ -260,7 +260,9 @@ class Availability extends Schema\Entity
         $slotList = new Collection\SlotList();
         if ($this['slotTimeInMinutes'] > 0) {
             do {
-                $slotList->addSlot($startTime, $this['workstationCount']);
+                $slot = new Slot($this['workstationCount']);
+                $slot->setTime($startTime);
+                $slotList[] = $slot;
                 $startTime = $startTime->modify('+' . $this['slotTimeInMinutes'] . 'minute');
                 // Only add a slot, if at least a minute is left, otherwise do not ("<" instead "<=")
             } while ($startTime->getTimestamp() < $stopTime->getTimestamp());
@@ -285,7 +287,7 @@ class Availability extends Schema\Entity
             $slices = floor($openingMinutes / $this['slotTimeInMinutes']);
         }
         $slot = new Slot([
-            'type' => 'free',
+            'type' => Slot::FREE,
             'intern' => $this['workstationCount']['intern'] * $slices,
             'callcenter' => $this['workstationCount']['callcenter'] * $slices,
             'public' => $this['workstationCount']['public'] * $slices,
