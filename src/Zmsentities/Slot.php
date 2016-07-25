@@ -59,11 +59,19 @@ class Slot extends Schema\Entity
 
     public function getTimeString()
     {
-        return isset($this['time']) ? $this['time'] : '0:00';
+        if (!isset($this['time'])) {
+            return '0:00';
+        }
+        if ($this['time'] instanceof \DateTimeInterface) {
+            return $this['time']->format('H:i');
+        }
+        return $this['time'];
     }
 
     public function __toString()
     {
-        return "Slot {$this->type}@{$this->getTimeString()} p/c/i={$this->public}/{$this->callcenter}/{$this->intern}";
+        return "Slot {$this->type}@"
+            . "{$this->getTimeString()}"
+            . " p/c/i={$this->public}/{$this->callcenter}/{$this->intern}";
     }
 }
