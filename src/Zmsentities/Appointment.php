@@ -71,7 +71,11 @@ class Appointment extends Schema\Entity
     public function setDateByString($dateString, $format = 'Y-m-d H:i')
     {
         $appointmentDateTime = \DateTime::createFromFormat($format, $dateString);
-        $this->date = $appointmentDateTime->format('U');
+        if ($appointmentDateTime) {
+            $this->date = $appointmentDateTime->format('U');
+        } else {
+            throw new \Exception("String ".htmlspecialchars($dateString)." not format ". htmlspecialchars($format));
+        }
         return $this;
     }
 }

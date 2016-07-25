@@ -23,8 +23,9 @@ class Slot extends Schema\Entity
         $this->intern += $workstationCount['intern'];
         return $this;
     }
+
     public function hasTime()
     {
-        return isset($this['slottime']);
+        return $this->time ? true : false;
     }
 }
