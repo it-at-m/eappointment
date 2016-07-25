@@ -27,7 +27,7 @@ class LoginForm
 
         // password
         $collection['password'] = Validator::param('password')->isString()
-            ->isBiggerThan(2, "Es muss ein aussagekräftiges Passwort eingegeben werden")
+            ->isBiggerThan(2, "Es muss ein Passwort eingegeben werden")
             ->isSmallerThan(250, "Das Passwort sollte 250 Zeichen nicht überschreiten");
 
         // department
