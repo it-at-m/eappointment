@@ -161,7 +161,6 @@ class SlotList
             $this->createSlots($start, $stop);
             $this->addSlotData($slotData);
         }
-
     }
 
     public static function getQuery()

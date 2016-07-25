@@ -139,7 +139,6 @@ class Process extends Base
                 $this->writeItem($query);
             }
         }
-
     }
 
     public function writeNewProcess($forceUnLocked = false)
