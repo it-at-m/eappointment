@@ -15,4 +15,9 @@ class Day extends Schema\Entity
             'freeAppointments' => new Slot(),
         ];
     }
+
+    public function __toString()
+    {
+        return "Day @{$this->year}-{$this->month}-{$this->day} with " . $this->freeAppointments;
+    }
 }

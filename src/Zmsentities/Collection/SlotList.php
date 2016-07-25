@@ -1,6 +1,8 @@
 <?php
 namespace BO\Zmsentities\Collection;
 
+use BO\Zmsentities\Slot;
+
 class SlotList extends Base
 {
 
@@ -17,6 +19,7 @@ class SlotList extends Base
         if (null !== $slotA && null !== $slotB) {
             foreach (['public', 'intern', 'callcenter'] as $type) {
                 $slotA[$type] = $slotA[$type] < $slotB[$type] ? $slotA[$type] : $slotB[$type];
+                $slotA->type = Slot::REDUCED;
             }
         }
         return $this;
@@ -26,51 +29,36 @@ class SlotList extends Base
     {
         $slot = $this->getSlot($index);
         if (null !== $slot) {
-            $slot->setSlotData(array(
-                'public' => 0,
-                'intern' => 0,
-                'callcenter' => 0
-            ));
+            $slot['public'] = 0;
+            $slot['intern'] = 0;
+            $slot['callcenter'] = 0;
+            $slot->type = Slot::REDUCED;
         }
         return $this;
     }
 
     public function getSlot($index)
     {
-        $slotKeys = array_keys((array)$this);
-        sort($slotKeys);
-        if (!isset($slotKeys[$index]) || !isset($this[$slotKeys[$index]])) {
+        $index = intval($index);
+        if (!isset($this[$index])) {
             return null;
         }
-        return $this[$slotKeys[$index]];
+        return $this[$index];
     }
 
-    public function addSlot(\BO\Zmsentities\Helper\DateTime $startTime, $workstationCount)
+    public function getSummerizedSlot()
     {
-        $slot = new \BO\Zmsentities\Slot();
-        $slot->setSlotData($workstationCount, $startTime);
-        $this[] = $slot;
-        return $this;
-    }
-
-    public function setSlot($slotnr, \BO\Zmsentities\Helper\DateTime $startTime, $workstationCount)
-    {
-        $slot = $this->getSlot($slotnr);
-        if (null !== $slot) {
-            $slot->setSlotData($workstationCount, $startTime);
-            $this[$slotnr] = $slot;
-        } else {
-            throw new \Exception("Slot $slotnr does not exists.");
+        $sum = new Slot();
+        $sum->type = Slot::SUM;
+        foreach ($this as $slot) {
+            $sum['public'] += $slot['public'];
+            $sum['intern'] += $slot['intern'];
+            $sum['callcenter'] += $slot['callcenter'];
+            if ($sum['type'] != Slot::FREE) {
+                $sum['type'] = $slot['type'];
+            }
         }
-        return $this;
-    }
-
-    public function addFreeAppointments($day, $slotInfo)
-    {
-        $day['freeAppointments']['public'] += $slotInfo['public'];
-        $day['freeAppointments']['intern'] += $slotInfo['intern'];
-        $day['freeAppointments']['callcenter'] += $slotInfo['callcenter'];
-        return $day;
+        return $sum;
     }
 
     public function getFreeProcesses(
