@@ -27,6 +27,5 @@ class ProcessReserve extends BaseController
         $message->data = $query->updateEntity($process);
         Render::lastModified(time(), '0');
         Render::json($message);
-
     }
 }
