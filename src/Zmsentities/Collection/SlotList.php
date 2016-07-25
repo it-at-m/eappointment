@@ -53,12 +53,14 @@ class SlotList extends Base
         return $this;
     }
 
-    public function writeSlot($slotnr, \BO\Zmsentities\Helper\DateTime $startTime, $workstationCount)
+    public function setSlot($slotnr, \BO\Zmsentities\Helper\DateTime $startTime, $workstationCount)
     {
         $slot = $this->getSlot($slotnr);
         if (null !== $slot) {
             $slot->setSlotData($workstationCount, $startTime);
             $this[$slotnr] = $slot;
+        } else {
+            throw new \Exception("Slot $slotnr does not exists.");
         }
         return $this;
     }
@@ -80,14 +82,17 @@ class SlotList extends Base
     ) {
 
         $processList = new ProcessList();
-        foreach ($this as $slotInfo) {
-            if ($slotInfo[$slotType] > 0) {
+        foreach ($this as $slot) {
+            if ($slot[$slotType] > 0) {
                 $appointment = new \BO\Zmsentities\Appointment(array(
                     'scope' => $scope,
                     'availability' => $availability,
-                    'slotCount' => $slotInfo[$slotType]
+                    'slotCount' => $slot[$slotType]
                 ));
-                $appointment->setDateByString($selectedDate .' '. $slotInfo['time']);
+                if (!$slot->hasTime()) {
+                    throw new \Exception("Time on slot not set: ".htmlspecialchars(var_export($slot, 1)));
+                }
+                $appointment->setDateByString($selectedDate .' '. $slot['time']);
                 $process = new \BO\Zmsentities\Process(array(
                     'scope' => $scope,
                     'requests' => $requests
