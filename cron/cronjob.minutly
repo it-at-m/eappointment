@@ -1,0 +1,6 @@
+#!/bin/bash
+DIR=$(dirname ${BASH_SOURCE[0]})
+BIN=$DIR/../bin
+
+php $BIN/mail_queue.php --send
+php $BIN/notification_queue.php --send
