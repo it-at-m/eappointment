@@ -23,6 +23,5 @@ if (preg_grep('#--?v(erbose)?#', $argv)) {
     \App::$messaging = new \BO\Zmsmessaging\SendQueue();
     $resultList = \App::$messaging->startMailTransmission();
 } else {
-    echo "This script must be run with ....";
-    echo "\nUsage:\n php bin/mail_queue.php [--send, --verbose] \n";
+    echo "\nUsage:\n mail_queue.php [--send, --verbose] \n";
 }
