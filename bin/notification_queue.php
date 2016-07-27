@@ -34,6 +34,5 @@ if (preg_grep('#--?v(erbose)?#', $argv)) {
     \App::$messaging = new \BO\Zmsmessaging\SendQueue('notification');
     $resultList = \App::$messaging->startNotificationTransmission();
 } else {
-    echo "This script must be run with ....";
-    echo "\nUsage:\n php bin/notification_queue.php [--send, --verbose] \n";
+    echo "\nUsage:\n notification_queue.php [--send, --verbose] \n";
 }
