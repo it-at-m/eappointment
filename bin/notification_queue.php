@@ -4,9 +4,10 @@
 // initialize the static \App singleton
 include(realpath(__DIR__) .'/../bootstrap.php');
 
+\App::$messaging = new \BO\Zmsmessaging\SendQueue('notification');
+$resultList = \App::$messaging->startNotificationTransmission(preg_grep('#--?s(end)?#', $argv));
+
 if (preg_grep('#--?v(erbose)?#', $argv)) {
-    \App::$messaging = new \BO\Zmsmessaging\SendQueue('notification');
-    $resultList = \App::$messaging->startNotificationTransmission();
     foreach ($resultList as $notification) {
         if (isset($notification['errorInfo'])) {
             echo "ERROR OCCURED: ". $notification['errorInfo'] ."\n";
@@ -30,9 +31,8 @@ if (preg_grep('#--?v(erbose)?#', $argv)) {
             echo $url ."\n\n";
         }
     }
-} else if (preg_grep('#--?s(end)?#', $argv)) {
-    \App::$messaging = new \BO\Zmsmessaging\SendQueue('notification');
-    $resultList = \App::$messaging->startNotificationTransmission();
-} else {
+}
+
+if (!preg_grep('#--?v(erbose)?#', $argv) && !preg_grep('#--?s(end)?#', $argv)) {
     echo "\nUsage:\n notification_queue.php [--send, --verbose] \n";
 }
