@@ -24,13 +24,13 @@ class SendQueue
         }
     }
 
-    public function startMailTransmission()
+    public function startMailTransmission($action = false)
     {
         $resultList = array();
         if (count($this->messagesQueue)) {
             foreach ($this->messagesQueue as $item) {
                 $mail = new \BO\Zmsentities\Mail($item);
-                $result = $this->startTransmission($mail);
+                $result = $this->startTransmission($mail, $action);
                 if ($result instanceof \PHPMailer) {
                     $resultList[] = array(
                         'id' => $result->getLastMessageID(),
@@ -52,13 +52,13 @@ class SendQueue
         return $resultList;
     }
 
-    public function startNotificationTransmission()
+    public function startNotificationTransmission($action = false)
     {
         $resultList = array();
         if (count($this->messagesQueue)) {
             foreach ($this->messagesQueue as $item) {
                 $notification = new \BO\Zmsentities\Notification($item);
-                $result = $this->startTransmission($notification);
+                $result = $this->startTransmission($notification, $action);
                 if ($result instanceof \PHPMailer) {
                     $resultList[] = array(
                         'id' => $result->getLastMessageID(),
@@ -82,7 +82,7 @@ class SendQueue
         return $resultList;
     }
 
-    protected function startTransmission($message)
+    protected function startTransmission($message, $action)
     {
         try {
             if ($message instanceof \BO\Zmsentities\Mail) {
@@ -97,13 +97,14 @@ class SendQueue
             \App::$log->debug('Zmsmessaging', [$exception]);
             return $exception->getMessage();
         }
-
-        if (null !== $mailer && 'viaGateway' != $mailer) {
-            if (!$mailer->Send()) {
-                \App::$log->debug('Zmsmessaging Failed', [$mailer->ErrorInfo]);
+        if (in_array('--send', $action)) {
+            if (null !== $mailer && 'viaGateway' != $mailer) {
+                if (!$mailer->Send()) {
+                    \App::$log->debug('Zmsmessaging Failed', [$mailer->ErrorInfo]);
+                }
             }
+            $this->deleteFromQueue($message);
         }
-        $this->deleteFromQueue($message);
         return $mailer;
     }
 
