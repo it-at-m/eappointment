@@ -102,11 +102,44 @@ class Bootstrap
         $view = new \Slim\Views\Twig(
             \App::APP_PATH  . \App::TEMPLATE_PATH,
             [
-                'cache' => \App::TWIG_CACHE ? \App::APP_PATH . \App::TWIG_CACHE : false,
+                'cache' => self::readTwigCacheDir(),
                 'debug' => \App::SLIM_DEBUG,
             ]
         );
         return $view;
+    }
+
+    public static function readTwigCacheDir()
+    {
+        $path = false;
+        if (\App::TWIG_CACHE) {
+            $path = \App::APP_PATH . \App::TWIG_CACHE;
+            $githead = self::readGitHead();
+            if ($githead) {
+                $path .= '/' . $githead . '/';
+            } else {
+                $path .= '/static';
+            }
+            if (!is_dir($path)) {
+                mkdir($path);
+            }
+        }
+        return $path;
+    }
+
+    public static function readGitHead()
+    {
+        $githash = false;
+        $githead = \App::APP_PATH . '/.git/HEAD';
+        if (is_readable($githead)) {
+            $gitbranch = trim(fgets(fopen($githead, 'r')));
+            $gitbranch = preg_replace('#^.* ([^\s]+)$#', '$1', $gitbranch);
+            $githashFile = \App::APP_PATH . '/.git/' . $gitbranch;
+            if (is_readable($githashFile)) {
+                $githash = trim(fgets(fopen($githashFile, 'r')));
+            }
+        }
+        return $githash;
     }
 
     public static function addTwigExtension($extension)
