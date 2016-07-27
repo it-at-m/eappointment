@@ -68,10 +68,24 @@ class Session extends Schema\Entity
         return false;
     }
 
+    public function isEmpty()
+    {
+        if ($this->hasNoProcess() &&
+            $this->hasNoAuthKey() &&
+            $this->hasNoStatus() &&
+            $this->hasNoTask() &&
+            !$this->isFinished()
+            ) {
+                return true;
+        }
+            return false;
+    }
+
     public function isFinished()
     {
-        if (isset($this->content['finished']) &&
-            true === $this->content['finished']
+        if ((isset($this->content['finished']) &&
+            $this->content['finished']) &&
+            !$this->hasNoProcess()
         ) {
             return true;
         }
@@ -81,10 +95,8 @@ class Session extends Schema\Entity
     public function isConfirmed()
     {
         if (isset($this->content['status']) &&
-            'confirmed' == $this->content['status'] &&
-            'change' != $this->content['task'] &&
-            isset($this->content['human']['Step']['summary']) &&
-            '1' < $this->content['human']['Step']['summary']) {
+            'confirmed' == $this->content['status']
+        ) {
             return true;
         }
         return false;
@@ -101,10 +113,37 @@ class Session extends Schema\Entity
         return false;
     }
 
+    public function hasNoStatus()
+    {
+        if ((!isset($this->content['status']) ||
+            '' == $this->content['status'])) {
+            return true;
+        }
+        return false;
+    }
+
+    public function hasNoTask()
+    {
+        if ((!isset($this->content['task']) ||
+            '' == $this->content['task'])) {
+            return true;
+        }
+        return false;
+    }
+
     public function hasNoProcess()
     {
         if ((!isset($this->content['basket']['process']) ||
             '' == $this->content['basket']['process'])) {
+            return true;
+        }
+        return false;
+    }
+
+    public function hasNoAuthKey()
+    {
+        if ((!isset($this->content['basket']['authKey']) ||
+            '' == $this->content['basket']['authKey'])) {
             return true;
         }
         return false;
