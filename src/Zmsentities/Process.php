@@ -96,7 +96,11 @@ class Process extends Schema\Entity
 
     public function addAmendment($formData)
     {
-        $this['amendment'] = $formData['amendment']['value'];
+        if (isset($formData['amendment'])) {
+            $this['amendment'] = $formData['amendment']['value'];
+        } else {
+            $this['amendment'] = '';
+        }
         return $this;
     }
 
