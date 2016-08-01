@@ -67,4 +67,17 @@ class Provider extends Base
         }
         return $this;
     }
+
+    public function addConditionRequestCsv($requestIdCsv)
+    {
+        $requestIdList = explode(',', $requestIdCsv);
+        $dbname_dldb = \BO\Zmsdb\Connection\Select::$dbname_dldb;
+        $this->query->leftJoin(
+            new Alias("$dbname_dldb.xdienst", 'xdienst'),
+            'provider.id',
+            '=',
+            'xdienst.dienstleister'
+        );
+        $this->query->where('xdienst.dienstleistung', 'IN', $requestIdList);
+    }
 }

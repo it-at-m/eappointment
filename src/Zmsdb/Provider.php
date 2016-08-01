@@ -31,34 +31,30 @@ class Provider extends Base
             ->addEntityMapping()
             ->addConditionIsAssigned($isAssigned);
         $result = $this->fetchList($query, new Entity());
-        if (count($result)) {
-            foreach ($result as $item) {
-                $provider = $this->readEntity($source, $item['id'], $resolveReferences);
-                if ($provider instanceof Entity) {
-                    $providerList->addEntity($provider);
-                }
+        foreach ($result as $provider) {
+            if ($resolveReferences > 0) {
+                $provider['data'] = Helper\DldbData::readExtendedProviderData($source, $provider['id']);
             }
+            $providerList->addEntity($provider);
         }
         return $providerList;
     }
 
     public function readListByRequest($source, $requestIdCsv, $resolveReferences = 0)
     {
-        $query = Query\Request::getQuerySlots();
         $providerList = new Collection();
         if ('dldb' !== $source) {
             return $providerList;
         }
-
-        $requestIdCsv = \explode(',', $requestIdCsv);
-        foreach ($requestIdCsv as $requestId) {
-            $result = $this->getReader()->fetchAll($query, ['request_id' => $requestId]);
-            foreach ($result as $item) {
-                $provider = $this->readEntity($source, $item['provider__id'], $resolveReferences);
-                if ($provider instanceof Entity) {
-                    $providerList->addEntity($provider);
-                }
+        $query = new Query\Provider(Query\Base::SELECT);
+        $query->addEntityMapping();
+        $query->addConditionRequestCsv($requestIdCsv);
+        $result = $this->fetchList($query, new Entity());
+        foreach ($result as $provider) {
+            if ($resolveReferences > 0) {
+                $provider['data'] = Helper\DldbData::readExtendedProviderData($source, $provider['id']);
             }
+            $providerList->addEntity($provider);
         }
         return $providerList;
     }
