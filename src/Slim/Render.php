@@ -54,14 +54,20 @@ class Render
         return self::$response;
     }
 
+    public static function withJson(ResponseInterface $response, $data, $status = 200)
+    {
+        $response = $response->withStatus($status);
+        $response = $response->withHeader('Content-Type', 'application/json');
+        $response->getBody()->write(json_encode($data));
+        return $response;
+    }
+
     /**
      * @return \Psr\Http\Message\ResponseInterface
      */
     public static function json($data, $status = 200)
     {
-        self::$response = self::$response->withStatus($status);
-        self::$response = self::$response->withHeader('Content-Type', 'application/json');
-        self::$response->getBody()->write(json_encode($data));
+        self::$response = self::withJson(self::$response, $data, $status);
         return self::$response;
     }
 
