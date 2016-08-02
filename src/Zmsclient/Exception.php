@@ -7,12 +7,18 @@ class Exception extends \Exception
     /**
      * @var \Psr\Http\Message\ResponseInterface $response
      */
-    protected $response;
+    public $response;
 
     /**
      * @var \Psr\Http\Message\RequestInterface $request
      */
-    protected $request;
+    public $request;
+
+    /**
+     * @var String $template for rendering exception
+     *
+     */
+    public $template = 'bo/zmsclient/exception';
 
     /**
      * @param String $message

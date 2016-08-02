@@ -81,11 +81,15 @@ class Result
         }
         $entity = Factory::create($result['meta'])->getEntity();
         if ($entity->error == true) {
-            throw new Exception(
+            $exception = new Exception(
                 'API-Error: ' . $entity->message,
                 $response,
                 $this->request
             );
+            if (isset($entity->exception)) {
+                $exception->template = $entity->exception;
+            }
+            throw $exception;
         }
     }
 
