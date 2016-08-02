@@ -40,6 +40,5 @@ class RequestTest extends Base
         $collection = (new Query())->readListByProvider('dldb', 122208, 0);
         $this->assertEntityList("\\BO\\Zmsentities\\Request", $collection);
         $this->assertEquals(true, $collection->hasEntity('120335')); //Abmeldung einer Wohnung
-
     }
 }
