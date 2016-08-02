@@ -49,6 +49,18 @@ class Request extends Base
         return $this;
     }
 
+    public function addConditionProcessId($processId)
+    {
+        $this->query->leftJoin(
+            new Alias("buergeranliegen", 'buergeranliegen'),
+            'buergeranliegen.AnliegenID',
+            '=',
+            'request.id'
+        );
+        $this->query->where('buergeranliegen.BuergerID', '=', $processId);
+        return $this;
+    }
+
     public function addConditionRequestCsv($requestCsv)
     {
         $requestIds = \explode(',', $requestCsv);
@@ -56,5 +68,17 @@ class Request extends Base
             $this->query->orWhere('id', '=', $requestId);
         }
         return $this;
+    }
+
+    public function addConditionProviderId($providerId)
+    {
+        $dbname_dldb = \BO\Zmsdb\Connection\Select::$dbname_dldb;
+        $this->query->leftJoin(
+            new Alias("$dbname_dldb.xdienst", 'xdienst'),
+            'request.id',
+            '=',
+            'xdienst.dienstleistung'
+        );
+        $this->query->where('xdienst.dienstleister', '=', $providerId);
     }
 }

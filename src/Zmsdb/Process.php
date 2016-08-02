@@ -114,30 +114,18 @@ class Process extends Base
 
     public function writeRequestsToDb($processId, $requests)
     {
-        $checkRequests = (new Request())->readRequestByProcessId($processId);
-        if (null === $checkRequests) {
-            $query = new Query\XRequest(Query\Base::INSERT);
-            foreach ($requests as $request) {
-                $query->addValues(
-                    [
+        $deleteQuery = new Query\XRequest(Query\Base::DELETE);
+        $deleteQuery->addConditionProcessId($processId);
+        $this->deleteItem($deleteQuery);
+        $query = new Query\XRequest(Query\Base::INSERT);
+        foreach ($requests as $request) {
+            $query->addValues(
+                [
                     'AnliegenID' => $request['id'],
                     'BuergerID' => $processId
-                    ]
-                );
-                $this->writeItem($query);
-            }
-        } else {
-            foreach ($requests as $request) {
-                $query = new Query\XRequest(Query\Base::UPDATE);
-                $query->addConditionXRequestId($request['id']);
-                $query->addConditionProcessId($processId);
-                $query->addValues(
-                    [
-                        'AnliegenID' => $request['id']
-                    ]
-                );
-                $this->writeItem($query);
-            }
+                ]
+            );
+            $this->writeItem($query);
         }
     }
 

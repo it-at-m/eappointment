@@ -9,9 +9,7 @@ class Request extends Base
 
     public function readEntity($source, $requestId, $resolveReferences = 0)
     {
-        if ('dldb' !== $source) {
-            return new Entity();
-        }
+        self::testSource($source);
         $query = new Query\Request(Query\Base::SELECT);
         $query
             ->addEntityMapping()
@@ -34,33 +32,41 @@ class Request extends Base
         return $providerSlots;
     }
 
+    protected static function testSource($source)
+    {
+        if ('dldb' !== $source) {
+            throw new Exception\UnknownDataSource("Unknown source ". htmlspecialchars($source));
+        }
+    }
+
+    protected function readCollection($query, $source, $resolveReferences)
+    {
+        $requestList = new Collection();
+        $result = $this->fetchList($query, new Entity());
+        foreach ($result as $request) {
+            if ($resolveReferences > 0) {
+                $request['data'] = Helper\DldbData::readExtendedRequestData($source, $request['id']);
+            }
+            $requestList->addEntity($request);
+        }
+        return $requestList;
+    }
+
     public function readRequestByProcessId($processId, $resolveReferences = 0)
     {
-        $requests = array();
-        $query = Query\Request::QUERY_BY_PROCESSID;
-        $result = $this->getReader()->fetchAll(
-            $query,
-            ['process_id' => $processId,]
-        );
-
-        if (count($result)) {
-            foreach ($result as $request) {
-                $requests[] = $this->readEntity('dldb', $request['id'], $resolveReferences);
-            }
-        }
-        return (count($requests)) ? $requests : null;
+        $source = 'dldb';
+        $query = new Query\Request(Query\Base::SELECT);
+        $query->addEntityMapping();
+        $query->addConditionProcessId($processId);
+        return $this->readCollection($query, $source, $resolveReferences);
     }
 
     public function readListByProvider($source, $providerId, $resolveReferences = 0)
     {
-        $requestList = new Collection();
-        $provider = (new Provider())->readEntity($source, $providerId, $resolveReferences);
-        foreach ($provider->data['services'] as $request) {
-            $request = $this->readEntity($source, $request['service'], $resolveReferences - 1);
-            if ($request instanceof Entity) {
-                $requestList->addEntity($request);
-            }
-        }
-        return $requestList;
+        self::testSource($source);
+        $query = new Query\Request(Query\Base::SELECT);
+        $query->addEntityMapping();
+        $query->addConditionProviderId($providerId);
+        return $this->readCollection($query, $source, $resolveReferences);
     }
 }
