@@ -11,7 +11,11 @@ class ProviderTest extends Base
         $entity = (new Query())->readEntity('dldb', 122280, 1);
         $this->assertEntity("\\BO\\Zmsentities\\Provider", $entity);
         $this->assertEquals(true, array_key_exists('data', $entity));
+    }
 
+    public function testUnknownSource()
+    {
+        $this->setExpectedException("\\BO\\Zmsdb\\Exception\\UnknownDataSource");
         $entity = (new Query())->readEntity('test', 122280, 1);
         $this->assertEntity("\\BO\\Zmsentities\\Provider", $entity);
     }
@@ -31,7 +35,7 @@ class ProviderTest extends Base
         $this->assertEntityList("\\BO\\Zmsentities\\Provider", $collection);
         $this->assertEquals(true, $collection->hasEntity('122210')); //Bürgeramt Halemweg (Außenstelle)
 
-        $collection = $query->readListByRequest('test', '120335'); //dldb not source
+        $collection = $query->readListByRequest('dldb', '99999999999999999'); // unknown request
         $this->assertEntityList("\\BO\\Zmsentities\\Provider", $collection);
         $this->assertEquals(false, $collection->hasEntity('122210')); //Bürgeramt Halemweg (Außenstelle)
     }

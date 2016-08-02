@@ -9,9 +9,7 @@ class Provider extends Base
 {
     public function readEntity($source, $providerId, $resolveReferences = 0)
     {
-        if ('dldb' !== $source) {
-            return new Entity();
-        }
+        self::testSource($source);
         $query = new Query\Provider(Query\Base::SELECT);
         $query
             ->addEntityMapping()
@@ -23,13 +21,16 @@ class Provider extends Base
         return $provider;
     }
 
-    public function readList($source, $isAssigned = false, $resolveReferences = 0)
+    protected static function testSource($source)
+    {
+        if ('dldb' !== $source) {
+            throw new Exception\UnknownDataSource("Unknown source ". htmlspecialchars($source));
+        }
+    }
+
+    protected function readCollection($query, $source, $resolveReferences)
     {
         $providerList = new Collection();
-        $query = new Query\Provider(Query\Base::SELECT);
-        $query
-            ->addEntityMapping()
-            ->addConditionIsAssigned($isAssigned);
         $result = $this->fetchList($query, new Entity());
         foreach ($result as $provider) {
             if ($resolveReferences > 0) {
@@ -40,22 +41,22 @@ class Provider extends Base
         return $providerList;
     }
 
+    public function readList($source, $isAssigned = false, $resolveReferences = 0)
+    {
+        self::testSource($source);
+        $query = new Query\Provider(Query\Base::SELECT);
+        $query
+            ->addEntityMapping()
+            ->addConditionIsAssigned($isAssigned);
+        return $this->readCollection($query, $source, $resolveReferences);
+    }
+
     public function readListByRequest($source, $requestIdCsv, $resolveReferences = 0)
     {
-        $providerList = new Collection();
-        if ('dldb' !== $source) {
-            return $providerList;
-        }
+        self::testSource($source);
         $query = new Query\Provider(Query\Base::SELECT);
         $query->addEntityMapping();
         $query->addConditionRequestCsv($requestIdCsv);
-        $result = $this->fetchList($query, new Entity());
-        foreach ($result as $provider) {
-            if ($resolveReferences > 0) {
-                $provider['data'] = Helper\DldbData::readExtendedProviderData($source, $provider['id']);
-            }
-            $providerList->addEntity($provider);
-        }
-        return $providerList;
+        return $this->readCollection($query, $source, $resolveReferences);
     }
 }
