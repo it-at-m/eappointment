@@ -11,4 +11,9 @@ class App extends \BO\Zmsadmin\Application
      */
     const HTTP_BASE_URL = ZMS_API_URL;
 
+    public static $http_curl_config = [
+        CURLOPT_SSL_VERIFYPEER => false,
+        CURLOPT_TIMEOUT => 9,
+        //CURLOPT_VERBOSE => true,
+    ];
 }
