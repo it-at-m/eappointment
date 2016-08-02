@@ -3,6 +3,9 @@
 /**
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
+use BO\Slim\Helper;
+use \Psr\Http\Message\RequestInterface;
+use \Psr\Http\Message\ResponseInterface;
 
 /* ---------------------------------------------------------------------------
  * html, basic routes
@@ -166,14 +169,14 @@
 \App::$slim->get('/healthcheck/', '\BO\Zmsappointment\Healthcheck')
     ->setName("healthcheck");
 
-\App::$slim->getContainer()->notFoundHandler = function() {
-    return function () {
-        return \BO\Slim\Render::html('page/404.twig');
+\App::$slim->getContainer()->offsetSet('notFoundHandler', function($container) {
+    return function (RequestInterface $request, ResponseInterface $response) {
+        return \BO\Slim\Render::withHtml($response, 'page/404.twig');
     };
-};
+});
 
-\App::$slim->getContainer()->errorHandler = function() {
-    return function (\Exception $exception) {
-        return \BO\Zmsappointment\Helper\Render::error($exception);
+\App::$slim->getContainer()->offsetSet('errorHandler', function($container) {
+    return function (RequestInterface $request, ResponseInterface $response, \Exception $exception) {
+        return \BO\Slim\TwigExceptionHandler::withHtml($request, $response, $exception);
     };
-};
+});
