@@ -52,12 +52,12 @@ class Session extends Schema\Entity
 
     public function getRequests()
     {
-        return Helper::toSortedCsv($this->content['basket']['requests']);
+        return Helper\Sorter::toSortedCsv($this->content['basket']['requests']);
     }
 
     public function getProviders()
     {
-        return Helper::toSortedCsv($this->content['basket']['providers']);
+        return Helper\Sorter::toSortedCsv($this->content['basket']['providers']);
     }
 
     public function hasEntryValues()
