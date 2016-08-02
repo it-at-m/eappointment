@@ -23,6 +23,10 @@ class Client implements ClientInterface
         $curlopts = $curlopts + self::$curlopt;
         $transport = new Curl();
         $transport->setOption('options', $curlopts);
-        return $transport->request($request);
+        try {
+            return $transport->request($request);
+        } catch (\Exception $exception) {
+            throw new RequestException($exception->getMessage(), $request);
+        }
     }
 }
