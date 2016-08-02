@@ -20,11 +20,13 @@ class DldbData
      * @param string $locale language
      * @return \BO\Dldb\FileAccess
      */
-    public static function getDataRepository($locale)
+    public static function getDataRepository()
     {
         // configure clientdldb data access
-        self::$dldbData = new \BO\Dldb\FileAccess($locale);
-        self::$dldbData->loadFromPath(self::$dataPath);
+        if (null === self::$dldbData) {
+            self::$dldbData = new \BO\Dldb\FileAccess();
+            self::$dldbData->loadFromPath(self::$dataPath);
+        }
         return self::$dldbData;
     }
 
@@ -40,7 +42,7 @@ class DldbData
     {
         $data = null;
         if ($source == 'dldb') {
-            $data = self::getDataRepository($locale)->fromService($locale)->fetchId($requestId);
+            $data = self::getDataRepository()->fromService($locale)->fetchId($requestId);
         }
         return $data;
     }
@@ -56,7 +58,7 @@ class DldbData
     {
         $data = null;
         if ($source == 'dldb') {
-            $data = self::getDataRepository($locale)->fromLocation($locale)->fetchId($providerId);
+            $data = self::getDataRepository()->fromLocation($locale)->fetchId($providerId);
         }
         return $data;
     }

@@ -24,7 +24,11 @@ class RequestTest extends Base
         $entity = (new Query($connection, $connection))->readEntity('dldb', 120335);
         $this->assertEntity("\\BO\\Zmsentities\\Request", $entity);
         $this->assertEquals(120335, $entity['id']);
+    }
 
+    public function testUnknownSource()
+    {
+        $this->setExpectedException("\\BO\\Zmsdb\\Exception\\UnknownDataSource");
         //source not dldb
         $entity = (new Query())->readEntity('test', 122280, 1);
         $this->assertEntity("\\BO\\Zmsentities\\Request", $entity);
@@ -33,7 +37,7 @@ class RequestTest extends Base
     public function testListByProvider()
     {
         //Dienstleister Bürgeramt I in Köpenick
-        $collection = (new Query())->readListByProvider('dldb', 122208, 1);
+        $collection = (new Query())->readListByProvider('dldb', 122208, 0);
         $this->assertEntityList("\\BO\\Zmsentities\\Request", $collection);
         $this->assertEquals(true, $collection->hasEntity('120335')); //Abmeldung einer Wohnung
 
