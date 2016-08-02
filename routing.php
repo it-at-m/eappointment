@@ -2514,6 +2514,13 @@ use \Psr\Http\Message\ResponseInterface;
         if ($exception->getCode() >= 200) {
             $status = $exception->getcode();
         }
+        if ($exception->getCode() >= 500 || !$exception->getCode()) {
+            \App::$log->critical(
+                "PHP Fatal Exception: "
+                . " in " . $exception->getFile() . " +" . $exception->getLine()
+                . " -> " . $exception->getMessage()
+            );
+        }
         return \BO\Slim\Render::withJson($response, $message, $status);
     };
 });
