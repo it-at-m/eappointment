@@ -4,6 +4,10 @@
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
+use BO\Slim\Helper;
+use \Psr\Http\Message\RequestInterface;
+use \Psr\Http\Message\ResponseInterface;
+
 /* ---------------------------------------------------------------------------
  * html, basic routes
  * -------------------------------------------------------------------------*/
@@ -2488,24 +2492,28 @@
     '\BO\Zmsapi\Healthcheck')
     ->setName("healthcheck");
 
-\App::$slim->getContainer()->notFoundHandler = function() {
-    return function () {
-        $message = \BO\Zmsapi\Response\Message::create();
+\App::$slim->getContainer()->offsetSet('notFoundHandler', function($container) {
+    return function (RequestInterface $request, ResponseInterface $response) {
+        $message = \BO\Zmsapi\Response\Message::create($request);
         $message->meta->error = true;
         $message->meta->message = "Could not find a resource with the given URL";
-        \BO\Slim\Render::lastModified(time(), '0');
-        return \BO\Slim\Render::json($message, 404);
+        $response = \BO\Slim\Render::withLastModified($response, time(), '0');
+        return \BO\Slim\Render::withJson($response, $message, 404);
     };
-};
+});
 
-\App::$slim->getContainer()->errorHandler = function() {
-    return function (\Exception $exception) {
-        $message = \BO\Zmsapi\Response\Message::create();
+\App::$slim->getContainer()->offsetSet('errorHandler', function($container) {
+    return function (RequestInterface $request, ResponseInterface $response, \Exception $exception) {
+        $message = \BO\Zmsapi\Response\Message::create($request);
         $message->meta->error = true;
         $message->meta->message = $exception->getMessage();
-        $message->meta->exception = (new \ReflectionClass($exception))->getShortName();
+        $message->meta->exception = get_class($exception);
         $message->meta->trace = $exception->getTrace();
         \BO\Slim\Render::lastModified(time(), '0');
-        return \BO\Slim\Render::json($message, 500);
+        $status = 500;
+        if ($exception->getCode() >= 200) {
+            $status = $exception->getcode();
+        }
+        return \BO\Slim\Render::withJson($response, $message, $status);
     };
-};
+});
