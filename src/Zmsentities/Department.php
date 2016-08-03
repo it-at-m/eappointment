@@ -8,6 +8,14 @@ class Department extends Schema\Entity
 
     public static $schema = "department.json";
 
+    public function getDefaults()
+    {
+        return [
+            'name' => '',
+            'scopes' => new Collection\ScopeList(),
+        ];
+    }
+
     public function hasNotificationEnabled()
     {
         if (isset($this->preferences['notifications'])) {
@@ -45,19 +53,21 @@ class Department extends Schema\Entity
 
     public function withOutClusterDuplicates()
     {
+        $department = clone $this;
         $clusterScopeList = new Collection\ScopeList();
-        foreach ($this->clusters as $cluster) {
+        foreach ($department->clusters as $cluster) {
             foreach ($cluster['scopes'] as $clusterScope) {
-                $clusterScopeList->addEntity(new Scope($clusterScope));
+                $clusterScopeList->addEntity(clone $clusterScope);
             }
         }
         $scopeList = new Collection\ScopeList();
-        foreach ($this->scopes as $scope) {
+        foreach ($department->scopes as $scope) {
             if (!$clusterScopeList->hasEntity($scope['id'])) {
-                $scopeList->addEntity(new Scope($scope));
+                var_dump($scope);
+                $scopeList->addEntity(clone $scope);
             }
         }
-        $this->scopes = $scopeList;
-        return $this;
+        $department->scopes = $scopeList;
+        return $department;
     }
 }

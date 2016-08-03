@@ -7,10 +7,16 @@ abstract class EntityCommonTests extends Base
 
     public function testNew()
     {
-        $entity = new $this->entityclass();
-        $example = $entity::getExample();
+        $example = $this->getExample();
         //var_dump($example);
         $this->assertTrue($example->isValid());
+    }
+
+    public function getExample()
+    {
+        $entity = new $this->entityclass();
+        $example = $entity::getExample();
+        return $example;
     }
 
     public function assertEntity($entityClass, $entity)
