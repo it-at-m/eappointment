@@ -14,6 +14,8 @@ class Application extends \BO\Slim\Application
      */
     const IDENTIFIER = 'Zmsadmin';
 
+    const DEBUG = false;
+
     /**
      * language preferences
      */
