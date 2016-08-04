@@ -74,9 +74,11 @@ $boardHeaderBlue:                       $blue;
     }
     .header_right {
         float:              right;
-        * {
+        > *,
+        form > * {
             display:        inline-block;
             margin-bottom:  0;
+            vertical-align: middle;
         }
         .btn {
             margin-right:   0;
