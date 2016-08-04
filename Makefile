@@ -27,4 +27,4 @@ live: # init live system
 dev: # init development system
 	$(COMPOSER) update
 	npm install
-	node_modules/.bin/bower --config.directory=vendor install
+	node_modules/.bin/bower install
