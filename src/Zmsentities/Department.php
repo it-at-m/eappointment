@@ -63,7 +63,6 @@ class Department extends Schema\Entity
         $scopeList = new Collection\ScopeList();
         foreach ($department->scopes as $scope) {
             if (!$clusterScopeList->hasEntity($scope['id'])) {
-                var_dump($scope);
                 $scopeList->addEntity(clone $scope);
             }
         }
