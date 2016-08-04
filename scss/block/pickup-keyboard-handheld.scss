@@ -42,4 +42,17 @@
     .note {
         font-size:              1rem;
     }
+    
+}
+
+
+@include media-query(palm) {
+    .pickup-keyboard-handheld {
+        form {
+            .actions {
+                text-align:         center; 
+                margin-top:         3em;
+            }
+        }
+    }
 }

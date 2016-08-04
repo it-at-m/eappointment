@@ -212,12 +212,14 @@
             &--left {
                 @extend 
                     .grid__item, 
-                    .five-twelfths;
+                    .five-twelfths,
+                    .palm--one-whole;
             }
             &--right {
                 @extend 
                     .grid__item, 
-                    .seven-twelfths;
+                    .seven-twelfths,
+                    .palm--one-whole;
             }
         }
     }
