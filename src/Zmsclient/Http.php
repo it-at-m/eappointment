@@ -33,6 +33,16 @@ class Http
     protected $uri = null;
 
     /**
+     * @var Boolean $logEnabled Log requests and responses if true
+     */
+    public static $logEnabled = true;
+
+    /**
+     * @var Array $log Contains a list of requests and responses if logging is enabled
+     */
+    public static $log = [];
+
+    /**
      *
      * @param Psr7\ClientInterface $client
      */
@@ -68,7 +78,14 @@ class Http
     public function readResponse(\Psr\Http\Message\RequestInterface $request)
     {
         $request = $this->getAuthorizedRequest($request);
-        return $this->client->readResponse($request);
+        $startTime = microtime(true);
+        $response = $this->client->readResponse($request);
+        if (self::$logEnabled) {
+            self::$log[] = $request;
+            self::$log[] = $response;
+            self::$log[] = "Response time in s: " . round(microtime(true) - $startTime, 3);
+        }
+        return $response;
     }
 
     /**
@@ -80,7 +97,6 @@ class Http
      */
     public function getAuthorizedRequest(\Psr\Http\Message\RequestInterface $request)
     {
-        // @todo implement authorization
         $xAuthKey = Auth::getKey();
         if (null !== $xAuthKey) {
             $request = $request->withHeader('X-Authkey', $xAuthKey);
