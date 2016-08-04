@@ -10,6 +10,9 @@ $queueMissedColor:              $red !default;
         .title {
             margin-right:           0.7em;
         }
+        .switchcluster {
+            max-width:              24em;
+        }
     }
     table {
         @extend 
