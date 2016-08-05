@@ -1,4 +1,5 @@
 <?php
+// @codingStandardsIgnoreFile
 
 namespace BO\Zmsdb\Tests;
 
@@ -32,7 +33,7 @@ class MailTest extends Base
 
     protected function getTestEntity()
     {
-        $input = new Entity(array(
+        return new Entity(array(
             "id" => 1234,
             "createIP" => "145.15.3.10",
             "createTimestamp" => 1447931596000,
@@ -100,10 +101,6 @@ class MailTest extends Base
                             "headsUpContent" => "",
                             "headsUpTime" => "0"
                         ],
-                        "pickup" => [
-                            "alternateName" => "Ausgabe",
-                            "isDefault" => "0"
-                        ],
                         "queue" => [
                             "callCountMax" => "0",
                             "callDisplayText" => "Herzlich Willkommen \r\nin Berlin Reinickendorf\r\n=====================\r\nTIP => Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter =>\r\nhttp =>//www.berlin.de/ba-reinickendorf/org/buergeramt/",
@@ -123,15 +120,11 @@ class MailTest extends Base
                             "notificationsAmendmentEnabled" => "0",
                             "notificationsDelay" => "0"
                         ],
-                        "workstation" => [
-                            "emergencyEnabled" => "0"
-                        ]
                     ],
                 ],
                 "status" => "confirmed"
             ],
             "subject" => "Example Mail"
         ));
-        return $input;
     }
 }
