@@ -65,7 +65,7 @@ class Notification extends Schema\Entity
         $requiredProperties = func_get_args();
         foreach ($requiredProperties as $property) {
             if (!array_key_exists($property, $this)) {
-                throw new Exception\NotificationMissingProperties();
+                throw new Exception\NotificationMissingProperties("Missing property $property");
                 $result = false;
             }
         }

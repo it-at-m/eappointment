@@ -5,7 +5,7 @@ namespace BO\Zmsentities\Helper;
 /**
  * Get a property from an Array or ArrayAccess
  */
-class Property
+class Property implements \ArrayAccess
 {
     /**
      * @var Mixed $access
@@ -32,6 +32,26 @@ class Property
             return $this->access;
         }
         return $default;
+    }
+
+    public function offsetGet($property)
+    {
+        return $this->__get($property);
+    }
+
+    public function offsetExists($property)
+    {
+        return null !== $this->__get($property)->get();
+    }
+
+    public function offsetSet($offset, $value)
+    {
+        throw new \Exception(__CLASS__ . "[$offset] is readonly, could not set " . htmlspecialchars($value));
+    }
+
+    public function offsetUnset($offset)
+    {
+        throw new \Exception(__CLASS__ . "[$offset] is readonly");
     }
 
     public function __get($property)
