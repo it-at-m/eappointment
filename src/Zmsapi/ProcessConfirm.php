@@ -35,8 +35,10 @@ class ProcessConfirm extends BaseController
         (new MailQuery())->writeInQueue($mail);
 
         //write notification in queue
-        $notification = (new \BO\Zmsentities\Notification())->toResolvedEntity($process, $config);
-        (new NotificationQuery())->writeInQueue($notification);
+        if ($process->isConfirmationSmsRequired()) {
+            $notification = (new \BO\Zmsentities\Notification())->toResolvedEntity($process, $config);
+            (new NotificationQuery())->writeInQueue($notification);
+        }
 
         $message->data = $process;
         Render::lastModified(time(), '0');
