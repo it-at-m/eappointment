@@ -46,4 +46,13 @@ class Property
         }
         return new self(null);
     }
+
+    public function __toString()
+    {
+        $string = $this->get('');
+        if (!is_string($string)) {
+            $string = print_r($string, true);
+        }
+        return $string;
+    }
 }

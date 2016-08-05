@@ -158,4 +158,14 @@ class Entity extends \ArrayObject implements \JsonSerializable
     {
         return (array_key_exists('id', $this) && !empty($this->id)) ? true : false;
     }
+
+    /**
+     * Allow accessing properties without checking if it exists first
+     *
+     * @return \BO\Zmsentities\Helper\Property
+     */
+    public function toProperty()
+    {
+        return new \BO\Zmsentities\Helper\Property($this);
+    }
 }

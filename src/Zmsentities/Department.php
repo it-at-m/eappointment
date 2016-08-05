@@ -16,26 +16,6 @@ class Department extends Schema\Entity
         ];
     }
 
-    public function hasNotificationEnabled()
-    {
-        if (isset($this->preferences['notifications'])) {
-            if (array_key_exists('enabled', $this->preferences['notifications'])) {
-                return ($this->preferences['notifications']['enabled']) ? true : false;
-            }
-        }
-        return false;
-    }
-
-    public function setNotificationPreferences($status = true)
-    {
-        if ($status) {
-            $this->preferences['notifications']['enabled'] = 1;
-        } else {
-            unset($this->preferences['notifications']['enabled']);
-        }
-        return $this;
-    }
-
     public function getNotificationPreferences()
     {
         return ($this->preferences['notifications']);
