@@ -38,6 +38,23 @@
             .palm--one-whole;
         vertical-align:     middle;
     }
+    form {
+        @extend 
+            .form--horizontal;
+        margin:                     0;
+        .form-group {
+            margin:                 0;
+            &.switchcluster {
+                max-width:          20em;
+                margin:             0;
+                label {
+                    color:          $white;
+                    padding:        0;
+                }
+            }
+        }
+    }
+    
 }
 
 
