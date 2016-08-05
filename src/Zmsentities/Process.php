@@ -164,4 +164,14 @@ class Process extends Schema\Entity
         }
         return $appointment;
     }
+
+    public function isConfirmationSmsRequired()
+    {
+        $prop = $this->toProperty();
+        return (
+            $prop->clients[0]->telephone->get()
+            && $prop->scope->department->preferences->notifications->enabled->get()
+            && $prop->scope->department->preferences->notifications->sendConfirmationEnabled->get()
+        );
+    }
 }
