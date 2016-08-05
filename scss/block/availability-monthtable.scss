@@ -14,6 +14,8 @@ $calendarDayTodayBackgroundColor:               #E5F5FC; //#FCFCEF;
 $calendarDayOutofrangeBackgroundColor:          #F8F8F8;
 $calendarDayClosedBackgroundColor:              #F4F4F4;
 $calendarDayHolidayBackgroundColor:             #EFC10F;
+$calendarDayFreeBackgroundColor:                #D0EACA;
+$calendarDayBusyBackgroundColor:                #FFACAA;
 
 $calendarCircleOpenColor:                       #A3CA3E;
 $calendarCircleAppointmentColor:                #009FE3;
@@ -45,6 +47,12 @@ $calendarCircleConflictColor:                   #BE1522;
         }
         &.holiday {
             box-shadow:             inset 0px 5px 0px $calendarDayHolidayBackgroundColor;
+        }
+        &.free {
+            box-shadow:             inset 0px 5px 0px $calendarDayFreeBackgroundColor;
+        }
+        &.busy {
+            box-shadow:             inset 0px 5px 0px $calendarDayBusyBackgroundColor;
         }
         &.today {
             background-color:       $calendarDayTodayBackgroundColor;
@@ -81,7 +89,7 @@ $calendarCircleConflictColor:                   #BE1522;
         .circles {
             position:               absolute;
             right:                  0.5em;
-            top:                    2em;
+            top:                    2.1em;
             .circle-conflict {
                 @extend .circle--upsize;
                 color:              $calendarCircleConflictColor;
@@ -95,12 +103,21 @@ $calendarCircleConflictColor:                   #BE1522;
                 color:              $calendarCircleAppointmentColor;
             }
         }
+        .icons {
+            color:                  #575757;
+            font-size:              1.0em;
+            position:               absolute;
+            top:                    3.8em;
+            right:                  0.5em;
+        }
     }
 }
 
 .availability-monthtable_legend {
+    margin-bottom:                  $gridGutter * 2;
     ul {
         @extend .list-bare;
+        margin-bottom:  1em;
         li {
             display:        inline;
             margin-right:   2em;
@@ -127,6 +144,24 @@ $calendarCircleConflictColor:                   #BE1522;
         vertical-align:     text-top;
         border:             0 none;
     }
+    .box-free {
+        display:            inline-block;
+        width:              1em;
+        height:             0.5em;
+        content:            "";
+        background-color:   $calendarDayFreeBackgroundColor;
+        vertical-align:     text-top;
+        border:             0 none;
+    }
+    .box-busy {
+        display:            inline-block;
+        width:              1em;
+        height:             0.5em;
+        content:            "";
+        background-color:   $calendarDayBusyBackgroundColor;
+        vertical-align:     text-top;
+        border:             0 none;
+    }
     .box-today {
         display:            inline-block;
         width:              1em;
@@ -145,9 +180,23 @@ $calendarCircleConflictColor:                   #BE1522;
         vertical-align:     text-top;
         border:             1px solid $inuit-table-border-color;
     }
+    [class^="icon-"]::before {
+        font-size:          1em;
+        line-height:        1em;
+        vertical-align:     baseline;
+    }
 }
 
 
+.availability-capacity {
+    margin:                 $gridGutter 0;
+    table {
+        @extend
+            .table--cells,
+            .table--oddeven;
+        width:      auto;
+    }
+}
 
 /* Modifier */
 .circle--upsize {

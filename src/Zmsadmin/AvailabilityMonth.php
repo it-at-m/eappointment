@@ -20,210 +20,212 @@ class AvailabilityMonth extends BaseController
     public static function render()
     {
         $data = array(
-            '2016-04-1'  => array(
+            '2016-08-1'  => array(
                 'closed' => false,
                 'holiday' => false,
                 'hasOpeningTimes' => true,
                 'hasAppointmentTimes' => true,
                 'hasConflict'=>false
             ),
-            '2016-04-2'  => array(
+            '2016-08-2'  => array(
                 'closed' => true,
                 'holiday' => false,
                 'hasOpeningTimes' => false,
                 'hasAppointmentTimes' => false,
                 'hasConflict'=>false
             ),
-            '2016-04-3'  => array(
+            '2016-08-3'  => array(
                 'closed' => true,
                 'holiday' => false,
                 'hasOpeningTimes' => false,
                 'hasAppointmentTimes' => false,
                 'hasConflict'=>false
             ),
-            '2016-04-4'  => array(
+            '2016-08-4'  => array(
                 'closed' => false,
                 'holiday' => false,
                 'hasOpeningTimes' => false,
                 'hasAppointmentTimes' => true,
                 'hasConflict'=>false
             ),
-            '2016-04-5'  => array(
+            '2016-08-5'  => array(
                 'closed' => false,
                 'holiday' => false,
                 'hasOpeningTimes' => true,
                 'hasAppointmentTimes' => true,
                 'hasConflict'=>false
             ),
-            '2016-04-6'  => array(
+            '2016-08-6'  => array(
                 'closed' => false,
                 'holiday' => false,
                 'hasOpeningTimes' => true,
                 'hasAppointmentTimes' => true,
                 'hasConflict'=>false
             ),
-            '2016-04-7'  => array(
+            '2016-08-7'  => array(
                 'closed' => false,
                 'holiday' => false,
                 'hasOpeningTimes' => true,
                 'hasAppointmentTimes' => false,
                 'hasConflict'=>false
             ),
-            '2016-04-8'  => array(
+            '2016-08-8'  => array(
                 'closed' => true,
                 'holiday' => true,
                 'hasOpeningTimes' => false,
                 'hasAppointmentTimes' => false,
                 'hasConflict'=>false
             ),
-            '2016-04-9'  => array(
+            '2016-08-9'  => array(
                 'closed' => true,
                 'holiday' => false,
                 'hasOpeningTimes' => false,
                 'hasAppointmentTimes' => false,
                 'hasConflict'=>false
             ),
-            '2016-04-10' => array(
+            '2016-08-10' => array(
                 'closed' => true,
                 'holiday' => false,
                 'hasOpeningTimes' => false,
                 'hasAppointmentTimes' => false,
                 'hasConflict'=>false
             ),
-            '2016-04-11' => array(
+            '2016-08-11' => array(
                 'closed' => false,
                 'holiday' => false,
                 'hasOpeningTimes' => false,
                 'hasAppointmentTimes' => true,
                 'hasConflict'=>false
             ),
-            '2016-04-12' => array(
+            '2016-08-12' => array(
                 'closed' => false,
                 'holiday' => false,
                 'hasOpeningTimes' => true,
                 'hasAppointmentTimes' => true,
                 'hasConflict'=>false
             ),
-            '2016-04-13' => array(
+            '2016-08-13' => array(
                 'closed' => false,
                 'holiday' => false,
                 'hasOpeningTimes' => true,
                 'hasAppointmentTimes' => true,
                 'hasConflict'=>false
             ),
-            '2016-04-14' => array(
+            '2016-08-14' => array(
                 'closed' => false,
                 'holiday' => false,
                 'hasOpeningTimes' => true,
                 'hasAppointmentTimes' => true,
                 'hasConflict'=>false
             ),
-            '2016-04-15' => array(
+            '2016-08-15' => array(
                 'closed' => false,
                 'holiday' => false,
                 'hasOpeningTimes' => true,
                 'hasAppointmentTimes' => true,
                 'hasConflict'=>false
             ),
-            '2016-04-16' => array(
+            '2016-08-16' => array(
                 'closed' => true,
                 'holiday' => false,
                 'hasOpeningTimes' => false,
                 'hasAppointmentTimes' => false,
                 'hasConflict'=>false
             ),
-            '2016-04-17' => array(
+            '2016-08-17' => array(
                 'closed' => true,
                 'holiday' => false,
                 'hasOpeningTimes' => false,
                 'hasAppointmentTimes' => false,
                 'hasConflict'=>false
             ),
-            '2016-04-18' => array(
+            '2016-08-18' => array(
                 'closed' => false,
                 'holiday' => false,
                 'hasOpeningTimes' => false,
                 'hasAppointmentTimes' => true,
                 'hasConflict'=>false
             ),
-            '2016-04-19' => array(
+            '2016-08-19' => array(
                 'closed' => false,
                 'holiday' => false,
                 'hasOpeningTimes' => true,
                 'hasAppointmentTimes' => true,
                 'hasConflict'=>false
             ),
-            '2016-04-20' => array(
+            '2016-08-20' => array(
                 'closed' => false,
                 'holiday' => false,
                 'hasOpeningTimes' => true,
                 'hasAppointmentTimes' => true,
                 'hasConflict'=>false
             ),
-            '2016-04-21' => array(
+            '2016-08-21' => array(
                 'closed' => false,
                 'holiday' => false,
                 'hasOpeningTimes' => true,
                 'hasAppointmentTimes' => true,
                 'hasConflict'=>false
             ),
-            '2016-04-22' => array(
+            '2016-08-22' => array(
                 'closed' => false,
                 'holiday' => false,
                 'hasOpeningTimes' => true,
                 'hasAppointmentTimes' => true,
                 'hasConflict'=>false
             ),
-            '2016-04-23' => array(
+            '2016-08-23' => array(
                 'closed' => true,
                 'holiday' => false,
                 'hasOpeningTimes' => false,
                 'hasAppointmentTimes' => false,
                 'hasConflict'=>false
             ),
-            '2016-04-24' => array(
+            '2016-08-24' => array(
                 'closed' => true,
                 'holiday' => false,
                 'hasOpeningTimes' => false,
                 'hasAppointmentTimes' => false,
                 'hasConflict'=>false
             ),
-            '2016-04-25' => array(
+            '2016-08-25' => array(
                 'closed' => false,
                 'holiday' => false,
                 'hasOpeningTimes' => false,
                 'hasAppointmentTimes' => true,
                 'hasConflict'=>false
             ),
-            '2016-04-26' => array(
+            '2016-08-26' => array(
                 'closed' => false,
                 'holiday' => false,
                 'hasOpeningTimes' => true,
                 'hasAppointmentTimes' => true,
                 'hasConflict'=>false
             ),
-            '2016-04-27' => array(
+            '2016-08-27' => array(
+                'closed' => false,
+                'holiday' => false,
+                'free' => true,
+                'hasOpeningTimes' => true,
+                'hasAppointmentTimes' => true,
+                'hasConflict'=>false
+            ),
+            '2016-08-28' => array(
+                'closed' => false,
+                'holiday' => false,
+                'busy' => true,
+                'hasOpeningTimes' => true,
+                'hasAppointmentTimes' => true,
+                'hasConflict'=>false
+            ),
+            '2016-08-29' => array(
                 'closed' => false,
                 'holiday' => false,
                 'hasOpeningTimes' => true,
                 'hasAppointmentTimes' => true,
                 'hasConflict'=>false
             ),
-            '2016-04-28' => array(
-                'closed' => false,
-                'holiday' => false,
-                'hasOpeningTimes' => true,
-                'hasAppointmentTimes' => true,
-                'hasConflict'=>false
-            ),
-            '2016-04-29' => array(
-                'closed' => false,
-                'holiday' => false,
-                'hasOpeningTimes' => true,
-                'hasAppointmentTimes' => true,
-                'hasConflict'=>false
-            ),
-            '2016-04-30' => array(
+            '2016-08-30' => array(
                 'closed' => true,
                 'holiday' => false,
                 'hasOpeningTimes' => false,

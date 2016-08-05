@@ -25,3 +25,22 @@ table {
         margin:             0;
     }
 }
+
+.table--oddeven {
+    tr {
+        &:nth-child(2n+1) {
+            background-color:       $zebraWhite;
+            margin-bottom:          0;
+        }
+        &:nth-child(2n) {
+            margin-bottom:          0;
+            background-color:       $zebraGray;
+        }
+        &.odd {
+             background-color:      $zebraWhite;
+        }
+        &.even {
+            background-color:       $zebraGray;
+        }
+    }
+}
