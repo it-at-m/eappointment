@@ -41,7 +41,7 @@ class ScopeAvailabilityMonth extends BaseController
         return Helper\Render::checkedHtml(
             self::$errorHandler,
             $response,
-            'page/availabilitymonth.twig',
+            'page/availabilityMonth.twig',
             array(
                 'availabilityList' => $availabilityList,
                 'availabilityListSlices' => $availabilityList->withCalculatedSlots(),
