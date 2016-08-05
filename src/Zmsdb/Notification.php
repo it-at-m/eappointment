@@ -47,7 +47,7 @@ class Notification extends Base
         $process = new \BO\Zmsentities\Process($notification->process);
         $client = $process->getFirstClient();
         if ($client->hasTelephone()
-            && $notification->hasProperties('id', 'message', 'process')
+            && $notification->hasProperties('message', 'process')
         ) {
             $query = new Query\Notification(Query\Base::INSERT);
             $query->addValues(array(
