@@ -1,0 +1,12 @@
+.checkboxselect {
+    width:                  auto;
+    height:                 10em;
+    border:                 solid 1px $greyBorder;
+    overflow:               auto;
+    color:                  $black;
+    background-color:       $white;
+    label {
+        display:            block;
+    }
+}
+ 
