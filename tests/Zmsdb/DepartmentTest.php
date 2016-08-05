@@ -17,13 +17,10 @@ class DepartmentTest extends Base
         $this->assertNotEmpty($entity);
         $this->assertEntity("\\BO\\Zmsentities\\Department", $entity);
         $this->assertEquals('service@berlinonline.de', $entity->email);
-        $this->assertEquals(true, $entity->hasNotificationEnabled());
 
         $entity->email = "max@berlinonline.de";
-        $entity->setNotificationPreferences(false);
         $entity = $query->updateEntity($entity->id, $entity);
         $this->assertEquals('max@berlinonline.de', $entity->email);
-        $this->assertEquals(false, $entity->hasNotificationEnabled());
 
         $deleteTest = $query->deleteEntity($entity->id);
         $this->assertTrue($deleteTest, "Failed to delete Department from Database.");
@@ -45,7 +42,7 @@ class DepartmentTest extends Base
 
     protected function getTestEntity()
     {
-        return $input = new Entity(array(
+        return new Entity(array(
             'id' => 123,
             'email' => 'service@berlinonline.de',
             'preferences' => [

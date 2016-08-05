@@ -50,9 +50,8 @@ class Mail extends Base
         $queueId = null;
         //write mail in queue
         $process = new \BO\Zmsentities\Process($mail->process);
-        $scope =  new \BO\Zmsentities\Scope($mail->process['scope']);
         $client = $process->getFirstClient();
-        if ($client->hasEmail() && $scope->hasNotificationEnabled()) {
+        if ($client->hasEmail()) {
             $query = new Query\MailQueue(Query\Base::INSERT);
             $query->addValues(array(
                 'processID' => $mail->process['id'],
@@ -71,6 +70,9 @@ class Mail extends Base
                     $this->writeInMailPart($queueId, $part);
                 }
                 $this->updateProcessClient($process, $client);
+            }
+            if (!$queueId) {
+                throw new \Exception("Could not send mail");
             }
         }
         return $queueId;

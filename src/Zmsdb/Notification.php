@@ -45,10 +45,8 @@ class Notification extends Base
     {
         $queueId = null;
         $process = new \BO\Zmsentities\Process($notification->process);
-        $department = new \BO\Zmsentities\Department($notification->department);
         $client = $process->getFirstClient();
         if ($client->hasTelephone()
-            && $department->hasNotificationEnabled()
             && $notification->hasProperties('id', 'message', 'process')
         ) {
             $query = new Query\Notification(Query\Base::INSERT);
