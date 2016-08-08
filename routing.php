@@ -151,6 +151,9 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/testpage/', '\BO\Zmsadmin\Testpage')
     ->setName("testpage");
 
+\App::$slim->get('/changelog/', '\BO\Zmsadmin\Changelog')
+    ->setName("changelog");
+    
 //\App::$slim->get('/dienstleistung{service_id:\d+}', '\BO\D115Mandant\Controller\ServiceDetail')
 //    ->setName("servicedetail");
 
