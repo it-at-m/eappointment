@@ -22,6 +22,6 @@ class OrganisationHash extends BaseController
         $itemId = $itemId; // @todo fetch data
         $message->data = \BO\Zmsentities\Ticketprinter::createExample();
         Render::lastModified(time(), '0');
-        Render::json($message);
+        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }
 }

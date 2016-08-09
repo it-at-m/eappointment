@@ -30,6 +30,6 @@ class UseraccountUpdate extends BaseController
         $message = Response\Message::create(Render::$request);
         $message->data = ($userAccount->hasId()) ? $userAccount : null;
         Render::lastModified(time(), '0');
-        Render::json($message, Helper\User::getStatus($userAccount));
+        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }
 }

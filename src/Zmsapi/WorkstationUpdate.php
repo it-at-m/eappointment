@@ -30,6 +30,6 @@ class WorkstationUpdate extends BaseController
         $message = Response\Message::create(Render::$request);
         $message->data = ($workstation->hasId()) ? $workstation : null;
         Render::lastModified(time(), '0');
-        Render::json($message, Helper\User::getStatus($workstation, true));
+        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }
 }

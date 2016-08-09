@@ -26,6 +26,6 @@ class NotificationList extends BaseController
         $notificationList = (new Query())->readList($resolveReferences);
         $message = Response\Message::create(Render::$request);
         $message->data = $notificationList;
-        Render::json($message);
+        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }
 }

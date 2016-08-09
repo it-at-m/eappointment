@@ -24,6 +24,6 @@ class MailList extends BaseController
         $mailList = (new Query())->readList($resolveReferences);
         $message = Response\Message::create(Render::$request);
         $message->data = $mailList;
-        Render::json($message);
+        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }
 }

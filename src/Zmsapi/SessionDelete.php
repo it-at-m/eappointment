@@ -27,6 +27,6 @@ class SessionDelete extends BaseController
         $query->deleteEntity($sessionName, $sessionId);
         $message->data = $session;
         Render::lastModified(time(), '0');
-        Render::json($message);
+        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }
 }

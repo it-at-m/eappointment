@@ -27,6 +27,6 @@ class MailAdd extends BaseController
         $entity->id = $queueId;
         $message->data = $entity;
         Render::lastModified(time(), '0');
-        Render::json($message);
+        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }
 }

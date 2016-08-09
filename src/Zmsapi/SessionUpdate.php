@@ -28,6 +28,6 @@ class SessionUpdate extends BaseController
         $sessionData = new \BO\Zmsentities\Session($input);
         $message->data = $query->updateEntity($sessionData);
         Render::lastModified(time(), '0');
-        Render::json($message);
+        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }
 }

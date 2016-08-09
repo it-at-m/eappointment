@@ -28,6 +28,6 @@ class ProcessUpdate extends BaseController
         $process->authKey = $authKey;
         $message->data = $query->updateEntity($process);
         Render::lastModified(time(), '0');
-        Render::json($message);
+        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }
 }

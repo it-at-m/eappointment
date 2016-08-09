@@ -26,6 +26,6 @@ class ProcessIcs extends BaseController
         $ics = \BO\Zmsentities\Helper\Messaging::createIcs($process, $config);
         $message->data = $ics;
         Render::lastModified(time(), '0');
-        Render::json($message);
+        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }
 }

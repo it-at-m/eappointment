@@ -26,6 +26,6 @@ class ProcessReserve extends BaseController
         $process = new \BO\Zmsentities\Process($input);
         $message->data = $query->updateEntity($process);
         Render::lastModified(time(), '0');
-        Render::json($message);
+        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }
 }

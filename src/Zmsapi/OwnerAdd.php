@@ -25,6 +25,6 @@ class OwnerAdd extends BaseController
         $entity = new \BO\Zmsentities\Owner($input);
         $message->data = (new Query())->writeEntity($entity);
         Render::lastModified(time(), '0');
-        Render::json($message);
+        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }
 }

@@ -23,6 +23,6 @@ class CalldisplayGet extends BaseController
         $input = Validator::input()->isJson()->getValue();
         $message->data = new \BO\Zmsentities\Calldisplay($input);
         Render::lastModified(time(), '0');
-        Render::json($message);
+        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }
 }

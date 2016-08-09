@@ -25,6 +25,6 @@ class ClusterUpdate extends BaseController
         $entity = new \BO\Zmsentities\Cluster($input);
         $message->data = (new Query())->updateEntity($itemId, $entity);
         Render::lastModified(time(), '0');
-        Render::json($message);
+        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }
 }

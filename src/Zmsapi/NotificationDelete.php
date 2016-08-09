@@ -27,6 +27,6 @@ class NotificationDelete extends BaseController
         $query->deleteEntity($itemId);
         $message->data = $notification;
         Render::lastModified(time(), '0');
-        Render::json($message, Helper\User::getStatus($notification));
+        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }
 }

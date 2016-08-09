@@ -25,6 +25,6 @@ class OwnerAddOrganisation extends BaseController
         $entity = new \BO\Zmsentities\Organisation($input);
         $message->data = (new Query())->writeEntity($entity, $parentId);
         Render::lastModified(time(), '0');
-        Render::json($message);
+        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }
 }
