@@ -28,6 +28,6 @@ class DayoffUpdate extends BaseController
         $message->data = $list;
         $year = $year; // @todo update data
         Render::lastModified(time(), '0');
-        Render::json($message);
+        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }
 }

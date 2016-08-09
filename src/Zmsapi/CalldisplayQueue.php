@@ -23,6 +23,6 @@ class CalldisplayQueue extends BaseController
         Validator::input()->isJson()->getValue();
         $message->data = array(\BO\Zmsentities\Queue::createExample());
         Render::lastModified(time(), '0');
-        Render::json($message);
+        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }
 }

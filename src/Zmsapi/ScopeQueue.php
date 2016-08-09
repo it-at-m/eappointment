@@ -22,6 +22,6 @@ class ScopeQueue extends BaseController
         $itemId = $itemId; // @todo fetch data
         $message->data = array(\BO\Zmsentities\Queue::createExample());
         Render::lastModified(time(), '0');
-        Render::json($message);
+        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }
 }

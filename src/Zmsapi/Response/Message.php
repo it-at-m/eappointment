@@ -18,6 +18,11 @@ class Message implements \JsonSerializable
     public $data = null;
 
     /**
+     * @var Mixed $data
+     */
+    public $statuscode = 200;
+
+    /**
      * @var \Psr\Http\Message\RequestInterface $request;
      *
      */
@@ -29,7 +34,7 @@ class Message implements \JsonSerializable
         $this->meta = new \BO\Zmsentities\Metaresult();
         $this->meta->error = false;
         $this->meta->exception = null;
-        $this->setUpdateMetaData();
+        $this->setUpdatedMetaData();
     }
 
 
@@ -39,11 +44,35 @@ class Message implements \JsonSerializable
         return $message;
     }
 
-    public function setUpdateMetaData()
+    public function hasData()
+    {
+        return (
+            ($this->data instanceof \BO\Zmsentities\Schema\Entity && $this->data->hasId())
+            || ($this->data instanceof \BO\Zmsentities\Collection\Base && count($this->data))
+            || (is_array($this->data) && count($this->data))
+        );
+    }
+
+    /**
+     * Update meta-data
+     * check for data in response
+     *
+     */
+    public function setUpdatedMetaData()
     {
         $this->meta->generated = date('c');
         $this->meta->server = \App::IDENTIFIER;
+        if ($this->data !== null && $this->statuscode == 200 && !$this->hasData()) {
+            $this->statuscode = 404;
+            $this->meta->error = true;
+            $this->meta->message = 'Not found';
+        }
         return $this;
+    }
+
+    public function getStatuscode()
+    {
+        return $this->statuscode;
     }
 
     public function jsonSerialize()

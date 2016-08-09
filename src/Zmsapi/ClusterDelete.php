@@ -26,6 +26,6 @@ class ClusterDelete extends BaseController
         $query->deleteEntity($itemId);
         $message->data = $cluster;
         Render::lastModified(time(), '0');
-        Render::json($message);
+        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }
 }

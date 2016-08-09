@@ -27,6 +27,6 @@ class StatusGet extends BaseController
         $message->data = $status;
         //throw new \Exception("Test");
         Render::lastModified(time(), '0');
-        Render::json($message);
+        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }
 }

@@ -27,6 +27,6 @@ class CalendarGet extends BaseController
         $calendar = new \BO\Zmsentities\Calendar($input);
         $message->data = $query->readResolvedEntity($calendar, \App::getNow());
         Render::lastModified(time(), '0');
-        Render::json($message);
+        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }
 }

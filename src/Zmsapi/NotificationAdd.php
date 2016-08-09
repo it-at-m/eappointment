@@ -28,6 +28,6 @@ class NotificationAdd extends BaseController
         (new Query())->writeInQueue($entity);
         $message->data = $entity;
         Render::lastModified(time(), '0');
-        Render::json($message, Helper\User::getStatus($entity));
+        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }
 }

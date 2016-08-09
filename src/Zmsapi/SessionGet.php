@@ -26,6 +26,6 @@ class SessionGet extends BaseController
         $message->data = $session;
         // $message->data = \BO\Zmsentities\Session::createExample();
         Render::lastModified(time(), '0');
-        Render::json($message);
+        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }
 }

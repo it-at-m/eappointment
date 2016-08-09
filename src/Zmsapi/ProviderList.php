@@ -30,6 +30,6 @@ class ProviderList extends BaseController
         $message = Response\Message::create(Render::$request);
         $message->data = $providerList;
         Render::lastModified(time(), '0');
-        Render::json($message);
+        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }
 }

@@ -29,6 +29,6 @@ class DepartmentGet extends BaseController
         $message = Response\Message::create(Render::$request);
         $message->data = $department;
         Render::lastModified(time(), '0');
-        Render::json($message, Helper\User::getStatus($department));
+        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }
 }
