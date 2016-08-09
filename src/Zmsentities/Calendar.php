@@ -3,6 +3,7 @@ namespace BO\Zmsentities;
 
 class Calendar extends Schema\Entity
 {
+    const PRIMARY = 'days';
 
     public static $schema = "calendar.json";
 

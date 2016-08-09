@@ -8,6 +8,12 @@ namespace BO\Zmsentities\Schema;
 class Entity extends \ArrayObject implements \JsonSerializable
 {
     /**
+     * primary id for entity
+     *
+     */
+    const PRIMARY = 'id';
+
+    /**
      * @var String $schema Filename of JSON-Schema file
      */
     public static $schema = null;
@@ -156,7 +162,8 @@ class Entity extends \ArrayObject implements \JsonSerializable
 
     public function hasId()
     {
-        return (array_key_exists('id', $this) && !empty($this->id)) ? true : false;
+        $idName = $this::PRIMARY;
+        return (array_key_exists($idName, $this) && $this[$idName]) ? true : false;
     }
 
     /**
