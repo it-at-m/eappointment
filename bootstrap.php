@@ -18,5 +18,9 @@ require(APP_PATH . '/config.php');
 \App::$http = new \BO\Zmsclient\Http(\App::HTTP_BASE_URL);
 \BO\Zmsclient\Psr7\Client::$curlopt = \App::$http_curl_config;
 
+// Http Logging
+\BO\Slim\Bootstrap::addTwigExtension(new \BO\Zmsclient\TwigExtension(\App::$slim->getContainer()));
+\BO\Zmsclient\Http::$logEnabled = \App::DEBUG;
+
 // load routing
 \BO\Slim\Bootstrap::loadRouting(\App::APP_PATH . '/routing.php');
