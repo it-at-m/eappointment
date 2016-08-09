@@ -7,5 +7,5 @@ namespace BO\Zmsentities\Exception;
  */
 class UserAccountMissingRights extends \Exception
 {
-
+    protected $code = 403;
 }
