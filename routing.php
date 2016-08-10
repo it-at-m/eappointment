@@ -169,7 +169,7 @@ use \Psr\Http\Message\ResponseInterface;
  * maintenance
  * -------------------------------------------------------------------------*/
 
-\App::$slim->get('/healthcheck/', '\BO\Zmsappointment\Healthcheck')
+\App::$slim->get('/healthcheck/', '\BO\Zmsadmin\Healthcheck')
     ->setName("healthcheck");
 
 \App::$slim->getContainer()->offsetSet('notFoundHandler', function($container) {

@@ -6,6 +6,8 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Slim\Render;
+
 /**
   * Handle requests concerning services
   *
@@ -15,8 +17,11 @@ class Healthcheck extends BaseController
     /**
      * @return String
      */
-    public static function render()
+    public function render()
     {
-        echo "OK";
+        $result = \App::$http->readGetResult('/status/');
+        $status = $result->getEntity();
+        Render::lastModified(time(), '0');
+        echo "OK - DB=" . $status['database']['nodeConnections'] . "%";
     }
 }
