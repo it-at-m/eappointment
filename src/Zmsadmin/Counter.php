@@ -40,7 +40,7 @@ class Counter extends BaseController
         return Helper\Render::checkedHtml(
             self::$errorHandler,
             $response,
-            'page/workstation.twig',
+            'page/counter.twig',
             array(
                 'title' => 'Tresen',
                 'menuActive' => 'counter',
