@@ -37,30 +37,39 @@
             "type": "object",
             "properties": {
                 "availability": {
+                    "description": "Allow editing availability with opening hours",
                     "type": "boolean"
                 },
                 "cluster": {
+                    "description": "Allow editing clusters",
                     "type": "boolean"
                 },
                 "department": {
+                    "description": "Allow editing departments",
                     "type": "boolean"
                 },
                 "organisation": {
+                    "description": "Allow editing organisations",
                     "type": "boolean"
                 },
                 "scope": {
+                    "description": "Allow editing scopes",
                     "type": "boolean"
                 },
                 "sms": {
+                    "description": "Allow sending SMS",
                     "type": "boolean"
                 },
                 "superuser": {
+                    "description": "Special rights for administrators, especially for maintenance",
                     "type": "boolean"
                 },
                 "ticketprinter": {
+                    "description": "Manage ticketprinter",
                     "type": "boolean"
                 },
                 "useraccount": {
+                    "description": "Allow create, edit and delete user accounts",
                     "type": "boolean"
                 }
             }
