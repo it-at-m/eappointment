@@ -51,8 +51,8 @@ class UserAccount extends Schema\Entity
     {
         if ($this->hasId()) {
             foreach ($requiredRights as $required) {
-                if (!array_key_exists($required, array_filter($this->rights))) {
-                    throw new Exception\UserAccountMissingRights();
+                if (!$this->toProperty()->rights->$required->get()) {
+                    throw new Exception\UserAccountMissingRights("Missing right " . htmlspecialchars($required));
                 }
             }
         } else {
