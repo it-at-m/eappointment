@@ -20,7 +20,7 @@ class WorkstationDelete extends BaseController
      */
     public static function render($loginname)
     {
-        Helper\User::checkRights('organisation', 'department', 'cluster', 'useraccount');
+        Helper\User::checkRights();
 
         $query = new Query();
         $workstation = $query->readUpdatedLogoutEntity($loginname);
