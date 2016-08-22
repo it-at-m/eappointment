@@ -18,7 +18,7 @@ class LoginTest extends Base
             'password' => 'vorschau'
         ));
 
-        $workstation = $query->readUpdatedLoginEntity($userAccount->id, $userAccount->password);
+        $workstation = $query->writeEntityLoginByName($userAccount->id, $userAccount->password);
         $this->assertEquals(true, $workstation->hasAuthKey());
 
         $workstation->scope['id'] = 141; //Bürgeramt Heerstraße

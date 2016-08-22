@@ -18,7 +18,7 @@ class Workstation extends Base
         return $workstation;
     }
 
-    public function readUpdatedLoginEntity($loginName, $password)
+    public function writeEntityLoginByName($loginName, $password)
     {
         $userAccount = new UserAccount();
         $workstation = new Entity();
@@ -42,7 +42,7 @@ class Workstation extends Base
         return $workstation;
     }
 
-    public function readUpdatedLogoutEntity($loginName)
+    public function writeEntityLogoutByName($loginName)
     {
         $query = Query\Workstation::QUERY_LOGOUT;
         $statement = $this->getWriter()->prepare($query);
