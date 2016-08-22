@@ -82,4 +82,16 @@ class Scope extends Schema\Entity
             return $this->contact['name'];
         }
     }
+
+    public function getScopeInfo()
+    {
+        $hint = explode('|', $this->hint);
+        return trim(current($hint));
+    }
+
+    public function getScopeHint()
+    {
+        $hint = explode('|', $this->hint);
+        return trim(end($hint));
+    }
 }
