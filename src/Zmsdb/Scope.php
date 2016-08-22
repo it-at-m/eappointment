@@ -146,11 +146,11 @@ class Scope extends Base
      *
      * @return Entity
      */
-    public function updateEntity($scopeId, \BO\Zmsentities\Scope $entity, $parentId)
+    public function updateEntity($scopeId, \BO\Zmsentities\Scope $entity)
     {
         $query = new Query\Scope(Query\Base::UPDATE);
         $query->addConditionScopeId($scopeId);
-        $values = $query->reverseEntityMapping($entity, $parentId);
+        $values = $query->reverseEntityMapping($entity);
         $query->addValues($values);
         $this->writeItem($query);
         return $this->readEntity($scopeId);

@@ -138,12 +138,11 @@ class Scope extends Base implements MappingInterface
     public function reverseEntityMapping(\BO\Zmsentities\Scope $entity, $parentId = null)
     {
         $data = array();
-        $hint = explode('|', $entity->hint);
         $data['BehoerdenID'] = (null !== $parentId) ? $parentId : $entity->getDepartmentId();
         $data['InfoDienstleisterID'] = $entity->getProviderId();
         $data['emailstandortadmin'] = $entity->getContactEMail();
-        $data['standortinfozeile'] = trim(current($hint));
-        $data['Hinweis'] = trim(end($hint));
+        $data['standortinfozeile'] = $entity->getScopeInfo();
+        $data['Hinweis'] = $entity->getScopeHint();
         $data['Bezeichnung'] = $entity->getName();
         $data['standortkuerzel'] = $entity->shortName;
         $data['Adresse'] = $entity->contact['street'];

@@ -11,7 +11,7 @@ class UserAccountTest extends Base
     public function testBasic()
     {
         $query = new Query();
-        $entity = $query->readEntity('berlinonline',1);
+        $entity = $query->readEntity('berlinonline', 1);
         $this->assertEntity("\\BO\\Zmsentities\\UserAccount", $entity);
     }
 
@@ -24,7 +24,7 @@ class UserAccountTest extends Base
         $userAccount->setRights('organisation');
         $userAccount = $query->updateEntity($userAccount->id, $userAccount);
 
-        $workstation = (new Workstation())->readUpdatedLoginEntity($userAccount->id, $input->password);
+        $workstation = (new Workstation())->writeEntityLoginByName($userAccount->id, $input->password);
         $this->assertEquals(true, $workstation->hasAuthKey());
 
         $userAccount = $query->readEntityByAuthKey($workstation->authKey, 1);
