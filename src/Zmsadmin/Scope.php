@@ -50,6 +50,7 @@ class Scope extends BaseController
         if (is_array($input) && array_key_exists('save', $input)) {
             try {
                 $entity = new Entity($input);
+                $entity->hint = implode(' | ', $input['hint']);
                 $entity->id = $entityId;
                 $entity = \App::$http->readPostResult('/scope/' . $entity->id . '/', $entity)
                     ->getEntity();

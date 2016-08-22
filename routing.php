@@ -57,7 +57,7 @@
 \App::$slim->get('/scope/{id:\d+}/availability/month/', '\BO\Zmsadmin\ScopeAvailabilityMonth')
     ->setName("scopeAvailabilityMonth");
 
-\App::$slim->get('/cluster/', '\BO\Zmsadmin\Cluster')
+\App::$slim->map(['GET', 'POST'], '/cluster/{id:\d+}/', '\BO\Zmsadmin\Cluster')
     ->setName("cluster");
 
 \App::$slim->map(['GET', 'POST'], '/department/{id:\d+}/', '\BO\Zmsadmin\Department')
