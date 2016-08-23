@@ -23,7 +23,7 @@ class WorkstationDelete extends BaseController
         Helper\User::checkRights();
 
         $query = new Query();
-        $workstation = $query->readUpdatedLogoutEntity($loginname);
+        $workstation = $query->writeEntityLogoutByName($loginname);
 
         $message = Response\Message::create(Render::$request);
         $message->data = $workstation;

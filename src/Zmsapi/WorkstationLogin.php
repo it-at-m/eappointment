@@ -23,7 +23,7 @@ class WorkstationLogin extends BaseController
         $query = new Query();
         $input = Validator::input()->isJson()->getValue();
 
-        $workstation = $query->readUpdatedLoginEntity($loginName, $input['password']);
+        $workstation = $query->writeEntityLoginByName($loginName, $input['password']);
 
         $message = Response\Message::create(Render::$request);
         $message->data = $workstation;
