@@ -97,7 +97,7 @@ class SendQueue
             \App::$log->debug('Zmsmessaging', [$exception]);
             return $exception->getMessage();
         }
-        if (in_array('--send', $action)) {
+        if (false !== $action) {
             if (null !== $mailer && 'viaGateway' != $mailer) {
                 if (!$mailer->Send()) {
                     \App::$log->debug('Zmsmessaging Failed', [$mailer->ErrorInfo]);
