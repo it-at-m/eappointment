@@ -39,13 +39,14 @@ class Ticketprinter extends Base
     {
         $ticketprinterList = new Collection();
         $query = new Query\Ticketprinter(Query\Base::SELECT);
-        $query->addEntityMapping();
+        $query
+            ->addEntityMapping()
+            ->addResolvedReferences($resolveReferences - 1);
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
             foreach ($result as $ticketprinter) {
-                $entity = $this->readEntity($ticketprinter['id'], $resolveReferences - 1);
-                if ($entity instanceof Entity) {
-                    $ticketprinterList->addEntity($entity);
+                if ($ticketprinter instanceof Entity) {
+                    $ticketprinterList->addEntity($ticketprinter);
                 }
             }
         }
@@ -89,12 +90,14 @@ class Ticketprinter extends Base
         $query = new Query\Ticketprinter(Query\Base::SELECT);
         $query
             ->addEntityMapping()
+            ->addResolvedReferences($resolveReferences - 1)
             ->addConditionOrganisationId($organisationId);
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
             foreach ($result as $ticketprinter) {
-                $entity = $this->readEntity($ticketprinter['id'], $resolveReferences - 1);
-                $ticketprinterList->addEntity($entity);
+                if ($ticketprinter instanceof Entity) {
+                    $ticketprinterList->addEntity($ticketprinter);
+                }
             }
             return $ticketprinterList;
         }
