@@ -5,8 +5,12 @@
 include(realpath(__DIR__) .'/../bootstrap.php');
 
 \App::$messaging = new \BO\Zmsmessaging\SendQueue('notification');
-$resultList = \App::$messaging->startNotificationTransmission(preg_grep('#--?s(end)?#', $argv));
 
+$isValid = false;
+if (preg_grep('#--?s(end)?#', $argv)) {
+    $isValid = true;
+}
+$resultList = \App::$messaging->startNotificationTransmission($isValid);
 if (preg_grep('#--?v(erbose)?#', $argv)) {
     foreach ($resultList as $notification) {
         if (isset($notification['errorInfo'])) {
