@@ -49,7 +49,6 @@ class UserAccount extends Base
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
             foreach ($result as $entity) {
-                $entity = $this->readEntity($entity->id, $resolveReferences);
                 if ($entity instanceof Entity) {
                     $collection->addEntity($entity);
                 }

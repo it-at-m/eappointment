@@ -46,8 +46,8 @@ class Cluster extends Base
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
             foreach ($result as $entity) {
-                $entity = $this->readEntity($entity->id, $resolveReferences);
                 if ($entity instanceof Entity) {
+                    $entity['scopes'] = (new Scope())->readByClusterId($entity->id, $resolveReferences);
                     $clusterList->addEntity($entity);
                 }
             }
@@ -66,8 +66,8 @@ class Cluster extends Base
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
             foreach ($result as $entity) {
-                $entity = $this->readEntity($entity->id, $resolveReferences);
                 if ($entity instanceof Entity && !$clusterList->hasEntity($entity->id)) {
+                    $entity['scopes'] = (new Scope())->readByClusterId($entity->id, $resolveReferences);
                     $clusterList->addEntity($entity);
                 }
             }
