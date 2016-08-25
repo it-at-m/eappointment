@@ -41,13 +41,15 @@ class Provider extends Base
         return $providerList;
     }
 
-    public function readList($source, $isAssigned = false, $resolveReferences = 0)
+    public function readList($source, $resolveReferences = 0, $isAssigned = null)
     {
         self::testSource($source);
         $query = new Query\Provider(Query\Base::SELECT);
         $query
-            ->addEntityMapping()
-            ->addConditionIsAssigned($isAssigned);
+            ->addEntityMapping();
+        if (null !== $isAssigned) {
+            $query->addConditionIsAssigned($isAssigned);
+        }
         return $this->readCollection($query, $source, $resolveReferences);
     }
 
