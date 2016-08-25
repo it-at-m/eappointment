@@ -27,7 +27,7 @@ class MailDelete extends BaseController
         } else {
             $message->meta->statuscode = 500;
             $message->meta->error = true;
-            $message->meta->messsage = "Could not delete mail";
+            $message->meta->message = "Could not delete mail";
         }
         Render::lastModified(time(), '0');
         Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
