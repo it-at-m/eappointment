@@ -23,4 +23,9 @@ class RequestList extends Base
         }
         return $list;
     }
+
+    public function getIdsCsv()
+    {
+        return implode(',', $this->getIds());
+    }
 }

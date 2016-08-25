@@ -50,6 +50,12 @@ class Session extends Schema\Entity
         ];
     }
 
+    public function setJsonContentToArray()
+    {
+        $this->content = json_decode($this->content);
+        return $this;
+    }
+
     public function getRequests()
     {
         return Helper\Sorter::toSortedCsv($this->content['basket']['requests']);
