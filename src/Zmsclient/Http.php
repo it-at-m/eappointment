@@ -112,13 +112,16 @@ class Http
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function readGetResult($relativeUrl, array $getParameters = null)
+    public function readGetResult($relativeUrl, array $getParameters = null, $xToken = null)
     {
         $uri = $this->uri->withPath($this->http_baseurl . $relativeUrl);
         if (null !== $getParameters) {
             $uri = $uri->withQuery(http_build_query($getParameters));
         }
         $request = new Psr7\Request('GET', $uri);
+        if (null !== $xToken) {
+            $request = $request->withHeader('X-Token', $xToken);
+        }
         $response = $this->readResponse($request);
         return new Result($response, $request);
     }
