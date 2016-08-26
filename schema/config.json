@@ -1,5 +1,6 @@
 {
     "type": "object",
+    "description": "main config data",
     "example": {
         "appointments": {
         	"urlChange": "http://service-berlin/terminvereinbarung/termin/manage/",
