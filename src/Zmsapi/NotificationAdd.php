@@ -25,8 +25,9 @@ class NotificationAdd extends BaseController
         $message = Response\Message::create(Render::$request);
         $input = Validator::input()->isJson()->getValue();
         $entity = new \BO\Zmsentities\Notification($input);
-        (new Query())->writeInQueue($entity);
+        $queueId = (new Query())->writeInQueue($entity);
         $message->data = $entity;
+        $message->data->id = $queueId;
         Render::lastModified(time(), '0');
         Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }

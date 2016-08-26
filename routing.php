@@ -413,6 +413,38 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/config/":
+ *      get:
+ *          description: Get config
+ *          parameters:
+ *              -   name: X-Token
+ *                  description: Secure Token
+ *                  required: true
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/config.json"
+ *              404:
+ *                  description: "config not found"
+ *              401:
+ *                  description: "authentification failed"
+ */
+\App::$slim->get('/config/',
+    '\BO\Zmsapi\ConfigGet')
+    ->setName("ConfigGet");
+
+/**
+ *  @swagger
  *  "/dayoff/{year}/":
  *      get:
  *          description: Get a list of common free days for a given year
