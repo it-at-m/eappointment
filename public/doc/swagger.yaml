@@ -39,6 +39,8 @@ definitions:
     $ref: "schema/client.json"
   cluster:
     $ref: "schema/cluster.json"
+  config:
+    $ref: "schema/config.json"
   contact:
     $ref: "schema/contact.json"
   day:

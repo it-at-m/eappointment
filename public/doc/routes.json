@@ -479,6 +479,45 @@
 			}
 		}
 	},
+	"/config/": {
+		"get": {
+			"description": "Get config",
+			"parameters": [
+				{
+					"name": "X-Token",
+					"description": "Secure Token",
+					"required": true,
+					"in": "header",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/config.json"
+								}
+							}
+						}
+					}
+				},
+				"401": {
+					"description": "authentification failed"
+				},
+				"404": {
+					"description": "config not found"
+				}
+			}
+		}
+	},
 	"/dayoff/{year}/": {
 		"get": {
 			"description": "Get a list of common free days for a given year",
