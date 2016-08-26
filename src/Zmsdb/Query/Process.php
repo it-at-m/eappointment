@@ -121,8 +121,8 @@ class Process extends Base implements MappingInterface
             'queue__callTime' => 'process.aufrufzeit',
             'queue__number' => 'process.wartenummer',
             'queue__waitingTime' => 'process.wartezeit',
-            'queue__reminderTimestamp' => 'process.Erinnerungszeitpunkt',
-            'workstation__id' => 'process.NutzerID'
+            'workstation__id' => 'process.NutzerID',
+            'reminderTimestamp' => 'process.Erinnerungszeitpunkt.'
         ];
     }
 
@@ -176,6 +176,7 @@ class Process extends Base implements MappingInterface
         }
 
         $data['vorlaeufigeBuchung'] = ($process['status'] == 'reserved') ? 1 : 0;
+        $data['Erinnerungszeitpunkt'] = $process->getReminderTimestamp();
 
         $data = array_filter($data, function ($value) {
             return ($value !== null && $value !== false && $value !== '');
