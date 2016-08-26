@@ -76,6 +76,11 @@ class Process extends Schema\Entity
         return $this->status;
     }
 
+    public function getReminderTimestamp()
+    {
+        return (array_key_exists('reminderTimestamp', $this)) ? $this->reminderTimestamp : 0;
+    }
+
     public function addClient($formData)
     {
         $client = new Client();
@@ -100,6 +105,16 @@ class Process extends Schema\Entity
             $this['amendment'] = $formData['amendment']['value'];
         } else {
             $this['amendment'] = '';
+        }
+        return $this;
+    }
+
+    public function addReminderTimestamp($formData)
+    {
+        if (isset($formData['headsUpTime'])) {
+            $this['reminderTimestamp'] = $formData['headsUpTime']['value'];
+        } else {
+            $this['reminderTimestamp'] = 0;
         }
         return $this;
     }
