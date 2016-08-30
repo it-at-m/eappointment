@@ -112,7 +112,8 @@ class Session extends Schema\Entity
             $this->hasNoAuthKey() &&
             $this->hasNoStatus() &&
             $this->hasNoTask() &&
-            !$this->isFinished()
+            !$this->isFinished() &&
+            !$this->hasEntryValues()
             ) {
                 return true;
         }
@@ -259,18 +260,6 @@ class Session extends Schema\Entity
     {
         return (!isset($this->content['basket']['providers']) ||
             '' == $this->content['basket']['providers']) ? true : false;
-    }
-
-    /**
-     *
-     * Check if a first day of calender exists
-     *
-     * @return boolean
-     */
-    public function hasNoFirstDay()
-    {
-        return (!isset($this->content['basket']['firstDay']) ||
-            '' == $this->content['basket']['firstDay']) ? true : false;
     }
 
     /**
