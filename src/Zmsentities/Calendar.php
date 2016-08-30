@@ -102,9 +102,11 @@ class Calendar extends Schema\Entity
     public function getMonthList()
     {
         $startDate = new \DateTime();
-        $startDate->setDate($this['firstDay']['year'], $this['firstDay']['month'], $this['firstDay']['day']);
+        $firstDay = $this->getFirstDay();
+        $lastDay = $this->getLastDay();
+        $startDate->setDate($firstDay->format('Y'), $firstDay->format('m'), $firstDay->format('d'));
         $endDate = new \DateTime();
-        $endDate->setDate($this['lastDay']['year'], $this['lastDay']['month'], $this['lastDay']['day']);
+        $endDate->setDate($lastDay->format('Y'), $lastDay->format('m'), $lastDay->format('d'));
         $currentDate = $startDate;
         if ($startDate->getTimestamp() > $endDate->getTimestamp()) {
             // swith first and last day if necessary
@@ -159,11 +161,29 @@ class Calendar extends Schema\Entity
 
     public function getFirstDay()
     {
-        $dateTime = $this->getDateTimeFromDate(array(
-            'year' => $this['firstDay']['year'],
-            'month' => $this['firstDay']['month'],
-            'day' => $this['firstDay']['day']
-        ));
+        if (isset($this['firstDay'])) {
+            $dateTime = $this->getDateTimeFromDate(array(
+                'year' => $this['firstDay']['year'],
+                'month' => $this['firstDay']['month'],
+                'day' => $this['firstDay']['day']
+            ));
+        } else {
+            $dateTime = Helper\DateTime::create();
+        }
+        return $dateTime->modify('00:00:00');
+    }
+
+    public function getLastDay()
+    {
+        if (isset($this['lastDay'])) {
+            $dateTime = $this->getDateTimeFromDate(array(
+                'year' => $this['lastDay']['year'],
+                'month' => $this['lastDay']['month'],
+                'day' => $this['lastDay']['day']
+            ));
+        } else {
+            $dateTime = Helper\DateTime::create();
+        }
         return $dateTime->modify('00:00:00');
     }
 
