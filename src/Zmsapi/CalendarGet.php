@@ -22,13 +22,17 @@ class CalendarGet extends BaseController
         $query = new Query();
         $message = Response\Message::create(Render::$request);
         $input = Validator::input()->isJson()->getValue();
+        $calendar = new \BO\Zmsentities\Calendar($input);
         if (null === $input) {
             $message->meta->statuscode = 500;
             $message->meta->error = true;
             $message->data = null;
+        } elseif (!isset($calendar['firstDay']) || !isset($calendar['lastDay'])) {
+            $message->meta->error = true;
+            $message->meta->message = "Es wurde kein Startdatum definiert.";
+            $message->meta->exception = "BO/Zmsapi/Exception/InvalidFirstDay";
         } else {
-            $entity = new \BO\Zmsentities\Calendar($input);
-            $message->data = $query->readResolvedEntity($entity, \App::getNow());
+            $message->data = $query->readResolvedEntity($calendar, \App::getNow());
         }
 
         Render::lastModified(time(), '0');

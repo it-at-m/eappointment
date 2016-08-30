@@ -23,21 +23,23 @@ class SessionUpdate extends BaseController
         $session = new \BO\Zmsentities\Session($input);
         $session->getUnSerializedContent();
         $message->data = null;
+
         if ($session->getProviders() && false === Helper\Matching::isProviderExisting($session)) {
-            $message->meta->statuscode = 500;
             $message->meta->error = true;
             $message->meta->message = "Ein ausgewählter Dienstleister exisistiert nicht";
             $message->meta->exception = "BO/Zmsapi/Helper/Matching";
         } elseif ($session->getRequests() && false === Helper\Matching::isRequestExisting($session)) {
-            $message->meta->statuscode = 500;
             $message->meta->error = true;
             $message->meta->message = "Eine ausgewählte Dienstleistung exisistiert nicht";
             $message->meta->exception = "BO/Zmsapi/Helper/Matching";
         } elseif ($session->getProviders() && false === Helper\Matching::hasProviderRequest($session)) {
-            $message->meta->statuscode = 500;
             $message->meta->error = true;
             $message->meta->message = "Die Diensleistung wird nicht vom Dienstleister angeboten";
             $message->meta->exception = "BO/Zmsapi/Helper/Matching";
+        } elseif ($session->isEmpty()) {
+            $message->meta->error = true;
+            $message->meta->message = "Es konnte keine Session ermittelt werden";
+            $message->meta->exception = "BO/Zmsapi/Exception/InvalidSession";
         } else {
             $session->getSerializedContent();
             $message->data = (new Query())->updateEntity($session);
