@@ -50,20 +50,52 @@ class Session extends Schema\Entity
         ];
     }
 
-    public function setJsonContentToArray()
+    public function getUnserializedContent()
     {
-        $this->content = json_decode($this->content);
+        if (!is_array($this->content)) {
+            $this->content = unserialize($this->content);
+        }
+        return $this;
+    }
+
+    public function getSerializedContent()
+    {
+        if (is_array($this->content)) {
+            $this->content = serialize($this->content);
+        }
         return $this;
     }
 
     public function getRequests()
     {
-        return Helper\Sorter::toSortedCsv($this->content['basket']['requests']);
+        if (isset($this->content['basket']['requests'])) {
+            return Helper\Sorter::toSortedCsv($this->content['basket']['requests']);
+        }
+        return null;
     }
 
     public function getProviders()
     {
-        return Helper\Sorter::toSortedCsv($this->content['basket']['providers']);
+        if (isset($this->content['basket']['providers'])) {
+            return Helper\Sorter::toSortedCsv($this->content['basket']['providers']);
+        }
+        return null;
+    }
+
+    public function getProcess()
+    {
+        if (isset($this->content['basket']['process'])) {
+            return $this->content['basket']['process'];
+        }
+        return null;
+    }
+
+    public function getAuthKey()
+    {
+        if (isset($this->content['basket']['authKey'])) {
+            return $this->content['basket']['authKey'];
+        }
+        return null;
     }
 
     public function hasEntryValues()
@@ -112,7 +144,9 @@ class Session extends Schema\Entity
     {
         if (isset($this->content['status']) &&
             'reserved' == $this->content['status'] &&
-            !$this->hasNoProcess() && !$this->hasChangedReservation()
+            'continue' != $this->content['task'] &&
+            !$this->hasNoProcess() &&
+            !$this->hasChangedReservation()
             ) {
             return true;
         }
@@ -192,6 +226,14 @@ class Session extends Schema\Entity
         return (
             isset($this->content['task']) &&
             'inprogress' == $this->content['task']
+        ) ? true : false;
+    }
+
+    public function hasConfirmationNotification()
+    {
+        return (
+            isset($this->content['basket']['confirmationNotification']) &&
+            $this->content['basket']['confirmationNotification']
         ) ? true : false;
     }
 
