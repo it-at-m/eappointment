@@ -43,9 +43,19 @@ class SessionHandler implements \SessionHandlerInterface
         $entity->id = $sessionId;
         $entity->name = $this->sessionName;
         $entity->content = $sessionData;
-        $session = \App::$http->readPostResult('/session/', $entity)
-            ->getEntity();
-        return ($session) ? true : false;
+
+        try {
+            $session = \App::$http->readPostResult('/session/', $entity)
+                ->getEntity();
+        } catch (Exception $exception) {
+            if ($exception->getCode() == 404) {
+                $session = null;
+            } else {
+                throw $exception;
+            }
+        }
+
+        return (null !== $session) ? true : false;
     }
 
     public function destroy($sessionId)
