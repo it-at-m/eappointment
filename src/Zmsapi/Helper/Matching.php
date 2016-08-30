@@ -11,31 +11,25 @@ use \BO\Zmsdb\Request;
  */
 class Matching
 {
-    public static function hasProviderRequest($source, $requests, $providers)
+    public static function hasProviderRequest($session)
     {
-        $requestList = new \BO\Zmsentities\Collection\RequestList($requests);
-        $requestIdCsv = $requestList->getIdsCsv();
-
-        $providerList = new \BO\Zmsentities\Collection\ProviderList($providers);
-        $providerIdCsv = $providerList->getIdsCsv();
-
-        $providerList = (new Provider())->readListByRequest($source, $requestIdCsv);
+        $requestIdCsv = $session->getRequests();
+        $providerIdCsv = $session->getProviders();
+        $providerList = (new Provider())->readListByRequest('dldb', $requestIdCsv);
         return $providerList->hasProvider($providerIdCsv);
     }
 
-    public static function isProviderExisting($source, $providers)
+    public static function isProviderExisting($session)
     {
-        $providerList = new \BO\Zmsentities\Collection\ProviderList($providers);
-        $providerIdCsv = $providerList->getIdsCsv();
-        $providerList = (new Provider())->readList($source);
+        $providerIdCsv = $session->getProviders();
+        $providerList = (new Provider())->readList('dldb');
         return $providerList->hasProvider($providerIdCsv);
     }
 
-    public static function isRequestExisting($source, $requests)
+    public static function isRequestExisting($session)
     {
-        $requestList = new \BO\Zmsentities\Collection\RequestList($requests);
-        $requestIdCsv = $requestList->getIdsCsv();
-        $providerList = (new Provider())->readListByRequest($source, $requestIdCsv, 1);
+        $requestIdCsv = $session->getRequests();
+        $providerList = (new Provider())->readListByRequest('dldb', $requestIdCsv, 1);
         return (count($providerList)) ? true : false;
     }
 }
