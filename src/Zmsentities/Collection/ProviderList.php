@@ -8,7 +8,6 @@ class ProviderList extends Base
         $providerIdCsv = explode(',', $providerIdCsv);
         foreach ($providerIdCsv as $providerId) {
             if (!in_array($providerId, $this->getIds())) {
-                error_log($providerId);
                 return false;
             }
         }
