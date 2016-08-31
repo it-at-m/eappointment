@@ -11,5 +11,5 @@ class InvalidFirstDay extends \BO\Zmsclient\Exception
      * @var String $template for rendering exception
      *
      */
-    public $template = 'bo/zmsapi/invalidfirstday';
+    public $template = 'bo/zmsapi/exception/invalidfirstday';
 }
