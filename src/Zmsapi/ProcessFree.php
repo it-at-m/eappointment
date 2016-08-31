@@ -24,8 +24,18 @@ class ProcessFree extends BaseController
         $message = Response\Message::create(Render::$request);
         $input = Validator::input()->isJson()->getValue();
         $query = new Query();
-        $calendar = new \BO\Zmsentities\Calendar($input);
-        $message->data = $query->readFreeProcesses($calendar, \App::getNow());
+        $entity = new \BO\Zmsentities\Calendar($input);
+        $processList = $query->readFreeProcesses($entity, \App::getNow());
+
+        $message->data = null;
+        if (!$processList->getFirstProcess()) {
+            $message->meta->error = true;
+            $message->meta->message = "Um einen Termin zu vereinbaren, muss vorher ein Tag ausgewählt werden.";
+            $message->meta->exception = "BO/Zmsapi/Exception/FreeProcessListEmpty";
+        } else {
+            $message->data = $processList;
+        }
+
         Render::lastModified(time(), '0');
         Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }

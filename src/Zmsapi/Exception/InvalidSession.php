@@ -11,5 +11,5 @@ class UnvalidSession extends \BO\Zmsclient\Exception
      * @var String $template for rendering exception
      *
      */
-    public $template = 'bo/zmsapi/invalidsession';
+    public $template = 'bo/zmsapi/exception/invalidsession';
 }
