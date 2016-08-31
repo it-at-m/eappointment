@@ -25,7 +25,7 @@ class Session extends Schema\Entity
                     'providers' => '',
                     'scope' => '',
                     'process' => '',
-                    'date' => '',
+                    'date' => null,
                     'familyName' => '',
                     'email' => '',
                     'telehone' => '',
@@ -66,6 +66,21 @@ class Session extends Schema\Entity
         return $this;
     }
 
+    public function getContent()
+    {
+        return $this->content;
+    }
+
+    public function getBasket()
+    {
+        return $this->content['basket'];
+    }
+
+    public function getHuman()
+    {
+        return $this->content['human'];
+    }
+
     public function getRequests()
     {
         if (isset($this->content['basket']['requests'])) {
@@ -96,6 +111,53 @@ class Session extends Schema\Entity
             return $this->content['basket']['authKey'];
         }
         return null;
+    }
+
+    public function getLastStep()
+    {
+        if (isset($this->content['human']['Step'])) {
+            $stepKeys = array_keys($this->content['human']['Step']);
+            return end($stepKeys);
+        }
+        return 'dayselect';
+    }
+
+    public function removeLastStep()
+    {
+        if (isset($this->content['human']['Step'][$this->getLastStep()])) {
+            unset($this->content['human']['Step'][$this->getLastStep()]);
+        }
+        return $this;
+    }
+
+    /**
+     *
+     * Get selected date
+     *
+     * @return integer
+     */
+    public function getSelectedDate()
+    {
+        if (isset($this->content['basket']['date']) &&
+            '' != $this->content['basket']['date']
+            ) {
+                return $this->content['basket']['date'];
+        }
+            return null;
+    }
+
+    /**
+     *
+     * Get entry data
+     *
+     * @return array
+     */
+    public function getEntryData()
+    {
+        if (isset($this->content['entry']) && count($this->content['entry'])) {
+                return $this->content['entry'];
+        }
+            return null;
     }
 
     public function hasEntryValues()
@@ -260,18 +322,6 @@ class Session extends Schema\Entity
     {
         return (!isset($this->content['basket']['providers']) ||
             '' == $this->content['basket']['providers']) ? true : false;
-    }
-
-    /**
-     *
-     * Check if a date is selected
-     *
-     * @return boolean
-     */
-    public function hasNoSelectedDate()
-    {
-        return (!isset($this->content['basket']['date']) ||
-            '' == $this->content['basket']['date']) ? true :false;
     }
 
     /**

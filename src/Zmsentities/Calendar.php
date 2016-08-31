@@ -210,7 +210,6 @@ class Calendar extends Schema\Entity
         return false;
     }
 
-
     public function addFreeProcess(Process $process)
     {
         $exists = false;
