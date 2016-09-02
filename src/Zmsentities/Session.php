@@ -39,13 +39,14 @@ class Session extends Schema\Entity
                     'Origin' => '',
                     'RemoteAddress' => '',
                     'referrer' => '',
-                    'Step' => array()
+                    'step' => array()
                 ],
                 'entry' => array(),
                 'status' => 'free',
                 'task' => '',
                 'finished' => false,
-                'X-Authkey' => ''
+                'X-Authkey' => '',
+                'error' => ''
             )
         ];
     }
@@ -115,17 +116,33 @@ class Session extends Schema\Entity
 
     public function getLastStep()
     {
-        if (isset($this->content['human']['Step'])) {
-            $stepKeys = array_keys($this->content['human']['Step']);
+        if (isset($this->content['human']['step'])) {
+            $stepKeys = array_keys($this->content['human']['step']);
             return end($stepKeys);
         }
         return 'dayselect';
     }
 
+    public function getStatus()
+    {
+        if (isset($this->content['status'])) {
+            return $this->content['status'];
+        }
+        return null;
+    }
+
+    public function getTask()
+    {
+        if (isset($this->content['task'])) {
+            return $this->content['task'];
+        }
+        return null;
+    }
+
     public function removeLastStep()
     {
-        if (isset($this->content['human']['Step'][$this->getLastStep()])) {
-            unset($this->content['human']['Step'][$this->getLastStep()]);
+        if (isset($this->content['human']['step'][$this->getLastStep()])) {
+            unset($this->content['human']['step'][$this->getLastStep()]);
         }
         return $this;
     }
@@ -216,6 +233,16 @@ class Session extends Schema\Entity
         return false;
     }
 
+    public function isProcessDeleted()
+    {
+        if (isset($this->content['basket']['process']) &&
+            '' != $this->content['basket']['process']
+            ) {
+                return false;
+        }
+            return true;
+    }
+
     public function hasNoStatus()
     {
         if ((!isset($this->content['status']) ||
@@ -252,20 +279,10 @@ class Session extends Schema\Entity
         return false;
     }
 
-    public function isProcessDeleted()
-    {
-        if (isset($this->content['basket']['process']) &&
-            '' != $this->content['basket']['process']
-        ) {
-            return false;
-        }
-        return true;
-    }
-
     public function hasChangedReservation()
     {
         if (isset($this->content['task']) &&
-            'reservation_changed' == $this->content['task']
+            'reservationChanged' == $this->content['task']
         ) {
             return true;
         }
@@ -277,7 +294,7 @@ class Session extends Schema\Entity
         if (isset(
             $this->content['task']
         ) &&
-            'process_changed' == $this->content['task']
+            'processChanged' == $this->content['task']
         ) {
             return true;
         }
@@ -288,7 +305,7 @@ class Session extends Schema\Entity
     {
         return (
             isset($this->content['task']) &&
-            'inprogress' == $this->content['task']
+            'inProgress' == $this->content['task']
         ) ? true : false;
     }
 
