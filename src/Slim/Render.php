@@ -128,9 +128,9 @@ class Render
      * @param Array $parameter parameters to append with "?"
      * @param Int $statuscode see an HTTP reference
      *
-     * @return NULL
+     * \Psr\Http\Message\ResponseInterface
      */
-    public static function redirect($route_name, $arguments, $parameter, $statuscode = 302)
+    public static function redirect($route_name, $arguments, $parameter = null, $statuscode = 302)
     {
         $response = new Response($statuscode);
         $url = \App::$slim->urlFor($route_name, $arguments);
