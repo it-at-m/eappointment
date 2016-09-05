@@ -12,6 +12,11 @@ final class SessionData implements SessionInterface
     private $data;
 
     /**
+     * @var boolean
+     */
+    private $isLocked = false;
+
+    /**
      * Instantiation via __construct is not allowed, use
      * - {@see DefaultSessionData::fromName}
      * - {@see DefaultSessionData::getNewSession}
@@ -45,6 +50,12 @@ final class SessionData implements SessionInterface
         return $instance;
     }
 
+    public function writeData()
+    {
+        session_write_close();
+        $this->isLocked = true;
+    }
+
     public function setGroup(array $group)
     {
         foreach ($group as $index => $items) {
@@ -66,6 +77,9 @@ final class SessionData implements SessionInterface
             $this->data[$key] = self::convertValueToScalar($value);
         } else {
             $this->data[$groupIndex][$key] = self::convertValueToScalar($value);
+        }
+        if ($this->isLocked) {
+            throw new \BO\Slim\Exception\SessionLocked();
         }
         $_SESSION = $this->data;
     }
