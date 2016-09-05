@@ -23,7 +23,17 @@ class ProcessGet extends BaseController
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         $process = (new Query())->readEntity($itemId, $authKey, $resolveReferences);
         $message = Response\Message::create(Render::$request);
-        $message->data = $process;
+
+        if (!$process->id) {
+            $message->meta->statuscode = 500;
+            $message->meta->error = true;
+            $message->data = null;
+            $message->meta->message = "Es konnte zu den Angaben kein passender Termin gefunden werden.";
+            $message->meta->exception = "BO/Zmsapi/Exception/NoProcessFound";
+        } else {
+            $message->data = $process;
+        }
+
         Render::lastModified(time(), '0');
         Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }
