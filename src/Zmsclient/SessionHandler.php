@@ -50,9 +50,8 @@ class SessionHandler implements \SessionHandlerInterface
         } catch (Exception $exception) {
             if ($exception->getCode() == 404) {
                 $session = null;
-            } else {
-                throw $exception;
             }
+            throw $exception;
         }
 
         return (null !== $session) ? true : false;
