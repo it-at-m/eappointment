@@ -81,6 +81,15 @@ class Process extends Schema\Entity
         return (array_key_exists('reminderTimestamp', $this)) ? $this->reminderTimestamp : 0;
     }
 
+    public function addRegistrationData($formdata)
+    {
+        $this->clients = array();
+        $this->addClient($formdata);
+        $this->addReminderTimestamp($formdata);
+        $this->addAmendment($formdata);
+        return $this;
+    }
+
     public function addClient($formData)
     {
         $client = new Client();
