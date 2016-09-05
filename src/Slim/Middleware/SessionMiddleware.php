@@ -41,9 +41,7 @@ class SessionMiddleware
         try {
             return Session\SessionData::getSessionfromName($sessionName);
         } catch (\Exception $exception) {
-            $exception = new \BO\Zmsclient\Exception('Es konnte leider keine Session ermittelt werden');
-            $exception->template = 'bo/slim/middleware/sessionmiddleware/sessionfailed';
-            throw $exception;
+            throw  new \BO\Slim\Exception('Es konnte leider keine Session ermittelt werden');
         }
     }
 }

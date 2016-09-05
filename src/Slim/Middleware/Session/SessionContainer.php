@@ -24,6 +24,11 @@ class SessionContainer implements SessionInterface
         }
     }
 
+    public function writeData()
+    {
+        $this->getSession()->writeData();
+    }
+
     public function set($key, $value, $index = null)
     {
         $this->getSession()->set($key, $value, $index);

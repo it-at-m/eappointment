@@ -40,6 +40,7 @@ class SessionHuman extends SessionContainer
                         "[Human " . session_id() . "] Missing step $stepName on " . self::getFromServer('SCRIPT_NAME')
                     );
                     $this->writeRedirectCaptcha($stepName);
+                    return true;
                 }
             }
             $clientIpAddress = self::getFromServer('REMOTE_ADDR');
