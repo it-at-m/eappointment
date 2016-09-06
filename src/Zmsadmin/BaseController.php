@@ -6,31 +6,18 @@
 
 namespace BO\Zmsadmin;
 
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
-use BO\Zmsadmin\Helper\ErrorHandler;
-use BO\Zmsclient\SessionHandler;
-use BO\Zmsclient\Auth;
+use \Psr\Http\Message\RequestInterface;
+use \Psr\Http\Message\ResponseInterface;
 
 /**
- * @SuppressWarnings(Children)
+ * @SuppressWarnings(NumberOfChildren)
  *
  */
 abstract class BaseController extends \BO\Slim\Controller
 {
-    public static $errorHandler;
 
-    /**
-     *
-     * @SuppressWarnings(Superglobals)
-     *
-     * @return self
-     */
     public function __construct(\Interop\Container\ContainerInterface $containerInterface)
     {
-        self::$errorHandler = new ErrorHandler();
-        self::$errorHandler->callingClass = (new \ReflectionClass(get_called_class()))->getShortName();
-
         parent::__construct($containerInterface);
     }
 

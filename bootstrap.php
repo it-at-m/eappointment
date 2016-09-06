@@ -22,5 +22,8 @@ require(APP_PATH . '/config.php');
 \BO\Slim\Bootstrap::addTwigExtension(new \BO\Zmsclient\TwigExtension(\App::$slim->getContainer()));
 \BO\Zmsclient\Http::$logEnabled = \App::DEBUG;
 
+// add slim middleware
+\App::$slim->add(new \BO\Slim\Middleware\TrailingSlash());
+
 // load routing
 \BO\Slim\Bootstrap::loadRouting(\App::APP_PATH . '/routing.php');
