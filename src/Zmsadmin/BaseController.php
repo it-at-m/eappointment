@@ -31,13 +31,6 @@ abstract class BaseController extends \BO\Slim\Controller
         self::$errorHandler = new ErrorHandler();
         self::$errorHandler->callingClass = (new \ReflectionClass(get_called_class()))->getShortName();
 
-        if (headers_sent() === false && session_status() !== PHP_SESSION_ACTIVE) {
-            $handler = new SessionHandler();
-            session_set_save_handler($handler, true);
-            session_name(\App::IDENTIFIER);
-            session_start();
-        }
-
         parent::__construct($containerInterface);
     }
 
