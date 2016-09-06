@@ -65,4 +65,18 @@ class Base extends \ArrayObject
         $this->offsetSet(null, $entity);
         return $this;
     }
+
+    public function getIds()
+    {
+        $list = [];
+        foreach ($this as $entity) {
+            $list[] = $entity->id;
+        }
+        return $list;
+    }
+
+    public function getIdsCsv()
+    {
+        return implode(',', $this->getIds());
+    }
 }
