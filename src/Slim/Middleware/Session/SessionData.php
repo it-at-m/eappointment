@@ -17,9 +17,8 @@ final class SessionData implements SessionInterface
     private $isLocked = false;
 
     /**
-     * Instantiation via __construct is not allowed, use
-     * - {@see DefaultSessionData::fromName}
-     * - {@see DefaultSessionData::getNewSession}
+     * __construct is not allowed, use
+     * - {@see SessionData::getSessionFromName}
      * instead
      */
     private function __construct()
