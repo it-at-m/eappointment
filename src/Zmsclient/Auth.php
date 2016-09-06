@@ -13,9 +13,8 @@ class Auth
      */
     public static function setKey($authKey)
     {
-        $_SESSION = array(
-            'X-Authkey' => $authKey
-        );
+        $_COOKIE[self::getCookieName()] = $authKey; // for access in the same process
+        setcookie(self::getCookieName(), $authKey, 0, '/', null, true, true);
     }
 
     /**
@@ -25,6 +24,14 @@ class Auth
      */
     public static function getKey()
     {
-        return (isset($_SESSION['X-Authkey'])) ? $_SESSION['X-Authkey'] : null;
+        if (array_key_exists(self::getCookieName(), $_COOKIE)) {
+            return $_COOKIE[self::getCookieName()];
+        }
+        return false;
+    }
+
+    protected static function getCookieName()
+    {
+        return 'Zmsclient';
     }
 }
