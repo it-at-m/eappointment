@@ -21,16 +21,15 @@ class ProcessGet extends BaseController
     public static function render($itemId, $authKey)
     {
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
-        $process = (new Query())->readEntity($itemId, $authKey, $resolveReferences);
         $message = Response\Message::create(Render::$request);
+        $authKeyByProcessId = (new Query())->readAuthKeyByProcessId($itemId);
 
-        if (!$process->id) {
-            $message->meta->statuscode = 500;
-            $message->meta->error = true;
-            $message->data = null;
-            $message->meta->message = "Es konnte zu den Angaben kein passender Termin gefunden werden.";
-            $message->meta->exception = "BO/Zmsapi/Exception/NoProcessFound";
+        if (null === $authKeyByProcessId) {
+            throw new Exception\Process\ProcessNotFound();
+        } elseif ($authKeyByProcessId != $authKey) {
+            throw new Exception\Process\AuthKeyMatchFailed();
         } else {
+            $process = (new Query())->readEntity($itemId, $authKey, $resolveReferences);
             $message->data = $process;
         }
 
