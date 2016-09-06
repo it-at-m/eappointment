@@ -29,9 +29,7 @@ class ProcessFree extends BaseController
 
         $message->data = null;
         if (!$processList->getFirstProcess()) {
-            $message->meta->error = true;
-            $message->meta->message = "Um einen Termin zu vereinbaren, muss vorher ein Tag ausgewählt werden.";
-            $message->meta->exception = "BO/Zmsapi/Exception/FreeProcessListEmpty";
+            throw new Exception\Process\FreeProcessListEmpty();
         } else {
             $message->data = $processList;
         }

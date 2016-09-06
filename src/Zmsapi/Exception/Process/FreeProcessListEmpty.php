@@ -7,5 +7,5 @@ namespace BO\Zmsapi\Exception\Process;
  */
 class FreeProcessListEmpty extends \Exception
 {
-
+    protected $code = 404;
 }
