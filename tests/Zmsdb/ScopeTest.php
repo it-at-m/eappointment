@@ -21,6 +21,9 @@ class ScopeTest extends Base
 
         $entityList = (new Query())->readByClusterId(109, 1);
         $this->assertEntityList("\\BO\\Zmsentities\\Scope", $entityList);
+
+        $this->assertEquals(true, $entityList->hasEntity('141')); //Herrstraße exists
+        $this->assertEquals(false, $entityList->hasEntity('153')); //Bürgeramt Rathaus Spandau does not exist
     }
 
     public function testProvider()
@@ -30,6 +33,9 @@ class ScopeTest extends Base
 
         $entityList = (new Query())->readByProviderId(122217, 1);
         $this->assertEntityList("\\BO\\Zmsentities\\Scope", $entityList);
+
+        $this->assertEquals(true, $entityList->hasEntity('141')); //Herrstraße exists
+        $this->assertEquals(false, $entityList->hasEntity('153')); //Bürgeramt Rathaus Spandau does not exist
     }
 
     public function testDepartment()
@@ -39,6 +45,9 @@ class ScopeTest extends Base
 
         $entityList = (new Query())->readByDepartmentId(78, 1);
         $this->assertEntityList("\\BO\\Zmsentities\\Scope", $entityList);
+
+        $this->assertEquals(false, $entityList->hasEntity('141')); //Herrstraße not exists
+        $this->assertEquals(true, $entityList->hasEntity('153')); //Bürgeramt Rathaus Spandau exists
     }
 
     public function testReadList()
