@@ -19,19 +19,21 @@ class ConfigGet extends BaseController
     {
         $message = Response\Message::create(Render::$request);
         $token = Render::$request->getHeader('X-Token');
-        $config = null;
         if (\App::SECURE_TOKEN == current($token)) {
             $config = (new Query())->readEntity();
             if (!$config) {
-                $message->meta->statuscode = 404;
+                $message->meta->error = true;
+                $message->statuscode = 404;
+            } else {
+                $message->data = $config;
+                $message->data->id = 1;
             }
         } else {
-            $message->meta->statuscode = 401;
+            $message->statuscode = 401;
             $message->meta->error = true;
             $message->meta->message = "Ihnen wurde der Zugriff auf diese Daten verwehrt.";
         }
-        $message->data = $config;
-        $message->data->id = 1;
+
         Render::lastModified(time(), '0');
         Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }
