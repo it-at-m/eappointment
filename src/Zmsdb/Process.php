@@ -62,7 +62,7 @@ class Process extends Base
         $query = new Query\Process(Query\Base::SELECT);
         $query->addEntityMapping()->addConditionProcessId($processId);
         $process = $this->fetchOne($query, new Entity());
-        return $process['authKey'];
+        return ('' != $process['authKey']) ? $process['authKey'] : null;
     }
 
     /**
