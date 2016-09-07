@@ -41,7 +41,7 @@ class SessionMiddleware
         try {
             return Session\SessionData::getSessionfromName($sessionName);
         } catch (\Exception $exception) {
-            throw  new \BO\Slim\Exception('Es konnte leider keine Session ermittelt werden');
+            throw  new \BO\Slim\Exception\SessionFailed();
         }
     }
 }

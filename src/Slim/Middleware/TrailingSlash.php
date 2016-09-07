@@ -13,6 +13,9 @@ class TrailingSlash
     public function __invoke(Request $request, Response $response, callable $next)
     {
         $uri = $request->getUri();
+        if ($request->getHeader('X-Ssl')) {
+            $uri = $uri->withScheme('https')->withPort(443);
+        }
         $path = $uri->getPath();
         if (substr($path, -1) !== '/' && !pathinfo($path, PATHINFO_EXTENSION)) {
             // permanently redirect paths without a trailing slash

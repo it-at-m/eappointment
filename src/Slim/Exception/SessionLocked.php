@@ -1,11 +1,11 @@
 <?php
 
-namespace BO\Zmsapi\Exception;
+namespace BO\Slim\Exception;
 
 /**
  * example class to generate an exception
  */
 class SessionLocked extends \Exception
 {
-    public $template = 'bo/slim/exception/sessionlocked.twig';
+    protected $code = 404;
 }
