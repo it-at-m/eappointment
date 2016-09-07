@@ -224,7 +224,9 @@ class Session extends Schema\Entity
     {
         if (isset($this->content['status']) &&
             'reserved' == $this->content['status'] &&
-            'continue' != $this->content['task'] &&
+            (isset($this->content['task']) &&
+                'continue' != $this->content['task']
+            ) &&
             !$this->hasNoProcess() &&
             !$this->hasChangedReservation()
             ) {
