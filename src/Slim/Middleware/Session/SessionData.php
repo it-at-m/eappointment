@@ -2,9 +2,7 @@
 
 namespace BO\Slim\Middleware\Session;
 
-use \BO\Zmsclient\SessionHandler;
-
-final class SessionData implements SessionInterface
+class SessionData implements SessionInterface
 {
     /**
      * @var array
@@ -35,8 +33,6 @@ final class SessionData implements SessionInterface
     {
         $session = array();
         if (headers_sent() === false && session_status() !== PHP_SESSION_ACTIVE) {
-            $handler = new SessionHandler();
-            session_set_save_handler($handler, true);
             session_name($name);
             session_start();
             if (!count($_SESSION)) {
