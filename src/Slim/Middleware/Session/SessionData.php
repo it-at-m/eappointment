@@ -19,7 +19,7 @@ class SessionData implements SessionInterface
      * - {@see SessionData::getSessionFromName}
      * instead
      */
-    public function __construct($data)
+    public function __construct($data = null)
     {
         $this->data = $data;
     }
