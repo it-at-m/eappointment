@@ -39,7 +39,7 @@ class SessionMiddleware
     public function getSessionContainer($sessionName = 'default')
     {
         try {
-            return Session\SessionData::getSessionfromName($sessionName);
+            return Session\SessionData::getSessionFromName($sessionName);
         } catch (\Exception $exception) {
             throw  new \BO\Slim\Exception\SessionFailed();
         }
