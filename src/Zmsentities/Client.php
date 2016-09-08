@@ -37,4 +37,9 @@ class Client extends Schema\Entity
     {
         return $this->notificationsSendCount;
     }
+
+    public function hasSurveyAccepted()
+    {
+        return (1 == $this->surveyAccepted) ? true : false;
+    }
 }
