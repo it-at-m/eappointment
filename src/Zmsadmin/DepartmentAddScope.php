@@ -58,7 +58,7 @@ class DepartmentAddScope extends BaseController
             }
         }
 
-        return Helper\Render::checkedHtml(self::$errorHandler, $response, 'page/scope.twig', array(
+        return \BO\Slim\Render::withHtml($response, 'page/scope.twig', array(
             'title' => 'Standort',
             'action' => 'add',
             'menuActive' => 'owner',

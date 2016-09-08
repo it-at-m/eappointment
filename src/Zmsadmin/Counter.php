@@ -20,7 +20,6 @@ class Counter extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-
         $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
         $provider = \App::$http->readGetResult(
             '/provider/dldb/'. $workstation->getProviderOfGivenScope() .'/'
@@ -28,8 +27,8 @@ class Counter extends BaseController
         $requestList = \App::$http->readGetResult('/request/dldb/provider/'. $provider->id .'/')->getCollection();
 
         if (!$workstation->hasId()) {
-            return Helper\Render::checkedRedirect(
-                self::$errorHandler,
+            return \BO\Slim\Render::redirect(
+
                 'index',
                 array(
                     'error' => 'login_failed'
@@ -37,8 +36,7 @@ class Counter extends BaseController
             );
         }
 
-        return Helper\Render::checkedHtml(
-            self::$errorHandler,
+        return \BO\Slim\Render::withHtml(
             $response,
             'page/counter.twig',
             array(

@@ -38,8 +38,8 @@ class ScopeAvailabilityMonth extends BaseController
         $scope = \App::$http->readGetResult('/scope/'. $scopeId .'/')->getEntity();
         $availabilityList = \App::$http->readGetResult('/scope/'. $scopeId .'/availability/')->getCollection();
 
-        return Helper\Render::checkedHtml(
-            self::$errorHandler,
+        return \BO\Slim\Render::withHtml(
+            
             $response,
             'page/availabilityMonth.twig',
             array(

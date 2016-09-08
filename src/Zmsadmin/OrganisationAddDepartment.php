@@ -45,7 +45,7 @@ class OrganisationAddDepartment extends BaseController
             }
         }
 
-        return Helper\Render::checkedHtml(self::$errorHandler, $response, 'page/department.twig', array(
+        return \BO\Slim\Render::withHtml($response, 'page/department.twig', array(
             'title' => 'Standort',
             'action' => 'add',
             'menuActive' => 'owner'

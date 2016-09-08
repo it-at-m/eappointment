@@ -44,7 +44,7 @@ class OwnerAdd extends BaseController
             }
         }
 
-        return Helper\Render::checkedHtml(self::$errorHandler, $response, 'page/owner.twig', array(
+        return \BO\Slim\Render::withHtml($response, 'page/owner.twig', array(
             'title' => 'Kunde',
             'action' => 'add',
             'menuActive' => 'owner'
