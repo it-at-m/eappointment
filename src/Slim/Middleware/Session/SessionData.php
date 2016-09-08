@@ -19,8 +19,9 @@ class SessionData implements SessionInterface
      * - {@see SessionData::getSessionFromName}
      * instead
      */
-    private function __construct()
+    public function __construct($data)
     {
+        $this->data = $data;
     }
 
     /**
@@ -39,6 +40,8 @@ class SessionData implements SessionInterface
                 $_SESSION['status'] = 'start';
             };
             $session = $_SESSION;
+        } else {
+            throw  new \BO\Slim\Exception\SessionFailed("Headers sent or a session is already active");
         }
         $instance = new self();
         $instance->data = $session;
