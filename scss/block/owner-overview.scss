@@ -57,14 +57,18 @@
         font-size:              1em;
     }
     > li {
-        padding:                $boardElementPadding;
         border-bottom:          1px solid $greyBorder;
     }
     .owner-overview_scope-list {   
         > li {
-            border-bottom:         0 none;
-            padding-left:           0;
-            padding-right:          0;
+            border-bottom: 1px solid #f1f1f1;
+            border-top: 0 none;
+            margin: $boardElementPadding;
+            padding: 0;
+        }
+        
+        > li:last-child {
+        	border-bottom:0 none;
         }
     }
 }
