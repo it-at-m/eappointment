@@ -54,14 +54,14 @@ class Scope extends BaseController
                 $entity->id = $entityId;
                 $entity = \App::$http->readPostResult('/scope/' . $entity->id . '/', $entity)
                     ->getEntity();
-                self::$errorHandler->success = 'scope_saved';
+                //self::$errorHandler->success = 'scope_saved';
             } catch (\Exception $exception) {
                 return Helper\Render::error($exception);
             }
         }
 
-        return Helper\Render::checkedHtml(
-            self::$errorHandler,
+        return \BO\Slim\Render::withHtml(
+
             $response,
             'page/scope.twig',
             array(

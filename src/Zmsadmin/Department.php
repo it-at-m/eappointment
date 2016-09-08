@@ -41,14 +41,14 @@ class Department extends BaseController
                     '/department/'. $entity->id .'/',
                     $entity
                 )->getEntity();
-                self::$errorHandler->success = 'department_saved';
+                //self::$errorHandler->success = 'department_saved';
             } catch (\Exception $exception) {
                 return Helper\Render::error($exception);
             }
         }
 
-        return Helper\Render::checkedHtml(
-            self::$errorHandler,
+        return \BO\Slim\Render::withHtml(
+
             $response,
             'page/department.twig',
             array(

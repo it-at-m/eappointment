@@ -30,8 +30,7 @@ class Index extends BaseController
 
         if ($loginData && !$form->hasFailed()) {
             $loginRedirect = LoginForm::setLoginRedirect($form);
-            return Helper\Render::checkedRedirect(
-                self::$errorHandler,
+            return \BO\Slim\Render::redirect(
                 $loginRedirect,
                 array(),
                 array()
@@ -41,9 +40,7 @@ class Index extends BaseController
         $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences'=>1))->getCollection();
         $organisationList = $ownerList->getOrganisationsByOwnerId(23);
 
-        self::$errorHandler->error = ($loginData) ? 'login_failed' : '';
-        return Helper\Render::checkedHtml(
-            self::$errorHandler,
+        return \BO\Slim\Render::withHtml(
             $response,
             'page/index.twig',
             array(

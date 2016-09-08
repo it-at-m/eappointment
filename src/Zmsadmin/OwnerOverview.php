@@ -6,12 +6,6 @@
 
 namespace BO\Zmsadmin;
 
-use BO\Mellon\Validator;
-
-/**
-  * Handle requests concerning services
-  *
-  */
 class OwnerOverview extends BaseController
 {
     /**
@@ -34,8 +28,8 @@ class OwnerOverview extends BaseController
             return \BO\Slim\Render::withHtml($response, 'page/404.twig', array());
         }
 
-        return Helper\Render::checkedHtml(
-            self::$errorHandler,
+        return \BO\Slim\Render::withHtml(
+
             $response,
             'page/ownerOverview.twig',
             array(

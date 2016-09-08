@@ -24,7 +24,6 @@ class Organisation extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-
         $entityId = Validator::value($args['id'])->isNumber()->getValue();
         $entity = \App::$http->readGetResult('/organisation/'. $entityId .'/')->getEntity();
 
@@ -41,14 +40,12 @@ class Organisation extends BaseController
                     '/organisation/'. $entity->id .'/',
                     $entity
                 )->getEntity();
-                self::$errorHandler->success = 'organisation_saved';
             } catch (\Exception $exception) {
                 return Helper\Render::error($exception);
             }
         }
 
-        return Helper\Render::checkedHtml(
-            self::$errorHandler,
+        return \BO\Slim\Render::withHtml(
             $response,
             'page/organisation.twig',
             array(

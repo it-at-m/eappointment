@@ -24,7 +24,6 @@ class Owner extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-
         $entityId = Validator::value($args['id'])->isNumber()->getValue();
         $entity = \App::$http->readGetResult('/owner/'. $entityId .'/')->getEntity();
 
@@ -41,14 +40,13 @@ class Owner extends BaseController
                     '/owner/'. $entity->id .'/',
                     $entity
                 )->getEntity();
-                self::$errorHandler->success = 'owner_saved';
+                //self::$errorHandler->success = 'owner_saved';
             } catch (\Exception $exception) {
                 return Helper\Render::error($exception);
             }
         }
 
-        return Helper\Render::checkedHtml(
-            self::$errorHandler,
+        return \BO\Slim\Render::withHtml(
             $response,
             'page/owner.twig',
             array(

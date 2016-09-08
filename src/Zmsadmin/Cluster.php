@@ -31,8 +31,8 @@ class Cluster extends BaseController
             '/scope/provider/' . $entity->scopes[0]['provider']['id'] . '/'
         )->getCollection();
 
-        return Helper\Render::checkedHtml(
-            self::$errorHandler,
+        return \BO\Slim\Render::withHtml(
+            
             $response,
             'page/cluster.twig',
             array(
