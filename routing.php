@@ -1,19 +1,27 @@
 <?php
 // @codingStandardsIgnoreFile
 /**
+ *
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
- **/
+ *
+ */
 use BO\Slim\Helper;
 use \Psr\Http\Message\RequestInterface;
 use \Psr\Http\Message\ResponseInterface;
 
-/* ---------------------------------------------------------------------------
+/*
+ * ---------------------------------------------------------------------------
  * html, basic routes
- * -------------------------------------------------------------------------*/
+ * -------------------------------------------------------------------------
+ */
 
-\App::$slim->map(['GET', 'POST'], '/', '\BO\Zmsadmin\Index')->setName("index");
+\App::$slim->map([
+    'GET','POST'
+], '/', '\BO\Zmsadmin\Index')
+    ->setName("index");
 
-\App::$slim->get('/logout/', '\BO\Zmsadmin\Logout')->setName("logout");
+\App::$slim->get('/logout/', '\BO\Zmsadmin\Logout')
+    ->setName("logout");
 
 \App::$slim->get('/workstation/{loginName}/', '\BO\Zmsadmin\WorkstationLogin')
     ->setName("workstationLogin");
@@ -30,25 +38,33 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/workstation/process/{id:\d+}/', '\BO\Zmsadmin\WorkstationClientActive')
     ->setName("workstationClientActive");
 
-\App::$slim->map(['GET', 'POST'], '/workstation/', '\BO\Zmsadmin\Workstation')
+\App::$slim->map([
+    'GET','POST'
+], '/workstation/', '\BO\Zmsadmin\Workstation')
     ->setName("workstation");
 
 \App::$slim->get('/counter/', '\BO\Zmsadmin\Counter')
     ->setName("counter");
 
-\App::$slim->map(['GET', 'POST'], '/scope/{id:\d+}/', '\BO\Zmsadmin\Scope')
+\App::$slim->map([
+    'GET','POST'
+], '/scope/{id:\d+}/', '\BO\Zmsadmin\Scope')
     ->setName("scope");
 
 \App::$slim->get('/scope/{id:\d+}/pickup/', '\BO\Zmsadmin\Pickup')
     ->setName("pickup");
 
-\App::$slim->map(['GET', 'POST'], '/department/{id:\d+}/scope/', '\BO\Zmsadmin\DepartmentAddScope')
+\App::$slim->map([
+    'GET','POST'
+], '/department/{id:\d+}/scope/', '\BO\Zmsadmin\DepartmentAddScope')
     ->setName("departmentAddScope");
 
 \App::$slim->get('/scope/delete/{id:\d+}/', '\BO\Zmsadmin\ScopeDelete')
     ->setName("scopeDelete");
 
-\App::$slim->map(['GET', 'POST'], '/scope/{id:\d+}/pickup/handheld/', '\BO\Zmsadmin\PickupHandheld')
+\App::$slim->map([
+    'GET','POST'
+], '/scope/{id:\d+}/pickup/handheld/', '\BO\Zmsadmin\PickupHandheld')
     ->setName("pickup_handheld");
 
 \App::$slim->get('/scope/{id:\d+}/pickup/keyboard/', '\BO\Zmsadmin\PickupKeyboard')
@@ -60,35 +76,48 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/scope/{id:\d+}/availability/month/', '\BO\Zmsadmin\ScopeAvailabilityMonth')
     ->setName("scopeAvailabilityMonth");
 
-\App::$slim->map(['GET', 'POST'], '/cluster/{id:\d+}/', '\BO\Zmsadmin\Cluster')
+\App::$slim->map([
+    'GET','POST'
+], '/cluster/{id:\d+}/', '\BO\Zmsadmin\Cluster')
     ->setName("cluster");
 
-\App::$slim->map(['GET', 'POST'], '/department/{id:\d+}/', '\BO\Zmsadmin\Department')
+\App::$slim->map([
+    'GET','POST'
+], '/department/{id:\d+}/', '\BO\Zmsadmin\Department')
     ->setName("department");
 
-\App::$slim->map(['GET', 'POST'], '/organisation/{id:\d+}/department/', '\BO\Zmsadmin\OrganisationAddDepartment')
+\App::$slim->map([
+    'GET','POST'
+], '/organisation/{id:\d+}/department/', '\BO\Zmsadmin\OrganisationAddDepartment')
     ->setName("organisationAddDepartment");
 
-    \App::$slim->get('/department/delete/{id:\d+}/', '\BO\Zmsadmin\DepartmentDelete')
+\App::$slim->get('/department/delete/{id:\d+}/', '\BO\Zmsadmin\DepartmentDelete')
     ->setName("departmentDelete");
 
-\App::$slim->map(['GET', 'POST'], '/organisation/{id:\d+}/', '\BO\Zmsadmin\Organisation')
+\App::$slim->map([
+    'GET','POST'
+], '/organisation/{id:\d+}/', '\BO\Zmsadmin\Organisation')
     ->setName("organisation");
 
-\App::$slim->map(['GET', 'POST'], '/owner/{id:\d+}/organisation/', '\BO\Zmsadmin\OwnerAddOrganisation')
+\App::$slim->map([
+    'GET','POST'
+], '/owner/{id:\d+}/organisation/', '\BO\Zmsadmin\OwnerAddOrganisation')
     ->setName("ownerAddOrganisation");
 
 \App::$slim->get('/organisation/delete/{id:\d+}/', '\BO\Zmsadmin\OrganisationDelete')
     ->setName("organisationDelete");
 
-
 \App::$slim->get('/owner/', '\BO\Zmsadmin\OwnerOverview')
     ->setName("owner_overview");
 
-\App::$slim->map(['GET', 'POST'], '/owner/{id:\d+}/', '\BO\Zmsadmin\Owner')
+\App::$slim->map([
+    'GET','POST'
+], '/owner/{id:\d+}/', '\BO\Zmsadmin\Owner')
     ->setName("owner");
 
-\App::$slim->map(['GET', 'POST'], '/owner/add/', '\BO\Zmsadmin\OwnerAdd')
+\App::$slim->map([
+    'GET','POST'
+], '/owner/add/', '\BO\Zmsadmin\OwnerAdd')
     ->setName("owner_add");
 
 \App::$slim->get('/owner/delete/{id:\d+}/', '\BO\Zmsadmin\OwnerDelete')
@@ -153,33 +182,42 @@ use \Psr\Http\Message\ResponseInterface;
 
 \App::$slim->get('/changelog/', '\BO\Zmsadmin\Changelog')
     ->setName("changelog");
-    
-//\App::$slim->get('/dienstleistung{service_id:\d+}', '\BO\D115Mandant\Controller\ServiceDetail')
-//    ->setName("servicedetail");
 
-/* ---------------------------------------------------------------------------
+// \App::$slim->get('/dienstleistung{service_id:\d+}', '\BO\D115Mandant\Controller\ServiceDetail')
+// ->setName("servicedetail");
+
+/*
+ * ---------------------------------------------------------------------------
  * externals
- * -------------------------------------------------------------------------*/
+ * -------------------------------------------------------------------------
+ */
 
 // external link to stadplan
-\App::$slim->get('http://www.Berlin.de/stadtplan/', function () {})
+\App::$slim->get('http://www.Berlin.de/stadtplan/', function () {
+})
     ->setName("citymap");
 
-/* ---------------------------------------------------------------------------
+/*
+ * ---------------------------------------------------------------------------
  * maintenance
- * -------------------------------------------------------------------------*/
+ * -------------------------------------------------------------------------
+ */
 
 \App::$slim->get('/healthcheck/', '\BO\Zmsadmin\Healthcheck')
     ->setName("healthcheck");
 
-\App::$slim->getContainer()->offsetSet('notFoundHandler', function($container) {
-    return function (RequestInterface $request, ResponseInterface $response) {
-        return \BO\Slim\Render::withHtml($response, 'page/404.twig');
-    };
-});
+\App::$slim->getContainer()
+    ->offsetSet('notFoundHandler',
+    function ($container) {
+        return function (RequestInterface $request, ResponseInterface $response) {
+            return \BO\Slim\Render::withHtml($response, 'page/404.twig');
+        };
+    });
 
-\App::$slim->getContainer()->offsetSet('errorHandler', function($container) {
-    return function (RequestInterface $request, ResponseInterface $response, \Exception $exception) {
-        return \BO\Slim\TwigExceptionHandler::withHtml($request, $response, $exception);
-    };
-});
+\App::$slim->getContainer()
+    ->offsetSet('errorHandler',
+    function ($container) {
+        return function (RequestInterface $request, ResponseInterface $response, \Exception $exception) {
+            return \BO\Slim\TwigExceptionHandler::withHtml($request, $response, $exception);
+        };
+    });
