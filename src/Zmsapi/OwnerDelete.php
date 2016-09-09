@@ -1,20 +1,24 @@
 <?php
-/**
- * @package 115Mandant
- * @copyright BerlinOnline Stadtportal GmbH & Co. KG
- **/
 
+/**
+ *
+ * @package Zmsadmin
+ * @copyright BerlinOnline Stadtportal GmbH & Co. KG
+ *
+ */
 namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Zmsdb\Owner as Query;
 
 /**
-  * Handle requests concerning services
-  */
+ * Delete an owner by Id
+ */
 class OwnerDelete extends BaseController
 {
+
     /**
+     *
      * @return String
      */
     public static function render($itemId)
@@ -22,7 +26,8 @@ class OwnerDelete extends BaseController
         $query = new Query();
         $message = Response\Message::create(Render::$request);
         $entity = $query->readEntity($itemId, 1);
-        if ($entity->hasOrganisationList()) {
+        if ($entity->toProperty()
+            ->offsetExists('departments')) {
             throw new Exception\Owner\OrganisationListNotEmpty();
         } else {
             $query->deleteEntity($itemId);
