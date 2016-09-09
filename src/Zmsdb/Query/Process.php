@@ -132,6 +132,12 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
+    public function addConditionScopeId($scopeId)
+    {
+        $this->query->where('process.StandortID', '=', $scopeId);
+        return $this;
+    }
+
     public function addConditionAuthKey($authKey)
     {
         if (! empty($authKey)) {

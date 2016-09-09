@@ -8,6 +8,7 @@ use BO\Zmsdb\Helper\ProcessStatus as Status;
 /**
  *
  * @SuppressWarnings(CouplingBetweenObjects)
+ * @SuppressWarnings(TooManyPublicMethods)
  */
 class Process extends Base
 {
@@ -57,12 +58,44 @@ class Process extends Base
         return $process;
     }
 
+    /**
+     * Read authKey by processId
+     *
+     * @param
+     * processId
+     *
+     * @return String authKey
+     */
     public function readAuthKeyByProcessId($processId)
     {
         $query = new Query\Process(Query\Base::SELECT);
         $query->addEntityMapping()->addConditionProcessId($processId);
         $process = $this->fetchOne($query, new Entity());
         return ('' != $process['authKey']) ? $process['authKey'] : null;
+    }
+
+    /**
+     * Read processList by scopeId
+     *
+     * @param
+     * scopeId
+     *
+     * @return String authKey
+     */
+    public function readProcessListByScopeId($scopeId)
+    {
+        $processList = new Collection();
+        $query = new Query\Process(Query\Base::SELECT);
+        $query->addEntityMapping()->addConditionScopeId($scopeId);
+        $result = $this->fetchList($query, new Entity());
+        if (count($result)) {
+            foreach ($result as $entity) {
+                if ($entity instanceof Entity) {
+                    $processList->addEntity($entity);
+                }
+            }
+        }
+        return $processList;
     }
 
     /**
