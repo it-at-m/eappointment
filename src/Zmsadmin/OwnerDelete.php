@@ -1,6 +1,6 @@
 <?php
 /**
- * @package 115Mandant
+ * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -8,12 +8,11 @@ namespace BO\Zmsadmin;
 
 use BO\Mellon\Validator;
 use BO\Slim\Render;
-use BO\Zmsentities\Owner as Entity;
 
 /**
-  * Handle requests concerning services
-  *
-  */
+ * Delete an Owner
+ *
+ */
 class OwnerDelete extends BaseController
 {
     /**
@@ -25,20 +24,13 @@ class OwnerDelete extends BaseController
         array $args
     ) {
         $entityId = Validator::value($args['id'])->isNumber()->getValue();
-
-        try {
-            \App::$http->readDeleteResult(
-                '/owner/'. $entityId .'/'
-            )->getEntity();
-            return Helper\Render::redirect(
-                'owner_overview',
-                array(),
-                array(
-                    'success' => 'owner_deleted'
-                )
-            );
-        } catch (\Exception $exception) {
-            return Helper\Render::error($exception);
-        }
+        \App::$http->readDeleteResult('/owner/'. $entityId .'/')->getEntity();
+        return Helper\Render::redirect(
+            'owner_overview',
+            array(),
+            array(
+                'success' => 'owner_deleted'
+            )
+        );
     }
 }

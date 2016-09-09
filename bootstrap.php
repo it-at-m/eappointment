@@ -12,8 +12,8 @@ require(APP_PATH . '/config.php');
 
 // Set option for environment, routing, logging and templating
 \BO\Slim\Bootstrap::init();
-//\BO\Slim\Bootstrap::addTwigExtension(new \BO\Dldb\TwigExtension());
-//\BO\Slim\Bootstrap::addTwigTemplateDirectory('dldb', APP_PATH . '/vendor/bo/clientdldb/templates');
+\BO\Slim\Bootstrap::addTwigExtension(new \Twig_Extensions_Extension_Text());
+\BO\Slim\Bootstrap::addTwigExtension(new \Twig_Extensions_Extension_I18n());
 
 \App::$http = new \BO\Zmsclient\Http(\App::HTTP_BASE_URL);
 \BO\Zmsclient\Psr7\Client::$curlopt = \App::$http_curl_config;
