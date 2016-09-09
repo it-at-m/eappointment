@@ -10,6 +10,18 @@ class SessionHandler implements \SessionHandlerInterface
     public $sessionName;
 
     /**
+     * @var \BO\Zmsclient\Http $http
+     *
+     */
+    protected $http = null;
+
+
+    public function __construct(Http $http)
+    {
+        $this->http = $http;
+    }
+
+    /**
      * @SuppressWarnings(UnusedFormalParameter)
      */
     public function open($save_path, $name)
@@ -25,7 +37,7 @@ class SessionHandler implements \SessionHandlerInterface
     public function read($sessionId)
     {
         try {
-            $session = \App::$http->readGetResult('/session/' . $this->sessionName . '/' . $sessionId . '/')
+            $session = $this->http->readGetResult('/session/' . $this->sessionName . '/' . $sessionId . '/')
                 ->getEntity();
         } catch (Exception $exception) {
             if ($exception->getCode() == 404) {
@@ -45,7 +57,7 @@ class SessionHandler implements \SessionHandlerInterface
         $entity->content = $sessionData;
 
         try {
-            $session = \App::$http->readPostResult('/session/', $entity)
+            $session = $this->http->readPostResult('/session/', $entity)
                 ->getEntity();
         } catch (Exception $exception) {
             if ($exception->getCode() == 404) {
@@ -59,7 +71,7 @@ class SessionHandler implements \SessionHandlerInterface
 
     public function destroy($sessionId)
     {
-        $result = \App::$http->readDeleteResult('/session/' . $this->sessionName . '/' . $sessionId . '/');
+        $result = $this->http->readDeleteResult('/session/' . $this->sessionName . '/' . $sessionId . '/');
         return ($result) ? true : false;
     }
 
