@@ -18,4 +18,9 @@ class Owner extends Schema\Entity
         }
         return false;
     }
+
+    public function hasOrganisationList()
+    {
+        return (array_key_exists('organisations', $this)) ? true : false;
+    }
 }
