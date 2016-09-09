@@ -4,6 +4,7 @@ namespace BO\Zmsentities;
 
 class Owner extends Schema\Entity
 {
+
     const PRIMARY = 'id';
 
     public static $schema = "owner.json";
@@ -17,10 +18,5 @@ class Owner extends Schema\Entity
             }
         }
         return false;
-    }
-
-    public function hasOrganisationList()
-    {
-        return (array_key_exists('organisations', $this)) ? true : false;
     }
 }
