@@ -21,8 +21,12 @@ class OwnerDelete extends BaseController
     {
         $query = new Query();
         $message = Response\Message::create(Render::$request);
-        $entity = $query->readEntity($itemId);
-        $query->deleteEntity($itemId);
+        $entity = $query->readEntity($itemId, 1);
+        if ($entity->hasOrganisationList()) {
+            throw new Exception\Owner\OrganisationListNotEmpty();
+        } else {
+            $query->deleteEntity($itemId);
+        }
         $message->data = $entity;
         Render::lastModified(time(), '0');
         Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
