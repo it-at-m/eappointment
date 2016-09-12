@@ -10,37 +10,32 @@ class UserAccount extends Base implements MappingInterface
      * @var String TABLE mysql table reference
      */
     const TABLE = 'nutzer';
+    const TABLE_ASSIGNMENT = 'nutzerzuordnung';
+
+    const QUERY_READ_ASSIGNED_DEPARTMENTS = '
+        SELECT userAssignment.`behoerdenid` AS id
+        FROM '. self::TABLE_ASSIGNMENT .' userAssignment
+        LEFT JOIN '. self::TABLE .' userAccount ON userAccount.Name = :userAccountName
+        WHERE
+            userAccount.`NutzerID` = userAssignment.`nutzerid`
+    ';
 
     public function getEntityMapping()
     {
         return [
-            'id' => 'userAccount.Name',
-            'lastLogin' => 'userAccount.Datum',
-            'rights__superuser' => self::expression('`userAccount`.`Berechtigung` = 90'),
-            'rights__organisation' => self::expression('`userAccount`.`Berechtigung` >= 70'),
-            'rights__department' => self::expression('`userAccount`.`Berechtigung` >= 50'),
-            'rights__cluster' => self::expression('`userAccount`.`Berechtigung` >= 40'),
-            'rights__useraccount' => self::expression('`userAccount`.`Berechtigung` >= 30'),
-            'rights__scope' => self::expression('`userAccount`.`Berechtigung` >= 20'),
-            'rights__availability' => self::expression('`userAccount`.`Berechtigung` >= 15'),
-            'rights__ticketprinter' => self::expression('`userAccount`.`Berechtigung` >= 10'),
-            'rights__sms' => self::expression('`userAccount`.`Berechtigung` >= 0'),
-            'departments__0__id' => 'userAccount.BehoerdenID',
-            'scope__0__id' => 'userAccount.StandortID',
+        'id' => 'userAccount.Name','lastLogin' => 'userAccount.Datum',
+        'rights__superuser' => self::expression('`userAccount`.`Berechtigung` = 90'),
+        'rights__organisation' => self::expression('`userAccount`.`Berechtigung` >= 70'),
+        'rights__department' => self::expression('`userAccount`.`Berechtigung` >= 50'),
+        'rights__cluster' => self::expression('`userAccount`.`Berechtigung` >= 40'),
+        'rights__useraccount' => self::expression('`userAccount`.`Berechtigung` >= 30'),
+        'rights__scope' => self::expression('`userAccount`.`Berechtigung` >= 20'),
+        'rights__availability' => self::expression('`userAccount`.`Berechtigung` >= 15'),
+        'rights__ticketprinter' => self::expression('`userAccount`.`Berechtigung` >= 10'),
+        'rights__sms' => self::expression('`userAccount`.`Berechtigung` >= 0'),
+        'rights__basic' => self::expression('`userAccount`.`Berechtigung` = 0'),
+        'scope__0__id' => 'userAccount.StandortID'
         ];
-    }
-
-    public function addJoin()
-    {
-        $this->query->leftJoin(
-            new Alias(Department::TABLE, 'department'),
-            'userAccount.BehoerdenID',
-            '=',
-            'department.BehoerdenID'
-        );
-        $departmentQuery = new Department($this->query);
-        $departmentQuery->addEntityMappingPrefixed($this->getPrefixed('departments__0__'));
-        return [$departmentQuery];
     }
 
     public function getReferenceMapping()

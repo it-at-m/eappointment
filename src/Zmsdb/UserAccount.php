@@ -7,11 +7,11 @@ use \BO\Zmsentities\Collection\UserAccountList as Collection;
 
 class UserAccount extends Base
 {
+
     public function readIsUserExisting($loginName, $password = false)
     {
         $query = new Query\UserAccount(Query\Base::SELECT);
-        $query
-            ->addEntityMapping()
+        $query->addEntityMapping()
             ->addConditionLoginName($loginName);
         if ($password) {
             $query->addConditionPassword($password);
@@ -23,11 +23,11 @@ class UserAccount extends Base
     public function readEntity($loginname, $resolveReferences = 0)
     {
         $query = new Query\UserAccount(Query\Base::SELECT);
-        $query
-            ->addEntityMapping()
+        $query->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
             ->addConditionLoginName($loginname);
         $userAccount = $this->fetchOne($query, new Entity());
+        $userAccount->departments = $this->readAssignedDepartmentList($userAccount, $resolveReferences);
         return $userAccount;
     }
 
@@ -35,7 +35,7 @@ class UserAccount extends Base
      * read list of useraccounts
      *
      * @param
-     * resolveReferences
+     *            resolveReferences
      *
      * @return Resource Collection
      */
@@ -43,13 +43,13 @@ class UserAccount extends Base
     {
         $collection = new Collection();
         $query = new Query\UserAccount(Query\Base::SELECT);
-        $query
-            ->addResolvedReferences($resolveReferences)
+        $query->addResolvedReferences($resolveReferences)
             ->addEntityMapping();
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
             foreach ($result as $entity) {
                 if ($entity instanceof Entity) {
+                    $entity->departments = $this->readAssignedDepartmentList($entity, $resolveReferences);
                     $collection->addEntity($entity);
                 }
             }
@@ -57,11 +57,39 @@ class UserAccount extends Base
         return $collection;
     }
 
+    /**
+     * read list assigned departments
+     *
+     * @param
+     *            resolveReferences
+     *
+     * @return Resource Collection
+     */
+    public function readAssignedDepartmentList($userAccount, $resolveReferences = 0)
+    {
+        $query = Query\UserAccount::QUERY_READ_ASSIGNED_DEPARTMENTS;
+        $departmentIds = $this->getReader()
+            ->fetchAll($query, [
+            'userAccountName' => $userAccount->id
+            ]);
+
+        $checkFirstDepartment = current($departmentIds);
+        if (count($departmentIds) && 1 <= $resolveReferences && 0 < $checkFirstDepartment['id']) {
+            $departmentList = new \BO\Zmsentities\Collection\DepartmentList();
+            foreach ($departmentIds as $item) {
+                $department = (new \BO\Zmsdb\Department())->readEntity($item['id'], $resolveReferences);
+                $departmentList->addEntity($department);
+            }
+            return $departmentList;
+        } else {
+            return $departmentIds;
+        }
+    }
+
     public function readEntityByAuthKey($xAuthKey, $resolveReferences = 0)
     {
         $query = new Query\UserAccount(Query\Base::SELECT);
-        $query
-            ->addEntityMapping()
+        $query->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
             ->addConditionXauthKey($xAuthKey);
         return ($xAuthKey) ? $this->fetchOne($query, new Entity()) : new Entity();
@@ -71,14 +99,14 @@ class UserAccount extends Base
      * write an userAccount
      *
      * @param
-     * entity
+     *            entity
      *
      * @return Entity
      */
     public function writeEntity(\BO\Zmsentities\UserAccount $entity)
     {
         $query = new Query\UserAccount(Query\Base::INSERT);
-        if ($this->readIsUserExisting($entity->id) || !$entity->hasProperties('id', 'password', 'rights')) {
+        if ($this->readIsUserExisting($entity->id) || ! $entity->hasProperties('id', 'password', 'rights')) {
             $userAccount = new \BO\Zmsentities\UserAccount();
         } else {
             $values = $query->reverseEntityMapping($entity);
@@ -89,12 +117,11 @@ class UserAccount extends Base
         return $userAccount;
     }
 
-
     /**
      * update a userAccount
      *
      * @param
-     * userAccountId
+     *            userAccountId
      *
      * @return Entity
      */
@@ -112,13 +139,13 @@ class UserAccount extends Base
      * remove an user
      *
      * @param
-     * itemId
+     *            itemId
      *
      * @return Resource Status
      */
     public function deleteEntity($loginName)
     {
-        $query =  new Query\UserAccount(Query\Base::DELETE);
+        $query = new Query\UserAccount(Query\Base::DELETE);
         $query->addConditionLoginName($loginName);
         return $this->deleteItem($query);
     }
