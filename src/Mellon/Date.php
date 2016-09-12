@@ -19,7 +19,7 @@ class Date extends \BO\Mellon\Valid
      *
      * @return self
      */
-     public function isDate($format = 'U', $message = 'no valid date')
+    public function isDate($format = 'U', $message = 'no valid date')
     {
         $this->validated = true;
         if (null !== $this->value) {
@@ -29,8 +29,7 @@ class Date extends \BO\Mellon\Valid
             if (false === $isDate) {
                 $this->failure($message);
             }
-        }
-        else {
+        } else {
             $this->failure($message);
         }
         return $this->validate($message, FILTER_VALIDATE_INT);
