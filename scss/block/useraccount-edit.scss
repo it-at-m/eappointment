@@ -4,5 +4,8 @@
     form {
         @extend 
             .form--horizontal;
+    },
+    form select {
+    	height: $multipleSelectHeight
     }
 }

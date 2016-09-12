@@ -141,8 +141,13 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/department/{id:\d+}/useraccount/', '\BO\Zmsadmin\UseraccountByDepartment')
     ->setName("useraccountByDepartment");
 
-\App::$slim->get('/useraccount/{id:\d+}/', '\BO\Zmsadmin\UseraccountEdit')
+\App::$slim->map([
+    'GET','POST'
+], '/useraccount/{loginname}/', '\BO\Zmsadmin\UseraccountEdit')
     ->setName("useraccountEdit");
+
+\App::$slim->get('/useraccount/delete/{loginname}/', '\BO\Zmsadmin\UserAccountDelete')
+    ->setName("userAccountDelete");
 
 \App::$slim->get('/calldisplay/', '\BO\Zmsadmin\Calldisplay')
     ->setName("calldisplay");
