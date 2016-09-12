@@ -525,7 +525,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/department/":
  *      get:
- *          description: Get a list of organisations
+ *          description: Get a list of departments
  *          parameters:
  *              -   name: X-Authkey
  *                  description: authentication key to identify user for testing access rights
@@ -1396,8 +1396,8 @@ use \Psr\Http\Message\ResponseInterface;
  */
 \App::$slim->post('/process/{id:\d{1,11}}/{authKey}/confirmation/mail/',
     '\BO\Zmsapi\ProcessConfirmationMail')
-    ->setName("ProcessConfirmationMail");    
-    
+    ->setName("ProcessConfirmationMail");
+
 /**
  *  @swagger
  *  "/process/{id}/{authKey}/confirmation/notification/":
