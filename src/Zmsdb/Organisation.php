@@ -7,11 +7,11 @@ use \BO\Zmsentities\Collection\OrganisationList as Collection;
 
 class Organisation extends Base
 {
+
     public function readEntity($itemId, $resolveReferences = 0)
     {
         $query = new Query\Organisation(Query\Base::SELECT);
-        $query
-            ->addEntityMapping()
+        $query->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
             ->addConditionOrganisationId($itemId);
         $organisation = $this->fetchOne($query, new Entity());
@@ -20,15 +20,14 @@ class Organisation extends Base
             $organisation['ticketprinters'] = (new Ticketprinter())->readByOrganisationId($itemId, $resolveReferences);
             return $organisation;
         }
-        return array();
+        return array ();
     }
 
     public function readByOwnerId($ownerId, $resolveReferences = 0)
     {
         $organisationList = new Collection();
         $query = new Query\Organisation(Query\Base::SELECT);
-        $query
-            ->addEntityMapping()
+        $query->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
             ->addConditionOwnerId($ownerId);
         $result = $this->fetchList($query, new Entity());
@@ -47,14 +46,19 @@ class Organisation extends Base
     {
         $organisationList = new Collection();
         $query = new Query\Organisation(Query\Base::SELECT);
-        $query
-            ->addEntityMapping()
+        $query->addEntityMapping()
             ->addResolvedReferences($resolveReferences);
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
             foreach ($result as $organisation) {
                 $entity = new Entity($organisation);
                 if ($entity instanceof Entity) {
+                    if (1 <= $resolveReferences) {
+                        $entity['departments'] = (new Department())->readByOrganisationId(
+                            $entity->id,
+                            $resolveReferences
+                        );
+                    }
                     $organisationList->addEntity($entity);
                 }
             }
@@ -63,16 +67,16 @@ class Organisation extends Base
     }
 
     /**
-    * remove an organisation
-    *
-    * @param
-    * itemId
-    *
-    * @return Resource Status
-    */
+     * remove an organisation
+     *
+     * @param
+     *            itemId
+     *
+     * @return Resource Status
+     */
     public function deleteEntity($itemId)
     {
-        $query =  new Query\Organisation(Query\Base::DELETE);
+        $query = new Query\Organisation(Query\Base::DELETE);
         $query->addConditionOrganisationId($itemId);
         return $this->deleteItem($query);
     }
@@ -81,7 +85,7 @@ class Organisation extends Base
      * write a organisation
      *
      * @param
-     * organisationId
+     *            organisationId
      *
      * @return Entity
      */
@@ -91,7 +95,8 @@ class Organisation extends Base
         $values = $query->reverseEntityMapping($entity, $parentId);
         $query->addValues($values);
         $this->writeItem($query);
-        $lastInsertId = $this->getWriter()->lastInsertId();
+        $lastInsertId = $this->getWriter()
+            ->lastInsertId();
         return $this->readEntity($lastInsertId);
     }
 
@@ -99,7 +104,7 @@ class Organisation extends Base
      * update a organisation
      *
      * @param
-     * organisationId
+     *            organisationId
      *
      * @return Entity
      */
