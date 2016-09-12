@@ -34,6 +34,12 @@ abstract class Base extends \PHPUnit_Framework_TestCase
       */
     protected $sessionData = array();
 
+
+    /**
+     * Namespace for tested classes
+     */
+    protected $namespace = '';
+
     /**
      * A class name if not detected automatically
      *
@@ -115,17 +121,27 @@ abstract class Base extends \PHPUnit_Framework_TestCase
         } else {
             $classname = $this->classname;
         }
-        $controllername = "\BO\Zmsappointment\\$classname";
+        if (false !== strpos($classname, '\\')) {
+            $controllername = $classname;
+        } else {
+            $controllername = $this->namespace . $classname;
+        }
         return $controllername;
     }
 
     protected function render($arguments = [], $parameters = [], $sessionData = null)
     {
         $validator = new \BO\Mellon\Validator($parameters);
-        $validator->makeInstance();
         $renderClass = $this->getControllerIdentifier();
         $controller = new $renderClass(\App::$slim->getContainer());
         $request = $this->getRequest('GET', '', $sessionData)->withQueryParams($parameters);
+        if (array_key_exists('__body', $parameters)) {
+            $body = new \Slim\Http\Body(fopen('php://temp', 'r+'));
+            $body->write($parameters['__body']);
+            $request = $request->withBody($body);
+            $validator->setInput($parameters['__body']);
+        }
+        $validator->makeInstance();
         $response = $controller->__invoke($request, $this->getResponse(), $arguments);
         return $response;
     }
