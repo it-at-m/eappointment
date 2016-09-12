@@ -23,7 +23,7 @@ class OrganisationAddDepartment extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-
+        $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
         $input = $request->getParsedBody();
         $parentId = Validator::value($args['id'])->isNumber()->getValue();
         if (is_array($input) && array_key_exists('save', $input)) {
@@ -49,7 +49,7 @@ class OrganisationAddDepartment extends BaseController
             'title' => 'Standort',
             'action' => 'add',
             'menuActive' => 'owner',
-            'workstation' => $this->workstation->getArrayCopy()
+            'workstation' => $workstation
         ));
     }
 }

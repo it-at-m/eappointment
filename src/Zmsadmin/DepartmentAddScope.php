@@ -23,6 +23,7 @@ class DepartmentAddScope extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
         $providerAssigned = \App::$http->readGetResult(
             '/provider/dldb/',
             array(
@@ -62,7 +63,7 @@ class DepartmentAddScope extends BaseController
             'title' => 'Standort',
             'action' => 'add',
             'menuActive' => 'owner',
-            'workstation' => $this->workstation->getArrayCopy(),
+            'workstation' => $workstation,
             'providerList' => array(
                 'notAssigned' => $providerNotAssigned,
                 'assigned' => $providerAssigned

@@ -24,6 +24,7 @@ class Organisation extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
         $entityId = Validator::value($args['id'])->isNumber()->getValue();
         $entity = \App::$http->readGetResult('/organisation/'. $entityId .'/')->getEntity();
 
@@ -50,8 +51,8 @@ class Organisation extends BaseController
             'page/organisation.twig',
             array(
                 'title' => 'Bezirk - Einrichtung und Administration',
-                'workstation' => $this->workstation->getArrayCopy(),
-                'organisation' => $entity->getArrayCopy(),
+                'workstation' => $workstation,
+                'organisation' => $entity,
                 'menuActive' => 'owner'
             )
         );

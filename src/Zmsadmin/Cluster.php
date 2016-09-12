@@ -19,7 +19,7 @@ class Cluster extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-
+        $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
         $entityId = Validator::value($args['id'])->isNumber()->getValue();
         $entity = \App::$http->readGetResult('/cluster/' . $entityId . '/')->getEntity();
 
@@ -38,7 +38,7 @@ class Cluster extends BaseController
             array(
                 'title' => 'Cluster',
                 'menuActive' => 'owner',
-                'workstation' => $this->workstation->getArrayCopy(),
+                'workstation' => $workstation,
                 'cluster' => $entity->getArrayCopy(),
                 'scopeList' => $scopeList
             )

@@ -23,7 +23,7 @@ class OwnerAdd extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-
+        $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
         $input = $request->getParsedBody();
         if (is_array($input) && array_key_exists('save', $input)) {
             try {
@@ -48,7 +48,7 @@ class OwnerAdd extends BaseController
             'title' => 'Kunde',
             'action' => 'add',
             'menuActive' => 'owner',
-            'workstation' => $this->workstation->getArrayCopy()
+            'workstation' => $workstation
         ));
     }
 }
