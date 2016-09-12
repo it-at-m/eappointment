@@ -22,7 +22,7 @@ class Mail extends \BO\Mellon\Valid
     public function isMail($message = 'no valid email')
     {
         $this->isString($message);
-        $this->validate($message, FILTER_SANITIZE_EMAIL);        
+        $this->validate($message, FILTER_SANITIZE_EMAIL);
         return $this->validate($message, FILTER_VALIDATE_EMAIL);
     }
 }
