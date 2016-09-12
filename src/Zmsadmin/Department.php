@@ -24,7 +24,7 @@ class Department extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-
+        $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
         $entityId = Validator::value($args['id'])->isNumber()->getValue();
         $entity = \App::$http->readGetResult('/department/'. $entityId .'/')->getEntity();
 
@@ -53,7 +53,7 @@ class Department extends BaseController
             'page/department.twig',
             array(
                 'title' => 'Standort',
-                'workstation' => $this->workstation->getArrayCopy(),
+                'workstation' => $workstation,
                 'department' => $entity->getArrayCopy(),
                 'menuActive' => 'owner'
             )

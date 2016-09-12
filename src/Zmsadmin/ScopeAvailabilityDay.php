@@ -20,6 +20,7 @@ class ScopeAvailabilityDay extends BaseController
      */
     public static function render($scope_id)
     {
+        $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
         $availabilityList = new AvailabilityList();
         $prefix = \App::APP_PATH . '/tests/examples/Availability'.$scope_id.'/';
         foreach (glob($prefix . 'availability_*.json') as $filename) {
@@ -32,7 +33,7 @@ class ScopeAvailabilityDay extends BaseController
             'availabilityListSlices' => $availabilityList->withCalculatedSlots(),
             'conflicts' => $conflicts,
             'scope' => $scope,
-            'workstation' => $this->workstation->getArrayCopy(),
+            'workstation' => $workstation,
             'menuActive' => 'availability',
             'maxWorkstationCount' => $availabilityList->getMaxWorkstationCount(),
         ));

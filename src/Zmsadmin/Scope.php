@@ -25,6 +25,7 @@ class Scope extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
         $providerAssigned = \App::$http->readGetResult(
             '/provider/dldb/',
             array(
@@ -67,7 +68,7 @@ class Scope extends BaseController
             array(
                 'title' => 'Standort',
                 'menuActive' => 'owner',
-                'workstation' => $this->workstation->getArrayCopy(),
+                'workstation' => $workstation,
                 'scope' => $entity->getArrayCopy(),
                 'parentId' => $entity->getDepartmentId(),
                 'providerList' => array(

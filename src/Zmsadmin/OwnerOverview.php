@@ -18,8 +18,8 @@ class OwnerOverview extends BaseController
     ) {
         $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences'=>4))->getCollection();
         $organisationList = $ownerList->getOrganisationsByOwnerId(23);
-        if (!$this->workstation->hasSuperUseraccount()) {
-            $department = $this->workstation->getSelectedDepartment();
+        if (!$workstation->hasSuperUseraccount()) {
+            $department = $workstation->getSelectedDepartment();
             $organisationList = $organisationList->getByDepartmentId($department->id);
         }
 
@@ -34,7 +34,7 @@ class OwnerOverview extends BaseController
             array(
                 'title' => 'Behörden und Standorte',
                 'menuActive' => 'owner',
-                'workstation' => $this->workstation,
+                'workstation' => $workstation,
                 'owner' => current($ownerList),
                 'itemList' => $organisationList->sortByName(),
             )
