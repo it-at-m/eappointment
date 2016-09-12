@@ -53,6 +53,7 @@ class Department extends BaseController
             'page/department.twig',
             array(
                 'title' => 'Standort',
+                'workstation' => $this->workstation->getArrayCopy(),
                 'department' => $entity->getArrayCopy(),
                 'menuActive' => 'owner'
             )

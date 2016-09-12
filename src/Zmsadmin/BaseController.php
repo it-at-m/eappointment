@@ -16,8 +16,11 @@ use \Psr\Http\Message\ResponseInterface;
 abstract class BaseController extends \BO\Slim\Controller
 {
 
+    protected $workstation;
+
     public function __construct(\Interop\Container\ContainerInterface $containerInterface)
     {
+        $this->workstation = \App::$http->readGetResult('/workstation/')->getEntity();
         parent::__construct($containerInterface);
     }
 

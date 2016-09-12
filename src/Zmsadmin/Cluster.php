@@ -32,12 +32,13 @@ class Cluster extends BaseController
         )->getCollection();
 
         return \BO\Slim\Render::withHtml(
-            
+
             $response,
             'page/cluster.twig',
             array(
                 'title' => 'Cluster',
                 'menuActive' => 'owner',
+                'workstation' => $this->workstation->getArrayCopy(),
                 'cluster' => $entity->getArrayCopy(),
                 'scopeList' => $scopeList
             )

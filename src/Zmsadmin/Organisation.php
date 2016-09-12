@@ -50,6 +50,7 @@ class Organisation extends BaseController
             'page/organisation.twig',
             array(
                 'title' => 'Bezirk - Einrichtung und Administration',
+                'workstation' => $this->workstation->getArrayCopy(),
                 'organisation' => $entity->getArrayCopy(),
                 'menuActive' => 'owner'
             )
