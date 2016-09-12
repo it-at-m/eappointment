@@ -22,6 +22,13 @@ class Validator
     protected $parameters = array();
 
     /**
+     * Content of STDIN
+     *
+     * @var String $input
+     */
+    protected $input = null;
+
+    /**
       * Singleton instance
       *
       * @var self $instance
@@ -32,9 +39,10 @@ class Validator
      * Always initialize using an array of parameters
      *
      */
-    public function __construct($parameters)
+    public function __construct($parameters, $input = null)
     {
         $this->setParameters($parameters);
+        $this->setInput($input);
     }
 
     /**
@@ -46,6 +54,15 @@ class Validator
             throw new Exception("Array argument required for parameters");
         }
         $this->parameters = $parameters;
+        return $this;
+    }
+
+    /**
+     * @return self
+     */
+    public function setInput($input)
+    {
+        $this->input = $input;
         return $this;
     }
 
@@ -134,8 +151,21 @@ class Validator
      */
     public static function input($name = null)
     {
-        $mixed = file_get_contents('php://input');
-        return self::value($mixed, $name);
+        $validator = self::getInstance();
+        return $validator->getInput($name);
+    }
+
+    /**
+     * @param String $name an optional name to identify the value
+     *
+     * @return \BO\Mellon\Unvalidated
+     */
+    public function getInput($name = null)
+    {
+        if (null === $this->input) {
+            $this->input = file_get_contents('php://input');
+        }
+        return self::value($this->input, $name);
     }
 
     /**

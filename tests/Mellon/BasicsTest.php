@@ -38,6 +38,12 @@ class BasicsTest extends \PHPUnit_Framework_TestCase
     {
         $valid = Validator::input()->isDeclared();
         $this->assertTrue($valid instanceof Valid);
+        Validator::resetInstance();
+        $validator = new Validator([], "InputBody");
+        $this->assertEquals("InputBody", $validator->getInput()->isString()->getValue());
+        $validator->makeInstance();
+        $valid = Validator::input()->isString();
+        $this->assertEquals("InputBody", $valid->getValue());
     }
 
     public function testUnvalidated()
