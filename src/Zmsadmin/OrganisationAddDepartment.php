@@ -48,7 +48,8 @@ class OrganisationAddDepartment extends BaseController
         return \BO\Slim\Render::withHtml($response, 'page/department.twig', array(
             'title' => 'Standort',
             'action' => 'add',
-            'menuActive' => 'owner'
+            'menuActive' => 'owner',
+            'workstation' => $this->workstation->getArrayCopy()
         ));
     }
 }

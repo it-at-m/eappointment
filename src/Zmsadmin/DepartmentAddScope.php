@@ -62,6 +62,7 @@ class DepartmentAddScope extends BaseController
             'title' => 'Standort',
             'action' => 'add',
             'menuActive' => 'owner',
+            'workstation' => $this->workstation->getArrayCopy(),
             'providerList' => array(
                 'notAssigned' => $providerNotAssigned,
                 'assigned' => $providerAssigned

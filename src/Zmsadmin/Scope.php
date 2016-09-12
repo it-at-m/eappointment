@@ -67,6 +67,7 @@ class Scope extends BaseController
             array(
                 'title' => 'Standort',
                 'menuActive' => 'owner',
+                'workstation' => $this->workstation->getArrayCopy(),
                 'scope' => $entity->getArrayCopy(),
                 'parentId' => $entity->getDepartmentId(),
                 'providerList' => array(

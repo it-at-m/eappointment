@@ -48,7 +48,8 @@ class OwnerAddOrganisation extends BaseController
         return \BO\Slim\Render::withHtml($response, 'page/organisation.twig', array(
             'title' => 'Kunde',
             'action' => 'add',
-            'menuActive' => 'organisation'
+            'menuActive' => 'organisation',
+            'workstation' => $this->workstation->getArrayCopy()
         ));
     }
 }
