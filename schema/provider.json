@@ -29,7 +29,7 @@
             "$ref": "contact.json"
         },
         "id": {
-            "type": "string",
+            "type": "number",
             "description": "reference to an id"
         },
         "link": {

@@ -10,7 +10,6 @@ class Calendar extends Schema\Entity
     public function getDefaults()
     {
         return [
-            'calendar' => [],
             'days' => [],
             'clusters' => [],
             'providers' => [],

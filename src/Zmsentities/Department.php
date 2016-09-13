@@ -11,7 +11,6 @@ class Department extends Schema\Entity
     public function getDefaults()
     {
         return [
-            'name' => '',
             'scopes' => new Collection\ScopeList(),
         ];
     }

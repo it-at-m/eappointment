@@ -22,7 +22,7 @@
         "startDate": 1447919543000,
         "startTime": "10:00",
         "weekday": {
-            "thursday": 16
+            "thursday": true
         },
         "workstationCount": {
             "callcenter": 8,

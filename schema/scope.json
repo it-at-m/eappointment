@@ -26,7 +26,6 @@
             "client": {
                 "alternateAppointmentUrl": "",
                 "amendmentLabel": "Zusatzinformationen zum Anliegen",
-                "amendmentRequired": false,
                 "emailRequired": false,
                 "telephoneActivated": true,
                 "telephoneRequired": false
@@ -190,6 +189,11 @@
                     "type": "object",
                     "additionalProperties": false,
                     "properties": {
+                        "confirmationContent": {
+                            "type": "string",
+                            "description": "text to send to client to confirm the appointment",
+                            "default": ""
+                        },
                         "enabled": {
                             "type": "boolean",
                             "description": "true if notifications for calling up clients are enabled",
@@ -293,11 +297,6 @@
                             "type": "boolean",
                             "description": "true if client should get a notification to confirm that notifications are enabled for him/her",
                             "default": false
-                        },
-                        "confirmationContent": {
-                            "type": "string",
-                            "description": "text to send to client to confirm the appointment",
-                            "default": ""
                         },
                         "deactivatedText": {
                             "type": "string",
