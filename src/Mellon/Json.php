@@ -19,7 +19,7 @@ class Json extends \BO\Mellon\Valid
     protected $defaultJsonString = '{}';
 
     /**
-     * Allow only valid urls
+     * Allow only valid json
      *
      * @param String $message error message in case of failure, use null for detailled messages
      *
@@ -49,6 +49,9 @@ class Json extends \BO\Mellon\Valid
                 $message = 'Json: ' . $json_error_list[$json_error];
             }
             $this->failure($message);
+        } elseif (!$jsonString) {
+            // Be compatible to javascript JSON.parse()
+            $this->failure('Json: Empty string');
         } else {
             $this->validated = true;
             $this->value = $array;
@@ -57,22 +60,10 @@ class Json extends \BO\Mellon\Valid
     }
 
     /**
-     * Set a default value to return if a string does not validate
+     * Set a default string value if a string does not validate
+     * The parsed value like an array or an object should be set by setDefault()
      *
-     * @param Mixed $value
-     *
-     * @return self
-     */
-    public function setDefault($value)
-    {
-            $this->default = $value;
-            return $this;
-    }
-
-    /**
-     * Set a default value to return if a string does not validate
-     *
-     * @param Mixed $value
+     * @param String $value
      *
      * @return self
      */
