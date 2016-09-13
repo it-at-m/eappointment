@@ -41,6 +41,10 @@
             "error" : ""
         }
     },
+    "required" : [
+        "id",
+        "name"
+        ],
     "properties": {
         "name": {
             "type": "string",

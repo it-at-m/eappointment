@@ -23,9 +23,9 @@ class Session extends Schema\Entity
                 'basket' => [
                     'requests' => '',
                     'providers' => '',
-                    'scope' => '',
-                    'process' => '',
-                    'date' => null,
+                    'scope' => 0,
+                    'process' => 0,
+                    'date' => 0,
                     'familyName' => '',
                     'email' => '',
                     'telehone' => '',
@@ -41,7 +41,6 @@ class Session extends Schema\Entity
                     'referrer' => '',
                     'step' => array()
                 ],
-                'entry' => array(),
                 'status' => 'free',
                 'task' => '',
                 'finished' => false,
@@ -156,7 +155,7 @@ class Session extends Schema\Entity
     public function getSelectedDate()
     {
         if (isset($this->content['basket']['date']) &&
-            '' != $this->content['basket']['date']
+            $this->content['basket']['date']
             ) {
                 return $this->content['basket']['date'];
         }
@@ -238,7 +237,7 @@ class Session extends Schema\Entity
     public function isProcessDeleted()
     {
         if (isset($this->content['basket']['process']) &&
-            '' != $this->content['basket']['process']
+            $this->content['basket']['process']
             ) {
                 return false;
         }
@@ -266,7 +265,7 @@ class Session extends Schema\Entity
     public function hasNoProcess()
     {
         if ((!isset($this->content['basket']['process']) ||
-            '' == $this->content['basket']['process'])) {
+            $this->content['basket']['process'])) {
             return true;
         }
         return false;
@@ -352,6 +351,6 @@ class Session extends Schema\Entity
     public function hasNoScope()
     {
         return (!isset($this->content['basket']['scope']) ||
-            '' == $this->content['basket']['scope']) ? true :false;
+            $this->content['basket']['scope']) ? true :false;
     }
 }
