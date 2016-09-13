@@ -13,7 +13,7 @@
 >
     <testsuites>
         <testsuite name="Zmsentities Test Suite">
-            <directory>./tests/Zmsentities/</directory>
+            <directory>./tests/Zmsapi/</directory>
         </testsuite>
     </testsuites>
     <filter>

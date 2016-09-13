@@ -19,8 +19,9 @@ class SessionUpdate extends BaseController
     public static function render()
     {
         $message = Response\Message::create(Render::$request);
-        $input = Validator::input()->isJson()->getValue();
+        $input = Validator::input()->isJson()->assertValid()->getValue();
         $session = new \BO\Zmsentities\Session($input);
+        $session->testValid();
         $session->getUnSerializedContent();
         $message->data = null;
 
