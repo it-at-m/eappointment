@@ -34,7 +34,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
      */
     public function __construct($input = [], $flags = \ArrayObject::ARRAY_AS_PROPS, $iterator_class = "ArrayIterator")
     {
-        $this->jsonSchema = self::readJsonSchema();
+        //$this->jsonSchema = self::readJsonSchema();
         $input = $this->getUnflattenedArray($input);
         $input = array_merge($this->getDefaults(), $input);
         parent::__construct($input, $flags, $iterator_class);
@@ -85,8 +85,10 @@ class Entity extends \ArrayObject implements \JsonSerializable
      */
     private function getValidator()
     {
-        $validator = new \JsonSchema\Validator();
-        $validator->check($this, $this->jsonSchema);
+        $jsonSchema = self::readJsonSchema();
+        $data = json_decode(json_encode($this));
+        $schema = $jsonSchema->toJsonObject();
+        $validator = new Validator($data, $schema);
         return $validator;
     }
 
@@ -99,6 +101,24 @@ class Entity extends \ArrayObject implements \JsonSerializable
     {
         $validator = $this->getValidator();
         return $validator->isValid();
+    }
+
+    /**
+     * Check if the given data validates against the given jsonSchema
+     *
+     * @throws \BO\Zmsentities\Expcetion\SchemaValidation
+     * @return Boolean
+     */
+    public function testValid()
+    {
+        $validator = $this->getValidator();
+        if (!$validator->isValid()) {
+            $exception = new \BO\Zmsentities\Exception\SchemaValidation();
+            $exception->setSchemaName($this->getEntityName() . '.json');
+            $exception->setValidationError($validator->errors());
+            throw $exception;
+        }
+        return true;
     }
 
     /**
@@ -136,13 +156,20 @@ class Entity extends \ArrayObject implements \JsonSerializable
         return self::$schemaCache[$class];
     }
 
-    public function jsonSerialize()
+    public function getEntityName()
     {
-        $serialize = $this->getArrayCopy();
         $entity = get_class($this);
         $entity = preg_replace('#.*[\\\]#', '', $entity);
         $entity = strtolower($entity);
-        $schema = array('$schema' => 'https://schema.berlin.de/queuemanagement/' . $entity . '.json');
+        return $entity;
+    }
+
+    public function jsonSerialize()
+    {
+        $serialize = $this->getArrayCopy();
+        $schema = array(
+            //'$schema' => 'https://schema.berlin.de/queuemanagement/' . $this->getEntityName() . '.json'
+        );
         return array_merge($schema, $serialize);
     }
 

@@ -19,7 +19,6 @@
             }
         ],
         "id": 456,
-        "owner": 23,
         "name": "Flughafen",
         "preferences": {
             "ticketPrinterProtectionEnabled": false

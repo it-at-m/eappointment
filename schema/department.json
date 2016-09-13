@@ -41,16 +41,6 @@
             {
                 "id": 123
             }
-        ],
-        "useraccounts": [
-            {
-                "lastLogin": 1447926465000,
-                "loginName": "johndoe",
-                "rights": {
-                    "scope": true,
-                    "ticketprinter": true
-                }
-            }
         ]
     },
     "additionalProperties": false,

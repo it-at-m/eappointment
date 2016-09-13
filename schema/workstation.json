@@ -25,7 +25,6 @@
         }
     },
     "required": [
-        "authkey",
         "hint"
     ],
     "additionalProperties": false,

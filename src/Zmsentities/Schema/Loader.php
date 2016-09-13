@@ -9,7 +9,7 @@ class Loader
     public static function asArray($schemaFilename)
     {
         $jsonString = self::asJson($schemaFilename);
-        $array = json_decode($jsonString, true);
+        $array = json_decode($jsonString);
         if (null === $array && $jsonString) {
             $json_error = json_last_error();
             $json_error_list = array(
@@ -22,7 +22,8 @@ class Loader
             );
             throw new Exception("Could not parse JSON File $schemaFilename: ".$json_error_list[$json_error]);
         }
-        return new \ArrayObject($array);
+        $schema = new Schema($array);
+        return $schema;
     }
     public static function asJson($schemaFilename)
     {
