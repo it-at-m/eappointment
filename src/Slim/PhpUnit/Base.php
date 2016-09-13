@@ -129,12 +129,18 @@ abstract class Base extends \PHPUnit_Framework_TestCase
         return $controllername;
     }
 
-    protected function render($arguments = [], $parameters = [], $sessionData = null)
+    protected function render($arguments = [], $parameters = [], $sessionData = null, $method = 'GET')
     {
         $validator = new \BO\Mellon\Validator($parameters);
         $renderClass = $this->getControllerIdentifier();
         $controller = new $renderClass(\App::$slim->getContainer());
-        $request = $this->getRequest('GET', '', $sessionData)->withQueryParams($parameters);
+        $request = $this->getRequest($method, '', $sessionData);
+        if ('GET' === $method) {
+            $request = $request->withQueryParams($parameters);
+        } elseif ('POST' === $method) {
+            $request = $request->withParsedBody($parameters);
+        }
+
         if (array_key_exists('__body', $parameters)) {
             $body = new \Slim\Http\Body(fopen('php://temp', 'r+'));
             $body->write($parameters['__body']);
