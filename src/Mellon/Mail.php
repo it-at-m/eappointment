@@ -10,7 +10,7 @@ namespace BO\Mellon;
   * Validation of URLs
   *
   */
-class Mail extends \BO\Mellon\Valid
+class Mail extends \BO\Mellon\String
 {
     /**
      * Allow only valid mails
