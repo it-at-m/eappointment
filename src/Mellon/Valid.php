@@ -19,7 +19,7 @@ class Valid extends \BO\Mellon\Parameter
       *
       * @var Array $messages
       */
-    protected $messages = array();
+    private $messages = null;
 
     /**
       * TRUE if value is validated, at least once
@@ -75,7 +75,10 @@ class Valid extends \BO\Mellon\Parameter
     protected function failure($message)
     {
         $this->failed = true;
-        $this->messages[] = $message;
+        if (null === $this->messages) {
+            $this->messages = new Failure\MessageList();
+        }
+        $this->messages[] = new Failure\Message($message);
         return $this;
     }
 
@@ -89,122 +92,6 @@ class Valid extends \BO\Mellon\Parameter
     public function isDeclared($message = 'value is not declared')
     {
         if (null === $this->value) {
-            $this->failure($message);
-        }
-        return $this;
-    }
-
-    /**
-     * Allow only boolean values like
-     * Allowed values are:
-     *   true
-     *   false
-     *   yes
-     *   no
-     *   on
-     *   off
-     *   1
-     *   0
-     *   ''
-     *
-     * @param String $message error message in case of failure
-     *
-     * @return self
-     */
-    public function isBool($message = 'not a boolean value')
-    {
-        return $this->validate($message, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
-    }
-
-    /**
-     * Allow only integer numbers
-     *
-     * @param String $message error message in case of failure
-     *
-     * @return self
-     */
-    public function isNumber($message = 'no valid number')
-    {
-        return $this->validate($message, FILTER_VALIDATE_INT);
-    }
-
-    /**
-     * Allow strings smaller than 64kb and do htmlspecialchars()
-     *
-     * @param String $message error message in case of failure
-     *
-     * @return self
-     */
-    public function isString($message = 'no valid string')
-    {
-        $this->isSmallerThan(65536, $message);
-        return $this->validate($message, FILTER_SANITIZE_SPECIAL_CHARS);
-    }
-
-    /**
-     * Allow only strings which do not match a given regular expression
-     *
-     * @param String $regex Regular expression including delimiter and modifier
-     * @param String $message error message in case of failure
-     *
-     * @return self
-     */
-    public function isFreeOf($regex, $message = 'value contains undesired content')
-    {
-        $this->validated = true;
-        if (preg_match($regex, $this->value)) {
-            $this->failure($message);
-        }
-        return $this;
-    }
-
-    /**
-     * Allow only strings which match a given regular expression
-     *
-     * @param String $regex Regular expression including delimiter and modifier
-     * @param String $message error message in case of failure
-     *
-     * @return self
-     */
-    public function isMatchOf($regex, $message = 'not a valid matching value')
-    {
-        $this->isDeclared($message);
-        return $this->validate($message, FILTER_VALIDATE_REGEXP, array(
-            'options' => array(
-                'regexp' => $regex,
-            ),
-        ));
-    }
-
-    /**
-     * Allow only strings with a length bigger than the given value
-     *
-     * @param Int $size value to compare length of the string
-     * @param String $message error message in case of failure
-     *
-     * @return self
-     */
-    public function isBiggerThan($size, $message = 'too small')
-    {
-        $this->validated = true;
-        if (strlen($this->value) < $size) {
-            $this->failure($message);
-        }
-        return $this;
-    }
-
-    /**
-     * Allow only strings with a length smaller than the given value
-     *
-     * @param Int $size value to compare length of the string
-     * @param String $message error message in case of failure
-     *
-     * @return self
-     */
-    public function isSmallerThan($size, $message = 'too big')
-    {
-        $this->validated = true;
-        if (strlen($this->value) > $size) {
             $this->failure($message);
         }
         return $this;
@@ -260,6 +147,23 @@ class Valid extends \BO\Mellon\Parameter
         return $this->failed;
     }
 
+
+    /**
+     * Throws exception if validation fails
+     *
+     * @throws \BO\Mellon\ValidationException
+     * @return Bool
+     */
+    public function assertValid()
+    {
+        if ($this->hasFailed()) {
+            $exception = new Failure\Exception();
+            $exception->setValidator($this);
+            throw $exception;
+        }
+        return $this;
+    }
+
     /**
      * Returns a list of error messages
      *
@@ -277,16 +181,26 @@ class Valid extends \BO\Mellon\Parameter
      *     messages - A list of error messages in case the validation has failed
      *     value - Value, might be the default value if validation has failed
      *
+     * @param Bool $unvalidated (optional) Return original value
+     *
      * @return Array
      */
-    public function getStatus()
+    public function getStatus($unvalidated = false)
     {
         $status = array(
             'failed' => $this->failed,
             'value' => $this->getValue(),
             'messages' => $this->getMessages(),
         );
+        if ($unvalidated) {
+            $status['_unvalidated'] = $this->getUnvalidated();
+        }
         return $status;
+    }
+
+    public function getUnvalidated()
+    {
+        return $this->value;
     }
 
     /**

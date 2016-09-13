@@ -53,4 +53,12 @@ abstract class Parameter
         $this->name = $name;
         return $this;
     }
+
+    /**
+     * @return String
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
 }
