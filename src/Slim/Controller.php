@@ -48,7 +48,12 @@ abstract class Controller
         Render::$container = $this->containerInterface;
         $className = get_class($this);
         ob_start();
-        $renderResponse = call_user_func_array([$className, 'render'], $args);
+        try {
+            $renderResponse = call_user_func_array([$className, 'render'], $args);
+        } catch (\Exception $exception) {
+            ob_end_clean();
+            throw $exception;
+        }
         $output = ob_get_clean();
         if ($output && !$renderResponse instanceof ResponseInterface) {
             $renderResponse = Render::$response;
