@@ -4,9 +4,9 @@
 // Allow configuration by ENVIRONMENT variables
 
 // MYSQL_USER with access to DB
-define('MYSQL_USER', getenv('MYSQL_USER') ? getenv('MYSQL_USER') : 'server');
-// MYSQL_PASSWORT
-define('MYSQL_PASSWORD', getenv('MYSQL_PASSWORD') ? getenv('MYSQL_PASSWORD') : 'internet');
+define('MYSQL_USER', getenv('MYSQL_USER') ? getenv('MYSQL_USER') : 'root');
+// MYSQL_PASSWORD
+define('MYSQL_PASSWORD', getenv('MYSQL_PASSWORD') ? getenv('MYSQL_PASSWORD') : 'zmsapi');
 // MYSQL_DATABASE is the database name containing the tables
 define('MYSQL_DATABASE', getenv('MYSQL_DATABASE') ? getenv('MYSQL_DATABASE') : 'zmsbo');
 // MYSQL_PORT of type "tcp://127.0.0.1:3306"
@@ -49,12 +49,12 @@ class App extends \BO\Zmsapi\Application
     /**
      * @var String DB_USERNAME
      */
-    const DB_USERNAME = 'server';
+    const DB_USERNAME = MYSQL_USER;
 
     /**
      * @var String DB_PASSWORD
      */
-    const DB_PASSWORD = 'internet';
+    const DB_PASSWORD = MYSQL_PASSWORD;
 }
 
 // Uncomment the following line for production data, this is testing only
