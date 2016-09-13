@@ -86,7 +86,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
     private function getValidator()
     {
         $jsonSchema = self::readJsonSchema();
-        $data = json_decode(json_encode($this));
+        $data = json_decode(json_encode($this->getArrayCopy()));
         $schema = $jsonSchema->toJsonObject();
         $validator = new Validator($data, $schema);
         return $validator;
@@ -168,7 +168,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
     {
         $serialize = $this->getArrayCopy();
         $schema = array(
-            //'$schema' => 'https://schema.berlin.de/queuemanagement/' . $this->getEntityName() . '.json'
+            '$schema' => 'https://schema.berlin.de/queuemanagement/' . $this->getEntityName() . '.json'
         );
         return array_merge($schema, $serialize);
     }
