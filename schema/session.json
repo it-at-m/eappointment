@@ -20,12 +20,12 @@
             },
             "human": {
                 "captcha_text" : "kck6Qz",
-                "Client" : 0,
-                "TS" : 0,
-                "Origin" : "captcha",
-                "RemoteAddress" : "127.0.0.1",
+                "client" : 0,
+                "ts" : 0,
+                "origin" : "captcha",
+                "remoteAddress" : "127.0.0.1",
                 "referrer" : "termin",
-                "Step" : {
+                "step" : {
                     "dayselect":1
                 }
             },
@@ -101,23 +101,24 @@
                         "captcha_text" : {
                             "type": "string"
                         },
-                        "Client" : {
+                        "client" : {
                             "type": "integer"
                         },
-                        "TS" : {
+                        "ts" : {
                             "type": "integer"
                         },
-                        "Origin" : {
+                        "origin" : {
                             "type": "string"
                         },
-                        "RemoteAddress" : {
+                        "remoteAddress" : {
                             "type": "string"
                         },
                         "referrer" : {
                             "type": "string"
                         },
-                        "Step" : {
+                        "step" : {
                             "type": "object",
+                            "description": "amount of called booking steps",
                             "properties": {
                                 "dayselect": {
                                     "type": "integer"
@@ -136,22 +137,40 @@
                     }
                 },
                 "entry" : {
-                    "type" : "object"
+                    "type" : "array",
+                    "description": "Save request IDs and provider IDs from entry query"
                 },
                 "status" : {
-                    "type": "string"
+                    "type": "string",
+                    "enum": [
+		                "start",
+		                "reserved",
+		                "confirmed",
+		                "inChange",
+		                "changedProcess",
+		                "stalled",
+		                "inProgress"
+		            ],
+            		"description": "Status of the session. The following values are possible:\n  * start: new session started\n  * reserved: set if a process has been reserved\n  * confirmed: set if a process has been confirmed\n * inChange: current process is in change mode\n * changedProcess: current process has been changed\n * stalled: set if session has a problem, fore example if second tab is in use \n  * inProgress: if session not stalled anymore\n"
                 },
                 "task" : {
-                    "type": "string"
+                    "type": "string",
+                    "enum": [
+                    	"new",
+		                "continue"
+			            ],
+	            		"description": "Change normal process by a task: \n * new: force to delete reserved process if exists, remove last step and start modifying process\n * continue: exception to continue on breaking status like reserved or confirmed\n"
                 },
                 "finished" : {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "description": "True if process has been confirmed successfully"
                 },
                 "X-Authkey" : {
                     "type": "string"
                 },
                 "error" : {
-                    "type": "string"
+                    "type": "string",
+                    "description": "error or notice from errorhandler to show specific template message block"
                 }
             }
         }
