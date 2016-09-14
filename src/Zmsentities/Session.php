@@ -34,10 +34,10 @@ class Session extends Schema\Entity
                 ],
                 'human' => [
                     'captcha_text' => '',
-                    'Client' => 0,
-                    'TS' => 0,
-                    'Origin' => '',
-                    'RemoteAddress' => '',
+                    'client' => 0,
+                    'ts' => 0,
+                    'origin' => '',
+                    'remoteAddress' => '',
                     'referrer' => '',
                     'step' => array()
                 ],
@@ -223,11 +223,9 @@ class Session extends Schema\Entity
     {
         if (isset($this->content['status']) &&
             'reserved' == $this->content['status'] &&
-            (isset($this->content['task']) &&
-                'continue' != $this->content['task']
-            ) &&
+            !isset($this->content['task']) &&
             !$this->hasNoProcess() &&
-            !$this->hasChangedReservation()
+            !$this->hasChangedProcess()
             ) {
             return true;
         }
@@ -265,7 +263,7 @@ class Session extends Schema\Entity
     public function hasNoProcess()
     {
         if ((!isset($this->content['basket']['process']) ||
-            $this->content['basket']['process'])) {
+            '' == $this->content['basket']['process'])) {
             return true;
         }
         return false;
@@ -280,22 +278,12 @@ class Session extends Schema\Entity
         return false;
     }
 
-    public function hasChangedReservation()
-    {
-        if (isset($this->content['task']) &&
-            'reservationChanged' == $this->content['task']
-        ) {
-            return true;
-        }
-        return false;
-    }
-
     public function hasChangedProcess()
     {
         if (isset(
-            $this->content['task']
+            $this->content['status']
         ) &&
-            'processChanged' == $this->content['task']
+            'processChanged' == $this->content['status']
         ) {
             return true;
         }
