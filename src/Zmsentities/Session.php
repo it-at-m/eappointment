@@ -23,9 +23,9 @@ class Session extends Schema\Entity
                 'basket' => [
                     'requests' => '',
                     'providers' => '',
-                    'scope' => 0,
-                    'process' => 0,
-                    'date' => 0,
+                    'scope' => null,
+                    'process' => null,
+                    'date' => null,
                     'familyName' => '',
                     'email' => '',
                     'telehone' => '',
