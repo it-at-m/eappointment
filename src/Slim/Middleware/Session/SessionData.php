@@ -143,14 +143,6 @@ class SessionData implements SessionInterface
      */
     public function clear()
     {
-        session_destroy();
-        setcookie(
-            session_name(),
-            null,
-            time() - 42000,
-            "/"
-        );
-        session_regenerate_id(true);
         $this->data = [];
         $_SESSION = [];
     }
