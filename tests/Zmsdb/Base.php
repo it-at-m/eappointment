@@ -12,7 +12,7 @@ abstract class Base extends \PHPUnit_Framework_TestCase
     public function assertEntity($entityClass, $entity)
     {
         $this->assertInstanceOf($entityClass, $entity);
-        $this->assertTrue($entity->isValid());
+        $this->assertTrue($entity->testValid());
     }
 
     public function assertEntityList($entityClass, $entityList)

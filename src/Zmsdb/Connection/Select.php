@@ -76,7 +76,9 @@ class Select
     protected static function createPdoConnection($dataSourceName)
     {
         try {
-            $pdo = new Pdo($dataSourceName, self::$username, self::$password, self::$pdoOptions);
+            $pdoOptions = array_merge([
+                ], self::$pdoOptions);
+            $pdo = new Pdo($dataSourceName, self::$username, self::$password, $pdoOptions);
             $pdo->exec('SET NAMES "UTF8";');
             $timezone = date('P');
             $pdo->prepare('SET time_zone = ?;')->execute([$timezone]);

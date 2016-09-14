@@ -37,6 +37,10 @@ class MailTest extends Base
             "id" => 1234,
             "createIP" => "145.15.3.10",
             "createTimestamp" => 1447931596000,
+            "client" => [
+                "email" => "test@service.berlinonline.de",
+                "familyName" => "Test Entity",
+                ],
             "department" => [
                 "id" => 72,
                 "preferences" => [
@@ -79,13 +83,6 @@ class MailTest extends Base
                 "scope" => [
                     "id" => 151,
                     "preferences" => [
-                        "appointment" => [
-                            "deallocationDuration" => "5",
-                            "endInDaysDefault" => "60",
-                            "multipleSlotsEnabled" => "1",
-                            "reservationDuration" => "5",
-                            "startInDaysDefault" => "0"
-                        ],
                         "client" => [
                             "alternateAppointmentUrl" => "",
                             "amendmentActivated" => "0",
@@ -96,7 +93,6 @@ class MailTest extends Base
                         ],
                         "notifications" => [
                             "confirmationContent" => "",
-                            "confirmationEnabled" => "0",
                             "enabled" => "1",
                             "headsUpContent" => "",
                             "headsUpTime" => "0"
@@ -116,6 +112,7 @@ class MailTest extends Base
                             "label" => ""
                         ],
                         "ticketprinter" => [
+                            "confirmationEnabled" => "0",
                             "deactivatedText" => "",
                             "notificationsAmendmentEnabled" => "0",
                             "notificationsDelay" => "0"

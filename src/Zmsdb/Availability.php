@@ -18,10 +18,10 @@ class Availability extends Base
                 ->addConditionAvailabilityId($availabilityId);
             $availability = $this->fetchOne($query, new Entity());
             $availability['scope'] = (new Scope())->readEntity($availability['scope']['id'], $resolveReferences);
-            if (!isset($availability['department'])) {
-                $availability['department'] = (new Department())
-                    ->readEntity($availability['scope']['department']['id'], $resolveReferences);
-            }
+            //if (!isset($availability['department'])) {
+            //    $availability['department'] = (new Department())
+            //        ->readEntity($availability['scope']['department']['id'], $resolveReferences);
+            //}
             self::$cache[$availabilityId] = $availability;
         }
         return self::$cache[$availabilityId];

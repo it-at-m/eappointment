@@ -15,7 +15,7 @@ class Ticketprinter extends Base implements MappingInterface
             'enabled' => 'ticketprinter.zugelassen',
             'hash' => 'ticketprinter.cookiecode',
             'id' => 'ticketprinter.kioskid',
-            'lastupdate' => 'ticketprinter.timestamp',
+            'lastUpdate' => 'ticketprinter.timestamp',
             'name' => 'ticketprinter.name',
             'organisation__id' => 'ticketprinter.organisationsid'
         ];
@@ -29,8 +29,7 @@ class Ticketprinter extends Base implements MappingInterface
             '=',
             'organisation.OrganisationsID'
         );
-        $organisationQuery = new Organisation($this->query);
-        $organisationQuery->addEntityMappingPrefixed($this->getPrefixed('organisation__'));
+        $organisationQuery = new Organisation($this->query, 'organisation__');
 
         return [$organisationQuery];
     }

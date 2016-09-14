@@ -21,7 +21,7 @@ class Calendar extends Base
         $calendar = $this->readResolvedRequests($calendar);
         $calendar = $this->readResolvedScopeReferences($calendar);
         $calendar = $this->readResolvedDays($calendar, $freeProcessesDate, $now, $slotType);
-        unset($calendar['processing']['slotlist']);
+        unset($calendar['processing']);
         return $calendar;
     }
 
@@ -32,8 +32,7 @@ class Calendar extends Base
     protected function readResolvedScopeReferences(Entity $calendar)
     {
         foreach ($calendar->scopes as $scope) {
-            $departmentId = $scope['department']['id'];
-            $scope['department']['dayoff'] = (new DayOff())->readByDepartmentId($departmentId);
+            $scope['dayoff'] = (new DayOff())->readByScopeId($scope['id']);
         }
         return $calendar;
     }

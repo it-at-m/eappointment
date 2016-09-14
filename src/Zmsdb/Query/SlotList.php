@@ -203,7 +203,8 @@ class SlotList
             }
             $this->availability = new \BO\Zmsentities\Availability($availability);
         }
-        $this->availability['department'] = $this->scope['department'];
+        $this->availability['department'] = new \BO\Zmsentities\Department();
+        $this->availability['department']['dayoff'] = $this->scope['dayoff'];
         return $this;
     }
 

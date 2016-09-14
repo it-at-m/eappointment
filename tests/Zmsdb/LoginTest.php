@@ -26,7 +26,7 @@ class LoginTest extends Base
         $userAccount->addDepartmentId(72); //Bürgeramt Egon-Erwin-Kisch-Str.
 
         $workstation->useraccount = $userAccount;
-        $xAuthKey = $workstation->authKey;
+        $workstation->authKey;
 
         $workstation = $query->updateEntity($workstation);
         $this->assertEquals(true, !isset($workstation->authKey));

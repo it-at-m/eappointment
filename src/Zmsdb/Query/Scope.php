@@ -24,20 +24,19 @@ class Scope extends Base implements MappingInterface
             '=',
             'provider.id'
         );
-        $providerQuery = new Provider($this->query);
-        $providerQuery->addEntityMappingPrefixed($this->getPrefixed('provider__'));
+        $providerQuery = new Provider($this->query, 'provider__');
 
 
-        $this->query->leftJoin(
-            new Alias(Department::TABLE, 'department'),
-            'scope.BehoerdenID',
-            '=',
-            'department.BehoerdenID'
-        );
-        $departmentQuery = new Department($this->query);
-        $departmentQuery->addEntityMappingPrefixed($this->getPrefixed('department__'));
+        //$this->query->leftJoin(
+        //    new Alias(Department::TABLE, 'department'),
+        //    'scope.BehoerdenID',
+        //    '=',
+        //    'department.BehoerdenID'
+        //);
+        //$departmentQuery = new Department($this->query, 'department__');
 
-        return [$providerQuery, $departmentQuery];
+        //return [$providerQuery, $departmentQuery];
+        return [$providerQuery];
     }
 
     public function getEntityMapping()
@@ -55,13 +54,12 @@ class Scope extends Base implements MappingInterface
             'preferences__appointment__reservationDuration' => 'scope.reservierungsdauer',
             'preferences__appointment__startInDaysDefault' => 'scope.Termine_ab',
             'preferences__client__alternateAppointmentUrl' => 'scope.qtv_url',
-            'preferences__client__amendmentRequired' => 'scope.anmerkungPflichtfeld',
+            'preferences__client__amendmentActivated' => 'scope.anmerkungPflichtfeld',
             'preferences__client__amendmentLabel' => 'scope.anmerkungLabel',
             'preferences__client__emailRequired' => 'scope.emailPflichtfeld',
             'preferences__client__telephoneActivated' => 'scope.telefonaktiviert',
             'preferences__client__telephoneRequired' => 'scope.telefonPflichtfeld',
             'preferences__notifications__confirmationContent' => 'scope.smsbestaetigungstext',
-            'preferences__notifications__confirmationEnabled' => 'scope.smswmsbestaetigung',
             'preferences__notifications__enabled' => 'scope.smswarteschlange',
             'preferences__notifications__headsUpContent' => 'scope.smsbenachrichtigungstext',
             'preferences__notifications__headsUpTime' => 'scope.smsbenachrichtigungsfrist',
@@ -79,6 +77,7 @@ class Scope extends Base implements MappingInterface
             'preferences__survey__emailContent' => 'scope.kundenbef_emailtext',
             'preferences__survey__enabled' => 'scope.kundenbefragung',
             'preferences__survey__label' => 'scope.kundenbef_label',
+            'preferences__ticketprinter__confirmationEnabled' => 'scope.smswmsbestaetigung',
             'preferences__ticketprinter__deactivatedText' => 'scope.wartenrhinweis',
             'preferences__ticketprinter__notificationsAmendmentEnabled' => 'scope.smsnachtrag',
             'preferences__ticketprinter__notificationsDelay' => 'scope.smskioskangebotsfrist',
@@ -90,17 +89,17 @@ class Scope extends Base implements MappingInterface
             'status__queue__ghostWorkstationCount' => 'scope.virtuellesachbearbeiterzahl',
             'status__queue__givenNumberCount' => 'scope.vergebenewartenummern',
             'status__queue__lastGivenNumber' => 'scope.letztewartenr',
-            'status__queue__lastGivenNumberTimestamp' => 'scope.wartenrdatum',
+            'status__queue__lastGivenNumberTimestamp' => self::expression('UNIX_TIMESTAMP(scope.wartenrdatum)'),
             'status__ticketprinter__deactivated' => 'scope.wartenrsperre',
             'provider__id' => 'scope.InfoDienstleisterID',
-            'department__id' => 'scope.BehoerdenID'
+            //'department__id' => 'scope.BehoerdenID'
         ];
     }
 
     public function getReferenceMapping()
     {
         return [
-            'department__$ref' => self::expression('CONCAT("/department/", `scope`.`BehoerdenID`, "/")'),
+            //'department__$ref' => self::expression('CONCAT("/department/", `scope`.`BehoerdenID`, "/")'),
             'provider__$ref' => self::expression('CONCAT("/provider/", `scope`.`InfoDienstleisterID`, "/")'),
         ];
     }
@@ -138,7 +137,9 @@ class Scope extends Base implements MappingInterface
     public function reverseEntityMapping(\BO\Zmsentities\Scope $entity, $parentId = null)
     {
         $data = array();
-        $data['BehoerdenID'] = (null !== $parentId) ? $parentId : $entity->getDepartmentId();
+        if ($parentId) {
+            $data['BehoerdenID'] = $parentId;
+        }
         $data['InfoDienstleisterID'] = $entity->getProviderId();
         $data['emailstandortadmin'] = $entity->getContactEMail();
         $data['standortinfozeile'] = $entity->getScopeInfo();
@@ -152,13 +153,12 @@ class Scope extends Base implements MappingInterface
         $data['mehrfachtermine'] = $entity->getPreference('appointment', 'multipleSlotsEnabled', true);
         $data['reservierungsdauer'] = $entity->getPreference('appointment', 'reservationDuration');
         $data['qtv_url'] = $entity->getPreference('client', 'alternateAppointmentUrl');
-        $data['anmerkungPflichtfeld'] = $entity->getPreference('client', 'amendmentRequired', true);
+        $data['anmerkungPflichtfeld'] = $entity->getPreference('client', 'amendmentActivated', true);
         $data['anmerkungLabel'] = $entity->getPreference('client', 'amendmentLabel', true);
         $data['emailPflichtfeld'] = $entity->getPreference('client', 'emailRequired', true);
         $data['telefonaktiviert'] = $entity->getPreference('client', 'telephoneActivated', true);
         $data['telefonPflichtfeld'] = $entity->getPreference('client', 'telephoneRequired', true);
         $data['smsbestaetigungstext'] = $entity->getPreference('notifications', 'confirmationContent');
-        $data['smswmsbestaetigung'] = $entity->getPreference('notifications', 'confirmationEnabled', true);
         $data['smswarteschlange'] = $entity->getPreference('notifications', 'enabled', true);
         $data['smsbenachrichtigungstext'] = $entity->getPreference('notifications', 'headsUpContent');
         $data['smsbenachrichtigungsfrist'] = $entity->getPreference('notifications', 'headsUpTime');
@@ -174,6 +174,7 @@ class Scope extends Base implements MappingInterface
         $data['kundenbef_emailtext'] = $entity->getPreference('survey', 'emailContent');
         $data['kundenbefragung'] = $entity->getPreference('survey', 'enabled', true);
         $data['kundenbef_label'] = $entity->getPreference('survey', 'label');
+        $data['smswmsbestaetigung'] = $entity->getPreference('ticketprinter', 'confirmationEnabled', true);
         $data['wartenrhinweis'] = $entity->getPreference('ticketprinter', 'deactivatedText');
         $data['smsnachtrag'] = $entity->getPreference('ticketprinter', 'notificationsAmendmentEnabled', true);
         $data['smskioskangebotsfrist'] = $entity->getPreference('ticketprinter', 'notificationsDelay');
@@ -185,7 +186,7 @@ class Scope extends Base implements MappingInterface
         $data['vergebenewartenummern'] = $entity->getStatus('queue', 'givenNumberCount');
         $data['letztewartenr'] = $entity->getStatus('queue', 'lastGivenNumber');
         $data['wartenrdatum'] = (null !== $entity->getStatus('queue', 'lastGivenNumberTimestamp')) ?
-            date('Y-m-d', ($entity->getStatus('queue', 'lastGivenNumberTimestamp') / 1000)) :
+            date('Y-m-d', ($entity->getStatus('queue', 'lastGivenNumberTimestamp'))) :
             null;
         $data['wartenrsperre'] = $entity->getStatus('ticketprinter', 'deactivated');
 
