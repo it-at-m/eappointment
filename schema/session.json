@@ -55,7 +55,7 @@
              "description": "id of session"
         },
         "content": {
-            "type": "object",
+            "type": ["object", "string"],
             "properties": {
                 "basket" : {
                     "type": "object",
@@ -67,13 +67,13 @@
                             "type": "string"
                         },
                         "scope" : {
-                            "type": "integer"
+                            "type": ["integer", "null"]
                         },
                         "process" : {
-                            "type": "integer"
+                            "type": ["integer", "null"]
                         },
                         "date" : {
-                            "type": "integer"
+                            "type": ["integer", "null"]
                         },
                         "familyName" : {
                             "type": "string"
