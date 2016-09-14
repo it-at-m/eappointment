@@ -47,14 +47,15 @@ class SessionHuman extends SessionContainer
             if (!$this->has('remoteAddress', 'human') || $clientIpAddress != $this->get('remoteAddress', 'human')) {
                 \App::$log->error("[Human " . session_id() . "] Missing remote address " . $clientIpAddress);
                 $this->writeRedirectCaptcha($fileName);
+                return true;
             }
-            return true;
         }
         if (!$this->isVerified()) {
             \App::$log->error("[Human " . session_id() . "] Missing session on " . self::getFromServer('SCRIPT_NAME'));
             $this->writeRedirectCaptcha($fileName);
             return true;
         }
+        $this->writeRedirectCaptcha(end($requiredSteps));
         return false;
     }
 
@@ -141,8 +142,8 @@ class SessionHuman extends SessionContainer
         if (false === $filename) {
             $filename = basename(self::getFromServer('SCRIPT_NAME'));
         }
-        $referrer = array('human' => array('referrer' => $filename));
-        $this->setGroup($referrer);
+        $referer = array('human' => array('referer' => $filename));
+        $this->setGroup($referer);
     }
 
     private function getFromServer($param)
