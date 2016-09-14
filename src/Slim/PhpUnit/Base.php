@@ -34,6 +34,12 @@ abstract class Base extends \PHPUnit_Framework_TestCase
       */
     protected $sessionData = array();
 
+    /**
+     * Use this object instance for session getEntity()
+     *
+     * @var Object $sessionClass
+     */
+    protected $sessionClass = null;
 
     /**
      * Namespace for tested classes
@@ -71,6 +77,7 @@ abstract class Base extends \PHPUnit_Framework_TestCase
         $request = self::createBasicRequest($method, $uri);
         $sessionContainer = SessionHuman::fromContainer(function () use ($sessionData) {
             $session = new SessionData($sessionData);
+            $session->setEntityClass($this->sessionClass);
             return $session;
         });
         $request = $request->withAttribute(SessionMiddleware::SESSION_ATTRIBUTE, $sessionContainer);
