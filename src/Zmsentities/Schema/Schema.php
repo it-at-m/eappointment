@@ -6,6 +6,8 @@ class Schema extends \ArrayObject
 {
     protected $input = null;
 
+    protected $asObject = null;
+
     /**
      * Read the json schema and let array act like an object
      */
@@ -17,6 +19,15 @@ class Schema extends \ArrayObject
 
     public function toJsonObject()
     {
+        if (null !== $this->asObject) {
+            return $this->asObject;
+        }
         return $this->input;
+    }
+
+    public function setJsonObject(\stdClass $asObject)
+    {
+        $this->asObject = $asObject;
+        return $this;
     }
 }
