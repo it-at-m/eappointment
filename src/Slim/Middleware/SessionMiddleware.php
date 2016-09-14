@@ -11,9 +11,12 @@ class SessionMiddleware
 
     private $sessionName;
 
-    public function __construct($name = 'default')
+    protected $sessionClass = null;
+
+    public function __construct($name = 'default', $sessionClass = null)
     {
         $this->sessionName = $name;
+        $this->sessionClass = $sessionClass;
     }
 
     /**
@@ -39,7 +42,9 @@ class SessionMiddleware
     public function getSessionContainer($sessionName = 'default')
     {
         try {
-            return Session\SessionData::getSessionFromName($sessionName);
+            $session = Session\SessionData::getSessionFromName($sessionName);
+            $session->setEntityClass($this->sessionClass);
+            return $session;
         } catch (\Exception $exception) {
             throw  new \BO\Slim\Exception\SessionFailed();
         }
