@@ -33,7 +33,7 @@
             }
         },
         "serverTime": {
-            "type": "integer",
+            "type": "number",
             "description": "unix timestamp of the server time to adjust the clock on the call display"
         },
         "clusters": {

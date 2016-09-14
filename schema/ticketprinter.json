@@ -11,7 +11,7 @@
     "additionalProperties": false,
     "properties": {
         "enabled": {
-            "type": "boolean",
+            "type": ["boolean", "number"],
             "description": "true if browser is allowed to hand out waiting numbers to the client"
         },
         "hash": {
@@ -19,10 +19,10 @@
             "description": "identifier for a browser (usually cookie content)"
         },
         "id": {
-            "type": "integer"
+            "type": "number"
         },
         "lastUpdate": {
-            "type": "integer",
+            "type": "number",
             "description": "unix timestamp of last status change"
         },
         "name": {

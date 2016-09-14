@@ -55,7 +55,6 @@
                     },
                     "notifications": {
                         "confirmationContent": "",
-                        "confirmationEnabled": "0",
                         "enabled": "1",
                         "headsUpContent": "",
                         "headsUpTime": "0"
@@ -79,6 +78,7 @@
                         "label": ""
                     },
                     "ticketprinter": {
+                        "confirmationEnabled": "0",
                         "deactivatedText": "",
                         "notificationsAmendmentEnabled": "0",
                         "notificationsDelay": "0"
@@ -108,14 +108,14 @@
     "additionalProperties": false,
     "properties": {
         "id": {
-            "type": "integer"
+            "type": "number"
         },
         "createIP": {
             "type": "string",
             "description": "IP Address of the creator"
         },
         "createTimestamp": {
-            "type": "integer",
+            "type": "number",
             "description": "unix timestamp representing creation of the notification"
         },
         "department": {

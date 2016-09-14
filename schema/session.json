@@ -67,13 +67,13 @@
                             "type": "string"
                         },
                         "scope" : {
-                            "type": ["integer", "null"]
+                            "type": ["number", "null"]
                         },
                         "process" : {
-                            "type": ["integer", "null"]
+                            "type": ["number", "null"]
                         },
                         "date" : {
-                            "type": ["integer", "null"]
+                            "type": ["number", "null"]
                         },
                         "familyName" : {
                             "type": "string"
@@ -82,7 +82,7 @@
                             "type": "string"
                         },
                         "clientTelehone" : {
-                            "type": "integer"
+                            "type": "number"
                         },
                         "clientAmendment" : {
                             "type": "string"
@@ -102,10 +102,10 @@
                             "type": "string"
                         },
                         "client" : {
-                            "type": "integer"
+                            "type": "number"
                         },
                         "ts" : {
-                            "type": "integer"
+                            "type": "number"
                         },
                         "origin" : {
                             "type": "string"
@@ -121,16 +121,16 @@
                             "description": "amount of called booking steps",
                             "properties": {
                                 "dayselect": {
-                                    "type": "integer"
+                                    "type": "number"
                                 },
                                 "timeselect": {
-                                    "type": "integer"
+                                    "type": "number"
                                 },
                                 "register": {
-                                    "type": "integer"
+                                    "type": "number"
                                 },
                                 "confirm": {
-                                    "type": "integer"
+                                    "type": "number"
                                 }
                             }
                         }

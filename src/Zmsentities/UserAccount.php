@@ -8,6 +8,15 @@ class UserAccount extends Schema\Entity
 
     public static $schema = "useraccount.json";
 
+    public function getDefaults()
+    {
+        return [
+            'rights' => [
+                'superuser' => false,
+            ],
+        ];
+    }
+
     public function hasProperties()
     {
         $result = true;

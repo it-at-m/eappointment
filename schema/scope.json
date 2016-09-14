@@ -89,7 +89,7 @@
                 "givenNumberCount": 23,
                 "ghostWorkstationCount": 0,
                 "lastGivenNumber": 322,
-                "lastGivenNumberTimestamp": 1447925159000
+                "lastGivenNumberTimestamp": 1447925159
             },
             "ticketprinter": {
                 "deactivated": false
@@ -105,13 +105,19 @@
         "contact": {
             "$ref": "contact.json"
         },
+        "dayoff": {
+            "type": ["object", "array"],
+            "items": {
+                "$ref": "dayoff.json"
+            }
+        },
         "hint": {
             "type": "string",
             "description": "hint for the client like a description where to find the scope",
             "default": ""
         },
         "id": {
-            "type": "integer",
+            "type": "number",
             "description": "auto increment"
         },
         "preferences": {
@@ -123,27 +129,27 @@
                     "additionalProperties": false,
                     "properties": {
                         "deallocationDuration": {
-                            "type": "integer",
+                            "type": "number",
                             "description": "minutes before an deleted appointment is free for booking again to prevent appointment trading",
                             "default": 30
                         },
                         "endInDaysDefault": {
-                            "type": "integer",
+                            "type": "number",
                             "description": "maximum number of days in the future to offer appointments",
                             "default": 60
                         },
                         "multipleSlotsEnabled": {
-                            "type": "boolean",
+                            "type": ["boolean", "number"],
                             "description": "true if more than one timeslot per appointment is allowed",
                             "default": true
                         },
                         "reservationDuration": {
-                            "type": "integer",
+                            "type": "number",
                             "description": "minutes an appointment can have the status reserved",
                             "default": 30
                         },
                         "startInDaysDefault": {
-                            "type": "integer",
+                            "type": "number",
                             "description": "number of days relative to today to start offering appointments",
                             "default": 1
                         }
@@ -164,22 +170,22 @@
                             "default": ""
                         },
                         "amendmentActivated": {
-                            "type": "boolean",
+                            "type": ["boolean", "number"],
                             "description": "true if an amendment is activated",
                             "default": false
                         },
                         "emailRequired": {
-                            "type": "boolean",
+                            "type": ["boolean", "number"],
                             "description": "true if client is required to enter an email address",
                             "default": false
                         },
                         "telephoneActivated": {
-                            "type": "boolean",
+                            "type": ["boolean", "number"],
                             "description": "true if client is allowed to enter a telephone number",
                             "default": false
                         },
                         "telephoneRequired": {
-                            "type": "boolean",
+                            "type": ["boolean", "number"],
                             "description": "true if client is required to enter a telephone number",
                             "default": false
                         }
@@ -195,12 +201,12 @@
                             "default": ""
                         },
                         "enabled": {
-                            "type": "boolean",
+                            "type": ["boolean", "number"],
                             "description": "true if notifications for calling up clients are enabled",
                             "default": false
                         },
                         "headsUpTime": {
-                            "type": "integer",
+                            "type": "number",
                             "description": "minutes before call to send a sms to the client",
                             "default": 15
                         },
@@ -221,7 +227,7 @@
                             "default": ""
                         },
                         "isDefault": {
-                            "type": "boolean",
+                            "type": ["boolean", "number"],
                             "description": "a pickup of documents is default, this scope is preselected for pickup",
                             "default": false
                         }
@@ -232,7 +238,7 @@
                     "additionalProperties": false,
                     "properties": {
                         "callCountMax": {
-                            "type": "integer",
+                            "type": "number",
                             "description": "number of calls before a process is removed from the queue",
                             "default": 3
                         },
@@ -242,27 +248,27 @@
                             "default": ""
                         },
                         "firstNumber": {
-                            "type": "integer",
+                            "type": "number",
                             "description": "fist possible waiting number for ticket printer",
                             "default": 1
                         },
                         "lastNumber": {
-                            "type": "integer",
+                            "type": "number",
                             "description": "last possible waiting number for ticket printer",
                             "default": 999
                         },
                         "publishWaitingTimeEnabled": {
-                            "type": "boolean",
+                            "type": ["boolean", "number"],
                             "description": "true if waiting times are allowed to be published for public use",
                             "default": true
                         },
                         "processingTimeAverage": {
-                            "type": "integer",
+                            "type": "number",
                             "description": "minutes average for completing a process, used to estimate waiting time",
                             "default": 15
                         },
                         "statisticsEnabled": {
-                            "type": "boolean",
+                            "type": ["boolean", "number"],
                             "description": "true if statistics are enabled",
                             "default": true
                         }
@@ -278,7 +284,7 @@
                             "default": ""
                         },
                         "enabled": {
-                            "type": "boolean",
+                            "type": ["boolean", "number"],
                             "description": "true if clients should be asked to participate in a survey",
                             "default": false
                         },
@@ -294,7 +300,7 @@
                     "additionalProperties": false,
                     "properties": {
                         "confirmationEnabled": {
-                            "type": "boolean",
+                            "type": ["boolean", "number"],
                             "description": "true if client should get a notification to confirm that notifications are enabled for him/her",
                             "default": false
                         },
@@ -304,12 +310,12 @@
                             "default": ""
                         },
                         "notificationsAmendmentEnabled": {
-                            "type": "boolean",
+                            "type": ["boolean", "number"],
                             "description": "true if a client is allowed to enter a notfication address after getting his waiting number",
                             "default": false
                         },
                         "notificationsDelay": {
-                            "type": "integer",
+                            "type": "number",
                             "description": "minutes of calculated waiting time before a client is able to enter a notification address",
                             "default": 20
                         }
@@ -320,7 +326,7 @@
                     "additionalProperties": false,
                     "properties": {
                         "emergencyEnabled": {
-                            "type": "boolean",
+                            "type": ["boolean", "number"],
                             "description": "true if an emergency button should be displayed on workstation screens",
                             "default": false
                         }
@@ -345,17 +351,17 @@
                     "description": "If activated, a workstation has an emergency-button to call for help",
                     "properties": {
                         "acceptedByWorkstation": {
-                            "type": "string",
+                            "type": ["string", "null"],
                             "description": "name of workstation which accepted the emergency call",
                             "default": ""
                         },
                         "activated": {
-                            "type": "boolean",
+                            "type": ["boolean", "number"],
                             "description": "true in case of emergency",
                             "default": false
                         },
                         "calledByWorkstation": {
-                            "type": "string",
+                            "type": ["string", "null"],
                             "description": "name of workstation where the emergency occured",
                             "default": ""
                         }
@@ -365,22 +371,22 @@
                     "type": "object",
                     "properties": {
                         "givenNumberCount": {
-                            "type": "integer",
+                            "type": "number",
                             "description": "counter for given waiting numbers for the current day",
                             "default": 0
                         },
                         "ghostWorkstationCount": {
-                            "type": "integer",
+                            "type": "number",
                             "description": "a fictive number of workstations to calculate waiting times, if zero, the real number of workingstations is used",
                             "default": 0
                         },
                         "lastGivenNumber": {
-                            "type": "integer",
+                            "type": "number",
                             "description": "last given waiting number",
                             "default": 0
                         },
                         "lastGivenNumberTimestamp": {
-                            "type": "integer",
+                            "type": "number",
                             "description": "unix timestamp of the last given waiting number",
                             "default": 0
                         }
@@ -390,7 +396,7 @@
                     "type": "object",
                     "properties": {
                         "deactivated": {
-                            "type": "boolean",
+                            "type": ["boolean", "number"],
                             "description": "true if all ticket printers are disabled",
                             "default": false
                         }

@@ -107,6 +107,12 @@
                 "$ref": "request.json"
             }
         },
+        "freeProcesses": {
+            "type": ["object", "array"],
+            "items": {
+                "$ref": "process.json"
+            }
+        },
         "scopes": {
             "type": "array",
             "items": {

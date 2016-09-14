@@ -39,13 +39,13 @@
             "$ref": "contact.json"
         },
         "departments": {
-            "type": "array",
+            "type": ["array", "object", "null"],
             "items": {
                 "$ref": "department.json"
             }
         },
         "id": {
-            "type": "integer"
+            "type": "number"
         },
         "name": {
             "type": "string"
@@ -55,13 +55,13 @@
             "additionalProperties": false,
             "properties": {
                 "ticketPrinterProtectionEnabled": {
-                    "type": "boolean",
+                    "type": ["boolean", "number"],
                     "description": "true if protection for ticket printer is enabled"
                 }
             }
         },
         "ticketprinters": {
-            "type": "array",
+            "type": ["array", "object", "null"],
             "items": {
                 "$ref": "ticketprinter.json"
             }

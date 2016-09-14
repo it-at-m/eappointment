@@ -50,12 +50,12 @@
     "additionalProperties": false,
     "properties": {
         "amendment": {
-            "type": "string",
+            "type": ["string", "null"],
             "description": "additional information for this process from the client",
             "default": ""
         },
         "appointments": {
-            "type": "array",
+            "type": ["array", "object", "null"],
             "items": {
                 "$ref": "appointment.json"
             }
@@ -65,7 +65,7 @@
             "description": "key for client to delete or change process"
         },
         "clients": {
-            "type": "array",
+            "type": ["array", "object", "null"],
             "items": {
                 "$ref": "client.json"
             }
@@ -75,22 +75,22 @@
             "description": "IP Address of the creator"
         },
         "createTimestamp": {
-            "type": "integer",
+            "type": "number",
             "description": "unix timestamp representing creation of the process"
         },
         "id": {
-            "type": "integer",
+            "type": "number",
             "description": "Number is used to identify appointments like on call displays\n"
         },
         "queue": {
             "$ref": "queue.json"
         },
         "reminderTimestamp": {
-            "type": "integer",
+            "type": "number",
             "description": "timestamp of last reminder message"
         },
         "requests": {
-            "type": "array",
+            "type": ["array", "object", "null"],
             "items": {
                 "$ref": "request.json"
             }
@@ -116,6 +116,9 @@
                 "blocked"
             ],
             "description": "Status of the process. The following values are possible:\n  * free: open for reservation\n  * reserved: for updating data, no validation yet\n  * confirmed: appointment\n  * queued: confirmed and in waiting queue\n  * called: show on call displays\n  * processing: client appeared and gets service\n  * pending: client has to return for getting papers\n  * finished: successfully processed\n  * missed: no client appeared\n  * archived: only used in statistics\n  * deleted: blocking appointment time\n  * anonymized: for statistically purposes only\n  * blocked: to avoid the reuse of IDs on the same day\n"
+        },
+        "workstation": {
+            "$ref": "workstation.json"
         }
     }
 }

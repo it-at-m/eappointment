@@ -53,7 +53,7 @@ class Base extends \ArrayObject
     public function hasEntity($entityId)
     {
         foreach ($this as $entity) {
-            if ($entityId == $entity->{$entity::PRIMARY}) {
+            if (isset($entity->{$entity::PRIMARY}) && $entityId == $entity->{$entity::PRIMARY}) {
                 return true;
             }
         }
