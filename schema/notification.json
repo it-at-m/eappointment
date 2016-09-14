@@ -49,14 +49,14 @@
     "additionalProperties": false,
     "properties": {
         "id": {
-            "type": "integer"
+            "type": "number"
         },
         "createIP": {
             "type": "string",
             "description": "IP Address of the creator"
         },
         "createTimestamp": {
-            "type": "integer",
+            "type": "number",
             "description": "unix timestamp representing creation of the notification"
         },
         "department": {

@@ -27,7 +27,7 @@
             "description": "information for the client like the address to a cluster location"
         },
         "id": {
-            "type": "integer",
+            "type": "number",
             "description": "auto increment"
         },
         "name": {
@@ -35,13 +35,13 @@
             "description": "name for internal usage"
         },
         "scopes": {
-            "type": "array",
+            "type": ["object", "array"],
             "items": {
                 "$ref": "scope.json"
             }
         },
         "shortNameEnabled": {
-            "type": "boolean",
+            "type": ["number", "boolean"],
             "description": "true if the scope short name should be display next to the workstation name"
         }
     }

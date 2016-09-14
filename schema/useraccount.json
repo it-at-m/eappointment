@@ -22,7 +22,7 @@
     "additionalProperties": false,
     "properties": {
         "lastLogin": {
-            "type": "integer",
+            "type": "number",
             "description": "unix timestamp"
         },
         "id": {

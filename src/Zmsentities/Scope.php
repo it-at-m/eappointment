@@ -25,19 +25,6 @@ class Scope extends Schema\Entity
         return ($this->preferences['notifications']);
     }
 
-    public function getDepartmentId()
-    {
-        if (array_key_exists('department', $this)) {
-            if (array_key_exists('id', $this['department'])) {
-                return $this['department']['id'];
-            } elseif (array_key_exists('$ref', $this['department'])) {
-                $departmentId = preg_replace('#^.*/(\d+)/$#', '$1', $this['department']['$ref']);
-                return $departmentId;
-            }
-        }
-        throw new \Exception("No reference to a department found");
-    }
-
     public function getConfirmationContent()
     {
         return ($this->preferences['notifications']['confirmationContent']);

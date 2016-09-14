@@ -10,22 +10,22 @@
     "additionalProperties": false,
     "properties": {
         "callcenter": {
-            "type": "integer",
+            "type": "number",
             "default": 0,
             "description": "Appointments of this type are usually only available via human agents, usually by phone"
         },
         "intern": {
-            "type": "integer",
+            "type": "number",
             "default": 0,
             "description": "Appointments of this type are usually only available for authenticated workstations"
         },
         "public": {
-            "type": "integer",
+            "type": "number",
             "default": 0,
             "description": "Appointments of this type are available for everyone"
         },
         "slotnumber": {
-            "type": "integer",
+            "type": "number",
             "description": "This field is set, if the slot is part of a incrementing list of slots"
         },
         "time": {

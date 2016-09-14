@@ -16,7 +16,7 @@
             "description": "mail address"
         },
         "emailSendCount": {
-            "type": "integer",
+            "type": "number",
             "description": "number of reminder mails send"
         },
         "familyName": {
@@ -25,7 +25,7 @@
             "description": "name of the client"
         },
         "notificationsSendCount": {
-            "type": "integer",
+            "type": "number",
             "description": "number of reminder sms send"
         },
         "surveyAccepted": {

@@ -28,13 +28,13 @@
     "additionalProperties": false,
     "properties": {
         "year": {
-            "type": "integer"
+            "type": "number"
         },
         "month": {
-            "type": "integer"
+            "type": "number"
         },
         "day": {
-            "type": "integer"
+            "type": "number"
         },
         "freeAppointments": {
             "$ref": "slot.json"

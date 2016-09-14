@@ -19,14 +19,14 @@
             "$ref": "availability.json"
         },
         "date": {
-            "type": "integer",
+            "type": "number",
             "description": "unix timestamp representing the date and time of the appointment"
         },
         "scope": {
             "$ref": "scope.json"
         },
         "slotCount": {
-            "type": "integer",
+            "type": "number",
             "description": "number of time slots used"
         }
     }

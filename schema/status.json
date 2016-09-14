@@ -66,15 +66,15 @@
             "type": "object",
             "properties": {
                 "major": {
-                    "type": "integer",
+                    "type": "number",
                     "description": "major version, this value increments on breaking changes"
                 },
                 "minor": {
-                    "type": "integer",
+                    "type": "number",
                     "description": "minor version, this value increments on adding features"
                 },
                 "patch": {
-                    "type": "integer",
+                    "type": "number",
                     "description": "patch level, this value increments with bugfixes"
                 }
             }

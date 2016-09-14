@@ -19,15 +19,15 @@
     "additionalProperties": false,
     "properties": {
         "arrivalTime": {
-            "type": "integer",
+            "type": "number",
             "description": "unix timestamp when client was added to the queue or appointment time"
         },
         "callCount": {
-            "type": "integer",
+            "type": "number",
             "description": "number of calls for the client to appear at the workstation"
         },
         "callTime": {
-            "type": "integer",
+            "type": "number",
             "description": "unix timestamp of last call"
         },
         "destination": {
@@ -43,11 +43,11 @@
             "description": "number to display on a call display"
         },
         "waitingTime": {
-            "type": "integer",
+            "type": "number",
             "description": "minutes since arrival of client"
         },
         "waitingTimeEstimate": {
-            "type": "integer",
+            "type": "number",
             "description": "estimated time in minutes to wait for a call"
         },
         "withAppointment": {

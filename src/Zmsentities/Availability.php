@@ -48,6 +48,7 @@ class Availability extends Schema\Entity
             'endDate' => 0,
             'startTime' => "0:00",
             'endTime' => "23:59",
+            'type' => 'appointment'
         ];
     }
 

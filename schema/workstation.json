@@ -38,7 +38,7 @@
             "description": "used for displaying in the calldisplay"
         },
         "id": {
-            "type": "integer",
+            "type": "number",
             "description": "id of the workstation"
         },
         "name": {
@@ -53,11 +53,11 @@
             "additionalProperties": false,
             "properties": {
                 "appointmentsOnly": {
-                    "type": "boolean",
+                    "type": ["boolean", "number"],
                     "description": "true if only appointments should be shown in queue"
                 },
                 "clusterEnabled": {
-                    "type": "boolean",
+                    "type": ["boolean", "number"],
                     "description": "true if the complete cluster should be shown in queue"
                 }
             }

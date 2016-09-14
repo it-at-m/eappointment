@@ -28,7 +28,7 @@
             "$ref": "contact.json"
         },
         "id": {
-            "type": "integer"
+            "type": "number"
         },
         "name": {
             "type": "string"
@@ -37,7 +37,7 @@
         	"type": "string"
         },
         "organisations": {
-            "type": "array",
+            "type": ["array", "object", "null"],
             "items": {
                 "$ref": "organisation.json"
             }

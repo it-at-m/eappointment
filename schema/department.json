@@ -46,19 +46,19 @@
     "additionalProperties": false,
     "properties": {
         "id": {
-            "type": "integer"
+            "type": "number"
         },
         "contact": {
             "$ref": "contact.json"
         },
         "clusters": {
-            "type": "array",
+            "type": ["object", "array"],
             "items": {
                 "$ref": "cluster.json"
             }
         },
         "dayoff": {
-            "type": "array",
+            "type": ["object", "array"],
             "items": {
                 "$ref": "dayoff.json"
             }
@@ -68,7 +68,7 @@
             "description": "sender address for reminder mails to the clients"
         },
         "links": {
-            "type": "array",
+            "type": ["object", "array"],
             "items": {
                 "type": "object",
                 "properties": {
@@ -79,11 +79,14 @@
                         "type": "string"
                     },
                     "target": {
-                        "type": "boolean",
+                        "type": ["boolean", "number"],
                         "description": "true if url should open in a new window"
                     }
                 }
             }
+        },
+        "name": {
+            "type": "string"
         },
         "preferences": {
             "type": "object",
@@ -94,19 +97,19 @@
                     "additionalProperties": false,
                     "properties": {
                         "enabled": {
-                            "type": "boolean",
+                            "type": ["boolean", "number", "null"],
                             "description": "true if sms are allowed"
                         },
                         "identification": {
-                            "type": "string",
+                            "type": ["string", "null"],
                             "description": "usually an email address"
                         },
                         "sendConfirmationEnabled": {
-                            "type": "boolean",
+                            "type": ["boolean", "number", "null"],
                             "description": "true if confirmation sms are enabled"
                         },
                         "sendReminderEnabled": {
-                            "type": "boolean",
+                            "type": ["boolean", "number", "null"],
                             "description": "true if reminder sms are enabled"
                         }
                     }
@@ -114,7 +117,7 @@
             }
         },
         "scopes": {
-            "type": "array",
+            "type": ["object", "array"],
             "items": {
                 "$ref": "scope.json"
             }
