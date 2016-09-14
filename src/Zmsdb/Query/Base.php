@@ -45,8 +45,9 @@ abstract class Base
      *
      * @param Mixed $queryType one of the constants for a query type or of instance \Solution10\SQL\Query
      */
-    public function __construct($queryType)
+    public function __construct($queryType, $prefix = '')
     {
+        $this->prefix = $prefix;
         $dialect = new MySQL();
         if (self::SELECT === $queryType) {
             $this->query = new Select($dialect);
@@ -163,6 +164,7 @@ abstract class Base
             $queryList = $this->addJoin();
             foreach ($queryList as $query) {
                 $query->addResolvedReferences($depth - 1);
+                $query->addEntityMapping();
             }
         } else {
             $this->addReferenceMapping();
@@ -223,31 +225,23 @@ abstract class Base
      */
     public function addEntityMapping()
     {
-        $this->query->select($this->getEntityMapping());
-        return $this;
-    }
-
-    /**
-     * Add a select part to the query containing a mapping from the db schema to the entity schema with a prefix
-     * This method is usually used on joined tables
-     *
-     * @param  String $prefix add a prefix per field like 'provider__'
-     * @return self
-     */
-    protected function addEntityMappingPrefixed($prefix)
-    {
-        $this->prefix = $prefix;
-        $prefixed = [];
-        foreach ($this->getEntityMapping() as $key => $value) {
-            $prefixed[$prefix . $key] = $value;
-        }
-        $this->query->select($prefixed);
+        $entityMapping = $this->getPrefixedList($this->getEntityMapping());
+        $this->query->select($entityMapping);
         return $this;
     }
 
     protected function getPrefixed($prefix)
     {
         return $this->prefix . $prefix;
+    }
+
+    protected function getPrefixedList($unprefixedList)
+    {
+        $prefixed = [];
+        foreach ($unprefixedList as $key => $value) {
+            $prefixed[$this->prefix . $key] = $value;
+        }
+        return $prefixed;
     }
 
     /**
@@ -257,7 +251,8 @@ abstract class Base
      */
     protected function addReferenceMapping()
     {
-        $this->query->select($this->getReferenceMapping());
+        $referenceMapping = $this->getPrefixedList($this->getReferenceMapping());
+        $this->query->select($referenceMapping);
         return $this;
     }
 

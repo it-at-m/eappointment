@@ -24,6 +24,23 @@ class DayOff extends Base
         return $dayOffList;
     }
 
+    public function readByScopeId($scopeId = 0)
+    {
+        $dayOffList = new Collection();
+        $query = new Query\DayOff(Query\Base::SELECT);
+        $query->addEntityMapping()
+            ->addConditionScopeId($scopeId);
+        $result = $this->fetchList($query, new Entity());
+        if (count($result)) {
+            foreach ($result as $entity) {
+                if ($entity instanceof Entity) {
+                    $dayOffList->addEntity($entity);
+                }
+            }
+        }
+        return $dayOffList;
+    }
+
     public function readByYear($year)
     {
         $dayOffList = new Collection();

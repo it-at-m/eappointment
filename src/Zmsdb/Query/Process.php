@@ -62,8 +62,7 @@ class Process extends Base implements MappingInterface
             new Alias(Availability::TABLE, 'availability'),
             Availability::getJoinExpression('`process`', '`availability`')
         );
-        $joinQuery = new Availability($this->query);
-        $joinQuery->addEntityMappingPrefixed($this->getPrefixed('appointments__0__availability__'));
+        $joinQuery = new Availability($this->query, 'appointments__0__availability__');
         return $joinQuery;
     }
 

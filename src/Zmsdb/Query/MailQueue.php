@@ -39,8 +39,7 @@ class MailQueue extends Base
             '=',
             'process.BuergerID'
         );
-        $processQuery = new Process($this->query);
-        $processQuery->addEntityMappingPrefixed($this->getPrefixed('process__'));
+        $processQuery = new Process($this->query, 'process__');
         return $processQuery;
     }
 
@@ -52,8 +51,7 @@ class MailQueue extends Base
             '=',
             'department.BehoerdenID'
         );
-        $departmentQuery = new Department($this->query);
-        $departmentQuery->addEntityMappingPrefixed($this->getPrefixed('department__'));
+        $departmentQuery = new Department($this->query, 'department__');
         return $departmentQuery;
     }
 

@@ -82,6 +82,9 @@ class ProcessTest extends Base
         return (new Calendar())->getExample();
     }
 
+    /**
+     * @SuppressWarnings(ExcessiveMethodLength)
+     */
     protected function getTestProcessEntity()
     {
          $input = new Entity(array(
@@ -119,7 +122,6 @@ class ProcessTest extends Base
                     ],
                     "notifications"=>[
                         "confirmationContent"=>"",
-                        "confirmationEnabled"=>"0",
                         "enabled"=>"0",
                         "headsUpContent"=>"",
                         "headsUpTime"=>"0"
@@ -142,6 +144,7 @@ class ProcessTest extends Base
                         "label"=>""
                     ],
                     "ticketprinter"=>[
+                        "confirmationEnabled"=>"0",
                         "deactivatedText"=>"",
                         "notificationsAmendmentEnabled"=>"0",
                         "notificationsDelay"=>"0"
@@ -161,7 +164,7 @@ class ProcessTest extends Base
                         "ghostWorkstationCount"=>"-1",
                         "givenNumberCount"=>"11",
                         "lastGivenNumber"=>"1011",
-                        "lastGivenNumberTimestamp"=>"2016-03-24"
+                        "lastGivenNumberTimestamp"=>"1447925159"
                     ],
                     "ticketprinter"=>[
                         "deactivated"=>"1"

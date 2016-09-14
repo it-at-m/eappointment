@@ -37,7 +37,7 @@ class Scope extends Base
             foreach ($result as $entity) {
                 if (0 == $resolveReferences) {
                     $entity = new Entity(array(
-                        'id' => $entity->id,
+                        //'id' => $entity->id,
                         '$ref' => '/scope/'. $entity->id .'/'
                     ));
                     $scopeList->addEntity($entity);
