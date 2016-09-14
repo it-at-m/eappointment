@@ -14,6 +14,9 @@ class SessionData implements SessionInterface
      */
     private $isLocked = false;
 
+
+    protected $entityClass = null;
+
     /**
      * __construct is not allowed, use
      * - {@see SessionData::getSessionFromName}
@@ -95,9 +98,18 @@ class SessionData implements SessionInterface
 
     public function getEntity()
     {
-        $sessionContent = new \BO\Zmsentities\Session();
+        if (null === $this->entityClass) {
+            throw new \Exception("Entity-Class not set");
+        }
+        $sessionContent = clone $this->entityClass;
         $sessionContent->content = $this->data;
         return $sessionContent;
+    }
+
+    public function setEntityClass($entityClass)
+    {
+        $this->entityClass = $entityClass;
+        return $this;
     }
 
     public function remove($key, $groupIndex = null)
