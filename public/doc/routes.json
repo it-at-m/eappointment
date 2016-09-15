@@ -619,7 +619,7 @@
 	},
 	"/department/": {
 		"get": {
-			"description": "Get a list of organisations",
+			"description": "Get a list of departments",
 			"parameters": [
 				{
 					"name": "X-Authkey",
