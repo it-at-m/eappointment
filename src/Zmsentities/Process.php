@@ -169,16 +169,6 @@ class Process extends Schema\Entity
         return $client;
     }
 
-    public function getDepartment()
-    {
-        return (\array_key_exists('department', $this->scope)) ? $this->scope['department'] : null;
-    }
-
-    public function getDepartmentId()
-    {
-        return (\array_key_exists('department', $this->scope)) ? $this->scope['department']['id'] : null;
-    }
-
     public function getFirstAppointment()
     {
         $appointment = null;
