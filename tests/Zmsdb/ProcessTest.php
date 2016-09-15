@@ -229,9 +229,6 @@ class ProcessTest extends Base
             "waitingTime"=>null,
             "reminderTimestamp"=>"0"
             ],
-            "workstation"=>[
-                "id"=>"0"
-            ],
             "requests"=>[
                 [
                     "id"=>"120686",
