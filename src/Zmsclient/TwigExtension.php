@@ -69,7 +69,7 @@ class TwigExtension extends \Twig_Extension
         $content = Validator::value((string)$body)->isJson();
         if ($content->hasFailed()) {
             $output =
-                'API-Call failed, JSON parsing with error: ' . implode('; ', $content->getMessages())
+                'API-Call failed, JSON parsing with error: ' . $content->getMessages()
                     . ' - Snippet: ' .substr(\strip_tags((string)$body), 0, 2000) . '...'
             ;
         } else {
