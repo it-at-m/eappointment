@@ -23,7 +23,7 @@ class UserAccount extends Base implements MappingInterface
     public function getEntityMapping()
     {
         return [
-        'id' => 'userAccount.Name','lastLogin' => 'userAccount.Datum',
+        'id' => 'userAccount.Name','lastLogin' => self::expression('UNIX_TIMESTAMP(userAccount.Datum)'),
         'rights__superuser' => self::expression('`userAccount`.`Berechtigung` = 90'),
         'rights__organisation' => self::expression('`userAccount`.`Berechtigung` >= 70'),
         'rights__department' => self::expression('`userAccount`.`Berechtigung` >= 50'),
@@ -33,15 +33,7 @@ class UserAccount extends Base implements MappingInterface
         'rights__availability' => self::expression('`userAccount`.`Berechtigung` >= 15'),
         'rights__ticketprinter' => self::expression('`userAccount`.`Berechtigung` >= 10'),
         'rights__sms' => self::expression('`userAccount`.`Berechtigung` >= 0'),
-        'rights__basic' => self::expression('`userAccount`.`Berechtigung` = 0'),
-        'scope__0__id' => 'userAccount.StandortID'
-        ];
-    }
-
-    public function getReferenceMapping()
-    {
-        return [
-            'departments__0__$ref' => self::expression('CONCAT("/department/", `userAccount`.`BehoerdenID`, "/")'),
+        'rights__basic' => self::expression('`userAccount`.`Berechtigung` >= 0'),
         ];
     }
 

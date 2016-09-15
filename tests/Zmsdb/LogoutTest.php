@@ -15,6 +15,6 @@ class LogoutTest extends Base
         $this->assertEquals(0, $workstation->scope['id']);
         $this->assertEquals(0, current($workstation->useraccount['departments'])['id']);
         $this->assertEquals(false, $workstation->hasAuthKey());
-        $this->assertEquals(date('Y-m-d'), $workstation->useraccount['lastLogin']);
+        $this->assertEquals(date('Y-m-d'), date('Y-m-d', $workstation->useraccount['lastLogin']));
     }
 }
