@@ -12,9 +12,8 @@ class MailTest extends Base
     {
         $input = $this->getTestEntity();
         $query = new Query();
-        $queueId = $query->writeInQueue($input);
+        $entity = $query->writeInQueue($input);
 
-        $entity = $query->readEntity($queueId);
         $this->assertEntity("\\BO\\Zmsentities\\Mail", $entity);
         $this->assertEquals('Das ist ein Plaintext Test', $entity->getPlainPart());
         $this->assertEquals("Max Mustermann", $entity->getFirstClient()['familyName']);
@@ -24,11 +23,12 @@ class MailTest extends Base
         $this->assertEntityList("\\BO\\Zmsentities\\Mail", $collection);
         $this->assertEquals(true, $collection->hasEntity('1234')); //Test Entity exists
 
-        $deleteTest = $query->deleteEntity($queueId);
+        $entityId = $entity->id;
+        $deleteTest = $query->deleteEntity($entityId);
         $this->assertTrue($deleteTest, "Failed to delete Mail from Database.");
 
-        $entity = $query->readEntity($queueId);
-        $this->assertFalse($entity->hasId($queueId), "Deleted Mail still exists in Database.");
+        $entity = $query->readEntity($entityId);
+        $this->assertFalse($entity->hasId($entityId), "Deleted Mail still exists in Database.");
     }
 
     protected function getTestEntity()

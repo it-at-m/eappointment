@@ -4,7 +4,9 @@ namespace BO\Zmsdb\Query;
 
 class Department extends Base implements MappingInterface
 {
+
     /**
+     *
      * @var String TABLE mysql table reference
      */
     const TABLE = 'behoerde';
@@ -61,9 +63,7 @@ class Department extends Base implements MappingInterface
     public function getEntityMapping()
     {
         return [
-            'contact__city' => self::expression(
-                'TRIM(" " FROM SUBSTRING_INDEX(`department`.`Adresse`, " ", -1))'
-            ),
+            'contact__city' => self::expression('TRIM(" " FROM SUBSTRING_INDEX(`department`.`Adresse`, " ", -1))'),
             'contact__street' => 'department.Adresse',
             /*
             'contact__streetNumber' => self::expression(
@@ -84,7 +84,7 @@ class Department extends Base implements MappingInterface
             'preferences__notifications__enabled' => 'department_sms.enabled',
             'preferences__notifications__identification' => 'department_sms.Absender',
             'preferences__notifications__sendConfirmationEnabled' => 'department_sms.internetbestaetigung',
-            'preferences__notifications__sendReminderEnabled' => 'department_sms.interneterinnerung',
+            'preferences__notifications__sendReminderEnabled' => 'department_sms.interneterinnerung'
         ];
     }
 
@@ -104,6 +104,18 @@ class Department extends Base implements MappingInterface
         );
     }
 
+    public function addConditionScopeId($scopeId)
+    {
+        $this->query->leftJoin(
+            new Alias('standort', 'scope_department'),
+            'scope_department.BehoerdenID',
+            '=',
+            'department.BehoerdenID'
+        );
+        $this->query->where('scope_department.StandortID', '=', $scopeId);
+        return $this;
+    }
+
     public function addConditionDepartmentId($departmentId)
     {
         $this->query->where('department.BehoerdenID', '=', $departmentId);
@@ -118,16 +130,19 @@ class Department extends Base implements MappingInterface
 
     public function reverseEntityMapping(\BO\Zmsentities\Department $entity, $parentId = null)
     {
-        $data = array();
+        $data = array ();
         if (null !== $parentId) {
             $data['OrganisationsID'] = $parentId;
         }
         $data['Adresse'] = $entity->contact['street'];
         $data['Name'] = $entity->name;
         $data['Ansprechpartner'] = $entity->getContactPerson();
-        $data = array_filter($data, function ($value) {
-            return ($value !== null && $value !== false);
-        });
+        $data = array_filter(
+            $data,
+            function ($value) {
+                return ($value !== null && $value !== false);
+            }
+        );
         return $data;
     }
 }
