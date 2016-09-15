@@ -16,7 +16,7 @@
             "id": 123
         },
         "useraccount": {
-            "lastLogin": 1447926465000,
+            "lastLogin": 1447926465,
             "id": "johndoe",
             "rights": {
                 "scope": true,
