@@ -74,7 +74,6 @@ class Mail extends Schema\Entity
         $entity->process = $process;
         $entity->subject = Helper\Messaging::getMailSubject($process, $config);
         $entity->createIP = $process->createIP;
-        $entity->department = $process->getDepartment();
         $entity->multipart = [
             array(
                 'mime' => 'text/html',
