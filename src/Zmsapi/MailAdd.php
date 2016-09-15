@@ -21,13 +21,12 @@ class MailAdd extends BaseController
     public static function render()
     {
         Helper\User::checkRights('sms');
-        
+
         $message = Response\Message::create(Render::$request);
         $input = Validator::input()->isJson()->getValue();
         $entity = new \BO\Zmsentities\Mail($input);
-        $queueId = (new Query())->writeInQueue($entity);
-        $entity->id = $queueId;
-        $message->data = $entity;
+        $mail = (new Query())->writeInQueue($entity);
+        $message->data = $mail;
         Render::lastModified(time(), '0');
         Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }

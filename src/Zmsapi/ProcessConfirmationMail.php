@@ -26,7 +26,7 @@ class ProcessConfirmationMail extends BaseController
         $input = Validator::input()->isJson()->getValue();
         $process = new \BO\Zmsentities\Process($input);
         $authKeyByProcessId = (new Process())->readAuthKeyByProcessId($process->id);
-        
+
         if (null === $input) {
             throw new Exception\InvalidInput();
         } elseif (null === $authKeyByProcessId) {
@@ -36,8 +36,7 @@ class ProcessConfirmationMail extends BaseController
         } else {
             $config = (new Config())->readEntity();
             $mail = (new \BO\Zmsentities\Mail())->toResolvedEntity($process, $config);
-            $queueId = (new Query())->writeInQueue($mail);
-            $mail->id = $queueId;
+            $mail = (new Query())->writeInQueue($mail);
             $message->data = $mail;
         }
 
