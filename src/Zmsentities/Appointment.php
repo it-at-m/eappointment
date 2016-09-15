@@ -8,12 +8,12 @@ class Appointment extends Schema\Entity
 
     public static $schema = "appointment.json";
 
-    public function toDate($lang)
+    public function toDate($lang = 'de')
     {
         return ($lang == 'en') ? date('l F d, Y', $this->date) : strftime("%A %d. %B %Y", $this->date);
     }
 
-    public function toTime($lang)
+    public function toTime($lang = 'de')
     {
         $suffix = ($lang == 'en') ? ' o\'clock' : ' Uhr';
         return date('H:i', $this->date) . $suffix;
@@ -74,7 +74,9 @@ class Appointment extends Schema\Entity
         if ($appointmentDateTime) {
             $this->date = $appointmentDateTime->format('U');
         } else {
-            throw new \Exception("String ".htmlspecialchars($dateString)." not format ". htmlspecialchars($format));
+            throw new Exception\DateStringWrongFormat(
+                "String ".htmlspecialchars($dateString)." not format ". htmlspecialchars($format)
+            );
         }
         return $this;
     }
