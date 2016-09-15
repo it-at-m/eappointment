@@ -17,21 +17,7 @@ class Ticketprinter extends Base implements MappingInterface
             'id' => 'ticketprinter.kioskid',
             'lastUpdate' => 'ticketprinter.timestamp',
             'name' => 'ticketprinter.name',
-            'organisation__id' => 'ticketprinter.organisationsid'
         ];
-    }
-
-    public function addJoin()
-    {
-        $this->query->leftJoin(
-            new Alias(Organisation::TABLE, 'organisation'),
-            'ticketprinter.organisationsid',
-            '=',
-            'organisation.OrganisationsID'
-        );
-        $organisationQuery = new Organisation($this->query, 'organisation__');
-
-        return [$organisationQuery];
     }
 
     public function addConditionTicketprinterId($ticketprinterId)
@@ -44,15 +30,6 @@ class Ticketprinter extends Base implements MappingInterface
     {
         $this->query->where('ticketprinter.organisationsid', '=', $organisationId);
         return $this;
-    }
-
-    public function getReferenceMapping()
-    {
-        return [
-            'organisation__$ref' => self::expression(
-                'CONCAT("/organisation/", `ticketprinter`.`organisationsid`, "/")'
-            ),
-        ];
     }
 
     public function reverseEntityMapping(\BO\Zmsentities\Ticketprinter $entity, $parentId = null)
