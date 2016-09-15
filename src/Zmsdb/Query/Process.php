@@ -120,7 +120,6 @@ class Process extends Base implements MappingInterface
             'queue__callTime' => 'process.aufrufzeit',
             'queue__number' => 'process.wartenummer',
             'queue__waitingTime' => 'process.wartezeit',
-            'workstation__id' => 'process.NutzerID',
             'reminderTimestamp' => 'process.Erinnerungszeitpunkt.'
         ];
     }
