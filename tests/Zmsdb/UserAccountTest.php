@@ -20,6 +20,7 @@ class UserAccountTest extends Base
         $query = new Query();
         $input = $this->getTestEntity();
         $userAccount = $query->writeEntity($input);
+        $this->assertEntity("\\BO\\Zmsentities\\UserAccount", $userAccount);
 
         $userAccount->setRights('organisation');
         $userAccount = $query->updateEntity($userAccount->id, $userAccount);
@@ -57,6 +58,6 @@ class UserAccountTest extends Base
 
     protected function getTestEntity()
     {
-        return $input = (new Entity())->getExample();
+        return (new Entity())->getExample();
     }
 }
