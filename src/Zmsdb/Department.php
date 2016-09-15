@@ -7,28 +7,27 @@ use \BO\Zmsentities\Collection\DepartmentList as Collection;
 
 class Department extends Base
 {
+
     /**
+     *
      * @var String TABLE mysql table reference
      */
-    public static $departmentCache = array();
+    public static $departmentCache = array ();
 
     public function readEntity($departmentId, $resolveReferences = 0, $disableCache = false)
     {
-        if (!$disableCache && array_key_exists($departmentId, self::$departmentCache)) {
+        if (! $disableCache && array_key_exists($departmentId, self::$departmentCache)) {
             return self::$departmentCache[$departmentId];
         }
         $query = new Query\Department(Query\Base::SELECT);
-        $query
-            ->addEntityMapping()
+        $query->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
             ->addConditionDepartmentId($departmentId);
         $department = $this->fetchOne($query, new Entity());
         if (isset($department['id'])) {
-            $department['clusters'] = (new Cluster())
-                ->readByDepartmentId($departmentId, $resolveReferences);
-            $department['scopes'] = (new Scope())
-                ->readByDepartmentId($departmentId, $resolveReferences);
-            $department['dayoff']  = (new DayOff())->readByDepartmentId($departmentId);
+            $department['clusters'] = (new Cluster())->readByDepartmentId($departmentId, $resolveReferences);
+            $department['scopes'] = (new Scope())->readByDepartmentId($departmentId, $resolveReferences);
+            $department['dayoff'] = (new DayOff())->readByDepartmentId($departmentId);
             self::$departmentCache[$departmentId] = $department;
             return $department->withOutClusterDuplicates();
         }
@@ -52,12 +51,21 @@ class Department extends Base
         return $departmentList;
     }
 
+    public function readByScopeId($scopeId, $resolveReferences = 0)
+    {
+        $query = new Query\Department(Query\Base::SELECT);
+        $query->addEntityMapping()
+            ->addResolvedReferences($resolveReferences)
+            ->addConditionScopeId($scopeId);
+        $department = $this->fetchOne($query, new Entity());
+        return (isset($department['id'])) ? $department : null;
+    }
+
     public function readByOrganisationId($organisationId, $resolveReferences = 0)
     {
         $departmentList = new Collection();
         $query = new Query\Department(Query\Base::SELECT);
-        $query
-            ->addEntityMapping()
+        $query->addEntityMapping()
             ->addConditionOrganisationId($organisationId);
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
@@ -75,38 +83,34 @@ class Department extends Base
      * remove a department
      *
      * @param
-     * departmentId
+     *            departmentId
      *
      * @return Resource Status
      */
     public function deleteEntity($departmentId)
     {
-        $query =  new Query\Department(Query\Base::DELETE);
+        $query = new Query\Department(Query\Base::DELETE);
         $query->addConditionDepartmentId($departmentId);
         $entityDelete = $this->deleteItem($query);
-
         $query = Query\Department::QUERY_MAIL_DELETE;
-        $statement = $this->getWriter()->prepare($query);
-        $emailDelete = $statement->execute(
-            array(
-                $departmentId,
-            )
-        );
+        $statement = $this->getWriter()
+            ->prepare($query);
+        $emailDelete = $statement->execute(array (
+            $departmentId
+        ));
         $query = Query\Department::QUERY_NOTIFICATIONS_DELETE;
-        $statement = $this->getWriter()->prepare($query);
-        $notificationsDelete = $statement->execute(
-            array(
-                $departmentId,
-            )
-        );
+        $statement = $this->getWriter()
+            ->prepare($query);
+        $notificationsDelete = $statement->execute(array (
+            $departmentId
+        ));
         return ($entityDelete && $emailDelete && $notificationsDelete) ? true : false;
     }
 
     /**
      * write a department
      *
-     * @param
-     * Department $entity
+     * @param Department $entity
      *
      * @return Entity
      */
@@ -114,24 +118,15 @@ class Department extends Base
     {
         $query = new Query\Department(Query\Base::INSERT);
         $values = $query->reverseEntityMapping($entity, $parentId);
-
-        //get owner by organisation
+        // get owner by organisation
         $owner = (new Owner())->readByOrganisationId($parentId);
         $values['KundenID'] = $owner->id;
-
         $query->addValues($values);
         $this->writeItem($query);
-        $lastInsertId = $this->getWriter()->lastInsertId();
-
-        $this->writeDepartmentMail(
-            $lastInsertId,
-            $entity->email
-        );
-        $this->writeDepartmentNotifications(
-            $lastInsertId,
-            $entity->getNotificationPreferences()
-        );
-
+        $lastInsertId = $this->getWriter()
+            ->lastInsertId();
+        $this->writeDepartmentMail($lastInsertId, $entity->email);
+        $this->writeDepartmentNotifications($lastInsertId, $entity->getNotificationPreferences());
         return $this->readEntity($lastInsertId);
     }
 
@@ -139,7 +134,7 @@ class Department extends Base
      * update a department
      *
      * @param
-     * departmentId
+     *            departmentId
      *
      * @return Entity
      */
@@ -150,16 +145,8 @@ class Department extends Base
         $values = $query->reverseEntityMapping($entity);
         $query->addValues($values);
         $this->writeItem($query);
-
-        $this->updateDepartmentMail(
-            $departmentId,
-            $entity->email
-        );
-        $this->updateDepartmentNotifications(
-            $departmentId,
-            $entity->getNotificationPreferences()
-        );
-
+        $this->updateDepartmentMail($departmentId, $entity->email);
+        $this->updateDepartmentNotifications($departmentId, $entity->getNotificationPreferences());
         return $this->readEntity($departmentId);
     }
 
@@ -167,21 +154,20 @@ class Department extends Base
      * create mail preferences of a department
      *
      * @param
-     * departmentId,
-     * email
+     *            departmentId,
+     *            email
      *
      * @return Boolean
      */
     protected function writeDepartmentMail($departmentId, $email)
     {
         $query = Query\Department::QUERY_MAIL_INSERT;
-        $statement = $this->getWriter()->prepare($query);
-        $result = $statement->execute(
-            array(
-                $departmentId,
-                $email
-            )
-        );
+        $statement = $this->getWriter()
+            ->prepare($query);
+        $result = $statement->execute(array (
+            $departmentId,
+            $email
+        ));
         return $result;
     }
 
@@ -189,17 +175,18 @@ class Department extends Base
      * create notification preferences of a department
      *
      * @param
-     * departmentId,
-     * preferences
+     *            departmentId,
+     *            preferences
      *
      * @return Boolean
      */
     protected function writeDepartmentNotifications($departmentId, $preferences)
     {
         $query = Query\Department::QUERY_NOTIFICATIONS_INSERT;
-        $statement = $this->getWriter()->prepare($query);
+        $statement = $this->getWriter()
+            ->prepare($query);
         $result = $statement->execute(
-            array(
+            array (
                 $departmentId,
                 (isset($preferences['enabled'])) ? 1 : 0,
                 $preferences['identification'],
@@ -214,38 +201,43 @@ class Department extends Base
      * update mail preferences of a department
      *
      * @param
-     * departmentId,
-     * email
+     *            departmentId,
+     *            email
      *
      * @return Boolean
      */
     protected function updateDepartmentMail($departmentId, $email)
     {
         $query = Query\Department::QUERY_MAIL_UPDATE;
-        return $this->getWriter()->fetchAffected($query, array(
+        return $this->getWriter()
+            ->fetchAffected($query, array (
             $email,
             $departmentId
-        ));
+            ));
     }
 
     /**
      * update notification preferences of a department
      *
      * @param
-     * departmentId,
-     * preferences
+     *            departmentId,
+     *            preferences
      *
      * @return Boolean
      */
     protected function updateDepartmentNotifications($departmentId, $preferences)
     {
         $query = Query\Department::QUERY_NOTIFICATIONS_UPDATE;
-        return $this->getWriter()->fetchAffected($query, array(
-            (isset($preferences['enabled'])) ? 1 : 0,
-            $preferences['identification'],
-            (isset($preferences['sendConfirmationEnabled'])) ? 1 : 0,
-            (isset($preferences['sendReminderEnabled'])) ? 1 : 0,
-            $departmentId
-        ));
+        return $this->getWriter()
+            ->fetchAffected(
+                $query,
+                array (
+                (isset($preferences['enabled'])) ? 1 : 0,
+                $preferences['identification'],
+                (isset($preferences['sendConfirmationEnabled'])) ? 1 : 0,
+                (isset($preferences['sendReminderEnabled'])) ? 1 : 0,
+                $departmentId
+                )
+            );
     }
 }
