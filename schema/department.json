@@ -52,13 +52,13 @@
             "$ref": "contact.json"
         },
         "clusters": {
-            "type": ["object", "array"],
+            "type": "array",
             "items": {
                 "$ref": "cluster.json"
             }
         },
         "dayoff": {
-            "type": ["object", "array"],
+            "type": "array",
             "items": {
                 "$ref": "dayoff.json"
             }
@@ -68,7 +68,7 @@
             "description": "sender address for reminder mails to the clients"
         },
         "links": {
-            "type": ["object", "array"],
+            "type": "array",
             "items": {
                 "type": "object",
                 "properties": {
@@ -97,19 +97,19 @@
                     "additionalProperties": false,
                     "properties": {
                         "enabled": {
-                            "type": ["boolean", "number", "null"],
+                            "type": ["boolean", "number"],
                             "description": "true if sms are allowed"
                         },
                         "identification": {
-                            "type": ["string", "null"],
+                            "type": ["string"],
                             "description": "usually an email address"
                         },
                         "sendConfirmationEnabled": {
-                            "type": ["boolean", "number", "null"],
+                            "type": ["boolean", "number"],
                             "description": "true if confirmation sms are enabled"
                         },
                         "sendReminderEnabled": {
-                            "type": ["boolean", "number", "null"],
+                            "type": ["boolean", "number"],
                             "description": "true if reminder sms are enabled"
                         }
                     }
@@ -117,7 +117,7 @@
             }
         },
         "scopes": {
-            "type": ["object", "array"],
+            "type": "array",
             "items": {
                 "$ref": "scope.json"
             }

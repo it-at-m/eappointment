@@ -50,12 +50,12 @@
     "additionalProperties": false,
     "properties": {
         "amendment": {
-            "type": ["string", "null"],
+            "type": ["string"],
             "description": "additional information for this process from the client",
             "default": ""
         },
         "appointments": {
-            "type": ["array", "object", "null"],
+            "type": "array",
             "items": {
                 "$ref": "appointment.json"
             }
@@ -65,7 +65,7 @@
             "description": "key for client to delete or change process"
         },
         "clients": {
-            "type": ["array", "object", "null"],
+            "type": "array",
             "items": {
                 "$ref": "client.json"
             }
@@ -90,7 +90,7 @@
             "description": "timestamp of last reminder message"
         },
         "requests": {
-            "type": ["array", "object", "null"],
+            "type": "array",
             "items": {
                 "$ref": "request.json"
             }

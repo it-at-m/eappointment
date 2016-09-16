@@ -20,14 +20,51 @@ class Schema extends \ArrayObject
     public function toJsonObject()
     {
         if (null !== $this->asObject) {
-            return $this->asObject;
+            $data = $this->asObject;
+        } else {
+            $data = json_decode(json_encode($this->toSanitizedArray()));
         }
-        return $this->input;
+        return $data;
     }
 
     public function setJsonObject(\stdClass $asObject)
     {
         $this->asObject = $asObject;
         return $this;
+    }
+
+    public function toSanitizedArray()
+    {
+        $data = $this->getArrayCopy();
+        $data = $this->toSanitizedValue($data);
+        return $data;
+    }
+
+    /**
+     * Sanitize value for valid export as JSON
+     *
+     */
+    protected function toSanitizedValue($value)
+    {
+        if ($value instanceof \ArrayObject) {
+            $value = $value->getArrayCopy();
+        }
+        if (is_array($value)) {
+            foreach ($value as $key => $item) {
+                $value[$key] = $this->toSanitizedValue($item);
+                if ($this->isItemEmpty($value[$key])) {
+                    unset($value[$key]);
+                }
+            }
+        }
+        return $value;
+    }
+
+    protected static function isItemEmpty($item)
+    {
+        return (
+            null === $item
+            || (is_array($item) && count($item) == 0)
+        );
     }
 }
