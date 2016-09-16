@@ -39,7 +39,7 @@
             "$ref": "contact.json"
         },
         "departments": {
-            "type": ["array", "object", "null"],
+            "type": "array",
             "items": {
                 "$ref": "department.json"
             }
@@ -61,7 +61,7 @@
             }
         },
         "ticketprinters": {
-            "type": ["array", "object", "null"],
+            "type": "array",
             "items": {
                 "$ref": "ticketprinter.json"
             }

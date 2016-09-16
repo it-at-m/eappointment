@@ -41,8 +41,8 @@ class Session extends Schema\Entity
                     'referrer' => '',
                     'step' => array()
                 ],
-                'status' => 'free',
-                'task' => '',
+                'status' => 'start',
+                'task' => 'new',
                 'finished' => false,
                 'X-Authkey' => '',
                 'error' => ''
