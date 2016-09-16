@@ -69,6 +69,13 @@ class Availability extends Schema\Entity
         // Synchronize timezones, cause DB entries do not have timezones
         $start->setTimezone($dateTime->getTimezone());
         $end->setTimezone($dateTime->getTimezone());
+
+        if ($this->hasDayOff($dateTime) && $this->getDuration() > 2) {
+            return false;
+        }
+        //if ($this->id == $debugAvailabilityId) {
+        //    error_log("true == hasDate(".$dateTime->format('c').") ".$this);
+        //}
         if (!$this['weekday'][$weekDayName]) {
             // Wrong weekday
             //if ($this->id == $debugAvailabilityId) {
@@ -90,12 +97,6 @@ class Availability extends Schema\Entity
             //}
             return false;
         }
-        if ($this->hasDayOff($dateTime) && $this->getDuration() > 2) {
-            return false;
-        }
-        //if ($this->id == $debugAvailabilityId) {
-        //    error_log("true == hasDate(".$dateTime->format('c').") ".$this);
-        //}
         return true;
     }
 
@@ -108,9 +109,9 @@ class Availability extends Schema\Entity
      */
     public function hasDayOff(\DateTimeInterface $dateTime)
     {
-        if (isset($this['department']['dayoff'])) {
+        if (isset($this['scope']['dayoff'])) {
             $timeStamp = $dateTime->getTimestamp();
-            foreach ($this['department']['dayoff'] as $dayOff) {
+            foreach ($this['scope']['dayoff'] as $dayOff) {
                 if ($dayOff['date'] == $timeStamp) {
                     return true;
                 }

@@ -10,13 +10,15 @@ class Workstation extends Schema\Entity
 
     public function getQueuePreference($key, $isBoolean = false)
     {
-        if (array_key_exists($key, $this)) {
+        $result = null;
+        if (array_key_exists($key, $this['queue'])) {
             if ($isBoolean) {
-                return ($this[$key]) ? 1 : 0;
+                $result = ($this['queue'][$key]) ? 1 : 0;
             } else {
-                return $this[$key];
+                $result = $this['queue'][$key];
             }
         }
+        return $result;
     }
 
     public function getSelectedDepartment()
