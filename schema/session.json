@@ -173,7 +173,7 @@
 	            		"description": "Change normal process by a task: \n* new: force to delete reserved process if exists, remove last step and start modifying process\n* continue: exception to continue on breaking status like reserved or confirmed\n"
                 },
                 "finished" : {
-                    "type": "boolean",
+                    "type": ["boolean", "number"],
                     "description": "True if process has been confirmed successfully"
                 },
                 "X-Authkey" : {
