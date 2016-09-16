@@ -70,9 +70,6 @@ class Availability extends Schema\Entity
         $start->setTimezone($dateTime->getTimezone());
         $end->setTimezone($dateTime->getTimezone());
 
-        if ($this->hasDayOff($dateTime) && $this->getDuration() > 2) {
-            return false;
-        }
         //if ($this->id == $debugAvailabilityId) {
         //    error_log("true == hasDate(".$dateTime->format('c').") ".$this);
         //}
@@ -95,6 +92,9 @@ class Availability extends Schema\Entity
             //if ($this->id == $debugAvailabilityId) {
             //    error_log("!series hasDate(".$dateTime->format('c').") ".$this);
             //}
+            return false;
+        }
+        if ($this->hasDayOff($dateTime) && $this->getDuration() > 2) {
             return false;
         }
         return true;
