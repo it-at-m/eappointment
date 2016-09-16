@@ -74,16 +74,7 @@
             "type": ["boolean", "number"],
             "default": true,
             "description": "an appointment is allowed to take more than one time slot"
-        },
-        "type": {
-            "type": "string",
-            "enum": [
-                "appointment",
-                "openinghours",
-                "break"
-            ],
-            "description": "The following type are available\n* appointment - defines times for appointments\n* openinghours - defines times where a scope is opened\n* break - defines times for a break (not implemented yet)\n"
-        },
+        },        
         "repeat": {
             "type": "object",
             "properties": {
@@ -112,6 +103,15 @@
         "startTime": {
             "type": "string",
             "description": "format '0:00' or '17:30'"
+        },
+        "type": {
+            "type": "string",
+            "enum": [
+                "appointment",
+                "openinghours",
+                "break"
+            ],
+            "description": "The following type are available\n* appointment - defines times for appointments\n* openinghours - defines times where a scope is opened\n* break - defines times for a break (not implemented yet)\n"
         },
         "weekday": {
             "type": "object",

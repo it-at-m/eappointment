@@ -21,7 +21,12 @@
             "rights": {
                 "scope": true,
                 "ticketprinter": true
-            }
+            },
+            "departments" : [
+            	{
+            		"id": 123
+			    }
+            ]
         }
     },
     "required": [
