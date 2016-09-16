@@ -21,8 +21,8 @@ class SessionUpdate extends BaseController
         $message = Response\Message::create(Render::$request);
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $session = new \BO\Zmsentities\Session($input);
-        $session->testValid();
         $session->getUnSerializedContent();
+        $session->testValid();
         $message->data = null;
 
         if ($session->getProviders() && false === Helper\Matching::isProviderExisting($session)) {
