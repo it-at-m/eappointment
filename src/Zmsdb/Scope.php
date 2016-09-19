@@ -19,6 +19,7 @@ class Scope extends Base
                 ->addConditionScopeId($scopeId);
             $scope = $this->fetchOne($query, new Entity());
             $scope = $this->addDldbData($scope, $resolveReferences);
+            $scope['dayoff'] = (new DayOff())->readByScopeId($scopeId);
             self::$cache[$scopeId] = $scope;
         }
         return self::$cache[$scopeId];
