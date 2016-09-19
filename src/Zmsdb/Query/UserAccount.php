@@ -62,7 +62,6 @@ class UserAccount extends Base implements MappingInterface
         $data['Name'] = $entity->id;
         $data['Passworthash'] = (isset($entity->password)) ? md5($entity->password) : null;
         $data['Berechtigung'] = RightsLevelManager::getLevel($entity->rights);
-        $data['BehoerdenID'] = $entity->getDepartmentId();
         //default values because of strict mode
         $data['notrufinitiierung'] = 0;
         $data['notrufantwort'] = 0;

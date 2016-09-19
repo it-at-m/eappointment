@@ -76,14 +76,14 @@ class Workstation extends Base implements MappingInterface
         return $this;
     }
 
-    public function reverseEntityMapping(\BO\Zmsentities\Workstation $entity)
+    public function reverseEntityMapping(\BO\Zmsentities\Workstation $entity, $selectedDepartmentId = null)
     {
         $data = array();
         $data['aufrufzusatz'] = ('' == $entity->hint) ? $entity->name : $entity->hint;
         $data['Kalenderansicht'] = $entity->getQueuePreference('appointmentsOnly', true);
         $data['clusteransicht'] = $entity->getQueuePreference('clusterEnabled', true);
         $data['StandortID'] = $entity->scope['id'];
-        $data['BehoerdenID'] = current($entity->useraccount['departments']);
+        $data['BehoerdenID'] = ($selectedDepartmentId) ? $entity->getDepartmentById($selectedDepartmentId) : 0;
         $data['Arbeitsplatznr'] = $entity->name;
 
         $data = array_filter($data, function ($value) {
