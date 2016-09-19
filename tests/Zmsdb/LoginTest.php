@@ -23,7 +23,8 @@ class LoginTest extends Base
 
         $workstation->scope['id'] = 141; //Bürgeramt Heerstraße
         $workstation->name = 12; //Arbeitsplatznummer
-        $userAccount->addDepartmentId(72); //Bürgeramt Egon-Erwin-Kisch-Str.
+
+        $userAccount->addDepartment((new \BO\Zmsdb\Department())->readEntity('72')); //Bürgeramt Egon-Erwin-Kisch-Str.
 
         $workstation->useraccount = $userAccount;
         $workstation->authKey;
