@@ -48,7 +48,7 @@ class Workstation extends Schema\Entity
     {
         $isSuperuser = false;
         $userRights = $this->getUseraccountRights();
-        if ($userRights['superuser']) {
+        if (isset($userRights['superuser'])) {
             $isSuperuser = true;
         }
         return $isSuperuser;

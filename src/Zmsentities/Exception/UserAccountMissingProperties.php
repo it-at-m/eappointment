@@ -7,5 +7,5 @@ namespace BO\Zmsentities\Exception;
  */
 class UserAccountMissingProperties extends \Exception
 {
-
+    protected $code = 500;
 }
