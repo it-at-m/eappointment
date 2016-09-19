@@ -29,6 +29,8 @@ class WorkstationTest extends EntityCommonTests
         $entity = (new $this->entityclass())->getExample();
         $department = $entity->getDepartmentById('123');
         $this->assertTrue($department->hasId(), 'Department does not exists in Workstation');
+        $department = $entity->getDepartmentById('72');
+        $this->assertFalse($department->hasId(), 'Department should not exists in Workstation');
     }
 
     public function testGetProviderOfGivenScope()
