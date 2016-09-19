@@ -34,15 +34,6 @@ class UserAccount extends Schema\Entity
         return $this;
     }
 
-    public function getDepartmentId()
-    {
-        $department = array('id' => 0);
-        if (count($this->departments)) {
-            $department = current($this->departments);
-        }
-        return $department['id'];
-    }
-
     public function hasDepartment($departmentId)
     {
         if (count($this->departments)) {

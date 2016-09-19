@@ -9,7 +9,7 @@ class UseraccountTest extends EntityCommonTests
     public function testBasic()
     {
         $entity = (new $this->entityclass())->getExample();
-        $this->assertTrue('72' == $entity->getDepartmentId(), 'add department id failed');
+        $this->assertTrue($entity->hasDepartment('72'), 'add department id failed');
         $entity->addDepartment((new \BO\Zmsentities\Department())->getExample());
         $this->assertTrue($entity->hasDepartment('123'), 'add department failed');
         $this->assertFalse($entity->hasDepartment('55'), 'department 55 should not exists');

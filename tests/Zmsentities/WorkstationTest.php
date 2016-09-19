@@ -24,10 +24,10 @@ class WorkstationTest extends EntityCommonTests
         $this->assertTrue(null === $entity->getQueuePreference('clusterTestEnabled'));
     }
 
-    public function testGetSelectedDepartment()
+    public function testGetDepartment()
     {
         $entity = (new $this->entityclass())->getExample();
-        $department = $entity->getSelectedDepartment();
+        $department = $entity->getDepartmentById('123');
         $this->assertTrue($department->hasId(), 'Department does not exists in Workstation');
     }
 
