@@ -21,13 +21,17 @@ class Workstation extends Schema\Entity
         return $result;
     }
 
-    public function getSelectedDepartment()
+    public function getDepartmentById($departmentId)
     {
-        $department = new Department();
-        if (array_key_exists('departments', $this->useraccount)) {
-            $department = new Department(current($this->useraccount['departments']));
+        $userAccount = new UserAccount($this->useraccount);
+        if ($userAccount->hasDepartment($departmentId)) {
+            foreach ($this->useraccount['departments'] as $department) {
+                if ($departmentId == $department['id']) {
+                    return new Department($department);
+                }
+            }
         }
-        return $department;
+        return null;
     }
 
     public function getProviderOfGivenScope()
