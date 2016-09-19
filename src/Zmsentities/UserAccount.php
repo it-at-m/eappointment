@@ -19,20 +19,18 @@ class UserAccount extends Schema\Entity
 
     public function hasProperties()
     {
-        $result = true;
-        $requiredProperties = func_get_args();
-        foreach ($requiredProperties as $property) {
-            if (!array_key_exists($property, $this)) {
-                throw new Exception\UserAccountMissingProperties();
-                $result = false;
+        foreach (func_get_args() as $property) {
+            if (!$this->toProperty()->$property->get()) {
+                throw new Exception\UserAccountMissingProperties("Missing property " . htmlspecialchars($property));
+                return false;
             }
         }
-        return $result;
+        return true;
     }
 
-    public function addDepartmentId($departmentId)
+    public function addDepartment($department)
     {
-        $this->departments[] = $departmentId;
+        $this->departments[] = $department;
         return $this;
     }
 
@@ -43,6 +41,18 @@ class UserAccount extends Schema\Entity
             $department = current($this->departments);
         }
         return $department['id'];
+    }
+
+    public function hasDepartment($departmentId)
+    {
+        if (count($this->departments)) {
+            foreach ($this->departments as $department) {
+                if ($department['id'] == $departmentId) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public function setRights()
