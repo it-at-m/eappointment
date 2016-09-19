@@ -68,6 +68,11 @@
             {
                 "id": 141
             }
+        ],
+        "freeProcesses": [
+        	{
+        		"id": 123
+        	}
         ]
     },
     "required": [

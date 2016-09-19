@@ -24,14 +24,12 @@ class Workstation extends Schema\Entity
     public function getDepartmentById($departmentId)
     {
         $userAccount = new UserAccount($this->useraccount);
-        if ($userAccount->hasDepartment($departmentId)) {
-            foreach ($this->useraccount['departments'] as $department) {
-                if ($departmentId == $department['id']) {
-                    return new Department($department);
-                }
+        foreach ($userAccount->departments as $department) {
+            if ($departmentId == $department['id']) {
+                return new Department($department);
             }
         }
-        return null;
+        return new Department();
     }
 
     public function getProviderOfGivenScope()

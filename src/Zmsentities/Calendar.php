@@ -1,8 +1,10 @@
 <?php
+
 namespace BO\Zmsentities;
 
 class Calendar extends Schema\Entity
 {
+
     const PRIMARY = 'days';
 
     public static $schema = "calendar.json";
@@ -10,11 +12,11 @@ class Calendar extends Schema\Entity
     public function getDefaults()
     {
         return [
-            'days' => [],
-            'clusters' => [],
-            'providers' => [],
-            'scopes' => [],
-            'requests' => []
+            'days' => [ ],
+            'clusters' => [ ],
+            'providers' => [ ],
+            'scopes' => [ ],
+            'requests' => [ ]
         ];
     }
 
@@ -59,8 +61,16 @@ class Calendar extends Schema\Entity
     {
         $firstDay = $this->getDayByDateTime(Helper\DateTime::create($firstDay));
         $lastDay = $this->getDayByDateTime(Helper\DateTime::create($lastDay));
-        $this->firstDay = array('year' => $firstDay->year, 'month' => $firstDay->month, 'day' => $firstDay->day);
-        $this->lastDay = array('year' => $lastDay->year, 'month' => $lastDay->month, 'day' => $lastDay->day);
+        $this->firstDay = array (
+            'year' => $firstDay->year,
+            'month' => $firstDay->month,
+            'day' => $firstDay->day
+        );
+        $this->lastDay = array (
+            'year' => $lastDay->year,
+            'month' => $lastDay->month,
+            'day' => $lastDay->day
+        );
         return $this;
     }
 
@@ -71,11 +81,12 @@ class Calendar extends Schema\Entity
      */
     public function getScopeList()
     {
-        $list = array();
+        $scopeList = new \BO\Zmsentities\Collection\ScopeList();
         foreach ($this->scopes as $scope) {
-            $list[] = $scope['id'];
+            $scope = new Scope($scope);
+            $scopeList->addEntity($scope);
         }
-        return $list;
+        return $scopeList;
     }
 
     /**
@@ -85,7 +96,7 @@ class Calendar extends Schema\Entity
      */
     public function getProviderList()
     {
-        $list = array();
+        $list = array ();
         foreach ($this->providers as $provider) {
             $list[] = $provider['id'];
         }
@@ -114,7 +125,7 @@ class Calendar extends Schema\Entity
         }
         $endDate = Helper\DateTime::create($endDate->format('Y-m-t'));
         $endDate->modify('23:59:59');
-        $monthList = [];
+        $monthList = [ ];
         do {
             $monthList[] = Helper\DateTime::create($currentDate->format('Y-m-1'));
             $currentDate->modify('+1 month');
@@ -138,11 +149,13 @@ class Calendar extends Schema\Entity
                 return $day;
             }
         }
-        $day = new Day([
-            'year' => $year,
-            'month' => $month,
-            'day' => $dayNumber
-        ]);
+        $day = new Day(
+            [
+                'year' => $year,
+                'month' => $month,
+                'day' => $dayNumber
+            ]
+        );
         $this['days'][] = $day;
         return $day;
     }
@@ -154,18 +167,20 @@ class Calendar extends Schema\Entity
 
     public function getDateTimeFromDate($date)
     {
-        $date = Helper\DateTime::createFromFormat('Y-m-d', $date['year']. '-'. $date['month'] .'-'. $date['day']);
+        $date = Helper\DateTime::createFromFormat('Y-m-d', $date['year'] . '-' . $date['month'] . '-' . $date['day']);
         return Helper\DateTime::create($date);
     }
 
     public function getFirstDay()
     {
         if (isset($this['firstDay'])) {
-            $dateTime = $this->getDateTimeFromDate(array(
-                'year' => $this['firstDay']['year'],
-                'month' => $this['firstDay']['month'],
-                'day' => $this['firstDay']['day']
-            ));
+            $dateTime = $this->getDateTimeFromDate(
+                array (
+                    'year' => $this['firstDay']['year'],
+                    'month' => $this['firstDay']['month'],
+                    'day' => $this['firstDay']['day']
+                )
+            );
         } else {
             $dateTime = Helper\DateTime::create();
         }
@@ -175,11 +190,13 @@ class Calendar extends Schema\Entity
     public function getLastDay()
     {
         if (isset($this['lastDay'])) {
-            $dateTime = $this->getDateTimeFromDate(array(
-                'year' => $this['lastDay']['year'],
-                'month' => $this['lastDay']['month'],
-                'day' => $this['lastDay']['day']
-            ));
+            $dateTime = $this->getDateTimeFromDate(
+                array (
+                    'year' => $this['lastDay']['year'],
+                    'month' => $this['lastDay']['month'],
+                    'day' => $this['lastDay']['day']
+                )
+            );
         } else {
             $dateTime = Helper\DateTime::create();
         }
@@ -209,13 +226,18 @@ class Calendar extends Schema\Entity
         return false;
     }
 
+    /*
     public function addFreeProcess(Process $process)
     {
         $exists = false;
         foreach ($process->appointments as $appointment) {
+            $appointment = new Appointment($appointment);
             foreach ($this->freeProcesses as $key => $freeProcess) {
-                if ($appointment && false !== $freeProcess->hasAppointment($appointment)) {
-                    $this->freeProcesses[$key]->addAppointment($appointment);
+                $freeProcess = new Process($freeProcess);
+                if ($appointment &&
+                     $freeProcess->hasAppointment($appointment->date, $freeProcess->getScopeId())
+                ) {
+                    $freeProcess->addAppointment($appointment);
                     $exists = true;
                 }
             }
@@ -225,4 +247,5 @@ class Calendar extends Schema\Entity
         }
         return $this;
     }
+    */
 }
