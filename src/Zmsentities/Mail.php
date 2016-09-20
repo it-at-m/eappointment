@@ -10,12 +10,12 @@ class Mail extends Schema\Entity
 
     public function getProcessId()
     {
-        return (\array_key_exists('id', $this->process)) ? $this->process['id'] : null;
+        return $this->toProperty()->process->id->get();
     }
 
     public function getProcessAuthKey()
     {
-        return (\array_key_exists('authKey', $this->process)) ? $this->process['authKey'] : null;
+        return $this->toProperty()->process->authKey->get();
     }
 
     public function addMultiPart($multiPart)
@@ -26,7 +26,8 @@ class Mail extends Schema\Entity
 
     public function getHtmlPart()
     {
-        foreach ($this->multipart as $part) {
+        $multiPart = $this->toProperty()->multipart->get();
+        foreach ($multiPart as $part) {
             $mailpart = new MailPart($part);
             if ($mailpart->isHtml()) {
                 return $mailpart->getContent();
