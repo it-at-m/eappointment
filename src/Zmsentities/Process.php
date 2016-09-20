@@ -101,17 +101,17 @@ class Process extends Schema\Entity
 
     public function getScopeId()
     {
-        return (\array_key_exists('id', $this->scope)) ? $this->scope['id'] : null;
+        return $this->toProperty()->scope->id->get();
     }
 
     public function getAmendment()
     {
-        return ($this->amendment) ? $this->amendment : null;
+        return $this->toProperty()->amendment->get();
     }
 
     public function getAuthKey()
     {
-        return ($this->authKey) ? $this->authKey : null;
+        return $this->toProperty()->authKey->get();
     }
 
     public function getFirstClient()
@@ -128,7 +128,7 @@ class Process extends Schema\Entity
     {
         $appointment = null;
         if (count($this->appointments) > 0) {
-            $data = current($this->appointments);
+            $data = reset($this->appointments);
             $appointment = new Appointment($data);
         }
         return $appointment;
