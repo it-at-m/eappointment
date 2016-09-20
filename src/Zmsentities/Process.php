@@ -28,8 +28,9 @@ class Process extends Schema\Entity
     public function getRequestIds()
     {
         $idList = array();
-        if (isset($this['requests']) && count($this['requests']) > 0) {
-            foreach ($this['requests'] as $request) {
+        $requests = $this->toProperty()->requests->get();
+        if ($requests) {
+            foreach ($requests as $request) {
                 $idList[] = $request['id'];
             }
         }
@@ -41,26 +42,20 @@ class Process extends Schema\Entity
         return implode(',', $this->getRequestIds());
     }
 
-    /**
-     * Returns calendar with added Providers
-     *
-     * @return $this
-     */
     public function addScope($scopeId)
     {
-        $scope = new Scope();
-        $scope->id = $scopeId;
-        $this->scope = $scope;
+        $this->scope = new Scope(array('id' => $scopeId));
         return $this;
     }
 
     public function addRequests($source, $requestList)
     {
         foreach (explode(',', $requestList) as $id) {
-            $request = new Request();
-            $request->source = $source;
-            $request->id = $id;
-            $this->requests[] = $request;
+            $this->requests[] = new Request(array(
+                'source' => $source,
+                'id' => $id
+            ));
+            ;
         }
         return $this;
     }
@@ -78,53 +73,13 @@ class Process extends Schema\Entity
 
     public function getReminderTimestamp()
     {
-        return (array_key_exists('reminderTimestamp', $this)) ? $this->reminderTimestamp : 0;
-    }
-
-    public function addRegistrationData($formdata)
-    {
-        $this->clients = array();
-        $this->addClient($formdata);
-        $this->addReminderTimestamp($formdata);
-        $this->addAmendment($formdata);
-        return $this;
-    }
-
-    public function addClient($formData)
-    {
-        $client = new Client();
-        foreach ($formData as $key => $item) {
-            if (null !== $item['value'] && array_key_exists($key, $client)) {
-                $client[$key] = $item['value'];
-            }
-        }
-        $this->clients[] = $client;
-        return $this;
+        $timestamp = $this->toProperty()->reminderTimestamp->get();
+        return ($timestamp) ? $timestamp : 0;
     }
 
     public function updateClients($client)
     {
         $this->clients[0] = $client;
-        return $this;
-    }
-
-    public function addAmendment($formData)
-    {
-        if (isset($formData['amendment'])) {
-            $this['amendment'] = $formData['amendment']['value'];
-        } else {
-            $this['amendment'] = '';
-        }
-        return $this;
-    }
-
-    public function addReminderTimestamp($formData)
-    {
-        if (isset($formData['headsUpTime'])) {
-            $this['reminderTimestamp'] = $formData['headsUpTime']['value'];
-        } else {
-            $this['reminderTimestamp'] = 0;
-        }
         return $this;
     }
 
