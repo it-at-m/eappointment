@@ -19,11 +19,8 @@ class Organisation extends Schema\Entity
         return $hasDepartment;
     }
 
-    public function getPreference($name)
+    public function getPreference($index)
     {
-        if (array_key_exists('preferences', $this) && array_key_exists($name, $this->preferences)) {
-            return $this->preferences[$name];
-        }
-        return null;
+        return $this->toProperty()->preferences->$index->get();
     }
 }

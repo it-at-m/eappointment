@@ -11,12 +11,10 @@ class Owner extends Schema\Entity
 
     public function hasOrganisation($organisationId)
     {
-        if (array_key_exists('organisations', $this)) {
-            $organisationList = new Collection\OrganisationList($this->organisations);
-            if ($organisationList->hasEntity($organisationId)) {
-                return true;
-            }
+        $organisationList = new Collection\OrganisationList();
+        foreach ($this->toProperty()->organisations->get() as $organisation) {
+            $organisationList->addEntity(new Organisation($organisation));
         }
-        return false;
+        return ($organisationList->hasEntity($organisationId)) ? true : false;
     }
 }
