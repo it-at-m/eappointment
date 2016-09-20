@@ -13,7 +13,7 @@
                 "date" : "1456310041",
                 "familyName" : "Max Mustermann",
                 "clientEmail" : "max@zms-bo.de",
-                "clientTelehone" : "030 23232323",
+                "clientTelehone" : "03023232323",
                 "clientAmendment" : "Notiz zum Termin",
                 "authKey" : "1234",
                 "notificationConfirmation" : false
@@ -24,7 +24,7 @@
                 "ts" : 0,
                 "origin" : "captcha",
                 "remoteAddress" : "127.0.0.1",
-                "referrer" : "termin",
+                "referer" : "termin",
                 "step" : {
                     "dayselect":1
                 }
@@ -35,7 +35,7 @@
                 "request" : "120335"
             },
             "task" : "continue",
-            "status" : "free",
+            "status" : "start",
             "finished" : true,
             "X-Authkey" : "abc12345678def",
             "error" : ""
