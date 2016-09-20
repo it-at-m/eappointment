@@ -38,9 +38,13 @@ class ProcessConfirmationMail extends BaseController
             $mail = (new \BO\Zmsentities\Mail())->toResolvedEntity($process, $config);
             $mail = (new Query())->writeInQueue($mail);
             $message->data = $mail;
+            $message->error = false;
+            $message->message = '';
+            \App::$log->warn("Send mail", [$mail]);
         }
 
         Render::lastModified(time(), '0');
-        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
+        // Always return a 200, even if no mail is send
+        Render::json($message, 200);
     }
 }

@@ -1359,7 +1359,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/process/{id}/{authKey}/confirmation/mail/":
  *      post:
- *          description: send mail on confirmed process
+ *          description: send mail on confirmed process. Depending on config, if no mail is send, an empty mail is returned. 
  *          parameters:
  *              -   name: id
  *                  description: process number
@@ -1386,7 +1386,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                          meta:
  *                              $ref: "schema/metaresult.json"
  *                          data:
- *                              $ref: "schema/process.json"
+ *                              $ref: "schema/mail.json"
  *              400:
  *                  description: "Invalid input"
  *              403:
