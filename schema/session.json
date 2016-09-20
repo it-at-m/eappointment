@@ -143,10 +143,10 @@
                         "source" : {
                             "type": "string"
                         },
-                        "provider" : {
+                        "providers" : {
                             "type": "string"
                         },
-                        "request" :{
+                        "requests" :{
                             "type": "string"
                         }
                     }
