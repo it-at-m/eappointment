@@ -10,6 +10,7 @@ class Provider extends Schema\Entity
 
     public function hasRequest($requestId)
     {
-        return in_array($requestId, $this['data']['services']);
+        $requests = $this->toProperty()->data->services->get();
+        return ($requests) ? in_array($requestId, $requests) : false;
     }
 }
