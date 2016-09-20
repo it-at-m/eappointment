@@ -5,13 +5,13 @@ namespace BO\Zmsentities;
 /**
  * Extension for Twig and Slim
  *
- *  @SuppressWarnings(PublicMethod)
- *  @SuppressWarnings(TooManyMethods)
- *  @SuppressWarnings(Complexity)
+ * @SuppressWarnings(PublicMethod)
+ * @SuppressWarnings(TooManyMethods)
+ * @SuppressWarnings(Complexity)
  */
-
 class Session extends Schema\Entity
 {
+
     const PRIMARY = 'id';
 
     public static $schema = "session.json";
@@ -19,7 +19,7 @@ class Session extends Schema\Entity
     public function getDefaults()
     {
         return [
-            'content' => array(
+            'content' => array (
                 'basket' => [
                     'requests' => '',
                     'providers' => '',
@@ -30,7 +30,7 @@ class Session extends Schema\Entity
                     'email' => '',
                     'telehone' => '',
                     'amendment' => '',
-                    'authKey' => '',
+                    'authKey' => ''
                 ],
                 'human' => [
                     'captcha_text' => '',
@@ -38,8 +38,8 @@ class Session extends Schema\Entity
                     'ts' => 0,
                     'origin' => '',
                     'remoteAddress' => '',
-                    'referrer' => '',
-                    'step' => array()
+                    'referer' => '',
+                    'step' => array ()
                 ],
                 'status' => 'start',
                 'task' => 'new',
@@ -52,7 +52,7 @@ class Session extends Schema\Entity
 
     public function getUnserializedContent()
     {
-        if (!is_array($this->content)) {
+        if (! is_array($this->content)) {
             $this->content = unserialize($this->content);
         }
         return $this;
@@ -83,66 +83,49 @@ class Session extends Schema\Entity
 
     public function getRequests()
     {
-        if (isset($this->content['basket']['requests'])) {
-            return Helper\Sorter::toSortedCsv($this->content['basket']['requests']);
-        }
-        return null;
+        return Helper\Sorter::toSortedCsv($this->toProperty()->content->basket->requests->get());
     }
 
     public function getProviders()
     {
-        if (isset($this->content['basket']['providers'])) {
-            return Helper\Sorter::toSortedCsv($this->content['basket']['providers']);
-        }
-        return null;
+        return Helper\Sorter::toSortedCsv($this->toProperty()->content->basket->providers->get());
     }
 
     public function getProcess()
     {
-        if (isset($this->content['basket']['process'])) {
-            return $this->content['basket']['process'];
-        }
-        return null;
+        return $this->toProperty()->content->basket->process->get();
+    }
+
+    public function getScope()
+    {
+        return $this->toProperty()->content->basket->scope->get();
     }
 
     public function getAuthKey()
     {
-        if (isset($this->content['basket']['authKey'])) {
-            return $this->content['basket']['authKey'];
-        }
-        return null;
+        return $this->toProperty()->content->basket->authKey->get();
     }
 
     public function getLastStep()
     {
-        if (isset($this->content['human']['step'])) {
-            $stepKeys = array_keys($this->content['human']['step']);
-            return end($stepKeys);
-        }
-        return 'dayselect';
+        $steps = $this->toProperty()->content->human->step->get();
+        $steps = (is_array($steps)) ? array_keys($steps) : null;
+        return (null !== $steps) ? end($steps) : $steps;
     }
 
     public function getStatus()
     {
-        if (isset($this->content['status'])) {
-            return $this->content['status'];
-        }
-        return null;
+        return $this->toProperty()->content->status->get();
     }
 
     public function getTask()
     {
-        if (isset($this->content['task'])) {
-            return $this->content['task'];
-        }
-        return null;
+        return $this->toProperty()->content->task->get();
     }
 
     public function removeLastStep()
     {
-        if (isset($this->content['human']['step'][$this->getLastStep()])) {
-            unset($this->content['human']['step'][$this->getLastStep()]);
-        }
+        unset($this->content['human']['step'][$this->getLastStep()]);
         return $this;
     }
 
@@ -154,12 +137,7 @@ class Session extends Schema\Entity
      */
     public function getSelectedDate()
     {
-        if (isset($this->content['basket']['date']) &&
-            $this->content['basket']['date']
-            ) {
-                return $this->content['basket']['date'];
-        }
-            return null;
+        return $this->toProperty()->content->basket->date->get();
     }
 
     /**
@@ -170,140 +148,82 @@ class Session extends Schema\Entity
      */
     public function getEntryData()
     {
-        if (isset($this->content['entry']) && count($this->content['entry'])) {
-                return $this->content['entry'];
-        }
-            return null;
+        return $this->toProperty()->content->entry->get();
     }
 
     public function hasEntryValues()
     {
-        if (isset($this->content['entry']) && count($this->content['entry'])) {
-            return true;
-        }
-        return false;
+        return (null !== $this->getEntryData()) ? true : false;
     }
 
     public function isEmpty()
     {
-        if ($this->hasNoProcess() &&
-            $this->hasNoAuthKey() &&
-            $this->hasNoStatus() &&
-            $this->hasNoTask() &&
-            !$this->isFinished() &&
-            !$this->hasEntryValues()
-            ) {
-                return true;
+        if ($this->hasNoProcess() && $this->hasNoAuthKey() && $this->hasNoStatus() && $this->hasNoTask() &&
+             ! $this->isFinished() && ! $this->hasEntryValues()) {
+            return true;
         }
-            return false;
+        return false;
     }
 
     public function isFinished()
     {
-        if ((isset($this->content['finished']) &&
-            $this->content['finished']) &&
-            !$this->hasNoProcess()
-        ) {
-            return true;
-        }
-        return false;
+        $finished = $this->toProperty()->content->finished->get();
+        return (null !== $finished && false !== $this->hasNoProcess()) ? true : false;
     }
 
     public function isConfirmed()
     {
-        if (isset($this->content['status']) &&
-            'confirmed' == $this->content['status']
-        ) {
-            return true;
-        }
-        return false;
+        return ('confirmed' == $this->getStatus()) ? true : false;
     }
 
     public function isReserved()
     {
-        if (isset($this->content['status']) &&
-            'reserved' == $this->content['status'] &&
-            !isset($this->content['task']) &&
-            !$this->hasNoProcess() &&
+        return (
+            'reserved' == $this->getStatus() &&
+            null === $this->getTask() &&
+            null !== $this->getProcess() &&
             !$this->hasChangedProcess()
-            ) {
-            return true;
-        }
-        return false;
+        ) ? true : false;
     }
 
     public function isProcessDeleted()
     {
-        if (isset($this->content['basket']['process']) &&
-            $this->content['basket']['process']
-            ) {
-                return false;
-        }
-            return true;
+        return $this->hasNoProcess();
     }
 
     public function hasNoStatus()
     {
-        if ((!isset($this->content['status']) ||
-            '' == $this->content['status'])) {
-            return true;
-        }
-        return false;
+        return (null === $this->getStatus()) ? true : false;
     }
 
     public function hasNoTask()
     {
-        if ((!isset($this->content['task']) ||
-            '' == $this->content['task'])) {
-            return true;
-        }
-        return false;
+        return (null === $this->getTask()) ? true : false;
     }
 
     public function hasNoProcess()
     {
-        if ((!isset($this->content['basket']['process']) ||
-            '' == $this->content['basket']['process'])) {
-            return true;
-        }
-        return false;
+        return (null === $this->getProcess()) ? true : false;
     }
 
     public function hasNoAuthKey()
     {
-        if ((!isset($this->content['basket']['authKey']) ||
-            '' == $this->content['basket']['authKey'])) {
-            return true;
-        }
-        return false;
+        return (null === $this->getAuthKey()) ? true : false;
     }
 
     public function hasChangedProcess()
     {
-        if (isset(
-            $this->content['status']
-        ) &&
-            'processChanged' == $this->content['status']
-        ) {
-            return true;
-        }
-        return false;
+        return ('processChanged' == $this->getStatus()) ? true : false;
     }
 
     public function hasPreviousAppointmentSearch()
     {
-        return (
-            isset($this->content['task']) &&
-            'inProgress' == $this->content['task']
-        ) ? true : false;
+        return ('inProgress' == $this->getStatus()) ? true : false;
     }
 
     public function hasConfirmationNotification()
     {
-        return (
-            isset($this->content['basket']['confirmationNotification']) &&
-            $this->content['basket']['confirmationNotification']
-        ) ? true : false;
+        return ($this->toProperty()->content->basket->confirmationNotification->get()) ? true : false;
     }
 
     /**
@@ -313,9 +233,7 @@ class Session extends Schema\Entity
      */
     public function hasNoRequests()
     {
-        return (
-            !isset($this->content['basket']['requests']) ||
-            '' == $this->content['basket']['requests']) ? true : false;
+        return (null === $this->getRequests()) ? true : false;
     }
 
     /**
@@ -326,8 +244,7 @@ class Session extends Schema\Entity
      */
     public function hasNoProvider()
     {
-        return (!isset($this->content['basket']['providers']) ||
-            '' == $this->content['basket']['providers']) ? true : false;
+        return (null === $this->getProviders()) ? true : false;
     }
 
     /**
@@ -338,7 +255,17 @@ class Session extends Schema\Entity
      */
     public function hasNoScope()
     {
-        return (!isset($this->content['basket']['scope']) ||
-            $this->content['basket']['scope']) ? true :false;
+        return (null === $this->getScope()) ? true : false;
+    }
+
+    /**
+     *
+     * Check if date exists
+     *
+     * @return boolean
+     */
+    public function hasNoDate()
+    {
+        return (null === $this->getSelectedDate()) ? true : false;
     }
 }
