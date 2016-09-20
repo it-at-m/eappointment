@@ -9,76 +9,64 @@ class Scope extends Schema\Entity
 
     public function getProviderId()
     {
-        if (array_key_exists('provider', $this)) {
-            if (array_key_exists('id', $this['provider'])) {
-                return $this['provider']['id'];
-            } elseif (array_key_exists('$ref', $this['provider'])) {
-                $providerId = preg_replace('#^.*/(\d+)/$#', '$1', $this['provider']['$ref']);
-                return $providerId;
-            }
+        $refString = '$ref';
+        $providerId = $this->toProperty()->provider->id->get();
+        $providerRef = $this->toProperty()->provider->$refString->get();
+        $providerId = ($providerId) ? $providerId : preg_replace('#^.*/(\d+)/$#', '$1', $providerRef);
+        if ($providerId) {
+            return $providerId;
         }
-        throw new \Exception("No reference to a provider found");
+        throw new Exception\ScopeMissingProvider("No reference to a provider found");
     }
 
     public function getNotificationPreferences()
     {
-        return ($this->preferences['notifications']);
+        return $this->toProperty()->preferences->notifications->get();
     }
 
     public function getConfirmationContent()
     {
-        return ($this->preferences['notifications']['confirmationContent']);
+        return $this->toProperty()->preferences->notifications->confirmationContent->get();
     }
 
     public function getHeadsUpContent()
     {
-        return ($this->preferences['notifications']['headsUpContent']);
+        return $this->toProperty()->preferences->notifications->headsUpContent->get();
     }
 
-    public function getPreference($preferenceKey, $index, $isCheckBox = false)
+    public function getPreference($preferenceKey, $index, $isBool = false)
     {
-        if (isset($this->preferences) && array_key_exists($preferenceKey, $this->preferences)) {
-            if (array_key_exists($index, $this->preferences[$preferenceKey])) {
-                return ($isCheckBox) ? 1 : $this->preferences[$preferenceKey][$index];
-            }
+        $preference = $this->toProperty()->preferences->$preferenceKey->$index->get();
+        if (!$isBool && null !== $preference) {
+            return $preference;
         }
-        return ($isCheckBox) ? 0 : null;
+        return ($isBool && null !== $preference) ? 1 : 0;
     }
 
     public function getStatus($statusKey, $index)
     {
-        if (isset($this->status) && array_key_exists($statusKey, $this->status)) {
-            if (array_key_exists($index, $this->status[$statusKey])) {
-                return $this->status[$statusKey][$index];
-            }
-        }
-        return null;
+        return $this->toProperty()->status->$statusKey->$index->get();
     }
 
     public function getContactEmail()
     {
-        if (isset($this->contact) && array_key_exists('email', $this->contact)) {
-            return $this->contact['email'];
-        }
-        return null;
+        return $this->toProperty()->contact->email->get();
     }
 
     public function getName()
     {
-        if (isset($this->contact) && array_key_exists('name', $this->contact)) {
-            return $this->contact['name'];
-        }
+        return $this->toProperty()->contact->name->get();
     }
 
     public function getScopeInfo()
     {
         $hint = explode('|', $this->hint);
-        return trim(current($hint));
+        return (1 <= count($hint)) ? trim(current($hint)) : null;
     }
 
     public function getScopeHint()
     {
         $hint = explode('|', $this->hint);
-        return trim(end($hint));
+        return (1 < count($hint)) ? trim(end($hint)) : null;
     }
 }
