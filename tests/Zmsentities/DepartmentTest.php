@@ -9,14 +9,25 @@ use BO\Zmsentities\Scope;
 
 class DepartmentTest extends EntityCommonTests
 {
+
     public $entityclass = '\BO\Zmsentities\Department';
+
+    public function testBasic()
+    {
+        $entity = $this->getExample();
+        $this->assertTrue(4 == count($entity->getNotificationPreferences()), 'preferences not accessible');
+        $this->assertContains('Flughafen Schönefeld', $entity->getContactPerson(), 'getting contact person failed');
+        $this->assertTrue(15831 == $entity->getContact()->postalCode, 'contact not accessible');
+    }
 
     public function testClusterDuplicates()
     {
         $example = $this->getExample();
         $example['scopes'] = new ScopeList();
         $cluster = new Cluster();
-        $scope = new Scope(['id' => 1234]);
+        $scope = new Scope([
+            'id' => 1234
+        ]);
         $cluster['scopes'][] = $scope;
         $example['clusters'][] = $cluster;
         $example['scopes'][] = $scope;
@@ -25,7 +36,10 @@ class DepartmentTest extends EntityCommonTests
         $this->assertFalse($reduced['scopes']->hasEntity(1234));
         $this->assertTrue($example['clusters'][0]['scopes']->hasEntity(1234));
         $this->assertTrue($reduced['clusters'][0]['scopes']->hasEntity(1234));
-        //var_dump(json_decode(json_encode($example)));
-        //var_dump(json_decode(json_encode($reduced)));
+
+        $this->assertFalse($example['scopes']->hasEntity(141));
+        $example['scopes']->addEntity(new \BO\Zmsentities\Scope(array('id' => 141)));
+        $reduced = $example->withOutClusterDuplicates();
+        $this->assertTrue($example['scopes']->hasEntity(141));
     }
 }

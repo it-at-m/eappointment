@@ -19,6 +19,7 @@ class Day extends Schema\Entity
     //@todo freeAppointments could be an array, should be slot entity
     public function __toString()
     {
-        return "Day @{$this->year}-{$this->month}-{$this->day} with "; //. $this->freeAppointments;
+        $this->freeAppointments = new Slot($this->freeAppointments);
+        return "Day @{$this->year}-{$this->month}-{$this->day} with ". $this->freeAppointments;
     }
 }

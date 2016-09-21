@@ -17,17 +17,17 @@ class Department extends Schema\Entity
 
     public function getNotificationPreferences()
     {
-        return ($this->preferences['notifications']);
+        return $this->toProperty()->preferences->notifications->get();
     }
 
     public function getContactPerson()
     {
-        return $this->contact['name'];
+        return $this->toProperty()->contact->name->get();
     }
 
     public function getContact()
     {
-        return new Contact($this->contact);
+        return new Contact($this->toProperty()->contact->get());
     }
 
     public function withOutClusterDuplicates()
