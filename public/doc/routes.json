@@ -1652,7 +1652,7 @@
 	},
 	"/process/{id}/{authKey}/confirmation/mail/": {
 		"post": {
-			"description": "send mail on confirmed process",
+			"description": "send mail on confirmed process. Depending on config, if no mail is send, an empty mail is returned.",
 			"parameters": [
 				{
 					"name": "id",
@@ -1688,7 +1688,7 @@
 								"$ref": "schema/metaresult.json"
 							},
 							"data": {
-								"$ref": "schema/process.json"
+								"$ref": "schema/mail.json"
 							}
 						}
 					}
