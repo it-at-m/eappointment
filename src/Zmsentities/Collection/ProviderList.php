@@ -5,21 +5,22 @@ class ProviderList extends Base
 {
     public function hasProvider($providerIdCsv)
     {
-        $providerIdCsv = explode(',', $providerIdCsv);
-        foreach ($providerIdCsv as $providerId) {
-            if (!in_array($providerId, $this->getIds())) {
-                return false;
+        $result = false;
+        $providerIds = explode(',', $providerIdCsv);
+        foreach ($this as $entity) {
+            foreach ($providerIds as $providerId) {
+                $result = $entity->hasId($providerId);
             }
         }
-        return true;
+        return $result;
     }
 
     public function hasRequest($requestIdCsv)
     {
         $result = false;
-        $requestIdCsv = explode(',', $requestIdCsv);
+        $requestIds = explode(',', $requestIdCsv);
         foreach ($this as $entity) {
-            foreach ($requestIdCsv as $requestId) {
+            foreach ($requestIds as $requestId) {
                 $result = $entity->hasRequest($requestId);
             }
         }

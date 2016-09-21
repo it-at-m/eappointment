@@ -15,6 +15,6 @@ class ProcessList extends Base
 
     public function getFirstProcess()
     {
-        return current($this);
+        return reset($this);
     }
 }

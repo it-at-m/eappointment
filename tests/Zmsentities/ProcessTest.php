@@ -6,6 +6,8 @@ class ProcessTest extends EntityCommonTests
 {
     public $entityclass = '\BO\Zmsentities\Process';
 
+    public $collectionclass = '\BO\Zmsentities\Collection\ProcessList';
+
     public function testBasic()
     {
         $entity = (new $this->entityclass())->getExample();
@@ -43,5 +45,22 @@ class ProcessTest extends EntityCommonTests
         $this->assertTrue($entity->hasAppointment(1447869172, 123), 'appointment is not accessible');
         $this->assertFalse($entity->hasAppointment(1447869173, 123), 'appointment date 1447869173 should not exist');
         $firstAppointment = $entity->getFirstAppointment();
+    }
+
+    public function testCollection()
+    {
+        $collection = new $this->collectionclass();
+        $entity = $this->getExample();
+        $collection->addEntity($entity);
+        $this->assertEntityList($this->entityclass, $collection);
+        $this->assertTrue(
+            1 == count($collection),
+            'Missing new Entity with ID ' . $entity->id . ' in collection, 1 expected (' .
+            count($collection) . ' found)'
+            );
+
+        $processListByTime = $collection->toProcessListByTime();
+        $this->assertTrue(\array_key_exists('1447869171', $processListByTime), 'Failed to create process list by time');
+        $this->assertTrue(123456 == $collection->getFirstProcess()->id, 'First process not found in process list');
     }
 }
