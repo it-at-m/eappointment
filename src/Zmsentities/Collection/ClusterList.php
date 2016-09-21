@@ -7,6 +7,7 @@ class ClusterList extends Base
     {
         foreach ($this as $entity) {
             foreach ($entity['scopes'] as $scope) {
+                $scope = new \BO\Zmsentities\Scope($scope);
                 if ($scopeId == $scope->id) {
                     return true;
                 }

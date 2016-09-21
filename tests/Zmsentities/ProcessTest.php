@@ -51,6 +51,9 @@ class ProcessTest extends EntityCommonTests
     {
         $collection = new $this->collectionclass();
         $entity = $this->getExample();
+        $entity2 = $this->getExample();
+        $appointment = (new \BO\Zmsentities\Appointment())->getExample();
+        $entity2->appointments = array($appointment);
         $collection->addEntity($entity);
         $this->assertEntityList($this->entityclass, $collection);
         $this->assertTrue(
@@ -60,7 +63,7 @@ class ProcessTest extends EntityCommonTests
             );
 
         $processListByTime = $collection->toProcessListByTime();
-        $this->assertTrue(\array_key_exists('1447869171', $processListByTime), 'Failed to create process list by time');
+        $this->assertTrue(\array_key_exists('1447869171', $processListByTime->sortByTimeKey()), 'Failed to create process list by time');
         $this->assertTrue(123456 == $collection->getFirstProcess()->id, 'First process not found in process list');
     }
 }

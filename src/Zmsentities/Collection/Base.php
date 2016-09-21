@@ -16,29 +16,26 @@ class Base extends \ArrayObject
 {
     public function sortByName()
     {
-        $itemList = clone $this;
-        $itemList->uasort(function ($a, $b) {
+        $this->uasort(function ($a, $b) {
             return strcmp(Sorter::toSortableString(ucfirst($a->name)), Sorter::toSortableString(ucfirst($b->name)));
         });
-        return $itemList;
+        return $this;
     }
 
     public function sortByTimeKey()
     {
-        $itemList = clone $this;
-        $itemList->uksort(function ($a, $b) {
+        $this->uksort(function ($a, $b) {
             return ($a - $b);
         });
-        return $itemList;
+        return $this;
     }
 
     public function sortByCustomKey($key)
     {
-        $itemList = clone $this;
-        $itemList->uasort(function ($a, $b) use ($key) {
+        $this->uasort(function ($a, $b) use ($key) {
             return ($a[$key] - $b[$key]);
         });
-        return $itemList;
+        return $this;
     }
 
     public function __clone()
