@@ -54,18 +54,18 @@ class Slot extends Schema\Entity
 
     public function hasTime()
     {
-        return $this->time ? true : false;
+        return ($this->toProperty()->time->get()) ? true : false;
     }
 
     public function getTimeString()
     {
-        if (!isset($this['time'])) {
+        if (null === $this->toProperty()->time->get()) {
             return '0:00';
         }
-        if ($this['time'] instanceof \DateTimeInterface) {
+        if ($this->toProperty()->time->get() instanceof \DateTimeInterface) {
             return $this['time']->format('H:i');
         }
-        return $this['time'];
+        return $this->toProperty()->time->get();
     }
 
     public function __toString()

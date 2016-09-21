@@ -20,26 +20,26 @@ class Client extends Schema\Entity
 
     public function hasEmail()
     {
-        return (!empty($this->email));
+        return ($this->toProperty()->email->get()) ? true : false;
     }
 
     public function hasTelephone()
     {
-        return (!empty($this->telephone));
+        return ($this->toProperty()->telephone->get()) ? true : false;
     }
 
     public function getEmailSendCount()
     {
-        return $this->emailSendCount;
+        return $this->toProperty()->emailSendCount->get();
     }
 
     public function getNotificationsSendCount()
     {
-        return $this->notificationsSendCount;
+        return $this->toProperty()->notificationsSendCount->get();
     }
 
     public function hasSurveyAccepted()
     {
-        return (1 == $this->surveyAccepted) ? true : false;
+        return (1 == $this->toProperty()->surveyAccepted->get()) ? true : false;
     }
 }

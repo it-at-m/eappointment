@@ -18,8 +18,6 @@ class Cluster extends Schema\Entity
 
     public function getName()
     {
-        if (array_key_exists('name', $this)) {
-            return $this->name;
-        }
+        return $this->toProperty()->name->get();
     }
 }
