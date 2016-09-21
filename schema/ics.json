@@ -1,9 +1,6 @@
 {
     "type": "object",
     "description": "representation of an ics attachment",
-    "example": {
-        "content": ""
-    },
     "properties": {
         "content": {
             "type": "string",
