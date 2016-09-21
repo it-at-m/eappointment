@@ -12,6 +12,8 @@ class DepartmentTest extends EntityCommonTests
 
     public $entityclass = '\BO\Zmsentities\Department';
 
+    public $collectionclass = '\BO\Zmsentities\Collection\DepartmentList';
+
     public function testBasic()
     {
         $entity = $this->getExample();

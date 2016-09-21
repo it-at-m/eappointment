@@ -17,12 +17,11 @@ class OwnerList extends Base
         return $organisationList->sortByName();
     }
 
-    public function getOrganisationListWithDepartments()
+    public function toDepartmentListByOrganisationName()
     {
         $list = array();
         foreach ($this as $entity) {
             $organisationList = $this->getOrganisationsByOwnerId($entity->id);
-            $organisationList;
             foreach ($organisationList as $organisation) {
                 $list[$entity->name][$organisation->name] = $organisation->departments;
             }
