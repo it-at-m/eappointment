@@ -67,12 +67,13 @@ class Messaging
 
     protected static function getTemplateByProcessStatus($type, $status)
     {
+        $template = null;
         if (array_key_exists($type, self::$templates)) {
             if (array_key_exists($status, self::$templates[$type])) {
-                return self::$templates[$type][$status];
+                $template = self::$templates[$type][$status];
             }
         }
-        return null;
+        return $template;
     }
 
     public static function getMailSubject(\BO\Zmsentities\Process $process, \BO\Zmsentities\Config $config)

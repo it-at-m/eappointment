@@ -9,6 +9,8 @@ class AvailabilityTest extends EntityCommonTests
 
     public $entityclass = '\BO\Zmsentities\Availability';
 
+    public $collectionclass = '\BO\Zmsentities\Collection\AvailabilityList';
+
     public function testHasDay()
     {
         $entity = new $this->entityclass();
@@ -247,7 +249,7 @@ class AvailabilityTest extends EntityCommonTests
     {
         $entity = (new $this->entityclass())->getExample();
         $entityWithCalculatedSlots = $entity->withCalculatedSlots();
-        $this->assertTrue($entityWithCalculatedSlots['workstationCount']['public'] == 81, $entityWithCalculatedSlots);
+        $this->assertTrue(81 == $entityWithCalculatedSlots['workstationCount']['public'], $entityWithCalculatedSlots);
     }
 
     public function testToString()
@@ -259,5 +261,28 @@ class AvailabilityTest extends EntityCommonTests
         $entity['repeat']['afterWeeks'] = 1;
         $entity['repeat']['weekOfMonth'] = 1;
         $this->assertContains('Availability #1234', $entity->__toString());
+    }
+
+    public function testCollection()
+    {
+        $collection = new $this->collectionclass();
+        $entity = $this->getExample();
+        $collection->addEntity($entity);
+        $this->assertEntityList($this->entityclass, $collection);
+        $this->assertTrue(
+            1 == count($collection),
+            'Missing new Entity with id ' . $entity->id . ' in collection, 1 expected (' .
+            count($collection) . ' found)'
+            );
+
+        $this->assertTrue(
+            10 == $collection->getMaxWorkstationCount(),
+            'Failed to get correct max workstation count, 10 expected'
+        );
+
+        $this->assertTrue(
+            81 == $collection->withCalculatedSlots()[0]['workstationCount']['public'],
+            'Failed to get list with calculated slots'
+        );
     }
 }

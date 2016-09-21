@@ -2,7 +2,7 @@
     "type": "object",
     "description": "A dayoff is a free day where a department and its scopes are closed. Beware, if an availability is valid only for one day, it overrules a dayoff, so you can administrate exceptions on a particular scope.",
     "example": {
-        "date": 1447921381000,
+        "date": 1447924981,
         "name": "Betriebsfeier"
     },
     "required": [

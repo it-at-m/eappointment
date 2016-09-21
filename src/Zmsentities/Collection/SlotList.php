@@ -68,7 +68,6 @@ class SlotList extends Base
         $slotType,
         $requests
     ) {
-
         $processList = new ProcessList();
         foreach ($this as $slot) {
             if ($slot[$slotType] > 0) {

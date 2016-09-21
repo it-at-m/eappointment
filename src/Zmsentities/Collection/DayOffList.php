@@ -20,11 +20,12 @@ class DayOffList extends Base
 
     public function getEntityByName($name)
     {
+        $result = null;
         foreach ($this as $entity) {
             if ($entity->name == $name) {
-                return $entity;
+                $result = $entity;
             }
         }
-        return null;
+        return $result;
     }
 }

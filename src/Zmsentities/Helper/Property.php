@@ -7,13 +7,16 @@ namespace BO\Zmsentities\Helper;
  */
 class Property implements \ArrayAccess
 {
+
     /**
+     *
      * @var Mixed $access
      *
      */
     protected $access = null;
 
     /**
+     *
      * @param Mixed $access
      */
     public function __construct($access)
@@ -41,24 +44,26 @@ class Property implements \ArrayAccess
 
     public function offsetExists($property)
     {
-        return null !== $this->__get($property)->get();
+        return null !== $this->__get($property)
+            ->get();
     }
 
     public function offsetSet($offset, $value)
     {
-        throw new \Exception(__CLASS__ . "[$offset] is readonly, could not set " . htmlspecialchars($value));
+        throw new \BO\Zmsentities\Exception\PropertyOffsetReadOnly(
+            __CLASS__ . "[$offset] is readonly, could not set " . htmlspecialchars($value)
+        );
     }
 
     public function offsetUnset($offset)
     {
-        throw new \Exception(__CLASS__ . "[$offset] is readonly");
+        throw new \BO\Zmsentities\Exception\PropertyOffsetReadOnly(__CLASS__ . "[$offset] is readonly");
     }
 
     public function __get($property)
     {
-        if ((is_array($this->access) || $this->access instanceof ArrayAccess)
-            && array_key_exists($property, $this->access)
-        ) {
+        if ((is_array($this->access) || $this->access instanceof ArrayAccess) &&
+             array_key_exists($property, $this->access)) {
             return new self($this->access[$property]);
         }
         if (is_object($this->access) && isset($this->access->$property)) {
@@ -70,7 +75,7 @@ class Property implements \ArrayAccess
     public function __toString()
     {
         $string = $this->get('');
-        if (!is_string($string)) {
+        if (! is_string($string)) {
             $string = print_r($string, true);
         }
         return $string;

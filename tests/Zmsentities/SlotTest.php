@@ -71,12 +71,13 @@ class SlotTest extends EntityCommonTests
     public function testGetFreeProcessesException()
     {
         $collection = new $this->collectionclass();
-        $entity = new $this->entityclass();
+        $entity = (new $this->entityclass())->getExample();
+        unset($entity['time']);
         $collection->addEntity($entity);
         $scope = (new \BO\Zmsentities\Scope())->getExample();
         $availability = (new \BO\Zmsentities\Availability())->getExample();
         try {
-            $freeProcesses = $collection->getFreeProcesses('2016-04-01', $scope, $availability, 'public', '123456');
+            $freeProcesses = $collection->getFreeProcesses('2015-04-01', $scope, $availability, 'public', '123456');
         } catch (\BO\Zmsentities\Exception\SlotMissingTime $exception) {
             $this->assertContains('Time on slot not set', $exception->getMessage());
             $this->assertEquals(500, $exception->getCode());
