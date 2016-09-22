@@ -37,7 +37,7 @@ class Unvalidated extends \BO\Mellon\Parameter
     /**
      * Try to find a class for a validation function
      *
-     * @param String $name like "isUrl" where "Url" is an existing class
+     * @param String $name like "isUrl" where "ValidUrl" is an existing class
      *
      * @throws \BO\Mellon\Exception
      *
@@ -47,7 +47,7 @@ class Unvalidated extends \BO\Mellon\Parameter
     {
         $partList = preg_split('#([A-Z][a-z]+)#', $name, -1, PREG_SPLIT_DELIM_CAPTURE);
         if (isset($partList[1])) {
-            $class = __NAMESPACE__ . '\\' . $partList[1];
+            $class = __NAMESPACE__ . '\\Valid' . $partList[1];
             if (class_exists($class)) {
                 return new $class($this->value, $this->name);
             } else {

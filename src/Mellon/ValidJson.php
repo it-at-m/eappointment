@@ -12,7 +12,7 @@ namespace BO\Mellon;
   * Beware: the function getValue does not return a string, it returns an object or array
   *    The function __toString() or cast like (string)$param returns the JSON-String.
   */
-class Json extends \BO\Mellon\Valid
+class ValidJson extends Valid
 {
 
     protected $originalJsonString = null;

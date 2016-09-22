@@ -10,7 +10,7 @@ namespace BO\Mellon;
   * Validation of URLs
   *
   */
-class Date extends \BO\Mellon\Valid
+class ValidDate extends Valid
 {
     /**
      * Allow only valid date format
