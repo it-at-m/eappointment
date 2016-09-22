@@ -11,6 +11,16 @@ class AvailabilityTest extends EntityCommonTests
 
     public $collectionclass = '\BO\Zmsentities\Collection\AvailabilityList';
 
+    protected static $weekdayNameList = [
+        'sunday',
+        'monday',
+        'tuesday',
+        'wednesday',
+        'thursday',
+        'friday',
+        'saturday'
+    ];
+
     public function testHasDay()
     {
         $entity = new $this->entityclass();
@@ -89,6 +99,8 @@ class AvailabilityTest extends EntityCommonTests
             'Time '. $time->format('Y-m-d') .' is not a dayoff time'
         );
 
+        $weekDayName = self::$weekdayNameList[$dayOffTime->format('w')];
+        $entity['weekday'][$weekDayName] = 1;
         $this->assertFalse(
             $entity->hasDate($dayOffTime),
             'Time '. $dayOffTime->format('Y-m-d') .' is a dayoff time'

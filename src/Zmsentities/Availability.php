@@ -75,23 +75,14 @@ class Availability extends Schema\Entity
         //}
         if (!$this['weekday'][$weekDayName]) {
             // Wrong weekday
-            //if ($this->id == $debugAvailabilityId) {
-            //    error_log("!weekday hasDate(".$dateTime->format('c').") ".$this);
-            //}
             return false;
         }
         if ($dateTime->getTimestamp() < $start->getTimestamp() || $dateTime->getTimestamp() > $end->getTimestamp()) {
             // Out of date range
-            //if ($this->id == $debugAvailabilityId) {
-            //    error_log("!date range hasDate(".$dateTime->format('c').") ".$this);
-            //}
             return false;
         }
         if (!$this->hasWeek($dateTime)) {
             // series settings for the week do not match
-            //if ($this->id == $debugAvailabilityId) {
-            //    error_log("!series hasDate(".$dateTime->format('c').") ".$this);
-            //}
             return false;
         }
         if ($this->hasDayOff($dateTime) && $this->getDuration() > 2) {

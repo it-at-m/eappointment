@@ -14,7 +14,7 @@ class SchemaTest extends Base
             $this->assertEquals(500, $exception->getCode());
         }
         try {
-            $loader->asArray('empty.json');
+            $loader->asArray('../tests/schema/empty.json');
             $this->fail("Expected exception SchemaFailedParseJsonFile not thrown");
         } catch (\BO\Zmsentities\Exception\SchemaFailedParseJsonFile $exception) {
             $this->assertEquals(500, $exception->getCode());
