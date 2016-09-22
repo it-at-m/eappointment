@@ -9,7 +9,7 @@ namespace BO\Mellon;
   * Validation of Strings
   * This validation is opinionated: It sanitizes the output from special chars for HTML
   */
-class Bool extends \BO\Mellon\Valid
+class ValidBool extends Valid
 {
 
     /**

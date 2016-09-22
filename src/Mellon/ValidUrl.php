@@ -10,7 +10,7 @@ namespace BO\Mellon;
   * Validation of URLs
   *
   */
-class Url extends \BO\Mellon\String
+class ValidUrl extends ValidString
 {
     /**
      * Allow only valid urls
