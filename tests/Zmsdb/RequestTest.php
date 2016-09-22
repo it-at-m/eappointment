@@ -24,6 +24,10 @@ class RequestTest extends Base
         $entity = (new Query($connection, $connection))->readEntity('dldb', 120335);
         $this->assertEntity("\\BO\\Zmsentities\\Request", $entity);
         $this->assertEquals(120335, $entity['id']);
+
+        $entity = (new Query($connection, $connection))->readEntity('dldb', 120335, 1);
+        $this->assertEntity("\\BO\\Zmsentities\\Request", $entity);
+        $this->assertTrue(array_key_exists('data', $entity), 'Addional data attribute missed');
     }
 
     public function testUnknownSource()
