@@ -16,6 +16,7 @@ class HelperTest extends EntityCommonTests
 
         try {
             $entity->toProperty()->offsetSet('date','1458856801');
+            $this->fail("Expected exception PropertyOffsetReadOnly not thrown");
         } catch (\BO\Zmsentities\Exception\PropertyOffsetReadOnly $exception) {
             $this->assertEquals(500, $exception->getCode());
             $this->assertContains('is readonly', $exception->getMessage());
@@ -23,6 +24,7 @@ class HelperTest extends EntityCommonTests
 
         try {
             $entity->toProperty()->offsetUnset('date');
+            $this->fail("Expected exception PropertyOffsetReadOnly not thrown");
         } catch (\BO\Zmsentities\Exception\PropertyOffsetReadOnly $exception) {
             $this->assertEquals(500, $exception->getCode());
             $this->assertContains('is readonly', $exception->getMessage());

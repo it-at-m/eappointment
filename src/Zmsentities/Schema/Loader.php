@@ -21,7 +21,9 @@ class Loader
                 JSON_ERROR_SYNTAX => 'Syntax error, malformed JSON',
                 JSON_ERROR_NONE => 'No errors',
             );
-            throw new Exception("Could not parse JSON File $schemaFilename: ".$json_error_list[$json_error]);
+            throw new \BO\Zmsentities\Exception\SchemaFailedParseJsonFile(
+                "Could not parse JSON File $schemaFilename: ".$json_error_list[$json_error]
+            );
         }
         $schema = new Schema($array);
         $schema->setJsonObject($object);
@@ -30,7 +32,7 @@ class Loader
     public static function asJson($schemaFilename)
     {
         if (!$schemaFilename) {
-            throw new Exception("Missing JSON-Schema file");
+            throw new \BO\Zmsentities\Exception\SchemaMissingJsonFile("Missing JSON-Schema file");
         }
         $directory = self::getSchemaPath();
         $filename = $directory . DIRECTORY_SEPARATOR . $schemaFilename;
