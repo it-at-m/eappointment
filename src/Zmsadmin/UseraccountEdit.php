@@ -47,7 +47,7 @@ class UseraccountEdit extends BaseController
             'page/useraccountEdit.twig',
             array (
                 'userAccount' => $userAccount,
-                'ownerList' => $ownerList->getOrganisationListWithDepartments(),
+                'ownerList' => $ownerList->toDepartmentListByOrganisationName(),
                 'workstation' => $workstation,
                 'title' => 'Nutzer: Einrichtung und Administration','menuActive' => 'useraccount'
             )
