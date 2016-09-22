@@ -72,18 +72,17 @@ class UserAccount extends Base
             ->fetchAll($query, [
             'userAccountName' => $userAccount->id
             ]);
+        $checkFirstDepartment = reset($departmentIds);
+        $departmentList = (0 == $checkFirstDepartment['id']) ? (new \BO\Zmsdb\Department())->readList() : null;
 
-        $checkFirstDepartment = current($departmentIds);
-        if (count($departmentIds) && 1 <= $resolveReferences && 0 < $checkFirstDepartment['id']) {
+        if (count($departmentIds) && !$departmentList && 0 < $resolveReferences) {
             $departmentList = new \BO\Zmsentities\Collection\DepartmentList();
             foreach ($departmentIds as $item) {
                 $department = (new \BO\Zmsdb\Department())->readEntity($item['id'], $resolveReferences);
                 $departmentList->addEntity($department);
             }
-            return $departmentList;
-        } else {
-            return $departmentIds;
         }
+        return $departmentList;
     }
 
     public function readEntityByAuthKey($xAuthKey, $resolveReferences = 0)
@@ -106,12 +105,13 @@ class UserAccount extends Base
     public function writeEntity(\BO\Zmsentities\UserAccount $entity)
     {
         $query = new Query\UserAccount(Query\Base::INSERT);
-        if ($this->readIsUserExisting($entity->id) || ! $entity->hasProperties('id', 'password', 'rights')) {
-            $userAccount = new \BO\Zmsentities\UserAccount();
+        if ($this->readIsUserExisting($entity->id)) {
+            $userAccount = $this->updateEntity($entity->id, $entity);
         } else {
             $values = $query->reverseEntityMapping($entity);
             $query->addValues($values);
             $this->writeItem($query);
+            $this->updateAssignedDepartments($entity);
             $userAccount = $this->readEntity($entity->id, 1);
         }
         return $userAccount;
@@ -132,6 +132,7 @@ class UserAccount extends Base
         $values = $query->reverseEntityMapping($entity);
         $query->addValues($values);
         $this->writeItem($query);
+        $this->updateAssignedDepartments($entity);
         return $this->readEntity($loginName, 1);
     }
 
@@ -147,6 +148,39 @@ class UserAccount extends Base
     {
         $query = new Query\UserAccount(Query\Base::DELETE);
         $query->addConditionLoginName($loginName);
+        $this->deleteAssignedDepartments($loginName);
         return $this->deleteItem($query);
+    }
+
+    protected function updateAssignedDepartments($entity)
+    {
+        $loginName = $entity->id;
+        $this->deleteAssignedDepartments($loginName);
+        $query = Query\UserAccount::QUERY_WRITE_ASSIGNED_DEPARTMENTS;
+        $statement = $this->getWriter()->prepare($query);
+        $userId = $this->readEntityIdByLoginName($loginName);
+        foreach ($entity->departments as $department) {
+            $statement->execute(
+                array (
+                    $userId,
+                    $department['id']
+                )
+            );
+        }
+    }
+
+    protected function readEntityIdByLoginName($loginName)
+    {
+        $query = Query\UserAccount::QUERY_READ_ID_BY_USERNAME;
+        $result = $this->getReader()->fetchOne($query, [$loginName]);
+        return $result['id'];
+    }
+
+    protected function deleteAssignedDepartments($loginName)
+    {
+        $query = Query\UserAccount::QUERY_DELETE_ASSIGNED_DEPARTMENTS;
+        $statement = $this->getWriter()->prepare($query);
+        $userId = $this->readEntityIdByLoginName($loginName);
+        $statement->execute([$userId]);
     }
 }

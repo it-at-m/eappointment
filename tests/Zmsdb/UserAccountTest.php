@@ -40,12 +40,13 @@ class UserAccountTest extends Base
         $this->assertEquals(true, $entityList->hasEntity('berlinonline')); //superuser bo
     }
 
-    public function testDublicate()
+    public function testReadAssignedDepartmentList()
     {
         $query = new Query();
-        $input = $this->getTestEntity();
-        $userAccount = $query->writeEntity($input);
-        $this->assertTrue(!$userAccount->hasId(), "Dublicate UserAccount Entry found in DB.");
+        $entity = $this->getTestEntity();
+        $userAccount = $query->writeEntity($entity);
+        $departmentList = $query->readAssignedDepartmentList($userAccount, 1);
+        $this->assertEntityList("\\BO\\Zmsentities\\Department", $departmentList);
     }
 
     public function testDelete()
@@ -54,6 +55,13 @@ class UserAccountTest extends Base
         $input = $this->getTestEntity();
         $deleteTest = $query->deleteEntity($input->id);
         $this->assertTrue($deleteTest, "Failed to delete User from Database.");
+    }
+
+    public function testDublicate()
+    {
+        $query = new Query();
+        $input = $this->getTestEntity();
+        $this->assertFalse($query->readIsUserExisting($input->id), "Dublicate UserAccount Entry found in DB.");
     }
 
     protected function getTestEntity()
