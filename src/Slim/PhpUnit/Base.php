@@ -159,6 +159,7 @@ abstract class Base extends \PHPUnit_Framework_TestCase
             $validator->setInput($parameters['__body']);
         }
         $validator->makeInstance();
+        $request = \BO\Slim\Middleware\Validator::withValidator($request);
         $response = $controller->__invoke($request, $this->getResponse(), $arguments);
         return $response;
     }
