@@ -9,6 +9,9 @@ use \BO\Slim\Middleware\SessionMiddleware;
 use \BO\Slim\Middleware\Session\SessionHuman;
 use \BO\Slim\Middleware\Session\SessionData;
 
+/**
+ * @SuppressWarnings(Coupling)
+ */
 abstract class Base extends \PHPUnit_Framework_TestCase
 {
     use \Helmich\Psr7Assert\Psr7Assertions;
@@ -81,6 +84,7 @@ abstract class Base extends \PHPUnit_Framework_TestCase
             return $session;
         });
         $request = $request->withAttribute(SessionMiddleware::SESSION_ATTRIBUTE, $sessionContainer);
+        $request = \BO\Slim\Middleware\Validator::withValidator($request);
         return $request;
     }
 
