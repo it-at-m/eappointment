@@ -12,6 +12,28 @@ class UserAccount extends Base implements MappingInterface
     const TABLE = 'nutzer';
     const TABLE_ASSIGNMENT = 'nutzerzuordnung';
 
+    const QUERY_READ_ID_BY_USERNAME = '
+        SELECT user.`NutzerID` AS id
+        FROM '. self::TABLE .' user
+        WHERE
+            user.`Name`=?
+    ';
+
+    const QUERY_WRITE_ASSIGNED_DEPARTMENTS = '
+        REPLACE INTO
+            '. self::TABLE_ASSIGNMENT .'
+        SET
+            nutzerid=?,
+            behoerdenid=?
+    ';
+
+    const QUERY_DELETE_ASSIGNED_DEPARTMENTS = '
+        DELETE FROM
+            '. self::TABLE_ASSIGNMENT .'
+        WHERE
+            nutzerid=?
+    ';
+
     const QUERY_READ_ASSIGNED_DEPARTMENTS = '
         SELECT userAssignment.`behoerdenid` AS id
         FROM '. self::TABLE_ASSIGNMENT .' userAssignment
