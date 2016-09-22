@@ -234,7 +234,7 @@ class Session extends Schema\Entity
      */
     public function hasNoRequests()
     {
-        return (null === $this->getRequests()) ? true : false;
+        return (!$this->getRequests()) ? true : false;
     }
 
     /**
@@ -245,7 +245,7 @@ class Session extends Schema\Entity
      */
     public function hasNoProvider()
     {
-        return (null === $this->getProviders()) ? true : false;
+        return (!$this->getProviders()) ? true : false;
     }
 
     /**
