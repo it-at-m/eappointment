@@ -73,7 +73,8 @@ class Session extends Schema\Entity
 
     public function getBasket()
     {
-        return $this->content['basket'];
+        $defaults = $this->getDefaults();
+        return array_key_exists('basket', $this->content) ? $this->content['basket'] : $defaults['content']['basket'];
     }
 
     public function getHuman()
