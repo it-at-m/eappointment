@@ -28,6 +28,7 @@ class ScopeTest extends EntityCommonTests
         $entity->provider = null;
         try {
             $entity->getProviderId();
+            $this->fail("Expected exception ScopeMissingProvider not thrown");
         } catch (\BO\Zmsentities\Exception\ScopeMissingProvider $exception) {
             $this->assertEquals(500, $exception->getCode());
         }

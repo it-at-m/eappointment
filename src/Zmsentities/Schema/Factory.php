@@ -43,7 +43,7 @@ class Factory
     public function getEntityName()
     {
         if (!array_key_exists('$schema', $this->data)) {
-            throw new Exception('Missing $schema-key on given data.');
+            throw new \BO\Zmsentities\Exception\SchemaMissingKey('Missing $schema-key on given data.');
         }
         $schema = $this->data['$schema'];
         $entityName = preg_replace('#^.*/([^/]+)\.json#', '$1', $schema);

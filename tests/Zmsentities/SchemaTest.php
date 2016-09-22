@@ -2,13 +2,28 @@
 
 namespace BO\Zmsentities\Tests;
 
-class SchemaTest extends EntityCommonTests
+class SchemaTest extends Base
 {
-    public $entityclass = '\BO\Zmsentities\Department';
+    public function testLoader()
+    {
+        $loader = new \BO\Zmsentities\Schema\Loader();
+        try {
+            $loader->asJson(false);
+            $this->fail("Expected exception SchemaMissingJsonFile not thrown");
+        } catch (\BO\Zmsentities\Exception\SchemaMissingJsonFile $exception) {
+            $this->assertEquals(500, $exception->getCode());
+        }
+        try {
+            $loader->asArray('empty.json');
+            $this->fail("Expected exception SchemaFailedParseJsonFile not thrown");
+        } catch (\BO\Zmsentities\Exception\SchemaFailedParseJsonFile $exception) {
+            $this->assertEquals(500, $exception->getCode());
+        }
+    }
 
     public function testEntity()
     {
-        $entity = new $this->entityclass();
+        $entity = new \BO\Zmsentities\Department();
         $data = $this->getTestEntityMapping();
         $entity->exchangeArray($data);
 
@@ -19,7 +34,7 @@ class SchemaTest extends EntityCommonTests
 
     public function testCreateExample()
     {
-        $entity = new $this->entityclass();
+        $entity = new \BO\Zmsentities\Department();
         $entity = $entity->createExample();
         $this->assertTrue('Germany' == $entity->contact['country'], 'Schema Helper createExample failed');
         //no example
@@ -30,10 +45,11 @@ class SchemaTest extends EntityCommonTests
 
     public function testTestValid()
     {
-        $entity = new $this->entityclass();
+        $entity = new \BO\Zmsentities\Department();
         $entity->id = 'Ident';
         try {
             $entity->testValid();
+            $this->fail("Expected exception SchemaValidation not thrown");
         } catch (\BO\Zmsentities\Exception\SchemaValidation $exception) {
             $this->assertEquals(500, $exception->getCode());
         }
@@ -41,7 +57,7 @@ class SchemaTest extends EntityCommonTests
 
     public function testJsonSerialize()
     {
-        $entity = new $this->entityclass();
+        $entity = new \BO\Zmsentities\Department();
         $jsonSerialize = json_decode(json_encode($entity));
         $this->assertTrue($jsonSerialize == $entity->jsonSerialize(), "Schema Helper jsonSerialize does not match");
     }

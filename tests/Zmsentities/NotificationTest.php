@@ -34,6 +34,7 @@ class NotificationTest extends EntityCommonTests
         $this->assertTrue($entity->hasProperties('id','department','process'), 'properties missed, please check');
         try {
             $entity->hasProperties('no_property');
+            $this->fail("Expected exception NotificationMissedProperty not thrown");
         } catch (\BO\Zmsentities\Exception\NotificationMissedProperty $exception) {
             $this->assertEquals(500, $exception->getCode());
         }

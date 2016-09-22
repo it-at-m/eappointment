@@ -116,14 +116,16 @@ class AvailabilityTest extends EntityCommonTests
         try {
             $entity->bookable['endInDays'] = null;
             $entity->isBookable($time, $time);
-        } catch (\BO\Zmsentities\Exception $exception) {
+            $this->fail("Expected exception ProcessBookableFailed not thrown");
+        } catch (\BO\Zmsentities\Exception\ProcessBookableFailed $exception) {
             $this->assertEquals('Undefined end time for booking, try to set the scope properly', $exception->getMessage());
         }
         $entity->bookable['endInDays'] = $endInDays;
         try {
             $entity->bookable['startInDays'] = null;
             $entity->isBookable($time, $time);
-        } catch (\BO\Zmsentities\Exception $exception) {
+            $this->fail("Expected exception ProcessBookableFailed not thrown");
+        } catch (\BO\Zmsentities\Exception\ProcessBookableFailed $exception) {
             $this->assertEquals('Undefined start time for booking, try to set the scope properly', $exception->getMessage());
         }
         $entity->bookable['endInDays'] = null;

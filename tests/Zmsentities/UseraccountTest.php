@@ -18,6 +18,7 @@ class UseraccountTest extends EntityCommonTests
         unset($entity['id']);
         try {
             $entity->hasProperties('id','password','rights');
+            $this->fail("Expected exception UserAccountMissingProperties not thrown");
         } catch (\BO\Zmsentities\Exception\UserAccountMissingProperties $exception) {
             $this->assertEquals(500, $exception->getCode());
         }

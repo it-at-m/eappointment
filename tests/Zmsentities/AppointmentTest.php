@@ -30,6 +30,7 @@ class AppointmentTest extends EntityCommonTests
         $this->assertTrue('11:50 o\'clock' == $entity->toTime('en'), 'English time does not match.');
         try {
             $entity->setDateByString('2016/05/27 11:50');
+            $this->fail("Expected exception DateStringWrongFormat not thrown");
         } catch (\BO\Zmsentities\Exception\DateStringWrongFormat $exception) {
             $this->assertEquals(500, $exception->getCode());
             return;

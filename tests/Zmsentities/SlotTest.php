@@ -78,6 +78,7 @@ class SlotTest extends EntityCommonTests
         $availability = (new \BO\Zmsentities\Availability())->getExample();
         try {
             $freeProcesses = $collection->getFreeProcesses('2015-04-01', $scope, $availability, 'public', '123456');
+            $this->fail("Expected exception SlotMissingTime not thrown");
         } catch (\BO\Zmsentities\Exception\SlotMissingTime $exception) {
             $this->assertContains('Time on slot not set', $exception->getMessage());
             $this->assertEquals(500, $exception->getCode());

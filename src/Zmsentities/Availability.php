@@ -204,7 +204,9 @@ class Availability extends Schema\Entity
         if (null !== $scopeStart) {
             return $now->modify('+' . $scopeStart . 'days');
         }
-        throw new Exception("Undefined start time for booking, try to set the scope properly");
+        throw new \BO\Zmsentities\Exception\ProcessBookableFailed(
+            "Undefined start time for booking, try to set the scope properly"
+        );
     }
 
     /**
@@ -225,7 +227,9 @@ class Availability extends Schema\Entity
         if (null !== $scopeStart) {
             return $now->modify('+' . $scopeStart . 'days');
         }
-        throw new Exception("Undefined end time for booking, try to set the scope properly");
+        throw new \BO\Zmsentities\Exception\ProcessBookableFailed(
+            "Undefined end time for booking, try to set the scope properly"
+        );
     }
 
     /**
