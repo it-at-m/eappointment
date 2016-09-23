@@ -144,17 +144,10 @@ class SessionData implements SessionInterface
     public function clear()
     {
         if (session_status() === PHP_SESSION_ACTIVE) {
-            session_destroy();
-            setcookie(
-                session_name(),
-                null,
-                time() - 42000,
-                "/"
-            );
             session_regenerate_id(true);
+            $this->data = [];
+            $_SESSION = $this->data;
         }
-        $this->data = [];
-        $_SESSION = $this->data;
     }
 
     public function has($key, $groupIndex = null)
