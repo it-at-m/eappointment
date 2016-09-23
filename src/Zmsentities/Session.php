@@ -68,18 +68,17 @@ class Session extends Schema\Entity
 
     public function getContent()
     {
-        return $this->content;
+        return $this->toProperty()->content->get();
     }
 
     public function getBasket()
     {
-        $defaults = $this->getDefaults();
-        return array_key_exists('basket', $this->content) ? $this->content['basket'] : $defaults['content']['basket'];
+        return $this->toProperty()->content->basket->get();
     }
 
     public function getHuman()
     {
-        return $this->content['human'];
+        return $this->toProperty()->content->human->get();
     }
 
     public function getRequests()
@@ -152,20 +151,9 @@ class Session extends Schema\Entity
         return $this->toProperty()->content->entry->get();
     }
 
-    public function hasEntryValues()
-    {
-        $providers = $this->toProperty()->content->entry->providers->get();
-        $requests = $this->toProperty()->content->entry->requests->get();
-        return ($providers && $requests) ? true : false;
-    }
-
     public function isEmpty()
     {
-        if (!$this->hasProcess() && !$this->hasAuthKey() && !$this->hasStatus() && !$this->hasTask() &&
-             ! $this->isFinished() && ! $this->hasEntryValues()) {
-            return true;
-        }
-        return false;
+        return (!$this->getProviders() && !$this->getRequests()) ? true : false;
     }
 
     public function isFinished()
@@ -186,17 +174,13 @@ class Session extends Schema\Entity
 
     public function isReserved()
     {
-        return (
-            'reserved' == $this->getStatus() &&
-            null === $this->getTask() &&
-            null !== $this->getProcess() &&
-            !$this->hasChangedProcess()
-        ) ? true : false;
+        return ('reserved' == $this->getStatus() && null === $this->getTask() && null !== $this->getProcess() &&
+             ! $this->hasChangedProcess()) ? true : false;
     }
 
     public function isProcessDeleted()
     {
-        return !$this->hasProcess();
+        return ! $this->hasProcess();
     }
 
     public function hasStatus()
@@ -252,8 +236,6 @@ class Session extends Schema\Entity
      */
     public function hasProvider()
     {
-        error_log($this->getProviders());
-        error_log($this->getRequests());
         return ($this->getProviders()) ? true : false;
     }
 
@@ -277,5 +259,24 @@ class Session extends Schema\Entity
     public function hasDate()
     {
         return ($this->getSelectedDate()) ? true : false;
+    }
+
+    /**
+     *
+     * Check if entry parameter are different
+     *
+     * @return boolean
+     */
+    public function hasDifferentEntry($newEntryData)
+    {
+        return (
+            $this->getProviders() &&
+            $this->getRequests() &&
+            $this->getEntryData() &&
+            (
+                !($this->getProviders() == $newEntryData['providers']) ||
+                !($this->getRequests() == $newEntryData['requests'])
+            )
+         ) ? true : false;
     }
 }
