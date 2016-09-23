@@ -84,7 +84,6 @@ abstract class Base extends \PHPUnit_Framework_TestCase
             return $session;
         });
         $request = $request->withAttribute(SessionMiddleware::SESSION_ATTRIBUTE, $sessionContainer);
-        $request = \BO\Slim\Middleware\Validator::withValidator($request);
         return $request;
     }
 
@@ -151,7 +150,6 @@ abstract class Base extends \PHPUnit_Framework_TestCase
         } elseif ('POST' === $method) {
             $request = $request->withParsedBody($parameters);
         }
-
         if (array_key_exists('__body', $parameters)) {
             $body = new \Slim\Http\Body(fopen('php://temp', 'r+'));
             $body->write($parameters['__body']);
