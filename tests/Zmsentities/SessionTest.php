@@ -19,12 +19,12 @@ class SessionTest extends EntityCommonTests
         $this->assertTrue(is_array($basket), 'basket conten not unserialized');
         $this->assertTrue(is_array($human), 'human content not unserialized');
         $this->assertTrue('kck6Qz' == $human['captcha_text'], 'human not accessible');
-        $this->assertFalse($entity->hasNoRequests(), 'requests not accessible');
-        $this->assertFalse($entity->hasNoProvider(), 'providers not accessible');
-        $this->assertFalse($entity->hasNoScope(), 'scope not accessible');
+        $this->assertTrue($entity->hasRequests(), 'requests not accessible');
+        $this->assertTrue($entity->hasProvider(), 'providers not accessible');
+        $this->assertTrue($entity->hasScope(), 'scope not accessible');
         $this->assertFalse($entity->hasConfirmationNotification(), 'confirmation notification should not be set');
-        $this->assertFalse($entity->hasNoAuthKey(), 'authKey should be set');
-        $this->assertFalse($entity->hasNoDate(), 'date should be set');
+        $this->assertTrue($entity->hasAuthKey(), 'authKey should be set');
+        $this->assertTrue($entity->hasDate(), 'date should be set');
         $this->assertTrue($entity->hasEntryValues(), 'entry data does not exists');
 
         $entity->removeLastStep();

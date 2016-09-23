@@ -154,12 +154,14 @@ class Session extends Schema\Entity
 
     public function hasEntryValues()
     {
-        return (null !== $this->getEntryData()) ? true : false;
+        $providers = $this->toProperty()->content->entry->providers->get();
+        $requests = $this->toProperty()->content->entry->requests->get();
+        return ($providers && $requests) ? true : false;
     }
 
     public function isEmpty()
     {
-        if ($this->hasNoProcess() && $this->hasNoAuthKey() && $this->hasNoStatus() && $this->hasNoTask() &&
+        if (!$this->hasProcess() && !$this->hasAuthKey() && !$this->hasStatus() && !$this->hasTask() &&
              ! $this->isFinished() && ! $this->hasEntryValues()) {
             return true;
         }
@@ -169,12 +171,17 @@ class Session extends Schema\Entity
     public function isFinished()
     {
         $finished = $this->toProperty()->content->finished->get();
-        return (null !== $finished && false !== $this->hasNoProcess()) ? true : false;
+        return (null !== $finished && false !== $this->hasProcess()) ? true : false;
     }
 
     public function isConfirmed()
     {
         return ('confirmed' == $this->getStatus()) ? true : false;
+    }
+
+    public function isStalled()
+    {
+        return ('stalled' == $this->getStatus()) ? true : false;
     }
 
     public function isReserved()
@@ -189,27 +196,27 @@ class Session extends Schema\Entity
 
     public function isProcessDeleted()
     {
-        return $this->hasNoProcess();
+        return !$this->hasProcess();
     }
 
-    public function hasNoStatus()
+    public function hasStatus()
     {
-        return (null === $this->getStatus()) ? true : false;
+        return (null === $this->getStatus()) ? false : true;
     }
 
-    public function hasNoTask()
+    public function hasTask()
     {
-        return (null === $this->getTask()) ? true : false;
+        return (null === $this->getTask()) ? false : true;
     }
 
-    public function hasNoProcess()
+    public function hasProcess()
     {
-        return (null === $this->getProcess()) ? true : false;
+        return (null === $this->getProcess()) ? false : true;
     }
 
-    public function hasNoAuthKey()
+    public function hasAuthKey()
     {
-        return (null === $this->getAuthKey()) ? true : false;
+        return (null === $this->getAuthKey()) ? false : true;
     }
 
     public function hasChangedProcess()
@@ -232,9 +239,9 @@ class Session extends Schema\Entity
      *
      * @return boolean
      */
-    public function hasNoRequests()
+    public function hasRequests()
     {
-        return (!$this->getRequests()) ? true : false;
+        return ($this->getRequests()) ? true : false;
     }
 
     /**
@@ -243,9 +250,11 @@ class Session extends Schema\Entity
      *
      * @return boolean
      */
-    public function hasNoProvider()
+    public function hasProvider()
     {
-        return (!$this->getProviders()) ? true : false;
+        error_log($this->getProviders());
+        error_log($this->getRequests());
+        return ($this->getProviders()) ? true : false;
     }
 
     /**
@@ -254,9 +263,9 @@ class Session extends Schema\Entity
      *
      * @return boolean
      */
-    public function hasNoScope()
+    public function hasScope()
     {
-        return (null === $this->getScope()) ? true : false;
+        return ($this->getScope()) ? true : false;
     }
 
     /**
@@ -265,8 +274,8 @@ class Session extends Schema\Entity
      *
      * @return boolean
      */
-    public function hasNoDate()
+    public function hasDate()
     {
-        return (null === $this->getSelectedDate()) ? true : false;
+        return ($this->getSelectedDate()) ? true : false;
     }
 }
