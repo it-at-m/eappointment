@@ -25,7 +25,10 @@ class SessionTest extends EntityCommonTests
         $this->assertFalse($entity->hasConfirmationNotification(), 'confirmation notification should not be set');
         $this->assertTrue($entity->hasAuthKey(), 'authKey should be set');
         $this->assertTrue($entity->hasDate(), 'date should be set');
-        $this->assertTrue($entity->hasEntryValues(), 'entry data does not exists');
+        $this->assertFalse(
+            $entity->hasDifferentEntry($entity->getEntryData()),
+            'entry data is different to session entry data'
+        );
 
         $entity->removeLastStep();
         $lastStep = $entity->getLastStep();
