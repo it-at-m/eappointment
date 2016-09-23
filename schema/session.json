@@ -31,8 +31,8 @@
             },
             "entry" : {
                 "source" : "specific",
-                "provider" : "122217",
-                "request" : "120335"
+                "providers" : "122217",
+                "requests" : "120335"
             },
             "task" : "continue",
             "status" : "start",
