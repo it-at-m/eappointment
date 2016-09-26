@@ -24,6 +24,14 @@ class ProcessReserve extends BaseController
         $input = Validator::input()->isJson()->getValue();
         $query = new Query();
         $process = new \BO\Zmsentities\Process($input);
+
+        if ($process->hasId()) {
+            throw new Exception\Process\ProcessFailedReservation();
+        } else {
+            $process->status = 'reserved';
+            $message->data = (new Query())->updateEntity($process);
+        }
+
         $message->data = $query->updateEntity($process);
         Render::lastModified(time(), '0');
         Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
