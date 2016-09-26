@@ -43,9 +43,7 @@ class SessionTest extends EntityCommonTests
 
         $entity = (new $this->entityclass())->getExample();
         $this->assertTrue($entity->hasStatus(), 'session must have a status');
-        $this->assertTrue($entity->hasTask(), 'Get task from session failed');
         $this->assertFalse($entity->isEmpty(), 'session is empty');
-        $this->assertTrue($entity->isFinished(), 'session should be finished');
         $this->assertFalse($entity->isStalled(), 'session should not be stalled');
         $this->assertFalse($entity->isConfirmed(), 'session should not be confirmed');
         $this->assertFalse($entity->isProcessDeleted(), 'session should not be reserved');
@@ -54,7 +52,6 @@ class SessionTest extends EntityCommonTests
 
         $this->assertFalse($entity->isReserved(), 'session should not be reserved');
         $entity->content['status'] = 'reserved';
-        $entity->content['task'] = null;
         $this->assertTrue($entity->isReserved(), 'session should be reserved');
     }
 }
