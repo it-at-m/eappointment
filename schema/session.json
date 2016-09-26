@@ -33,10 +33,8 @@
                 "source" : "specific",
                 "providers" : "122217",
                 "requests" : "120335"
-            },
-            "task" : "continue",
+            },            
             "status" : "start",
-            "finished" : true,
             "X-Authkey" : "abc12345678def",
             "error" : ""
         }
@@ -163,19 +161,7 @@
 		                "inProgress"
 		            ],
             		"description": "Status of the session. The following values are possible:\n* start: new session started\n* reserved: set if a process has been reserved\n* confirmed: set if a process has been confirmed\n* inChange: current process is in change mode\n* changedProcess: current process has been changed\n* stalled: set if session has a problem, fore example if second tab is in use \n* inProgress: if session not stalled anymore\n"
-                },
-                "task" : {
-                    "type": "string",
-                    "enum": [
-                    	"new",
-		                "continue"
-			            ],
-	            		"description": "Change normal process by a task: \n* new: force to delete reserved process if exists, remove last step and start modifying process\n* continue: exception to continue on breaking status like reserved or confirmed\n"
-                },
-                "finished" : {
-                    "type": ["boolean", "number"],
-                    "description": "True if process has been confirmed successfully"
-                },
+                },                     
                 "X-Authkey" : {
                     "type": "string"
                 },

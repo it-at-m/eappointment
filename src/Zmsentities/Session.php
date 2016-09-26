@@ -42,8 +42,6 @@ class Session extends Schema\Entity
                     'step' => array ()
                 ],
                 'status' => 'start',
-                'task' => 'new',
-                'finished' => false,
                 'X-Authkey' => '',
                 'error' => ''
             )
@@ -156,10 +154,9 @@ class Session extends Schema\Entity
         return (!$this->getProviders() && !$this->getRequests()) ? true : false;
     }
 
-    public function isFinished()
+    public function isInChange()
     {
-        $finished = $this->toProperty()->content->finished->get();
-        return (null !== $finished && false !== $this->hasProcess()) ? true : false;
+        return ('inChange' == $this->getStatus()) ? true : false;
     }
 
     public function isConfirmed()
@@ -174,8 +171,7 @@ class Session extends Schema\Entity
 
     public function isReserved()
     {
-        return ('reserved' == $this->getStatus() && null === $this->getTask() && null !== $this->getProcess() &&
-             ! $this->hasChangedProcess()) ? true : false;
+        return ('reserved' == $this->getStatus()) ? true : false;
     }
 
     public function isProcessDeleted()
@@ -186,11 +182,6 @@ class Session extends Schema\Entity
     public function hasStatus()
     {
         return (null === $this->getStatus()) ? false : true;
-    }
-
-    public function hasTask()
-    {
-        return (null === $this->getTask()) ? false : true;
     }
 
     public function hasProcess()
