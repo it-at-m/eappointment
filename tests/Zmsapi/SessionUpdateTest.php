@@ -81,8 +81,7 @@ class SessionUpdateTest extends Base
             '__body' => '{
                 "id": "unittest",
                 "name": "unittest",
-                "task": "continue",
-                "status": "finished",
+                "status": "start",
                 "content": {
                     "basket": {
                         "requests" : "120703",
