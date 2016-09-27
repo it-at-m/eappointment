@@ -116,11 +116,6 @@ class Session extends Schema\Entity
         return $this->toProperty()->content->status->get();
     }
 
-    public function getTask()
-    {
-        return $this->toProperty()->content->task->get();
-    }
-
     public function removeLastStep()
     {
         unset($this->content['human']['step'][$this->getLastStep()]);
