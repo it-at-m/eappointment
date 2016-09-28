@@ -166,7 +166,7 @@ class Session extends Schema\Entity
 
     public function isReserved()
     {
-        return ('reserved' == $this->getStatus()) ? true : false;
+        return ('reserved' == $this->getStatus() || $this->hasChangedProcess()) ? true : false;
     }
 
     public function isProcessDeleted()
@@ -191,7 +191,7 @@ class Session extends Schema\Entity
 
     public function hasChangedProcess()
     {
-        return ('processChanged' == $this->getStatus()) ? true : false;
+        return ('changedProcess' == $this->getStatus()) ? true : false;
     }
 
     public function hasPreviousAppointmentSearch()
