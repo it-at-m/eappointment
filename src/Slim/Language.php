@@ -45,8 +45,8 @@ class Language
         $lang_ids = array_keys(self::$supportedLanguages);
         $lang_ids = array_diff($lang_ids, array($default));
         if (null !== $this->request) {
-            $url = $this->request->getUri()->getPath();
-            if (preg_match('~^('.implode('|', $lang_ids).')/~', $url, $matches)) {
+            $url = $this->request->getUri()->getBasePath();
+            if (preg_match('~^/('.implode('|', $lang_ids).')/~', $url, $matches)) {
                 $current = $matches[1];
             }
         }

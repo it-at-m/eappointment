@@ -89,14 +89,12 @@ class TwigExtension extends \Twig_Extension
         );
     }
 
-    public function currentRoute($lang = null, $multiLanguage = true)
+    public function currentRoute($lang = null)
     {
         if ($this->container->has('currentRoute')) {
             $routeParams = $this->container->get('currentRouteParams');
             $routeParams['lang'] = ($lang !== null) ? $lang : self::currentLang();
-            $routeName = ($multiLanguage) ?
-                $lang . '__'. $this->container->get('currentRoute') :
-                $this->container->get('currentRoute');
+            $routeName = $this->container->get('currentRoute');
             $route = array(
                 'name' => $routeName,
                 'params' => $routeParams
@@ -117,8 +115,7 @@ class TwigExtension extends \Twig_Extension
 
     public function urlGet($routeName, $params = array(), $getparams = array())
     {
-        $lang = (isset($params['lang'])) ? $params['lang'] : null;
-        $url = \App::$slim->urlFor($routeName, $params, $lang);
+        $url = \App::$slim->urlFor($routeName, $params);
         $url = preg_replace('#^.*?(https?://)#', '\1', $url); // allow http:// routes
         if ($getparams) {
             $url .= '?' . http_build_query($getparams);
