@@ -4,13 +4,14 @@ namespace BO\Slim;
 
 class SlimApp extends \Slim\App
 {
-    public function urlFor($name, $params = array(), $lang = null)
+    public function urlFor($name, $params = array())
     {
-        $currentLang = (null !== $lang) ? $lang : \App::$language->getCurrent();
-        $params['lang'] = (isset($params['lang'])) ? $params['lang'] : $currentLang;
-        if ($params['lang'] == '' || $params['lang'] == \App::$language->getDefault()) {
-            unset($params['lang']);
+        $routePath = $this->getContainer()->router->pathFor($name, $params);
+        $lang = (\App::$language->getCurrent() != \App::$language->getDefault()) ? \App::$language->getCurrent() : '';
+        if ($lang != \App::$language->getCurrent()) {
+            $routePath = preg_replace('~^/('.\App::$language->getCurrent().')/~', $lang, $routePath);
+            //$routePath = sprintf('/%s%s', '', $routePath);
         }
-        return $this->getContainer()->router->pathFor($name, $params);
+        return $routePath;
     }
 }

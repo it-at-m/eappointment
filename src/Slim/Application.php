@@ -85,6 +85,11 @@ class Application
             'name'    => 'Deutsch',
             'locale'  => 'de_DE.utf-8',
             'default' => true,
+        ),
+        'en' => array(
+            'name'    => 'English',
+            'locale'  => 'en_GB.utf-8',
+            'default' => false,
         )
     );
 }
