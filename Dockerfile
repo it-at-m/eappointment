@@ -5,11 +5,18 @@ RUN echo "precedence ::ffff:0:0/96 100" >> /etc/gai.conf
 
 # Install software
 RUN apt-get update -yqq
-RUN apt-get install -yqq openssh-client git zip unzip rsync libpng-dev gettext
-
+RUN apt-get install -yqq openssh-client git zip unzip rsync libpng-dev gettext libfreetype6-dev libmcrypt-dev libpng12-dev libjpeg-dev libpng-dev
+#
 # Install PHP extensions
-RUN docker-php-ext-install pdo_mysql mbstring gd gettext
-
+RUN docker-php-ext-install pdo_mysql mbstring gettext iconv
+RUN docker-php-ext-configure gd \
+        --enable-gd-native-ttf \
+        --with-freetype-dir=/usr/include/freetype2 \
+        --with-png-dir=/usr/include \
+        --with-jpeg-dir=/usr/include \
+ 	&& docker-php-ext-install -j$(nproc) iconv mcrypt \
+    	&& docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
+    	&& docker-php-ext-install -j$(nproc) gd
 # Install xdebug after composer for performance
 RUN pecl install xdebug > /dev/null
 #RUN docker-php-ext-disable xdebug
@@ -33,6 +40,7 @@ RUN apt-get install -yqq libbz2-dev
 RUN docker-php-ext-install bz2
 
 # Clean up
-RUN apt-get clean && rm -rf /var/lib/apt/lists/* && rm -rf /usr/src
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
 
 
