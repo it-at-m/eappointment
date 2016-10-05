@@ -4,7 +4,6 @@ namespace BO\Zmsentities;
 
 class Calendar extends Schema\Entity
 {
-
     const PRIMARY = 'days';
 
     public static $schema = "calendar.json";
@@ -18,6 +17,38 @@ class Calendar extends Schema\Entity
             'scopes' => [ ],
             'requests' => [ ]
         ];
+    }
+
+    public function addDates($date, \DateTimeInterface $now, $timeZone)
+    {
+        $validDate = \BO\Mellon\Validator::value($date)->isDate();
+        $date = (! $validDate->hasFailed()) ? $validDate->getValue() : $now->format('U');
+        $this->addFirstAndLastDay($date, $timeZone);
+        return $this;
+    }
+
+    /**
+     * Returns calendar with first and last day
+     *
+     * @return $this
+     */
+    public function addFirstAndLastDay($date, $timeZone)
+    {
+        $timeZone = new \DateTimeZone($timeZone);
+        $dateTime = $this->getDateTimeFromTs($date, $timeZone);
+        $firstDay = $dateTime->setTime(0, 0, 0);
+        $lastDay = $dateTime->modify("+1 Month")->modify('last day of this month')->setTime(23, 59, 59);
+        $this->firstDay = array (
+            'year' => $firstDay->format('Y'),
+            'month' => $firstDay->format('m'),
+            'day' => $firstDay->format('d')
+        );
+        $this->lastDay = array (
+            'year' => $lastDay->format('Y'),
+            'month' => $lastDay->format('m'),
+            'day' => $lastDay->format('d')
+        );
+        return $this;
     }
 
     /**
@@ -53,28 +84,6 @@ class Calendar extends Schema\Entity
     }
 
     /**
-     * Returns calendar with first and last day
-     *
-     * @return $this
-     */
-    public function addFirstAndLastDay($firstDay, $lastDay)
-    {
-        $firstDay = $this->getDayByDateTime(Helper\DateTime::create($firstDay));
-        $lastDay = $this->getDayByDateTime(Helper\DateTime::create($lastDay));
-        $this->firstDay = array (
-            'year' => $firstDay->year,
-            'month' => $firstDay->month,
-            'day' => $firstDay->day
-        );
-        $this->lastDay = array (
-            'year' => $lastDay->year,
-            'month' => $lastDay->month,
-            'day' => $lastDay->day
-        );
-        return $this;
-    }
-
-    /**
      * Returns a list of associated scope ids
      *
      * @return array
@@ -101,36 +110,6 @@ class Calendar extends Schema\Entity
             $list[] = $provider['id'];
         }
         return $list;
-    }
-
-    /**
-     * Returns a list of contained month given by firstDay and lastDay
-     * The return value is a DateTime object for the first day of the month
-     *
-     * @return [\DateTime]
-     */
-    public function getMonthList()
-    {
-        $startDate = new \DateTime();
-        $firstDay = $this->getFirstDay();
-        $lastDay = $this->getLastDay();
-        $startDate->setDate($firstDay->format('Y'), $firstDay->format('m'), $firstDay->format('d'));
-        $endDate = new \DateTime();
-        $endDate->setDate($lastDay->format('Y'), $lastDay->format('m'), $lastDay->format('d'));
-        $currentDate = $startDate;
-        if ($startDate->getTimestamp() > $endDate->getTimestamp()) {
-            // swith first and last day if necessary
-            $currentDate = $endDate;
-            $endDate = $startDate;
-        }
-        $endDate = Helper\DateTime::create($endDate->format('Y-m-t'));
-        $endDate->modify('23:59:59');
-        $monthList = [ ];
-        do {
-            $monthList[] = Helper\DateTime::create($currentDate->format('Y-m-1'));
-            $currentDate->modify('+1 month');
-        } while ($currentDate->getTimestamp() <= $endDate->getTimestamp());
-        return $monthList;
     }
 
     /**
@@ -167,7 +146,8 @@ class Calendar extends Schema\Entity
 
     public function getDateTimeFromDate($date)
     {
-        $date = Helper\DateTime::createFromFormat('Y-m-d', $date['year'] . '-' . $date['month'] . '-' . $date['day']);
+        $day = (isset($date['day'])) ? $date['day'] : 1;
+        $date = Helper\DateTime::createFromFormat('Y-m-d', $date['year'] . '-' . $date['month'] . '-' . $day);
         return Helper\DateTime::create($date);
     }
 
@@ -200,7 +180,7 @@ class Calendar extends Schema\Entity
         } else {
             $dateTime = Helper\DateTime::create();
         }
-        return $dateTime->modify('00:00:00');
+        return $dateTime->modify('23:59:59');
     }
 
     public function getDateTimeFromTs($timestamp, $timezone = null)
@@ -226,26 +206,48 @@ class Calendar extends Schema\Entity
         return false;
     }
 
-    /*
-    public function addFreeProcess(Process $process)
+    /**
+     * Returns a list of contained month given by firstDay and lastDay
+     * The return value is a month entity object for the first day of the month
+     *
+     * @return [\DateTime]
+     */
+    public function getMonthList()
     {
-        $exists = false;
-        foreach ($process->appointments as $appointment) {
-            $appointment = new Appointment($appointment);
-            foreach ($this->freeProcesses as $key => $freeProcess) {
-                $freeProcess = new Process($freeProcess);
-                if ($appointment &&
-                     $freeProcess->hasAppointment($appointment->date, $freeProcess->getScopeId())
-                ) {
-                    $freeProcess->addAppointment($appointment);
-                    $exists = true;
-                }
+        $firstDay = $this->getFirstDay()->modify('first day of this month')->modify('00:00:00');
+        $lastDay = $this->getLastDay()->modify('last day of this month')->modify('23:59:59');
+        $currentDate = $firstDay;
+        if ($firstDay->getTimestamp() > $lastDay->getTimestamp()) {
+            // swith first and last day if necessary
+            $currentDate = $lastDay;
+            $lastDay = $firstDay;
+        }
+        $monthList = new Collection\MonthList();
+        do {
+            $startDow = date('w', mktime(0, 0, 0, $currentDate->format('m'), 1, $currentDate->format('Y')));
+            $month = (new Month(
+                array(
+                    'year' => $currentDate->format('Y'),
+                    'month' => $currentDate->format('m'),
+                    'calHeadline' => strftime('%B %Y', $currentDate->getTimestamp()),
+                    'startDow' => ($startDow == 0) ? 6 : $startDow - 1, // change for week start with monday on 0,
+                    'days' => (new Collection\DayList($this->days))->withAssociatedDays($currentDate->format('m'))
+                )
+            ));
+            $monthList->addEntity($month);
+            $currentDate = $currentDate->modify('+1 month');
+        } while ($currentDate->getTimestamp() <= $lastDay->getTimestamp());
+        return $monthList;
+    }
+
+    public function getMonthListWithStatedDays(\DateTimeInterface $now)
+    {
+        $monthList = new Collection\MonthList();
+        if ($this->toProperty()->days->get()) {
+            foreach ($this->getMonthList() as $month) {
+                $monthList->addEntity($month->getWithStatedDayList($now));
             }
         }
-        if (false === $exists) {
-            $this->freeProcesses[] = $process;
-        }
-        return $this;
+        return $monthList;
     }
-    */
 }

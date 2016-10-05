@@ -1,7 +1,6 @@
 <?php
 namespace BO\Zmsentities\Collection;
 
-class MailList extends Base
+class MonthList extends Base
 {
-
 }
