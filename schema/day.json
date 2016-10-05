@@ -11,6 +11,7 @@
             "public": 0,
             "type": "sum"
         },
+        "status" : "bookable",
         "firstAppointmentTimestamp": {
             "intern": 1447919770000,
             "type": "timestamp"
@@ -44,6 +45,16 @@
         },
         "lastAppointmentTimestamp": {
             "$ref": "slot.json"
-        }
+        },
+        "status": {
+        	"type": "string",
+            "enum": [
+            	"bookable",
+                "notBookable",
+                "restricted",
+                "full"
+            ],
+            "description": "Status of day. The following values are possible:\n  * bookable: day has free appointments\n  * notBookable: day is not bookable because of missing availabilities\n  * restricted: not bookable because of dayoff times\n  * full: not bookable because missing free appointments\n"
+    	}
     }
 }

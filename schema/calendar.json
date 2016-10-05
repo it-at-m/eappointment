@@ -10,7 +10,8 @@
                 "freeAppointments": {
                     "callcenter": 0,
                     "intern": 3,
-                    "public": 0
+                    "public": 2,
+                    "type": "free"
                 },
                 "firstAppointmentTimestamp": {
                     "intern": 1447919770000
