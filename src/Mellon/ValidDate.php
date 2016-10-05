@@ -24,7 +24,7 @@ class ValidDate extends Valid
         $this->validated = true;
         if (null !== $this->value) {
             $selectedDate = \DateTime::createFromFormat($format, $this->value);
-            $selectedDate->setTimezone(new \DateTimeZone(\App::TIMEZONE));
+            //$selectedDate->setTimezone(new \DateTimeZone(\App::TIMEZONE));
             $isDate = (bool)strtotime($selectedDate->format('Y-m-d'));
             if (false === $isDate) {
                 $this->failure($message);
