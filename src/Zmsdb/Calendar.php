@@ -92,8 +92,8 @@ class Calendar extends Base
         $query = SlotList::getQuery();
         $monthList = $calendar->getMonthList();
         $statement = $this->getReader()->prepare($query);
-        foreach ($monthList as $monthDateTime) {
-            $month = new \DateTimeImmutable($monthDateTime->format('c'));
+        foreach ($monthList as $month) {
+            $monthDateTime = $calendar->getDateTimeFromDate($month);
             foreach ($calendar->scopes as $scope) {
                 $statement->execute(SlotList::getParameters($scope['id'], $monthDateTime, $now));
                 //error_log(var_export(SlotList::getParameters($scope['id'], $monthDateTime), true));
@@ -102,7 +102,7 @@ class Calendar extends Base
                     $calendar = $this->addDayInfoToCalendar(
                         $calendar,
                         $slotData,
-                        $month,
+                        $monthDateTime,
                         $slotsRequired,
                         $freeProcessesDate,
                         $scope,
@@ -114,7 +114,7 @@ class Calendar extends Base
                 $calendar = $this->addDayInfoToCalendar(
                     $calendar,
                     ['availability__id' => null],
-                    $month,
+                    $monthDateTime,
                     $slotsRequired,
                     $freeProcessesDate,
                     $scope,
@@ -132,7 +132,7 @@ class Calendar extends Base
     protected function addDayInfoToCalendar(
         Entity $calendar,
         array $slotData,
-        \DateTimeImmutable $month,
+        \DateTimeImmutable $monthDateTime,
         $slotsRequired,
         $freeProcessesDate,
         \BO\Zmsentities\Scope $scope = null,
@@ -144,8 +144,8 @@ class Calendar extends Base
             if (null !== $slotData["availability__id"]) {
                 $calendar['processing']['slotlist'] = new SlotList(
                     $slotData,
-                    $month->modify('first day of')->modify('00:00:00'),
-                    $month->modify('last day of')->modify('23:59:59'),
+                    $monthDateTime->modify('first day of')->modify('00:00:00'),
+                    $monthDateTime->modify('last day of')->modify('23:59:59'),
                     null,
                     $scope
                 );
