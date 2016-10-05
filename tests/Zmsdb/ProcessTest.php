@@ -56,15 +56,13 @@ class ProcessTest extends Base
         $now = new \DateTimeImmutable("2016-05-30 08:00");
 
         $calendar = $this->getTestCalendarEntity();
-        $firstDay = $now->format('Y-m-d');
-        $lastDay = date('Y-m-t', strtotime("+1 month", strtotime($firstDay)));
-        $calendar->addFirstAndLastDay($firstDay, $lastDay);
+        $calendar->addFirstAndLastDay($now->getTimestamp(), 'Europe/Berlin');
 
         $processList = $query->readFreeProcesses($calendar, $now);
         $firstProcess = $processList->getFirstProcess();
         $this->assertTrue(
             $firstProcess->hasAppointment($now->format('U'), $firstProcess->getScopeId()),
-            "Missing Appointment Date (". $firstDay .") in first free Process"
+            "Missing Appointment Date (". $calendar->getFirstDay()->format('Y-m-d') .") in first free Process"
         );
     }
 
