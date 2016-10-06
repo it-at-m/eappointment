@@ -30,7 +30,7 @@ class ScopeDelete extends BaseController
         if (count($processList)) {
             throw new Exception\Scope\ScopeHasProcesses();
         } else {
-            //$query->deleteEntity($itemId);
+            $query->deleteEntity($itemId);
         }
         $message->data = $entity;
         Render::lastModified(time(), '0');
