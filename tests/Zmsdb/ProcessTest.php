@@ -33,6 +33,13 @@ class ProcessTest extends Base
         $this->assertEquals(null, $process);
     }
 
+    public function testReadListByScopeId()
+    {
+        $query = new Query();
+        $processList = $query->readProcessListByScopeId(141); //Heerstraße
+        $this->assertTrue(0 < count($processList), "Scope 141 Heerstraße should have assigned processes");
+    }
+
     public function testWriteProcessUnLocked()
     {
         $query = new Query();
