@@ -30,11 +30,13 @@ class OrganisationTest extends Base
     {
         $query = new Query();
         $input = $this->getTestEntity();
-        $collection = $query->readList();
+        $collection = $query->readList(1);
         $collection->addEntity($input);
         $this->assertEntityList("\\BO\\Zmsentities\\Organisation", $collection);
-        $this->assertEquals(true, $collection->hasEntity('78')); //Treptow-Köpenick exists
-        $this->assertEquals(true, $collection->hasEntity('456')); //Test Entity exists
+        $this->assertTrue($collection->hasEntity(78)); //Treptow-Köpenick exists
+        $this->assertTrue(null !== $collection->getEntity(78));
+        $this->assertTrue($collection->hasEntity(456)); //Test Entity exists
+        $this->assertTrue($collection->getByDepartmentId(96)->hasEntity(78)); //resolve department references works
     }
 
     public function testWriteEntity()

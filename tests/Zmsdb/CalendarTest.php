@@ -46,7 +46,8 @@ class CalendarTest extends Base
         $now = new \DateTimeImmutable("2016-04-01 11:55");
         $input = $this->getTestEntity();
         //var_dump(json_encode($input, JSON_PRETTY_PRINT));
-        $input->addProvider('dldb', 122217); // Heerstr.
+        $input->addProvider('dldb', 122217); // Bürgeramt Heerstr.
+        $input->addCluster(109); // Bürgeramt Heerstr.
         $entity = (new Query())->readResolvedEntity($input, $now);
         //var_dump(json_encode($entity, JSON_PRETTY_PRINT));
         //$array = json_decode(json_encode($entity), 1);
