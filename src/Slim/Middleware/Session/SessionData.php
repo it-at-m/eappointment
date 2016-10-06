@@ -173,6 +173,6 @@ class SessionData implements SessionInterface
 
     private static function convertValueToScalar($value)
     {
-        return json_decode(json_encode($value, \JSON_PRESERVE_ZERO_FRACTION), true);
+        return json_decode(json_encode($value), true);
     }
 }
