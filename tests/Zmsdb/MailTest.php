@@ -31,6 +31,25 @@ class MailTest extends Base
         $this->assertFalse($entity->hasId($entityId), "Deleted Mail still exists in Database.");
     }
 
+    public function testWriteMailInQueueFailed()
+    {
+        $this->setExpectedException('BO\Zmsdb\Exception\MailWriteInQueueFailed');
+        $query = new Query();
+        $input = $this->getTestEntity();
+        $input->process['clients'][0]['email'] = null;
+        $entity = $query->writeInQueue($input);
+        $query->deleteEntity($entity->id);
+    }
+
+    public function testWriteMailPartFailed()
+    {
+        $this->setExpectedException('BO\Zmsdb\Exception\MailWritePartFailed');
+        $query = new Query();
+        $input = $this->getTestEntity();
+        $input->multipart[0]['content'] = null;
+        $entity = $query->writeInQueue($input);
+    }
+
     protected function getTestEntity()
     {
         return new Entity(array(
