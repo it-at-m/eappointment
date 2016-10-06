@@ -23,15 +23,19 @@ class OrganisationTest extends EntityCommonTests
         $collection->addEntity($entity);
         $this->assertEntityList($this->entityclass, $collection);
         $this->assertTrue(
-            1 == count($collection),
+            $collection->hasEntity(456),
             'Missing new Organisation Entity with ID ' . $entity->id . ' in collection, 1 expected (' .
             count($collection) . ' found)'
         );
 
-        $department = new \BO\Zmsentities\Department(array('id' => 141));
-        $entity = new $this->entityclass(array('departments' => array($department)));
+        $department = new \BO\Zmsentities\Department(array('id' => 96));
+        $entity = new $this->entityclass(array(
+            'departments' => array($department),
+            'id' => 123
+        ));
         $collection->addEntity($entity);
-        $organisationList = $collection->getByDepartmentId(141);
-        $this->assertTrue(141 == $organisationList[0]->departments[0]->id, 'Getting organisation by department failed');
+        $organisationList = $collection->getByDepartmentId(96);
+        $this->assertTrue(96 == $organisationList[0]->departments[0]->id, 'Getting organisation by department failed');
+        $this->assertTrue(123 == $organisationList->getEntity(123)['id']);
     }
 }
