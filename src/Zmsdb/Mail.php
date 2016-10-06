@@ -46,59 +46,62 @@ class Mail extends Base
 
     public function writeInQueue(Entity $mail)
     {
-        $queueId = null;
-        // write mail in queue
+        $result = false;
+        $query = new Query\MailQueue(Query\Base::INSERT);
         $process = new \BO\Zmsentities\Process($mail->process);
         $client = $process->getFirstClient();
         $department = (new Department())->readByScopeId($process->getScopeId(), 0);
+        $query->addValues(
+            array (
+                'processID' => $mail->process['id'],
+                'departmentID' => $department->toProperty()->id->get(),
+                'createIP' => $mail->createIP,
+                'createTimestamp' => time(),
+                'subject' => $mail->subject,
+                'clientFamilyName' => $client->familyName,
+                'clientEmail' => $client->email
+            )
+        );
         if ($client->hasEmail()) {
-            $query = new Query\MailQueue(Query\Base::INSERT);
-            $query->addValues(
-                array (
-                    'processID' => $mail->process['id'],
-                    'departmentID' => $department->toProperty()->id->get(),
-                    'createIP' => $mail->createIP,
-                    'createTimestamp' => time(),
-                    'subject' => $mail->subject,
-                    'clientFamilyName' => $client->familyName,
-                    'clientEmail' => $client->email
-                )
-            );
             $result = $this->writeItem($query);
-            if ($result) {
-                $queueId = $this->getWriter()
-                    ->lastInsertId();
-                foreach ($mail->multipart as $part) {
-                    $this->writeInMailPart($queueId, $part);
-                }
-                $this->updateProcessClient($process, $client);
-            }
-            if (! $queueId) {
-                throw new \Exception("Could not send mail");
-            }
         }
+        if (! $result) {
+            throw new Exception\MailWriteInQueueFailed("Failed to write mail in queue (maybe email not given)");
+        }
+        $queueId = $this->getWriter()->lastInsertId();
+        $this->writeMailParts($queueId, $mail->multipart);
+        $this->updateProcessClient($process, $client);
         return $this->readEntity($queueId);
     }
 
-    protected function writeInMailPart($queueId, $data)
+    protected function writeMailParts($queueId, $multipart)
     {
-        $query = new Query\MailPart(Query\Base::INSERT);
-        $query->addValues(
-            array (
-                'queueId' => $queueId,
-                'mime' => $data['mime'],
-                'content' => $data['content'],
-                'base64' => $data['base64'] ? 1 : 0
-            )
-        );
-        return $this->writeItem($query);
+        $success = true;
+        foreach ($multipart as $part) {
+            $query = new Query\MailPart(Query\Base::INSERT);
+            $query->addValues(
+                array (
+                    'queueId' => $queueId,
+                    'mime' => $part['mime'],
+                    'content' => $part['content'],
+                    'base64' => $part['base64'] ? 1 : 0
+                )
+            );
+            if (! isset($part['content']) || ! isset($part['mime']) || ! $success) {
+                $this->deleteEntity($queueId);
+                throw new Exception\MailWritePartFailed(
+                    'Failed to write part (' . $part['mime'] . ') of mail with id ' . $queueId
+                );
+            }
+            $success = $this->writeItem($query);
+        }
+        return true;
     }
 
     public function deleteEntity($itemId)
     {
         $query = Query\MailQueue::QUERY_DELETE;
-        $statement = $this->getWriter()
-            ->prepare($query);
+        $statement = $this->getWriter()->prepare($query);
         return $statement->execute(array (
             $itemId
         ));
@@ -107,8 +110,7 @@ class Mail extends Base
     public function deleteEntityByProcess($processId)
     {
         $query = Query\MailQueue::QUERY_DELETE_BY_PROCESS;
-        $statement = $this->getWriter()
-            ->prepare($query);
+        $statement = $this->getWriter()->prepare($query);
         return $statement->execute(array (
             $processId
         ));
