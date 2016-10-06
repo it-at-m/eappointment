@@ -2,6 +2,11 @@
 
 namespace BO\Zmsentities;
 
+/**
+ *
+ * @SuppressWarnings(CouplingBetweenObjects)
+ * @SuppressWarnings(TooManyPublicMethods)
+ */
 class Calendar extends Schema\Entity
 {
     const PRIMARY = 'days';
@@ -63,6 +68,21 @@ class Calendar extends Schema\Entity
             $provider->source = $source;
             $provider->id = $id;
             $this->providers[] = $provider;
+        }
+        return $this;
+    }
+
+    /**
+     * Returns calendar with added Clusters
+     *
+     * @return $this
+     */
+    public function addCluster($idList)
+    {
+        foreach (explode(',', $idList) as $id) {
+            $cluster = new Cluster();
+            $cluster->id = $id;
+            $this->clusters[] = $cluster;
         }
         return $this;
     }

@@ -47,14 +47,26 @@ class Base extends \ArrayObject
         }
     }
 
-    public function hasEntity($entityId)
+    public function hasEntity($primary)
     {
         foreach ($this as $entity) {
-            if (isset($entity->{$entity::PRIMARY}) && $entityId == $entity->{$entity::PRIMARY}) {
+            if (isset($entity->{$entity::PRIMARY}) && $primary == $entity->{$entity::PRIMARY}) {
                 return true;
             }
         }
         return false;
+    }
+
+    public function getEntity($primary)
+    {
+        $result = null;
+        foreach ($this as $entity) {
+            if (isset($entity->{$entity::PRIMARY}) && $primary == $entity->{$entity::PRIMARY}) {
+                $result = $entity;
+                break;
+            }
+        }
+        return $result;
     }
 
     public function addEntity(\BO\Zmsentities\Schema\Entity $entity)
