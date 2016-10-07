@@ -55,8 +55,11 @@ class App extends \BO\Zmsapi\Application
      * @var String DB_PASSWORD
      */
     const DB_PASSWORD = MYSQL_PASSWORD;
+
+    // Uncomment the following line for testing with fixtures
+    // public static $data = "/vendor/bo/zmsdb/tests/Zmsdb/fixtures";
 }
 
-// Uncomment the following line for production data, this is testing only
+// Uncomment the following line for testing data with vendor/bin/importTestData
 // App::$now = new DateTimeImmutable('2016-04-01 11:55:00', new DateTimeZone('Europe/Berlin'));
 
