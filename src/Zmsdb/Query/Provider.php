@@ -33,7 +33,7 @@ class Provider extends Base
     {
         $dbname_zmsbo_scope = \BO\Zmsdb\Connection\Select::$dbname_zms .'.'. Scope::TABLE;
         //error_log(var_export($isNotAssigned,1));
-        if (1 == $isAssigned) {
+        if (true === $isAssigned) {
             $this->query->leftJoin(
                 new Alias($dbname_zmsbo_scope, 'scope'),
                 'provider.id',
@@ -41,7 +41,7 @@ class Provider extends Base
                 'scope.InfoDienstleisterID'
             );
             $this->query->where('scope.InfoDienstleisterID', 'IS NOT', null);
-        } elseif (0 == $isAssigned) {
+        } elseif (false === $isAssigned) {
             $this->query->leftJoin(
                 new Alias($dbname_zmsbo_scope, 'scope'),
                 'provider.id',
