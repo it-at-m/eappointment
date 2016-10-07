@@ -39,6 +39,6 @@ class DayList extends Base
                 $dayList->addEntity($day);
             }
         }
-        return $dayList;
+        return $dayList->sortByCustomKey('day');
     }
 }

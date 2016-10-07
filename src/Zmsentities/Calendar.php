@@ -242,7 +242,10 @@ class Calendar extends Schema\Entity
             $currentDate = $lastDay;
             $lastDay = $firstDay;
         }
+        $this->getDay($firstDay->format('Y'), $firstDay->format('m'), $firstDay->format('d'));
+        $this->getDay($lastDay->format('Y'), $lastDay->format('m'), $lastDay->format('d'));
         $monthList = new Collection\MonthList();
+        $dayList = new Collection\DayList($this->days);
         do {
             $startDow = date('w', mktime(0, 0, 0, $currentDate->format('m'), 1, $currentDate->format('Y')));
             $month = (new Month(
@@ -251,7 +254,7 @@ class Calendar extends Schema\Entity
                     'month' => $currentDate->format('m'),
                     'calHeadline' => strftime('%B %Y', $currentDate->getTimestamp()),
                     'startDow' => ($startDow == 0) ? 6 : $startDow - 1, // change for week start with monday on 0,
-                    'days' => (new Collection\DayList($this->days))->withAssociatedDays($currentDate->format('m'))
+                    'days' => $dayList->withAssociatedDays($currentDate->format('m'))
                 )
             ));
             $monthList->addEntity($month);
