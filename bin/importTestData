@@ -12,7 +12,14 @@ if (file_exists("$dir/bootstrap.php")) {
 } else {
     require("$dir/config.php");
 }
-$fixtures = realpath(__DIR__ . '/../tests/Zmsdb/fixtures/');
-$migrations = realpath(__DIR__ . '/../migrations/');
-\BO\Zmsdb\Cli\Db::startTestDataImport($fixtures);
-\BO\Zmsdb\Cli\Db::startMigrations($migrations);
+if (isset($argv[1]) && $argv[1] == '--commit') {
+    $fixtures = realpath(__DIR__ . '/../tests/Zmsdb/fixtures/');
+    $migrations = realpath(__DIR__ . '/../migrations/');
+    \BO\Zmsdb\Cli\Db::startTestDataImport($fixtures);
+    \BO\Zmsdb\Cli\Db::startMigrations($migrations);
+} else {
+    echo "Usage: {$argv[0]} --commit\n\tATTENTION! Drops Database and writes Testdata. USE WITH CAUTION!\n\n"
+        . "\t!!!!!!!!!!!!!!!!!!!!!!!\n"
+        . "\t!! DATA LOSS WARNING !!\n"
+        . "\t!!!!!!!!!!!!!!!!!!!!!!!\n\n";
+}
