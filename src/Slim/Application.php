@@ -28,6 +28,14 @@ class Application
     const TIMEZONE = 'Europe/Berlin';
 
     public static $includeUrl = null;
+
+    /*
+     * -----------------------------------------------------------------------
+     * current time
+     */
+
+    public static $now;
+
     /*
      * -----------------------------------------------------------------------
      * Slim

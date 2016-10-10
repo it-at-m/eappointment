@@ -2,15 +2,31 @@
 
 namespace BO\Slim;
 
+use Psr\Http\Message\RequestInterface;
+
 class SlimApp extends \Slim\App
 {
     public function urlFor($name, $params = array())
     {
         $routePath = $this->getContainer()->router->pathFor($name, $params);
-        $lang = (\App::$language->getCurrent() != \App::$language->getDefault()) ? \App::$language->getCurrent() : '';
-        if ($lang != \App::$language->getCurrent()) {
-            $routePath = preg_replace('~^/('.\App::$language->getCurrent().')/~', $lang, $routePath);
-            //$routePath = sprintf('/%s%s', '', $routePath);
+        $lang = (isset($params['lang'])) ? $params['lang'] : null;
+        $routePath = $this->getWithNewLanguageInUri($routePath, $lang);
+        return $routePath;
+    }
+
+    protected function getWithNewLanguageInUri($routePath, $newLanguage = null)
+    {
+        if (\App::$language->getCurrent()) {
+            if ($newLanguage != $this->getDefault()) {
+                $routePath = preg_replace('~^/('.\App::$language->getCurrent().')~', $newLanguage, $routePath);
+            }
+            if ($newLanguage == $this->getDefault()) {
+                $routePath = preg_replace('~^/('.\App::$language->getCurrent().')~', '', $routePath);
+            }
+        } else {
+            if (!\App::$language->getCurrent() && $newLanguage != $this->getDefault()) {
+                $routePath = sprintf('/%s%s', $newLanguage, $routePath);
+            }
         }
         return $routePath;
     }

@@ -42,7 +42,7 @@ class Bootstrap
         date_default_timezone_set($timezone);
         mb_internal_encoding($charset);
         \App::$language = new \BO\Slim\Language($container['request'], \App::$supportedLanguages);
-        \App::$now = new \DateTimeImmutable();
+        \App::$now = (! \App::$now) ? new \DateTimeImmutable() : \App::$now;
         return \App::$language;
     }
 
