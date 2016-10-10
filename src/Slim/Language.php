@@ -39,14 +39,14 @@ class Language
 
     protected function getLanguageFromRequest()
     {
-        $current = '';
+        $current = null;
         $default = $this->getDefault();
         // Detect current language based on request URI
         $lang_ids = array_keys(self::$supportedLanguages);
         $lang_ids = array_diff($lang_ids, array($default));
         if (null !== $this->request) {
             $url = $this->request->getUri()->getBasePath();
-            if (preg_match('~^/('.implode('|', $lang_ids).')/~', $url, $matches)) {
+            if (preg_match('~^/('.implode('|', $lang_ids).')~', $url, $matches)) {
                 $current = $matches[1];
             }
         }
