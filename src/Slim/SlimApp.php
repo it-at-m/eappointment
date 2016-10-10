@@ -17,14 +17,14 @@ class SlimApp extends \Slim\App
     protected function getWithNewLanguageInUri($routePath, $newLanguage = null)
     {
         if (\App::$language->getCurrent()) {
-            if ($newLanguage != $this->getDefault()) {
+            if ($newLanguage != \App::$language->getDefault()) {
                 $routePath = preg_replace('~^/('.\App::$language->getCurrent().')~', $newLanguage, $routePath);
             }
-            if ($newLanguage == $this->getDefault()) {
+            if ($newLanguage == \App::$language->getDefault()) {
                 $routePath = preg_replace('~^/('.\App::$language->getCurrent().')~', '', $routePath);
             }
         } else {
-            if (!\App::$language->getCurrent() && $newLanguage != $this->getDefault()) {
+            if (!\App::$language->getCurrent() && $newLanguage != \App::$language->getDefault()) {
                 $routePath = sprintf('/%s%s', $newLanguage, $routePath);
             }
         }
