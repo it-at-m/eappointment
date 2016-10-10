@@ -45,7 +45,16 @@ class TwigExtension extends \Twig_Extension
             new \Twig_SimpleFunction('formatDateTime', array($this, 'formatDateTime')),
             new \Twig_SimpleFunction('toGermanDateFromTs', array($this, 'toGermanDateFromTs')),
             new \Twig_SimpleFunction('toTextFormat', array($this, 'toTextFormat')),
+            new \Twig_SimpleFunction('getNow', array($this, 'getNow')),
         );
+    }
+
+    public static function getNow()
+    {
+        if (\App::$now instanceof \DateTimeInterface) {
+            return \App::$now;
+        }
+        return new \DateTimeImmutable();
     }
 
     public function toTextFormat($string)
