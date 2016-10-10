@@ -22,7 +22,6 @@ class ProcessReserve extends BaseController
     {
         $message = Response\Message::create(Render::$request);
         $input = Validator::input()->isJson()->getValue();
-        $query = new Query();
         $process = new \BO\Zmsentities\Process($input);
 
         if ($process->hasId()) {
@@ -31,8 +30,6 @@ class ProcessReserve extends BaseController
             $process->status = 'reserved';
             $message->data = (new Query())->updateEntity($process);
         }
-
-        $message->data = $query->updateEntity($process);
         Render::lastModified(time(), '0');
         Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }
