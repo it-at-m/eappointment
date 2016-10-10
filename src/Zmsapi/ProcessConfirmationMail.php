@@ -33,14 +33,25 @@ class ProcessConfirmationMail extends BaseController
             throw new Exception\Process\ProcessNotFound();
         } elseif ($authKeyByProcessId != $process->authKey) {
             throw new Exception\Process\AuthKeyMatchFailed();
-        } else {
+        } elseif ($process->toProperty()->scope->preferences->client->emailRequired->get()
+            && $process->getFirstClient()->hasEmail()
+        ) {
+            throw new Exception\Process\EmailRequired();
+        } elseif ($process->getFirstClient()->hasEmail()) {
             $config = (new Config())->readEntity();
             $mail = (new \BO\Zmsentities\Mail())->toResolvedEntity($process, $config);
             $mail = (new Query())->writeInQueue($mail);
             $message->data = $mail;
             $message->error = false;
             $message->message = '';
-            \App::$log->warn("Send mail", [$mail]);
+            \App::$log->info("Send mail", [$mail]);
+        } else {
+            // Create message for possible ICS attachment used in frontend
+            $config = (new Config())->readEntity();
+            $mail = (new \BO\Zmsentities\Mail())->toResolvedEntity($process, $config);
+            $message->data = $mail;
+            $message->error = false;
+            $message->message = '';
         }
 
         Render::lastModified(time(), '0');
