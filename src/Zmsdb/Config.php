@@ -11,35 +11,32 @@ class Config extends Base
      */
     public function readEntity()
     {
-        $querySql = Query\Config::QUERY_SELECT;
-        $config = $this->fetchData($querySql);
+        $query = Query\Config::QUERY_SELECT;
+        $config = $this->fetchData($query);
         return $config;
     }
 
     public function updateEntity(Entity $config)
     {
         $result = false;
-        $query = Query\Config::QUERY_UPDATE;
-        $statement = $this->getWriter()->prepare($query);
+        $query = new Query\Config(Query\Base::REPLACE);
         foreach ($config as $key => $item) {
             if (is_array($item)) {
                 foreach ($item as $itemName => $itemValue) {
-                    $result = $statement->execute(
-                        array(
-                            $key .'__'. $itemName,
-                            $this->getSpecifiedValue($itemValue),
-                            time()
-                        )
-                    );
+                    $query->addValues(array(
+                        'name' => $key .'__'. $itemName,
+                        'value' => $this->getSpecifiedValue($itemValue),
+                        'changeTimestamp' => (new \DateTimeImmutable())->format('Y-m-d H:i:s')
+                    ));
+                    $result = $this->writeItem($query);
                 }
             } else {
-                $result = $statement->execute(
-                    array(
-                        $key,
-                        $this->getSpecifiedValue($item),
-                        time()
-                    )
-                );
+                $query->addValues(array(
+                    'name' => $key,
+                    'value' => $this->getSpecifiedValue($item),
+                    'changeTimestamp' => (new \DateTimeImmutable())->format('Y-m-d H:i:s')
+                ));
+                $result = $this->writeItem($query);
             }
         }
         return ($result) ? $this->readEntity() : null;
@@ -53,11 +50,9 @@ class Config extends Base
      */
     public function deleteProperty($property)
     {
-        $query = Query\Config::QUERY_DELETE_PROPERTY;
-        $statement = $this->getWriter()->prepare($query);
-        return $statement->execute(array(
-            $property
-        ));
+        $query = new Query\Config(Query\Base::DELETE);
+        $query->addConditionName($property);
+        return $this->deleteItem($query);
     }
 
     protected function fetchData($querySql)
@@ -65,14 +60,7 @@ class Config extends Base
         $splittedHash = array();
         $dataList = $this->getReader()->fetchAll($querySql);
         foreach ($dataList as $data) {
-            if (is_array($data['name'])) {
-                $hash = (new Entity())->getUnflattenedArray($data['name']);
-                foreach ($hash as $key => $value) {
-                    $splittedHash[$key] = $value;
-                }
-            } else {
-                $splittedHash[$data['name']] = $data['value'];
-            }
+            $splittedHash[$data['name']] = $data['value'];
         }
         return new Entity($splittedHash);
     }

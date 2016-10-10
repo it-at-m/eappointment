@@ -76,11 +76,6 @@ class Availability extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionTime(\DateTimeInterface $time)
-    {
-        $time = \BO\Zmsentites\Helper\DateTime::create($time);
-    }
-
     public function reverseEntityMapping(\BO\Zmsentities\Availability $entity)
     {
         $data = array();

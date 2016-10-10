@@ -21,7 +21,7 @@ class ProviderTest extends Base
         $this->assertEntity("\\BO\\Zmsentities\\Provider", $entity);
     }
 
-    public function testReadList()
+    public function testReadAssignedList()
     {
         $query = new Query();
         $collection = $query->readList('dldb', 1, true); // resolveReferences = 1 and addConditionIsAssigned = true
@@ -29,6 +29,16 @@ class ProviderTest extends Base
         $this->assertTrue($collection->hasEntity('122251')); // Bürgeramt Schöneberg has assigned department
         $this->assertFalse($collection->hasEntity('121364')); // Kfz-Zulassungsbehörde-Friedr.-Kreuzberg without
                                                               // assigned department
+    }
+
+    public function testReadNotAssignedList()
+    {
+        $query = new Query();
+        $collection = $query->readList('dldb', 1, false); // resolveReferences = 1 and addConditionIsAssigned = false
+        $this->assertEntityList("\\BO\\Zmsentities\\Provider", $collection);
+        $this->assertFalse($collection->hasEntity('122251')); // Bürgeramt Schöneberg without assigned department
+        $this->assertTrue($collection->hasEntity('121364')); // Kfz-Zulassungsbehörde-Friedr.-Kreuzberg has
+                                                             // assigned department
     }
 
     public function testReadListByRequest()

@@ -3,7 +3,6 @@
 namespace BO\Zmsdb\Tests;
 
 use \BO\Zmsdb\Config as Query;
-use \BO\Zmsentities\Config as Entity;
 
 class ConfigTest extends Base
 {

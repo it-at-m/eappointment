@@ -61,6 +61,7 @@ abstract class Base
         } elseif (self::REPLACE === $queryType) {
             $this->query = new INSERT($dialect);
             $this->query->queryBaseStatement('REPLACE INTO');
+            $this->addTable();
         } elseif (self::DELETE === $queryType) {
             $this->query = new Delete($dialect);
             $this->query->queryBaseStatement('DELETE '. $this::getAlias() .' FROM');
@@ -239,7 +240,7 @@ abstract class Base
     {
         $prefixed = [];
         foreach ($unprefixedList as $key => $value) {
-            $prefixed[$this->prefix . $key] = $value;
+            $prefixed[$this->getPrefixed($key)] = $value;
         }
         return $prefixed;
     }

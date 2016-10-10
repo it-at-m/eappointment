@@ -15,6 +15,7 @@ class Calendar extends Base
     ) {
         $calendar['processing'] = [];
         $calendar['freeProcesses'] = new \BO\Zmsentities\Collection\ProcessList();
+        $calendar['scopes'] = new \BO\Zmsentities\Collection\ScopeList();
         $calendar['processing']['slotlist'] = new SlotList();
         $calendar = $this->readResolvedProviders($calendar);
         $calendar = $this->readResolvedClusters($calendar);
@@ -62,7 +63,9 @@ class Calendar extends Base
         foreach ($calendar['clusters'] as $cluster) {
             $scopeList = $scopeReader->readByClusterId($cluster['id'], 1);
             foreach ($scopeList as $scope) {
-                $calendar['scopes'][] = $scope;
+                if (! $calendar['scopes']->hasEntity($scope->id)) {
+                    $calendar['scopes']->addEntity($scope);
+                }
             }
         }
         return $calendar;
@@ -72,12 +75,13 @@ class Calendar extends Base
     {
         $scopeReader = new Scope($this->getWriter(), $this->getReader());
         $providerReader = new Provider($this->getWriter(), $this->getReader());
-        $calendar['scopes'] = array();
         foreach ($calendar['providers'] as $key => $provider) {
             $calendar['providers'][$key] = $providerReader->readEntity('dldb', $provider['id']);
             $scopeList = $scopeReader->readByProviderId($provider['id'], 1);
             foreach ($scopeList as $scope) {
-                $calendar['scopes'][] = $scope;
+                if (! $calendar['scopes']->hasEntity($scope->id)) {
+                    $calendar['scopes']->addEntity($scope);
+                }
             }
         }
         return $calendar;

@@ -21,7 +21,7 @@ class CalendarTest extends Base
         $now = new \DateTimeImmutable("2016-04-01 11:55");
         $freeProcessesDate = new \DateTimeImmutable("2016-05-25");
         $input = $this->getTestEntity();
-        $input->addProvider('dldb', '122281');
+        $input->addCluster(109); // Bürgeramt Heerstr.
         $entity = (new Query())->readResolvedEntity($input, $now, $freeProcessesDate);
         $this->assertEquals(0, count($entity['freeProcesses']));
     }
