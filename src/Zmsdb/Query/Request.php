@@ -61,15 +61,6 @@ class Request extends Base
         return $this;
     }
 
-    public function addConditionRequestCsv($requestCsv)
-    {
-        $requestIds = \explode(',', $requestCsv);
-        foreach ($requestIds as $requestId) {
-            $this->query->orWhere('id', '=', $requestId);
-        }
-        return $this;
-    }
-
     public function addConditionProviderId($providerId)
     {
         $dbname_dldb = \BO\Zmsdb\Connection\Select::$dbname_dldb;

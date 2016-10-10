@@ -59,15 +59,6 @@ class Provider extends Base
         return $this;
     }
 
-    public function addConditionProviderCsv($providerCsv)
-    {
-        $providerIds = \explode(',', $providerCsv);
-        foreach ($providerIds as $providerId) {
-            $this->query->orWhere('id', '=', $providerId);
-        }
-        return $this;
-    }
-
     public function addConditionRequestCsv($requestIdCsv)
     {
         $requestIdList = explode(',', $requestIdCsv);

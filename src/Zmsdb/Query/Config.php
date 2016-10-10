@@ -4,24 +4,18 @@ namespace BO\Zmsdb\Query;
 
 class Config extends Base
 {
+    /**
+     * @var String TABLE mysql table reference
+     */
+    const TABLE = 'config';
+
     const QUERY_SELECT = '
         SELECT * FROM config
     ';
 
-    const QUERY_UPDATE = '
-        REPLACE INTO config (
-            name,
-            value,
-            changeTimestamp
-        )
-        VALUES (
-            ?,
-            ?,
-            FROM_UNIXTIME(?)
-        )
-    ';
-
-    const QUERY_DELETE_PROPERTY = '
-        DELETE FROM config WHERE name = ?
-    ';
+    public function addConditionName($itemName)
+    {
+        $this->query->where(self::TABLE .'.name', '=', $itemName);
+        return $this;
+    }
 }

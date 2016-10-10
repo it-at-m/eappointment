@@ -18,12 +18,6 @@ class MailPart extends Base
         ];
     }
 
-    public function addConditionItemId($itemId)
-    {
-        $this->query->where('mailPart.id', '=', $itemId);
-        return $this;
-    }
-
     public function addConditionQueueId($queueId)
     {
         $this->query->where('mailPart.queueId', '=', $queueId);

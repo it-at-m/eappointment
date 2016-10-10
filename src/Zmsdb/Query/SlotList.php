@@ -258,7 +258,7 @@ class SlotList
             $this->addFreeProcessesToCalendar($calendar, $freeProcessesDate, $date, $slotType);
             $datetime = new \DateTimeImmutable($date);
             $day = $calendar->getDayByDateTime($datetime);
-            $day['freeAppointments'] = $slotList->getSummerizedSlot();
+            $day['freeAppointments'] = $slotList->getSummerizedSlot($day['freeAppointments']);
         }
         return $calendar;
     }

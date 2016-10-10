@@ -60,7 +60,7 @@ abstract class Base
             $data = $this->getReader()->fetchOne($query->getSql(), $query->getParameters());
         } catch (\PDOException $pdoException) {
             $message = "SQL: $sql || Parameters=". var_export($parameters, true);
-            throw new \Exception($message, 0, $pdoException);
+            throw new Exception\PDOFailed($message, 0, $pdoException);
         }
         if ($data) {
             $entity->exchangeArray($data);
@@ -77,7 +77,7 @@ abstract class Base
             $dataList = $this->getReader()->fetchAll($sql, $parameters);
         } catch (\PDOException $pdoException) {
             $message = "SQL: $sql || Parameters=". var_export($parameters, true);
-            throw new \Exception($message, 0, $pdoException);
+            throw new Exception\PDOFailed($message, 0, $pdoException);
         }
         foreach ($dataList as $data) {
             $dataEntity = clone $entity;

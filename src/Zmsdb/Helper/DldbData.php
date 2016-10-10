@@ -44,7 +44,7 @@ class DldbData
         if ($source == 'dldb') {
             $data = self::getDataRepository()->fromService($locale)->fetchId($requestId);
         }
-        return $data;
+        return ($data) ? $data : new \stdClass();
     }
 
     /**
@@ -60,6 +60,6 @@ class DldbData
         if ($source == 'dldb') {
             $data = self::getDataRepository()->fromLocation($locale)->fetchId($providerId);
         }
-        return $data;
+        return ($data) ? $data : new \stdClass();
     }
 }
