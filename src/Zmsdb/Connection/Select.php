@@ -80,13 +80,13 @@ class Select
                 ], self::$pdoOptions);
             $pdo = new Pdo($dataSourceName, self::$username, self::$password, $pdoOptions);
             $pdo->exec('SET NAMES "UTF8";');
-            $timezone = date('P');
-            $pdo->prepare('SET time_zone = ?;')->execute([$timezone]);
+            //$timezone = date('P');
+            //$pdo->prepare('SET time_zone = ?;')->execute([$timezone]);
             $pdo->exec('SET SESSION sql_mode = "STRICT_ALL_TABLES";');
         } catch (\Exception $exception) {
             // Extend exception message with connection information
-            $connectInfo = "$dataSourceName;user=".self::$username.";password=".self::$password."; ";
-            throw new \Exception($connectInfo . $exception->getMessage(), $exception->getCode(), $exception);
+            $connectInfo = " $dataSourceName;; ";
+            throw new \Exception($connectInfo . $exception->getMessage(), (int)$exception->getCode(), $exception);
         }
         return $pdo;
     }
