@@ -83,8 +83,8 @@ class Availability extends Base implements MappingInterface
         $data['Offen_ab'] = $entity->bookable['startInDays'];
         $data['Offen_bis'] = $entity->bookable['endInDays'];
         $data['kommentar'] = $entity->description;
-        $data['Startdatum'] = (new \DateTimeImmutable('@'. $entity->startDate/1000))->format('Y-m-d');
-        $data['Endedatum'] = (new \DateTimeImmutable('@'. $entity->endDate/1000))->format('Y-m-d');
+        $data['Startdatum'] = (new \DateTimeImmutable('@'. $entity->startDate))->format('Y-m-d');
+        $data['Endedatum'] = (new \DateTimeImmutable('@'. $entity->endDate))->format('Y-m-d');
         $data['Terminanfangszeit'] = $entity->startTime;
         $data['Terminendzeit'] = $entity->endTime;
         $data['allexWochen'] = (isset($entity->repeat['afterWeeks'])) ? 1 : 0;
