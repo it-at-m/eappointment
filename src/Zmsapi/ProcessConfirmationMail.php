@@ -13,6 +13,9 @@ use \BO\Zmsdb\Config;
 use \BO\Zmsdb\Process;
 
 /**
+  *
+  * @SuppressWarnings(CouplingBetweenObjects)
+  *
   * Handle requests concerning services
   */
 class ProcessConfirmationMail extends BaseController
