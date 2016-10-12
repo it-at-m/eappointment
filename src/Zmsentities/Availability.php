@@ -296,7 +296,7 @@ class Availability extends Schema\Entity
     public function __toString()
     {
         $info = "Availability #" . $this['id'];
-        $info .= " starting " . $this->getStartDateTime()->format('Y-m-d');
+        $info .= " starting " . $this->startDate . $this->getStartDateTime()->format(' Y-m-d');
         $info .= " (" . $this->getBookableStart(new \DateTime)->format('Y-m-d') . ")";
         $info .= " until " . $this->getEndDateTime()->format('Y-m-d');
         $info .= " (" . $this->getBookableEnd(new \DateTime)->format('Y-m-d') . ")";
