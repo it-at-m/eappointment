@@ -7,7 +7,7 @@
             "endInDays": 60
         },
         "description": "Sonderöffnungszeit",
-        "endDate": 1447919116000,
+        "endDate": 1447919116,
         "endTime": "15:30",
         "id": 1234,
         "multipleSlotsAllowed": true,
@@ -19,7 +19,7 @@
             "id": 141
         },
         "slotTimeInMinutes": 12,
-        "startDate": 1447919543000,
+        "startDate": 1447919543,
         "startTime": "10:00",
         "weekday": {
             "thursday": true
