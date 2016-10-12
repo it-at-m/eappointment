@@ -48,7 +48,7 @@ class SlotList extends Base
 
     public function getSummerizedSlot($slot = null)
     {
-        $sum = (! $slot) ? new Slot() : $slot;
+        $sum = (! $slot) ? new Slot() : new Slot($slot);
         $sum->type = Slot::SUM;
         foreach ($this as $slot) {
             $sum['public'] += $slot['public'];
