@@ -3,6 +3,9 @@
 namespace BO\Zmsdb\Connection;
 
 /**
+ *
+ * @codeCoverageIgnore
+ *
  * Handle read and write connections
  */
 class Select

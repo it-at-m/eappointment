@@ -6,10 +6,13 @@ use BO\Zmsentities\Helper\DateTime;
 use BO\Zmsentities\Slot;
 
 /**
+ *
+ * @SuppressWarnings(CouplingBetweenObjects)
  * Calculate Slots for available booking times
  */
 class SlotList
 {
+
     const QUERY = 'SELECT
 
             -- collect some important settings, especially from the scope, use the appointment key
@@ -129,24 +132,28 @@ class SlotList
         ';
 
     /**
+     *
      * @var array $slotData Single result row from the query
      */
     protected $slotData = null;
 
     /**
+     *
      * @var \BO\Zmsentities\Scope $scope
      */
     protected $scope = null;
 
     /**
+     *
      * @var \BO\Zmsentities\Availability $availability
      */
     protected $availability = null;
 
     /**
+     *
      * @var Array $slots
      */
-    protected $slots = array();
+    protected $slots = array ();
 
     public function __construct(
         array $slotData = ['availability__id' => null],
@@ -155,12 +162,13 @@ class SlotList
         \BO\Zmsentities\Availability $availability = null,
         \BO\Zmsentities\Scope $scope = null
     ) {
+
         $this->availability = $availability;
         $this->scope = $scope;
         $this->setSlotData($slotData);
         if (isset($this->availability['id'])) {
             $this->createSlots($start, $stop);
-            $this->addSlotData($slotData);
+            $this->addQueryData($slotData);
         }
     }
 
@@ -180,7 +188,7 @@ class SlotList
             'start_availability' => $monthDateTime->format('Y-m-1'),
             'end_availability' => $monthDateTime->format('Y-m-t'),
             'nowStart' => $now->format('Y-m-d'),
-            'nowEnd' => $now->format('Y-m-d'),
+            'nowEnd' => $now->format('Y-m-d')
         ];
         return $parameters;
     }
@@ -194,7 +202,7 @@ class SlotList
     {
         $this->slotData = $slotData;
         if (null === $this->availability) {
-            $availability = [];
+            $availability = [ ];
             foreach ($slotData as $key => $value) {
                 if (0 === strpos($key, 'availability__')) {
                     $newkey = str_replace('availability__', '', $key);
@@ -207,47 +215,40 @@ class SlotList
         return $this;
     }
 
-    public function addSlotData(array $slotData)
+    public function addQueryData(array $slotData)
     {
         if (isset($slotData['slotnr'])) {
             $slotnumber = $slotData['slotnr'];
             $slotdate = $slotData['slotdate'];
-            $slotList = (!isset($this->slots[$slotdate])) ?
+            $slotList = (! isset($this->slots[$slotdate])) ?
                 new \BO\Zmsentities\Collection\SlotList() :
                 $this->slots[$slotdate];
-
-            //check in entity collection if slot exists => if not then ignore it
-            //I want to create a test if dayoff matches with processes, to avoid such exceptions
             $slot = $slotList->getSlot($slotnumber);
             if (null === $slot) {
                 $slotDebug = "$slotdate #$slotnumber @" . $slotData['slottime'] . " on " . $this->availability;
-                error_log("Debugdata: Found database entry without a pre-generated slot $slotDebug");
-                throw new \Exception(
+                // error_log("Debugdata: Found database entry without a pre-generated slot $slotDebug");
+                throw new \BO\Zmsdb\Exception\SlotDataWithoutPreGeneratedSlot(
                     "Found database entry without a pre-generated slot $slotDebug"
                 );
             }
-
             if ($slot->type !== Slot::FREE) {
                 $slotDebug = "$slotdate #$slotnumber @" . $slotData['slottime'] . " on " . $this->availability;
-                error_log("Debugdata: Found two database entries for the same slot $slotDebug <=> $slot");
-                throw new \Exception(
-                    "Found two database entries for the same slot $slotDebug <=> ".$slot
+                // error_log("Debugdata: Found two database entries for the same slot $slotDebug <=> $slot");
+                throw new \BO\Zmsdb\Exception\SlotDataDublicateEntryFound(
+                    "Found two database entries for the same slot $slotDebug <=> " . $slot
                 );
             }
-
-            $slot->public +=
-                    $slotData['freeAppointments__public'] - $slotData['availability__workstationCount__public'];
-            $slot->callcenter +=
-                    $slotData['freeAppointments__callcenter'] - $slotData['availability__workstationCount__callcenter'];
-            $slot->intern +=
-                    $slotData['freeAppointments__intern'] - $slotData['availability__workstationCount__intern'];
+            $slot->public += $slotData['freeAppointments__public'] -
+                $slotData['availability__workstationCount__public'];
+            $slot->callcenter += $slotData['freeAppointments__callcenter'] -
+                $slotData['availability__workstationCount__callcenter'];
+            $slot->intern += $slotData['freeAppointments__intern'] -
+                $slotData['availability__workstationCount__intern'];
             $slot->time = new DateTime($slotData['slottime']);
             $slot->type = Slot::TIMESLICE;
             $slotList[$slotnumber] = $slot;
         } else {
-            throw new \Exception(
-                "Found empty slot: " . var_export($slotData, true)
-            );
+            throw new \BO\Zmsdb\Exception\SlotDataEmpty("Found empty slot: " . var_export($slotData, true));
         }
         return $this;
     }
@@ -269,6 +270,7 @@ class SlotList
         $date,
         $slotType = 'public'
     ) {
+
         if (null !== $freeProcessesDate && $date == $freeProcessesDate->format('Y-m-d')) {
             $freeProcesses = $this->getFreeProcesses($calendar, $freeProcessesDate, $slotType);
             foreach ($freeProcesses as $process) {
@@ -302,10 +304,8 @@ class SlotList
     /**
      * Create slots based on availability
      */
-    public function createSlots(
-        \DateTimeInterface $startDate,
-        \DateTimeInterface $stopDate
-    ) {
+    public function createSlots(\DateTimeInterface $startDate, \DateTimeInterface $stopDate)
+    {
         $time = DateTime::create($startDate);
         $slotlist = $this->availability->getSlotList();
         do {
@@ -334,9 +334,9 @@ class SlotList
         if (count($this->slots) && $slotsRequired > 1) {
             foreach ($this->slots as $slotList) {
                 $slotLength = count($slotList);
-                for ($slotIndex = 0; $slotIndex < $slotLength; $slotIndex++) {
+                for ($slotIndex = 0; $slotIndex < $slotLength; $slotIndex ++) {
                     if ($slotIndex + $slotsRequired < $slotLength) {
-                        for ($slotRelative = 1; $slotRelative < $slotsRequired; $slotRelative++) {
+                        for ($slotRelative = 1; $slotRelative < $slotsRequired; $slotRelative ++) {
                             if ($slotIndex + $slotRelative < $slotLength) {
                                 $slotList->takeLowerSlotValue($slotIndex, $slotIndex + $slotRelative);
                             }

@@ -155,7 +155,7 @@ class Calendar extends Base
                 );
             }
         } elseif ($slotData['availability__id'] !== null) { //avoid two empty scopes in a row
-            $calendar['processing']['slotlist']->addSlotData($slotData);
+            $calendar['processing']['slotlist']->addQueryData($slotData);
         }
         return $calendar;
     }
