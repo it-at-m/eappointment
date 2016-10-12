@@ -24,7 +24,8 @@
         },
         "data": {
             "type": "object",
-            "description": "source dependant additional properties"
+            "description": "source dependant additional properties",
+            "additionalProperties": true
         },
         "name": {
             "type": "string",
