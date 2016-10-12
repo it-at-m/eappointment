@@ -17,6 +17,7 @@ use \BO\Zmsdb\Process;
   * @SuppressWarnings(CouplingBetweenObjects)
   *
   * Handle requests concerning services
+  * @SuppressWarnings(Coupling)
   */
 class ProcessConfirmationMail extends BaseController
 {
@@ -37,7 +38,7 @@ class ProcessConfirmationMail extends BaseController
         } elseif ($authKeyByProcessId != $process->authKey) {
             throw new Exception\Process\AuthKeyMatchFailed();
         } elseif ($process->toProperty()->scope->preferences->client->emailRequired->get()
-            && $process->getFirstClient()->hasEmail()
+            && !$process->getFirstClient()->hasEmail()
         ) {
             throw new Exception\Process\EmailRequired();
         } elseif ($process->getFirstClient()->hasEmail()) {
