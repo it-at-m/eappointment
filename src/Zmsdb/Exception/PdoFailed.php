@@ -2,6 +2,6 @@
 
 namespace BO\Zmsdb\Exception;
 
-class PdoFailed extends \Exception
+class PDOFailed extends \Exception
 {
 }

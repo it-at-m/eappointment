@@ -66,30 +66,6 @@ class Process extends Base implements MappingInterface
         return $joinQuery;
     }
 
-    /**
-     * TODO: Check if necessary, the slot list is built on the calendar
-     */
-    public function readRequestOnEntity(\BO\Zmsentities\Request $entity)
-    {
-        $dbname_dldb = \BO\Zmsdb\Connection\Select::$dbname_dldb;
-        $query = 'SELECT
-                x.`dienstleister` AS provider__id,
-                x.`slots`
-            FROM `' . $dbname_dldb . '`.`xdienst` x
-                LEFT JOIN `' . $dbname_dldb . '`.`dienstleister` d ON x.dienstleister = d.id
-            WHERE
-                x.`dienstleistung` = :request_id
-                AND x.`termin_hide` = 0
-                AND d.`zms_termin` = 1
-        ';
-        $providerSlots = $this->getReader()
-            ->fetchAll(
-                $query,
-                ['request_id' => $entity->id]
-            );
-        return $providerSlots;
-    }
-
     public function getEntityMapping()
     {
         return [
