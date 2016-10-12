@@ -2,6 +2,9 @@
 
 namespace BO\Zmsdb\Cli;
 
+/**
+ * @codeCoverageIgnore
+ */
 class Db
 {
     public static $baseDSN = '';

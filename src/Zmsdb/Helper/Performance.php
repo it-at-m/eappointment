@@ -2,6 +2,9 @@
 
 namespace BO\Zmsdb\Helper;
 
+/**
+ * @codeCoverageIgnore
+ */
 class Performance
 {
     public static $times = [];
