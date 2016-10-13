@@ -238,12 +238,12 @@ class Calendar extends Schema\Entity
         $lastDay = $this->getLastDay()->modify('last day of this month')->modify('23:59:59');
         $currentDate = $firstDay;
         if ($firstDay->getTimestamp() > $lastDay->getTimestamp()) {
-            // swith first and last day if necessary
+            // switch first and last day if necessary
             $currentDate = $lastDay;
             $lastDay = $firstDay;
         }
-        $this->getDay($firstDay->format('Y'), $firstDay->format('m'), $firstDay->format('d'));
-        $this->getDay($lastDay->format('Y'), $lastDay->format('m'), $lastDay->format('d'));
+        //$this->getDay($firstDay->format('Y'), $firstDay->format('m'), $firstDay->format('d'));
+        //$this->getDay($lastDay->format('Y'), $lastDay->format('m'), $lastDay->format('d'));
         $monthList = new Collection\MonthList();
         $dayList = new Collection\DayList($this->days);
         do {
