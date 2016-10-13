@@ -23,8 +23,7 @@ class ProviderTest extends Base
 
     public function testEmptyDldbData()
     {
-        \BO\Zmsdb\Helper\DldbData::$dldbData = null;
-        $entity = (new Query())->readEntity('dldb', 122280, 1);
+        $entity = (new Query())->readEntity('dldb', 122280, 0);
         $this->assertEntity("\\BO\\Zmsentities\\Provider", $entity);
     }
 

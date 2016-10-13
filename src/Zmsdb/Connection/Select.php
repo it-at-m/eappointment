@@ -95,24 +95,6 @@ class Select
     }
 
     /**
-     * Enable profiling for sql queries
-     */
-    public static function disableProfilers()
-    {
-        self::$readProfiler->setActive(false);
-        self::$write->setActive(false);
-    }
-
-    /**
-     * Enable profiling for sql queries
-     */
-    public static function enableProfilers()
-    {
-        self::$readProfiler->setActive(true);
-        self::$write->setActive(true);
-    }
-
-    /**
      * Set the read connection.
      * Usually this function is only required to set mockups for testing
      *
