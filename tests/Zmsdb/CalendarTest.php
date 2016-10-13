@@ -66,14 +66,12 @@ class CalendarTest extends Base
 
     public function testOverallDayOff()
     {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
         $freeProcessesDate = new \DateTimeImmutable("2016-05-16");
         $input = $this->getTestEntity();
         foreach ($this->fullProviderIdList as $providerId) {
             $input->addProvider('dldb', $providerId);
         }
-        $entity = (new Query())->readResolvedEntity($input, $now, $freeProcessesDate);
-        //$this->assertEntity("\\BO\\Zmsentities\\Calendar", $entity);
+        $entity = (new Query())->readResolvedEntity($input, $freeProcessesDate, $freeProcessesDate);
         $this->assertEquals(0, count($entity['freeProcesses']));
     }
 
