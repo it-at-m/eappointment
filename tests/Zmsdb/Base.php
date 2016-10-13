@@ -6,7 +6,6 @@ abstract class Base extends \PHPUnit_Framework_TestCase
 {
     public function tearDown()
     {
-        var_dump(memory_get_peak_usage());
         \BO\Zmsdb\Connection\Select::closeWriteConnection();
         \BO\Zmsdb\Connection\Select::closeReadConnection();
         \Mockery::close();
