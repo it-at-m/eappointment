@@ -12,7 +12,7 @@ class SessionUpdateTest extends Base
             '__body' => '{
                 "id": "unittest",
                 "name": "unittest"
-    }',
+            }',
         ], []);
         $this->assertContains('session.json', (string)$response->getBody());
     }

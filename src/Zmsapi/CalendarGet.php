@@ -21,12 +21,10 @@ class CalendarGet extends BaseController
     {
         $query = new Query();
         $message = Response\Message::create(Render::$request);
-        $input = Validator::input()->isJson()->getValue();
+        $input = Validator::input()->isJson()->assertValid()->getValue();
         $calendar = new \BO\Zmsentities\Calendar($input);
         $calendarData = $query->readResolvedEntity($calendar, \App::getNow());
-        if (null === $input) {
-            throw new Exception\InvalidInput();
-        } elseif (!isset($calendar['firstDay']) || !isset($calendar['lastDay'])) {
+        if (!isset($calendar['firstDay']) || !isset($calendar['lastDay'])) {
             throw new Exception\Calendar\InvalidFirstDay();
         } elseif (0 == count($calendar['days'])) {
             throw new Exception\Calendar\AppointmentsMissed();
