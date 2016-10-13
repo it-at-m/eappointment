@@ -114,7 +114,11 @@ class Process extends Base implements MappingInterface
 
     public function addConditionAuthKey($authKey)
     {
-        $this->query->where('process.absagecode', '=', $authKey);
+        if (! empty($authKey)) {
+             $this->query->where('process.absagecode', '=', $authKey);
+        } else {
+            $this->query->where('process.absagecode', 'IS', null);
+        }
         return $this;
     }
 
