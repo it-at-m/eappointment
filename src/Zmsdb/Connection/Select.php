@@ -83,8 +83,8 @@ class Select
                 ], self::$pdoOptions);
             $pdo = new Pdo($dataSourceName, self::$username, self::$password, $pdoOptions);
             $pdo->exec('SET NAMES "UTF8";');
-            //$timezone = date('P');
-            //$pdo->prepare('SET time_zone = ?;')->execute([$timezone]);
+            $timezone = date_default_timezone_get();
+            $pdo->prepare('SET time_zone = ?;')->execute([$timezone]);
             $pdo->exec('SET SESSION sql_mode = "STRICT_ALL_TABLES";');
         } catch (\Exception $exception) {
             // Extend exception message with connection information
