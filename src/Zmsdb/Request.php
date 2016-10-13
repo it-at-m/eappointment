@@ -42,8 +42,9 @@ class Request extends Base
     protected function readCollection($query, $source, $resolveReferences)
     {
         $requestList = new Collection();
-        $result = $this->fetchList($query, new Entity());
-        foreach ($result as $request) {
+        $statement = $this->fetchStatement($query);
+        while ($requestData = $statement->fetch(\PDO::FETCH_ASSOC)) {
+            $request = new Entity($requestData);
             if ($resolveReferences > 0) {
                 $request['data'] = Helper\DldbData::readExtendedRequestData($source, $request['id']);
             }

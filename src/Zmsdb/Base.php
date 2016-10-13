@@ -87,6 +87,20 @@ abstract class Base
         return $resultList;
     }
 
+    public function fetchStatement(Query\Base $query)
+    {
+        $sql = $query->getSql();
+        $parameters = $query->getParameters();
+        try {
+            $statement = $this->getReader()->prepare($sql);
+            $statement->execute($parameters);
+        } catch (\PDOException $pdoException) {
+            $message = "SQL: $sql || Parameters=". var_export($parameters, true);
+            throw new Exception\PDOFailed($message, 0, $pdoException);
+        }
+        return $statement;
+    }
+
     /**
      * Write an Item to database - Insert, Update
      * TODO: Check if there is a smarter way to do mapping with entity
