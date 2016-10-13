@@ -88,7 +88,7 @@ class Select
             $pdo->exec('SET SESSION sql_mode = "STRICT_ALL_TABLES";');
         } catch (\Exception $exception) {
             // Extend exception message with connection information
-            $connectInfo = " $dataSourceName;; ";
+            $connectInfo = $dataSourceName;
             throw new \Exception($connectInfo . $exception->getMessage(), (int)$exception->getCode(), $exception);
         }
         return $pdo;
