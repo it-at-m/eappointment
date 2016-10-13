@@ -23,7 +23,7 @@ class Language
     public function __construct(RequestInterface $request, array $supportedLanguages)
     {
         if (self::$instance) {
-            throw new Exception('\BO\Slim\Language is a singleton, do not init twice');
+            throw new \Exception('\BO\Slim\Language is a singleton, do not init twice');
         }
         self::$instance = $this;
 
@@ -35,6 +35,14 @@ class Language
         }
 
         $this->setTextDomain();
+    }
+
+    public function getBaseWithLanguage($baseUri)
+    {
+        if (\App::$language->getCurrent() != \App::$language->getDefault()) {
+            $baseUri .= '/'. \App::$language->getCurrent();
+        }
+        return $baseUri;
     }
 
     protected function getLanguageFromRequest()
