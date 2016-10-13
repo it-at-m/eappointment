@@ -22,11 +22,19 @@ class ProcessUpdate extends BaseController
     {
         $query = new Query();
         $message = Response\Message::create(Render::$request);
-        $input = Validator::input()->isJson()->getValue();
-        $process = new \BO\Zmsentities\Process($input);
-        $process->id = $itemId;
-        $process->authKey = $authKey;
-        $message->data = $query->updateEntity($process);
+        $input = Validator::input()->isJson()->assertValid()->getValue();
+        $authKeyByProcessId = (new Query())->readAuthKeyByProcessId($itemId);
+
+        if (null === $authKeyByProcessId) {
+            throw new Exception\Process\ProcessNotFound();
+        } elseif ($authKeyByProcessId != $authKey) {
+            throw new Exception\Process\AuthKeyMatchFailed();
+        } else {
+            $process = new \BO\Zmsentities\Process($input);
+            $process->id = $itemId;
+            $process->authKey = $authKey;
+            $message->data = $query->updateEntity($process);
+        }
         Render::lastModified(time(), '0');
         Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }
