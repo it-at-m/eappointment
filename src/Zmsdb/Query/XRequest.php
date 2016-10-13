@@ -10,21 +10,6 @@ class XRequest extends Base
      */
     const TABLE = 'buergeranliegen';
 
-    public function getEntityMapping()
-    {
-        return [
-            'id' => 'xrequest.BuergeranliegenID',
-            'process__id' => 'xrequest.BuergerID',
-            'request__id' => 'xrequest.AnliegenID'
-        ];
-    }
-
-    public function addConditionXRequestId($requestId)
-    {
-        $this->query->where('AnliegenID', '=', $requestId);
-        return $this;
-    }
-
     public function addConditionProcessId($processId)
     {
         $this->query->where('BuergerID', '=', $processId);

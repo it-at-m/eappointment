@@ -185,9 +185,8 @@ class Scope extends Base implements MappingInterface
         $data['virtuellesachbearbeiterzahl'] = $entity->getStatus('queue', 'ghostWorkstationCount');
         $data['vergebenewartenummern'] = $entity->getStatus('queue', 'givenNumberCount');
         $data['letztewartenr'] = $entity->getStatus('queue', 'lastGivenNumber');
-        $data['wartenrdatum'] = (null !== $entity->getStatus('queue', 'lastGivenNumberTimestamp')) ?
-            date('Y-m-d', ($entity->getStatus('queue', 'lastGivenNumberTimestamp'))) :
-            null;
+        $lastGivenTimestamp = $entity->getStatus('queue', 'lastGivenNumberTimestamp');
+        $data['wartenrdatum'] = ($lastGivenTimestamp) ? date('Y-m-d', $lastGivenTimestamp) : null;
         $data['wartenrsperre'] = $entity->getStatus('ticketprinter', 'deactivated');
 
         $data = array_filter($data, function ($value) {

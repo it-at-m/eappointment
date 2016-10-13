@@ -21,6 +21,13 @@ class ProviderTest extends Base
         $this->assertEntity("\\BO\\Zmsentities\\Provider", $entity);
     }
 
+    public function testEmptyDldbData()
+    {
+        \BO\Zmsdb\Helper\DldbData::$dldbData = null;
+        $entity = (new Query())->readEntity('dldb', 122280, 1);
+        $this->assertEntity("\\BO\\Zmsentities\\Provider", $entity);
+    }
+
     public function testReadAssignedList()
     {
         $query = new Query();
