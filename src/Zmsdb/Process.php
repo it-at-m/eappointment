@@ -87,12 +87,11 @@ class Process extends Base
         $processList = new Collection();
         $query = new Query\Process(Query\Base::SELECT);
         $query->addEntityMapping()->addConditionScopeId($scopeId);
-        $result = $this->fetchList($query, new Entity());
-        if (count($result)) {
-            foreach ($result as $entity) {
-                if ($entity instanceof Entity) {
-                    $processList->addEntity($entity);
-                }
+        $statement = $this->fetchStatement($query);
+        while ($processData = $statement->fetch(\PDO::FETCH_ASSOC)) {
+            $entity = new Entity($processData);
+            if ($entity instanceof Entity) {
+                $processList->addEntity($entity);
             }
         }
         return $processList;

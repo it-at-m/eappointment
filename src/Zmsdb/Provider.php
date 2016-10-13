@@ -31,8 +31,9 @@ class Provider extends Base
     protected function readCollection($query, $source, $resolveReferences)
     {
         $providerList = new Collection();
-        $result = $this->fetchList($query, new Entity());
-        foreach ($result as $provider) {
+        $statement = $this->fetchStatement($query);
+        while ($providerData = $statement->fetch(\PDO::FETCH_ASSOC)) {
+            $provider = new Entity($providerData);
             if ($resolveReferences > 0) {
                 $provider['data'] = Helper\DldbData::readExtendedProviderData($source, $provider['id']);
             }
