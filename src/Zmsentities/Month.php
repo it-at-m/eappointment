@@ -12,8 +12,7 @@ class Month extends Schema\Entity
 
     public function getFirstDay()
     {
-        $firstDay = reset($this->days);
-        $dateTime = Helper\DateTime::create($firstDay['year'] .'-'. $firstDay['month'] .'-'. $firstDay['day']);
+        $dateTime = Helper\DateTime::create($this['year'] .'-'. $this['month'] .'-1');
         return $dateTime->modify('00:00:00');
     }
 
