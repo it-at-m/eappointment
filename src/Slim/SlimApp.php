@@ -16,7 +16,7 @@ class SlimApp extends \Slim\App
 
     protected function getWithNewLanguageInUri($routePath, $newLanguage = null)
     {
-        if (\App::$language->getCurrent()) {
+        if ($newLanguage && \App::$language->getDefault() != \App::$language->getCurrent()) {
             if ($newLanguage != \App::$language->getDefault()) {
                 $routePath = preg_replace('~^/('.\App::$language->getCurrent().')~', $newLanguage, $routePath);
             }
@@ -24,7 +24,7 @@ class SlimApp extends \Slim\App
                 $routePath = preg_replace('~^/('.\App::$language->getCurrent().')~', '', $routePath);
             }
         } else {
-            if (!\App::$language->getCurrent() && $newLanguage != \App::$language->getDefault()) {
+            if ($newLanguage && $newLanguage != \App::$language->getDefault()) {
                 $routePath = sprintf('/%s%s', $newLanguage, $routePath);
             }
         }
