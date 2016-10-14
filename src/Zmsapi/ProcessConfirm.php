@@ -11,7 +11,7 @@ use \BO\Mellon\Validator;
 use \BO\Zmsdb\Process as Query;
 
 /**
-  * Handle requests concerning services
+  * Try to confirm a process, changes status from reservered to confirmed
   */
 class ProcessConfirm extends BaseController
 {
@@ -20,10 +20,21 @@ class ProcessConfirm extends BaseController
      */
     public static function render()
     {
-        $input = Validator::input()->isJson()->getValue();
-        $entity = new \BO\Zmsentities\Process($input);
-        $process = (new Query())->updateProcessStatus($entity, 'confirmed');
+        $input = Validator::input()->isJson()->assertValid()->getValue();
+        $process = new \BO\Zmsentities\Process($input);
+        $authKeyByProcessId = (new Query())->readAuthKeyByProcessId($process->id);
 
+        if (null === $authKeyByProcessId) {
+            throw new Exception\Process\ProcessNotFound();
+        } elseif ($authKeyByProcessId != $process->authKey) {
+            throw new Exception\Process\AuthKeyMatchFailed();
+        } else {
+            $process = (new Query())->readEntity($process->id, $process->authKey);
+            if ('reserved' != $process->status) {
+                throw new Exception\Process\ProcessNotReservedAnymore();
+            }
+            $process = (new Query())->updateProcessStatus($process, 'confirmed');
+        }
         $message = Response\Message::create(Render::$request);
         $message->data = $process;
         Render::lastModified(time(), '0');

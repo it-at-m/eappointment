@@ -27,13 +27,11 @@ class ProcessConfirmationMail extends BaseController
     public static function render()
     {
         $message = Response\Message::create(Render::$request);
-        $input = Validator::input()->isJson()->getValue();
+        $input = Validator::input()->isJson()->assertValid()->getValue();
         $process = new \BO\Zmsentities\Process($input);
         $authKeyByProcessId = (new Process())->readAuthKeyByProcessId($process->id);
 
-        if (null === $input) {
-            throw new Exception\InvalidInput();
-        } elseif (null === $authKeyByProcessId) {
+        if (null === $authKeyByProcessId) {
             throw new Exception\Process\ProcessNotFound();
         } elseif ($authKeyByProcessId != $process->authKey) {
             throw new Exception\Process\AuthKeyMatchFailed();
