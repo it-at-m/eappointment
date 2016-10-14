@@ -155,12 +155,13 @@
 		                "start",
 		                "reserved",
 		                "confirmed",
+		                "finished",
 		                "inChange",
 		                "changedProcess",
 		                "stalled",
 		                "inProgress"
 		            ],
-            		"description": "Status of the session. The following values are possible:\n* start: new session started\n* reserved: set if a process has been reserved\n* confirmed: set if a process has been confirmed\n* inChange: current process is in change mode\n* changedProcess: current process has been changed\n* stalled: set if session has a problem, fore example if second tab is in use \n* inProgress: if session not stalled anymore\n"
+            		"description": "Status of the session. The following values are possible:\n* start: new session started\n* reserved: set if a process has been reserved\n* confirmed: set if a process has been confirmed\n* finished: set if a process has been finished\n* inChange: current process is in change mode\n* changedProcess: current process has been changed\n* stalled: set if session has a problem, fore example if second tab is in use \n* inProgress: if session not stalled anymore\n"
                 },                     
                 "X-Authkey" : {
                     "type": "string"
