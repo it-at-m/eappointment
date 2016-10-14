@@ -154,11 +154,6 @@ class Session extends Schema\Entity
         return ('inChange' == $this->getStatus()) ? true : false;
     }
 
-    public function isConfirmed()
-    {
-        return ('confirmed' == $this->getStatus()) ? true : false;
-    }
-
     public function isStalled()
     {
         return ('stalled' == $this->getStatus()) ? true : false;
@@ -167,6 +162,16 @@ class Session extends Schema\Entity
     public function isReserved()
     {
         return ('reserved' == $this->getStatus() || $this->hasChangedProcess()) ? true : false;
+    }
+
+    public function isConfirmed()
+    {
+        return ('confirmed' == $this->getStatus()) ? true : false;
+    }
+
+    public function isFinished()
+    {
+        return ('finished' == $this->getStatus()) ? true : false;
     }
 
     public function isProcessDeleted()
