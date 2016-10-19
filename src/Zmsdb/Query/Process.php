@@ -1,4 +1,5 @@
 <?php
+
 namespace BO\Zmsdb\Query;
 
 class Process extends Base implements MappingInterface
@@ -28,6 +29,7 @@ class Process extends Base implements MappingInterface
         ";
 
     const QUERY_SET_LOCK = "SELECT GET_LOCK('AutoIncWithOldNum', 2)";
+
     const QUERY_RELEASE_LOCK = "SELECT RELEASE_LOCK('AutoIncWithOldNum')";
 
     public function getQueryNewProcessId()
@@ -48,13 +50,12 @@ class Process extends Base implements MappingInterface
     public function addJoin()
     {
         return [
-            $this->addJoinAvailability(),
+            $this->addJoinAvailability()
         ];
     }
 
     /**
      * Add Availability to the dataset
-     *
      */
     protected function addJoinAvailability()
     {
@@ -76,19 +77,26 @@ class Process extends Base implements MappingInterface
             ),
             'scope__id' => 'process.StandortID',
             'appointments__0__scope__id' => 'process.StandortID',
-            //'appointments__0__slotCount' => 'process.hatFolgetermine',
-            'appointments__0__slotCount' => self::expression('(SELECT COUNT(*) + 1
+            // 'appointments__0__slotCount' => 'process.hatFolgetermine',
+            'appointments__0__slotCount' => self::expression(
+                '(SELECT COUNT(*) + 1
                     FROM ' . self::TABLE . ' as `followingProcess`
                     WHERE
                         `followingProcess`.`istFolgeterminvon` = `BuergerID`
-                )'),
+                )'
+            ),
             'authKey' => 'process.absagecode',
             'clients__0__email' => 'process.EMail',
             'clients__0__emailSendCount' => 'process.EMailverschickt',
             'clients__0__familyName' => 'process.Name',
             'clients__0__notificationsSendCount' => 'process.SMSverschickt',
             'clients__0__surveyAccepted' => 'process.zustimmung_kundenbefragung',
-            'clients__0__telephone' => 'process.telefonnummer_fuer_rueckfragen',
+            'clients__0__telephone' => self::expression(
+                'IF(`process`.`telefonnummer_fuer_rueckfragen`,
+                    `process`.`telefonnummer_fuer_rueckfragen`,
+                    `process`.`Telefonnummer`
+                )'
+            ),
             'createIP' => 'process.IPAdresse',
             'createTimestamp' => 'process.IPTimeStamp',
             'queue__arrivalTime' => 'process.wsm_aufnahmezeit',
@@ -120,8 +128,10 @@ class Process extends Base implements MappingInterface
 
     public function addConditionIsReserved()
     {
-        $this->query
-            ->where('process.name', 'NOT IN', array('dereferenced','(abgesagt)'))
+        $this->query->where('process.name', 'NOT IN', array (
+            'dereferenced',
+            '(abgesagt)'
+        ))
             ->where('process.vorlaeufigeBuchung', '=', 1)
             ->where('process.StandortID', '<>', 1)
             ->where('process.istFolgeterminvon', 'is', null);
@@ -130,33 +140,33 @@ class Process extends Base implements MappingInterface
 
     public function reverseEntityMapping(\BO\Zmsentities\Process $process)
     {
-        $data = array();
+        $data = array ();
         $data['Anmerkung'] = $process->getAmendment();
         $data['StandortID'] = $process->getScopeId();
-
         $appointment = $process->getFirstAppointment();
         if (null !== $appointment) {
             $datetime = $appointment->toDateTime();
             $data['Datum'] = $datetime->format('Y-m-d');
             $data['Uhrzeit'] = $datetime->format('H:i');
         }
-
         $client = $process->getFirstClient();
         if (null !== $client) {
             $data['Name'] = $client->familyName;
             $data['EMail'] = $client->email;
             $data['telefonnummer_fuer_rueckfragen'] = $client->telephone;
+            $data['Telefonnummer'] = $client->telephone; // to stay compatible with ZMS1
             $data['zustimmung_kundenbefragung'] = $client->surveyAccepted;
             $data['EMailverschickt'] = $client->emailSendCount;
             $data['SMSverschickt'] = $client->notificationsSendCount;
         }
-
         $data['vorlaeufigeBuchung'] = ($process['status'] == 'reserved') ? 1 : 0;
         $data['Erinnerungszeitpunkt'] = $process->getReminderTimestamp();
-
-        $data = array_filter($data, function ($value) {
-            return ($value !== null && $value !== false && $value !== '');
-        });
+        $data = array_filter(
+            $data,
+            function ($value) {
+                return ($value !== null && $value !== false && $value !== '');
+            }
+        );
         return $data;
     }
 }
