@@ -6,7 +6,7 @@ DIR=$(dirname $($REALPATH ${BASH_SOURCE[0]}))
 ROOT=$($REALPATH $DIR/..)
 
 echo "Configuring application"
-
+mkdir -p $ROOT/.git/hooks
 ln -sf $ROOT/bin/test $ROOT/.git/hooks/pre-commit
 
 
