@@ -2,25 +2,32 @@
 
 namespace BO\Zmsdb\Tests;
 
-use \BO\Zmsdb\Cluster as Cluster;
-use \BO\Zmsdb\Query\Cluster as Query;
-use \BO\Zmsentities\Cluster as Entity;
+use \BO\Zmsdb\Provider as Provider;
+use \BO\Zmsdb\Query\Provider as Query;
+use \BO\Zmsentities\Provider as Entity;
 
 class FetchFailedTest extends Base
 {
     public function testFetchOneFailed()
     {
         $this->setExpectedException('\BO\Zmsdb\Exception\PdoFailed');
-        $cluster = new Cluster();
+        $provider = new Provider();
         $query = new Query('SELECT');
-        $cluster = $cluster->fetchOne($query, new Entity());
+        $Provider = $provider->fetchOne($query, new Entity());
     }
 
     public function testFetchListFailed()
     {
         $this->setExpectedException('\BO\Zmsdb\Exception\PdoFailed');
-        $cluster = new Cluster();
+        $provider = new Provider();
         $query = new Query('SELECT');
-        $cluster = $cluster->fetchList($query, new Entity());
+        $Provider = $provider->fetchList($query, new Entity());
+    }
+
+    public function testStatementFailed()
+    {
+        $this->setExpectedException("\BO\Zmsdb\Exception\PdoFailed");
+        $provider = new Provider();
+        $statement = $provider->fetchStatement(new Query('SELECT'));
     }
 }
