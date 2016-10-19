@@ -1359,7 +1359,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/process/{id}/{authKey}/confirmation/mail/":
  *      post:
- *          description: send mail on confirmed process. Depending on config, if no mail is send, an empty mail is returned. 
+ *          description: send mail on confirmed process. Depending on config, if no mail is send, an empty mail is returned.
  *          parameters:
  *              -   name: id
  *                  description: process number
@@ -2170,7 +2170,7 @@ use \Psr\Http\Message\ResponseInterface;
 *                          data:
 *                              $ref: "schema/session.json"
 */
-\App::$slim->get('/session/{name:[a-zA-Z]{3,20}}/{id:[a-z0-9]{20,40}}/',
+\App::$slim->get('/session/{name:[a-zA-Z]{3,20}}/{id:[a-z0-9]{8,40}}/',
     '\BO\Zmsapi\SessionGet')
     ->setName("SessionGet");
 

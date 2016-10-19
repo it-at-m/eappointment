@@ -9,7 +9,7 @@ echo "Get DLDB Exports"
 $ROOT/bin/getDldbExport
 
 echo "Configuring application"
-
+mkdir -p $ROOT/.git/hooks
 ln -sf $ROOT/bin/test $ROOT/.git/hooks/pre-commit
 
 if [ ! -e $ROOT/config.php ]
