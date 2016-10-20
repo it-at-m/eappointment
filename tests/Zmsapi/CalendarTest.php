@@ -44,7 +44,7 @@ class CalendarTest extends Base
 
     public function testEmpty()
     {
-        $this->setExpectedException('BO\Mellon\Failure\Exception');
+        $this->expectException('BO\Mellon\Failure\Exception');
         $this->render([], [
             '__body' => '',
         ], []);

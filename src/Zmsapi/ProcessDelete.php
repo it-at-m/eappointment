@@ -9,9 +9,6 @@ namespace BO\Zmsapi;
 use \BO\Slim\Render;
 use \BO\Zmsdb\Process as Query;
 
-/**
-  * Handle requests concerning services
-  */
 class ProcessDelete extends BaseController
 {
     /**
