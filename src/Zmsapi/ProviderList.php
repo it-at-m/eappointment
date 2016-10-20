@@ -21,12 +21,19 @@ class ProviderList extends BaseController
     public static function render($source, $requestIdCsv = null)
     {
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
+        $query = new Query();
         $isAssigned = Validator::param('isAssigned')->isBool()->getValue();
+
         if (null !== $requestIdCsv) {
-            $providerList = (new Query())->readListByRequest($source, $requestIdCsv, $resolveReferences);
+            $providerList = $query->readListByRequest($source, $requestIdCsv, $resolveReferences);
         } else {
-            $providerList = (new Query())->readList($source, $resolveReferences, $isAssigned);
+            $providerList = $query->readList($source, $resolveReferences, $isAssigned);
         }
+
+        if (0 == count($providerList)) {
+            throw new Exception\Provider\ProviderNotFound();
+        }
+
         $message = Response\Message::create(Render::$request);
         $message->data = $providerList;
         Render::lastModified(time(), '0');

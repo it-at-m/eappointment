@@ -25,8 +25,8 @@ class SessionDeleteTest extends Base
 
     public function testFailedDelete()
     {
-        $this->setExpectedException('BO\Zmsapi\Exception\Session\SessionDeleteFailed');
+        $this->expectException('BO\Zmsapi\Exception\Session\SessionDeleteFailed');
+        $this->expectExceptionCode(404);
         $response = $this->render(['name' => self::SESSION_NAME, 'id' => self::SESSION_ID], [], []);
-        $this->assertTrue(404 == $response->getStatusCode());
     }
 }
