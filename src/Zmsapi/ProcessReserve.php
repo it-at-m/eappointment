@@ -1,6 +1,6 @@
 <?php
 /**
- * @package 115Mandant
+ * @package Zmsapi
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -21,14 +21,15 @@ class ProcessReserve extends BaseController
     public static function render()
     {
         $message = Response\Message::create(Render::$request);
-        $input = Validator::input()->isJson()->getValue();
+        $input = Validator::input()->isJson()->assertValid()->getValue();
         $process = new \BO\Zmsentities\Process($input);
 
         if ($process->hasId()) {
             throw new Exception\Process\ProcessFailedReservation();
         } else {
             $process->status = 'reserved';
-            $message->data = (new Query())->updateEntity($process);
+            $process = (new Query())->updateEntity($process);
+            $message->data = $process;
         }
         Render::lastModified(time(), '0');
         Render::json($message->setUpdatedMetaData(), $message->getStatuscode());

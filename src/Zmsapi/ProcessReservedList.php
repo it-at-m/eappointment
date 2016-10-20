@@ -1,6 +1,6 @@
 <?php
 /**
- * @package 115Mandant
+ * @package Zmsapi
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -20,10 +20,14 @@ class ProcessReservedList extends BaseController
      */
     public static function render()
     {
+        Helper\User::checkRights('useraccount');
+
         $query = new Query();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
+        $collection = $query->readReservedProcesses($resolveReferences);
+
         $message = Response\Message::create(Render::$request);
-        $message->data = $query->readReservedProcesses($resolveReferences);
+        $message->data = $collection;
         Render::lastModified(time(), '0');
         Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }
