@@ -1581,10 +1581,8 @@ use \Psr\Http\Message\ResponseInterface;
  *                              $ref: "schema/process.json"
  *              400:
  *                  description: "Invalid input"
- *              403:
- *                  description: "authkey does not match"
  *              404:
- *                  description: "Could not find any processes, returns empty list"
+ *                  description: "Failed to reserve a process"
  */
 \App::$slim->post('/process/status/reserved/',
     '\BO\Zmsapi\ProcessReserve')
