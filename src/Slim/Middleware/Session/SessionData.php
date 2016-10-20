@@ -145,8 +145,9 @@ class SessionData implements SessionInterface
     {
         if (session_status() === PHP_SESSION_ACTIVE) {
             session_regenerate_id(true);
-            $this->data = [];
-            $_SESSION = $this->data;
+            $instance = new self();
+            $instance->data = $_SESSION;
+            return $instance;
         }
     }
 

@@ -43,6 +43,9 @@ class ErrorHandler
     {
         foreach (func_get_args() as $errorCheck) {
             if ($redirect = $errorCheck($this)) {
+                if (isset($redirect['queryParams'])) {
+                    return Render::redirect($redirect['route'], array(), $redirect['queryParams']);
+                }
                 return Render::redirect($redirect['route'], $redirect['params']);
             }
         }
