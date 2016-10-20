@@ -9,12 +9,8 @@ use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\Process as Query;
 
-/**
- * Handle requests concerning services
- */
 class ProcessFree extends BaseController
 {
-
     /**
      *
      * @return String
@@ -22,7 +18,7 @@ class ProcessFree extends BaseController
     public static function render()
     {
         $message = Response\Message::create(Render::$request);
-        $input = Validator::input()->isJson()->getValue();
+        $input = Validator::input()->isJson()->assertValid()->getValue();
         $query = new Query();
         $entity = new \BO\Zmsentities\Calendar($input);
         $processList = $query->readFreeProcesses($entity, \App::getNow());
