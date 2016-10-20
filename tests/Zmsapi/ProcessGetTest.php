@@ -14,19 +14,21 @@ class ProcessGetTest extends Base
 
     public function testEmpty()
     {
-        $this->setExpectedException('\ErrorException');
+        $this->expectException('\ErrorException');
         $this->render([], [], []);
     }
 
     public function testProcessNotFound()
     {
-        $this->setExpectedException('\BO\Zmsapi\Exception\Process\ProcessNotFound');
+        $this->expectException('\BO\Zmsapi\Exception\Process\ProcessNotFound');
+        $this->expectExceptionCode(404);
         $response = $this->render([123456,null], [], []);
     }
 
     public function testAuthKeyMatchFailed()
     {
-        $this->setExpectedException('\BO\Zmsapi\Exception\Process\AuthKeyMatchFailed');
+        $this->expectException('\BO\Zmsapi\Exception\Process\AuthKeyMatchFailed');
+        $this->expectExceptionCode(403);
         $response = $this->render([10030,null], [], []);
     }
 }
