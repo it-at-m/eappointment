@@ -24,7 +24,7 @@
                 "startInDaysDefault": 2
             },
             "client": {
-                "alternateAppointmentUrl": "",
+                "alternateAppointmentUrl": "https://service.berlin.de",
                 "amendmentLabel": "Zusatzinformationen zum Anliegen",
                 "emailRequired": false,
                 "telephoneActivated": true,
