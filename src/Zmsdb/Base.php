@@ -63,7 +63,7 @@ abstract class Base
             throw new Exception\PDOFailed($message, 0, $pdoException);
         }
         if ($data) {
-            $entity->exchangeArray($data);
+            $entity->exchangeArray($query->postProcess($data));
         }
         return $entity;
     }
@@ -81,7 +81,7 @@ abstract class Base
         }
         foreach ($dataList as $data) {
             $dataEntity = clone $entity;
-            $dataEntity->exchangeArray($data);
+            $dataEntity->exchangeArray($query->postProcess($data));
             $resultList[] = $dataEntity;
         }
         return $resultList;

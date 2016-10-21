@@ -16,7 +16,7 @@ class SlotList
     const QUERY = 'SELECT
 
             -- collect some important settings, especially from the scope, use the appointment key
-            FLOOR(UNIX_TIMESTAMP(CONCAT(b.Datum, " ", b.Uhrzeit))) AS appointment__date,
+            CONCAT(b.Datum, " ", b.Uhrzeit) AS appointment__date,
             s.StandortID AS appointment__scope__id,
             s.mehrfachtermine AS appointment__scope__preferences__appointment__multipleSlotsEnabled,
 
@@ -44,8 +44,8 @@ class SlotList
             o.allexWochen AS availability__repeat__afterWeeks,
             o.jedexteWoche AS availability__repeat__weekOfMonth,
             FLOOR(TIME_TO_SEC(o.Timeslot) / 60) AS availability__slotTimeInMinutes,
-            FLOOR(UNIX_TIMESTAMP(o.Startdatum)) AS availability__startDate,
-            FLOOR(UNIX_TIMESTAMP(o.Endedatum)) AS availability__endDate,
+            o.Startdatum AS availability__startDate,
+            o.Endedatum AS availability__endDate,
             o.Terminanfangszeit	 AS availability__startTime,
             o.Terminendzeit	 AS availability__endTime,
 
@@ -123,7 +123,7 @@ class SlotList
         GROUP BY o.OeffnungszeitID, b.Datum, `slotnr`
         HAVING
             -- reduce results cause processing them costs time even with query cache
-            FROM_UNIXTIME(appointment__date) BETWEEN
+            appointment__date BETWEEN
                 DATE_ADD(:nowStart, INTERVAL availability__bookable__startInDays DAY)
                 AND DATE_ADD(:nowEnd, INTERVAL availability__bookable__endInDays + 1 DAY)
 
@@ -166,7 +166,7 @@ class SlotList
         $this->availability = $availability;
         $this->scope = $scope;
         $this->setSlotData($slotData);
-        if (isset($this->availability['id'])) {
+        if ($this->availability && isset($this->availability['id'])) {
             $this->createSlots($start, $stop);
             $this->addQueryData($slotData);
         }
@@ -348,5 +348,13 @@ class SlotList
             }
         }
         return $this;
+    }
+
+    public function postProcess($data)
+    {
+        $data["appointment__date"] = (new \DateTime($data["appointment__date"]))->getTimestamp();
+        $data["availability__startDate"] = (new \DateTime($data["availability__startDate"]))->getTimestamp();
+        $data["availability__endDate"] = (new \DateTime($data["availability__endDate"]))->getTimestamp();
+        return $data;
     }
 }

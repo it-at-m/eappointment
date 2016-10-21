@@ -44,7 +44,7 @@ class Request extends Base
         $requestList = new Collection();
         $statement = $this->fetchStatement($query);
         while ($requestData = $statement->fetch(\PDO::FETCH_ASSOC)) {
-            $request = new Entity($requestData);
+            $request = new Entity($query->postProcess($requestData));
             if ($resolveReferences > 0) {
                 $request['data'] = Helper\DldbData::readExtendedRequestData($source, $request['id']);
             }

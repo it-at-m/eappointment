@@ -33,7 +33,7 @@ class Provider extends Base
         $providerList = new Collection();
         $statement = $this->fetchStatement($query);
         while ($providerData = $statement->fetch(\PDO::FETCH_ASSOC)) {
-            $provider = new Entity($providerData);
+            $provider = new Entity($query->postProcess($providerData));
             if ($resolveReferences > 0) {
                 $provider['data'] = Helper\DldbData::readExtendedProviderData($source, $provider['id']);
             }

@@ -89,7 +89,7 @@ class Scope extends Base implements MappingInterface
             'status__queue__ghostWorkstationCount' => 'scope.virtuellesachbearbeiterzahl',
             'status__queue__givenNumberCount' => 'scope.vergebenewartenummern',
             'status__queue__lastGivenNumber' => 'scope.letztewartenr',
-            'status__queue__lastGivenNumberTimestamp' => self::expression('UNIX_TIMESTAMP(scope.wartenrdatum)'),
+            'status__queue__lastGivenNumberTimestamp' => 'scope.wartenrdatum',
             'status__ticketprinter__deactivated' => 'scope.wartenrsperre',
             'provider__id' => 'scope.InfoDienstleisterID',
             //'department__id' => 'scope.BehoerdenID'
@@ -193,5 +193,12 @@ class Scope extends Base implements MappingInterface
             return ($value !== null && $value !== false);
         });
             return $data;
+    }
+
+    public function postProcess($data)
+    {
+        $data["status__queue__lastGivenNumberTimestamp"] =
+            (new \DateTime($data["status__queue__lastGivenNumberTimestamp"]))->getTimestamp();
+        return $data;
     }
 }

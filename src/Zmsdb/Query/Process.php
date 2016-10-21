@@ -73,7 +73,7 @@ class Process extends Base implements MappingInterface
             'amendment' => 'process.Anmerkung',
             'id' => 'process.BuergerID',
             'appointments__0__date' => self::expression(
-                'FLOOR(UNIX_TIMESTAMP(CONCAT(`process`.`Datum`, " ", `process`.`Uhrzeit`)))'
+                'CONCAT(`process`.`Datum`, " ", `process`.`Uhrzeit`)'
             ),
             'scope__id' => 'process.StandortID',
             'appointments__0__scope__id' => 'process.StandortID',
@@ -167,6 +167,12 @@ class Process extends Base implements MappingInterface
                 return ($value !== null && $value !== false && $value !== '');
             }
         );
+        return $data;
+    }
+
+    public function postProcess($data)
+    {
+        $data["appointments__0__date"] = (new \DateTime($data["appointments__0__date"]))->getTimestamp();
         return $data;
     }
 }
