@@ -15,6 +15,16 @@ class CalendarTest extends Base
         122257,122208,122226
     ];
 
+    public function testWithScope()
+    {
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $input = $this->getTestEntity();
+        $input->addScope(141); // Bürgeramt Heerstr.
+        $entity = (new Query())->readResolvedEntity($input, $now);
+        $this->assertTrue($entity->hasDay(2016, 5, 27), "Missing 2016-05-27 in dataset");
+        $this->assertEquals(2, $entity->getDay(2016, 5, 27)['freeAppointments']['public']);
+    }
+
     public function testDayOffBASpandau()
     {
         //Bürgeramt Spandau with Day Off on 2016-05-25

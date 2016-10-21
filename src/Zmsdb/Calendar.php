@@ -15,14 +15,31 @@ class Calendar extends Base
     ) {
         $calendar['processing'] = [];
         $calendar['freeProcesses'] = new \BO\Zmsentities\Collection\ProcessList();
-        $calendar['scopes'] = new \BO\Zmsentities\Collection\ScopeList();
+        $calendar['scopes'] = $calendar->getScopeList();
         $calendar['processing']['slotlist'] = new SlotList();
+        $calendar = $this->readResolvedScopes($calendar);
         $calendar = $this->readResolvedProviders($calendar);
         $calendar = $this->readResolvedClusters($calendar);
         $calendar = $this->readResolvedRequests($calendar);
         $calendar = $this->readResolvedScopeReferences($calendar);
         $calendar = $this->readResolvedDays($calendar, $freeProcessesDate, $now, $slotType);
         unset($calendar['processing']);
+        return $calendar;
+    }
+
+    /**
+     * Resolve calendar scopes
+     *
+     */
+    protected function readResolvedScopes(Entity $calendar)
+    {
+        $scopeList = new \BO\Zmsentities\Collection\ScopeList();
+        $scopeReader = new Scope($this->getWriter(), $this->getReader());
+        foreach ($calendar->scopes as $scope) {
+            $scope = $scopeReader->readEntity($scope['id'], 1);
+            $scopeList->addEntity($scope);
+        }
+        $calendar['scopes'] = $scopeList;
         return $calendar;
     }
 
