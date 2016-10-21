@@ -41,9 +41,7 @@ class Base extends \ArrayObject
     public function __clone()
     {
         foreach ($this as $key => $property) {
-            if (is_object($property)) {
-                $this[$key] = clone $property;
-            }
+            $this[$key] = clone $property;
         }
     }
 

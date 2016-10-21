@@ -159,7 +159,7 @@ class Calendar extends Schema\Entity
     public function getDay($year, $month, $dayNumber)
     {
         foreach ($this['days'] as $key => $day) {
-            if ($day['year'] == $year && $day['month'] == $month && $day['day'] == $dayNumber) {
+            if ($day['day'] == $dayNumber && $day['month'] == $month && $day['year'] == $year) {
                 if (! ($day instanceof Day)) {
                     $day = new Day($day);
                     $this['days'][$key] = $day;
