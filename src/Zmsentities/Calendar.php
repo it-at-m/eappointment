@@ -64,10 +64,12 @@ class Calendar extends Schema\Entity
     public function addProvider($source, $idList)
     {
         foreach (explode(',', $idList) as $id) {
-            $provider = new Provider();
-            $provider->source = $source;
-            $provider->id = $id;
-            $this->providers[] = $provider;
+            if ($id) {
+                $provider = new Provider();
+                $provider->source = $source;
+                $provider->id = $id;
+                $this->providers[] = $provider;
+            }
         }
         return $this;
     }
@@ -95,10 +97,27 @@ class Calendar extends Schema\Entity
     public function addRequest($source, $requestList)
     {
         foreach (explode(',', $requestList) as $id) {
-            $request = new Request();
-            $request->source = $source;
-            $request->id = $id;
-            $this->requests[] = $request;
+            if ($id) {
+                $request = new Request();
+                $request->source = $source;
+                $request->id = $id;
+                $this->requests[] = $request;
+            }
+        }
+        return $this;
+    }
+
+    /**
+     * Returns calendar with added scope
+     *
+     * @return $this
+     */
+    public function addScope($scopeId)
+    {
+        if ($scopeId) {
+            $scope = new Scope();
+            $scope->id = $scopeId;
+            $this->scopes[] = $scope;
         }
         return $this;
     }
