@@ -45,17 +45,18 @@ class UserAccount extends Base implements MappingInterface
     public function getEntityMapping()
     {
         return [
-        'id' => 'userAccount.Name','lastLogin' => self::expression('UNIX_TIMESTAMP(userAccount.Datum)'),
-        'rights__superuser' => self::expression('`userAccount`.`Berechtigung` = 90'),
-        'rights__organisation' => self::expression('`userAccount`.`Berechtigung` >= 70'),
-        'rights__department' => self::expression('`userAccount`.`Berechtigung` >= 50'),
-        'rights__cluster' => self::expression('`userAccount`.`Berechtigung` >= 40'),
-        'rights__useraccount' => self::expression('`userAccount`.`Berechtigung` >= 30'),
-        'rights__scope' => self::expression('`userAccount`.`Berechtigung` >= 20'),
-        'rights__availability' => self::expression('`userAccount`.`Berechtigung` >= 15'),
-        'rights__ticketprinter' => self::expression('`userAccount`.`Berechtigung` >= 10'),
-        'rights__sms' => self::expression('`userAccount`.`Berechtigung` >= 0'),
-        'rights__basic' => self::expression('`userAccount`.`Berechtigung` >= 0'),
+            'id' => 'userAccount.Name',
+            'lastLogin' => 'userAccount.Datum',
+            'rights__superuser' => self::expression('`userAccount`.`Berechtigung` = 90'),
+            'rights__organisation' => self::expression('`userAccount`.`Berechtigung` >= 70'),
+            'rights__department' => self::expression('`userAccount`.`Berechtigung` >= 50'),
+            'rights__cluster' => self::expression('`userAccount`.`Berechtigung` >= 40'),
+            'rights__useraccount' => self::expression('`userAccount`.`Berechtigung` >= 30'),
+            'rights__scope' => self::expression('`userAccount`.`Berechtigung` >= 20'),
+            'rights__availability' => self::expression('`userAccount`.`Berechtigung` >= 15'),
+            'rights__ticketprinter' => self::expression('`userAccount`.`Berechtigung` >= 10'),
+            'rights__sms' => self::expression('`userAccount`.`Berechtigung` >= 0'),
+            'rights__basic' => self::expression('`userAccount`.`Berechtigung` >= 0'),
         ];
     }
 
@@ -92,5 +93,11 @@ class UserAccount extends Base implements MappingInterface
             return ($value !== null && $value !== false);
         });
             return $data;
+    }
+
+    public function postProcess($data)
+    {
+        $data["lastLogin"] = (new \DateTime($data["lastLogin"]))->getTimestamp();
+        return $data;
     }
 }

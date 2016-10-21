@@ -273,4 +273,13 @@ abstract class Base
         $this->query->values($values);
         return $this;
     }
+
+    /**
+     * postProcess data if necessary
+     *
+     */
+    public function postProcess($data)
+    {
+        return $data;
+    }
 }

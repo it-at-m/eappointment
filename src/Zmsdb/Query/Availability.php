@@ -31,9 +31,9 @@ class Availability extends Base implements MappingInterface
                 'IF(`availability`.`Offen_bis`, `availability`.`Offen_bis`, `scope`.`Termine_bis`)'
             ),
             'description' => 'availability.kommentar',
-            'startDate' => self::expression('FLOOR(UNIX_TIMESTAMP(`availability`.`Startdatum`))'),
+            'startDate' => 'availability.Startdatum',
             'startTime' => 'availability.Terminanfangszeit',
-            'endDate' => self::expression('FLOOR(UNIX_TIMESTAMP(`availability`.`Endedatum`))'),
+            'endDate' => 'availability.Endedatum',
             'endTime' => 'availability.Terminendzeit',
             'multipleSlotsAllowed' => 'availability.erlaubemehrfachslots',
             'repeat__afterWeeks' => 'availability.allexWochen',
@@ -106,6 +106,7 @@ class Availability extends Base implements MappingInterface
 
     public static function getJoinExpression($process, $availability)
     {
+        // UNIX_TIMESTAMP is relative here, no dependency to TIMEZONE
         return self::expression("
             $availability.StandortID = $process.StandortID
             AND $availability.OeffnungszeitID IS NOT NULL
@@ -147,5 +148,12 @@ class Availability extends Base implements MappingInterface
             AND $process.Datum >= $availability.Startdatum
             AND $process.Datum <= $availability.Endedatum
             ");
+    }
+
+    public function postProcess($data)
+    {
+        $data["startDate"] = (new \DateTime($data["startDate"]))->getTimestamp();
+        $data["endDate"] = (new \DateTime($data["endDate"]))->getTimestamp();
+        return $data;
     }
 }

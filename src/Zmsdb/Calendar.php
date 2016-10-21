@@ -93,6 +93,7 @@ class Calendar extends Base
         \DateTimeInterface $now,
         $slotType = 'public'
     ) {
+        $querySlotList = new SlotList();
         $query = SlotList::getQuery();
         $monthList = $calendar->getMonthList();
         $statement = $this->getReader()->prepare($query);
@@ -105,7 +106,7 @@ class Calendar extends Base
                 while ($slotData = $statement->fetch(\PDO::FETCH_ASSOC)) {
                     $calendar = $this->addDayInfoToCalendar(
                         $calendar,
-                        $slotData,
+                        $querySlotList->postProcess($slotData),
                         $monthDateTime,
                         $slotsRequired,
                         $freeProcessesDate,
