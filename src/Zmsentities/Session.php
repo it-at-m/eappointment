@@ -146,7 +146,7 @@ class Session extends Schema\Entity
 
     public function isEmpty()
     {
-        return (!$this->getProviders() && !$this->getRequests()) ? true : false;
+        return (! $this->hasProvider() && ! $this->hasRequests() && ! $this->hasScope()) ? true : false;
     }
 
     public function isInChange()
@@ -261,12 +261,13 @@ class Session extends Schema\Entity
     public function hasDifferentEntry($newEntryData)
     {
         return (
-            $this->getProviders() &&
+            ($this->getProviders() || $this->getScope()) &&
             $this->getRequests() &&
             $this->getEntryData() &&
             (
                 !($this->getProviders() == $newEntryData['providers']) ||
-                !($this->getRequests() == $newEntryData['requests'])
+                !($this->getRequests() == $newEntryData['requests']) ||
+                !($this->getScope() == $newEntryData['scope'])
             )
          ) ? true : false;
     }

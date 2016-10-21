@@ -32,7 +32,8 @@
             "entry" : {
                 "source" : "specific",
                 "providers" : "122217",
-                "requests" : "120335"
+                "requests" : "120335",
+                "scope": 123
             },            
             "status" : "start",
             "X-Authkey" : "abc12345678def",
@@ -146,6 +147,9 @@
                         },
                         "requests" :{
                             "type": "string"
+                        },
+                        "scope" : {
+                            "type": ["number"]
                         }
                     }
                 },
