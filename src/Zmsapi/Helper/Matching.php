@@ -13,23 +13,38 @@ class Matching
 {
     public static function hasProviderRequest($session)
     {
+        $result = true;
         $requestIdCsv = $session->getRequests();
-        $providerIdCsv = $session->getProviders();
         $providerList = (new Provider())->readListByRequest('dldb', $requestIdCsv);
-        return $providerList->hasProvider($providerIdCsv);
+        if ($session->hasProvider()) {
+            $providerIdCsv = $session->getProviders();
+            $result = $providerList->hasProvider($providerIdCsv);
+        } elseif ($session->hasScope()) {
+            $scope = (new \BO\Zmsdb\Scope())->readEntity($session->getScope(), 1);
+            $result = $providerList->hasProvider($scope->getProviderId());
+        }
+        return $result;
     }
 
     public static function isProviderExisting($session)
     {
-        $providerIdCsv = $session->getProviders();
-        $providerList = (new Provider())->readList('dldb');
-        return $providerList->hasProvider($providerIdCsv);
+        $result = true;
+        if ($session->hasProvider()) {
+            $providerIdCsv = $session->getProviders();
+            $providerList = (new Provider())->readList('dldb');
+            $result = $providerList->hasProvider($providerIdCsv);
+        }
+        return $result;
     }
 
     public static function isRequestExisting($session)
     {
-        $requestIdCsv = $session->getRequests();
-        $providerList = (new Provider())->readListByRequest('dldb', $requestIdCsv, 1);
-        return (count($providerList)) ? true : false;
+        $result = true;
+        if ($session->hasRequests()) {
+            $requestIdCsv = $session->getRequests();
+            $providerList = (new Provider())->readListByRequest('dldb', $requestIdCsv, 1);
+            $result = (count($providerList)) ? true : false;
+        }
+        return $result;
     }
 }

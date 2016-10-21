@@ -25,11 +25,11 @@ class SessionUpdate extends BaseController
         $session->testValid();
         $message->data = null;
 
-        if ($session->getProviders() && false === Helper\Matching::isProviderExisting($session)) {
+        if (false === Helper\Matching::isProviderExisting($session)) {
             throw new Exception\Matching\ProviderNotFound();
-        } elseif ($session->getRequests() && false === Helper\Matching::isRequestExisting($session)) {
+        } elseif (false === Helper\Matching::isRequestExisting($session)) {
             throw new Exception\Matching\RequestNotFound();
-        } elseif ($session->getProviders() && false === Helper\Matching::hasProviderRequest($session)) {
+        } elseif (false === Helper\Matching::hasProviderRequest($session)) {
             throw new Exception\Matching\MatchingNotFound();
         } elseif (!$session->hasStatus()) {
             throw new Exception\Session\InvalidSession('Es konnte keine Session ermittelt werden');
