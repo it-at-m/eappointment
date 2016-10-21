@@ -23,6 +23,13 @@ class DayOff extends Base implements MappingInterface
         return $this;
     }
 
+    public function addConditionCommon()
+    {
+        $this->query
+            ->where('dayOff.BehoerdenID', '=', 0);
+        return $this;
+    }
+
     public function addConditionScopeId($scopeId)
     {
         $this->query->leftJoin(
@@ -33,7 +40,7 @@ class DayOff extends Base implements MappingInterface
         );
         $this->query
             ->where('scope_dayoff.StandortID', '=', $scopeId)
-            ->orWhere('dayOff.BehoerdenID', '=', 0);
+            ;
         return $this;
     }
 
@@ -41,7 +48,7 @@ class DayOff extends Base implements MappingInterface
     {
         $this->query
             ->where('dayOff.BehoerdenID', '=', $departmentId)
-            ->orWhere('dayOff.BehoerdenID', '=', 0);
+            ;
         return $this;
     }
 

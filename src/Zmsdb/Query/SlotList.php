@@ -313,7 +313,8 @@ class SlotList
             if ($this->availability->hasDate($time)) {
                 $this->slots[$date] = clone $slotlist;
             }
-            $time = $time->modify('+1day');
+            //$time = $time->modify('+1day');
+            $time = $time->setTimestamp($time->getTimestamp() + 86400);
         } while ($time->getTimestamp() <= $stopDate->getTimestamp());
     }
 
@@ -352,9 +353,9 @@ class SlotList
 
     public function postProcess($data)
     {
-        $data["appointment__date"] = (new \DateTime($data["appointment__date"]))->getTimestamp();
-        $data["availability__startDate"] = (new \DateTime($data["availability__startDate"]))->getTimestamp();
-        $data["availability__endDate"] = (new \DateTime($data["availability__endDate"]))->getTimestamp();
+        $data["appointment__date"] = strtotime($data["appointment__date"]);
+        $data["availability__startDate"] = strtotime($data["availability__startDate"]);
+        $data["availability__endDate"] = strtotime($data["availability__endDate"]);
         return $data;
     }
 }
