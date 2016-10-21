@@ -313,8 +313,7 @@ class SlotList
             if ($this->availability->hasDate($time)) {
                 $this->slots[$date] = clone $slotlist;
             }
-            //$time = $time->modify('+1day');
-            $time = $time->setTimestamp($time->getTimestamp() + 86400);
+            $time = $time->modify('+1day');
         } while ($time->getTimestamp() <= $stopDate->getTimestamp());
     }
 
