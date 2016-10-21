@@ -74,4 +74,12 @@ class Slot extends Schema\Entity
             . "{$this->getTimeString()}"
             . " p/c/i={$this->public}/{$this->callcenter}/{$this->intern}";
     }
+
+    /**
+     * Keep empty, no sub-instances
+     * ATTENTION: Keep highly optimized, time critical function
+     */
+    public function __clone()
+    {
+    }
 }

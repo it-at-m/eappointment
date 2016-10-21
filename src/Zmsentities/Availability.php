@@ -22,6 +22,18 @@ class Availability extends Schema\Entity
     ];
 
     /**
+     * Performance costs for modifying time are high, cache the calculated value
+     * @var \DateTimeImmutable $startTime
+     */
+    protected $startTime;
+
+    /**
+     * Performance costs for modifying time are high, cache the calculated value
+     * @var \DateTimeImmutable $endTime
+     */
+    protected $endTime;
+
+    /**
      * Set Default values
      */
     public function getDefaults()
@@ -54,6 +66,7 @@ class Availability extends Schema\Entity
 
     /**
      * Check, if the dateTime contains a day and time given by the settings
+     * ATTENTION: Time critical function, keep highly optimized
      *
      * @param \DateTimeInterface $dateTime
      *
@@ -63,20 +76,19 @@ class Availability extends Schema\Entity
     {
         //$debugAvailabilityId = 0;
         $dateTime = Helper\DateTime::create($dateTime);
-        $weekDayName = self::$weekdayNameList[$dateTime->format('w')];
-        $start = $this->getStartDateTime()->modify('0:00');
-        $end = $this->getEndDateTime();
-        // Synchronize timezones, cause DB entries do not have timezones
-        $start->setTimezone($dateTime->getTimezone());
-        $end->setTimezone($dateTime->getTimezone());
 
         //if ($this->id == $debugAvailabilityId) {
         //    error_log("true == hasDate(".$dateTime->format('c').") ".$this);
         //}
+
+        // First check weekday, greatest difference on an easy check
+        $weekDayName = self::$weekdayNameList[$dateTime->format('w')];
         if (!$this['weekday'][$weekDayName]) {
             // Wrong weekday
             return false;
         }
+        $start = $this->getStartDateTime()->modify('0:00');
+        $end = $this->getEndDateTime();
         if ($dateTime->getTimestamp() < $start->getTimestamp() || $dateTime->getTimestamp() > $end->getTimestamp()) {
             // Out of date range
             return false;
@@ -85,7 +97,7 @@ class Availability extends Schema\Entity
             // series settings for the week do not match
             return false;
         }
-        if ($this->hasDayOff($dateTime) && $this->getDuration() > 2) {
+        if ($this->getDuration() > 2 && $this->hasDayOff($dateTime)) {
             return false;
         }
         return true;
@@ -146,10 +158,12 @@ class Availability extends Schema\Entity
      */
     public function getStartDateTime()
     {
-        $time = Helper\DateTime::create()
-            ->setTimestamp($this['startDate'])
-            ->modify('today ' .  $this['startTime']);
-        return $time;
+        if (!$this->startTime) {
+            $this->startTime = Helper\DateTime::create()
+                ->setTimestamp($this['startDate'])
+                ->modify('today ' .  $this['startTime']);
+        }
+        return $this->startTime;
     }
 
     /**
@@ -159,10 +173,12 @@ class Availability extends Schema\Entity
      */
     public function getEndDateTime()
     {
-        $time = Helper\DateTime::create()
-            ->setTimestamp($this['endDate'])
-            ->modify('today ' .  $this['endTime']);
-        return $time;
+        if (!$this->endTime) {
+            $this->endTime = Helper\DateTime::create()
+                ->setTimestamp($this['endDate'])
+                ->modify('today ' .  $this['endTime']);
+        }
+        return $this->endTime;
     }
 
     /**
@@ -255,9 +271,10 @@ class Availability extends Schema\Entity
         $startTime = Helper\DateTime::create($this['startTime']);
         $stopTime = Helper\DateTime::create($this['endTime']);
         $slotList = new Collection\SlotList();
+        $slotInstance = new Slot($this['workstationCount']);
         if ($this['slotTimeInMinutes'] > 0) {
             do {
-                $slot = new Slot($this['workstationCount']);
+                $slot = clone $slotInstance;
                 $slot->setTime($startTime);
                 $slotList[] = $slot;
                 $startTime = $startTime->modify('+' . $this['slotTimeInMinutes'] . 'minute');
@@ -318,5 +335,12 @@ class Availability extends Schema\Entity
         $info .= "c{$this['workstationCount']['callcenter']}/";
         $info .= "i{$this['workstationCount']['intern']}";
         return $info;
+    }
+
+    public function offsetSet($index, $value)
+    {
+        $this->startTime = null;
+        $this->endTime = null;
+        return parent::offsetSet($index, $value);
     }
 }

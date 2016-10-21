@@ -14,8 +14,8 @@ class SlotList extends Base
      */
     public function takeLowerSlotValue($indexA, $indexB)
     {
-        $slotA = $this->getSlot($indexA);
-        $slotB = $this->getSlot($indexB);
+        $slotA = $this[$indexA];
+        $slotB = $this[$indexB];
         if (null !== $slotA && null !== $slotB) {
             foreach (['public', 'intern', 'callcenter'] as $type) {
                 $slotA[$type] = $slotA[$type] < $slotB[$type] ? $slotA[$type] : $slotB[$type];
@@ -48,7 +48,7 @@ class SlotList extends Base
 
     public function getSummerizedSlot($slot = null)
     {
-        $sum = (! $slot) ? new Slot() : new Slot($slot);
+        $sum = ($slot instanceof Slot) ? $slot : new Slot();
         $sum->type = Slot::SUM;
         foreach ($this as $slot) {
             $sum['public'] += $slot['public'];
