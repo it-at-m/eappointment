@@ -52,16 +52,21 @@ class UserAccountTest extends Base
     public function testDelete()
     {
         $query = new Query();
-        $input = $this->getTestEntity();
-        $deleteTest = $query->deleteEntity($input->id);
-        $this->assertTrue($deleteTest, "Failed to delete User from Database.");
+        $entity = $this->getTestEntity();
+        $userAccount = $query->writeEntity($entity);
+        $query->deleteEntity($userAccount->id);
+        $entity = $query->readEntity($userAccount->id, 1);
+        $this->assertFalse(isset($entity->id), "Failed to delete User from Database.");
     }
 
     public function testDublicate()
     {
         $query = new Query();
         $input = $this->getTestEntity();
-        $this->assertFalse($query->readIsUserExisting($input->id), "Dublicate UserAccount Entry found in DB.");
+        $userAccount = $query->writeEntity($input);
+        $userAccount = $query->writeEntity($input);
+        $query->deleteEntity($userAccount->id);
+        $this->assertFalse($query->readIsUserExisting($userAccount->id), "Dublicate UserAccount Entry found in DB.");
     }
 
     protected function getTestEntity()
