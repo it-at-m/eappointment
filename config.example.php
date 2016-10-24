@@ -17,7 +17,7 @@ if (getenv('MYSQL_PORT')) {
     $dsn .= parse_url(getenv('MYSQL_PORT'), PHP_URL_PORT);
     define('DSN_RW', $dsn);
 } else {
-    define('DSN_RW', 'mysql:dbname=zmsbo;host=127.0.0.1');
+    define('DSN_RW', 'mysql:dbname=' . MYSQL_DATABASE . ';host=127.0.0.1');
 }
 // MYSQL_PORT_RO for readonly access of type "tcp://127.0.0.1:3306"
 if (getenv('MYSQL_PORT_RO')) {

@@ -9,6 +9,18 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
 {
     protected $namespace = '\\BO\\Zmsapi\\';
 
+    public function setUp()
+    {
+        \BO\Zmsdb\Connection\Select::setTransaction();
+    }
+
+    public function tearDown()
+    {
+        \BO\Zmsdb\Connection\Select::writeRollback();
+        \BO\Zmsdb\Connection\Select::closeWriteConnection();
+        \BO\Zmsdb\Connection\Select::closeReadConnection();
+    }
+
     public function readFixture($filename)
     {
         $path = dirname(__FILE__) . '/fixtures/' . $filename;
