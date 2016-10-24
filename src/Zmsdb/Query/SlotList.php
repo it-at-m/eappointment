@@ -75,7 +75,7 @@ class SlotList
             AND o.OeffnungszeitID IS NOT NULL
 
             -- ignore slots out of date range
-            AND (b.Datum IS NULL OR b.Datum BETWEEN :start_process AND :end_process)
+            AND (b.Datum BETWEEN :start_process AND :end_process)
 
             -- ignore availability out of date range
             AND o.Endedatum >= :start_availability
@@ -116,6 +116,7 @@ class SlotList
             AND b.Uhrzeit < o.Terminendzeit
             AND b.Datum >= o.Startdatum
             AND b.Datum <= o.Endedatum
+            AND UNIX_TIMESTAMP(:currentTime) + 1800 <= UNIX_TIMESTAMP(CONCAT(b.Datum, " ", b.Uhrzeit))
 
             -- match day off
             AND b.Datum NOT IN (SELECT Datum FROM feiertage f WHERE f.BehoerdenID = s.BehoerdenID OR f.BehoerdenID = 0)
@@ -159,6 +160,7 @@ class SlotList
         array $slotData = ['availability__id' => null],
         \DateTimeImmutable $start = null,
         \DateTimeImmutable $stop = null,
+        \DateTimeInterface $now = null,
         \BO\Zmsentities\Availability $availability = null,
         \BO\Zmsentities\Scope $scope = null
     ) {
@@ -167,7 +169,7 @@ class SlotList
         $this->scope = $scope;
         $this->setSlotData($slotData);
         if ($this->availability && isset($this->availability['id'])) {
-            $this->createSlots($start, $stop);
+            $this->createSlots($start, $stop, $now);
             $this->addQueryData($slotData);
         }
     }
@@ -188,7 +190,8 @@ class SlotList
             'start_availability' => $monthDateTime->format('Y-m-1'),
             'end_availability' => $monthDateTime->format('Y-m-t'),
             'nowStart' => $now->format('Y-m-d'),
-            'nowEnd' => $now->format('Y-m-d')
+            'nowEnd' => $now->format('Y-m-d'),
+            'currentTime' => $now->format('Y-m-d H:i:s')
         ];
         return $parameters;
     }
@@ -304,14 +307,18 @@ class SlotList
     /**
      * Create slots based on availability
      */
-    public function createSlots(\DateTimeInterface $startDate, \DateTimeInterface $stopDate)
+    public function createSlots(\DateTimeInterface $startDate, \DateTimeInterface $stopDate, \DateTimeInterface $now)
     {
         $time = DateTime::create($startDate);
         $slotlist = $this->availability->getSlotList();
+        $nowDate = $now->modify('00:00:00');
         do {
             $date = $time->format('Y-m-d');
             if ($this->availability->hasDate($time)) {
                 $this->slots[$date] = clone $slotlist;
+                if ($nowDate == $time) {
+                    $this->slots[$date] = $this->slots[$date]->withTimeGreaterThan($now);
+                }
             }
             $time = $time->modify('+1day');
         } while ($time->getTimestamp() <= $stopDate->getTimestamp());
