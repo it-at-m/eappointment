@@ -30,7 +30,7 @@ class SlotListTest extends Base
         $this->setExpectedException('\BO\Zmsdb\Exception\SlotDataDublicateEntryFound');
         $slotData = $this->getTestSlotData();
         $dateTime = \DateTimeImmutable::createFromFormat('Y-m-d', '2016-04-05');
-        $slotList = new SlotList($this->getTestSlotData(), $dateTime, $dateTime->modify('+1day'), null, null, $now);
+        $slotList = new SlotList($this->getTestSlotData(), $dateTime, $dateTime->modify('+1day'), $now);
         $slotList->setSlotData($this->getTestSlotList());
         $slotList->addQueryData($slotData);
     }

@@ -27,7 +27,9 @@ class UserAccount extends Base
             ->addResolvedReferences($resolveReferences)
             ->addConditionLoginName($loginname);
         $userAccount = $this->fetchOne($query, new Entity());
-        $userAccount->departments = $this->readAssignedDepartmentList($userAccount, $resolveReferences);
+        if ($userAccount->toProperty()->id->get()) {
+            $userAccount->departments = $this->readAssignedDepartmentList($userAccount, $resolveReferences);
+        }
         return $userAccount;
     }
 
