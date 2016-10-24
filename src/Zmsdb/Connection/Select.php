@@ -71,6 +71,12 @@ class Select
     protected static $writeProfiler = null;
 
     /**
+     * @var Bool $useTransaction
+     *
+     */
+    protected static $useTransaction = false;
+
+    /**
      * Create a PDO compatible object
      *
      * @param  String $dataSourceName compatible with PDO
@@ -154,6 +160,11 @@ class Select
             self::$writeProfiler = new \Aura\Sql\Profiler();
             self::$writeProfiler->setActive(self::$enableProfiling);
             self::$writeConnection->setProfiler(self::$writeProfiler);
+            if (self::$useTransaction) {
+                self::$writeConnection->beginTransaction();
+            }
+            // On writing, use the same host to avoid racing/transcation conditions
+            self::$readConnection = self::$writeConnection;
         }
         return self::$writeConnection;
     }
@@ -165,5 +176,40 @@ class Select
     public static function closeWriteConnection()
     {
         self::$writeConnection = null;
+    }
+
+    /**
+     * Set transaction
+     *
+     * @param Bool $useTransaction
+     *
+     */
+    public static function setTransaction($useTransaction = true)
+    {
+        static::$useTransaction = $useTransaction;
+    }
+
+    /**
+     * Rollback transaction if started
+     *
+     */
+    public static function writeRollback()
+    {
+        if (self::$useTransaction && self::getWriteConnection()->inTransaction()) {
+            return self::getWriteConnection()->rollBack();
+        }
+        return null;
+    }
+
+    /**
+     * Commit transaction if started
+     *
+     */
+    public static function writeCommit()
+    {
+        if (self::$useTransaction && self::getWriteConnection()->inTransaction()) {
+            return self::getWriteConnection()->commit();
+        }
+        return null;
     }
 }

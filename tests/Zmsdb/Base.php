@@ -4,11 +4,16 @@ namespace BO\Zmsdb\Tests;
 
 abstract class Base extends \PHPUnit_Framework_TestCase
 {
+    public function setUp()
+    {
+        \BO\Zmsdb\Connection\Select::setTransaction();
+    }
+
     public function tearDown()
     {
+        \BO\Zmsdb\Connection\Select::writeRollback();
         \BO\Zmsdb\Connection\Select::closeWriteConnection();
         \BO\Zmsdb\Connection\Select::closeReadConnection();
-        \Mockery::close();
     }
 
     public function assertEntity($entityClass, $entity)
