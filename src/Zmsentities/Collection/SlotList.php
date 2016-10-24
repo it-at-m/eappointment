@@ -61,6 +61,24 @@ class SlotList extends Base
         return $sum;
     }
 
+    /*
+     * reduce slotlist from slots smaller than reference time (today) + 1800 seconds
+     */
+    public function withTimeGreaterThan(\DateTimeInterface $dateTime)
+    {
+        $slotList = new self();
+        $referenceTime = $dateTime->getTimestamp() + 1800;
+        foreach ($this as $slot) {
+            $slotTime = \BO\Zmsentities\Helper\DateTime::create(
+                $dateTime->format('Y-m-d') .' '. $slot->time
+            )->getTimeStamp();
+            if ($referenceTime < $slotTime) {
+                $slotList->addEntity($slot);
+            }
+        }
+        return $slotList;
+    }
+
     public function getFreeProcesses(
         $selectedDate,
         \BO\Zmsentities\Scope $scope,
