@@ -51,7 +51,6 @@ class Session extends Base
 
     public function deleteByTimeInterval($sessionName, $deleteInSeconds)
     {
-        $deleteQuery = new Query\Session(Query\Base::DELETE);
         $selectQuery = new Query\Session(Query\Base::SELECT);
         $selectQuery
             ->addEntityMapping()
@@ -61,6 +60,7 @@ class Session extends Base
         while ($sessionData = $statement->fetch(\PDO::FETCH_ASSOC)) {
             $entity = new Entity($sessionData);
             if ($entity instanceof Entity) {
+                $deleteQuery = new Query\Session(Query\Base::DELETE);
                 $deleteQuery
                     ->addConditionSessionName($sessionName)
                     ->addConditionSessionId($entity->id);
