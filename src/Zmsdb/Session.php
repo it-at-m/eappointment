@@ -48,4 +48,24 @@ class Session extends Base
         );
         return ($result) ? true : false;
     }
+
+    public function deleteByTimeInterval($sessionName, $deleteInSeconds)
+    {
+        $deleteQuery = new Query\Session(Query\Base::DELETE);
+        $selectQuery = new Query\Session(Query\Base::SELECT);
+        $selectQuery
+            ->addEntityMapping()
+            ->addConditionSessionName($sessionName)
+            ->addConditionSessionDeleteInterval($deleteInSeconds);
+        $statement = $this->fetchStatement($selectQuery);
+        while ($sessionData = $statement->fetch(\PDO::FETCH_ASSOC)) {
+            $entity = new Entity($sessionData);
+            if ($entity instanceof Entity) {
+                $deleteQuery
+                    ->addConditionSessionName($sessionName)
+                    ->addConditionSessionId($entity->id);
+                $this->deleteItem($deleteQuery);
+            }
+        }
+    }
 }
