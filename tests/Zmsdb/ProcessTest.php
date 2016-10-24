@@ -66,11 +66,7 @@ class ProcessTest extends Base
         $calendar->addFirstAndLastDay($now->getTimestamp(), 'Europe/Berlin');
 
         $processList = $query->readFreeProcesses($calendar, $now);
-        $firstProcess = $processList->getFirstProcess();
-        $this->assertTrue(
-            $firstProcess->hasAppointment($now->format('U'), $firstProcess->getScopeId()),
-            "Missing Appointment Date (". $calendar->getFirstDay()->format('Y-m-d') .") in first free Process"
-        );
+        $this->assertTrue(0 < count($processList));
     }
 
     public function testStatusReserved()

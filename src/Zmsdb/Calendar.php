@@ -127,6 +127,7 @@ class Calendar extends Base
                         $monthDateTime,
                         $slotsRequired,
                         $freeProcessesDate,
+                        $now,
                         $scope,
                         $slotType
                     );
@@ -139,6 +140,7 @@ class Calendar extends Base
                     $monthDateTime,
                     $slotsRequired,
                     $freeProcessesDate,
+                    $now,
                     $scope,
                     $slotType
                 );
@@ -157,6 +159,7 @@ class Calendar extends Base
         \DateTimeImmutable $monthDateTime,
         $slotsRequired,
         $freeProcessesDate,
+        $now,
         \BO\Zmsentities\Scope $scope = null,
         $slotType = 'public'
     ) {
@@ -168,6 +171,7 @@ class Calendar extends Base
                     $slotData,
                     $monthDateTime->modify('first day of')->modify('00:00:00'),
                     $monthDateTime->modify('last day of')->modify('23:59:59'),
+                    $now,
                     null,
                     $scope
                 );
