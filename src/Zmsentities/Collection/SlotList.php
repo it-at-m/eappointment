@@ -66,14 +66,14 @@ class SlotList extends Base
      */
     public function withTimeGreaterThan(\DateTimeInterface $dateTime)
     {
-        $slotList = new self();
+        $slotList = clone $this;
         $referenceTime = $dateTime->getTimestamp() + 1800;
-        foreach ($this as $slot) {
+        foreach ($this as $index => $slot) {
             $slotTime = \BO\Zmsentities\Helper\DateTime::create(
                 $dateTime->format('Y-m-d') .' '. $slot->time
             )->getTimeStamp();
-            if ($referenceTime < $slotTime) {
-                $slotList->addEntity($slot);
+            if ($referenceTime > $slotTime) {
+                $slotList->setEmptySlotValues($index);
             }
         }
         return $slotList;
