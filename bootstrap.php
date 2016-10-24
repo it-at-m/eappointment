@@ -23,6 +23,8 @@ require(APP_PATH . '/config.php');
     \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
 ];
 
+\App::$slim->add(new \BO\Zmsapi\Helper\TransactionMiddleware());
+
 // DLDB data loader
 \BO\Zmsdb\Helper\DldbData::$dataPath = \App::APP_PATH . \App::$data;
 
