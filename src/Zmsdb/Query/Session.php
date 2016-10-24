@@ -46,4 +46,16 @@ class Session extends Base
         $this->query->where('session.sessionname', '=', $sessionName);
         return $this;
     }
+
+    public function addConditionSessionDeleteInterval($deleteInSeconds)
+    {
+        $this->query->where(
+            self::expression(
+                'UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(`session`.`ts`)'
+            ),
+            '>=',
+            $deleteInSeconds
+        );
+        return $this;
+    }
 }
