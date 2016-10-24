@@ -3,3 +3,4 @@ DIR=$(dirname ${BASH_SOURCE[0]})
 BIN=$DIR/../vendor/bin
 EXPORT=$DIR/../data/
 
+$BIN/deleteSessionData Zmsappointment 30 --commit
