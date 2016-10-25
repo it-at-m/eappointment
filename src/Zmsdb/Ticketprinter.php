@@ -8,40 +8,33 @@ use \BO\Zmsentities\Collection\TicketprinterList as Collection;
 class Ticketprinter extends Base
 {
     /**
-    * read entity
-    *
-    * @param
-    * itemId
-    * resolveReferences
-    *
-    * @return Resource Entity
-    */
-    public function readEntity($itemId, $resolveReferences = 0)
+     * read entity
+     *
+     * @param
+     * itemId
+     *
+     * @return Resource Entity
+     */
+    public function readEntity($itemId)
     {
         $query = new Query\Ticketprinter(Query\Base::SELECT);
         $query
             ->addEntityMapping()
-            ->addResolvedReferences($resolveReferences)
             ->addConditionTicketprinterId($itemId);
         $ticketprinter = $this->fetchOne($query, new Entity());
         return $ticketprinter;
     }
 
-     /**
-     * read list of owners
-     *
-     * @param
-     * resolveReferences
+    /**
+     * read list of ticketprinters
      *
      * @return Resource Collection
      */
-    public function readList($resolveReferences = 0)
+    public function readList()
     {
         $ticketprinterList = new Collection();
         $query = new Query\Ticketprinter(Query\Base::SELECT);
-        $query
-            ->addEntityMapping()
-            ->addResolvedReferences($resolveReferences - 1);
+        $query->addEntityMapping();
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
             foreach ($result as $ticketprinter) {
@@ -54,20 +47,64 @@ class Ticketprinter extends Base
     }
 
     /**
-     * write a ticketprinter
+     * read Ticketprinter by Hash
      *
      * @param
-     * entity
+     * hash
+     *
+     * @return Resource Entity
+     */
+    public function readByHash($hash)
+    {
+        $query = new Query\Ticketprinter(Query\Base::SELECT);
+        $query
+            ->addEntityMapping()
+            ->addConditionHash($hash);
+        $ticketprinter = $this->fetchOne($query, new Entity());
+        //\App::$log->error('ticketprinter by hash: ', [$ticketprinter]);
+        return $ticketprinter;
+    }
+
+    /**
+     * write a cookie for ticketprinter
+     *
+     * @param
+     * organisationId
      *
      * @return Entity
      */
-    public function writeEntity(Entity $entity, $parentId)
+    public function writeCookie($organisationId)
     {
         $query = new Query\Ticketprinter(Query\Base::INSERT);
-        $values = $query->reverseEntityMapping($entity, $parentId);
+        $ticketprinter = new Entity();
+        $hash = $ticketprinter->getHashWith($organisationId);
+        $ticketprinter->hash = $hash;
+
+        $organisation = (new Organisation())->readEntity($organisationId);
+        $ticketprinter->enabled = (! $organisation->getPreference('ticketPrinterProtectionEnabled'));
+
+        $values = $query->reverseEntityMapping($ticketprinter, $organisationId);
+        $query->addValues($values);
+        $this->writeItem($query);
+        return $ticketprinter;
+    }
+
+    /**
+     * write a ticketprinter
+     *
+     * @param
+     * entity,
+     * organisationId
+     *
+     * @return Entity
+     */
+    public function writeEntity(Entity $entity, $organisationId)
+    {
+        $query = new Query\Ticketprinter(Query\Base::INSERT);
+        $values = $query->reverseEntityMapping($entity, $organisationId);
 
         //get owner by organisation
-        $owner = (new Owner())->readByOrganisationId($parentId);
+        $owner = (new Owner())->readByOrganisationId($organisationId);
         $values['kundenid'] = $owner->id;
 
         $query->addValues($values);
@@ -77,20 +114,19 @@ class Ticketprinter extends Base
     }
 
     /**
-     * read list of owners by organisation
+     * read list of ticketprinter by organisation
      *
      * @param
-     * resolveReferences
+     * organisationId
      *
      * @return Resource Collection
      */
-    public function readByOrganisationId($organisationId, $resolveReferences = 0)
+    public function readByOrganisationId($organisationId)
     {
         $ticketprinterList = new Collection();
         $query = new Query\Ticketprinter(Query\Base::SELECT);
         $query
             ->addEntityMapping()
-            ->addResolvedReferences($resolveReferences - 1)
             ->addConditionOrganisationId($organisationId);
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
@@ -104,7 +140,7 @@ class Ticketprinter extends Base
     }
 
      /**
-     * remove an owner
+     * remove an ticketprinter
      *
      * @param
      * itemId
