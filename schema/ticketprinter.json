@@ -37,9 +37,9 @@
                 "type": "object",
                 "properties": {
                     "name": {
-                        "type": "string"
-                    },
-                    "description": "Name of the Button, shown value",
+                        "type": "string",
+                        "description": "Name of the Button, shown value"
+                    },                    
                     "type": {
                         "type": "string",
 			            "enum": [
@@ -58,11 +58,12 @@
                         "description": "url to scope, cluster or external target"
                     }
                 }
-            }
+            },
+            "description": "List of buttons"
     	},
     	"buttonlist" : {
     		"type" : "string",
-    		"definition" : "comma separated list of scope and cluster ids or links (s = scope, c = cluster, l = link), max of 6 buttons"
+    		"description" : "comma separated list of scope, cluster, links (s = scope, c = cluster, l = link), max of 6 buttons"
     	},
         "enabled": {
             "type": ["boolean", "number"],
