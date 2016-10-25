@@ -410,6 +410,45 @@ use \Psr\Http\Message\ResponseInterface;
     '\BO\Zmsapi\ClusterQueue')
     ->setName("ClusterQueue");
 
+    /**
+     *  @swagger
+     *  "/cluster/{id}/waitingnumber/{hash}/":
+     *      get:
+     *          description: Get a waitingNumber according to scope preferences
+     *          parameters:
+     *              -   name: id
+     *                  description: cluster number
+     *                  required: true
+     *                  in: path
+     *                  type: integer
+     *              -   name: hash
+     *                  description: valid ticketprinter hash
+     *                  required: true
+     *                  in: path
+     *                  type: string
+     *              -   name: resolveReferences
+     *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+     *                  in: query
+     *                  type: integer
+     *          responses:
+     *              200:
+     *                  description: "success"
+     *                  schema:
+     *                      type: object
+     *                      properties:
+     *                          meta:
+     *                              $ref: "schema/metaresult.json"
+     *                          data:
+     *                              $ref: "schema/process.json"
+     *              403:
+     *                  description: "hash is not valid"
+     *              404:
+     *                  description: "cluster id does not exists"
+     */
+    \App::$slim->get('/cluster/{id:\d{1,11}}/waitingnumber/{hash}/',
+        '\BO\Zmsapi\TicketprinterWaitingnumberByCluster')
+        ->setName("TicketprinterWaitingnumberByCluster:");
+
 /**
  *  @swagger
  *  "/config/":
@@ -1172,10 +1211,6 @@ use \Psr\Http\Message\ResponseInterface;
  *                  description: organisation number
  *                  in: path
  *                  required: true
- *                  type: integer
- *              -   name: resolveReferences
- *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
- *                  in: query
  *                  type: integer
  *          responses:
  *              200:
@@ -2133,6 +2168,45 @@ use \Psr\Http\Message\ResponseInterface;
     ->setName("ScopeDelete");
 
 /**
+ *  @swagger
+ *  "/scope/{id}/waitingnumber/{hash}/":
+ *      get:
+ *          description: Get a waitingNumber according to scope preferences
+ *          parameters:
+ *              -   name: id
+ *                  description: scope number
+ *                  required: true
+ *                  in: path
+ *                  type: integer
+ *              -   name: hash
+ *                  description: valid ticketprinter hash
+ *                  required: true
+ *                  in: path
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/process.json"
+ *              403:
+ *                  description: "hash is not valid"
+ *              404:
+ *                  description: "scope id does not exists"
+ */
+\App::$slim->get('/scope/{id:\d{1,11}}/waitingnumber/{hash}/',
+    '\BO\Zmsapi\TicketprinterWaitingnumberByScope')
+    ->setName("TicketprinterWaitingnumberByScope");
+
+/**
 *  @swagger
 *  "/session/{name}/{id}/":
 *      get:
@@ -2262,46 +2336,6 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/status/',
     '\BO\Zmsapi\StatusGet')
     ->setName("StatusGet");
-
-/**
- *  @swagger
- *  "/ticketprinter/{id}/waitingnumber/":
- *      get:
- *          description: Get a waitingNumber according to scope preferences
- *          parameters:
- *              -   name: id
- *                  description: scope number
- *                  in: path
- *                  required: true
- *                  type: integer
- *              -   name: ticketprinter
- *                  description: ticketprinter data, a valid hash is required
- *                  in: body
- *                  required: true
- *                  schema:
- *                      $ref: "schema/ticketprinter.json"
- *              -   name: resolveReferences
- *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
- *                  in: query
- *                  type: integer
- *          responses:
- *              200:
- *                  description: "success"
- *                  schema:
- *                      type: object
- *                      properties:
- *                          meta:
- *                              $ref: "schema/metaresult.json"
- *                          data:
- *                              $ref: "schema/process.json"
- *              403:
- *                  description: "hash is not valid"
- *              404:
- *                  description: "ticketprinter id does not exists"
- */
-\App::$slim->get('/ticketprinter/{id:\d{1,11}}/waitingnumber/',
-    '\BO\Zmsapi\TicketprinterWaitingnumber')
-    ->setName("TicketprinterWaitingnumber:");
 
 /**
  *  @swagger

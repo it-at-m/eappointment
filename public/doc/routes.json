@@ -479,6 +479,55 @@
 			}
 		}
 	},
+	"/cluster/{id}/waitingnumber/{hash}/": {
+		"get": {
+			"description": "Get a waitingNumber according to scope preferences",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "cluster number",
+					"required": true,
+					"in": "path",
+					"type": "integer"
+				},
+				{
+					"name": "hash",
+					"description": "valid ticketprinter hash",
+					"required": true,
+					"in": "path",
+					"type": "string"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/process.json"
+							}
+						}
+					}
+				},
+				"403": {
+					"description": "hash is not valid"
+				},
+				"404": {
+					"description": "cluster id does not exists"
+				}
+			}
+		}
+	},
 	"/config/": {
 		"get": {
 			"description": "Get config",
@@ -1380,12 +1429,6 @@
 					"description": "organisation number",
 					"in": "path",
 					"required": true,
-					"type": "integer"
-				},
-				{
-					"name": "resolveReferences",
-					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
-					"in": "query",
 					"type": "integer"
 				}
 			],
@@ -2576,6 +2619,55 @@
 			}
 		}
 	},
+	"/scope/{id}/waitingnumber/{hash}/": {
+		"get": {
+			"description": "Get a waitingNumber according to scope preferences",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "scope number",
+					"required": true,
+					"in": "path",
+					"type": "integer"
+				},
+				{
+					"name": "hash",
+					"description": "valid ticketprinter hash",
+					"required": true,
+					"in": "path",
+					"type": "string"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/process.json"
+							}
+						}
+					}
+				},
+				"403": {
+					"description": "hash is not valid"
+				},
+				"404": {
+					"description": "scope id does not exists"
+				}
+			}
+		}
+	},
 	"/session/{name}/{id}/": {
 		"get": {
 			"description": "Get current Session",
@@ -2731,57 +2823,6 @@
 					"schema": {
 						"$ref": "schema/status.json"
 					}
-				}
-			}
-		}
-	},
-	"/ticketprinter/{id}/waitingnumber/": {
-		"get": {
-			"description": "Get a waitingNumber according to scope preferences",
-			"parameters": [
-				{
-					"name": "id",
-					"description": "scope number",
-					"in": "path",
-					"required": true,
-					"type": "integer"
-				},
-				{
-					"name": "ticketprinter",
-					"description": "ticketprinter data, a valid hash is required",
-					"in": "body",
-					"required": true,
-					"schema": {
-						"$ref": "schema/ticketprinter.json"
-					}
-				},
-				{
-					"name": "resolveReferences",
-					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
-					"in": "query",
-					"type": "integer"
-				}
-			],
-			"responses": {
-				"200": {
-					"description": "success",
-					"schema": {
-						"type": "object",
-						"properties": {
-							"meta": {
-								"$ref": "schema/metaresult.json"
-							},
-							"data": {
-								"$ref": "schema/process.json"
-							}
-						}
-					}
-				},
-				"403": {
-					"description": "hash is not valid"
-				},
-				"404": {
-					"description": "ticketprinter id does not exists"
 				}
 			}
 		}
