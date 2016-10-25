@@ -2,6 +2,27 @@
     "type": "object",
     "description": "A ticketprinter is a system to print waiting numbers for clients. Usually it has a touch screen and a printing device.",
     "example": {
+    	"buttons" : [
+    		{
+    			"name": "Testbutton Scope",
+    			"type": "scope",
+    			"enabled": true,
+    			"url": "/scope/123/" 
+    		},
+    		{
+    			"name": "Testbutton Cluster",
+    			"type": "cluster",
+    			"enabled": true,
+    			"url": "/cluster/45/" 
+    		},
+    		{
+    			"name": "Testbutton Link",
+    			"type": "link",
+    			"enabled": true,
+    			"url": "http://www.berlin.de/" 
+    		}
+    	],
+    	"buttonlist": "s123,c45,l[http://www.berlin.de/|Portal+Berlin.de]",
         "enabled": true,
         "hash": "e744a234c1",
         "id": 1234,
@@ -10,6 +31,39 @@
     },
     "additionalProperties": false,
     "properties": {
+    	"buttons" : {
+    		"type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "description": "Name of the Button, shown value",
+                    "type": {
+                        "type": "string",
+			            "enum": [
+			                "cluster",
+			                "link",
+			                "scope"
+			            ],
+			            "description": "Type of the button, for complement links"
+                    },
+                    "enabled": {
+                        "type": "boolean",
+                        "description": "To enable or disable button usage"
+                    },
+                    "url": {
+                        "type": "string",
+                        "description": "url to scope, cluster or external target"
+                    }
+                }
+            }
+    	},
+    	"buttonlist" : {
+    		"type" : "string",
+    		"definition" : "comma separated list of scope and cluster ids or links (s = scope, c = cluster, l = link), max of 6 buttons"
+    	},
         "enabled": {
             "type": ["boolean", "number"],
             "description": "true if browser is allowed to hand out waiting numbers to the client"
