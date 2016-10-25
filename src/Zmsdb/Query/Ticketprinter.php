@@ -9,6 +9,8 @@ class Ticketprinter extends Base implements MappingInterface
      */
     const TABLE = 'kiosk';
 
+    const PRIMARY = 'hash';
+
     public function getEntityMapping()
     {
         return [
@@ -16,7 +18,7 @@ class Ticketprinter extends Base implements MappingInterface
             'hash' => 'ticketprinter.cookiecode',
             'id' => 'ticketprinter.kioskid',
             'lastUpdate' => 'ticketprinter.timestamp',
-            'name' => 'ticketprinter.name',
+            'name' => 'ticketprinter.name'
         ];
     }
 
@@ -32,15 +34,19 @@ class Ticketprinter extends Base implements MappingInterface
         return $this;
     }
 
-    public function reverseEntityMapping(\BO\Zmsentities\Ticketprinter $entity, $parentId = null)
+    public function addConditionHash($hash)
+    {
+        $this->query->where('ticketprinter.cookiecode', '=', $hash);
+        return $this;
+    }
+
+    public function reverseEntityMapping(\BO\Zmsentities\Ticketprinter $entity, $organisationId)
     {
         $data = array();
-        if (null !== $parentId) {
-            $data['organisationsid'] = $parentId;
-        }
-        $data['zugelassen'] = ($entity->enabled) ? 1 : 0;
+        $data['organisationsid'] = $organisationId;
+        $data['zugelassen'] = ($entity->toProperty()->enabled->get()) ? 1 : 0;
         $data['cookiecode'] = $entity->hash;
-        $data['name'] = $entity->name;
+        $data['name'] = $entity->toProperty()->name->get();
         $data = array_filter($data, function ($value) {
             return ($value !== null && $value !== false);
         });
