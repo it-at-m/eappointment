@@ -1,11 +1,11 @@
 <?php
 
-namespace BO\Zmsapi\Exception\Session;
+namespace BO\Zmsapi\Exception\Ticketprinter;
 
 /**
  * example class to generate an exception
  */
-class TicketPrinterHashNotValid extends \Exception
+class TicketprinterHashNotValid extends \Exception
 {
     protected $code = 403;
 
