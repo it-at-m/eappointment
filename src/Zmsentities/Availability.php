@@ -310,6 +310,19 @@ class Availability extends Schema\Entity
         return $availability;
     }
 
+    /**
+     * check if availability with type openinghours is opened
+     *
+     * @return self cloned
+     */
+    public function isOpened(\DateTimeInterface $now)
+    {
+        $now = Helper\DateTime::create($now)->format('H:i');
+        $startTime = Helper\DateTime::create($this['startTime'])->format('H:i');
+        $stopTime = Helper\DateTime::create($this['endTime'])->format('H:i');
+        return ($startTime <= $now && $stopTime >= $now);
+    }
+
     public function __toString()
     {
         $info = "Availability #" . $this['id'];
