@@ -2339,6 +2339,46 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/ticketprinter/":
+ *      post:
+ *          description: Update ticketprinter with list of scope, cluster or link buttons
+ *          parameters:
+ *              -   name: ticketprinter
+ *                  description: ticketprinter data for update
+ *                  in: body
+ *                  required: true
+ *                  schema:
+ *                      $ref: "schema/ticketprinter.json"
+ *          responses:
+ *              200:
+ *                  description: get an updated ticketprinter object
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/ticketprinter.json"
+ *              400:
+ *                  description: "Invalid input"
+ *              403:
+ *                  description: "hash is not valid"
+ *              404:
+ *                  description: "Could not find any available ticketprinter"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/ticketprinter.json"
+ */
+\App::$slim->post('/ticketprinter/',
+    '\BO\Zmsapi\Ticketprinter')
+    ->setName("Ticketprinter");
+
+/**
+ *  @swagger
  *  "/useraccount/":
  *      get:
  *          description: Get a list of useraccounts
