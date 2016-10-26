@@ -224,9 +224,9 @@ abstract class Base
      *
      * @return self
      */
-    public function addEntityMapping()
+    public function addEntityMapping($type = null)
     {
-        $entityMapping = $this->getPrefixedList($this->getEntityMapping());
+        $entityMapping = $this->getPrefixedList($this->getEntityMapping($type));
         $this->query->select($entityMapping);
         return $this;
     }

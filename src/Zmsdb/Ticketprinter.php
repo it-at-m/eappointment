@@ -66,6 +66,32 @@ class Ticketprinter extends Base
     }
 
     /**
+     * read Ticketprinter by comma separated buttonlist
+     *
+     * @param
+     * ticketprinter Entity
+     * now DateTime
+     *
+     * @return Resource Entity
+     */
+    public function readByButtonList(Entity $ticketprinter, \DateTimeImmutable $now)
+    {
+        $ticketprinter->toStructuredButtonList();
+        foreach ($ticketprinter->buttons as $key => $button) {
+            if ('scope' == $button['type']) {
+                $query = new Scope();
+                $ticketprinter->buttons[$key]['enabled'] = $query->readIsOpened($button['scope']['id'], $now);
+                $ticketprinter->buttons[$key]['name'] = $query->readEntity($button['scope']['id'])->getName();
+            } elseif ('cluster' == $button['type']) {
+                $scopeList = (new Cluster())->readIsOpenedScopeList($button['cluster']['id'], $now);
+                $ticketprinter->buttons[$key]['enabled'] = (count($scopeList)) ? true : false;
+                $ticketprinter->buttons[$key]['name'] = $scopeList[0]->getName();
+            }
+        }
+        return $ticketprinter;
+    }
+
+    /**
      * write a cookie for ticketprinter
      *
      * @param
