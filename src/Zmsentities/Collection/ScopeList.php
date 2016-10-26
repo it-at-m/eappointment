@@ -13,4 +13,23 @@ class ScopeList extends Base
         }
         return $result;
     }
+
+    public function withUniqueScopes()
+    {
+        $scopeList = new self();
+        foreach ($this as $scope) {
+            if (! $scopeList->hasEntity($scope->id)) {
+                $scopeList->addEntity($scope);
+            }
+        }
+        return $scopeList;
+    }
+
+    public function addScopeList(Collection $scopeList)
+    {
+        foreach ($scopeList as $scope) {
+            $this->addEntity($scope);
+        }
+        return $this;
+    }
 }
