@@ -196,6 +196,23 @@ class SlotList
         return $parameters;
     }
 
+    public static function getParametersDay($scopeId, \DateTimeInterface $dateTime, \DateTimeInterface $now)
+    {
+        $now = DateTime::create($now);
+        $dateTime = DateTime::create($dateTime);
+        //\App::$log->error("FreeProcess", [$dateTime->format('c')]);
+        $parameters = [
+            'scope_id' => $scopeId,
+            'start_process' => $dateTime->format('Y-m-d'),
+            'end_process' => $dateTime->format('Y-m-d'),
+            'start_availability' => $dateTime->format('Y-m-d'),
+            'end_availability' => $dateTime->format('Y-m-d'),
+            'nowStart' => $now->format('Y-m-d'),
+            'nowEnd' => $now->format('Y-m-d')
+        ];
+        return $parameters;
+    }
+
     /**
      * To avoid a db query for availability,
      * we use the scope data to add missing values
@@ -218,14 +235,23 @@ class SlotList
         return $this;
     }
 
+    /**
+     * add data from a mysql result set
+     * @see self::QUERY
+     *
+     */
     public function addQueryData(array $slotData)
     {
         if (isset($slotData['slotnr'])) {
             $slotnumber = $slotData['slotnr'];
             $slotdate = $slotData['slotdate'];
-            $slotList = (! isset($this->slots[$slotdate])) ?
-                new \BO\Zmsentities\Collection\SlotList() :
-                $this->slots[$slotdate];
+            if (!array_key_exists($slotdate, $this->slots)) {
+                $slotDebug = "$slotdate #$slotnumber @" . $slotData['slottime'] . " on " . $this->availability;
+                throw new \BO\Zmsdb\Exception\SlotDataWithoutPreGeneratedSlot(
+                    "Found database entry without a generated date for $slotDebug"
+                );
+            }
+            $slotList = $this->slots[$slotdate];
             $slot = $slotList->getSlot($slotnumber);
             if (null === $slot) {
                 $slotDebug = "$slotdate #$slotnumber @" . $slotData['slottime'] . " on " . $this->availability;
