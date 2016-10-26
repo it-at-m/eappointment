@@ -19,8 +19,9 @@ class Availability extends Base implements MappingInterface
          );
     }
 
-    public function getEntityMapping()
+    public function getEntityMapping($type = 'appointment')
     {
+        $type = (! $type) ? 'appointment' : $type;
         return [
             'id' => 'availability.OeffnungszeitID',
             'scope__id' => 'availability.StandortID',
@@ -32,14 +33,14 @@ class Availability extends Base implements MappingInterface
             ),
             'description' => 'availability.kommentar',
             'startDate' => 'availability.Startdatum',
-            'startTime' => 'availability.Terminanfangszeit',
+            'startTime' => ('appointment' == $type) ? 'availability.Terminanfangszeit' : 'availability.Anfangszeit',
             'endDate' => 'availability.Endedatum',
-            'endTime' => 'availability.Terminendzeit',
+            'endTime' => ('appointment' == $type) ? 'availability.Terminendzeit' : 'availability.Endzeit',
             'multipleSlotsAllowed' => 'availability.erlaubemehrfachslots',
             'repeat__afterWeeks' => 'availability.allexWochen',
             'repeat__weekOfMonth' => 'availability.jedexteWoche',
             'slotTimeInMinutes' => self::expression('FLOOR(TIME_TO_SEC(`availability`.`Timeslot`) / 60)') ,
-            'type' => self::expression('"appointment"') ,
+            'type' => self::expression('"'. $type .'"') ,
             'weekday__monday' => self::expression('`availability`.`Wochentag` & 2'),
             'weekday__tuesday' => self::expression('`availability`.`Wochentag` & 4'),
             'weekday__wednesday' => self::expression('`availability`.`Wochentag` & 8'),
@@ -76,6 +77,10 @@ class Availability extends Base implements MappingInterface
         return $this;
     }
 
+    /*
+     * Todo
+     * Es muss noch nach Typ unterschieden werden appointment und openinghours
+     */
     public function reverseEntityMapping(\BO\Zmsentities\Availability $entity)
     {
         $data = array();

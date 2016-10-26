@@ -309,6 +309,7 @@ class SlotList
      */
     public function createSlots(\DateTimeInterface $startDate, \DateTimeInterface $stopDate, \DateTimeInterface $now)
     {
+        $startDate = ($startDate < $now) ? $now->modify('00:00:00') : $startDate;
         $time = DateTime::create($startDate);
         $slotlist = $this->availability->getSlotList();
         $nowDate = $now->modify('00:00:00');

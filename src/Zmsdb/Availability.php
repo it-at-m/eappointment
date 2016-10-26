@@ -43,6 +43,19 @@ class Availability extends Base
                 }
             }
         }
+        $query = new Query\Availability(Query\Base::SELECT);
+        $query
+            ->addEntityMapping('openinghours')
+            ->addResolvedReferences($resolveReferences)
+            ->addConditionScopeId($scopeId);
+        $result = $this->fetchList($query, new Entity());
+        if (count($result)) {
+            foreach ($result as $entity) {
+                if ($entity instanceof Entity) {
+                    $collection->addEntity($entity);
+                }
+            }
+        }
         return $collection;
     }
 

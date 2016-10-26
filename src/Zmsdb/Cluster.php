@@ -76,6 +76,28 @@ class Cluster extends Base
     }
 
     /**
+     * get a scope and return if it is opened
+     *
+     ** @param
+     *            scopeId
+     *            now
+     *
+     * @return Bool
+     */
+    public function readIsOpenedScopeList($clusterId, $now)
+    {
+        $scopeList = new \BO\Zmsentities\Collection\ScopeList();
+        $cluster = $this->readEntity($clusterId, 1);
+        foreach ($cluster->scopes as $scope) {
+            $availabilityList = (new Availability())->readList($scope['id']);
+            if ($availabilityList->isOpened($now) && ! $scope->getStatus('ticketprinter', 'deactivated')) {
+                $scopeList->addEntity($scope);
+            }
+        }
+        return $scopeList;
+    }
+
+    /**
     * remove an cluster
     *
     * @param

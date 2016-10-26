@@ -7,14 +7,14 @@ use \BO\Zmsentities\Collection\ScopeList as Collection;
 
 class Scope extends Base
 {
-    public static $cache = [];
+
+    public static $cache = [ ];
 
     public function readEntity($scopeId, $resolveReferences = 0, $disableCache = false)
     {
-        if (!$disableCache && !array_key_exists($scopeId, self::$cache)) {
+        if (! $disableCache && ! array_key_exists($scopeId, self::$cache)) {
             $query = new Query\Scope(Query\Base::SELECT);
-            $query
-                ->addEntityMapping()
+            $query->addEntityMapping()
                 ->addResolvedReferences($resolveReferences)
                 ->addConditionScopeId($scopeId);
             $scope = $this->fetchOne($query, new Entity());
@@ -29,18 +29,19 @@ class Scope extends Base
     {
         $scopeList = new Collection();
         $query = new Query\Scope(Query\Base::SELECT);
-        $query
-            ->addEntityMapping()
+        $query->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
             ->addConditionClusterId($clusterId);
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
             foreach ($result as $entity) {
                 if (0 == $resolveReferences) {
-                    $entity = new Entity(array(
-                        //'id' => $entity->id,
-                        '$ref' => '/scope/'. $entity->id .'/'
-                    ));
+                    $entity = new Entity(
+                        array (
+                            // 'id' => $entity->id,
+                            '$ref' => '/scope/' . $entity->id . '/'
+                        )
+                    );
                     $scopeList->addEntity($entity);
                 } else {
                     if ($entity instanceof Entity) {
@@ -56,18 +57,19 @@ class Scope extends Base
     {
         $scopeList = new Collection();
         $query = new Query\Scope(Query\Base::SELECT);
-        $query
-            ->addEntityMapping()
+        $query->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
             ->addConditionProviderId($providerId);
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
             foreach ($result as $entity) {
                 if (0 == $resolveReferences) {
-                    $entity = new Entity(array(
-                        'id' => $entity->id,
-                        '$ref' => '/scope/'. $entity->id .'/'
-                    ));
+                    $entity = new Entity(
+                        array (
+                            'id' => $entity->id,
+                            '$ref' => '/scope/' . $entity->id . '/'
+                        )
+                    );
                     $scopeList->addEntity($entity);
                 } else {
                     if ($entity instanceof Entity) {
@@ -83,18 +85,19 @@ class Scope extends Base
     {
         $scopeList = new Collection();
         $query = new Query\Scope(Query\Base::SELECT);
-        $query
-            ->addEntityMapping()
+        $query->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
             ->addConditionDepartmentId($departmentId);
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
             foreach ($result as $entity) {
                 if (0 == $resolveReferences) {
-                    $entity = new Entity(array(
-                        'id' => $entity->id,
-                        '$ref' => '/scope/'. $entity->id .'/'
-                    ));
+                    $entity = new Entity(
+                        array (
+                            'id' => $entity->id,
+                            '$ref' => '/scope/' . $entity->id . '/'
+                        )
+                    );
                     $scopeList->addEntity($entity);
                 } else {
                     if ($entity instanceof Entity) {
@@ -110,8 +113,7 @@ class Scope extends Base
     {
         $scopeList = new Collection();
         $query = new Query\Scope(Query\Base::SELECT);
-        $query
-            ->addEntityMapping()
+        $query->addEntityMapping()
             ->addResolvedReferences($resolveReferences);
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
@@ -125,6 +127,29 @@ class Scope extends Base
     }
 
     /**
+     * get a scope and return if it is opened
+     *
+     ** @param
+     *            scopeId
+     *            now
+     *
+     * @return Bool
+     */
+    public function readIsOpened($scopeId, $now)
+    {
+        $isOpened = false;
+        $query = new Query\Scope(Query\Base::SELECT);
+        $query->addEntityMapping()
+            ->addConditionScopeId($scopeId);
+        $availabilityList = (new Availability())->readList($scopeId);
+        $scope = $this->fetchOne($query, new Entity());
+        if ($availabilityList->isOpened($now) && ! $scope->getStatus('ticketprinter', 'deactivated')) {
+            $isOpened = true;
+        }
+        return $isOpened;
+    }
+
+    /**
      * write a scope
      *
      * @return Entity
@@ -135,7 +160,8 @@ class Scope extends Base
         $values = $query->reverseEntityMapping($entity, $parentId);
         $query->addValues($values);
         $this->writeItem($query);
-        $lastInsertId = $this->getWriter()->lastInsertId();
+        $lastInsertId = $this->getWriter()
+            ->lastInsertId();
         return $this->readEntity($lastInsertId);
     }
 
@@ -143,7 +169,7 @@ class Scope extends Base
      * update a scope
      *
      * @param
-     * scopeId
+     *            scopeId
      *
      * @return Entity
      */
@@ -161,13 +187,13 @@ class Scope extends Base
      * remove a scope
      *
      * @param
-     * scopeId
+     *            scopeId
      *
      * @return Resource Status
      */
     public function deleteEntity($scopeId)
     {
-        $query =  new Query\Scope(Query\Base::DELETE);
+        $query = new Query\Scope(Query\Base::DELETE);
         $query->addConditionScopeId($scopeId);
         return $this->deleteItem($query);
     }

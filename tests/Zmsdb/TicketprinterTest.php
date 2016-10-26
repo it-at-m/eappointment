@@ -25,15 +25,14 @@ class TicketprinterTest extends Base
         $query = new Query();
         $input = $this->getTestEntity();
         $entity = $query->writeEntity($input, 78); // with parent Treptow-Köpenick
-
         $collection = $query->readList();
         $collection->addEntity($input);
         $this->assertEntityList("\\BO\\Zmsentities\\Ticketprinter", $collection);
-        $this->assertEquals(true, $collection->hasEntity($entity->id)); //Inserted Test Entity exists
-        $this->assertEquals(true, $collection->hasEntity('1234')); //Added Test Entity exists
+        $this->assertEquals(true, $collection->hasEntity($entity->hash)); //Inserted Test Entity exists
+        $this->assertEquals(true, $collection->hasEntity('e744a234c1')); //Added Test Entity exists
 
         $collection = $query->readByOrganisationId(78);
-        $this->assertEquals(true, $collection->hasEntity($entity->id)); //Inserted Test Entity exists
+        $this->assertEquals(true, $collection->hasEntity($entity->hash)); //Inserted Test Entity exists
 
         $deleteTest = $query->deleteEntity($entity->id);
         $this->assertTrue($deleteTest, "Failed to delete Ticketprinter from Database.");
