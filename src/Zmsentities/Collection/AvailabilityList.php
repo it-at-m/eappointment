@@ -27,4 +27,17 @@ class AvailabilityList extends Base
         }
         return $list;
     }
+
+    public function isOpened(\DateTimeImmutable $now)
+    {
+        foreach ($this as $availability) {
+            if ('openinghours' == $availability->type) {
+                $isOpened = $availability->isOpened($now);
+                if (true === $isOpened) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }
