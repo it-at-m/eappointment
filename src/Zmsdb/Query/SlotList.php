@@ -208,7 +208,8 @@ class SlotList
             'start_availability' => $dateTime->format('Y-m-d'),
             'end_availability' => $dateTime->format('Y-m-d'),
             'nowStart' => $now->format('Y-m-d'),
-            'nowEnd' => $now->format('Y-m-d')
+            'nowEnd' => $now->format('Y-m-d'),
+            'currentTime' => $now->format('Y-m-d H:i:s')
         ];
         return $parameters;
     }
