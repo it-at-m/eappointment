@@ -41,12 +41,8 @@ class SessionMiddleware
 
     public function getSessionContainer($sessionName = 'default')
     {
-        try {
             $session = Session\SessionData::getSessionFromName($sessionName);
             $session->setEntityClass($this->sessionClass);
             return $session;
-        } catch (\Exception $exception) {
-            throw  new \BO\Slim\Exception\SessionFailed();
-        }
     }
 }
