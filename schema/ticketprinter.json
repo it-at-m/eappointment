@@ -1,27 +1,7 @@
 {
     "type": "object",
     "description": "A ticketprinter is a system to print waiting numbers for clients. Usually it has a touch screen and a printing device.",
-    "example": {
-    	"buttons" : [
-    		{
-    			"name": "Testbutton Scope",
-    			"type": "scope",
-    			"enabled": true,
-    			"url": "/scope/123/" 
-    		},
-    		{
-    			"name": "Testbutton Cluster",
-    			"type": "cluster",
-    			"enabled": true,
-    			"url": "/cluster/45/" 
-    		},
-    		{
-    			"name": "Testbutton Link",
-    			"type": "link",
-    			"enabled": true,
-    			"url": "http://www.berlin.de/" 
-    		}
-    	],
+    "example": {    	
     	"buttonlist": "s123,c45,l[http://www.berlin.de/|Portal+Berlin.de]",
         "enabled": true,
         "hash": "e744a234c1",
@@ -56,6 +36,12 @@
                     "url": {
                         "type": "string",
                         "description": "url to scope, cluster or external target"
+                    },
+                    "scope": {
+                    	"$ref": "scope.json"
+                    },
+                    "cluster": {
+                    	"$ref": "cluster.json"
                     }
                 }
             },
