@@ -117,7 +117,11 @@ class Calendar extends Base
         foreach ($monthList as $month) {
             $monthDateTime = $calendar->getDateTimeFromDate($month);
             foreach ($calendar->scopes as $scope) {
+                if ($freeProcessesDate) {
+                    $statement->execute(SlotList::getParametersDay($scope['id'], $freeProcessesDate, $now));
+                } else {
                 $statement->execute(SlotList::getParameters($scope['id'], $monthDateTime, $now));
+                }
                 //error_log(var_export(SlotList::getParameters($scope['id'], $monthDateTime), true));
                 $slotsRequired = $calendar['processing']['slotinfo'][$scope->getProviderId()];
                 while ($slotData = $statement->fetch(\PDO::FETCH_ASSOC)) {
@@ -169,8 +173,12 @@ class Calendar extends Base
             if (null !== $slotData["availability__id"]) {
                 $calendar['processing']['slotlist'] = new SlotList(
                     $slotData,
-                    $monthDateTime->modify('first day of')->modify('00:00:00'),
-                    $monthDateTime->modify('last day of')->modify('23:59:59'),
+                    $freeProcessesDate ?
+                        $freeProcessesDate
+                            : $monthDateTime->modify('first day of')->modify('00:00:00'),
+                    $freeProcessesDate ?
+                        $freeProcessesDate->modify('23:59:59')
+                            : $monthDateTime->modify('last day of')->modify('23:59:59'),
                     $now,
                     null,
                     $scope
