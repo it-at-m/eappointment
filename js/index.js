@@ -14,7 +14,7 @@ import settings from './settings';
 // Bind jQuery on $ for testing
 window.$ = $;
 window.bo = {
-    "zmsticketprinter": settings,
+    "zmscalldisplay": settings,
     "test": {
     },
 };

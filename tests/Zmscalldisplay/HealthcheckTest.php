@@ -1,6 +1,6 @@
 <?php
 
-namespace BO\Zmsticketprinter\Tests;
+namespace BO\Zmscalldisplay\Tests;
 
 class HealthcheckTest extends Base
 {

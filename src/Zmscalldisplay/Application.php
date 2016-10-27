@@ -5,7 +5,7 @@
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
-namespace BO\Zmsticketprinter;
+namespace BO\Zmscalldisplay;
 
 class Application extends \BO\Slim\Application
 {
@@ -13,7 +13,7 @@ class Application extends \BO\Slim\Application
     /**
      * Name of the application
      */
-    const IDENTIFIER = 'Zmsticketprinter';
+    const IDENTIFIER = 'Zmscalldisplay';
 
     const DEBUG = false;
 

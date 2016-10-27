@@ -4,7 +4,7 @@
  * @copyright BerlinOnline Stadtportal GmbH & Co. KGd
  *
  */
-namespace BO\Zmsticketprinter;
+namespace BO\Zmscalldisplay;
 
 use \Psr\Http\Message\RequestInterface;
 use \Psr\Http\Message\ResponseInterface;

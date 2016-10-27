@@ -13,7 +13,7 @@ The variable `$WEBROOT` represents the parent path to install the application.
 ```bash
     cd $WEBROOT
     git clone [URL]
-    cd zmsticketprinter
+    cd zmscalldisplay
     make live
     cp config.example.php config.php
 ```

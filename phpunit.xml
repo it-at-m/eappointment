@@ -9,11 +9,11 @@
          processIsolation="false"
          stopOnFailure="true"
          syntaxCheck="false"
-         bootstrap="tests/Zmsticketprinter/bootstrap.php"
+         bootstrap="tests/Zmscalldisplay/bootstrap.php"
 >
     <testsuites>
-        <testsuite name="Zmsticketprinter Test Suite">
-            <directory>./tests/Zmsticketprinter/</directory>
+        <testsuite name="Zmscalldisplay Test Suite">
+            <directory>./tests/Zmscalldisplay/</directory>
         </testsuite>
     </testsuites>
     <filter>

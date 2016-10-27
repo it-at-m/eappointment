@@ -3,9 +3,9 @@
 
 define('ZMS_API_URL', getenv('ZMS_API_URL') ? getenv('ZMS_API_URL') : 'https://localhost/terminvereinbarung/api/2');
 
-class App extends \BO\Zmsticketprinter\Application
+class App extends \BO\Zmscalldisplay\Application
 {
-    const IDENTIFIER = 'Zmsticketprinter-ENV';
+    const IDENTIFIER = 'Zmscalldisplay-ENV';
     const APP_PATH = APP_PATH;
     const DEBUG = true;
     const SLIM_DEBUG = true;
