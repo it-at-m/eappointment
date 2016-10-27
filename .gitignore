@@ -1,0 +1,7 @@
+vendor
+node_modules
+config.php
+**.swp
+.sass-cache
+bower_components
+tests/*.html
