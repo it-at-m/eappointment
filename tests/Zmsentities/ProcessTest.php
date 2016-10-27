@@ -66,4 +66,13 @@ class ProcessTest extends EntityCommonTests
         $this->assertTrue(\array_key_exists('1447869171', $processListByTime->sortByTimeKey()), 'Failed to create process list by time');
         $this->assertTrue(123456 == $collection->getFirstProcess()->id, 'First process not found in process list');
     }
+
+    public function testScopeList()
+    {
+        $collection = new $this->collectionclass();
+        $entity = $this->getExample();
+        $collection->addEntity($entity);
+        $scopeList = $collection->getScopeList();
+        $this->assertTrue(count($scopeList) > 0);
+    }
 }
