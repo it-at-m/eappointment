@@ -25,7 +25,7 @@ class ScopeList extends Base
         return $scopeList;
     }
 
-    public function addScopeList(Collection $scopeList)
+    public function addScopeList($scopeList)
     {
         foreach ($scopeList as $scope) {
             $this->addEntity($scope);

@@ -279,13 +279,17 @@ class AvailabilityTest extends EntityCommonTests
 
     public function testCollection()
     {
+        $time = new \DateTimeImmutable(self::DEFAULT_TIME);
         $collection = new $this->collectionclass();
-        $entity = $this->getExample();
+        $entity = (new $this->entityclass())->getExample();
         $collection->addEntity($entity);
+        $entityOH = $this->getExampleWithTypeOpeningHours();
+        $collection->addEntity($entityOH);
+        $this->assertTrue($collection->isOpened($time));
         $this->assertEntityList($this->entityclass, $collection);
         $this->assertTrue(
-            1 == count($collection),
-            'Missing new Entity with id ' . $entity->id . ' in collection, 1 expected (' .
+            2 == count($collection),
+            'Amount of entities in collection failed, 2 expected (' .
             count($collection) . ' found)'
             );
 
@@ -297,6 +301,45 @@ class AvailabilityTest extends EntityCommonTests
         $this->assertTrue(
             81 == $collection->withCalculatedSlots()[0]['workstationCount']['public'],
             'Failed to get list with calculated slots'
+        );
+    }
+
+    protected function getExampleWithTypeOpeningHours()
+    {
+        return new $this->entityclass(
+            [
+                'id' => '93181',
+                'weekday' => array (
+                    'monday' => '0',
+                    'tuesday' => '4',
+                    'wednesday' => '0',
+                    'thursday' => '0',
+                    'friday' => '0',
+                    'saturday' => '0',
+                    'sunday' => '0'
+                ),
+                'repeat' => array (
+                    'afterWeeks' => '2',
+                    'weekOfMonth' => '0'
+                ),
+                'bookable' => array (
+                    'startInDays' => '0',
+                    'endInDays' => '60'
+                ),
+                'workstationCount' => array (
+                    'public' => '2',
+                    'callcenter' => '2',
+                    'intern' => '2'
+                ),
+                'slotTimeInMinutes' => '15',
+                'startDate' => '1461024000',
+                'endDate' => '1461024000',
+                'startTime' => '12:00:00',
+                'endTime' => '16:00:00',
+                'multipleSlotsAllowed' => '0',
+                'scope' => array('id'=>141),
+                'type' => 'openinghours'
+            ]
         );
     }
 }

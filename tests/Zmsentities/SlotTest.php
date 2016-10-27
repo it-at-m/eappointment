@@ -4,6 +4,7 @@ namespace BO\Zmsentities\Tests;
 
 class SlotTest extends EntityCommonTests
 {
+    const DEFAULT_TIME = '2016-05-27 12:50:00';
 
     public $entityclass = '\BO\Zmsentities\Slot';
 
@@ -30,7 +31,8 @@ class SlotTest extends EntityCommonTests
         $entity2 = new $this->entityclass(array (
             'public' => 2,
             'intern' => 9,
-            'callcenter' => 5
+            'callcenter' => 5,
+            'time' => '12:50'
         ));
         $collection->addEntity($entity);
         $collection->addEntity($entity2);
@@ -46,6 +48,9 @@ class SlotTest extends EntityCommonTests
 
         $summerizedSlots = $collection->getSummerizedSlot();
         $this->assertTrue(2 == $summerizedSlots->public, "Summerized public slot count false, 2 expected");
+
+        $time = new \DateTimeImmutable(self::DEFAULT_TIME);
+        $this->assertTrue(2 == count($collection->withTimeGreaterThan($time)));
     }
 
     public function testGetFreeProcesses()
