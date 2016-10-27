@@ -1,0 +1,29 @@
+{
+  "$schema": "https://localhost/terminvereinbarung/api/2/",
+  "meta": {
+    "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+    "error": false,
+    "generated": "2016-04-29T11:53:31+02:00",
+    "server": "Zmsapi-unconfigured"
+  },
+  "data": {
+    "$schema": "https://schema.berlin.de/queuemanagement/status.json",
+    "database": {
+      "nodeConnections": 0.01,
+      "clusterStatus": "OFF"
+    },
+    "processes": {
+      "blocked": null,
+      "confirmed": "86860",
+      "deleted": "2",
+      "lastInsert": "2016-04-11 11:58:04",
+      "missed": "6",
+      "reserved": "9"
+    },
+    "version": {
+      "major": "0",
+      "minor": "1",
+      "patch": "0"
+    }
+  }
+}

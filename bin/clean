@@ -1,0 +1,21 @@
+#!/bin/bash
+
+REALPATH=$(which realpath || which readlink)
+REALPATH=$([[ "$REALPATH" =~ 'readlink' ]] && echo "$REALPATH -e" || echo "$REALPATH")
+DIR=$(dirname $($REALPATH ${BASH_SOURCE[0]}))
+ROOT=$($REALPATH $DIR/..)
+
+TWIGCACHE=$(php -r 'include("bootstrap.php"); echo \BO\Slim\Bootstrap::readTwigCacheDir();' )
+CACHEDIR=$(dirname $TWIGCACHE)
+
+echo "Removing cached files..."
+cd $ROOT
+if [ -d $TWIGCACHE ] && [ -d $CACHEDIR ] && [ $CACHEDIR != $ROOT ]
+then
+    echo "Remove all files under $CACHEDIR/* (y|N)?"
+    rm --preserve-root -rIv $CACHEDIR/*
+else
+    echo "No cache dir configured"
+    exit 1
+fi
+
