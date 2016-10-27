@@ -21,7 +21,7 @@ class Status extends Base
         $entity['database']['clusterStatus'] =
             array_key_exists('wsrep_ready', $statusVariables) ? $statusVariables['wsrep_ready'] : 'OFF';
         $entity['database']['logbin'] =
-            array_key_exists('logbin', $statusVariables) ? $statusVariables['logbin'] : 'OFF';
+            array_key_exists('log_bin', $configVariables) ? $configVariables['log_bin'] : 'OFF';
         $entity['processes']['blocked'] = $this->readBlockedProcessCount();
         $entity['processes']['confirmed'] = $this->readConfirmedProcessCount();
         $entity['processes']['deleted'] = $this->readDeletedProcessCount();
