@@ -1,0 +1,33 @@
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="{{ currentLang() }}" lang="{{ currentLang() }}">
+    {% block head %}
+    <head>
+        <title>{% block title %}{% endblock %}</title>
+        <meta name="robots" content="NOINDEX NOFOLLOW">
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta charset="UTF-8" />
+        <link rel="stylesheet" type="text/css" href="{{ includeUrl() }}/_css/appointment.css">
+        <link rel="canonical" href="http://service.berlin.de/">
+    </head>
+    {% endblock %}
+    <body class="locale_{{ currentLang() }}" id="{% block pageid %}{% endblock %}">
+        <div class="alert alert-info"><strong>Hinweis:</strong> Sie befinden sich auf einem Entwicklungssystem. Die folgenden Inhalte sind nicht aktuell. Siehe <strong><a href="https://service.berlin.de/">https://service.berlin.de/</a></strong></div>
+        <div class="row">
+            <div class="span7 column-content">
+               	<div class="html5-section article" role="main">
+        			<div class="zms">
+                        {% block decoration %}
+                            {% block content %}{% endblock %}
+                        {% endblock %}
+                    </div>
+                 </div>
+            </div>
+        </div>
+        <script type="text/javascript" src="{{ includeUrl() }}/_js/index.js"></script>
+        <script type="text/javascript">window.bo.zmsticketprinter.includepath="{{ includeUrl() }}"</script>
+        {% if debug %}
+        <!-- httplog --> {{ dumpHttpLog() }}
+        {% endif %}
+    </body>
+</html>

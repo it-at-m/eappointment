@@ -1,0 +1,119 @@
+{% extends "layout/main.twig" %}
+{% block title %}{% trans "Ein Fehler ist aufgetreten" %}{% endblock %}
+
+{% block headline %}
+    {{ snippets.headline1(title) }}
+{% endblock %}
+{% block content %}
+
+    <div class="textile">
+                <p>
+                Es ist ein Fehler aufgetreten und die gewünschte Seite kann
+                nicht angezeigt werden. Dies kann unterschiedliche Ursachen
+                haben. In der Regel beheben wir aufkommende Fehler innerhalb
+                kurzer Zeit. Sollte der Fehler wiederholt auftreten, würden
+                wir uns freuen, wenn Sie uns kurz per E-Mail eine Nachricht
+                zukommen lassen könnten. Bitte kopieren Sie auch die
+                Beschreibung des Fehlers mit in ihr Anschreiben, nur so können
+                wir eine schnelle Behebung gewährleisten.
+
+                    Bei generellen technischen Fehlern, bitte diese <a href="https://gitlab.com/eappointment/eappointment/-/issues/new">hier melden</a>.
+                </p>
+                <h2>
+                    Beschreibung des Fehlers
+                </h2>
+                <p>
+                Bei Anfragen zum Fehler schicken Sie bitte die folgenden
+                Informationen mit. Dies hilft uns, den Fehler zuzuordnen und
+                schnell zu beheben.
+                </p>
+                <div class="table-responsive">
+                    <table>
+                        <tbody><tr>
+                            <td>
+                                <strong>Fehlerbeschreibung:</strong>
+                            </td>
+                            <td>
+                                <span  style="overflow: auto; width: 100%;">{{ failed }}</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>Fehlerklasse:</strong>
+                            </td>
+                            <td>
+                                {{exceptionclass}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>Aufruf:</strong>
+                            </td>
+                            <td>
+                                {{requesturi}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>Übertragene Daten:</strong>
+                            </td>
+                            <td>
+                                <pre style="overflow: auto; width: 100%;">{{requestdata}}</pre>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>Methode:</strong>
+                            </td>
+                            <td>
+                                <span class="caps">{{requestmethod}}</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>Serverzeit:</strong>
+                            </td>
+                            <td>
+                                {{servertime}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>Trace:</strong>
+                            </td>
+                            <td>
+                            see logs for ID #{{uniqueid}}
+                            {% if debug %}
+                            <pre style=" width: 100%;font-size:10px; background:#eee; border:1px solid #ccc; padding:2px; overflow:auto;">
+- {{file}} ({{line}})
+{{trace}}
+                            </pre>
+                            {% endif %}
+                            </td>
+                        </tr>
+                        {% if debug %}
+                        <tr>
+                            <td>
+                                <strong>Curl:</strong>
+                            </td>
+                            <td>
+                                <pre style="overflow: auto; width: 100%;">curl -X "{{request.method}}" -d "{{requestdata|replace({"\n": "", "    ": ""})}}" "{{requesturi}}"
+                                </pre>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <strong>Response:</strong>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <iframe style="width:100%; height: 600px" src="data:text/html,{{responsedata|url_encode}}"></iframe>
+                            </td>
+                        </tr>
+                        {% endif %}
+                    </tbody></table>
+                </div>
+            </div>
+
+{% endblock %}
