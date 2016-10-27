@@ -6,6 +6,8 @@ class ScopeTest extends EntityCommonTests
 {
     public $entityclass = '\BO\Zmsentities\Scope';
 
+    public $collectionclass = '\BO\Zmsentities\Collection\ScopeList';
+
     public function testBasic()
     {
         $entity = (new $this->entityclass())->getExample();
@@ -39,5 +41,15 @@ class ScopeTest extends EntityCommonTests
         $entity = (new $this->entityclass())->getExample();
         $this->assertTrue('3' == $entity->getPreference('queue', 'callCountMax'), 'string preference not available');
         $this->assertTrue('1' == $entity->getPreference('survey', 'enabled', true), 'bool preference not available');
+    }
+
+    public function testScopeList()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $collection = new $this->collectionclass();
+        $newCollection = new $this->collectionclass();
+        $collection->addEntity($entity);
+        $newCollection->addScopeList($collection);
+        $this->assertTrue($newCollection->hasEntity($entity->id), 'Failed to add scopelist to another list');
     }
 }

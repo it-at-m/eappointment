@@ -222,6 +222,14 @@ class Calendar extends Schema\Entity
         return $dateTime->modify('23:59:59');
     }
 
+    public function setLastDayTime($date)
+    {
+        $day = new Day();
+        $day->setDateTime($date);
+        $this['lastDay'] = $day;
+        return $this;
+    }
+
     public function getDateTimeFromTs($timestamp, $timezone = null)
     {
         $dateTime = new Helper\DateTime('@' . $timestamp);

@@ -31,6 +31,13 @@ class Day extends Schema\Entity
         return "Day @{$this->year}-{$this->month}-{$this->day} with ". $this->freeAppointments;
     }
 
+    public function setDateTime(\DateTimeInterface $dateTime)
+    {
+        $this['year'] = $dateTime->format('Y');
+        $this['month'] = $dateTime->format('m');
+        $this['day'] = $dateTime->format('d');
+    }
+
     public function toDateTime()
     {
         $date = Helper\DateTime::createFromFormat('Y-m-d', $this['year'] . '-' . $this['month'] . '-' . $this['day']);
