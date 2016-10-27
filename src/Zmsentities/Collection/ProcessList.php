@@ -17,4 +17,15 @@ class ProcessList extends Base
     {
         return reset($this);
     }
+
+    public function getScopeList()
+    {
+        $list = new ScopeList();
+        foreach ($this as $process) {
+            if (array_key_exists('scope', $process)) {
+                $list[] = new \BO\Zmsentities\Scope($process['scope']);
+            }
+        }
+        return $list->withUniqueScopes();
+    }
 }
