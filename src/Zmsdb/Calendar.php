@@ -120,7 +120,7 @@ class Calendar extends Base
                 if ($freeProcessesDate) {
                     $statement->execute(SlotList::getParametersDay($scope['id'], $freeProcessesDate, $now));
                 } else {
-                $statement->execute(SlotList::getParameters($scope['id'], $monthDateTime, $now));
+                    $statement->execute(SlotList::getParameters($scope['id'], $monthDateTime, $now));
                 }
                 //error_log(var_export(SlotList::getParameters($scope['id'], $monthDateTime), true));
                 $slotsRequired = $calendar['processing']['slotinfo'][$scope->getProviderId()];
