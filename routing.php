@@ -13,14 +13,14 @@ use \Psr\Http\Message\ResponseInterface;
  * html, basic routes
  * -------------------------------------------------------------------------
  */
-\App::$slim->get('/', '\BO\Zmsticketprinter\Index')
+\App::$slim->get('/', '\BO\Zmscalldisplay\Index')
     ->setName("index");
 /*
  * ---------------------------------------------------------------------------
  * maintenance
  * -------------------------------------------------------------------------
  */
-\App::$slim->get('/healthcheck/', '\BO\Zmsticketprinter\Healthcheck')
+\App::$slim->get('/healthcheck/', '\BO\Zmscalldisplay\Healthcheck')
     ->setName("healthcheck");
 \App::$slim->getContainer()
     ->offsetSet('notFoundHandler',

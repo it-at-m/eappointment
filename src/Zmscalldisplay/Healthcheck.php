@@ -5,7 +5,7 @@
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
-namespace BO\Zmsticketprinter;
+namespace BO\Zmscalldisplay;
 
 /**
  * Handle requests concerning services

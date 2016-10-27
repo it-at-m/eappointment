@@ -5,14 +5,14 @@
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
-namespace BO\Zmsticketprinter\Tests;
+namespace BO\Zmscalldisplay\Tests;
 
 use \Prophecy\Argument;
 
 abstract class Base extends \BO\Zmsclient\PhpUnit\Base
 {
 
-    protected $namespace = '\\BO\\Zmsticketprinter\\';
+    protected $namespace = '\\BO\\Zmscalldisplay\\';
 
     public function readFixture($filename)
     {

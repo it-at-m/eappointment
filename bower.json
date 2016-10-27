@@ -1,6 +1,6 @@
 {
-  "name": "zmsticketprinter",
-  "description": "zms ticketprinter frontend",
+  "name": "zmscalldisplay",
+  "description": "zms calldisplay frontend",
   "main": "index.js",
   "authors": [
     "BerlinOnline GmbH & Co. KG"
