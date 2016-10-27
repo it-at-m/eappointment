@@ -39,7 +39,7 @@ class Calendar extends Base
             $scope = $scopeReader->readEntity($scope['id'], 1);
             $scopeList->addEntity($scope);
         }
-        $calendar['scopes'] = $scopeList;
+        $calendar['scopes'] = $scopeList->withUniqueScopes();
         return $calendar;
     }
 
@@ -173,10 +173,10 @@ class Calendar extends Base
             if (null !== $slotData["availability__id"]) {
                 $calendar['processing']['slotlist'] = new SlotList(
                     $slotData,
-                    $freeProcessesDate ?
-                        $freeProcessesDate
+                    ($freeProcessesDate) ?
+                        $freeProcessesDate->modify('00:00:00')
                             : $monthDateTime->modify('first day of')->modify('00:00:00'),
-                    $freeProcessesDate ?
+                    ($freeProcessesDate) ?
                         $freeProcessesDate->modify('23:59:59')
                             : $monthDateTime->modify('last day of')->modify('23:59:59'),
                     $now,

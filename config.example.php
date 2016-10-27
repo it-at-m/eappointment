@@ -1,5 +1,7 @@
 <?php
 
+//ONLY FOR TESTING
+
 require(__DIR__ . '/vendor/autoload.php');
 date_default_timezone_set('Europe/Berlin');
 
@@ -19,7 +21,6 @@ if (getenv('MYSQL_ENV_MYSQL_ROOT_PASSWORD') || getenv('MYSQL_ROOT_PASSWORD')) {
     \BO\Zmsdb\Connection\Select::$username = 'server';
     \BO\Zmsdb\Connection\Select::$password = 'internet';
 }
-
 \BO\Zmsdb\Connection\Select::$enableProfiling = true;
 \BO\Zmsdb\Connection\Select::$dbname_zms = 'zmsbo';
 \BO\Zmsdb\Connection\Select::$dbname_dldb = 'startinfo';

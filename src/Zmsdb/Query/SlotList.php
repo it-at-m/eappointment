@@ -300,7 +300,6 @@ class SlotList
         $date,
         $slotType = 'public'
     ) {
-
         if (null !== $freeProcessesDate && $date == $freeProcessesDate->format('Y-m-d')) {
             $freeProcesses = $this->getFreeProcesses($calendar, $freeProcessesDate, $slotType);
             foreach ($freeProcesses as $process) {
@@ -319,7 +318,6 @@ class SlotList
         \DateTimeImmutable $freeProcessesDate = null,
         $slotType = 'public'
     ) {
-
         $selectedDate = $freeProcessesDate->format('Y-m-d');
         $slotList = $this->slots[$selectedDate];
         return $slotList->getFreeProcesses(
@@ -337,6 +335,7 @@ class SlotList
     public function createSlots(\DateTimeInterface $startDate, \DateTimeInterface $stopDate, \DateTimeInterface $now)
     {
         $startDate = ($startDate < $now) ? $now->modify('00:00:00') : $startDate;
+        $stopDate = $stopDate->modify('00:00:00');
         $time = DateTime::create($startDate);
         $slotlist = $this->availability->getSlotList();
         $nowDate = $now->modify('00:00:00');
