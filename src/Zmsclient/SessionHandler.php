@@ -39,6 +39,8 @@ class SessionHandler implements \SessionHandlerInterface
         try {
             $session = $this->http->readGetResult('/session/' . $this->sessionName . '/' . $sessionId . '/')
                 ->getEntity();
+        } catch (Exception\ApiFailed $exception) {
+            throw $exception;
         } catch (Exception $exception) {
             if ($exception->getCode() == 404) {
                 $session = null;

@@ -64,7 +64,7 @@ class Result
         $response = $this->response;
         $body = Validator::value((string)$response->getBody())->isJson();
         if ($body->hasFailed()) {
-            throw new Exception(
+            throw new Exception\ApiFailed(
                 'API-Call failed, JSON parsing with error: ' . $body->getMessages()
                     . ' - Snippet: ' .substr(\strip_tags((string)$response->getBody()), 0, 2000) . '...',
                 $response,
