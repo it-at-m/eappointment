@@ -1,0 +1,25 @@
+{
+  "name": "zmsticketprinter",
+  "description": "zms ticketprinter frontend",
+  "main": "index.js",
+  "authors": [
+    "BerlinOnline GmbH & Co. KG"
+  ],
+  "license": "SEE LICENSE IN LICENSE",
+  "keywords": [
+    "zms"
+  ],
+  "moduleType": [],
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "magic": "~1.1.0"
+  }
+}
