@@ -19,6 +19,34 @@ class TicketprinterTest extends Base
         $deleteTest = $query->deleteEntity($entity->id);
         $this->assertTrue($deleteTest, "Failed to delete Ticketprinter from Database.");
     }
+    
+    public function testReadByHash()
+    {
+        $query = new Query();
+        $input = $this->getTestEntity();
+        $entity = $query->writeEntity($input, 78); // with parent Treptow-Köpenick
+        $entity = $query->readByHash('e744a234c1');
+        $this->assertEquals('e744a234c1', $entity->hash);
+    }
+    
+    public function testReadByButtonList()
+    {
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $query = new Query();
+        $input = $this->getTestEntity();
+        $entity = $query->readByButtonList($input, $now);
+        $this->assertTrue('Bürgeramt Heerstraße' == $entity->buttons[0]['name']);
+        $this->assertTrue('cluster' == $entity->buttons[1]['type']);
+        $this->assertTrue('https://service.berlin.de' == $entity->buttons[2]['url']);
+    }
+    
+    public function testWriteCookie()
+    {
+        $query = new Query();
+        $entity = $query->writeCookie(54); //Organisation Pankow
+        $this->assertContains('54', $entity->hash);
+        $this->assertTrue($entity->enabled);
+    }
 
     public function testReadList()
     {
@@ -41,6 +69,7 @@ class TicketprinterTest extends Base
     protected function getTestEntity()
     {
         return $input = new Entity(array(
+            "buttonlist" => "s141,c60,l[https://service.berlin.de|Service Berlin]",
             "enabled" => true,
             "hash" => "e744a234c1",
             "id" => 1234,

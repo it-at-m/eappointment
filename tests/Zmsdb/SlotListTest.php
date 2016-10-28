@@ -18,10 +18,23 @@ class SlotListTest extends Base
     {
         $this->setExpectedException('\BO\Zmsdb\Exception\SlotDataWithoutPreGeneratedSlot');
         $slotData = $this->getTestSlotData();
-        $slotData['slotdate'] = (new \DateTimeImmutable())->format('Y-m-d');
-        $dateTime = (new \DateTimeImmutable());
+        $slotData['slotdate'] = (new \DateTimeImmutable())->format('Y-m-d');    
         $slotList = new SlotList();
         $slotList->addQueryData($slotData);
+    }
+    
+    public function testSlotDataWithoutPreGeneratedSlotOnSlotNull()
+    {
+        $this->setExpectedException('\BO\Zmsdb\Exception\SlotDataWithoutPreGeneratedSlot');
+        $slotData = $this->getTestSlotData();
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $dateTime = \DateTimeImmutable::createFromFormat('Y-m-d', '2016-04-05');
+        $slotList = new SlotList($slotData, $dateTime, $dateTime->modify('+1day'), $now);
+        $slotList->addQueryData(array(            
+            'slottime' => '11:10:00',
+            'slotdate' => '2016-04-05',
+            'slotnr' => '9999' //unavailable slotnumber            
+        ));
     }
 
     public function testSlotDataDublicate()

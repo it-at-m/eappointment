@@ -23,6 +23,15 @@ class ClusterTest extends Base
         $this->assertEquals(true, $entityList->hasScope('134')); //Bürgeramt 1 (Neu- Hohenschönhausen) Egon-Erwin-Kisch-Straße exists
         $this->assertEquals(true, $entityList->hasScope('135')); //Bürgeramt 2 (Lichtenberg) Normannenstr. exists
     }
+    
+    public function testReadIsOpenedScopeList()
+    {
+        $query = new Query();
+        $input = $this->getTestEntity();
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $entityList = $query->readIsOpenedScopeList(60, $now); //by Egon-Erwin-Kisch-Str. Cluster
+        $this->assertEquals(true, 0 <= count($entityList));
+    }
 
     public function testWriteEntity()
     {
