@@ -2339,6 +2339,41 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/ticketprinter/{hash}/":
+ *      get:
+ *          description: Get current Ticketprinter by hash
+ *          parameters:            
+ *              -   name: hash
+ *                  description: hash from ticketprinter
+ *                  required: true
+ *                  in: path
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: get a ticketprinter by his hash
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/ticketprinter.json"
+ *              404:
+ *                  description: "Could not find any available ticketprinter"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/ticketprinter.json"
+ */
+\App::$slim->get('/ticketprinter/{hash:[a-z0-9]{20,40}}/',
+    '\BO\Zmsapi\TicketprinterGet')
+    ->setName("TicketprinterGet");    
+
+/**
+ *  @swagger
  *  "/ticketprinter/":
  *      post:
  *          description: Update ticketprinter with list of scope, cluster or link buttons
