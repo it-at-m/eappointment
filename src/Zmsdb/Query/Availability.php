@@ -76,6 +76,14 @@ class Availability extends Base implements MappingInterface
         $this->query->where('scope.StandortID', '=', $scopeId);
         return $this;
     }
+    
+    public function addConditionDate($date)
+    {
+        $this->query
+            ->where('availability.Startdatum', '<=', $date)
+            ->where('availability.Endedatum', '>=', $date);
+        return $this;
+    }
 
     /*
      * Todo

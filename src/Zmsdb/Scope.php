@@ -127,7 +127,7 @@ class Scope extends Base
     }
 
     /**
-     * get a scope and return if it is opened
+     * get a scope and return true if it is opened
      *
      ** @param
      *            scopeId
@@ -141,7 +141,8 @@ class Scope extends Base
         $query = new Query\Scope(Query\Base::SELECT);
         $query->addEntityMapping()
             ->addConditionScopeId($scopeId);
-        $availabilityList = (new Availability())->readList($scopeId);
+        $availabilityList = (new Availability())->readOpeningHoursListByDate($scopeId, $now);
+        error_log(var_export($availabilityList,1));
         $scope = $this->fetchOne($query, new Entity());
         if ($availabilityList->isOpened($now) && ! $scope->getStatus('ticketprinter', 'deactivated')) {
             $isOpened = true;

@@ -58,6 +58,27 @@ class Availability extends Base
         }
         return $collection;
     }
+    
+    public function readOpeningHoursListByDate($scopeId, \DateTimeInterface $now, $resolveReferences = 0)
+    {
+        $collection = new Collection(); 
+        $date = $now->format('Y-m-d');
+        $query = new Query\Availability(Query\Base::SELECT);
+        $query
+            ->addEntityMapping('openinghours')
+            ->addResolvedReferences($resolveReferences)
+            ->addConditionScopeId($scopeId)
+            ->addConditionDate($date);
+        $result = $this->fetchList($query, new Entity());
+        if (count($result)) {
+            foreach ($result as $entity) {
+                if ($entity instanceof Entity) {
+                    $collection->addEntity($entity);
+                }
+            }
+        }
+        return $collection;
+    }
 
     /**
      * write an availability
