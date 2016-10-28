@@ -45,6 +45,7 @@ class ProcessTest extends EntityCommonTests
         $this->assertTrue($entity->hasAppointment(1447869172, 123), 'appointment is not accessible');
         $this->assertFalse($entity->hasAppointment(1447869173, 123), 'appointment date 1447869173 should not exist');
         $firstAppointment = $entity->getFirstAppointment();
+        $this->assertTrue($firstAppointment instanceof \BO\Zmsentities\Appointment);
     }
 
     public function testCollection()
@@ -60,10 +61,13 @@ class ProcessTest extends EntityCommonTests
             1 == count($collection),
             'Missing new Entity with ID ' . $entity->id . ' in collection, 1 expected (' .
             count($collection) . ' found)'
-            );
+        );
 
         $processListByTime = $collection->toProcessListByTime();
-        $this->assertTrue(\array_key_exists('1447869171', $processListByTime->sortByTimeKey()), 'Failed to create process list by time');
+        $this->assertTrue(
+            array_key_exists('1447869171', $processListByTime->sortByTimeKey()),
+            'Failed to create process list by time'
+        );
         $this->assertTrue(123456 == $collection->getFirstProcess()->id, 'First process not found in process list');
     }
 
@@ -74,5 +78,16 @@ class ProcessTest extends EntityCommonTests
         $collection->addEntity($entity);
         $scopeList = $collection->getScopeList();
         $this->assertTrue(count($scopeList) > 0);
+    }
+
+    public function testLessData()
+    {
+        $collection = new $this->collectionclass();
+        $entity = $this->getExample();
+        $appointment = (new \BO\Zmsentities\Appointment())->getExample();
+        $entity->appointments = array($appointment);
+        $collection->addEntity($entity);
+        $collection = $collection->withLessData();
+        $this->assertEntityList($this->entityclass, $collection);
     }
 }

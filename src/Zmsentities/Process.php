@@ -143,4 +143,34 @@ class Process extends Schema\Entity
             && $prop->scope->department->preferences->notifications->sendConfirmationEnabled->get()
         );
     }
+
+    /**
+     * Reduce data of dereferenced entities to a required minimum
+     *
+     */
+    public function withLessData()
+    {
+        $entity = clone $this;
+
+        foreach ($entity['appointments'] as $appointment) {
+            if ($appointment->toProperty()->scope->isAvailable()) {
+                unset($appointment['scope']);
+            }
+            if ($appointment->toProperty()->availability->isAvailable()) {
+                unset($appointment['availability']);
+            }
+        }
+        unset($entity['createTimestamp']);
+        unset($entity['createIP']);
+        if ($entity->toProperty()->scope->status->isAvailable()) {
+            unset($entity['scope']['status']);
+        }
+        if ($entity->toProperty()->scope->dayoff->isAvailable()) {
+            unset($entity['scope']['dayoff']);
+        }
+        if ($entity->toProperty()->scope->preferences->isAvailable()) {
+            unset($entity['scope']['preferences']);
+        }
+        return $entity;
+    }
 }

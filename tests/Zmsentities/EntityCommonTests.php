@@ -31,4 +31,10 @@ abstract class EntityCommonTests extends Base
             $this->assertEntity($entityClass, $entity);
         }
     }
+
+    public function testLessData()
+    {
+        $example = $this->getExample()->withLessData();
+        $this->assertTrue($example->testValid());
+    }
 }
