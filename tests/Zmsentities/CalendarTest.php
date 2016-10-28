@@ -25,6 +25,7 @@ class CalendarTest extends EntityCommonTests
         $date = $entity->getDateTimeFromTs($time->getTimestamp(), $time->getTimezone());
         $day = $entity->getDayByDateTime($date);
         $this->assertInstanceOf('\BO\Zmsentities\Day', $day, 'Day is not instance of \BO\Zmsentites\Day');
+        unset($entity['firstDay']);
         $entity->addDates($time->getTimestamp(), $time, $time->getTimezone()->getName());
         $entity->addProvider('dldb', self::PROVIDER);
         $this->assertEquals(2, count($entity->getProviderList()));
@@ -52,7 +53,7 @@ class CalendarTest extends EntityCommonTests
         $this->assertTrue($entity->getFirstDay()
             ->format('Y-m-d') == date('Y-m-d'), 'First day does not match');
         $this->assertTrue($entity->getLastDay()
-            ->format('Y-m-d') == date('Y-m-d'), 'First day does not match');
+            ->format('Y-m-d') == date('Y-m-d'), 'Last day does not match');
 
         $timeZone = new \DateTimeZone('Europe/Berlin');
         $date = \BO\Zmsentities\Helper\DateTime::create(self::FIRST_DAY, $timeZone);
@@ -74,7 +75,11 @@ class CalendarTest extends EntityCommonTests
         $day = $entity->getDay(date('Y'), date('m'), date('d'));
         $this->assertTrue($entity->hasDay($day->year, $day->month, $day->day));
         $this->assertFalse($entity->hasDay('2015', '11', '20'));
-
+        
+        $time = \DateTime::createFromFormat('Y-m-d', self::LAST_DAY);
+        $entity->setLastDayTime($time);
+        $this->assertTrue($entity->getLastDay()
+            ->format('Y-m-d') == self::LAST_DAY, 'Last day does not match');
     }
 
     public function testMonthList()

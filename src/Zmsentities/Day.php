@@ -36,6 +36,7 @@ class Day extends Schema\Entity
         $this['year'] = $dateTime->format('Y');
         $this['month'] = $dateTime->format('m');
         $this['day'] = $dateTime->format('d');
+        return $this;
     }
 
     public function toDateTime()
