@@ -89,7 +89,7 @@ class Cluster extends Base
         $scopeList = new \BO\Zmsentities\Collection\ScopeList();
         $cluster = $this->readEntity($clusterId, 1);
         foreach ($cluster->scopes as $scope) {
-            $availabilityList = (new Availability())->readList($scope['id']);
+            $availabilityList = (new Availability())->readOpeningHoursListByDate($scope['id'], $now);
             if ($availabilityList->isOpened($now) && ! $scope->getStatus('ticketprinter', 'deactivated')) {
                 $scopeList->addEntity($scope);
             }
