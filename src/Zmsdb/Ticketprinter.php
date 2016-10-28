@@ -80,10 +80,17 @@ class Ticketprinter extends Base
         foreach ($ticketprinter->buttons as $key => $button) {
             if ('scope' == $button['type']) {
                 $query = new Scope();
+                if (! $query->readEntity($button['scope']['id'])->hasId()) {
+                    throw new Exception\TicketprinterUnvalidButtonList();
+                }
                 $ticketprinter->buttons[$key]['enabled'] = $query->readIsOpened($button['scope']['id'], $now);
                 $ticketprinter->buttons[$key]['name'] = $query->readEntity($button['scope']['id'])->getName();
             } elseif ('cluster' == $button['type']) {
-                $scopeList = (new Cluster())->readIsOpenedScopeList($button['cluster']['id'], $now);
+                $query = new Cluster();
+                if (! $query->readEntity($button['cluster']['id'])) {
+                    throw new Exception\TicketprinterUnvalidButtonList();
+                }
+                $scopeList = $query->readIsOpenedScopeList($button['cluster']['id'], $now);
                 $ticketprinter->buttons[$key]['enabled'] = (count($scopeList)) ? true : false;
                 $ticketprinter->buttons[$key]['name'] = $scopeList[0]->getName();
             }

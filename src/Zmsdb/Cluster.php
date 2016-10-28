@@ -24,6 +24,9 @@ class Cluster extends Base
             ->addResolvedReferences($resolveReferences)
             ->addConditionClusterId($itemId);
         $cluster = $this->fetchOne($query, new Entity());
+        if (! $cluster->hasId()) {
+            return null;
+        }
         $cluster['scopes'] = (new Scope())->readByClusterId($cluster->id, $resolveReferences);
         return $cluster;
     }

@@ -61,7 +61,7 @@ class Availability extends Base
     
     public function readOpeningHoursListByDate($scopeId, \DateTimeInterface $now, $resolveReferences = 0)
     {
-        $collection = new Collection(); 
+        $collection = new Collection();
         $date = $now->format('Y-m-d');
         $query = new Query\Availability(Query\Base::SELECT);
         $query
