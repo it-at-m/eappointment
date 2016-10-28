@@ -29,6 +29,14 @@ class Property implements \ArrayAccess
         return new self($access);
     }
 
+    public function isAvailable()
+    {
+        if (null !== $this->access) {
+            return true;
+        }
+        return false;
+    }
+
     public function get($default = null)
     {
         if (null !== $this->access) {

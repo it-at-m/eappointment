@@ -86,4 +86,17 @@ class Base extends \ArrayObject
     {
         return implode(',', $this->getIds());
     }
+
+    /**
+     * Reduce items data of dereferenced entities to a required minimum
+     *
+     */
+    public function withLessData()
+    {
+        $list = new static();
+        foreach ($this as $key => $item) {
+            $list[$key] = $item->withLessData();
+        }
+        return $list;
+    }
 }

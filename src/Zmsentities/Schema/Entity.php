@@ -4,6 +4,7 @@ namespace BO\Zmsentities\Schema;
 
 /**
  * @SuppressWarnings(NumberOfChildren)
+ * @SuppressWarnings(PublicMethod)
  */
 class Entity extends \ArrayObject implements \JsonSerializable
 {
@@ -202,5 +203,14 @@ class Entity extends \ArrayObject implements \JsonSerializable
     public function toProperty()
     {
         return new \BO\Zmsentities\Helper\Property($this);
+    }
+
+    /**
+     * Reduce data of dereferenced entities to a required minimum
+     *
+     */
+    public function withLessData()
+    {
+        return clone $this;
     }
 }
