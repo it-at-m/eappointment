@@ -154,7 +154,9 @@ class Process extends Schema\Entity
 
         foreach ($entity['appointments'] as $appointment) {
             if ($appointment->toProperty()->scope->isAvailable()) {
+                $scopeId = $appointment['scope']['id'];
                 unset($appointment['scope']);
+                $appointment['scope'] = ['id' => $scopeId];
             }
             if ($appointment->toProperty()->availability->isAvailable()) {
                 unset($appointment['availability']);
