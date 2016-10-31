@@ -45,7 +45,6 @@ class Calendar extends Schema\Entity
         $dateTime = $this->getDateTimeFromTs($date, $timeZone);
         $firstDay = $dateTime->setTime(0, 0, 0);
         $lastDay = $dateTime->modify('last day of next month')->setTime(23, 59, 59);
-        error_log((string)$lastDay);
         $this->firstDay = array (
             'year' => $firstDay->format('Y'),
             'month' => $firstDay->format('m'),
