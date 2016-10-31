@@ -74,9 +74,6 @@ class SlotList
             o.StandortID = :scope_id
             AND o.OeffnungszeitID IS NOT NULL
 
-            -- ignore slots out of date range
-            AND (b.Datum BETWEEN :start_process AND :end_process)
-
             -- ignore availability out of date range
             AND o.Endedatum >= :start_availability
             AND o.Startdatum <= :end_availability
@@ -84,43 +81,56 @@ class SlotList
             -- ignore availability without appointment slots
             AND o.Anzahlterminarbeitsplaetze != 0
 
-            -- match weekday
-            AND o.Wochentag & POW(2, DAYOFWEEK(b.Datum) - 1)
-
-            -- match week
             AND (
                 (
-                    o.allexWochen
-                    -- The following line would be correct by logic, but does not work :-(
-                        AND FLOOR(
-                            (FLOOR(UNIX_TIMESTAMP(b.Datum))
-                            - FLOOR(UNIX_TIMESTAMP(o.Startdatum)))
-                            / 86400
-                            / 7
-                        ) % o.allexWochen = 0
-                )
-                OR (
-                    o.jedexteWoche
+                    -- match weekday
+                    o.Wochentag & POW(2, DAYOFWEEK(b.Datum) - 1)
+
+                    -- match week
                     AND (
-                        CEIL(DAYOFMONTH(b.Datum) / 7) = o.jedexteWoche
+                        (
+                            o.allexWochen
+                            -- The following line would be correct by logic, but does not work :-/
+                                AND FLOOR(
+                                    (FLOOR(UNIX_TIMESTAMP(b.Datum))
+                                    - FLOOR(UNIX_TIMESTAMP(o.Startdatum)))
+                                    / 86400
+                                    / 7
+                                ) % o.allexWochen = 0
+                        )
                         OR (
-                            o.jedexteWoche = 5
-                            AND CEIL(LAST_DAY(b.Datum) / 7) = CEIL(DAYOFMONTH(b.Datum) / 7)
+                            o.jedexteWoche
+                            AND (
+                                CEIL(DAYOFMONTH(b.Datum) / 7) = o.jedexteWoche
+                                OR (
+                                    o.jedexteWoche = 5
+                                    AND CEIL(LAST_DAY(b.Datum) / 7) = CEIL(DAYOFMONTH(b.Datum) / 7)
+                                )
+                            )
                         )
                     )
+
+                    -- ignore slots out of date range
+                    AND b.Datum BETWEEN :start_process AND :end_process
+
+                    -- match time and date
+                    AND b.Uhrzeit >= o.Terminanfangszeit
+                    AND b.Uhrzeit < o.Terminendzeit
+                    AND b.Datum >= o.Startdatum
+                    AND b.Datum <= o.Endedatum
+                    AND UNIX_TIMESTAMP(:currentTime) + 1800 <= UNIX_TIMESTAMP(CONCAT(b.Datum, " ", b.Uhrzeit))
+
+                    -- match day off
+                    AND (
+                        b.Datum NOT IN (
+                            SELECT Datum FROM feiertage f WHERE f.BehoerdenID = s.BehoerdenID OR f.BehoerdenID = 0
+                        )
+                        -- ignore day off if availabilty is valid for two or less days
+                        OR UNIX_TIMESTAMP(o.Endedatum) - UNIX_TIMESTAMP(o.Startdatum) < 172800
+                    )
                 )
+                OR b.Datum IS NULL
             )
-
-            -- match time and date
-            AND b.Uhrzeit >= o.Terminanfangszeit
-            AND b.Uhrzeit < o.Terminendzeit
-            AND b.Datum >= o.Startdatum
-            AND b.Datum <= o.Endedatum
-            AND UNIX_TIMESTAMP(:currentTime) + 1800 <= UNIX_TIMESTAMP(CONCAT(b.Datum, " ", b.Uhrzeit))
-
-            -- match day off
-            AND b.Datum NOT IN (SELECT Datum FROM feiertage f WHERE f.BehoerdenID = s.BehoerdenID OR f.BehoerdenID = 0)
-
         GROUP BY o.OeffnungszeitID, b.Datum, `slotnr`
         HAVING
             -- reduce results cause processing them costs time even with query cache
