@@ -25,6 +25,7 @@ class AvailabilityTest extends EntityCommonTests
     {
         $entity = new $this->entityclass();
         $time = new \DateTimeImmutable(self::DEFAULT_TIME);
+        $now = new \DateTimeImmutable(self::DEFAULT_TIME);
         $entity['startDate'] = $time->getTimestamp();
         $entity['startTime'] = $time->format('H:i');
         $entity['endDate'] = $time->modify("+2month")
@@ -34,32 +35,35 @@ class AvailabilityTest extends EntityCommonTests
         $entity['weekday']['friday'] = 1;
         $entity['repeat']['afterWeeks'] = 2;
 
-        $this->assertTrue($entity->getDuration() == 60, "Availability duration does not macht");
-        $this->assertTrue($entity->hasDate($time), 'Availability should be valid on startDate');
+        $this->assertTrue($entity->getDuration() == 60, "Availability duration does not match");
         $this->assertFalse(
-            $entity->hasDate($time->modify('+3days')),
+            $entity->hasDate($time, $now),
+            'Availability should not be valid on startDate, case bookable on 1 day in the future'
+        );
+        $this->assertTrue(
+            $entity->hasDate($time->modify('+2week'), $now),
+            'Availability should be valid in the second week afterwards'
+        );
+        $this->assertFalse(
+            $entity->hasDate($time->modify('+3days'), $now),
             'Availability should not be valid on a monday if only friday is given'
         );
         $entity['weekday']['monday'] = 1;
         $this->assertTrue(
-            $entity->hasDate($time->modify('+3days')),
+            $entity->hasDate($time->modify('+3days'), $now),
             'Availability should be valid on a monday if friday and monday is given'
         );
         $this->assertFalse(
-            $entity->hasDate($time->modify('+1week')),
+            $entity->hasDate($time->modify('+1week'), $now),
             'Availability should not be valid in the first week afterwards if repeating is set to every 2 weeks'
-        );
-        $this->assertTrue(
-            $entity->hasDate($time->modify('+2week')),
-            'Availability should be valid in the second week afterwards'
         );
         $entity['repeat']['weekOfMonth'] = 2;
         $this->assertTrue(
-            $entity->hasDate($time->modify('+1week')),
+            $entity->hasDate($time->modify('+1week'), $now),
             'Availability should be valid in the second week of the month'
         );
         $this->assertFalse(
-            $entity->hasDate($time->modify('+3week')),
+            $entity->hasDate($time->modify('+3week'), $now),
             'Availability should be valid in the third week of the month'
         );
 
@@ -68,18 +72,19 @@ class AvailabilityTest extends EntityCommonTests
         $entity['repeat']['afterWeeks'] = 2;
         $entity['repeat']['weekOfMonth'] = 0;
         $this->assertTrue(
-            $entity->hasDate($time->modify('+3week')),
+            $entity->hasDate($time->modify('+3week'), $now),
             'Availability on afterWeeks=2 should be valid in the third week after startDate +1 day'
         );
         $entity['endDate'] = $time->modify("-1day")
             ->getTimestamp();
-        $this->assertFalse($entity->hasDate($time->modify('+1week')), 'EndDate is smaller than startDate');
+        $this->assertFalse($entity->hasDate($time->modify('+1week'), $now), 'EndDate is smaller than startDate');
     }
 
     public function testDayOff()
     {
         $dayOffTime = new \DateTimeImmutable(self::DEFAULT_TIME);
         $time = new \DateTimeImmutable('2015-11-26 12:30:00');
+        $now = new \DateTimeImmutable('2015-11-26 12:30:00');
         $entity = new $this->entityclass();
         $entity['startDate'] = $time->getTimestamp();
         $entity['endDate'] = $time->modify("+2month")->getTimestamp();
@@ -102,7 +107,7 @@ class AvailabilityTest extends EntityCommonTests
         $weekDayName = self::$weekdayNameList[$dayOffTime->format('w')];
         $entity['weekday'][$weekDayName] = 1;
         $this->assertFalse(
-            $entity->hasDate($dayOffTime),
+            $entity->hasDate($dayOffTime, $now),
             'Time '. $dayOffTime->format('Y-m-d') .' is a dayoff time'
         );
     }
@@ -114,7 +119,6 @@ class AvailabilityTest extends EntityCommonTests
         $entity['startDate'] = $time->getTimestamp();
         $entity['endDate'] = $time->modify("+2month")->getTimestamp();
         $endInDays = $entity->bookable['endInDays'];
-        $startInDays = $entity->bookable['startInDays'];
 
         $this->assertFalse(
             $entity->isBookable($time, $time),
@@ -130,7 +134,10 @@ class AvailabilityTest extends EntityCommonTests
             $entity->isBookable($time, $time);
             $this->fail("Expected exception ProcessBookableFailed not thrown");
         } catch (\BO\Zmsentities\Exception\ProcessBookableFailed $exception) {
-            $this->assertEquals('Undefined end time for booking, try to set the scope properly', $exception->getMessage());
+            $this->assertEquals(
+                'Undefined end time for booking, try to set the scope properly',
+                $exception->getMessage()
+            );
         }
         $entity->bookable['endInDays'] = $endInDays;
         try {
@@ -138,7 +145,10 @@ class AvailabilityTest extends EntityCommonTests
             $entity->isBookable($time, $time);
             $this->fail("Expected exception ProcessBookableFailed not thrown");
         } catch (\BO\Zmsentities\Exception\ProcessBookableFailed $exception) {
-            $this->assertEquals('Undefined start time for booking, try to set the scope properly', $exception->getMessage());
+            $this->assertEquals(
+                'Undefined start time for booking, try to set the scope properly',
+                $exception->getMessage()
+            );
         }
         $entity->bookable['endInDays'] = null;
 
@@ -262,8 +272,8 @@ class AvailabilityTest extends EntityCommonTests
     public function testWithCalculatedSlots()
     {
         $entity = (new $this->entityclass())->getExample();
-        $entityWithCalculatedSlots = $entity->withCalculatedSlots();
-        $this->assertTrue(81 == $entityWithCalculatedSlots['workstationCount']['public'], $entityWithCalculatedSlots);
+        $withCalculatedSlots = $entity->withCalculatedSlots();
+        $this->assertTrue(81 == $withCalculatedSlots['workstationCount']['public'], $withCalculatedSlots);
     }
 
     public function testToString()
@@ -293,7 +303,7 @@ class AvailabilityTest extends EntityCommonTests
             2 == count($collection),
             'Amount of entities in collection failed, 2 expected (' .
             count($collection) . ' found)'
-            );
+        );
 
         $this->assertTrue(
             10 == $collection->getMaxWorkstationCount(),
@@ -314,7 +324,7 @@ class AvailabilityTest extends EntityCommonTests
         $entityOH->endTime = '11:00:00';
         $collection->addEntity($entityOH);
         $this->assertFalse($collection->isOpened($time));
-    }    
+    }
 
     protected function getExampleWithTypeOpeningHours()
     {

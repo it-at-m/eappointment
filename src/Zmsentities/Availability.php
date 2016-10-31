@@ -72,7 +72,7 @@ class Availability extends Schema\Entity
      *
      * @return Bool
      */
-    public function hasDate(\DateTimeInterface $dateTime)
+    public function hasDate(\DateTimeInterface $dateTime, \DateTimeInterface $now)
     {
         //$debugAvailabilityId = 0;
         $dateTime = Helper\DateTime::create($dateTime);
@@ -98,6 +98,10 @@ class Availability extends Schema\Entity
             return false;
         }
         if ($this->getDuration() > 2 && $this->hasDayOff($dateTime)) {
+            return false;
+        }
+        if (!$this->isBookable($dateTime, $now)) {
+            // out of bookable start and end
             return false;
         }
         return true;
@@ -253,9 +257,11 @@ class Availability extends Schema\Entity
         $start = $this->getBookableStart($now);
         $end = $this->getBookableEnd($now);
         if ($dateTime->getTimestamp() < $start->getTimestamp()) {
+            //error_log($dateTime->format('c').'<'.$start->format('c'). " " . $this);
             return false;
         }
         if ($dateTime->getTimestamp() > $end->getTimestamp()) {
+            //error_log($dateTime->format('c').'>'.$end->format('c'). " " . $this);
             return false;
         }
         return true;
@@ -327,9 +333,9 @@ class Availability extends Schema\Entity
     {
         $info = "Availability #" . $this['id'];
         $info .= " starting " . $this->startDate . $this->getStartDateTime()->format(' Y-m-d');
-        $info .= " (" . $this->getBookableStart(new \DateTime)->format('Y-m-d') . ")";
+        $info .= "||now+" . $this['bookable']['startInDays'] . " ";
         $info .= " until " . $this->getEndDateTime()->format('Y-m-d');
-        $info .= " (" . $this->getBookableEnd(new \DateTime)->format('Y-m-d') . ")";
+        $info .= "||now+" . $this['bookable']['endInDays'] . " ";
         if ($this['repeat']['afterWeeks']) {
             $info .= " every " . $this['repeat']['afterWeeks'] . " week(s)";
         }

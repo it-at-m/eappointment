@@ -69,4 +69,13 @@ class Scope extends Schema\Entity
         $hint = explode('|', $this->hint);
         return (1 < count($hint)) ? trim(end($hint)) : null;
     }
+
+    public function __toString()
+    {
+        $string = 'scope#';
+        $string .= $this['id'];
+        $string .= ' ';
+        $string .= $this->getName();
+        return $string;
+    }
 }

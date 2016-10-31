@@ -15,7 +15,7 @@ class HelperTest extends EntityCommonTests
         $this->assertContains('Karfreitag', $entity->toProperty()->__toString(), 'Property __toString failed');
 
         try {
-            $entity->toProperty()->offsetSet('date','1458856801');
+            $entity->toProperty()->offsetSet('date', '1458856801');
             $this->fail("Expected exception PropertyOffsetReadOnly not thrown");
         } catch (\BO\Zmsentities\Exception\PropertyOffsetReadOnly $exception) {
             $this->assertEquals(500, $exception->getCode());
@@ -39,16 +39,16 @@ class HelperTest extends EntityCommonTests
             new \DateTimeZone('Europe/Berlin')
         );
         $this->assertFalse(
-            $entity->hasDate($time),
+            $entity->hasDate($time, $time),
             'Helper DateTime::create failed'
         );
 
         $time = \BO\Zmsentities\Helper\DateTime::create(
             new \BO\Zmsentities\Helper\DateTime('2016-01-31 12:50:00'),
             new \DateTimeZone('Europe/Berlin')
-            );
+        );
         $this->assertFalse(
-            $entity->hasDate($time),
+            $entity->hasDate($time, $time),
             'Helper DateTime::create failed'
         );
 
