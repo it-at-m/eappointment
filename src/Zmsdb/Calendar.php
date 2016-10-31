@@ -122,7 +122,6 @@ class Calendar extends Base
                 } else {
                     $statement->execute(SlotList::getParameters($scope['id'], $monthDateTime, $now));
                 }
-                //error_log(var_export(SlotList::getParameters($scope['id'], $monthDateTime), true));
                 $slotsRequired = $calendar['processing']['slotinfo'][$scope->getProviderId()];
                 while ($slotData = $statement->fetch(\PDO::FETCH_ASSOC)) {
                     $calendar = $this->addDayInfoToCalendar(

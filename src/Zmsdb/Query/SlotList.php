@@ -341,7 +341,7 @@ class SlotList
         $nowDate = $now->modify('00:00:00');
         do {
             $date = $time->format('Y-m-d');
-            if ($this->availability->hasDate($time)) {
+            if ($this->availability->hasDate($time, $nowDate)) {
                 $this->slots[$date] = clone $slotlist;
                 if ($nowDate == $time) {
                     $this->slots[$date] = $this->slots[$date]->withTimeGreaterThan($now);
