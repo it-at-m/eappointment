@@ -12,6 +12,10 @@ class ScopeTest extends Base
         $entity = (new Query())->readEntity(141, 1);
         $this->assertEntity("\\BO\\Zmsentities\\Scope", $entity);
         $this->assertEquals('Bürgeramt Heerstraße', $entity->getName());
+        $this->assertEquals(
+            '1',
+            $entity->toProperty()->preferences->appointment->notificationConfirmationEnabled->get()
+        );
     }
 
     public function testCluster()
@@ -79,7 +83,6 @@ class ScopeTest extends Base
     public function testReadIsOpened()
     {
         $query = new Query();
-        $input = $this->getTestEntity();
         $now = new \DateTimeImmutable("2016-04-01 11:55");
         $this->assertEquals(true, $query->readIsOpened(141, $now)); //Herrstraße
     }

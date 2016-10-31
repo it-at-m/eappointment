@@ -26,18 +26,25 @@ class Scope extends Base implements MappingInterface
         );
         $providerQuery = new Provider($this->query, 'provider__');
 
-
-        //$this->query->leftJoin(
-        //    new Alias(Department::TABLE, 'department'),
-        //    'scope.BehoerdenID',
-        //    '=',
-        //    'department.BehoerdenID'
-        //);
-        //$departmentQuery = new Department($this->query, 'department__');
-
-        //return [$providerQuery, $departmentQuery];
         return [$providerQuery];
     }
+
+    protected function addRequiredJoins()
+    {
+        $this->query->leftJoin(
+            new Alias(Department::TABLE, 'scopedepartment'),
+            'scope.BehoerdenID',
+            '=',
+            'scopedepartment.BehoerdenID'
+        );
+        $this->query->leftJoin(
+            new Alias('sms', 'scopesms'),
+            'scopedepartment.BehoerdenID',
+            '=',
+            'scopesms.BehoerdenID'
+        );
+    }
+
 
     public function getEntityMapping()
     {
@@ -53,6 +60,10 @@ class Scope extends Base implements MappingInterface
             'preferences__appointment__multipleSlotsEnabled' => 'scope.mehrfachtermine',
             'preferences__appointment__reservationDuration' => 'scope.reservierungsdauer',
             'preferences__appointment__startInDaysDefault' => 'scope.Termine_ab',
+            'preferences__appointment__notificationConfirmationEnabled' =>
+                self::expression('scopesms.enabled && scopesms.Absender != "" && scopesms.interneterinnerung'),
+            'preferences__appointment__notificationHeadsUpEnabled' =>
+                self::expression('scopesms.enabled && scopesms.Absender != "" && scopesms.internetbestaetigung'),
             'preferences__client__alternateAppointmentUrl' => 'scope.qtv_url',
             'preferences__client__amendmentActivated' => 'scope.anmerkungPflichtfeld',
             'preferences__client__amendmentLabel' => 'scope.anmerkungLabel',
@@ -60,7 +71,6 @@ class Scope extends Base implements MappingInterface
             'preferences__client__telephoneActivated' => 'scope.telefonaktiviert',
             'preferences__client__telephoneRequired' => 'scope.telefonPflichtfeld',
             'preferences__notifications__confirmationContent' => 'scope.smsbestaetigungstext',
-            'preferences__notifications__enabled' => 'scope.smswarteschlange',
             'preferences__notifications__headsUpContent' => 'scope.smsbenachrichtigungstext',
             'preferences__notifications__headsUpTime' => 'scope.smsbenachrichtigungsfrist',
             'preferences__pickup__alternateName' => 'scope.ausgabeschaltername',
@@ -80,6 +90,7 @@ class Scope extends Base implements MappingInterface
             'preferences__ticketprinter__confirmationEnabled' => 'scope.smswmsbestaetigung',
             'preferences__ticketprinter__deactivatedText' => 'scope.wartenrhinweis',
             'preferences__ticketprinter__notificationsAmendmentEnabled' => 'scope.smsnachtrag',
+            'preferences__ticketprinter__notificationsEnabled' => 'scope.smswarteschlange',
             'preferences__ticketprinter__notificationsDelay' => 'scope.smskioskangebotsfrist',
             'preferences__workstation__emergencyEnabled' => 'scope.notruffunktion',
             'shortName' => 'scope.standortkuerzel',
@@ -151,6 +162,7 @@ class Scope extends Base implements MappingInterface
         $data['Termine_bis'] = $entity->getPreference('appointment', 'endInDaysDefault');
         $data['Termine_ab'] = $entity->getPreference('appointment', 'startInDaysDefault');
         $data['mehrfachtermine'] = $entity->getPreference('appointment', 'multipleSlotsEnabled', true);
+        // notificationConfirmationEnabled and notificationHeadsUpEnabled are saved in department!
         $data['reservierungsdauer'] = $entity->getPreference('appointment', 'reservationDuration');
         $data['qtv_url'] = $entity->getPreference('client', 'alternateAppointmentUrl');
         $data['anmerkungPflichtfeld'] = $entity->getPreference('client', 'amendmentActivated', true);
@@ -159,7 +171,6 @@ class Scope extends Base implements MappingInterface
         $data['telefonaktiviert'] = $entity->getPreference('client', 'telephoneActivated', true);
         $data['telefonPflichtfeld'] = $entity->getPreference('client', 'telephoneRequired', true);
         $data['smsbestaetigungstext'] = $entity->getPreference('notifications', 'confirmationContent');
-        $data['smswarteschlange'] = $entity->getPreference('notifications', 'enabled', true);
         $data['smsbenachrichtigungstext'] = $entity->getPreference('notifications', 'headsUpContent');
         $data['smsbenachrichtigungsfrist'] = $entity->getPreference('notifications', 'headsUpTime');
         $data['ausgabeschaltername'] = $entity->getPreference('pickup', 'alternateName');
@@ -177,6 +188,7 @@ class Scope extends Base implements MappingInterface
         $data['smswmsbestaetigung'] = $entity->getPreference('ticketprinter', 'confirmationEnabled', true);
         $data['wartenrhinweis'] = $entity->getPreference('ticketprinter', 'deactivatedText');
         $data['smsnachtrag'] = $entity->getPreference('ticketprinter', 'notificationsAmendmentEnabled', true);
+        $data['smswarteschlange'] = $entity->getPreference('ticketprinter', 'notificationsEnabled', true);
         $data['smskioskangebotsfrist'] = $entity->getPreference('ticketprinter', 'notificationsDelay');
         $data['notruffunktion'] = $entity->getPreference('workstation', 'emergencyEnabled', true);
         $data['notrufantwort'] = $entity->getStatus('emergency', 'acceptedByWorkstation');
