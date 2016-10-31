@@ -4,6 +4,7 @@ namespace BO\Zmsdb\Tests;
 
 use \BO\Zmsdb\Availability as Query;
 use \BO\Zmsentities\Availability as Entity;
+use BO\Zmsentities\Helper\DateTime;
 
 class AvailabilityTest extends Base
 {
@@ -17,6 +18,19 @@ class AvailabilityTest extends Base
 
         $entity = $query->readEntity(21202, 0, true); //check cache
         $this->assertEquals(64, $entity->weekday['saturday']);
+    }
+
+
+    public function testEndAvailability()
+    {
+        $query = new Query();
+        $entity = $query->readEntity(64054, 0); //Egon-Erwin-Kisch scope#135 for monday
+        $dateTime = new DateTime("2016-05-30 10:00");
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $this->assertFalse(
+            $entity->hasDate($dateTime, $now),
+            "Scope should not be open, cause it has only 56 days bookable from now on"
+        );
     }
 
     public function testReadList()
@@ -46,6 +60,6 @@ class AvailabilityTest extends Base
 
     protected function getTestEntity()
     {
-        return $input = (new Entity())->createExample();
+        return (new Entity())->createExample();
     }
 }
