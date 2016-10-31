@@ -87,11 +87,23 @@ class Message implements \JsonSerializable
             "data" => $this->data,
         ];
         if (\App::DEBUG) {
-            $message['profiler'] = [
-                'DB_RO' => \BO\Zmsdb\Connection\Select::getReadConnection()->getProfiler()->getProfiles(),
-                'DB_RW' => \BO\Zmsdb\Connection\Select::getWriteConnection()->getProfiler()->getProfiles(),
-            ];
+            $message['profiler'] = $this->getProfilerData();
         }
         return $message;
+    }
+
+    protected function getProfilerData()
+    {
+        $profiles = \BO\Zmsdb\Connection\Select::getWriteConnection()->getProfiler()->getProfiles();
+        if (!$profiles) {
+            $profiles = \BO\Zmsdb\Connection\Select::getReadConnection()->getProfiler()->getProfiles();
+        }
+        $filtered = array();
+        foreach ($profiles as $profile) {
+            if ($profile['function'] == 'perform') {
+                $filtered[] = $profile;
+            }
+        }
+        return $filtered;
     }
 }
