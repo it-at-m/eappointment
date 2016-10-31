@@ -27,7 +27,7 @@ class ProcessFree extends BaseController
         if (!$processList->getFirstProcess()) {
             throw new Exception\Process\FreeProcessListEmpty();
         } else {
-            $message->data = $processList;
+            $message->data = $processList->withLessData();
         }
 
         Render::lastModified(time(), '0');
