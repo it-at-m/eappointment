@@ -20,6 +20,8 @@
                 "deallocationDuration": 10,
                 "endInDaysDefault": 60,
                 "multipleSlotsEnabled": true,
+                "notificationConfirmationEnabled": true,
+                "notificationHeadsUpEnabled": true,
                 "reservationDuration": 5,
                 "startInDaysDefault": 2
             },
@@ -32,7 +34,6 @@
             },
             "notifications": {
                 "confirmationContent": "Ihr Termin wurde erfolgreich gebucht mit der Nummer: ",
-                "enabled": true,
                 "headsUpTime": 15,
                 "headsUpContent": "Ihr Termin wird bald aufgerufen, begeben Sie sich zum Warteraum."
             },
@@ -58,6 +59,7 @@
                 "confirmationEnabled": true,
                 "deactivatedText": "Dies Ausgabe von Wartenummern wurde bereits vorzeitig geschlossen, wir bitten um ihr Verständnis.",
                 "notificationsAmendmentEnabled": true,
+                "notificationsEnabled": true,
                 "notificationsDelay": 30
             },
             "workstation": {
@@ -143,6 +145,16 @@
                             "description": "true if more than one timeslot per appointment is allowed",
                             "default": true
                         },
+                        "notificationConfirmationEnabled": {
+                            "type": ["boolean", "number"],
+                            "description": "true if client should get a notification to confirm that notifications are enabled for him/her (Convienient preferences, see department for origin)",
+                            "default": false
+                        },
+                        "notificationHeadsUpEnabled": {
+                            "type": ["boolean", "number"],
+                            "description": "true if client should get a notification as reminder (Convienient preferences, see department for origin)",
+                            "default": false
+                        },
                         "reservationDuration": {
                             "type": "number",
                             "description": "minutes an appointment can have the status reserved",
@@ -199,11 +211,6 @@
                             "type": "string",
                             "description": "text to send to client to confirm the appointment",
                             "default": ""
-                        },
-                        "enabled": {
-                            "type": ["boolean", "number"],
-                            "description": "true if notifications for calling up clients are enabled",
-                            "default": false
                         },
                         "headsUpTime": {
                             "type": "number",
@@ -312,6 +319,11 @@
                         "notificationsAmendmentEnabled": {
                             "type": ["boolean", "number"],
                             "description": "true if a client is allowed to enter a notfication address after getting his waiting number",
+                            "default": false
+                        },
+                        "notificationsEnabled": {
+                            "type": ["boolean", "number"],
+                            "description": "true if notifications for calling up clients are enabled. A client is allowed to enter a telephone number if waitingtime is greater than notificationDelay.",
                             "default": false
                         },
                         "notificationsDelay": {
