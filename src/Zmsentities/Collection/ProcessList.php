@@ -28,4 +28,15 @@ class ProcessList extends Base
         }
         return $list->withUniqueScopes();
     }
+
+    public function toReducedWithinTime($referenceTime)
+    {
+        $processList = new self();
+        foreach ($this as $process) {
+            if ($process->getFirstAppointment()['date'] < $referenceTime) {
+                $processList->addEntity($process);
+            }
+        }
+        return $processList;
+    }
 }
