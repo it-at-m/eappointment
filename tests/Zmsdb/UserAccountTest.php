@@ -5,6 +5,7 @@ namespace BO\Zmsdb\Tests;
 use \BO\Zmsdb\UserAccount as Query;
 use \BO\Zmsdb\Workstation;
 use \BO\Zmsentities\UserAccount as Entity;
+use \BO\Zmsentities\Workstation as WorkstationEntity;
 
 class UserAccountTest extends Base
 {
@@ -47,6 +48,24 @@ class UserAccountTest extends Base
         $userAccount = $query->writeEntity($entity);
         $departmentList = $query->readAssignedDepartmentList($userAccount, 1);
         $this->assertEntityList("\\BO\\Zmsentities\\Department", $departmentList);
+    }
+
+    public function testReadWorkstationByScope()
+    {
+        $query = new Query();
+        $input = $this->getTestEntity();
+        //first write userAccount example in Database
+        $userAccount = $query->writeEntity($input);
+        $this->assertEntity("\\BO\\Zmsentities\\UserAccount", $userAccount);
+        //login workstation by useraccount
+        $workstation = (new Workstation())->writeEntityLoginByName($userAccount->id, $input->password);
+        //get example workstation account with scope etc and give id from logged in workstation for update
+        $workstationInput = (new WorkstationEntity())->getExample();
+        $workstationInput->id = $workstation->id;
+        //update workstation to read by scope testing
+        $workstation = (new Workstation())->updateEntity($workstationInput);
+        $workstation = (new Workstation())->readByScope(123);
+        $this->assertEntity("\\BO\\Zmsentities\\Workstation", $workstation);
     }
 
     public function testDelete()

@@ -129,9 +129,9 @@ class Scope extends Base
     /**
      * get a scope and return true if it is opened
      *
-     ** @param
-     *            scopeId
-     *            now
+     * * @param
+     * scopeId
+     * now
      *
      * @return Bool
      */
@@ -147,6 +147,35 @@ class Scope extends Base
             $isOpened = true;
         }
         return $isOpened;
+    }
+
+    /**
+     * get waitingtime of scope
+     *
+     * * @param
+     * scopeId
+     * now
+     *
+     * @return Bool
+     */
+    public function readWaitingTime($scopeId, $now)
+    {
+        $waitingTime = null;
+        $processList = (new Process())->readProcessListByScopeId($scopeId);
+        $query = new Query\Scope(Query\Base::SELECT);
+        $query->addEntityMapping()
+            ->addConditionScopeId($scopeId);
+        $scope = $this->fetchOne($query, new Entity());
+        $workstationCount = ('-1' == $scope->getStatus('queue', 'ghostWorkstationCount')) ?
+            count((new Workstation())->readByScope($scopeId)) :
+            $scope->getStatus('queue', 'ghostWorkstationCount');
+        if (0 < $workstationCount) {
+            $timeSlot = $scope->getPreference('queue', 'processingTimeAverage') * 60 / $workstationCount;
+            $referenceTime = $now->getTimestamp() + ($timeSlot * count($processList));
+            $processList->toReducedWithinTime($referenceTime);
+            $waitingTime = count($processList) * $timeSlot;
+        }
+        return $waitingTime;
     }
 
     /**
