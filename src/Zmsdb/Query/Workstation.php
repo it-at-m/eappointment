@@ -76,6 +76,12 @@ class Workstation extends Base implements MappingInterface
         return $this;
     }
 
+    public function addConditionScopeId($scopeId)
+    {
+        $this->query->where('workstation.StandortID', '=', $scopeId);
+        return $this;
+    }
+
     public function reverseEntityMapping(\BO\Zmsentities\Workstation $entity, $selectedDepartmentId = null)
     {
         $data = array();

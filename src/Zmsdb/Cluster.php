@@ -79,10 +79,10 @@ class Cluster extends Base
     }
 
     /**
-     * get a scope and return if it is opened
+     * get a scopeList with opened scopes
      *
      ** @param
-     *            scopeId
+     *            clusterId
      *            now
      *
      * @return Bool
@@ -91,13 +91,39 @@ class Cluster extends Base
     {
         $scopeList = new \BO\Zmsentities\Collection\ScopeList();
         $cluster = $this->readEntity($clusterId, 1);
-        foreach ($cluster->scopes as $scope) {
-            $availabilityList = (new Availability())->readOpeningHoursListByDate($scope['id'], $now);
-            if ($availabilityList->isOpened($now) && ! $scope->getStatus('ticketprinter', 'deactivated')) {
-                $scopeList->addEntity($scope);
+        if ($cluster && $cluster->toProperty()->scopes->get()) {
+            foreach ($cluster->scopes as $scope) {
+                $availabilityList = (new Availability())->readOpeningHoursListByDate($scope['id'], $now);
+                if ($availabilityList->isOpened($now) && ! $scope->getStatus('ticketprinter', 'deactivated')) {
+                    $scopeList->addEntity($scope);
+                }
             }
         }
         return $scopeList;
+    }
+
+    /**
+     * get a scope with shortest waitingtime
+     *
+     ** @param
+     *            clusterId
+     *            now
+     *
+     * @return Bool
+     */
+    public function readScopeWithShortestWaitingTime($clusterId, $now)
+    {
+        $scopeList = $this->readIsOpenedScopeList($clusterId, $now);
+        $preferedScope = reset($scopeList);
+        $waitingTimeReference = 10000000;
+        foreach ($scopeList as $scope) {
+            $waitingTime = (new Scope())->readWaitingTime($scope->id, $now);
+            if ($waitingTime && $waitingTimeReference >= $waitingTime) {
+                $waitingTimeReference = $waitingTime;
+                $preferedScope = $scope;
+            }
+        }
+        return $preferedScope;
     }
 
     /**

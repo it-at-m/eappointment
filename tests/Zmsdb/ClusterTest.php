@@ -7,6 +7,16 @@ use \BO\Zmsentities\Cluster as Entity;
 
 class ClusterTest extends Base
 {
+    public function testBasic()
+    {
+        $query = new Query();
+        $entity = $query->readEntity(4);
+        $this->assertEntity("\\BO\\Zmsentities\\Cluster", $entity);
+
+        $entity = $query->readEntity(999);
+        $this->assertTrue(null === $entity);
+    }
+
     public function testReadList()
     {
         $query = new Query();
@@ -20,10 +30,11 @@ class ClusterTest extends Base
         $input = $this->getTestEntity();
         $entityList = $query->readByDepartmentId(72, 1); //by Egon-Erwin-Kisch-Str.
         $this->assertEntityList("\\BO\\Zmsentities\\Cluster", $entityList);
-        $this->assertEquals(true, $entityList->hasScope('134')); //Bürgeramt 1 (Neu- Hohenschönhausen) Egon-Erwin-Kisch-Straße exists
+        //Bürgeramt 1 (Neu- Hohenschönhausen) Egon-Erwin-Kisch-Straße exists
+        $this->assertEquals(true, $entityList->hasScope('134'));
         $this->assertEquals(true, $entityList->hasScope('135')); //Bürgeramt 2 (Lichtenberg) Normannenstr. exists
     }
-    
+
     public function testReadIsOpenedScopeList()
     {
         $query = new Query();
@@ -31,6 +42,16 @@ class ClusterTest extends Base
         $now = new \DateTimeImmutable("2016-04-01 11:55");
         $entityList = $query->readIsOpenedScopeList(60, $now); //by Egon-Erwin-Kisch-Str. Cluster
         $this->assertEquals(true, 0 <= count($entityList));
+    }
+
+    public function testReadScopeWithShortestWaitingTime()
+    {
+        $query = new Query();
+        $input = $this->getTestEntity();
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        //by Schöneberg with test ghostWorkstationCount of 3
+        $scope = $query->readScopeWithShortestWaitingTime(4, $now);
+        $this->assertTrue(146 == $scope->id);
     }
 
     public function testWriteEntity()
