@@ -25,12 +25,6 @@ abstract class Base
      */
     public function __construct(\PDO $writeConnection = null, \PDO $readConnection = null)
     {
-        if (null === $writeConnection) {
-            $writeConnection = Connection\Select::getWriteConnection();
-        }
-        if (null === $readConnection) {
-            $readConnection = Connection\Select::getReadConnection();
-        }
         $this->writeDb = $writeConnection;
         $this->readDb = $readConnection;
     }
@@ -40,6 +34,10 @@ abstract class Base
      */
     public function getWriter()
     {
+        if (null === $this->writeDb) {
+            $this->writeDb = Connection\Select::getWriteConnection();
+            $this->readDb = $this->writeDb;
+        }
         return $this->writeDb;
     }
 
@@ -48,6 +46,9 @@ abstract class Base
      */
     public function getReader()
     {
+        if (null === $this->readDb) {
+            $this->readDb= Connection\Select::getReadConnection();
+        }
         return $this->readDb;
     }
 
