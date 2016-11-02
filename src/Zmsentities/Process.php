@@ -175,4 +175,18 @@ class Process extends Schema\Entity
         }
         return $entity;
     }
+
+    public function __toString()
+    {
+        $string = "process#";
+        $string .= $this->id;
+        $string .= " (" . $this->status . ")";
+        $string .= " " . $this->getFirstAppointment()->toDateTime()->format('c');
+        $string .= " " . $this->getFirstAppointment()->slotCount."slots";
+        foreach ($this->requests as $request) {
+            $string .= " " . $request['source'] . "." . $request['id'];
+        }
+        $string .= " scope." . $this['scope']['id'];
+        return $string;
+    }
 }
