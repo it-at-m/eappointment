@@ -90,4 +90,15 @@ class ProcessTest extends EntityCommonTests
         $collection = $collection->withLessData();
         $this->assertEntityList($this->entityclass, $collection);
     }
+
+    public function testReduceWithinTime()
+    {
+        $collection = new $this->collectionclass();
+        $entity = $this->getExample();
+        $appointment = (new \BO\Zmsentities\Appointment())->getExample();
+        $entity->appointments = array($appointment);
+        $collection->addEntity($entity);
+        $collection->toReducedWithinTime(1447869172);
+        $this->assertEntityList($this->entityclass, $collection);
+    }
 }
