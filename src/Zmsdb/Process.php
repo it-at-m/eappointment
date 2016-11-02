@@ -55,6 +55,7 @@ class Process extends Base
 
         $process = $this->readEntity($processId, $authKey);
         $process['status'] = (new Status())->readProcessStatus($processId, $authKey);
+        Log::writeLogEntry("UPDATE (Process::updateEntity) $process ", $processId);
         return $process;
     }
 
@@ -141,6 +142,7 @@ class Process extends Base
             $notification =  new Notification();
             $notification->deleteEntityByProcess($processId);
         }
+        Log::writeLogEntry("DELETE (Process::deleteEntity) $processId ", $processId);
         return $status;
     }
 
@@ -167,6 +169,7 @@ class Process extends Base
         $lock = $this->getLock($query);
         $dateTime = new \DateTime();
         if ($lock == 1 && false === $forceUnLocked) {
+            $autoincrement = '';
             $query->addValues(
                 [
                 'BuergerID' => $this->getNewProcessId($query),
@@ -175,6 +178,7 @@ class Process extends Base
                 ]
             );
         } else {
+            $autoincrement = '(autoincrement)';
             $query->addValues(
                 [
                 'BuergerID' => null,
@@ -187,6 +191,7 @@ class Process extends Base
         $lastInsertId = $this->getWriter()
             ->lastInsertId();
         $this->releaseLock($query);
+        Log::writeLogEntry("CREATE (Process::writeNewProcess) process#$lastInsertId $autoincrement ", $lastInsertId);
         return $lastInsertId;
     }
 
