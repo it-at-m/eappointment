@@ -25,8 +25,13 @@ class ProcessDelete extends BaseController
         } elseif ($authKeyByProcessId != $authKey) {
             throw new Exception\Process\AuthKeyMatchFailed();
         } else {
-            $query->deleteEntity($itemId, $authKey);
+            //first read for scope -> its 0 after delete
             $process = $query->readEntity($itemId, $authKey);
+            $scopeId = $process->getScopeId();
+            $query->deleteEntity($itemId, $authKey);
+            //read with delete status and add scope to process for return
+            $process = $query->readEntity($itemId, $authKey);
+            $process->addScope($scopeId);
             $message->data = $process;
         }
 
