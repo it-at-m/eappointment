@@ -24,6 +24,7 @@ require(APP_PATH . '/config.php');
 ];
 
 \App::$slim->add(new \BO\Zmsapi\Helper\TransactionMiddleware());
+\App::$slim->add(new \BO\Zmsapi\Helper\LogOperatorMiddleware());
 
 // DLDB data loader
 \BO\Zmsdb\Helper\DldbData::$dataPath = \App::APP_PATH . \App::$data;
