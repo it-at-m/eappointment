@@ -8,21 +8,27 @@ use \BO\Zmsentities\Calendar;
 
 class ProcessTest extends Base
 {
-    public function testBasic()
+    public function testUpdateProcess()
     {
         $query = new Query();
         $input = $this->getTestProcessEntity();
-
-        $process = $query->updateEntity($input);
-        $process = $query->readEntity($process->id, $process->authKey);
+        $process = $query->reserveEntity($input);
+        $process->amendment = 'Test amendment';
+        $process = $query->updateEntity($process);
 
         $this->assertEntity("\\BO\\Zmsentities\\Process", $process);
-        $this->assertEquals(array('120686'), $process->getRequestIds());
+        $this->assertEquals('Test amendment', $process->amendment);
         $this->assertEquals(151, $process->getScopeId());
 
         $process = $query->updateProcessStatus($process, 'confirmed');
         $this->assertEquals('confirmed', $process->getStatus());
+    }
 
+    public function testDeleteProcess()
+    {
+        $query = new Query();
+        $input = $this->getTestProcessEntity();
+        $process = $query->reserveEntity($input);
         $deleteTest = $query->deleteEntity($process->id, $process->authKey);
         $this->assertTrue($deleteTest, "Failed to delete Process from Database.");
 
@@ -33,11 +39,21 @@ class ProcessTest extends Base
         $this->assertEquals(null, $process);
     }
 
-    public function testReadListByScopeId()
+    public function testReserveProcess()
     {
         $query = new Query();
-        $processList = $query->readProcessListByScopeId(141); //Heerstraße
-        $this->assertTrue(0 < count($processList), "Scope 141 Heerstraße should have assigned processes");
+        $input = $this->getTestProcessEntity();
+        $process = $query->reserveEntity($input);
+        $process = $query->readEntity($process->id, $process->authKey);
+        $this->assertEntity("\\BO\\Zmsentities\\Process", $process);
+    }
+
+    public function testReadListByScopeAndTime()
+    {
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $query = new Query();
+        $processList = $query->readProcessListByScopeAndTime(141, $now); //Heerstraße
+        $this->assertTrue(105 == count($processList), "Scope 141 Heerstraße should have 105 assigned processes");
     }
 
     public function testWriteProcessUnLocked()
@@ -45,16 +61,9 @@ class ProcessTest extends Base
         $query = new Query();
         $input = $this->getTestProcessEntity();
         $input->id = $query->writeNewProcess(true);
+        $input->authKey = $query->readAuthKeyByProcessId($input->id);
         $process = $query->updateEntity($input);
-
         $this->assertEntity("\\BO\\Zmsentities\\Process", $process);
-        $this->assertEquals(array('120686'), $process->getRequestIds());
-
-        $deleteTest = $query->deleteEntity($process->id, $process->authKey);
-        $this->assertTrue($deleteTest, "Failed to delete Process from Database.");
-
-        $process = $query->readEntity($process->id, $process->authKey);
-        $this->assertEquals('deleted', $process->getStatus());
     }
 
     public function testStatusFree()

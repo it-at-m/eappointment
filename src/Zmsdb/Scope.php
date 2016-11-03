@@ -158,25 +158,27 @@ class Scope extends Base
      *
      * @return Bool
      */
+    /*
     public function readWaitingTime($scopeId, $now)
     {
-        $waitingTime = null;
-        $processList = (new Process())->readProcessListByScopeId($scopeId);
+        //get scope
         $query = new Query\Scope(Query\Base::SELECT);
-        $query->addEntityMapping()
-            ->addConditionScopeId($scopeId);
+        $query->addEntityMapping()->addConditionScopeId($scopeId);
         $scope = $this->fetchOne($query, new Entity());
+
+        //get workstation count
         $workstationCount = ('-1' == $scope->getStatus('queue', 'ghostWorkstationCount')) ?
             count((new Workstation())->readByScope($scopeId)) :
             $scope->getStatus('queue', 'ghostWorkstationCount');
-        if (0 < $workstationCount) {
-            $timeSlot = $scope->getPreference('queue', 'processingTimeAverage') * 60 / $workstationCount;
-            $referenceTime = $now->getTimestamp() + ($timeSlot * count($processList));
-            $processList->toReducedWithinTime($referenceTime);
-            $waitingTime = count($processList) * $timeSlot;
-        }
-        return $waitingTime;
+
+        //get queuelist
+        $queueList = (new Process())
+            ->readProcessListByScopeAndTime($scopeId, $now)
+            ->toQueue($now)
+            ->withEstimatedWaitingTime($scope->getPreference('queue', 'processingTimeAverage'), $workstationCount);
+        return $queueList->getEstimatedWaitingTime();
     }
+    */
 
     /**
      * write a scope
