@@ -44,13 +44,13 @@ class Notification extends Schema\Entity
         return $this->toProperty()->department->preferences->notifications->identification->get();
     }
 
-    public function toResolvedEntity(Process $process, Config $config)
+    public function toResolvedEntity(Process $process, Config $config, Department $department)
     {
         $entity = clone $this;
         $entity->process = $process;
         $entity->message = Helper\Messaging::getNotificationContent($process, $config);
         $entity->createIP = $process->createIP;
-        $entity->department = $process->toProperty()->scope->department->get();
+        $entity->department = $department;
         return $entity;
     }
 
