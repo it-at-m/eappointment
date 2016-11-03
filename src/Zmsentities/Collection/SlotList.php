@@ -79,12 +79,15 @@ class SlotList extends Base
         return $slotList;
     }
 
+    // todo, slotRequired von calendar bis hierhin durchreichen und als slotCount verwenden
+    // für jeden slot ein appointment adden
     public function getFreeProcesses(
         $selectedDate,
         \BO\Zmsentities\Scope $scope,
         \BO\Zmsentities\Availability $availability,
         $slotType,
-        $requests
+        $requests,
+        $slotsRequired
     ) {
         $processList = new ProcessList();
         foreach ($this as $slot) {
@@ -92,7 +95,7 @@ class SlotList extends Base
                 $appointment = new \BO\Zmsentities\Appointment(array(
                     'scope' => $scope,
                     'availability' => $availability,
-                    'slotCount' => $slot[$slotType]
+                    'slotCount' => $slotsRequired
                 ));
                 if (!$slot->hasTime()) {
                     throw new \BO\Zmsentities\Exception\SlotMissingTime("Time on slot not set: $slot");
@@ -102,7 +105,9 @@ class SlotList extends Base
                     'scope' => $scope,
                     'requests' => $requests
                 ));
-                $process->addAppointment($appointment);
+                for ($count = 0; $count < $slot[$slotType]; $count++) {
+                    $process->addAppointment($appointment);
+                }
                 $processList[] = $process;
             }
         }
