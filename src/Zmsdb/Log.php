@@ -11,8 +11,11 @@ class Log extends Base
     const MIGRATION = 'migration';
     const ERROR = 'error';
 
+    public static $operator = 'lib';
+
     public static function writeLogEntry($message, $referenceId, $type = self::PROCESS)
     {
+        $message .= " [" . static::$operator . "]";
         $log = new static();
         $writer =$log->getWriter();
         $sql = "INSERT INTO `log` SET `message`=:message, `reference_id`=:referenceId, `type`=:type";
