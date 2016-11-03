@@ -60,16 +60,15 @@ class SlotTest extends EntityCommonTests
         $collection->addEntity($entity);
         $scope = (new \BO\Zmsentities\Scope())->getExample();
         $availability = (new \BO\Zmsentities\Availability())->getExample();
-        $freeProcesses = $collection->getFreeProcesses('2016-04-01', $scope, $availability, 'public', '123456');
-        $firstAppointment = $freeProcesses[0]->getFirstAppointment();
+        $freeProcesses = $collection->getFreeProcesses('2016-04-01', $scope, $availability, 'public', '123456', 0);
         $this->assertInstanceOf(
             '\BO\Zmsentities\Appointment',
-            $firstAppointment,
+            $freeProcesses[0]->getFirstAppointment(),
             'Get Appointment failed'
             );
         $this->assertTrue(
-            3 == $firstAppointment->slotCount,
-            'Amout of slotcount ('. $firstAppointment->slotCount .') is wrong, 3 expected'
+            3 == count($freeProcesses[0]->appointments),
+            'Amout of slotcount ('. count($freeProcesses[0]->appointments) .') is wrong, 3 expected'
         );
     }
 
@@ -82,7 +81,7 @@ class SlotTest extends EntityCommonTests
         $scope = (new \BO\Zmsentities\Scope())->getExample();
         $availability = (new \BO\Zmsentities\Availability())->getExample();
         try {
-            $freeProcesses = $collection->getFreeProcesses('2015-04-01', $scope, $availability, 'public', '123456');
+            $freeProcesses = $collection->getFreeProcesses('2015-04-01', $scope, $availability, 'public', '123456', 0);
             $this->fail("Expected exception SlotMissingTime not thrown");
         } catch (\BO\Zmsentities\Exception\SlotMissingTime $exception) {
             $this->assertContains('Time on slot not set', $exception->getMessage());
