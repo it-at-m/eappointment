@@ -25,12 +25,13 @@ class CompareFreeProcessesTest extends Base
         $freeProcessesDayIntern = 0;
         $freeProcessesTime = 0;
         //$scopeList = (new Scope())->readList();
-        $scopeList = new \BO\Zmsentities\COllection\ScopeList();
+        $scopeList = new \BO\Zmsentities\Collection\ScopeList();
         $scopeList->addEntity((new Scope())->readEntity(145));
         foreach ($scopeList as $scope) {
             $processAppointments = 0;
             $input = $this->getTestEntity();
             $input->addScope($scope->id);
+            echo "DAY CALENDAR \n";
             $calendar = (new Calendar())->readResolvedEntity($input, $now);
             $day = $calendar->getDayByDateTime($dateTime);
 
