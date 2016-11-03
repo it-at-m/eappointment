@@ -44,6 +44,7 @@ class ClusterTest extends Base
         $this->assertEquals(true, 0 <= count($entityList));
     }
 
+    /*
     public function testReadScopeWithShortestWaitingTime()
     {
         $query = new Query();
@@ -53,6 +54,7 @@ class ClusterTest extends Base
         $scope = $query->readScopeWithShortestWaitingTime(4, $now);
         $this->assertTrue(146 == $scope->id);
     }
+    */
 
     public function testWriteEntity()
     {

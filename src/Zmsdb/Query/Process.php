@@ -120,6 +120,12 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
+    public function addConditionTime($now)
+    {
+        $this->query->where('process.Datum', '=', $now->format('Y-m-d'));
+        return $this;
+    }
+
     public function addConditionAuthKey($authKey)
     {
         $this->query->where('process.absagecode', '=', $authKey);

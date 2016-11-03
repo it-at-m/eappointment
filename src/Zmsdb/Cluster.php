@@ -111,6 +111,7 @@ class Cluster extends Base
      *
      * @return Bool
      */
+    /*
     public function readScopeWithShortestWaitingTime($clusterId, $now)
     {
         $scopeList = $this->readIsOpenedScopeList($clusterId, $now);
@@ -125,6 +126,7 @@ class Cluster extends Base
         }
         return $preferedScope;
     }
+    */
 
     /**
     * remove an cluster

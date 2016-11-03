@@ -31,6 +31,7 @@ class Process extends Base
         return $process;
     }
 
+    /*
     public function updateEntity(\BO\Zmsentities\Process $process)
     {
         $query = new Query\Process(Query\Base::UPDATE);
@@ -58,6 +59,45 @@ class Process extends Base
         Log::writeLogEntry("UPDATE (Process::updateEntity) $process ", $processId);
         return $process;
     }
+    */
+
+    public function updateEntity(\BO\Zmsentities\Process $process)
+    {
+        $query = new Query\Process(Query\Base::UPDATE);
+        $query->addConditionProcessId($process['id']);
+        $query->addConditionAuthKey($process['authKey']);
+
+        $values = $query->reverseEntityMapping($process);
+        $query->addValues($values);
+        $this->writeItem($query);
+        $this->writeRequestsToDb($process->id, $process->requests);
+
+        $process = $this->readEntity($process->id, $process->authKey);
+        $process->status = (new Status())->readProcessStatus($process->id, $process->authKey);
+
+        Log::writeLogEntry("UPDATE (Process::updateEntity) $process ", $process->id);
+        return $process;
+    }
+
+    public function reserveEntity(\BO\Zmsentities\Process $process)
+    {
+        $processId = $this->writeNewProcess();
+        $authKey = $this->readAuthKeyByProcessId($processId);
+        $query = new Query\Process(Query\Base::UPDATE);
+        $query->addConditionProcessId($processId);
+        $query->addConditionAuthKey($authKey);
+
+        $values = $query->reverseEntityMapping($process);
+        $query->addValues($values);
+        $this->writeItem($query);
+        $this->writeRequestsToDb($processId, $process['requests']);
+
+        $process = $this->readEntity($processId, $authKey);
+        $process['status'] = (new Status())->readProcessStatus($processId, $authKey);
+
+        Log::writeLogEntry("RESERVE (Process::reserveEntity) $process ", $processId);
+        return $process;
+    }
 
     /**
      * Read authKey by processId
@@ -83,11 +123,14 @@ class Process extends Base
      *
      * @return String authKey
      */
-    public function readProcessListByScopeId($scopeId)
+    public function readProcessListByScopeAndTime($scopeId, \DateTimeInterface $now)
     {
         $processList = new Collection();
         $query = new Query\Process(Query\Base::SELECT);
-        $query->addEntityMapping()->addConditionScopeId($scopeId);
+        $query
+            ->addEntityMapping()
+            ->addConditionScopeId($scopeId)
+            ->addConditionTime($now);
         $statement = $this->fetchStatement($query);
         while ($processData = $statement->fetch(\PDO::FETCH_ASSOC)) {
             $entity = new Entity($query->postProcess($processData));
