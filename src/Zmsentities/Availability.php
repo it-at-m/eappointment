@@ -353,6 +353,8 @@ class Availability extends Schema\Entity
         $info .= " with p{$this['workstationCount']['public']}/";
         $info .= "c{$this['workstationCount']['callcenter']}/";
         $info .= "i{$this['workstationCount']['intern']}";
+        $day = $this->getSlotList()->getSummerizedSlot();
+        $info .= " day $day";
         return $info;
     }
 
