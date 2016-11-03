@@ -158,7 +158,7 @@ class SlotList
      *
      * @var \BO\Zmsentities\Availability $availability
      */
-    protected $availability = null;
+    public $availability = null;
 
     /**
      *
@@ -293,10 +293,10 @@ class SlotList
         return $this;
     }
 
-    public function addToCalendar(\BO\Zmsentities\Calendar $calendar, $freeProcessesDate, $slotType = 'public')
+    public function addToCalendar(\BO\Zmsentities\Calendar $calendar, $freeProcessesDate, $slotType = 'public', $slotsRequired)
     {
         foreach ($this->slots as $date => $slotList) {
-            $this->addFreeProcessesToCalendar($calendar, $freeProcessesDate, $date, $slotType);
+            $this->addFreeProcessesToCalendar($calendar, $freeProcessesDate, $date, $slotType, $slotsRequired);
             $datetime = new \DateTimeImmutable($date);
             $day = $calendar->getDayByDateTime($datetime);
             $day['freeAppointments'] = $slotList->getSummerizedSlot($day['freeAppointments']);
@@ -308,10 +308,11 @@ class SlotList
         \BO\Zmsentities\Calendar $calendar,
         $freeProcessesDate,
         $date,
-        $slotType = 'public'
+        $slotType = 'public',
+        $slotsRequired
     ) {
         if (null !== $freeProcessesDate && $date == $freeProcessesDate->format('Y-m-d')) {
-            $freeProcesses = $this->getFreeProcesses($calendar, $freeProcessesDate, $slotType);
+            $freeProcesses = $this->getFreeProcesses($calendar, $freeProcessesDate, $slotType, $slotsRequired);
             foreach ($freeProcesses as $process) {
                 if ($process instanceof \BO\Zmsentities\Process) {
                     $calendar['freeProcesses']->addEntity($process);
@@ -326,7 +327,8 @@ class SlotList
     public function getFreeProcesses(
         \BO\Zmsentities\Calendar $calendar,
         \DateTimeImmutable $freeProcessesDate = null,
-        $slotType = 'public'
+        $slotType = 'public',
+        $slotsRequired
     ) {
         $selectedDate = $freeProcessesDate->format('Y-m-d');
         $slotList = $this->slots[$selectedDate];
@@ -335,7 +337,8 @@ class SlotList
             $this->scope,
             $this->availability,
             $slotType,
-            $calendar['requests']
+            $calendar['requests'],
+            $slotsRequired
         );
     }
 
