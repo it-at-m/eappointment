@@ -45,8 +45,9 @@ class NotificationTest extends EntityCommonTests
         $entity = (new $this->entityclass())->getExample();
         $process = (new \BO\Zmsentities\Process())->getExample();
         $config = (new \BO\Zmsentities\Config())->getExample();
+        $department = (new \BO\Zmsentities\Department())->getExample();
 
-        $resolvedEntity = $entity->toResolvedEntity($process, $config);
+        $resolvedEntity = $entity->toResolvedEntity($process, $config, $department);
         $this->assertContains(
             'Ihre Telefonnummer wurde erfolgreich registriert',
             $resolvedEntity['message'],
