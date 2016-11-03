@@ -28,7 +28,7 @@ class ProcessReserve extends BaseController
             throw new Exception\Process\ProcessFailedReservation();
         } else {
             $process->status = 'reserved';
-            $process = (new Query())->updateEntity($process);
+            $process = (new Query())->reserveEntity($process);
             $message->data = $process;
         }
         Render::lastModified(time(), '0');

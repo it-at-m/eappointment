@@ -13,9 +13,9 @@ class ProcessDeleteTest extends Base
     public function testRendering()
     {
         $query = new \BO\Zmsdb\Process();
-        $entity = (new \BO\Zmsentities\Process());
+        $entity = (new \BO\Zmsentities\Process())->getExample();
         $entity->scope['id'] = 141;
-        $process = $query->updateEntity($entity);
+        $process = $query->reserveEntity($entity);
         $this->processId = $process->id;
         $this->authKey = $process->authKey;
         $response = $this->render([$this->processId, $this->authKey], [], []);
