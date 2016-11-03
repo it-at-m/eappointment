@@ -69,22 +69,12 @@ class SlotList
         FROM
             standort s
             LEFT JOIN oeffnungszeit o USING(StandortID)
-            LEFT JOIN buerger b ON b.StandortID = o.StandortID
-        WHERE
-            o.StandortID = :scope_id
-            AND o.OeffnungszeitID IS NOT NULL
-
-            -- ignore availability out of date range
-            AND o.Endedatum >= :start_availability
-            AND o.Startdatum <= :end_availability
-
-            -- ignore availability without appointment slots
-            AND o.Anzahlterminarbeitsplaetze != 0
-
-            AND (
+            LEFT JOIN buerger b ON 
                 (
+                    b.StandortID = o.StandortID
+
                     -- match weekday
-                    o.Wochentag & POW(2, DAYOFWEEK(b.Datum) - 1)
+                    AND o.Wochentag & POW(2, DAYOFWEEK(b.Datum) - 1)
 
                     -- match week
                     AND (
@@ -118,6 +108,7 @@ class SlotList
                     AND b.Uhrzeit < o.Terminendzeit
                     AND b.Datum >= o.Startdatum
                     AND b.Datum <= o.Endedatum
+                    -- appointment should be half an hour after current time
                     AND UNIX_TIMESTAMP(:currentTime) + 1800 <= UNIX_TIMESTAMP(CONCAT(b.Datum, " ", b.Uhrzeit))
 
                     -- match day off
@@ -129,14 +120,23 @@ class SlotList
                         OR UNIX_TIMESTAMP(o.Endedatum) - UNIX_TIMESTAMP(o.Startdatum) < 172800
                     )
                 )
-                OR b.Datum IS NULL
-            )
+        WHERE
+            o.StandortID = :scope_id
+            AND o.OeffnungszeitID IS NOT NULL
+
+            -- ignore availability out of date range
+            AND o.Endedatum >= :start_availability
+            AND o.Startdatum <= :end_availability
+
+            -- ignore availability without appointment slots
+            AND o.Anzahlterminarbeitsplaetze != 0
         GROUP BY o.OeffnungszeitID, b.Datum, `slotnr`
         HAVING
             -- reduce results cause processing them costs time even with query cache
             appointment__date BETWEEN
                 DATE_ADD(:nowStart, INTERVAL availability__bookable__startInDays DAY)
                 AND DATE_ADD(:nowEnd, INTERVAL availability__bookable__endInDays + 1 DAY)
+            OR appointment__date IS NULL
 
         -- ordering is important for processing later on (slot reduction)
         ORDER BY o.OeffnungszeitID, b.Datum, `slotnr`
@@ -158,7 +158,7 @@ class SlotList
      *
      * @var \BO\Zmsentities\Availability $availability
      */
-    public $availability = null;
+    protected $availability = null;
 
     /**
      *
@@ -287,14 +287,20 @@ class SlotList
             $slot->time = new DateTime($slotData['slottime']);
             $slot->type = Slot::TIMESLICE;
             $slotList[$slotnumber] = $slot;
+        } elseif (isset($slotData['availability__id'])) {
+            // Only availability data for available slots
         } else {
             throw new \BO\Zmsdb\Exception\SlotDataEmpty("Found empty slot: " . var_export($slotData, true));
         }
         return $this;
     }
 
-    public function addToCalendar(\BO\Zmsentities\Calendar $calendar, $freeProcessesDate, $slotType = 'public', $slotsRequired)
-    {
+    public function addToCalendar(
+        \BO\Zmsentities\Calendar $calendar,
+        $freeProcessesDate,
+        $slotType = 'public',
+        $slotsRequired = 1
+    ) {
         foreach ($this->slots as $date => $slotList) {
             $this->addFreeProcessesToCalendar($calendar, $freeProcessesDate, $date, $slotType, $slotsRequired);
             $datetime = new \DateTimeImmutable($date);
@@ -309,7 +315,7 @@ class SlotList
         $freeProcessesDate,
         $date,
         $slotType = 'public',
-        $slotsRequired
+        $slotsRequired = 1
     ) {
         if (null !== $freeProcessesDate && $date == $freeProcessesDate->format('Y-m-d')) {
             $freeProcesses = $this->getFreeProcesses($calendar, $freeProcessesDate, $slotType, $slotsRequired);
@@ -328,7 +334,7 @@ class SlotList
         \BO\Zmsentities\Calendar $calendar,
         \DateTimeImmutable $freeProcessesDate = null,
         $slotType = 'public',
-        $slotsRequired
+        $slotsRequired = 1
     ) {
         $selectedDate = $freeProcessesDate->format('Y-m-d');
         $slotList = $this->slots[$selectedDate];
@@ -379,19 +385,9 @@ class SlotList
     public function toReducedBySlots($slotsRequired)
     {
         if (count($this->slots) && $slotsRequired > 1) {
-            foreach ($this->slots as $slotList) {
-                $slotLength = count($slotList);
-                for ($slotIndex = 0; $slotIndex < $slotLength; $slotIndex ++) {
-                    if ($slotIndex + $slotsRequired < $slotLength) {
-                        for ($slotRelative = 1; $slotRelative < $slotsRequired; $slotRelative ++) {
-                            if ($slotIndex + $slotRelative < $slotLength) {
-                                $slotList->takeLowerSlotValue($slotIndex, $slotIndex + $slotRelative);
-                            }
-                        }
-                    } else {
-                        $slotList->setEmptySlotValues($slotIndex);
-                    }
-                }
+            foreach ($this->slots as $date => $slotList) {
+                $reduced = $slotList->withReducedSlots($slotsRequired);
+                $this->slots[$date] = $reduced;
             }
         }
         return $this;
@@ -403,5 +399,10 @@ class SlotList
         $data["availability__startDate"] = strtotime($data["availability__startDate"]);
         $data["availability__endDate"] = strtotime($data["availability__endDate"]);
         return $data;
+    }
+
+    public function __toString()
+    {
+        return "Query_SlotList: {$this->availability} {$this->scope}";
     }
 }
