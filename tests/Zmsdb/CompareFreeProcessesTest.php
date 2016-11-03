@@ -16,6 +16,10 @@ class CompareFreeProcessesTest extends Base
         122257,122208,122226
     ];
 
+    /**
+     * @SuppressWarnings(PHPMD)
+     *
+     */
     public function testBasic()
     {
         $now = new \DateTimeImmutable("2016-04-01 11:55:00");
@@ -24,14 +28,18 @@ class CompareFreeProcessesTest extends Base
         $freeProcessesDayCallcenter = 0;
         $freeProcessesDayIntern = 0;
         $freeProcessesTime = 0;
-        //$scopeList = (new Scope())->readList();
-        $scopeList = new \BO\Zmsentities\Collection\ScopeList();
-        $scopeList->addEntity((new Scope())->readEntity(145));
+        $scopeList = (new Scope())->readList();
+        //$scopeList = new \BO\Zmsentities\Collection\ScopeList();
+        //$scopeList->addEntity((new Scope())->readEntity(145));
         foreach ($scopeList as $scope) {
             $processAppointments = 0;
             $input = $this->getTestEntity();
             $input->addScope($scope->id);
-            echo "DAY CALENDAR \n";
+            /*$day = new \BO\Zmsentities\Day([
+                "year" => 2016,
+                "month" => 5,
+                "day" => 30
+            ]);*/
             $calendar = (new Calendar())->readResolvedEntity($input, $now);
             $day = $calendar->getDayByDateTime($dateTime);
 
@@ -42,43 +50,15 @@ class CompareFreeProcessesTest extends Base
             $input2 = $this->getTestEntity();
             $input2->addScope($scope->id);
             $input2->firstDay = $day;
-            echo "FREE PROCESSES \n";
             $freeProcessList = (new Process())->readFreeProcesses($input2, $now);
-            foreach ($freeProcessList as $process) {
-                $processAppointments += count($process->appointments);
-                $freeProcessesTime += count($process->appointments);
-            }
+            $processAppointments += count($freeProcessList->getAppointmentList());
+            $freeProcessesTime += count($freeProcessList->getAppointmentList());
 
-            if ( $day->freeAppointments->public != $processAppointments) {
-                var_dump('Standort: '. $scope->id . ' (provider '. $scope->provider['id'] .') on calendarDay: '. $day->freeAppointments->public .' | on freeProcessList: '. $processAppointments);
-            }
-
-            /*
             $this->assertTrue(
                 $day->freeAppointments->public == $processAppointments,
-                'Standort: '. $scope->id . ' on calendarDay: '. $day->freeAppointments->public .' | on freeProcessList: '. $processAppointments
+                "MISMATCH: $scope  calendarDay==$day | freeProcessList(public)==" . $processAppointments
             );
-            */
         }
-
-        /*
-        $input = $this->getTestEntity();
-        $input2 = $this->getTestEntity();
-
-        foreach ($this->fullProviderIdList as $providerId) {
-            $input->addProvider('dldb', $providerId);
-            $input2->addProvider('dldb', $providerId);
-        }
-        $calendar = (new Calendar())->readResolvedEntity($input, $now);
-        $day = $calendar->getDayByDateTime($dateTime);
-        $input2->firstDay = $day;
-        $freeProcessList = (new Process())->readFreeProcesses($input2, $now);
-        var_dump('Day by Provider:' .(string)$day . ' | '. count($freeProcessList));
-
-        var_dump('Gesamt DaySelect/TimeSelect: ' . $freeProcessesDay .' / '. $freeProcessesTime);
-        var_dump('Gesamt Intern DaySelect/TimeSelect: ' . $freeProcessesDayIntern);
-        var_dump('Gesamt Callcenter DaySelect/TimeSelect: ' . $freeProcessesDayCallcenter);
-        */
     }
 
     protected function getTestEntity()
