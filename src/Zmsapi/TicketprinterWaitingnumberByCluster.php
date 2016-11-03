@@ -8,23 +8,35 @@ namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
-use \BO\Zmsdb\Ticketprinter as Query;
+use \BO\Zmsdb\Cluster as Query;
 
 /**
   * Handle requests concerning services
   */
-class TicketprinterWaitingnumber extends BaseController
+class TicketprinterWaitingnumberByCluster extends BaseController
 {
     /**
      * @return String
      */
-    public static function render($scopeId)
+    public static function render($clusterId, $hash)
     {
         $message = Response\Message::create(Render::$request);
-        $input = Validator::input()->isJson()->getValue();
-        $scopeId = $scopeId; // @todo fetch data
-        $input = $input;
-        $message->data = array(\BO\Zmsentities\Process::createExample());
+        $ticketprinter = (new \BO\Zmsdb\Ticketprinter())->readByHash($hash);
+        if (! $ticketprinter->hasId()) {
+            throw new Exception\Ticketprinter\TicketprinterHashNotValid();
+        }
+
+        $query = new Query();
+        $cluster = $query->readEntity($clusterId);
+        if (! $cluster) {
+            throw new Exception\Cluster\ClusterNotFound();
+        }
+
+        /*
+        $scope = $query->readScopeWithShortestWaitingTime($cluster->id, \App::$now);
+        $message->data = $process;
+        */
+
         Render::lastModified(time(), '0');
         Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }

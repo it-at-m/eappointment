@@ -414,7 +414,7 @@ use \Psr\Http\Message\ResponseInterface;
      *  @swagger
      *  "/cluster/{id}/waitingnumber/{hash}/":
      *      get:
-     *          description: Get a waitingNumber according to scope preferences
+     *          description: Get a waitingNumber according to scope preferences in cluster
      *          parameters:
      *              -   name: id
      *                  description: cluster number
@@ -2342,7 +2342,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/ticketprinter/{hash}/":
  *      get:
  *          description: Get current Ticketprinter by hash
- *          parameters:            
+ *          parameters:
  *              -   name: hash
  *                  description: hash from ticketprinter
  *                  required: true
@@ -2370,7 +2370,7 @@ use \Psr\Http\Message\ResponseInterface;
  */
 \App::$slim->get('/ticketprinter/{hash:[a-z0-9]{20,40}}/',
     '\BO\Zmsapi\TicketprinterGet')
-    ->setName("TicketprinterGet");    
+    ->setName("TicketprinterGet");
 
 /**
  *  @swagger
