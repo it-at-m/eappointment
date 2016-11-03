@@ -15,7 +15,12 @@ class Messaging
             'queued' => 'notification_headsup.twig',
         ),
         'mail' => array(
-            'confirmed' => 'mail_confirmation.twig'
+            'confirmed' => 'mail_confirmation.twig',
+            'deleted' => 'mail_delete.twig'
+        ),
+        'ics' => array(
+            'confirmed' => 'icsappointment.twig',
+            'deleted' => 'icsappointment_delete.twig'
         )
     );
 
@@ -96,7 +101,7 @@ class Messaging
     public static function getMailIcs(\BO\Zmsentities\Process $process, \BO\Zmsentities\Config $config, $now = false)
     {
         $ics = new \BO\Zmsentities\Ics();
-        $template = 'icsappointment.twig';
+        $template = self::getTemplateByProcessStatus('ics', $process->status);
         $message = self::getMailContent($process, $config);
         $plainContent = self::getPlainText($message);
         $appointment = $process->getFirstAppointment();
@@ -119,11 +124,11 @@ class Messaging
     public static function getPlainText($content)
     {
         $replaceThis = array(
-            '<br />' => '\n',
-            '<li>' => '\n- ',
-            '</li>' => '',
-            '<h2>' => '\n',
-            '</h2>' => '\n',
+            "<br />" => "\n",
+            "<li>" => "\n- ",
+            "</li>" => "",
+            "<h2>" => "\n",
+            "</h2>" => "\n",
         );
 
         $content = \preg_replace('!\s+!m', ' ', $content);

@@ -1,6 +1,8 @@
 {% block german %}
 {% if process.status == 'confirmed' %}
 Terminbestaetigung
+{% elseif process.status == 'deleted' %}
+Terminabsage
 {% else %}
 Terminerinnerung
 {% endif %}
