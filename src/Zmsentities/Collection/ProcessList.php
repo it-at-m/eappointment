@@ -29,6 +29,17 @@ class ProcessList extends Base
         return $list->withUniqueScopes();
     }
 
+    public function getAppointmentList()
+    {
+        $appointmentList = new AppointmentList();
+        foreach ($this as $process) {
+            foreach ($process["appointments"] as $appointment) {
+                $appointmentList->addEntity($appointment);
+            }
+        }
+        return $appointmentList;
+    }
+
     public function toReducedWithinTime($referenceTime)
     {
         $processList = new self();
