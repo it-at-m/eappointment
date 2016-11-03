@@ -180,10 +180,13 @@ class Process extends Base
             $query->addConditionProcessId($processId);
             $status = $this->deleteItem($query);
             //delete mail and notification from queue by processId
+            //commented because mails with delete messages will removed too
+            /*
             $mail =  new Mail();
             $mail->deleteEntityByProcess($processId);
             $notification =  new Notification();
             $notification->deleteEntityByProcess($processId);
+            */
         }
         Log::writeLogEntry("DELETE (Process::deleteEntity) $processId ", $processId);
         return $status;
