@@ -135,6 +135,7 @@ class Messaging
         $content = \str_replace(array_keys($replaceThis), $replaceThis, $content);
         $content = \strip_tags($content);
 
+        /*
         $lines = \explode("\n", $content);
         $new_lines = array();
         foreach ($lines as $line) {
@@ -143,6 +144,7 @@ class Messaging
             }
         }
         $content = \implode("\n", $new_lines);
+         */
         $content = \html_entity_decode($content);
         return $content;
     }
