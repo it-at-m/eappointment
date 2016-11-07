@@ -13,4 +13,18 @@ class RequestList extends Base
         }
         return true;
     }
+
+    public function getIds()
+    {
+        $idList = array();
+        foreach ($this as $request) {
+            $idList[] = $request['id'];
+        }
+        return $idList;
+    }
+
+    public function getCSV()
+    {
+        return implode(',', $this->getIds());
+    }
 }

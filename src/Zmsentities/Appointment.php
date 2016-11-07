@@ -8,6 +8,15 @@ class Appointment extends Schema\Entity
 
     public static $schema = "appointment.json";
 
+    public function getDefaults()
+    {
+        return [
+            'date' => 0,
+            'scope' => new Scope(),
+            'slotCount' => 0,
+        ];
+    }
+
     public function toDate($lang = 'de')
     {
         return ($lang == 'en') ? date('l F d, Y', $this->date) : strftime("%A %d. %B %Y", $this->date);
@@ -17,6 +26,17 @@ class Appointment extends Schema\Entity
     {
         $suffix = ($lang == 'en') ? ' o\'clock' : ' Uhr';
         return date('H:i', $this->date) . $suffix;
+    }
+
+    /**
+     * Modify time for appointment
+     *
+     */
+    public function setTime($timeString)
+    {
+        $dateTime = $this->toDateTime();
+        $this->date = $dateTime->modify($timeString)->getTimestamp();
+        return $this;
     }
 
     public function addDate($date)
@@ -79,5 +99,30 @@ class Appointment extends Schema\Entity
             );
         }
         return $this;
+    }
+
+    /**
+     * Does two appointments match, the matching appointment might have a lower slot count
+     *
+     */
+    public function isMatching(self $appointment)
+    {
+        //error_log("Compare $this with $appointment");
+        if ($appointment['slotCount'] <= $this['slotCount']
+            && $appointment['scope']['id'] == $this['scope']['id']
+            && $appointment['date'] == $this['date']
+        ) {
+            return true;
+        }
+        return false;
+    }
+
+    public function __toString()
+    {
+        return "appointment#"
+            . $this->toDateTime()->format('c')
+            . " ".$this['slotCount']."slots"
+            . " scope".$this['scope']['id']
+            ;
     }
 }
