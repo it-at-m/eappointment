@@ -19,7 +19,7 @@ class ProcessDeleteTest extends Base
         $this->processId = $process->id;
         $this->authKey = $process->authKey;
         $response = $this->render([$this->processId, $this->authKey], [], []);
-        $this->assertContains('"status":"deleted"', (string)$response->getBody());
+        $this->assertContains('Abgesagter Termin', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
