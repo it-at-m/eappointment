@@ -10,9 +10,10 @@ class ProcessTest extends Base
 {
     public function testUpdateProcess()
     {
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
         $query = new Query();
         $input = $this->getTestProcessEntity();
-        $process = $query->reserveEntity($input);
+        $process = $query->writeEntityReserved($input, $now);
         $process->amendment = 'Test amendment';
         $process = $query->updateEntity($process);
 
@@ -24,11 +25,23 @@ class ProcessTest extends Base
         $this->assertEquals('confirmed', $process->getStatus());
     }
 
-    public function testDeleteProcess()
+    public function testMultipleSlots()
     {
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
         $query = new Query();
         $input = $this->getTestProcessEntity();
-        $process = $query->reserveEntity($input);
+        $input->getFirstAppointment()->slotCount = 3;
+        $process = $query->writeEntityReserved($input, $now);
+        $process = $query->readEntity($process->id, $process->authKey);
+        $this->assertEquals(3, $process->getFirstAppointment()->slotCount);
+    }
+
+    public function testDeleteProcess()
+    {
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $query = new Query();
+        $input = $this->getTestProcessEntity();
+        $process = $query->writeEntityReserved($input, $now);
         $deleteTest = $query->deleteEntity($process->id, $process->authKey);
         $this->assertTrue($deleteTest, "Failed to delete Process from Database.");
 
@@ -41,9 +54,10 @@ class ProcessTest extends Base
 
     public function testReserveProcess()
     {
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
         $query = new Query();
         $input = $this->getTestProcessEntity();
-        $process = $query->reserveEntity($input);
+        $process = $query->writeEntityReserved($input, $now);
         $process = $query->readEntity($process->id, $process->authKey);
         $this->assertEntity("\\BO\\Zmsentities\\Process", $process);
     }
@@ -54,16 +68,6 @@ class ProcessTest extends Base
         $query = new Query();
         $processList = $query->readProcessListByScopeAndTime(141, $now); //Heerstraße
         $this->assertTrue(105 == count($processList), "Scope 141 Heerstraße should have 105 assigned processes");
-    }
-
-    public function testWriteProcessUnLocked()
-    {
-        $query = new Query();
-        $input = $this->getTestProcessEntity();
-        $input->id = $query->writeNewProcess(true);
-        $input->authKey = $query->readAuthKeyByProcessId($input->id);
-        $process = $query->updateEntity($input);
-        $this->assertEntity("\\BO\\Zmsentities\\Process", $process);
     }
 
     public function testStatusFree()
@@ -97,16 +101,17 @@ class ProcessTest extends Base
      */
     protected function getTestProcessEntity()
     {
-         $input = new Entity(array(
+        // https://localhost/terminvereinbarung/termin/time/1464339600/151/
+        $input = new Entity(array(
             "amendment"=>"",
             "appointments"=>[
-            [
-                "date"=>"1464166800",
-                "scope"=>[
-                "id"=>"151"
-                ],
-                "slotCount"=>"1"
-            ]
+                [
+                    "date"=>"1464339600",
+                    "scope"=>[
+                        "id"=>"151"
+                    ],
+                    "slotCount"=>"1"
+                ]
             ],
             "scope"=>[
                 "contact"=>[
@@ -232,12 +237,12 @@ class ProcessTest extends Base
             "createIP"=>"127.0.0.1",
             "createTimestamp"=>"1459028767",
             "queue"=>[
-            "arrivalTime"=>"00:00:00",
-            "callCount"=>"0",
-            "callTime"=>"00:00:00",
-            "number"=>"0",
-            "waitingTime"=>null,
-            "reminderTimestamp"=>"0"
+                "arrivalTime"=>"00:00:00",
+                "callCount"=>"0",
+                "callTime"=>"00:00:00",
+                "number"=>"0",
+                "waitingTime"=>null,
+                "reminderTimestamp"=>"0"
             ],
             "requests"=>[
                 [
@@ -248,7 +253,7 @@ class ProcessTest extends Base
                 ]
             ],
             "status"=>"reserved"
-         ));
+        ));
          return $input;
     }
 }

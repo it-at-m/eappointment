@@ -24,6 +24,9 @@ class Process extends Base
             ->addConditionProcessId($processId)
             ->addConditionAuthKey($authKey);
         $process = $this->fetchOne($query, new Entity());
+        if ($process->id != $processId) {
+            throw new Exception\ProcessAuthFailed("Could not find process $processId identified by '$authKey'");
+        }
         $process['requests'] = (new Request())->readRequestByProcessId($processId, $resolveReferences);
         $process['status'] = (new Status())->readProcessStatus($processId, $authKey);
         $process['scope'] = (new Scope())->readEntity($process->getScopeId(), $resolveReferences);
@@ -79,24 +82,71 @@ class Process extends Base
         return $process;
     }
 
-    public function reserveEntity(\BO\Zmsentities\Process $process)
-    {
-        $processId = $this->writeNewProcess();
-        $authKey = $this->readAuthKeyByProcessId($processId);
-        $query = new Query\Process(Query\Base::UPDATE);
-        $query->addConditionProcessId($processId);
-        $query->addConditionAuthKey($authKey);
+    /**
+     * Insert a new process if there are free slots
+     *
+     */
+    public function writeEntityReserved(
+        \BO\Zmsentities\Process $process,
+        \DateTimeInterface $now,
+        $slotType = "public"
+    ) {
+        $process->status = 'reserved';
+        $appointment = $process->getAppointments()->getFirst();
+        $freeProcessList = $this->readFreeProcesses($process->toCalendar(), $now);
+        if (!$freeProcessList->getAppointmentList()->hasAppointment($appointment)) {
+            throw new Exception\ProcessReserveFailed("Already reserved");
+        }
+        $slotList = (new Slot)->readByAppointment($appointment);
+        if (!$slotList->isAvailableForAll($slotType)) {
+            throw new Exception\ProcessReserveFailed("Could not reserve multiple slots");
+        }
+        foreach ($slotList as $slot) {
+            if ($process->id > 99999) {
+                $newProcess = clone $process;
+                $newProcess->getFirstAppointment()->setTime($slot->time);
+                $this->writeNewProcess($newProcess, $process->id);
+            } elseif ($process->id === 0) {
+                $process = $this->writeNewProcess($process, 0, count($slotList) - 1);
+            } else {
+                throw new \Exception("SQL UPDATE error on inserting new $process on $slot");
+            }
+        }
+        return $process;
+    }
 
+    /**
+     * write a new process to DB
+     *
+     */
+    protected function writeNewProcess(
+        \BO\Zmsentities\Process $process,
+        $parentProcess = 0,
+        $childProcessCount = 0
+    ) {
+        $query = new Query\Process(Query\Base::INSERT);
+        $process->id = $this->readNewProcessId();
+        $process->setRandomAuthKey();
         $values = $query->reverseEntityMapping($process);
         $query->addValues($values);
+        $query->addValuesNewProcess($process, $parentProcess, $childProcessCount);
         $this->writeItem($query);
-        $this->writeRequestsToDb($processId, $process['requests']);
-
-        $process = $this->readEntity($processId, $authKey);
-        $process['status'] = (new Status())->readProcessStatus($processId, $authKey);
-
-        Log::writeLogEntry("RESERVE (Process::reserveEntity) $process ", $processId);
+        Log::writeLogEntry("CREATE (Process::writeNewProcess) process#{$process->id} ", $process->id);
         return $process;
+    }
+
+    /**
+     * Fetch a free process ID from DB
+     *
+     */
+    protected function readNewProcessId()
+    {
+        $query = new Query\Process(Query\Base::SELECT);
+        $newProcessId = 100000;
+        if ($this->getReader()->fetchValue($query->getFirstSixDigitProcessId())) {
+            $newProcessId = $this->getReader()->fetchValue($query->getQueryNewProcessId());
+        }
+        return $newProcessId;
     }
 
     /**
@@ -207,59 +257,6 @@ class Process extends Base
             );
             $this->writeItem($query);
         }
-    }
-
-    public function writeNewProcess($forceUnLocked = false)
-    {
-        $query = new Query\Process(Query\Base::INSERT);
-        $lock = $this->getLock($query);
-        $dateTime = new \DateTime();
-        if ($lock == 1 && false === $forceUnLocked) {
-            $autoincrement = '';
-            $query->addValues(
-                [
-                'BuergerID' => $this->getNewProcessId($query),
-                'IPTimeStamp' => (int) $dateTime->getTimestamp(),
-                'absagecode' => substr(md5(rand()), 0, 4)
-                ]
-            );
-        } else {
-            $autoincrement = '(autoincrement)';
-            $query->addValues(
-                [
-                'BuergerID' => null,
-                'IPTimeStamp' => (int) $dateTime->getTimestamp(),
-                'absagecode' => substr(md5(rand()), 0, 4)
-                ]
-            );
-        }
-        $this->writeItem($query);
-        $lastInsertId = $this->getWriter()
-            ->lastInsertId();
-        $this->releaseLock($query);
-        Log::writeLogEntry("CREATE (Process::writeNewProcess) process#$lastInsertId $autoincrement ", $lastInsertId);
-        return $lastInsertId;
-    }
-
-    public function getNewProcessId($query)
-    {
-        $newProcessId = 100000;
-        if ($this->getReader()->fetchValue($query->getFirstSixDigitProcessId())) {
-            $newProcessId = $this->getReader()->fetchValue($query->getQueryNewProcessId());
-        }
-        return $newProcessId;
-    }
-
-    public function getLock($query)
-    {
-        return $this->getReader()
-            ->fetchValue($query::QUERY_SET_LOCK);
-    }
-
-    public function releaseLock($query)
-    {
-        return $this->getReader()
-            ->fetchValue($query::QUERY_RELEASE_LOCK);
     }
 
     public function readFreeProcesses(\BO\Zmsentities\Calendar $calendar, \DateTimeInterface $now)
