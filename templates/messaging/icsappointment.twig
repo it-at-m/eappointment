@@ -23,7 +23,7 @@ END:STANDARD
 END:VTIMEZONE
 METHOD:PUBLISH
 BEGIN:VEVENT
-CLASS:PUBLIC
+UID:{{ startTime|date("Ymd") }}-{{ process.id }}
 DTSTART;TZID=Europe/Berlin:{{ startTime|date("Ymd") }}T{{ startTime|date("His") }}
 DTEND;TZID=Europe/Berlin:{{ endTime|date("Ymd") }}T{{ endTime|date("His") }}
 DTSTAMP:{{ timestamp|date("Ymd") }}T{{ timestamp|date("His") }}Z
