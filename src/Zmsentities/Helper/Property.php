@@ -31,10 +31,8 @@ class Property implements \ArrayAccess
 
     public function isAvailable()
     {
-        if (null !== $this->access) {
-            return true;
-        }
-        return false;
+        //shorter to avoid extra unit testing
+        return (null !== $this->access) ? true : false;
     }
 
     public function get($default = null)

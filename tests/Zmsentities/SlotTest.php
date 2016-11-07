@@ -53,6 +53,19 @@ class SlotTest extends EntityCommonTests
         $this->assertTrue(2 == count($collection->withTimeGreaterThan($time)));
     }
 
+    public function testReducedSlots()
+    {
+        $collection = new $this->collectionclass();
+        $entity = $this->getExample();
+        $entity2 = $this->getExample();
+        $entity3 = $this->getExample();
+        $collection->addEntity($entity);
+        $collection->addEntity($entity2);
+        $collection->addEntity($entity3);
+        $collection = $collection->withReducedSlots(2);
+        $this->assertEquals(3, $collection[1]['public']);
+    }
+
     public function testGetFreeProcesses()
     {
         $collection = new $this->collectionclass();
