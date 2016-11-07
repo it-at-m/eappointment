@@ -28,23 +28,19 @@ class Process extends Base implements MappingInterface
             OR process.istFolgeterminvon = ?
         ";
 
-    const QUERY_SET_LOCK = "SELECT GET_LOCK('AutoIncWithOldNum', 2)";
-
-    const QUERY_RELEASE_LOCK = "SELECT RELEASE_LOCK('AutoIncWithOldNum')";
-
     public function getQueryNewProcessId()
     {
         return 'SELECT A.`BuergerID`+1 AS `nextid`
             FROM `' . self::getTablename() . '` A
                 LEFT JOIN `' . self::getTablename() . '` B ON A.BuergerID+1 = B.BuergerID
             WHERE B.`BuergerID` IS NULL AND A.`BuergerID` > 100000
-            ORDER BY A.`BuergerID` LIMIT 1';
+            ORDER BY A.`BuergerID` LIMIT 1 FOR UPDATE';
     }
 
     public function getFirstSixDigitProcessId()
     {
         return 'SELECT * FROM `' . self::getTablename() . '` A
-            WHERE A.`BuergerID` = 100000';
+            WHERE A.`BuergerID` = 100000 FOR UPDATE';
     }
 
     public function addJoin()
@@ -78,13 +74,7 @@ class Process extends Base implements MappingInterface
             'scope__id' => 'process.StandortID',
             'appointments__0__scope__id' => 'process.StandortID',
             // 'appointments__0__slotCount' => 'process.hatFolgetermine',
-            'appointments__0__slotCount' => self::expression(
-                '(SELECT COUNT(*) + 1
-                    FROM ' . self::TABLE . ' as `followingProcess`
-                    WHERE
-                        `followingProcess`.`istFolgeterminvon` = `BuergerID`
-                )'
-            ),
+            'appointments__0__slotCount' => self::expression('process.hatFolgetermine + 1'),
             'authKey' => 'process.absagecode',
             'clients__0__email' => 'process.EMail',
             'clients__0__emailSendCount' => 'process.EMailverschickt',
@@ -165,6 +155,7 @@ class Process extends Base implements MappingInterface
             $data['EMailverschickt'] = $client->emailSendCount;
             $data['SMSverschickt'] = $client->notificationsSendCount;
         }
+        $data['IPAdresse'] = $process['createIP'];
         $data['vorlaeufigeBuchung'] = ($process['status'] == 'reserved') ? 1 : 0;
         $data['Erinnerungszeitpunkt'] = $process->getReminderTimestamp();
         $data = array_filter(
@@ -180,5 +171,16 @@ class Process extends Base implements MappingInterface
     {
         $data["appointments__0__date"] = (new \DateTime($data["appointments__0__date"]))->getTimestamp();
         return $data;
+    }
+
+    public function addValuesNewProcess(\BO\Zmsentities\Process $process, $parentProcess = 0, $childProcessCount = 0)
+    {
+        $this->addValues([
+            'BuergerID' => $process->id,
+            'IPTimeStamp' => $process->createTimestamp,
+            'absagecode' => $process->authKey,
+            'hatFolgetermine' => $childProcessCount,
+            'istFolgeterminvon' => $parentProcess,
+        ]);
     }
 }

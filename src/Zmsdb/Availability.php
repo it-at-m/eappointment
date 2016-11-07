@@ -62,13 +62,12 @@ class Availability extends Base
     public function readOpeningHoursListByDate($scopeId, \DateTimeInterface $now, $resolveReferences = 0)
     {
         $collection = new Collection();
-        $date = $now->format('Y-m-d');
         $query = new Query\Availability(Query\Base::SELECT);
         $query
             ->addEntityMapping('openinghours')
             ->addResolvedReferences($resolveReferences)
             ->addConditionScopeId($scopeId)
-            ->addConditionDate($date);
+            ->addConditionDate($now);
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
             foreach ($result as $entity) {
@@ -78,6 +77,17 @@ class Availability extends Base
             }
         }
         return $collection;
+    }
+
+    public function readByAppointment(\BO\Zmsentities\Appointment $appointment)
+    {
+        $query = new Query\Availability(Query\Base::SELECT);
+        $query->addEntityMapping();
+        $query->addConditionScopeId($appointment->toProperty()->scope->id->get());
+        $query->addConditionDate($appointment->toDateTime());
+        $query->addConditionAppointmentTime($appointment->toDateTime());
+        $result = $this->fetchOne($query, new Entity());
+        return $result;
     }
 
     /**

@@ -284,7 +284,7 @@ class SlotList
                 $slotData['availability__workstationCount__callcenter'];
             $slot->intern += $slotData['freeAppointments__intern'] -
                 $slotData['availability__workstationCount__intern'];
-            $slot->time = new DateTime($slotData['slottime']);
+            $slot->time = (new DateTime($slotData['slottime']))->format('H:i');
             $slot->type = Slot::TIMESLICE;
             $slotList[$slotnumber] = $slot;
         } elseif (isset($slotData['availability__id'])) {

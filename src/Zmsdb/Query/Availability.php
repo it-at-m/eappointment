@@ -77,14 +77,51 @@ class Availability extends Base implements MappingInterface
         return $this;
     }
     
-    public function addConditionDate($date)
+    public function addConditionDate(\DateTimeInterface $dateTime)
     {
+        $date = $dateTime->format('Y-m-d');
         $this->query
             ->where('availability.Startdatum', '<=', $date)
             ->where('availability.Endedatum', '>=', $date);
+        //-- match weekday
+        $this->query->where(self::expression("availability.Wochentag & POW(2, DAYOFWEEK('$date') - 1)"), '>=', '1');
+        //-- match week
+        $this->query->where(self::expression("
+            (
+                (
+                    availability.allexWochen
+                    AND FLOOR(
+                        (
+                            FLOOR(UNIX_TIMESTAMP($date))
+                            - FLOOR(UNIX_TIMESTAMP(availability.Startdatum)))
+                            / 86400
+                            / 7
+                        )
+                        % availability.allexWochen = 0
+                )
+                OR (
+                    availability.jedexteWoche
+                    AND (
+                        CEIL(DAYOFMONTH($date) / 7) = availability.jedexteWoche
+                        OR (
+                            availability.jedexteWoche = 5
+                            AND CEIL(LAST_DAY($date) / 7) = CEIL(DAYOFMONTH($date) / 7)
+                        )
+                    )
+                )
+            ) AND 1
+            "), '=', '1');
         return $this;
     }
 
+    public function addConditionAppointmentTime(\DateTimeInterface $dateTime)
+    {
+        $time = $dateTime->format('H:i:s');
+        $this->query->where("availability.Terminanfangszeit", '<=', $time);
+        $this->query->where("availability.Terminendzeit", '>=', $time);
+
+        return $this;
+    }
     /*
      * Todo
      * Es muss noch nach Typ unterschieden werden appointment und openinghours
@@ -123,9 +160,6 @@ class Availability extends Base implements MappingInterface
         return self::expression("
             $availability.StandortID = $process.StandortID
             AND $availability.OeffnungszeitID IS NOT NULL
-
-            -- ignore availability without appointment slots
-            AND $availability.Anzahlterminarbeitsplaetze != 0
 
             -- match weekday
             AND $availability.Wochentag & POW(2, DAYOFWEEK($process.Datum) - 1)
