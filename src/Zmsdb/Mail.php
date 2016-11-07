@@ -70,7 +70,9 @@ class Mail extends Base
         }
         $queueId = $this->getWriter()->lastInsertId();
         $this->writeMailParts($queueId, $mail->multipart);
-        $this->updateProcessClient($process, $client);
+        if ('deleted' != $process->status) {
+            $this->updateProcessClient($process, $client);
+        }
         return $this->readEntity($queueId);
     }
 
