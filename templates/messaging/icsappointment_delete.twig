@@ -23,7 +23,9 @@ END:STANDARD
 END:VTIMEZONE
 METHOD:CANCEL
 BEGIN:VEVENT
-CLASS:PUBLIC
+UID:{{ startTime|date("Ymd") }}-{{ process.id }}
+SEQUENCE:1
+STATUS:CANCELLED
 DTSTART;TZID=Europe/Berlin:{{ startTime|date("Ymd") }}T{{ startTime|date("His") }}
 DTEND;TZID=Europe/Berlin:{{ endTime|date("Ymd") }}T{{ endTime|date("His") }}
 DTSTAMP:{{ timestamp|date("Ymd") }}T{{ timestamp|date("His") }}Z
@@ -34,7 +36,6 @@ BEGIN:VALARM
 ACTION:DISPLAY
 TRIGGER:-P1D
 DESCRIPTION:Termin abgesagt
-STATUS:CANCELLED
 END:VALARM
 END:VEVENT
 END:VCALENDAR

@@ -124,11 +124,11 @@ class Messaging
     public static function getPlainText($content)
     {
         $replaceThis = array(
-            "<br />" => "\n",
-            "<li>" => "\n- ",
+            "<br />" => "\\n",
+            "<li>" => "\\n- ",
             "</li>" => "",
-            "<h2>" => "\n",
-            "</h2>" => "\n",
+            "<h2>" => "\\n",
+            "</h2>" => "\\n",
         );
 
         $content = \preg_replace('!\s+!m', ' ', $content);
