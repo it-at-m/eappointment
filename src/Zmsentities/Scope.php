@@ -7,6 +7,13 @@ class Scope extends Schema\Entity
 
     public static $schema = "scope.json";
 
+    public function getDefaults()
+    {
+        return [
+            'id' => 0,
+        ];
+    }
+
     public function getProviderId()
     {
         $refString = '$ref';

@@ -17,9 +17,9 @@ class SlotList extends Base
         $slotA = $this[$indexA];
         $slotB = $this[$indexB];
         if (null !== $slotA && null !== $slotB) {
+            $slotA->type = Slot::REDUCED;
             foreach (['public', 'intern', 'callcenter'] as $type) {
                 $slotA[$type] = $slotA[$type] < $slotB[$type] ? $slotA[$type] : $slotB[$type];
-                $slotA->type = Slot::REDUCED;
             }
         }
         return $this;
@@ -35,6 +35,52 @@ class SlotList extends Base
             $slot->type = Slot::REDUCED;
         }
         return $this;
+    }
+
+    public function isAvailableForAll($slotType)
+    {
+        foreach ($this as $slot) {
+            if ($slot[$slotType] < 1) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Get a slot for a given time
+     *
+     */
+    public function getByDateTime(\DateTimeInterface $dateTime)
+    {
+        foreach ($this as $slot) {
+            if ($slot->hasTime() && $slot->time == $dateTime->format('H:i')) {
+                return $slot;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Get all slots for an appointment
+     *
+     */
+    public function withSlotsForAppointment(\BO\Zmsentities\Appointment $appointment)
+    {
+        $slotList = new SlotList();
+        $takeFollowingSlot = 0;
+        $startTime = $appointment->toDateTime()->format('H:i');
+        foreach ($this as $slot) {
+            if ($slot->hasTime() && $slot->time == $startTime) {
+                $slotList[] = $slot;
+                $takeFollowingSlot = $appointment['slotCount'] - 1;
+            }
+            if ($takeFollowingSlot) {
+                $takeFollowingSlot--;
+                $slotList[] = $slot;
+            }
+        }
+        return $slotList;
     }
 
     public function getSlot($index)
@@ -79,8 +125,18 @@ class SlotList extends Base
         return $slotList;
     }
 
-    // todo, slotRequired von calendar bis hierhin durchreichen und als slotCount verwenden
-    // für jeden slot ein appointment adden
+    /**
+     * Creates a ProcessList for free processes
+     *
+     * @param String $selectedDate of format "YYYY-MM-DD"
+     * @param \BO\Zmsentities\Scope $scope
+     * @param \BO\Zmsentities\Availability $availability
+     * @param String $slotType one of "public", "callcenter", "intern"
+     * @param Array $requests to add to process
+     * @param $slotsRequired Number of slots required
+     *
+     * @return ProcessList
+     */
     public function getFreeProcesses(
         $selectedDate,
         \BO\Zmsentities\Scope $scope,
@@ -91,6 +147,12 @@ class SlotList extends Base
     ) {
         $processList = new ProcessList();
         foreach ($this as $slot) {
+            if ($slotsRequired > 1 && $slot->type != Slot::REDUCED) {
+                throw new \Exception(
+                    "With $slotsRequired slots required, "
+                    ."do not use SlotList::getFreeProcesses without reduced slots: $slot"
+                );
+            }
             if ($slot[$slotType] > 0) {
                 $appointment = new \BO\Zmsentities\Appointment(array(
                     'scope' => $scope,

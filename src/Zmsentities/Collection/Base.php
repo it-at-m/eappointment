@@ -14,6 +14,12 @@ use \BO\Zmsentities\Helper\Sorter;
  */
 class Base extends \ArrayObject
 {
+    public function getFirst()
+    {
+        $item = reset($this);
+        return $item;
+    }
+
     public function sortByName()
     {
         $this->uasort(function ($a, $b) {

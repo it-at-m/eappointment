@@ -11,35 +11,45 @@ class Process extends Schema\Entity
     {
         return [
             'amendment' => '',
-            'appointments' => [],
+            'appointments' => new Collection\AppointmentList(),
             'authKey' => '',
-            'clients' => [],
+            'clients' => new Collection\ClientList(),
             'createIP' => '',
-            'createTimestamp' => '',
+            'createTimestamp' => time(),
             'id' => 0,
-            'queue' => [],
+            'queue' => new Queue(),
             'reminderTimestamp' => 0,
-            'requests' => [],
-            'scope' => [],
+            'requests' => new Collection\RequestList(),
+            'scope' => new Scope(),
             'status' => ''
         ];
     }
 
+    /**
+     * @return Collection\RequestList
+     *
+     */
+    public function getRequests()
+    {
+        if (!$this->requests instanceof Collection\RequestList) {
+            $requestList = new Collection\RequestList();
+            foreach ($this->requests as $request) {
+                $request = ($request instanceof Request) ? $request : new Request($request);
+                $requestList->addEntity($request);
+            }
+            $this->requests = $requestList;
+        }
+        return $this->requests;
+    }
+
     public function getRequestIds()
     {
-        $idList = array();
-        $requests = $this->toProperty()->requests->get();
-        if ($requests) {
-            foreach ($requests as $request) {
-                $idList[] = $request['id'];
-            }
-        }
-        return $idList;
+        return $this->getRequests()->getIds();
     }
 
     public function getRequestCSV()
     {
-        return implode(',', $this->getRequestIds());
+        return $this->getRequests()->getCSV();
     }
 
     public function addScope($scopeId)
@@ -48,9 +58,9 @@ class Process extends Schema\Entity
         return $this;
     }
 
-    public function addRequests($source, $requestList)
+    public function addRequests($source, $requestCSV)
     {
-        foreach (explode(',', $requestList) as $id) {
+        foreach (explode(',', $requestCSV) as $id) {
             $this->requests[] = new Request(array(
                 'source' => $source,
                 'id' => $id
@@ -83,14 +93,26 @@ class Process extends Schema\Entity
         return $this;
     }
 
-    public function hasAppointment($date, $scopeId)
+    /**
+     * @return \BO\Zmsentities\Collection\AppointmentList
+     *
+     */
+    public function getAppointments()
     {
-        foreach ($this->appointments as $item) {
-            if ($item['date'] == $date && $item['scope']['id'] == $scopeId) {
-                return true;
+        if (!$this['appointments'] instanceof Collection\AppointmentList) {
+            $this['appointments'] = new Collection\AppointmentList($this['appointments']);
+            foreach ($this['appointments'] as $index => $appointment) {
+                if (!$appointment instanceof Appointment) {
+                    $this['appointments'][$index] = new Appointment($appointment);
+                }
             }
         }
-        return false;
+        return $this['appointments'];
+    }
+
+    public function hasAppointment($date, $scopeId)
+    {
+        return $this->getAppointments()->hasDateScope($date, $scopeId);
     }
 
     public function addAppointment(Appointment $newappointment)
@@ -114,6 +136,11 @@ class Process extends Schema\Entity
         return $this->toProperty()->authKey->get();
     }
 
+    public function setRandomAuthKey()
+    {
+        $this->authKey = substr(md5(rand()), 0, 4);
+    }
+
     public function getFirstClient()
     {
         $client = null;
@@ -126,10 +153,11 @@ class Process extends Schema\Entity
 
     public function getFirstAppointment()
     {
-        $appointment = null;
-        if (count($this->appointments) > 0) {
-            $data = reset($this->appointments);
-            $appointment = new Appointment($data);
+        $appointment = $this->getAppointments()->getFirst();
+        if (!$appointment) {
+            $appointment = new Appointment();
+            $appointment->scope = $this->scope;
+            $this->appointments[] = $appointment;
         }
         return $appointment;
     }
@@ -176,10 +204,24 @@ class Process extends Schema\Entity
         return $entity;
     }
 
+    public function toCalendar()
+    {
+        $calendar = new Calendar();
+        $dateTime = $this->getFirstAppointment()->toDateTime();
+        $day = new Day();
+        $day->setDateTime($dateTime);
+        $calendar->firstDay = $day;
+        $calendar->lastDay = $day;
+        $calendar->requests = clone $this->getRequests();
+        $calendar->scopes = new Collection\ScopeList([$this->scope]);
+        return $calendar;
+    }
+
     public function __toString()
     {
         $string = "process#";
         $string .= $this->id;
+        $string .= ":".$this->authKey;
         $string .= " (" . $this->status . ")";
         $string .= " " . $this->getFirstAppointment()->toDateTime()->format('c');
         $string .= " " . $this->getFirstAppointment()->slotCount."slots";
