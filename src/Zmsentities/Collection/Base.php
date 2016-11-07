@@ -105,4 +105,13 @@ class Base extends \ArrayObject
         }
         return $list;
     }
+
+    public function __toString()
+    {
+        $list = [];
+        foreach ($this as $item) {
+            $list[] = $item->__toString();
+        }
+        return "[" . implode(',', $list) . "]";
+    }
 }

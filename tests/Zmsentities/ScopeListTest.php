@@ -18,4 +18,16 @@ class ScopeListTest extends EntityCommonTests
             'Alternate redirect url missed'
         );
     }
+
+    public function testToString()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $collection = new $this->collectionclass();
+        $collection->addEntity($entity);
+        $collection->addEntity(clone $entity);
+        $this->assertEquals(
+            "[$entity,$entity]",
+            (string)$collection
+        );
+    }
 }

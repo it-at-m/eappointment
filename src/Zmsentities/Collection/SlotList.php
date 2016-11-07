@@ -181,7 +181,7 @@ class SlotList extends Base
         $slotList = clone $this;
         $slotLength = count($slotList);
         for ($slotIndex = 0; $slotIndex < $slotLength; $slotIndex ++) {
-            if ($slotIndex + $slotsRequired < $slotLength) {
+            if ($slotIndex + $slotsRequired - 1 < $slotLength) {
                 for ($slotRelative = 1; $slotRelative < $slotsRequired; $slotRelative ++) {
                     if ($slotIndex + $slotRelative < $slotLength) {
                         $slotList->takeLowerSlotValue($slotIndex, $slotIndex + $slotRelative);
