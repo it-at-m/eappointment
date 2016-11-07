@@ -25,6 +25,8 @@ class ProcessTest extends EntityCommonTests
         $this->assertTrue(1447931730000 == $entity->getReminderTimestamp(), 'reminder timestamp is not set');
 
         $this->assertFalse($entity->isConfirmationSmsRequired(), 'Confirmation SMS should not be set to required');
+
+        $this->assertContains('122305', (string)$entity, 'requests are not accessible');
     }
 
     public function testClient()
@@ -52,9 +54,7 @@ class ProcessTest extends EntityCommonTests
     {
         $collection = new $this->collectionclass();
         $entity = $this->getExample();
-        $entity2 = $this->getExample();
         $appointment = (new \BO\Zmsentities\Appointment())->getExample();
-        $entity2->appointments = array($appointment);
         $collection->addEntity($entity);
         $this->assertEntityList($this->entityclass, $collection);
         $this->assertTrue(
@@ -69,6 +69,7 @@ class ProcessTest extends EntityCommonTests
             'Failed to create process list by time'
         );
         $this->assertTrue(123456 == $collection->getFirstProcess()->id, 'First process not found in process list');
+        $this->assertTrue(1 == count($collection->getAppointmentList()));
     }
 
     public function testScopeList()
@@ -85,12 +86,19 @@ class ProcessTest extends EntityCommonTests
         $collection = new $this->collectionclass();
         $entity = $this->getExample();
         $appointment = (new \BO\Zmsentities\Appointment())->getExample();
-        $entity->appointments = array($appointment);
+        $appointment->availability = (new \BO\Zmsentities\Availability())->getExample();
+        $entity->appointments = (new \BO\Zmsentities\Collection\AppointmentList())->addEntity($appointment);
+        $entity->scope = (new \BO\Zmsentities\Scope())->getExample();
+        $dayoff = (new \BO\Zmsentities\DayOff())->getExample();
+        $entity->scope->dayoff = (new \BO\Zmsentities\Collection\DayOffList())->addEntity($dayoff);
         $collection->addEntity($entity);
         $collection = $collection->withLessData();
         $this->assertEntityList($this->entityclass, $collection);
+        $this->assertFalse(isset($entity->withLessData()['dayoff']), 'Converting to less data failed');
     }
 
+    //check if necessary
+    /*
     public function testReduceWithinTime()
     {
         $collection = new $this->collectionclass();
@@ -101,4 +109,5 @@ class ProcessTest extends EntityCommonTests
         $collection->toReducedWithinTime(1447869172);
         $this->assertEntityList($this->entityclass, $collection);
     }
+    */
 }

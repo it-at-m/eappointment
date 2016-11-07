@@ -34,12 +34,14 @@ class ProcessList extends Base
         $appointmentList = new AppointmentList();
         foreach ($this as $process) {
             foreach ($process["appointments"] as $appointment) {
-                $appointmentList->addEntity($appointment);
+                $appointmentList->addEntity(new \BO\Zmsentities\Appointment($appointment));
             }
         }
         return $appointmentList;
     }
 
+    //check if necessary
+    /*
     public function toReducedWithinTime($referenceTime)
     {
         $processList = new self();
@@ -50,6 +52,7 @@ class ProcessList extends Base
         }
         return $processList;
     }
+    */
 
     /*
     public function toQueue($now)
