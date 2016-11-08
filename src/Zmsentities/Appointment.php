@@ -108,8 +108,7 @@ class Appointment extends Schema\Entity
     public function isMatching(self $appointment)
     {
         //error_log("Compare $this with $appointment");
-        if ($appointment['slotCount'] <= $this['slotCount']
-            && $appointment['scope']['id'] == $this['scope']['id']
+        if ($appointment['scope']['id'] == $this['scope']['id']
             && $appointment['date'] == $this['date']
         ) {
             return true;

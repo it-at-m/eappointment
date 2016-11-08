@@ -141,6 +141,11 @@ class Process extends Schema\Entity
         $this->authKey = substr(md5(rand()), 0, 4);
     }
 
+    public function setCreateTImestamp($now)
+    {
+        $this->createTimestamp = $now->getTimestamp();
+    }
+
     public function getFirstClient()
     {
         $client = null;
@@ -157,7 +162,7 @@ class Process extends Schema\Entity
         if (!$appointment) {
             $appointment = new Appointment();
             $appointment->scope = $this->scope;
-            $this->appointments[] = $appointment;
+            $this->appointments->addEntity($appointment);
         }
         return $appointment;
     }

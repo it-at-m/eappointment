@@ -16,7 +16,8 @@ class ProcessTest extends EntityCommonTests
 
         $entity->addScope('141');
         $this->assertTrue('141' == $entity->getScopeId(), 'scope is not accessible');
-        $this->assertTrue('abcd' == $entity->getAuthKey(), 'authKey is not accessible');
+        $entity->setRandomAuthKey();
+        $this->assertTrue(4 == strlen($entity->getAuthKey()), 'set random authKey failed');
         $this->assertTrue('Beispiel Termin' == $entity->getAmendment(), 'amendment is not accessible');
 
         $entity->setStatus('reserved');
@@ -27,6 +28,9 @@ class ProcessTest extends EntityCommonTests
         $this->assertFalse($entity->isConfirmationSmsRequired(), 'Confirmation SMS should not be set to required');
 
         $this->assertContains('122305', (string)$entity, 'requests are not accessible');
+
+        $this->assertTrue(2 == count($entity->getRequestIds()), 'requests are not accessible');
+        $this->assertContains('122305', $entity->getRequestCsv(), 'requests are not accessible');
     }
 
     public function testClient()
@@ -42,12 +46,15 @@ class ProcessTest extends EntityCommonTests
     public function testAppointment()
     {
         $entity = (new $this->entityclass())->getExample();
+        unset($entity->appointments);
+        $entity->appointments = array();
+        $firstAppointment = $entity->getFirstAppointment();
+        $this->assertTrue($firstAppointment instanceof \BO\Zmsentities\Appointment);
+
         $appointment = (new \BO\Zmsentities\Appointment())->getExample();
         $entity->addAppointment($appointment);
         $this->assertTrue($entity->hasAppointment(1447869172, 123), 'appointment is not accessible');
         $this->assertFalse($entity->hasAppointment(1447869173, 123), 'appointment date 1447869173 should not exist');
-        $firstAppointment = $entity->getFirstAppointment();
-        $this->assertTrue($firstAppointment instanceof \BO\Zmsentities\Appointment);
     }
 
     public function testCollection()
