@@ -75,9 +75,9 @@ class Process extends Base
             if ($process->id > 99999) {
                 $newProcess = clone $process;
                 $newProcess->getFirstAppointment()->setTime($slot->time);
-                $this->writeNewProcess($newProcess, $process->id);
+                $this->writeNewProcess($newProcess, $now, $process->id);
             } elseif ($process->id === 0) {
-                $process = $this->writeNewProcess($process, 0, count($slotList) - 1);
+                $process = $this->writeNewProcess($process, $now, 0, count($slotList) - 1);
             } else {
                 throw new \Exception("SQL UPDATE error on inserting new $process on $slot");
             }
@@ -92,12 +92,14 @@ class Process extends Base
      */
     protected function writeNewProcess(
         \BO\Zmsentities\Process $process,
+        \DateTimeInterface $now,
         $parentProcess = 0,
         $childProcessCount = 0
     ) {
         $query = new Query\Process(Query\Base::INSERT);
         $process->id = $this->readNewProcessId();
         $process->setRandomAuthKey();
+        $process->setCreateTimestamp($now);
         $values = $query->reverseEntityMapping($process);
         $query->addValues($values);
         $query->addValuesNewProcess($process, $parentProcess, $childProcessCount);
