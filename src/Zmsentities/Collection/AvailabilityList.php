@@ -40,4 +40,15 @@ class AvailabilityList extends Base
         }
         return false;
     }
+
+    public function getSlotList()
+    {
+        $slotList = new SlotList();
+        foreach ($this as $availability) {
+            foreach ($availability->getSlotList() as $slot) {
+                $slotList->addEntity($slot);
+            }
+        }
+        return $slotList;
+    }
 }
