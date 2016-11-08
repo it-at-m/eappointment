@@ -75,7 +75,8 @@ class SlotList extends Base
                 $slotList[] = $slot;
                 $takeFollowingSlot = $appointment['slotCount'] - 1;
             }
-            if ($takeFollowingSlot > 0) {
+            // wenn nur auf takeFollowingSLot geachtet wird, nimmt er den gleichen slot wie vorher in die Liste
+            if ($slot->time != $startTime && $takeFollowingSlot > 0) {
                 $takeFollowingSlot--;
                 $slotList[] = $slot;
             }
