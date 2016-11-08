@@ -4,6 +4,10 @@ namespace BO\Zmsdb;
 use \BO\Zmsentities\Calendar as Entity;
 use \BO\Zmsdb\Query\SlotList;
 
+/**
+ * @SuppressWarnings(Coupling)
+ *
+ */
 class Calendar extends Base
 {
 
@@ -22,6 +26,9 @@ class Calendar extends Base
         $calendar = $this->readResolvedClusters($calendar);
         $calendar = $this->readResolvedRequests($calendar);
         $calendar = $this->readResolvedScopeReferences($calendar);
+        if (count($calendar->scopes) < 1) {
+            throw new Exception\CalendarWithoutScopes("No scopes found");
+        }
         $calendar = $this->readResolvedDays($calendar, $freeProcessesDate, $now, $slotType);
         unset($calendar['processing']);
         return $calendar;

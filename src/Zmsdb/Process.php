@@ -34,36 +34,6 @@ class Process extends Base
         return $process;
     }
 
-    /*
-    public function updateEntity(\BO\Zmsentities\Process $process)
-    {
-        $query = new Query\Process(Query\Base::UPDATE);
-        if (array_key_exists('id', $process) && !empty($process['id'])) {
-            $processId = $process['id'];
-        } else {
-            $processId = $this->writeNewProcess();
-        }
-        if (array_key_exists('authKey', $process) && !empty($process['authKey'])) {
-            $authKey = $process['authKey'];
-        } else {
-            $authKey = $this->readAuthKeyByProcessId($processId);
-        }
-
-        $query->addConditionProcessId($processId);
-        $query->addConditionAuthKey($authKey);
-
-        $values = $query->reverseEntityMapping($process);
-        $query->addValues($values);
-        $this->writeItem($query);
-        $this->writeRequestsToDb($processId, $process['requests']);
-
-        $process = $this->readEntity($processId, $authKey);
-        $process['status'] = (new Status())->readProcessStatus($processId, $authKey);
-        Log::writeLogEntry("UPDATE (Process::updateEntity) $process ", $processId);
-        return $process;
-    }
-    */
-
     public function updateEntity(\BO\Zmsentities\Process $process)
     {
         $query = new Query\Process(Query\Base::UPDATE);
@@ -73,7 +43,7 @@ class Process extends Base
         $values = $query->reverseEntityMapping($process);
         $query->addValues($values);
         $this->writeItem($query);
-        $this->writeRequestsToDb($process->id, $process->requests);
+        $this->writeRequestsToDb($process);
 
         $process = $this->readEntity($process->id, $process->authKey);
         $process->status = (new Status())->readProcessStatus($process->id, $process->authKey);
@@ -112,6 +82,7 @@ class Process extends Base
                 throw new \Exception("SQL UPDATE error on inserting new $process on $slot");
             }
         }
+        $this->writeRequestsToDb($process);
         return $process;
     }
 
@@ -229,30 +200,22 @@ class Process extends Base
             $query =  new Query\XRequest(Query\Base::DELETE);
             $query->addConditionProcessId($processId);
             $status = $this->deleteItem($query);
-            //delete mail and notification from queue by processId
-            //commented because mails with delete messages will removed too
-            /*
-            $mail =  new Mail();
-            $mail->deleteEntityByProcess($processId);
-            $notification =  new Notification();
-            $notification->deleteEntityByProcess($processId);
-            */
         }
         Log::writeLogEntry("DELETE (Process::deleteEntity) $processId ", $processId);
         return $status;
     }
 
-    public function writeRequestsToDb($processId, $requests)
+    protected function writeRequestsToDb(\BO\Zmsentities\Process $process)
     {
         $deleteQuery = new Query\XRequest(Query\Base::DELETE);
-        $deleteQuery->addConditionProcessId($processId);
+        $deleteQuery->addConditionProcessId($process->id);
         $this->deleteItem($deleteQuery);
         $query = new Query\XRequest(Query\Base::INSERT);
-        foreach ($requests as $request) {
+        foreach ($process->requests as $request) {
             $query->addValues(
                 [
                     'AnliegenID' => $request['id'],
-                    'BuergerID' => $processId
+                    'BuergerID' => $process->id
                 ]
             );
             $this->writeItem($query);
