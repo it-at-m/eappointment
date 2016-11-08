@@ -23,8 +23,7 @@ class ProcessStatus extends \BO\Zmsdb\Process
         ];
 
         $entity = call_user_func_array(array($this, $statusList[$status]), array($process));
-        $values = $query->reverseEntityMapping($entity);
-        $query->addValues($values);
+        $query->addValuesUpdateProcess($entity);
 
         $this->writeItem($query, 'process', $query::TABLE);
         $process = $this->readEntity($process['id'], $process['authKey']);
