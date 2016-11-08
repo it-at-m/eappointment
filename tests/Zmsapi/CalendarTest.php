@@ -55,6 +55,14 @@ class CalendarTest extends Base
         $this->setExpectedException('BO\Zmsapi\Exception\Calendar\InvalidFirstDay');
         $this->render([], [
             '__body' => '{
+                "requests": [
+                    {
+                      "id": "120703",
+                      "name": "Personalausweis beantragen",
+                      "source": "dldb"
+                    }
+                ],
+                "scopes": [{"id":141, "provider":{"id":122217}}],
                 "lastDay": {
                     "year": '. \App::$now->modify("+1 month")->format("Y") .',
                     "month": '. \App::$now->modify("+1 month")->format("n") .',
@@ -69,15 +77,23 @@ class CalendarTest extends Base
         $this->setExpectedException('BO\Zmsapi\Exception\Calendar\AppointmentsMissed');
         $this->render([], [
             '__body' => '{
+                "requests": [
+                    {
+                      "id": "120703",
+                      "name": "Personalausweis beantragen",
+                      "source": "dldb"
+                    }
+                ],
+                "scopes": [{"id":141, "provider":{"id":122217}}],
                 "firstDay": {
-                    "year": '. \App::$now->format("Y") .',
-                    "month": '. \App::$now->format("n") .',
-                    "day": '. \App::$now->format("j") .'
+                    "year": '. \App::$now->modify("+3 month")->format("Y") .',
+                    "month": '. \App::$now->modify("+3 month")->format("n") .',
+                    "day": '. \App::$now->modify("+3 month")->format("j") .'
                 },
                 "lastDay": {
-                    "year": '. \App::$now->modify("+1 month")->format("Y") .',
-                    "month": '. \App::$now->modify("+1 month")->format("n") .',
-                    "day": '. \App::$now->modify("+1 month")->format("t") .'
+                    "year": '. \App::$now->modify("+4 month")->format("Y") .',
+                    "month": '. \App::$now->modify("+4 month")->format("n") .',
+                    "day": '. \App::$now->modify("+4 month")->format("t") .'
                 }
             }'
         ], []);
