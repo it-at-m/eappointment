@@ -13,8 +13,8 @@ class Slot extends Base
      */
     public function readByAppointment(\BO\Zmsentities\Appointment $appointment)
     {
-        $availability = (new Availability())->readByAppointment($appointment);
-        $slotList = $availability->getSlotList()->withSlotsForAppointment($appointment);
+        $availabilityList = (new Availability())->readByAppointment($appointment);
+        $slotList = $availabilityList->getSlotList()->withSlotsForAppointment($appointment);
         return $slotList;
     }
 }

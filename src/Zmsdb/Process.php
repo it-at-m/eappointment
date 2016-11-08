@@ -39,9 +39,7 @@ class Process extends Base
         $query = new Query\Process(Query\Base::UPDATE);
         $query->addConditionProcessId($process['id']);
         $query->addConditionAuthKey($process['authKey']);
-
-        $values = $query->reverseEntityMapping($process);
-        $query->addValues($values);
+        $query->addValuesUpdateProcess($process);
         $this->writeItem($query);
         $this->writeRequestsToDb($process);
 
@@ -100,9 +98,8 @@ class Process extends Base
         $process->id = $this->readNewProcessId();
         $process->setRandomAuthKey();
         $process->setCreateTimestamp($now);
-        $values = $query->reverseEntityMapping($process);
-        $query->addValues($values);
         $query->addValuesNewProcess($process, $parentProcess, $childProcessCount);
+        $query->addValuesUpdateProcess($process);
         $this->writeItem($query);
         Log::writeLogEntry("CREATE (Process::writeNewProcess) process#{$process->id} ", $process->id);
         return $process;

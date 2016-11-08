@@ -134,7 +134,7 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
-    public function reverseEntityMapping(\BO\Zmsentities\Process $process)
+    public function addValuesUpdateProcess(\BO\Zmsentities\Process $process)
     {
         $data = array ();
         $data['Anmerkung'] = $process->getAmendment();
@@ -164,7 +164,7 @@ class Process extends Base implements MappingInterface
                 return ($value !== null && $value !== false && $value !== '');
             }
         );
-        return $data;
+        $this->addValues($data);
     }
 
     public function postProcess($data)
