@@ -21,7 +21,8 @@ class RequestTest extends EntityCommonTests
             );
 
         $this->assertFalse($collection->hasRequests(1234), 'Provider list should not have a request with id 1234');
-        $this->assertContains('1234', $collection->getIdsCsv(), 'Failed to get csv from ids in request list');
+        $this->assertContains('1234', $collection->getCsv(), 'Failed to get csv from ids in request list');
+        $this->assertEquals('123456', $collection->getIds()[0], 'Failed to get csv from ids in request list');
 
         $entity->id = 1234;
         $collection->addEntity($entity);
