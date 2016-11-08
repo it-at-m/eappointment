@@ -25,12 +25,11 @@ class ProcessReserve extends BaseController
         $process = new \BO\Zmsentities\Process($input);
 
         if ($process->hasId()) {
-            throw new Exception\Process\ProcessFailedReservation();
-        } else {
-            $process->status = 'reserved';
-            $process = (new Query())->reserveEntity($process);
-            $message->data = $process;
+            throw new Exception\Process\ProcessFailedReservation("Prozess existierte bereits");
         }
+        $process = (new Query())->writeEntityReserved($process, \App::$now, 'public');
+        $message->data = $process;
+
         Render::lastModified(time(), '0');
         Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }
