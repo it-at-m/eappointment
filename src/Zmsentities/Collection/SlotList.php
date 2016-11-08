@@ -75,7 +75,7 @@ class SlotList extends Base
                 $slotList[] = $slot;
                 $takeFollowingSlot = $appointment['slotCount'] - 1;
             }
-            if ($takeFollowingSlot) {
+            if ($takeFollowingSlot > 0) {
                 $takeFollowingSlot--;
                 $slotList[] = $slot;
             }
