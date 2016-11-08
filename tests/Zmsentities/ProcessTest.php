@@ -4,13 +4,19 @@ namespace BO\Zmsentities\Tests;
 
 class ProcessTest extends EntityCommonTests
 {
+    const DEFAULT_TIME = '2016-01-01 12:50:00';
+
     public $entityclass = '\BO\Zmsentities\Process';
 
     public $collectionclass = '\BO\Zmsentities\Collection\ProcessList';
 
     public function testBasic()
     {
+        $now = new \DateTimeImmutable(self::DEFAULT_TIME);
         $entity = (new $this->entityclass())->getExample();
+        $entity->setCreateTimestamp($now);
+        $this->assertTrue('1451649000' == $entity->createTimestamp, 'Creating Timestamp failed');
+
         $entity->addRequests('dldb', '122305');
         $this->assertContains('122305', $entity->getRequestCSV(), 'requests are not accessible');
 
@@ -55,6 +61,13 @@ class ProcessTest extends EntityCommonTests
         $entity->addAppointment($appointment);
         $this->assertTrue($entity->hasAppointment(1447869172, 123), 'appointment is not accessible');
         $this->assertFalse($entity->hasAppointment(1447869173, 123), 'appointment date 1447869173 should not exist');
+    }
+
+    public function testToCalendar()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $calendar = $entity->toCalendar();
+        $this->assertEntity('\BO\Zmsentities\Calendar', $calendar);
     }
 
     public function testCollection()

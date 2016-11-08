@@ -11,6 +11,7 @@ class AppointmentTest extends EntityCommonTests
     {
         $entity = (new $this->entityclass())->getExample();
         $this->assertEntity($this->entityclass, $entity);
+        $this->assertContains('123', (string)$entity);
     }
 
     public function testDate()
@@ -19,10 +20,11 @@ class AppointmentTest extends EntityCommonTests
         $entity->availability = (new \BO\Zmsentities\Availability())->getExample();
         $time = $entity->getEndTime();
         $entity->addDate($time->getTimestamp());
+        $entity->setTime('12:00');
         $this->assertTrue('Mittwoch 18. November 2015' == $entity->toDate(), 'German date does not match.');
         $this->assertTrue('Wednesday November 18, 2015' == $entity->toDate('en'), 'English date does not match.');
-        $this->assertTrue('19:04 Uhr' == $entity->toTime(), 'German time does not match.');
-        $this->assertTrue('19:04 o\'clock' == $entity->toTime('en'), 'English time does not match.');
+        $this->assertTrue('12:00 Uhr' == $entity->toTime(), 'German time does not match.');
+        $this->assertTrue('12:00 o\'clock' == $entity->toTime('en'), 'English time does not match.');
         $entity->setDateByString('2016-05-27 11:50');
         $this->assertTrue('Freitag 27. Mai 2016' == $entity->toDate(), 'German date does not match.');
         $this->assertTrue('Friday May 27, 2016' == $entity->toDate('en'), 'English date does not match.');
@@ -58,5 +60,15 @@ class AppointmentTest extends EntityCommonTests
         $entity->availability = (new \BO\Zmsentities\Availability())->getExample();
         $availability = $entity->getAvailability();
         $this->assertEntity('\\BO\\Zmsentities\\Availability', $availability);
+    }
+
+    public function testMatching()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $entity2 = (new $this->entityclass())->getExample();
+        $entity3 = (new $this->entityclass())->getExample();
+        $entity3->addScope('141');
+        $this->assertTrue($entity->isMatching($entity2));
+        $this->assertFalse($entity->isMatching($entity3));
     }
 }

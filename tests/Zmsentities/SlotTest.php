@@ -51,6 +51,8 @@ class SlotTest extends EntityCommonTests
 
         $time = new \DateTimeImmutable(self::DEFAULT_TIME);
         $this->assertTrue(2 == count($collection->withTimeGreaterThan($time)));
+
+        $this->assertContains('slotlist#', (string)$collection);
     }
 
     public function testReducedSlots()
@@ -105,19 +107,19 @@ class SlotTest extends EntityCommonTests
 
     public function testGetFreeProcessesException()
     {
+        $this->setExpectedException('\BO\Zmsentities\Exception\SlotMissingTime');
         $collection = new $this->collectionclass();
         $entity = (new $this->entityclass())->getExample();
         unset($entity['time']);
         $collection->addEntity($entity);
-        $scope = (new \BO\Zmsentities\Scope())->getExample();
-        $availability = (new \BO\Zmsentities\Availability())->getExample();
-        try {
-            $collection->getFreeProcesses('2015-04-01', $scope, $availability, 'public', '123456', 0);
-            $this->fail("Expected exception SlotMissingTime not thrown");
-        } catch (\BO\Zmsentities\Exception\SlotMissingTime $exception) {
-            $this->assertContains('Time on slot not set', $exception->getMessage());
-            $this->assertEquals(500, $exception->getCode());
-        }
+        $collection->getFreeProcesses(
+            '2015-04-01',
+            (new \BO\Zmsentities\Scope())->getExample(),
+            (new \BO\Zmsentities\Availability())->getExample(),
+            'public',
+            '123456',
+            0
+        );
 
     }
 }
