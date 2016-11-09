@@ -10,6 +10,9 @@ class ProcessGetTest extends Base
     {
         $response = $this->render([10030,'1c56'], [], []);
         $this->assertContains('process.json', (string)$response->getBody());
+        //by name
+        $response = $this->render([10030,'Dayoff'], [], []);
+        $this->assertContains('process.json', (string)$response->getBody());
     }
 
     public function testEmpty()

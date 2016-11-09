@@ -20,13 +20,13 @@ class ProcessIcs extends BaseController
      */
     public static function render($itemId, $authKey)
     {
+        $query = new Query();
         $message = Response\Message::create(Render::$request);
-        $process = (new Query())->readEntity($itemId, $authKey, 2);
-        $authKeyByProcessId = (new Query())->readAuthKeyByProcessId($process->id);
-
-        if (null === $authKeyByProcessId) {
+        $process = $query->readEntity($itemId, $authKey, 2);
+        $authCheck = $query->readAuthKeyByProcessId($itemId);
+        if (! $authCheck) {
             throw new Exception\Process\ProcessNotFound();
-        } elseif ($authKeyByProcessId != $process->authKey) {
+        } elseif ($authCheck['authKey'] != $authKey && $authCheck['authName'] != $authKey) {
             throw new Exception\Process\AuthKeyMatchFailed();
         } else {
             $config = (new Config())->readEntity();

@@ -30,11 +30,10 @@ class ProcessDeleteMail extends BaseController
         $message->data = array();
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $process = new \BO\Zmsentities\Process($input);
-        $authKeyByProcessId = (new Process())->readAuthKeyByProcessId($process->id);
-
-        if (null === $authKeyByProcessId) {
+        $authCheck = (new Query())->readAuthKeyByProcessId($process->id);
+        if (! $authCheck) {
             throw new Exception\Process\ProcessNotFound();
-        } elseif ($authKeyByProcessId != $process->authKey) {
+        } elseif ($authCheck['authKey'] != $process->authKey && $authCheck['authName'] != $process->authKey) {
             throw new Exception\Process\AuthKeyMatchFailed();
         } elseif ($process->getFirstClient()->hasEmail()) {
             $config = (new Config())->readEntity();

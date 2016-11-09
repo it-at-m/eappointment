@@ -18,11 +18,10 @@ class ProcessDelete extends BaseController
     {
         $query = new Query();
         $message = Response\Message::create(Render::$request);
-        $authKeyByProcessId = $query->readAuthKeyByProcessId($itemId);
-
-        if (null === $authKeyByProcessId) {
+        $authCheck = (new Query())->readAuthKeyByProcessId($itemId);
+        if (! $authCheck) {
             throw new Exception\Process\ProcessNotFound();
-        } elseif ($authKeyByProcessId != $authKey) {
+        } elseif ($authCheck['authKey'] != $authKey && $authCheck['authName'] != $authKey) {
             throw new Exception\Process\AuthKeyMatchFailed();
         } else {
             $query->deleteEntity($itemId, $authKey);

@@ -1279,7 +1279,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: authKey
- *                  description: authentication key
+ *                  description: authentication key or name
  *                  in: path
  *                  required: true
  *                  type: string

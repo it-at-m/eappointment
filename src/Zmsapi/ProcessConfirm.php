@@ -22,11 +22,10 @@ class ProcessConfirm extends BaseController
     {
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $process = new \BO\Zmsentities\Process($input);
-        $authKeyByProcessId = (new Query())->readAuthKeyByProcessId($process->id);
-
-        if (null === $authKeyByProcessId) {
+        $authCheck = (new Query())->readAuthKeyByProcessId($process->id);
+        if (! $authCheck) {
             throw new Exception\Process\ProcessNotFound();
-        } elseif ($authKeyByProcessId != $process->authKey) {
+        } elseif ($authCheck['authKey'] != $process->authKey && $authCheck['authName'] != $process->authKey) {
             throw new Exception\Process\AuthKeyMatchFailed();
         } else {
             $process = (new Query())->readEntity($process->id, $process->authKey);
