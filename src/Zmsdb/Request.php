@@ -16,6 +16,9 @@ class Request extends Base
             ->addResolvedReferences($resolveReferences)
             ->addConditionRequestId($requestId);
         $request = $this->fetchOne($query, new Entity());
+        if (!$request->hasId()) {
+            throw new Exception\RequestNotFound("Could not find request with ID $source/$requestId");
+        }
         if ($resolveReferences >= 1 && $request['source'] == 'dldb') {
             $request['data'] = Helper\DldbData::readExtendedRequestData($source, $requestId);
         }
