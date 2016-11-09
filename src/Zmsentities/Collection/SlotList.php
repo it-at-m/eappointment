@@ -71,14 +71,13 @@ class SlotList extends Base
         $takeFollowingSlot = 0;
         $startTime = $appointment->toDateTime()->format('H:i');
         foreach ($this as $slot) {
+            if ($takeFollowingSlot > 0) {
+                $takeFollowingSlot--;
+                $slotList[] = $slot;
+            }
             if ($slot->hasTime() && $slot->time == $startTime) {
                 $slotList[] = $slot;
                 $takeFollowingSlot = $appointment['slotCount'] - 1;
-            }
-            // wenn nur auf takeFollowingSLot geachtet wird, nimmt er den gleichen slot wie vorher in die Liste
-            if ($slot->time != $startTime && $takeFollowingSlot > 0) {
-                $takeFollowingSlot--;
-                $slotList[] = $slot;
             }
         }
         return $slotList;
@@ -149,7 +148,7 @@ class SlotList extends Base
         $processList = new ProcessList();
         foreach ($this as $slot) {
             if ($slotsRequired > 1 && $slot->type != Slot::REDUCED) {
-                throw new \Exception(
+                throw new \BO\Zmsentities\Exception\SlotRequiredWithoutReducing(
                     "With $slotsRequired slots required, "
                     ."do not use SlotList::getFreeProcesses without reduced slots: $slot"
                 );
