@@ -28,6 +28,16 @@ class NotificationTest extends Base
         $this->assertFalse($entity->hasId($queueId), "Deleted Notification still exists in Database.");
     }
 
+    public function testDeleteByProcessId()
+    {
+        $input = $this->getTestEntity();
+        $query = new Query();
+        $queueId = $query->writeInQueue($input);
+        $deleteTest = $query->deleteEntityByProcess($input->process['id']);
+        $entity = $query->readEntity($queueId);
+        $this->assertFalse($entity->hasId($queueId), "Deleted Notification still exists in Database.");
+    }
+
     protected function getTestEntity()
     {
         $input = new Entity(array(

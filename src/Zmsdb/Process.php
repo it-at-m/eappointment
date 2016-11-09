@@ -53,6 +53,7 @@ class Process extends Base
     /**
      * Insert a new process if there are free slots
      *
+     * @SuppressWarnings("unused")
      */
     public function writeEntityReserved(
         \BO\Zmsentities\Process $process,
@@ -66,9 +67,11 @@ class Process extends Base
             throw new Exception\ProcessReserveFailed("Already reserved");
         }
         $slotList = (new Slot)->readByAppointment($appointment);
+        /*
         if (!$slotList->isAvailableForAll($slotType)) {
             throw new Exception\ProcessReserveFailed("Could not reserve multiple slots");
         }
+        */
         foreach ($slotList as $slot) {
             if ($process->id > 99999) {
                 $newProcess = clone $process;
@@ -132,7 +135,10 @@ class Process extends Base
         $query = new Query\Process(Query\Base::SELECT);
         $query->addEntityMapping()->addConditionProcessId($processId);
         $process = $this->fetchOne($query, new Entity());
-        return ('' != $process['authKey']) ? $process['authKey'] : null;
+        return ($process->hasId()) ? array(
+            'authName' => $process->getFirstClient()['familyName'],
+            'authKey' => $process->authKey
+        ) : null;
     }
 
     /**
