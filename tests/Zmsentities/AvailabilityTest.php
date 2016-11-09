@@ -276,6 +276,17 @@ class AvailabilityTest extends EntityCommonTests
         $this->assertTrue(81 == $withCalculatedSlots['workstationCount']['public'], $withCalculatedSlots);
     }
 
+    public function testGetSlotList()
+    {
+        $collection = new $this->collectionclass();
+        $entity = (new $this->entityclass())->getExample();
+        $collection->addEntity($entity);
+        $slotList = $collection->getSlotList();
+        $this->assertTrue(28 == count($slotList));
+        $this->assertEquals('10:00', $slotList->getFirst()['time']);
+        $this->assertEquals('10:12', $slotList[1]['time']);
+    }
+
     public function testToString()
     {
         $entity = (new $this->entityclass())->getExample();
@@ -293,7 +304,7 @@ class AvailabilityTest extends EntityCommonTests
         $collection = new $this->collectionclass();
         $entity = (new $this->entityclass())->getExample();
         $collection->addEntity($entity);
-        
+
         $entityOH = $this->getExampleWithTypeOpeningHours();
         $collection->addEntity($entityOH);
         $this->assertTrue($collection->isOpened($time));
@@ -315,7 +326,7 @@ class AvailabilityTest extends EntityCommonTests
             'Failed to get list with calculated slots'
         );
     }
-    
+
     public function testUnopened()
     {
         $time = new \DateTimeImmutable(self::DEFAULT_TIME);

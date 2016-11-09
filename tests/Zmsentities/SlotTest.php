@@ -86,6 +86,53 @@ class SlotTest extends EntityCommonTests
         $this->assertEquals(0, $collection4[2]['public']);
     }
 
+    public function testSlotByAppointment()
+    {
+        $now = new \DateTimeImmutable(self::DEFAULT_TIME);
+        $appointment = (new \BO\Zmsentities\Appointment())->getExample();
+        $appointment->setTime('12:50');
+        $collection = new $this->collectionclass();
+        $entity = $this->getExample();
+        $entity2 = new $this->entityclass(array (
+            'public' => 2,
+            'intern' => 9,
+            'callcenter' => 5,
+            'time' => '12:50'
+        ));
+        $collection->addEntity($entity);
+        $collection->addEntity($entity2);
+        $this->assertEquals('12:50', $collection->getByDateTime($now)['time']);
+        $this->assertFalse($collection->getByDateTime($now->setTime('10','00')));
+
+        $entity3 = new $this->entityclass(array (
+            'public' => 2,
+            'intern' => 9,
+            'callcenter' => 5,
+            'time' => '13:00'
+        ));
+        $collection->addEntity($entity3);
+        $slotList = $collection->withSlotsForAppointment($appointment);
+        $this->assertTrue(2 == count($slotList));
+        $this->assertEquals('12:50', $slotList->getFirst()['time']);
+    }
+
+    public function testAvailableForAll()
+    {
+        $collection = new $this->collectionclass();
+        $entity = $this->getExample();
+        $entity2 = new $this->entityclass(array (
+            'public' => 0,
+            'intern' => 9,
+            'callcenter' => 5,
+            'time' => '12:50'
+        ));
+        $collection->addEntity($entity);
+        $this->assertTrue($collection->isAvailableForAll('public'));
+
+        $collection->addEntity($entity2);
+        $this->assertFalse($collection->isAvailableForAll('public'));
+    }
+
     public function testGetFreeProcesses()
     {
         $collection = new $this->collectionclass();
@@ -103,6 +150,17 @@ class SlotTest extends EntityCommonTests
             3 == count($freeProcesses[0]->appointments),
             'Amout of slotcount ('. count($freeProcesses[0]->appointments) .') is wrong, 3 expected'
         );
+    }
+
+    public function testGetFreeProcessesFailed()
+    {
+        $this->setExpectedException('\BO\Zmsentities\Exception\SlotRequiredWithoutReducing');
+        $collection = new $this->collectionclass();
+        $entity = $this->getExample();
+        $collection->addEntity($entity);
+        $scope = (new \BO\Zmsentities\Scope())->getExample();
+        $availability = (new \BO\Zmsentities\Availability())->getExample();
+        $collection->getFreeProcesses('2016-04-01', $scope, $availability, 'public', '123456', 2);
     }
 
     public function testGetFreeProcessesException()
