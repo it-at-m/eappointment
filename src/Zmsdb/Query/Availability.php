@@ -76,7 +76,7 @@ class Availability extends Base implements MappingInterface
         $this->query->where('scope.StandortID', '=', $scopeId);
         return $this;
     }
-    
+
     public function addConditionDate(\DateTimeInterface $dateTime)
     {
         $date = $dateTime->format('Y-m-d');
@@ -118,7 +118,7 @@ class Availability extends Base implements MappingInterface
     {
         $time = $dateTime->format('H:i:s');
         $this->query->where("availability.Terminanfangszeit", '<=', $time);
-        $this->query->where("availability.Terminendzeit", '>=', $time);
+        $this->query->where("availability.Terminendzeit", '>', $time);
 
         return $this;
     }
