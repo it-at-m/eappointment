@@ -7,6 +7,8 @@ class AppointmentTest extends EntityCommonTests
 
     public $entityclass = '\BO\Zmsentities\Appointment';
 
+    public $collectionclass = '\BO\Zmsentities\Collection\AppointmentList';
+
     public function testBasic()
     {
         $entity = (new $this->entityclass())->getExample();
@@ -64,11 +66,12 @@ class AppointmentTest extends EntityCommonTests
 
     public function testMatching()
     {
+        $collection = new $this->collectionclass();
         $entity = (new $this->entityclass())->getExample();
         $entity2 = (new $this->entityclass())->getExample();
-        $entity3 = (new $this->entityclass())->getExample();
-        $entity3->addScope('141');
-        $this->assertTrue($entity->isMatching($entity2));
-        $this->assertFalse($entity->isMatching($entity3));
+        $entity2->addScope('141');
+        $collection->addEntity($entity);
+        $this->assertTrue($collection->hasAppointment($entity));
+        $this->assertFalse($collection->hasAppointment($entity2));
     }
 }
