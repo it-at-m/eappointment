@@ -29,11 +29,10 @@ class ProcessConfirmationMail extends BaseController
         $message = Response\Message::create(Render::$request);
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $process = new \BO\Zmsentities\Process($input);
-        $authKeyByProcessId = (new Process())->readAuthKeyByProcessId($process->id);
-
-        if (null === $authKeyByProcessId) {
+        $authCheck = (new Process())->readAuthKeyByProcessId($process->id);
+        if (! $authCheck) {
             throw new Exception\Process\ProcessNotFound();
-        } elseif ($authKeyByProcessId != $process->authKey) {
+        } elseif ($authCheck['authKey'] != $process->authKey && $authCheck['authName'] != $process->authKey) {
             throw new Exception\Process\AuthKeyMatchFailed();
         } elseif ($process->toProperty()->scope->preferences->client->emailRequired->get()
             && !$process->getFirstClient()->hasEmail()
