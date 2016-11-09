@@ -45,6 +45,7 @@ class Scope extends Base
                     $scopeList->addEntity($entity);
                 } else {
                     if ($entity instanceof Entity) {
+                        $entity = $this->addDldbData($entity, $resolveReferences);
                         $scopeList->addEntity($entity);
                     }
                 }
@@ -73,6 +74,7 @@ class Scope extends Base
                     $scopeList->addEntity($entity);
                 } else {
                     if ($entity instanceof Entity) {
+                        $entity = $this->addDldbData($entity, $resolveReferences);
                         $scopeList->addEntity($entity);
                     }
                 }
@@ -101,6 +103,7 @@ class Scope extends Base
                     $scopeList->addEntity($entity);
                 } else {
                     if ($entity instanceof Entity) {
+                        $entity = $this->addDldbData($entity, $resolveReferences);
                         $scopeList->addEntity($entity);
                     }
                 }

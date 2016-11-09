@@ -43,7 +43,7 @@ class Calendar extends Base
         $scopeList = new \BO\Zmsentities\Collection\ScopeList();
         $scopeReader = new Scope($this->getWriter(), $this->getReader());
         foreach ($calendar->scopes as $scope) {
-            $scope = $scopeReader->readEntity($scope['id'], 1);
+            $scope = $scopeReader->readEntity($scope['id'], 2);
             $scopeList->addEntity($scope);
         }
         $calendar['scopes'] = $scopeList->withUniqueScopes();
@@ -101,7 +101,7 @@ class Calendar extends Base
         $providerReader = new Provider($this->getWriter(), $this->getReader());
         foreach ($calendar['providers'] as $key => $provider) {
             $calendar['providers'][$key] = $providerReader->readEntity('dldb', $provider['id']);
-            $scopeList = $scopeReader->readByProviderId($provider['id'], 1);
+            $scopeList = $scopeReader->readByProviderId($provider['id'], 2);
             foreach ($scopeList as $scope) {
                 if (! $calendar['scopes']->hasEntity($scope->id)) {
                     $calendar['scopes']->addEntity($scope);
