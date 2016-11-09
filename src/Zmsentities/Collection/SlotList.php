@@ -100,9 +100,6 @@ class SlotList extends Base
             $sum['public'] += $slot['public'];
             $sum['intern'] += $slot['intern'];
             $sum['callcenter'] += $slot['callcenter'];
-            if ($sum['type'] != Slot::FREE) {
-                $sum['type'] = $slot['type'];
-            }
         }
         return $sum;
     }

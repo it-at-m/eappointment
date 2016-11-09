@@ -21,7 +21,7 @@ class SlotTest extends EntityCommonTests
         $entity->setTime($time);
         $this->assertTrue($entity->time == $entity->getTimeString(), 'Slottime does not match');
         $this->assertTrue($entity->hasTime(), 'Slottime 10:00 missed');
-        $this->assertTrue('Slot sum@10:00 p/c/i=3/8/10' == $entity->__toString(), 'SlotTime String does not match');
+        $this->assertEquals('slot#sum@10:00 p/c/i=3/8/10', $entity->__toString(), 'SlotTime String does not match');
     }
 
     public function testCollection()

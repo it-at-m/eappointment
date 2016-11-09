@@ -230,6 +230,7 @@ class Process extends Schema\Entity
         $string .= " (" . $this->status . ")";
         $string .= " " . $this->getFirstAppointment()->toDateTime()->format('c');
         $string .= " " . $this->getFirstAppointment()->slotCount."slots";
+        $string .= "*" . count($this->appointments);
         foreach ($this->requests as $request) {
             $string .= " " . $request['source'] . "." . $request['id'];
         }
