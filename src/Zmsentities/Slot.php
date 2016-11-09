@@ -70,7 +70,7 @@ class Slot extends Schema\Entity
 
     public function __toString()
     {
-        return "Slot {$this->type}@"
+        return "slot#{$this->type}@"
             . "{$this->getTimeString()}"
             . " p/c/i={$this->public}/{$this->callcenter}/{$this->intern}";
     }
