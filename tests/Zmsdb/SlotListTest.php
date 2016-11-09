@@ -7,14 +7,23 @@ use \BO\Zmsentities\Collection\SlotList as Collection;
 
 class SlotListTest extends Base
 {
-    public function testEmptySlotData()
+    public function testBasic()
+    {
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $dateTime = \DateTimeImmutable::createFromFormat('Y-m-d', '2016-04-05');
+        $slotList = new SlotList($this->getTestSlotData(), $dateTime, $dateTime->modify('+1day'), $now);
+        $slotList->setSlotData($this->getTestSlotList());
+        $this->assertContains('SlotList: Availability #68979 starting', (string)$slotList);
+    }
+
+    public function testExceptionEmpty()
     {
         $this->setExpectedException('\BO\Zmsdb\Exception\SlotDataEmpty');
         $slotList = new SlotList();
         $slotList->addQueryData(array());
     }
 
-    public function testSlotDataWithoutPreGeneratedSlot()
+    public function testExceptionWithoutPreGeneratedSlot()
     {
         $this->setExpectedException('\BO\Zmsdb\Exception\SlotDataWithoutPreGeneratedSlot');
         $slotData = $this->getTestSlotData();
@@ -22,8 +31,8 @@ class SlotListTest extends Base
         $slotList = new SlotList();
         $slotList->addQueryData($slotData);
     }
-    
-    public function testSlotDataWithoutPreGeneratedSlotOnSlotNull()
+
+    public function testExceptionWithoutPreGeneratedSlot2()
     {
         $this->setExpectedException('\BO\Zmsdb\Exception\SlotDataWithoutPreGeneratedSlot');
         $slotData = $this->getTestSlotData();
@@ -37,10 +46,10 @@ class SlotListTest extends Base
         ));
     }
 
-    public function testSlotDataDublicate()
+    public function testExceptionDublicateEntryFound()
     {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
         $this->setExpectedException('\BO\Zmsdb\Exception\SlotDataDublicateEntryFound');
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
         $slotData = $this->getTestSlotData();
         $dateTime = \DateTimeImmutable::createFromFormat('Y-m-d', '2016-04-05');
         $slotList = new SlotList($this->getTestSlotData(), $dateTime, $dateTime->modify('+1day'), $now);

@@ -50,6 +50,16 @@ class MailTest extends Base
         $entity = $query->writeInQueue($input);
     }
 
+    public function testDeleteByProcessId()
+    {
+        $input = $this->getTestEntity();
+        $query = new Query();
+        $entity = $query->writeInQueue($input);
+        $deleteTest = $query->deleteEntityByProcess($input->process['id']);
+        $entity = $query->readEntity($entity->id);
+        $this->assertFalse($entity->hasId(), "Delete Mail by process id failed.");
+    }
+
     protected function getTestEntity()
     {
         return new Entity(array(

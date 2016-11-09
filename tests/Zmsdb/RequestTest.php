@@ -10,27 +10,22 @@ class RequestTest extends Base
 {
     public function testBasic()
     {
-        /*
-        $connection = \Mockery::mock("PDO");
-        $connection->shouldReceive('fetchOne')
-            ->andReturn([
-                  'id' => '120335',
-                  'link' => 'https://service.berlin.de/dienstleistung/120335/',
-                  'name' => 'Abmeldung einer Wohnung',
-                  'source' => 'dldb',
-            ]);
-        */
-        $connection = null;
-        $entity = (new Query($connection, $connection))->readEntity('dldb', 120335);
+        $entity = (new Query())->readEntity('dldb', 120335);
         $this->assertEntity("\\BO\\Zmsentities\\Request", $entity);
         $this->assertEquals(120335, $entity['id']);
 
-        $entity = (new Query($connection, $connection))->readEntity('dldb', 120335, 1);
+        $entity = (new Query())->readEntity('dldb', 120335, 1);
         $this->assertEntity("\\BO\\Zmsentities\\Request", $entity);
         $this->assertTrue(array_key_exists('data', $entity), 'Addional data attribute missed');
     }
 
-    public function testUnknownSource()
+    public function testExceptionRequestNotFound()
+    {
+        $this->setExpectedException("\\BO\\Zmsdb\\Exception\\RequestNotFound");
+        $entity = (new Query())->readEntity('dldb', 999999);
+    }
+
+    public function testExceptionUnknownDataSource()
     {
         $this->setExpectedException("\\BO\\Zmsdb\\Exception\\UnknownDataSource");
         //source not dldb

@@ -15,6 +15,14 @@ class CalendarTest extends Base
         122257,122208,122226
     ];
 
+    public function testExceptionCalendarWithoutScopes()
+    {
+        $this->setExpectedException('\BO\Zmsdb\Exception\CalendarWithoutScopes');
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $input = $this->getTestEntity();
+        $entity = (new Query())->readResolvedEntity($input, $now);
+    }
+
     public function testWithScope()
     {
         $now = new \DateTimeImmutable("2016-04-01 11:55");

@@ -8,6 +8,43 @@ use \BO\Zmsentities\Calendar;
 
 class ProcessTest extends Base
 {
+    public function testReadEntityFailed()
+    {
+        $this->setExpectedException('\BO\Zmsdb\Exception\ProcessAuthFailed');
+
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $query = new Query();
+        $input = $this->getTestProcessEntity();
+        $process = $query->writeEntityReserved($input, $now);
+        $process = $query->readEntity($process->id, '1234');
+    }
+
+    public function testExceptionAlreadyReserved()
+    {
+        $this->setExpectedException('\BO\Zmsdb\Exception\ProcessReserveFailed');
+
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $query = new Query();
+        $input = $this->getTestProcessEntity();
+        $process = $query->writeEntityReserved($input, $now);
+        $process = $query->writeEntityReserved($process, $now);
+        $process = $query->writeEntityReserved($process, $now);
+    }
+
+    public function testExceptionSQLUpdateFailed()
+    {
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $query = new Query();
+        $input = $this->getTestProcessEntity();
+        $input->id = 1000;
+        try {
+            $query->writeEntityReserved($input, $now);
+            $this->fail("Expected exception not thrown");
+        } catch (\Exception $exception) {
+            $this->assertContains('SQL UPDATE error on inserting new process', $exception->getMessage());
+        }
+    }
+
     public function testUpdateProcess()
     {
         $now = new \DateTimeImmutable("2016-04-01 11:55");
@@ -58,7 +95,8 @@ class ProcessTest extends Base
         $query = new Query();
         $input = $this->getTestProcessEntity();
         $process = $query->writeEntityReserved($input, $now);
-        $process = $query->readEntity($process->id, $process->authKey);
+        $authCheck = $query->readAuthKeyByProcessId($process->id);
+        $process = $query->readEntity($process->id, $authCheck['authKey']);
         $this->assertEntity("\\BO\\Zmsentities\\Process", $process);
     }
 

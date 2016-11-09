@@ -79,12 +79,19 @@ class ScopeTest extends Base
         $deleteTest = $query->deleteEntity($entity->id);
         $this->assertTrue($deleteTest, "Failed to delete Scope from Database.");
     }
-    
+
     public function testReadIsOpened()
     {
         $query = new Query();
         $now = new \DateTimeImmutable("2016-04-01 11:55");
         $this->assertEquals(true, $query->readIsOpened(141, $now)); //Herrstraße
+    }
+
+    public function testAddDldbData()
+    {
+        \BO\Zmsdb\Scope::$cache = [];
+        $entity2 = (new Query())->readEntity(141, 2);
+        $this->assertTrue(array_key_exists('data', $entity2->provider));
     }
 
     protected function getTestEntity()
