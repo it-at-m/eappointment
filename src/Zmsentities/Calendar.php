@@ -302,4 +302,28 @@ class Calendar extends Schema\Entity
         }
         return $monthList;
     }
+
+    /**
+     * Reduce data of dereferenced entities to a required minimum
+     *
+     */
+    public function withLessData()
+    {
+        $entity = clone $this;
+
+        foreach ($entity['scopes'] as $scope) {
+            if ($scope->toProperty()->provider->data->isAvailable()) {
+                $provider = $scope->toProperty()->provider->get();
+                unset($scope['provider']);
+                $scope['provider']['data'] = ['payment' => $provider['data']['payment']];
+                $scope['provider']['contact'] = $provider['contact'];
+                $scope['provider']['name'] = $provider['name'];
+                unset($scope['dayoff']);
+            }
+        }
+        unset($entity['providers']);
+        unset($entity['clusters']);
+        unset($entity['freeProcesses']);
+        return $entity;
+    }
 }
