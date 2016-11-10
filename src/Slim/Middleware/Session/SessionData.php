@@ -144,11 +144,22 @@ class SessionData implements SessionInterface
     public function clear()
     {
         if (session_status() === PHP_SESSION_ACTIVE) {
+            setcookie(session_name(), '', time()-3600, '/');
+            $_SESSION = array();
+            session_destroy();
+        }
+    }
+
+    /**
+     *
+     * @SuppressWarnings(Superglobals)
+     *
+     * @return self
+     */
+    public function restart()
+    {
+        if (session_status() === PHP_SESSION_ACTIVE) {
             session_regenerate_id(true);
-            $instance = new self();
-            $_SESSION = [];
-            $instance->data = $_SESSION;
-            return $instance;
         }
     }
 
