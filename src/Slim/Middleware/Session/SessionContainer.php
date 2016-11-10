@@ -54,6 +54,11 @@ class SessionContainer implements SessionInterface
         $this->getSession()->clear();
     }
 
+    public function restart()
+    {
+        $this->getSession()->restart();
+    }
+
     public function clearGroup($groupIndex = null)
     {
         $this->getSession()->clearGroup($groupIndex);
