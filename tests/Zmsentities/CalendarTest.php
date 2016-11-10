@@ -75,7 +75,7 @@ class CalendarTest extends EntityCommonTests
         $day = $entity->getDay(date('Y'), date('m'), date('d'));
         $this->assertTrue($entity->hasDay($day->year, $day->month, $day->day));
         $this->assertFalse($entity->hasDay('2015', '11', '20'));
-        
+
         $time = \DateTime::createFromFormat('Y-m-d', self::LAST_DAY);
         $entity->setLastDayTime($time);
         $this->assertTrue($entity->getLastDay()
@@ -108,5 +108,19 @@ class CalendarTest extends EntityCommonTests
                 $this->assertInstanceOf('BO\Zmsentities\Day', $day);
             }
         }
+    }
+
+    public function testLessData()
+    {
+        $entity = $this->getExample();
+        $scope = (new \BO\Zmsentities\Scope())->getExample();
+        $scope->provider['data'] = array('payment' => 'only cash', 'extra' => 'to remove');
+        $scope->dayoff[] = array('name' => '1. Weihnachtsfeiertag');
+        $entity->scopes[0] = $scope;
+        $entity = $entity->withLessData();
+        $this->assertEntity($this->entityclass, $entity);
+        $this->assertFalse(isset($entity['providers']), 'Converting to less data failed');
+        $this->assertFalse(isset($entity['scopes'][0]['provider']['data']['extra']), 'Converting to less data failed');
+        $this->assertTrue(isset($entity['scopes'][0]['provider']['data']['payment']), 'Converting to less data failed');
     }
 }
