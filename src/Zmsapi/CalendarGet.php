@@ -26,7 +26,8 @@ class CalendarGet extends BaseController
         if (!isset($calendar['firstDay']) || !isset($calendar['lastDay'])) {
             throw new Exception\Calendar\InvalidFirstDay();
         } else {
-            $message->data = $query->readResolvedEntity($calendar, \App::getNow());
+            $calendar = $query->readResolvedEntity($calendar, \App::getNow())->withLessData();
+            $message->data = $calendar;
         }
         if (0 == count($message->data['days'])) {
             throw new Exception\Calendar\AppointmentsMissed();
