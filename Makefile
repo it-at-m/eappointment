@@ -8,6 +8,12 @@ now: # Dummy target
 
 build: # Build javascript and css
 	node_modules/.bin/gulp
+	
+css:
+	node_modules/.bin/gulp scss
+
+js:
+	node_modules/.bin/gulp js
 
 fix: # run code fixing
 	php vendor/bin/phpcbf --standard=psr2 src/
@@ -23,3 +29,6 @@ dev: # init development system
 	$(COMPOSER) update
 	npm install
 	node_modules/.bin/bower --config.directory=vendor install
+	
+coverage:
+	php -dzend_extension=xdebug.so vendor/bin/phpunit --coverage-html public/_tests/coverage/
