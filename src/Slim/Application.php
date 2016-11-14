@@ -71,7 +71,7 @@ class Application
     /**
      * Set this option, if ESI should be used
      */
-    const ESI_ENABLED = false;
+    const ESI_ENABLED = true;
 
     /*
      * -----------------------------------------------------------------------
