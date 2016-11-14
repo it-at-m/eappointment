@@ -667,44 +667,6 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
- *  "/organisation/{id}/department/":
- *      post:
- *          description: Add a new department
- *          parameters:
- *              -   name: id
- *                  description: organisation number
- *                  in: path
- *                  required: true
- *                  type: integer
- *              -   name: department
- *                  description: department data to add
- *                  required: true
- *                  in: body
- *                  schema:
- *                      $ref: "schema/department.json"
- *              -   name: X-Authkey
- *                  description: authentication key to identify user for testing access rights
- *                  in: header
- *                  type: string
- *          responses:
- *              200:
- *                  description: "success"
- *                  schema:
- *                      type: object
- *                      properties:
- *                          meta:
- *                              $ref: "schema/metaresult.json"
- *                          data:
- *                              $ref: "schema/department.json"
- *              404:
- *                  description: "Missing required properties in the department"
- */
-\App::$slim->post('/organisation/{id:\d{1,11}}/department/',
-    '\BO\Zmsapi\OrganisationAddDepartment')
-    ->setName("OrganisationAddDepartment");
-
-/**
- *  @swagger
  *  "/department/{id}/":
  *      delete:
  *          description: Deletes an department
@@ -1203,6 +1165,34 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/organisation/scope/{id}/":
+ *      get:
+ *          description: Get an organisation by scopeId.
+ *          parameters:
+ *              -   name: id
+ *                  description: scope number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/organisation.json"
+ *              404:
+ *                  description: "organisation id does not exists"
+ */
+\App::$slim->get('/organisation/scope/{id:\d{1,4}}/',
+    '\BO\Zmsapi\OrganisationByScope')
+    ->setName("OrganisationByScope");
+
+/**
+ *  @swagger
  *  "/organisation/{id}/hash/":
  *      get:
  *          description: Get a hash to identify a ticketprinter. Usually a browser requests a hash once and stores it in a cookie.
@@ -1228,6 +1218,44 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/organisation/{id:\d{1,11}}/hash/',
     '\BO\Zmsapi\OrganisationHash')
     ->setName("OrganisationHash");
+
+/**
+ *  @swagger
+ *  "/organisation/{id}/department/":
+ *      post:
+ *          description: Add a new department
+ *          parameters:
+ *              -   name: id
+ *                  description: organisation number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: department
+ *                  description: department data to add
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/department.json"
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/department.json"
+ *              404:
+ *                  description: "Missing required properties in the department"
+ */
+\App::$slim->post('/organisation/{id:\d{1,11}}/department/',
+    '\BO\Zmsapi\OrganisationAddDepartment')
+    ->setName("OrganisationAddDepartment");
 
 /**
  *  @swagger
