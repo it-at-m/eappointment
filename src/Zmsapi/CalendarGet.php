@@ -10,17 +10,19 @@ namespace BO\Zmsapi;
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\Calendar as Query;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 class CalendarGet extends BaseController
 {
     /**
-     *
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render()
+    public function __invoke(RequestInterface $request, ResponseInterface $response, array $args)
     {
         $query = new Query();
-        $message = Response\Message::create(Render::$request);
+        $message = Response\Message::create($request);
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $calendar = new \BO\Zmsentities\Calendar($input);
         if (!isset($calendar['firstDay']) || !isset($calendar['lastDay'])) {
@@ -32,7 +34,8 @@ class CalendarGet extends BaseController
         if (0 == count($message->data['days'])) {
             throw new Exception\Calendar\AppointmentsMissed();
         }
-        Render::lastModified(time(), '0');
-        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+        return $response;
     }
 }

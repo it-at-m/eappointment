@@ -2,6 +2,8 @@
 
 namespace BO\Zmsapi\Response;
 
+use \BO\Zmsdb\Connection\Select;
+
 /**
  * example class to generate a response
  */
@@ -94,13 +96,18 @@ class Message implements \JsonSerializable
 
     protected function getProfilerData()
     {
-        $profiles = \BO\Zmsdb\Connection\Select::getWriteConnection()->getProfiler()->getProfiles();
-        if (!$profiles) {
-            $profiles = \BO\Zmsdb\Connection\Select::getReadConnection()->getProfiler()->getProfiles();
+        $profiles = [];
+        if (Select::hasWriteConnection()) {
+            $profiles += Select::getWriteConnection()->getProfiler()->getProfiles();
+        }
+        if (Select::hasReadConnection()) {
+            $profiles += Select::getReadConnection()->getProfiler()->getProfiles();
         }
         $filtered = array();
         foreach ($profiles as $profile) {
             if ($profile['function'] == 'perform') {
+                unset($profile['trace']);
+                $profile['statement'] = preg_replace('#\s+#', ' ', $profile['statement']);
                 $filtered[] = $profile;
             }
         }

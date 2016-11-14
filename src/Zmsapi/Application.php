@@ -49,6 +49,12 @@ class Application extends \BO\Slim\Application
     const DB_DSN_READWRITE = 'mysql:dbname=zmsbo;host=127.0.0.1';
 
     /**
+     * temporary db name for using dldb data
+     * @var String DB_STARTINFO
+     */
+    const DB_STARTINFO = 'startinfo';
+
+    /**
      * @var String DB_USERNAME
      */
     const DB_USERNAME = 'server';
