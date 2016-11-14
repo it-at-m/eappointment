@@ -18,6 +18,9 @@ use \Psr\Http\Message\ResponseInterface;
 
 \App::$slim->get('/scope/{id:\d+}/', '\BO\Zmsticketprinter\TicketprinterByScope')
     ->setName("TicketprinterByScope");
+
+\App::$slim->post('/process/', '\BO\Zmsticketprinter\TicketprinterProcess')
+    ->setName("TicketprinterProcess");
 /*
  * ---------------------------------------------------------------------------
  * maintenance
