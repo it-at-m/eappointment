@@ -168,8 +168,8 @@ class Ticketprinter extends Base
                     $ticketprinterList->addEntity($ticketprinter);
                 }
             }
-            return $ticketprinterList;
         }
+        return $ticketprinterList;
     }
 
      /**

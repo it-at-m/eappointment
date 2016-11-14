@@ -23,6 +23,23 @@ class Organisation extends Base
         return array ();
     }
 
+    public function readByScopeId($scopeId, $resolveReferences = 0)
+    {
+        $query = new Query\Organisation(Query\Base::SELECT);
+        $query->addEntityMapping()
+            ->addResolvedReferences($resolveReferences)
+            ->addConditionScopeId($scopeId);
+        $organisation = $this->fetchOne($query, new Entity());
+        if (isset($organisation['id'])) {
+            $organisation['departments'] = (new Department())
+                ->readByOrganisationId($organisation['id'], $resolveReferences);
+            $organisation['ticketprinters'] = (new Ticketprinter())
+                ->readByOrganisationId($organisation['id'], $resolveReferences);
+            return $organisation;
+        }
+        return array ();
+    }
+
     public function readByOwnerId($ownerId, $resolveReferences = 0)
     {
         $organisationList = new Collection();
