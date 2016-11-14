@@ -128,6 +128,15 @@ class Select
     }
 
     /**
+     * Test if a read connection is established
+     *
+     */
+    public static function hasReadConnection()
+    {
+        return (null === self::$readConnection) ? false : true;
+    }
+
+    /**
      * Close a connection for reading data
      *
      */
@@ -167,6 +176,15 @@ class Select
             self::$readConnection = self::$writeConnection;
         }
         return self::$writeConnection;
+    }
+
+    /**
+     * Test if a write connection is established
+     *
+     */
+    public static function hasWriteConnection()
+    {
+        return (null === self::$writeConnection) ? false : true;
     }
 
     /**
