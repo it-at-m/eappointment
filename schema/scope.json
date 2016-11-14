@@ -56,6 +56,7 @@
                 "label": "Teilnahme an der Kundenzufriedensheits-Umfrage"
             },
             "ticketprinter": {
+            	"buttonName": "Bürgeramt",
                 "confirmationEnabled": true,
                 "deactivatedText": "Dies Ausgabe von Wartenummern wurde bereits vorzeitig geschlossen, wir bitten um ihr Verständnis.",
                 "notificationsAmendmentEnabled": true,
@@ -306,6 +307,11 @@
                     "type": "object",
                     "additionalProperties": false,
                     "properties": {
+                    	"buttonName": {
+                            "type": "string",
+                            "description": "name/value of button in ticketprinter",
+                            "default": ""
+                        },
                         "confirmationEnabled": {
                             "type": ["boolean", "number"],
                             "description": "true if client should get a notification to confirm that notifications are enabled for him/her",

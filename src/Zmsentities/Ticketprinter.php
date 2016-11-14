@@ -17,6 +17,11 @@ class Ticketprinter extends Schema\Entity
         return $organisiationId . bin2hex(openssl_random_pseudo_bytes(16));
     }
 
+    public function isEnabled()
+    {
+        return $this->enabled;
+    }
+
     public function toStructuredButtonList()
     {
         $this->buttons = array();
