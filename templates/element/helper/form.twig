@@ -1,0 +1,231 @@
+{#
+############## FORM GROUP MACRO (FORMELEMENT WRAPPER) ##############
+#}
+
+{%- macro formgroup(groupargs, elements) %}
+
+                    <div class="form-group{% if groupargs.errors %} has-error {% endif %}{% if groupargs.class %} {{groupargs.class}} {% endif %}">
+                        {% if groupargs.label -%}
+                        <label class="label">{{ groupargs.label }}{% if groupargs.required %}<span class="required-symbol">*</span>{% endif %}</label>
+                        {% elseif groupargs.divlabel -%}
+                        <div class="label">{{ groupargs.divlabel }}{% if groupargs.required %}<span class="required-symbol">*</span>{% endif %}</div>
+                        {% endif -%}
+                        <div class="controls">
+                        {% for element in elements -%}
+
+                            {%- if element.type == "select" -%}
+                                {{- _self.selectfield(element.parameter) -}}
+                            {% endif -%}
+                            
+                            {%- if element.type == "checkboxSelect" -%}
+                                {{- _self.checkboxselectfield(element.parameter) -}}
+                            {% endif -%}
+                            
+                            {%- if element.type == "checkboxDeselect" -%}
+                                {{- _self.checkboxdeselectfield(element.parameter) -}}
+                            {% endif -%}
+                            
+                            {%- if element.parameter.prepend %}
+                            <span class="prepend">
+                                {{ element.parameter.prepend }}
+                            </span>
+                            {% endif -%}
+
+                            {%- if element.type == "input" -%}
+                                {{ _self.inputfield(element.parameter) -}}
+                            {% endif -%}
+
+                            {%- if element.type == "checkbox" -%}
+                                {{- _self.checkboxfield(element.parameter) -}}
+                            {% endif -%}
+
+                            {%- if element.type == "radio" -%}
+                                {{ _self.radiobuttonfield(element.parameter) -}}
+                            {% endif -%}
+
+                            {%- if element.type == "textarea" -%}
+                                {{ _self.textareafield(element.parameter) -}}
+                            {% endif -%}
+
+                            {%- if element.type == "datepicker" -%}
+                                {{ _self.datepickerfield(element.parameter) -}}
+                            {% endif -%}
+
+                            {%- if element.type == "file" -%}
+                                {{ _self.filefield(element.parameter) -}}
+                            {% endif -%}
+
+                            {%- if element.type == "prepend" -%}
+                                {{ _self.prepend(element.parameter) -}}
+                            {% endif -%}
+
+                            {%- if element.type == "append" -%}
+                                {{ _self.append(element.parameter) -}}
+                            {% endif -%}
+
+                            {%- if element.type == "counter" -%}
+                                {{ _self.counterfield(element.parameter) -}}
+                            {% endif -%}
+
+                            {%- if element.parameter.append %}
+                            <span class="append">{{ element.parameter.append }}</span>
+                            {% endif -%}
+
+                        {% endfor -%}
+                        {% if groupargs.description -%}
+                            {{ _self.groupdescription(groupargs.description) -}}
+                        {% endif -%}
+                        {% if groupargs.errors -%}
+                            {{  _self.errormessage(groupargs.errors) -}}
+                        {% endif %}
+                        </div>
+                    </div>
+{% endmacro -%}
+
+
+
+{#
+############## FORM ELEMENT MACROS ##############
+#}
+
+
+{% macro inputfield(args) %}
+    <input type="{{ args.type|default('text') }}" name="{{ args.name }}" value="{{ args.value|e }}"{% if args.size %} size="{{ args.size }}"{% endif %}{% if args.readonly %} readonly="readonly"{% endif %}{% if args.maxlength %} maxlength="{{ args.maxlength }}"{% endif %}{% if args.placeholder %} placeholder="{{ args.placeholder }}"{% endif %} class="form-input{% if args.width %} input--size-{{ args.width }}{% endif %}"{% if args.accesskey %} accesskey="{{ args.accesskey }}"{% endif %}{% if args.id %} id="{{ args.id }}"{% endif %}>
+{% endmacro %}
+
+
+{% macro filefield(args) %}
+{% if args.file.type == 'image' and args.file.src %}
+    <img alt="{{ args.file.alt }}" width="60" src="{{ args.file.src }}" class="thumbnail" />
+{% endif %}
+    <input type="file" name="{{ args.name }}" {% if args.size %} size="{{ args.size }}"{% endif %}{% if args.readonly %} readonly="readonly"{% endif %}{% if args.maxlength %} maxlength="{{ args.maxlength }}"{% endif %}{% if args.placeholder %} placeholder="{{ args.placeholder }}"{% endif %} class="button-file{% if args.width %} input--size-{{ args.width }}{% endif %}"{% if args.accesskey %} accesskey="{{ args.accesskey }}"{% endif %}{% if args.id %} id="{{ args.id }}"{% endif %}>
+{% endmacro %}
+
+
+{% macro inputsubmit(args) %}
+    <input type="submit" name="{{ args.name }}" value="{{ args.value|e }}" class="button-{{ args.type|default('submit') }}"{% if args.id %} id="{{ args.id }}"{% endif %}>
+{% endmacro %}
+
+{% macro datepickerfield(args) %}
+    <div class="add-date-picker">
+        <input {% if args.readonly %} readonly="readonly"{% endif %} type="text" name="{{ args.name }}" value="{{ args.value }}"{% if args.placeholder %} placeholder="{{ args.placeholder }}"{% endif %} class="form-input{% if args.width %} input--size-{{ args.width }}{% endif %}"{% if args.id %} id="{{ args.id }}"{% endif %}>
+    </div>
+{% endmacro %}
+
+
+{% macro selectfield(args) %}
+    	<select name="{{ args.name }}"{% if args.multiple %} multiple="multiple"{% endif %}{% if args.size %} size="{{ args.size }}"{% endif %}{% if args.width %} class="input--size-{{ args.width }}"{% endif %}{% if args.accesskey %} accesskey="{{ args.accesskey }}"{% endif %}{% if args.id %} id="{{ args.id }}"{% endif %}{% if args.disabled %} disabled="disabled"{% endif %}>
+	    {% for item in args.options %}
+	        {% if item.options is iterable %}
+            <optgroup label="{{ item.name }}">
+                {% for option in item.options %}
+                <option title="{{ option.name }}" {% if option.selected %}selected="selected"{% endif %} value="{{ option.value }}">{{ option.name }}</option>
+                {% endfor %}
+            </optgroup>
+			{% else %}
+            <option title="{{ item.name }}" {% if item.selected %}selected="selected"{% endif %} value="{{ item.value }}">{{ item.name }}</option>
+		    {% endif %}
+        {% endfor %}
+    </select>
+{% endmacro %}
+
+
+
+
+
+{% macro checkboxselectfield(args) %}
+        <div class="checkboxselect">
+            {{- _self._checkboxselectinner(args) -}}
+        </div>
+{% endmacro %}
+
+{% macro checkboxdeselectfield(args) %}
+        <div class="checkboxdeselect">
+            {{- _self._checkboxselectinner(args) -}}
+            <a class="clear-list">Liste leeren</a>
+        </div>
+{% endmacro %}
+
+{% macro _checkboxselectinner(args) %}
+    <div class="inner"{% if args.height %} style="height:{{args.height}}"{% endif %}>
+    {% for item in args.options %}
+        {% if item.options is iterable %}
+        <div class="group">
+            <h4>{{ item.name }}</h4>
+            {% for option in item.options %}
+            <label>
+                <input {% if option.selected %}checked="checked"{% endif %} type="checkbox" name="{{ args.name }}" value="{{ option.value }}" />
+                <span>{{ option.name }}</span>
+            </label>
+            {% endfor %}
+        </div>
+        {% else %}
+        <label>
+            <input {% if item.selected %}checked="checked"{% endif %} type="checkbox" name="{{ args.name }}" value="{{ item.value }}" />
+            <span>{{ item.name }}</span>
+        </label>
+        {% endif %}
+    {% endfor %}
+    </div>
+{% endmacro %}
+
+
+
+
+{% macro textareafield(args) %}
+        <textarea name="{{ args.name }}" rows="{{ args.rows|default(3) }}" {% if args.width %} class="input--size-{{ args.width }}"{% endif %}{% if args.id %} id="{{ args.id }}"{% endif %}{% if args.maxlength %} maxlength="{{ args.maxlength }}"{% endif %}>{{ args.value|e }}</textarea>
+{% endmacro %}
+
+
+{% macro checkboxfield(args) %}
+    <label class="checkbox-label{% if args.inline %} checkbox-inline{% endif %}">
+        <input name="{{ args.name }}" type="checkbox" {% if args.checked %}checked="checked"{% endif %} value="{{ args.value|default(0) }}"{% if args.id %} id="{{ args.id }}"{% endif %}>
+        {{ args.label -}}
+        {% if args.required -%}
+            <span class="required-symbol">*</span>
+        {%- endif %}
+    </label>
+{% endmacro %}
+
+
+{% macro radiobuttonfield(args) %}
+    <label class="radio-label{% if args.inline %} radio-inline{% endif %}">
+        <input name="{{ args.name }}" type="radio" {% if args.checked %}checked="checked"{% endif %} value="{{ args.value|default(0) }}"{% if args.id %} id="{{ args.id }}"{% endif %}>{{ args.label|raw }} {% if args.required %}<span class="required-symbol">*</span>{% endif %}
+    </label>
+{% endmacro %}
+
+
+{% macro counterfield(args) %}
+        <div class="form-input-counter">
+            <div class="input-counter">
+                <a class="decrement">−</a>
+                <input type="text" value="{{ args.value|default(0) }}" readonly="readonly"{% if args.size %} size="{{args.size}}"{% endif %} class="form-input{% if args.width %} input--size-{{ args.width }}{% endif %}" />
+                <a class="increment">+</a>
+            </div>
+            <span class="label">{{ args.label -}}</span>
+        </div>
+{% endmacro %}
+
+
+{% macro formbutton(args) %}
+    <button class="button-{{ args.type|default('submit') }}" type="submit"{% if args.name %}name="{{ args.name }}"{% endif %} value="{{ args.value }}"{% if args.id %} id="{{ args.id }}"{% endif %}>{{ args.label}}</button>
+{% endmacro %}
+
+{% macro custombutton(args) %}
+    <a href="{{ args.target }}" class="button-{{ args.type|default('submit') }}" target="_self">{{ args.label }}</a>
+{% endmacro %}
+
+{% macro errormessage(messages) %}
+        <ul>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+{% endmacro %}
+
+
+{% macro groupdescription(description) %}
+        <p class="form-input-description">
+            {{ description | raw }}
+        </p>
+{% endmacro %}
