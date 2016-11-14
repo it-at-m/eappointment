@@ -19,7 +19,6 @@ class TicketprinterGet extends BaseController
      */
     public static function render($hash)
     {
-        error_log($hash);
         $message = Response\Message::create(Render::$request);
         $query = new Query();
         $ticketprinter = $query->readByHash($hash);
