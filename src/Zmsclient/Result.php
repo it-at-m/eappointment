@@ -87,6 +87,7 @@ class Result
                 $response,
                 $this->request
             );
+            $exception->originalMessage = $entity->message;
             if (isset($entity->exception)) {
                 $exception->template = $entity->exception;
             }
