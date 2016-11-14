@@ -14,7 +14,10 @@ use \Psr\Http\Message\ResponseInterface;
  * -------------------------------------------------------------------------
  */
 \App::$slim->get('/', '\BO\Zmsticketprinter\Index')
-    ->setName("index");
+    ->setName("Index");
+
+\App::$slim->get('/scope/{id:\d+}/', '\BO\Zmsticketprinter\TicketprinterByScope')
+    ->setName("TicketprinterByScope");
 /*
  * ---------------------------------------------------------------------------
  * maintenance
