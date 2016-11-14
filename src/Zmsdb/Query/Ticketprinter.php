@@ -14,7 +14,7 @@ class Ticketprinter extends Base implements MappingInterface
     public function getEntityMapping()
     {
         return [
-            'enabled' => 'ticketprinter.zugelassen',
+            'enabled' => self::expression('CAST(`ticketprinter`.`zugelassen` AS SIGNED)'),
             'hash' => 'ticketprinter.cookiecode',
             'id' => 'ticketprinter.kioskid',
             'lastUpdate' => 'ticketprinter.timestamp',
@@ -44,8 +44,9 @@ class Ticketprinter extends Base implements MappingInterface
     {
         $data = array();
         $data['organisationsid'] = $organisationId;
-        $data['zugelassen'] = ($entity->toProperty()->enabled->get()) ? 1 : 0;
+        $data['zugelassen'] = ($entity->isEnabled()) ? 1 : 0;
         $data['cookiecode'] = $entity->hash;
+        $data['timestamp'] = time();
         $data['name'] = $entity->toProperty()->name->get();
         $data = array_filter($data, function ($value) {
             return ($value !== null && $value !== false);

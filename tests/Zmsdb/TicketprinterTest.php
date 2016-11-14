@@ -40,7 +40,7 @@ class TicketprinterTest extends Base
         $this->assertTrue('https://service.berlin.de' == $entity->buttons[2]['url']);
     }
 
-    public function testReadByButtonListScopeFailed()
+    public function testUnvalidButtonList()
     {
         $this->setExpectedException('\BO\Zmsdb\Exception\TicketprinterUnvalidButtonList');
         $now = new \DateTimeImmutable("2016-04-01 11:55");
