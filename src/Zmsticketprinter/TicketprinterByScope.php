@@ -27,14 +27,15 @@ class TicketprinterByScope extends BaseController
     ) {
         $scopeId = Validator::value($args['id'])->isNumber()->getValue();
         $organisation = \App::$http->readGetResult('/organisation/scope/'. $scopeId . '/')->getEntity();
-        $ticketprinter = \BO\Zmsclient\Ticketprinter::getHash();
-        if (!$ticketprinter) {
+
+        $ticketprinterHash = \BO\Zmsclient\Ticketprinter::getHash();
+        if (!$ticketprinterHash) {
             $ticketprinter = \App::$http->readGetResult('/organisation/'. $organisation->id . '/hash/')->getEntity();
+        } else {
+            $ticketprinter = \App::$http->readGetResult('/ticketprinter/'. $ticketprinterHash . '/')->getEntity();
         }
         $ticketprinter->buttonlist = 's'. $scopeId;
         $ticketprinter = \App::$http->readPostResult('/ticketprinter/', $ticketprinter)->getEntity();
-
-        var_dump($ticketprinter);
 
         return \BO\Slim\Render::withHtml(
             $response,
@@ -42,6 +43,7 @@ class TicketprinterByScope extends BaseController
             array(
                 'debug' => \App::DEBUG,
                 'title' => 'Wartennumer ziehen',
+                'ticketprinter' => $ticketprinter
             )
         );
     }
