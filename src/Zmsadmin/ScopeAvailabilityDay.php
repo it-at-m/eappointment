@@ -28,7 +28,7 @@ class ScopeAvailabilityDay extends BaseController
         }
         $scope = json_decode(file_get_contents($prefix . 'scope.json'), true);
         $conflicts = json_decode(file_get_contents($prefix . 'conflicts.json'), true);
-        \BO\Slim\Render::withHtml('page/availabilityday.twig', array(
+        \BO\Slim\Render::html('page/availabilityday.twig', array(
             'availabilityList' => $availabilityList,
             'availabilityListSlices' => $availabilityList->withCalculatedSlots(),
             'conflicts' => $conflicts,
