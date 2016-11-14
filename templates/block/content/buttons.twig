@@ -1,0 +1,105 @@
+{# 1 Button #}
+{% block button_singlerow %}
+	<div class="wartebuttonbereich_einzeilig" data-queue-min=1 data-queue-max=2>
+			<form action="../php/termineintragen.php" method="post">
+				<input name="herkunft" type="hidden" value="wartenummer/mehrfachkiosk.php?OID=65&amp;auswahlstandortid[]=106">
+				<input name="StandortID" type="hidden" value="106">
+				<input name="ClusterID" type="hidden" value="">
+				<input name="Zeit" type="hidden" value="0">
+				<input name="Tag" type="hidden" value="11">
+				<input name="Monat" type="hidden" value="11">
+				<input name="Jahr" type="hidden" value="2016">
+                <div class="warteschlangebutton_gross" id="warteschlangebutton_gross">
+                    <button type="submit" name="Eintragen" value="Wartenummer anfordern" class="eintragen" onmousedown="this.className += ' active';" onmouseup="this.className = this.className.replace(' active','');">
+                        Wartenummer für
+    					Bürgeramt 1 (Kreuzberg), Yorckstr.
+    				</button>
+                </div>
+			</form>
+		</div>
+{% endblock %}
+
+{# > 2 Buttons #}
+{% block button_multirow %}
+	<div class="wartebuttonbereich_zweizeilig"  data-queue-min=3 data-queue-max=6>
+			<form action="../php/termineintragen.php" method="post">
+				<input name="herkunft" type="hidden" value="wartenummer/mehrfachkiosk.php?OID=65&amp;auswahlclusterid[]=427&amp;auswahlstandortid[]=106&amp;auswahlstandortid[]=107&amp;auswahlstandortid[]=108">
+				<input name="StandortID" type="hidden" value="106">
+				<input name="ClusterID" type="hidden" value="">
+				<input name="Zeit" type="hidden" value="0">
+				<input name="Tag" type="hidden" value="11">
+				<input name="Monat" type="hidden" value="11">
+				<input name="Jahr" type="hidden" value="2016">
+				<div class="variablerwarteschlangebutton" id="variablerwarteschlangebutton">
+					<button type="submit" name="Eintragen" value="Wartenummer anfordern" class="eintragen disabled" onmousedown="this.className += ' active';" onmouseup="this.className = this.className.replace(' active','');" disabled="">
+						Bürgeramt 1 (Kreuzberg), Yorckstr.
+					</button>
+				</div>
+			</form>
+
+			<form action="../php/termineintragen.php" method="post">
+				<input name="herkunft" type="hidden" value="wartenummer/mehrfachkiosk.php?OID=65&amp;auswahlclusterid[]=427&amp;auswahlstandortid[]=106&amp;auswahlstandortid[]=107&amp;auswahlstandortid[]=108">
+				<input name="StandortID" type="hidden" value="107">
+				<input name="ClusterID" type="hidden" value="">
+				<input name="Zeit" type="hidden" value="0">
+				<input name="Tag" type="hidden" value="11">
+				<input name="Monat" type="hidden" value="11">
+				<input name="Jahr" type="hidden" value="2016">
+				<div class="variablerwarteschlangebutton" id="variablerwarteschlangebutton">
+					<button type="submit" name="Eintragen" value="Wartenummer anfordern" class="eintragen disabled" onmousedown="this.className += ' active';" onmouseup="this.className = this.className.replace(' active','');" disabled="">
+						Bürgeramt 2.0 Ausbildungsbürgeramt Schlesische Str.
+					</button>
+				</div>
+			</form>
+
+			<form action="../php/termineintragen.php" method="post">
+				<input name="herkunft" type="hidden" value="wartenummer/mehrfachkiosk.php?OID=65&amp;auswahlclusterid[]=427&amp;auswahlstandortid[]=106&amp;auswahlstandortid[]=107&amp;auswahlstandortid[]=108">
+				<input name="StandortID" type="hidden" value="108">
+				<input name="ClusterID" type="hidden" value="">
+				<input name="Zeit" type="hidden" value="0">
+				<input name="Tag" type="hidden" value="11">
+				<input name="Monat" type="hidden" value="11">
+				<input name="Jahr" type="hidden" value="2016">
+				<div class="variablerwarteschlangebutton" id="variablerwarteschlangebutton">
+					<button type="submit" name="Eintragen" value="Wartenummer anfordern" class="eintragen disabled" onmousedown="this.className += ' active';" onmouseup="this.className = this.className.replace(' active','');" disabled="">
+						Bürgeramt 3 (Friedrichshain), Frankfurter Allee
+					</button>
+				</div>
+			</form>
+</div>
+{% endblock %}
+
+{# 2 Buttons #}
+{% block button_multirow_deep %}
+	<div class="wartebuttonbereich_zweizeilig_tief"  data-queue-min=3 data-queue-max=6>
+			<form action="../php/termineintragen.php" method="post">
+				<input name="herkunft" type="hidden" value="wartenummer/mehrfachkiosk.php?OID=65&amp;auswahlclusterid[]=427&amp;auswahlstandortid[]=106&amp;auswahlstandortid[]=107&amp;auswahlstandortid[]=108">
+				<input name="StandortID" type="hidden" value="106">
+				<input name="ClusterID" type="hidden" value="">
+				<input name="Zeit" type="hidden" value="0">
+				<input name="Tag" type="hidden" value="11">
+				<input name="Monat" type="hidden" value="11">
+				<input name="Jahr" type="hidden" value="2016">
+				<div class="variablerwarteschlangebutton" id="variablerwarteschlangebutton">
+					<button type="submit" name="Eintragen" value="Wartenummer anfordern" class="eintragen disabled" onmousedown="this.className += ' active';" onmouseup="this.className = this.className.replace(' active','');" disabled="">
+						Bürgeramt 1 (Kreuzberg), Yorckstr.
+					</button>
+				</div>
+			</form>
+
+			<form action="../php/termineintragen.php" method="post">
+				<input name="herkunft" type="hidden" value="wartenummer/mehrfachkiosk.php?OID=65&amp;auswahlclusterid[]=427&amp;auswahlstandortid[]=106&amp;auswahlstandortid[]=107&amp;auswahlstandortid[]=108">
+				<input name="StandortID" type="hidden" value="107">
+				<input name="ClusterID" type="hidden" value="">
+				<input name="Zeit" type="hidden" value="0">
+				<input name="Tag" type="hidden" value="11">
+				<input name="Monat" type="hidden" value="11">
+				<input name="Jahr" type="hidden" value="2016">
+				<div class="variablerwarteschlangebutton" id="variablerwarteschlangebutton">
+					<button type="submit" name="Eintragen" value="Wartenummer anfordern" class="eintragen disabled" onmousedown="this.className += ' active';" onmouseup="this.className = this.className.replace(' active','');" disabled="">
+						Bürgeramt 2.0 Ausbildungsbürgeramt Schlesische Str.
+					</button>
+				</div>
+			</form>
+</div>
+{% endblock %}
