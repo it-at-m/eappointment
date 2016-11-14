@@ -26,7 +26,9 @@ class Validator
         if ("GET" == $request->getMethod()) {
             $validator = new \BO\Mellon\Validator($request->getQueryParams());
         } else {
-            $validator = new \BO\Mellon\Validator($request->getParsedBody());
+            $parameters = $request->getParsedBody();
+            $parameters = $parameters ? $parameters : [];
+            $validator = new \BO\Mellon\Validator($parameters);
             $body = (string)$request->getBody();
             $validator->setInput($body);
         }
