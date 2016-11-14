@@ -22,8 +22,12 @@ class TicketprinterGet extends BaseController
         $message = Response\Message::create(Render::$request);
         $query = new Query();
         $ticketprinter = $query->readByHash($hash);
+
         if (! $ticketprinter->hasId()) {
             throw new Exception\Ticketprinter\TicketprinterNotFound();
+        }
+        if (! $ticketprinter->isEnabled()) {
+            throw new Exception\Ticketprinter\TicketprinterNotEnabled();
         }
         $message->data = $ticketprinter;
         Render::lastModified(time(), '0');
