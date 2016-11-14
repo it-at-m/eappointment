@@ -22,7 +22,7 @@ class OrganisationByScope extends BaseController
     {
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $organisation = (new Query())->readByScopeId($itemId, $resolveReferences);
-        if (! $organisation->hasId()) {
+        if (! $organisation) {
             throw new Exception\Organisation\OrganisationNotFound();
         }
         $message = Response\Message::create(Render::$request);

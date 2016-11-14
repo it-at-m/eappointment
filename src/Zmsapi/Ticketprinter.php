@@ -27,18 +27,15 @@ class Ticketprinter extends BaseController
 
         $entity = new Entity($input);
         $entity->testValid();
-        /* check if necessary
-        $reference = $query->readByHash($entity->hash);
-        if (! $reference->hasId()) {
-            throw new Exception\Ticketprinter\TicketprinterHashNotValid();
-        }
-        */
+
         if (! $entity->hasId()) {
             throw new Exception\Ticketprinter\TicketprinterNotFound();
         }
+        if (! $entity->isEnabled()) {
+            throw new Exception\Ticketprinter\TicketprinterNotEnabled();
+        }
 
-        $ticketprinter = $query->readByButtonList($entity, \App::$now);
-        $message->data = $ticketprinter;
+        $message->data = $query->readByButtonList($entity, \App::$now);
         Render::lastModified(time(), '0');
         Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }
