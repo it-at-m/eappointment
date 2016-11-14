@@ -1,0 +1,154 @@
+/**
+ * OUR SETTINGS
+ */
+/**
+ * Import our css
+ */
+#main {
+  margin: 0 auto auto;
+  max-width: 1024px;
+  padding: 0;
+  background-color: #FFFFFF; }
+
+html {
+  font-family: Arial, sans-serif;
+  line-height: 36px;
+  font-size: 28px;
+  font-weight: bold;
+  display: block;
+  background: url(img/background_eingabe.png) top left no-repeat #C8D5E6;
+  color: #494C4A;
+  margin: 0;
+  padding: 0; }
+
+body {
+  width: 1024px;
+  height: 768px;
+  overflow: hidden;
+  margin: 0;
+  padding: 0; }
+
+#main-header {
+  font-size: 14px;
+  line-height: 18px;
+  color: #FFFFFF; }
+
+#main-header .adressangabe {
+  color: #FFFFFF;
+  font-size: 22px;
+  line-height: 23px;
+  margin: 16px 0px 0px 36px; }
+
+.alert {
+  font-size: 14px;
+  line-height: 18px; }
+
+.alert.alert-info {
+  background-color: #d9edf7;
+  border-radius: 4px;
+  color: #000000;
+  padding: .7em 1em;
+  margin-bottom: 1.385em;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+  border: 1px solid #c0e1f2; }
+
+.devhint {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  width: 300px; }
+
+.textile {
+  width: 800px;
+  font-size: 14px;
+  line-height: 18px; }
+
+.digitaluhr {
+  position: absolute;
+  left: 922px;
+  top: 56px;
+  font-weight: normal;
+  font-size: 20px;
+  color: #FFFFFF;
+  text-align: left; }
+
+.content {
+  overflow-y: auto;
+  width: 800px;
+  height: 600px;
+  margin: 130px 0px 0px 160px;
+  padding: 0px; }
+
+.warteschlangebutton_gross button.eintragen {
+  background: url(img/wartenummer_anfordern.png) 0 24px no-repeat;
+  border: 0;
+  color: #fff;
+  font-size: 42px;
+  font-family: Arial, sans-serif;
+  font-weight: bold;
+  height: 195px;
+  width: 657px; }
+
+div.wartebuttonbereich_einzeilig {
+  position: absolute;
+  top: 295px;
+  width: 875px;
+  left: 160px; }
+
+.wartenummern .kleineSMSRueckmeldung,
+.wartenummern .kleineAusdruckRueckmeldung,
+.wartenummern .kleineAusgabeFehlermeldung,
+.wartenummern .kleineSMSDruckRueckmeldung {
+  background: url(img/textflaeche_gross.png) no-repeat 0 0px;
+  border: 0;
+  font-size: 28px;
+  font-family: Arial, sans-serif;
+  font-weight: bold;
+  height: 117px;
+  line-height: 60px;
+  padding: 1px 0 0;
+  margin: 0px 5px 0px 6px;
+  text-align: center;
+  width: 830px;
+  position: absolute;
+  left: 62px;
+  top: 85px; }
+
+.wartenummern .SMSRueckmeldung,
+.wartenummern .AusdruckRueckmeldung,
+.wartenummern .AusgabeFehlermeldung,
+.wartenummern .SMSDruckRueckmeldung {
+  background: url(img/textflaeche_gross.png) no-repeat 0 0px;
+  border: 0;
+  font-size: 28px;
+  font-family: Arial, sans-serif;
+  font-weight: bold;
+  height: 155px;
+  line-height: 30px;
+  padding: 1px 0 0;
+  text-align: center;
+  width: 857px;
+  position: absolute;
+  left: 62px;
+  top: 150px; }
+
+.wartenummern {
+  height: 758px;
+  width: 1014px; }
+
+.wartenummern .werbeblock_oben {
+  position: absolute;
+  top: 150px; }
+
+.box {
+  line-height: 24px;
+  font-size: 24px;
+  width: 780px; }
+
+.debug {
+  font-size: 14px;
+  line-height: 18px;
+  color: #000000;
+  margin-left: 20px; }
+
+/*# sourceMappingURL=ticketprinter.css.map */
