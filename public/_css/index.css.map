@@ -1,1 +1,0 @@
-{"version":3,"file":"index.css","sources":["index.scss","settings.scss"],"sourcesContent":["\n@import \"settings\";\n\n\n","/**\n * OUR SETTINGS\n */\n\n// Colors\n$white:                         #FFFFFF;\n$black:                         #000000;\n"],"mappings":"ACAA;;GAEG","names":[]}

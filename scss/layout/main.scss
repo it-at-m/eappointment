@@ -1,0 +1,28 @@
+// Base site layout and grid
+
+#main {
+    margin:             0 auto auto;
+    max-width:          $pageMaxWidth;
+    padding:            0;
+    background-color:   $white;
+}
+
+html {
+    font-family:        $base-font-family;
+    line-height:        $base-line-height;
+    font-size:			$base-font-size;
+    font-weight:		bold;
+    display:			block;
+    background: 		url(img/background_eingabe.png) top left no-repeat #C8D5E6;
+    color:				$baseTextColor;
+    margin:				0;
+    padding:			0;
+}
+
+body {
+	width: $pageMaxWidth;
+    height: $pageMaxHeight;
+    overflow: hidden;
+    margin:				0;
+    padding:			0;
+}
