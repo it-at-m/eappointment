@@ -88,6 +88,9 @@ class Entity extends \ArrayObject implements \JsonSerializable
     {
         $jsonSchema = self::readJsonSchema();
         $data = new Schema($this);
+        if (array_key_exists('$schema', $data)) {
+            unset($data['$schema']);
+        }
         $validator = new Validator($data->toJsonObject(), $jsonSchema->toJsonObject());
         return $validator;
     }
