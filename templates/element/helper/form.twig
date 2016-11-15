@@ -2,7 +2,7 @@
 ############## FORM GROUP MACRO (FORMELEMENT WRAPPER) ##############
 #}
 
-{%- macro formgroup(groupargs, elements) %}
+{% macro formgroup(groupargs, elements) %}
 
                     <div class="form-group{% if groupargs.errors %} has-error {% endif %}{% if groupargs.class %} {{groupargs.class}} {% endif %}">
                         {% if groupargs.label -%}
@@ -16,15 +16,15 @@
                             {%- if element.type == "select" -%}
                                 {{- _self.selectfield(element.parameter) -}}
                             {% endif -%}
-                            
+
                             {%- if element.type == "checkboxSelect" -%}
                                 {{- _self.checkboxselectfield(element.parameter) -}}
                             {% endif -%}
-                            
+
                             {%- if element.type == "checkboxDeselect" -%}
                                 {{- _self.checkboxdeselectfield(element.parameter) -}}
                             {% endif -%}
-                            
+
                             {%- if element.parameter.prepend %}
                             <span class="prepend">
                                 {{ element.parameter.prepend }}
@@ -33,6 +33,10 @@
 
                             {%- if element.type == "input" -%}
                                 {{ _self.inputfield(element.parameter) -}}
+                            {% endif -%}
+
+                            {%- if element.type == "hidden" -%}
+                                {{ _self.hiddenfield(element.parameter) -}}
                             {% endif -%}
 
                             {%- if element.type == "checkbox" -%}
@@ -80,7 +84,7 @@
                         {% endif %}
                         </div>
                     </div>
-{% endmacro -%}
+{% endmacro %}
 
 
 
@@ -93,6 +97,9 @@
     <input type="{{ args.type|default('text') }}" name="{{ args.name }}" value="{{ args.value|e }}"{% if args.size %} size="{{ args.size }}"{% endif %}{% if args.readonly %} readonly="readonly"{% endif %}{% if args.maxlength %} maxlength="{{ args.maxlength }}"{% endif %}{% if args.placeholder %} placeholder="{{ args.placeholder }}"{% endif %} class="form-input{% if args.width %} input--size-{{ args.width }}{% endif %}"{% if args.accesskey %} accesskey="{{ args.accesskey }}"{% endif %}{% if args.id %} id="{{ args.id }}"{% endif %}>
 {% endmacro %}
 
+{% macro hiddenfield(args) %}
+    <input type="hidden" name="{{ args.name }}" value="{{ args.value|e }}"{% if args.id %} id="{{ args.id }}"{% endif %}>
+{% endmacro %}
 
 {% macro filefield(args) %}
 {% if args.file.type == 'image' and args.file.src %}
@@ -100,7 +107,6 @@
 {% endif %}
     <input type="file" name="{{ args.name }}" {% if args.size %} size="{{ args.size }}"{% endif %}{% if args.readonly %} readonly="readonly"{% endif %}{% if args.maxlength %} maxlength="{{ args.maxlength }}"{% endif %}{% if args.placeholder %} placeholder="{{ args.placeholder }}"{% endif %} class="button-file{% if args.width %} input--size-{{ args.width }}{% endif %}"{% if args.accesskey %} accesskey="{{ args.accesskey }}"{% endif %}{% if args.id %} id="{{ args.id }}"{% endif %}>
 {% endmacro %}
-
 
 {% macro inputsubmit(args) %}
     <input type="submit" name="{{ args.name }}" value="{{ args.value|e }}" class="button-{{ args.type|default('submit') }}"{% if args.id %} id="{{ args.id }}"{% endif %}>
@@ -208,11 +214,11 @@
 
 
 {% macro formbutton(args) %}
-    <button class="button-{{ args.type|default('submit') }}" type="submit"{% if args.name %}name="{{ args.name }}"{% endif %} value="{{ args.value }}"{% if args.id %} id="{{ args.id }}"{% endif %}>{{ args.label}}</button>
+    <button class="{{ args.class|default('eintragen') }}" type="submit"{% if args.name %}name="{{ args.name }}"{% endif %} value="{{ args.value }}"{% if args.id %} id="{{ args.id }}"{% endif %}>{{ args.label}}</button>
 {% endmacro %}
 
 {% macro custombutton(args) %}
-    <a href="{{ args.target }}" class="button-{{ args.type|default('submit') }}" target="_self">{{ args.label }}</a>
+    <a href="{{ args.target }}" class="{{ args.class|default('eintragen') }}" target="_self">{{ args.label }}</a>
 {% endmacro %}
 
 {% macro errormessage(messages) %}
