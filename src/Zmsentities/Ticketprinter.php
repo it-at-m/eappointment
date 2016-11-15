@@ -14,7 +14,8 @@ class Ticketprinter extends Schema\Entity
 
     public function getHashWith($organisiationId)
     {
-        return $organisiationId . bin2hex(openssl_random_pseudo_bytes(16));
+        $this->hash = $organisiationId . bin2hex(openssl_random_pseudo_bytes(16));
+        return $this;
     }
 
     public function isEnabled()
