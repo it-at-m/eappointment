@@ -15,4 +15,15 @@ class ClusterList extends Base
         }
         return false;
     }
+
+    public function withUniqueClusters()
+    {
+        $clusterList = new self();
+        foreach ($this as $cluster) {
+            if (! $clusterList->hasEntity($cluster->id)) {
+                $clusterList->addEntity($cluster);
+            }
+        }
+        return $clusterList;
+    }
 }
