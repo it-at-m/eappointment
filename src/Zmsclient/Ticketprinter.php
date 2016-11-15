@@ -14,7 +14,9 @@ class Ticketprinter
     public static function setHash($hash)
     {
         $_COOKIE[self::getCookieName()] = $hash;
-        setcookie(self::getCookieName(), $hash, 0, '/', null, true, true);
+        if (!headers_sent()) {
+            setcookie(self::getCookieName(), $hash, 0, '/', null, true, true);
+        }
     }
 
     /**
