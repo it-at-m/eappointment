@@ -33,7 +33,7 @@ class TicketprinterTest extends Base
     {
         $now = new \DateTimeImmutable("2016-04-01 11:55");
         $query = new Query();
-        $input = $this->getTestEntity();
+        $input = $this->getTestEntity()->toStructuredButtonList();
         $entity = $query->readByButtonList($input, $now);
         $this->assertTrue('Bürgeramt Heerstraße' == $entity->buttons[0]['name']);
         $this->assertTrue('cluster' == $entity->buttons[1]['type']);
@@ -45,7 +45,7 @@ class TicketprinterTest extends Base
         $this->setExpectedException('\BO\Zmsdb\Exception\TicketprinterUnvalidButtonList');
         $now = new \DateTimeImmutable("2016-04-01 11:55");
         $query = new Query();
-        $input = (new Entity)->getExample();
+        $input = (new Entity)->getExample()->toStructuredButtonList();
         $entity = $query->readByButtonList($input, $now);
     }
 
@@ -56,7 +56,7 @@ class TicketprinterTest extends Base
         $query = new Query();
         $input = $this->getTestEntity();
         $input->buttonlist = 's141,c999,l[https://service.berlin.de|Service Berlin]';
-        $entity = $query->readByButtonList($input, $now);
+        $entity = $query->readByButtonList($input->toStructuredButtonList(), $now);
     }
 
     public function testWriteWithHash()
