@@ -75,7 +75,7 @@ class Ticketprinter extends Base
      */
     public function readByButtonList(Entity $ticketprinter, \DateTimeImmutable $now)
     {
-        $ticketprinter->toStructuredButtonList();
+        //$ticketprinter->toStructuredButtonList();
         foreach ($ticketprinter->buttons as $key => $button) {
             if ($key < 6) {
                 if ('scope' == $button['type']) {
