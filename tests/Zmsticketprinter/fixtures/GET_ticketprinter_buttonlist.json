@@ -1,0 +1,27 @@
+{
+  "$schema": "https://localhost/terminvereinbarung/api/2/",
+  "meta": {
+    "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+    "error": false,
+    "generated": "2016-04-29T11:53:31+02:00",
+    "server": "Zmsapi-unconfigured"
+  },
+  "data": {
+	"$schema": "https:\/\/schema.berlin.de\/queuemanagement\/ticketprinter.json",
+	"enabled": "1",
+	"hash": "ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2",
+	"id": "1",
+	"lastUpdate": "1477661416",
+	"name": "Test Ticketprinter",
+	"buttonlist": "s141",
+	"buttons": [{
+		"type": "scope",
+		"url": "\/scope\/141\/",
+		"scope": {
+			"id": 141
+		},
+		"enabled": true,
+		"name": "Bürgeramt Heerstraße"
+	}]
+}
+}
