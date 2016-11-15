@@ -118,12 +118,10 @@ class Ticketprinter extends Base
      *
      * @return Entity
      */
-    public function writeCookie($organisationId)
+    public function writeEntityWithHash($organisationId)
     {
         $query = new Query\Ticketprinter(Query\Base::INSERT);
-        $ticketprinter = new Entity();
-        $hash = $ticketprinter->getHashWith($organisationId);
-        $ticketprinter->hash = $hash;
+        $ticketprinter = (new Entity())->getHashWith($organisationId);
 
         $organisation = (new Organisation())->readEntity($organisationId);
         $owner = (new Owner())->readByOrganisationId($organisationId);

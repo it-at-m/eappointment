@@ -59,10 +59,10 @@ class TicketprinterTest extends Base
         $entity = $query->readByButtonList($input, $now);
     }
 
-    public function testWriteCookie()
+    public function testWriteWithHash()
     {
         $query = new Query();
-        $entity = $query->writeCookie(54); //Organisation Pankow
+        $entity = $query->writeEntityWithHash(54); //Organisation Pankow
         $this->assertContains('54', $entity->hash);
         $this->assertTrue($entity->enabled);
     }
