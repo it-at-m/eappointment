@@ -28,7 +28,7 @@ class TicketprinterByScope extends BaseController
         $validator = $request->getAttribute('validator');
         $validate = $validator->getParameter('hasWaitinnumber')->isBool()->getValue();
         $scopeId = Validator::value($args['id'])->isNumber()->getValue();
-        $ticketprinter = (new Helper\Ticketprinter(array('scope' => $scopeId)))->getEntity();
+        $ticketprinter = (new Helper\Ticketprinter(array('scope' => $scopeId), $request))->getEntity();
 
         return \BO\Slim\Render::withHtml(
             $response,
