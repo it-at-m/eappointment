@@ -25,7 +25,7 @@ class OrganisationHash extends BaseController
         if (! $organisation) {
             throw new Exception\Organisation\OrganisationNotFound();
         }
-        $ticketprinter = (new Ticketprinter())->writeCookie($organisationId);
+        $ticketprinter = (new Ticketprinter())->writeEntityWithHash($organisationId);
         $message->data = $ticketprinter;
         Render::lastModified(time(), '0');
         Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
