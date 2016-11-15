@@ -5,3 +5,4 @@ config.php
 .sass-cache
 bower_components
 tests/*.html
+public/_tests
