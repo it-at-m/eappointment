@@ -1,99 +1,48 @@
 {# 1 Button #}
 {% block button_singlerow %}
+	{% from 'element/helper/form.twig' import formbutton, hiddenfield %}
 	<div class="wartebuttonbereich_einzeilig" data-queue-min=1 data-queue-max=2>
 		<form action="{{ urlGet('TicketprinterProcess', {}, {}) }}" method="post">
-			<input name="StandortID" type="hidden" value="{{ ticketprinter.buttons|first.scope }}">
-			<input name="ClusterID" type="hidden" value="{{ ticketprinter.buttons|first.cluster }}">
-            <div class="warteschlangebutton_gross" id="warteschlangebutton_gross">
-                <button type="submit" name="Eintragen" value="Wartenummer anfordern" class="eintragen" onmousedown="this.className += ' active';" onmouseup="this.className = this.className.replace(' active','');">
-                    {% trans "Wartenummer für" %}<br />{{ ticketprinter.buttons|first.name }}
-				</button>
+            {{ hiddenfield({ "name": "scopeId", "value": ticketprinter.buttons|first.scope.id }) }}
+            {{ hiddenfield({ "name": "clusterId", "value": ticketprinter.buttons|first.cluster.id }) }}
+			{% set label = "Wartenummer für\n" ~ ticketprinter.buttons|first.name %}
+			<div class="warteschlangebutton_gross" id="warteschlangebutton_gross">
+                {{ formbutton({ "type":"submit", "name": "Eintragen", "label":label, "value": "Wartenummer anfordern" }) }}
             </div>
-		</form>
+        </form>
 	</div>
 {% endblock %}
 
 {# > 2 Buttons #}
 {% block button_multirow %}
+	{% from 'element/helper/form.twig' import formbutton, hiddenfield %}
 	<div class="wartebuttonbereich_zweizeilig"  data-queue-min=3 data-queue-max=6>
-			<form action="../php/termineintragen.php" method="post">
-				<input name="herkunft" type="hidden" value="wartenummer/mehrfachkiosk.php?OID=65&amp;auswahlclusterid[]=427&amp;auswahlstandortid[]=106&amp;auswahlstandortid[]=107&amp;auswahlstandortid[]=108">
-				<input name="StandortID" type="hidden" value="106">
-				<input name="ClusterID" type="hidden" value="">
-				<input name="Zeit" type="hidden" value="0">
-				<input name="Tag" type="hidden" value="11">
-				<input name="Monat" type="hidden" value="11">
-				<input name="Jahr" type="hidden" value="2016">
-				<div class="variablerwarteschlangebutton" id="variablerwarteschlangebutton">
-					<button type="submit" name="Eintragen" value="Wartenummer anfordern" class="eintragen disabled" onmousedown="this.className += ' active';" onmouseup="this.className = this.className.replace(' active','');" disabled="">
-						Bürgeramt 1 (Kreuzberg), Yorckstr.
-					</button>
-				</div>
-			</form>
-
-			<form action="../php/termineintragen.php" method="post">
-				<input name="herkunft" type="hidden" value="wartenummer/mehrfachkiosk.php?OID=65&amp;auswahlclusterid[]=427&amp;auswahlstandortid[]=106&amp;auswahlstandortid[]=107&amp;auswahlstandortid[]=108">
-				<input name="StandortID" type="hidden" value="107">
-				<input name="ClusterID" type="hidden" value="">
-				<input name="Zeit" type="hidden" value="0">
-				<input name="Tag" type="hidden" value="11">
-				<input name="Monat" type="hidden" value="11">
-				<input name="Jahr" type="hidden" value="2016">
-				<div class="variablerwarteschlangebutton" id="variablerwarteschlangebutton">
-					<button type="submit" name="Eintragen" value="Wartenummer anfordern" class="eintragen disabled" onmousedown="this.className += ' active';" onmouseup="this.className = this.className.replace(' active','');" disabled="">
-						Bürgeramt 2.0 Ausbildungsbürgeramt Schlesische Str.
-					</button>
-				</div>
-			</form>
-
-			<form action="../php/termineintragen.php" method="post">
-				<input name="herkunft" type="hidden" value="wartenummer/mehrfachkiosk.php?OID=65&amp;auswahlclusterid[]=427&amp;auswahlstandortid[]=106&amp;auswahlstandortid[]=107&amp;auswahlstandortid[]=108">
-				<input name="StandortID" type="hidden" value="108">
-				<input name="ClusterID" type="hidden" value="">
-				<input name="Zeit" type="hidden" value="0">
-				<input name="Tag" type="hidden" value="11">
-				<input name="Monat" type="hidden" value="11">
-				<input name="Jahr" type="hidden" value="2016">
-				<div class="variablerwarteschlangebutton" id="variablerwarteschlangebutton">
-					<button type="submit" name="Eintragen" value="Wartenummer anfordern" class="eintragen disabled" onmousedown="this.className += ' active';" onmouseup="this.className = this.className.replace(' active','');" disabled="">
-						Bürgeramt 3 (Friedrichshain), Frankfurter Allee
-					</button>
-				</div>
-			</form>
+	{% for button in ticketprinter.buttons %}
+		<form action="{{ urlGet('TicketprinterProcess', {}, {}) }}" method="post">
+            {{ hiddenfield({ "name": "scopeId", "value": button.scope.id }) }}
+            {{ hiddenfield({ "name": "clusterId", "value": button.cluster.id }) }}
+			{% set label = "Wartenummer für\n" ~ button.name %}
+			<div class="variablerwarteschlangebutton" id="variablerwarteschlangebutton">
+                {{ formbutton({ "type":"submit", "name": "Eintragen", "label":label, "value": "Wartenummer anfordern" }) }}
+            </div>
+        </form>
+	{% endfor %}
 </div>
 {% endblock %}
 
 {# 2 Buttons #}
 {% block button_multirow_deep %}
+	{% from 'element/helper/form.twig' import formbutton, hiddenfield %}
 	<div class="wartebuttonbereich_zweizeilig_tief"  data-queue-min=3 data-queue-max=6>
-			<form action="../php/termineintragen.php" method="post">
-				<input name="herkunft" type="hidden" value="wartenummer/mehrfachkiosk.php?OID=65&amp;auswahlclusterid[]=427&amp;auswahlstandortid[]=106&amp;auswahlstandortid[]=107&amp;auswahlstandortid[]=108">
-				<input name="StandortID" type="hidden" value="106">
-				<input name="ClusterID" type="hidden" value="">
-				<input name="Zeit" type="hidden" value="0">
-				<input name="Tag" type="hidden" value="11">
-				<input name="Monat" type="hidden" value="11">
-				<input name="Jahr" type="hidden" value="2016">
-				<div class="variablerwarteschlangebutton" id="variablerwarteschlangebutton">
-					<button type="submit" name="Eintragen" value="Wartenummer anfordern" class="eintragen disabled" onmousedown="this.className += ' active';" onmouseup="this.className = this.className.replace(' active','');" disabled="">
-						Bürgeramt 1 (Kreuzberg), Yorckstr.
-					</button>
-				</div>
-			</form>
-
-			<form action="../php/termineintragen.php" method="post">
-				<input name="herkunft" type="hidden" value="wartenummer/mehrfachkiosk.php?OID=65&amp;auswahlclusterid[]=427&amp;auswahlstandortid[]=106&amp;auswahlstandortid[]=107&amp;auswahlstandortid[]=108">
-				<input name="StandortID" type="hidden" value="107">
-				<input name="ClusterID" type="hidden" value="">
-				<input name="Zeit" type="hidden" value="0">
-				<input name="Tag" type="hidden" value="11">
-				<input name="Monat" type="hidden" value="11">
-				<input name="Jahr" type="hidden" value="2016">
-				<div class="variablerwarteschlangebutton" id="variablerwarteschlangebutton">
-					<button type="submit" name="Eintragen" value="Wartenummer anfordern" class="eintragen disabled" onmousedown="this.className += ' active';" onmouseup="this.className = this.className.replace(' active','');" disabled="">
-						Bürgeramt 2.0 Ausbildungsbürgeramt Schlesische Str.
-					</button>
-				</div>
-			</form>
+    {% for button in ticketprinter.buttons %}
+    	<form action="{{ urlGet('TicketprinterProcess', {}, {}) }}" method="post">
+            {{ hiddenfield({ "name": "scopeId", "value": button.scope.id }) }}
+            {{ hiddenfield({ "name": "clusterId", "value": button.cluster.id }) }}
+    		{% set label = "Wartenummer für\n" ~ button.name %}
+    		<div class="variablerwarteschlangebutton" id="variablerwarteschlangebutton">
+                {{ formbutton({ "type":"submit", "name": "Eintragen", "label":label, "value": "Wartenummer anfordern" }) }}
+            </div>
+        </form>
+	{% endfor %}
 </div>
 {% endblock %}

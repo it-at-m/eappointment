@@ -10,6 +10,10 @@
 {% endblock %}
 {% block content %}
 
+	{% if validate %}
+	{{ block("feedback_print") }}
+	{% endif %}
+
 	<div class="werbeblock_oben">
 		{% trans "Anzahl vor Ihnen wartender Kunden" %}:
 		<span id="wartende">
@@ -22,7 +26,6 @@
 	</div>
 
 	{{ block("button_singlerow") }}
-	{{ block("feedback_print") }}
 	</div>
 </div>
 {% endblock %}
