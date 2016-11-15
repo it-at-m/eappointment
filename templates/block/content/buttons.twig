@@ -1,48 +1,72 @@
 {# 1 Button #}
 {% block button_singlerow %}
-	{% from 'element/helper/form.twig' import formbutton, hiddenfield %}
+	{% from 'element/helper/form.twig' import formbutton, custombutton, hiddenfield %}
 	<div class="wartebuttonbereich_einzeilig" data-queue-min=1 data-queue-max=2>
-		<form action="{{ urlGet('TicketprinterProcess', {}, {}) }}" method="post">
-            {{ hiddenfield({ "name": "scopeId", "value": ticketprinter.buttons|first.scope.id }) }}
-            {{ hiddenfield({ "name": "clusterId", "value": ticketprinter.buttons|first.cluster.id }) }}
-			{% set label = "Wartenummer für\n" ~ ticketprinter.buttons|first.name %}
-			<div class="warteschlangebutton_gross" id="warteschlangebutton_gross">
-                {{ formbutton({ "type":"submit", "name": "Eintragen", "label":label, "value": "Wartenummer anfordern" }) }}
+		{% if button.type == "link" %}
+			{% set label = button.name|default('Information') %}
+			<div class="variablerwarteschlangebutton" id="variablerwarteschlangebutton">
+                {{ custombutton({ "name": "Eintragen", "label":label|trans, "target": button.url }) }}
             </div>
-        </form>
+		{% else %}
+    		<form action="{{ urlGet('TicketprinterProcess', {}, {}) }}" method="post">
+                {{ hiddenfield({ "name": "scopeId", "value": ticketprinter.buttons|first.scope.id }) }}
+                {{ hiddenfield({ "name": "clusterId", "value": ticketprinter.buttons|first.cluster.id }) }}
+    			{% set label = "Wartenummer für " ~ ticketprinter.buttons|first.name %}
+                {% if ticketprinter.buttons|first.type == "link" %}
+    			{% set label = "Information" %}
+    			{% endif %}
+    			<div class="warteschlangebutton_gross" id="warteschlangebutton_gross">
+                    {{ formbutton({ "type":"submit", "name": "Eintragen", "label":label|trans, "value": "Wartenummer anfordern" }) }}
+                </div>
+            </form>
+        {% endif %}
 	</div>
 {% endblock %}
 
 {# > 2 Buttons #}
 {% block button_multirow %}
-	{% from 'element/helper/form.twig' import formbutton, hiddenfield %}
+	{% from 'element/helper/form.twig' import formbutton, custombutton, hiddenfield %}
 	<div class="wartebuttonbereich_zweizeilig"  data-queue-min=3 data-queue-max=6>
 	{% for button in ticketprinter.buttons %}
-		<form action="{{ urlGet('TicketprinterProcess', {}, {}) }}" method="post">
-            {{ hiddenfield({ "name": "scopeId", "value": button.scope.id }) }}
-            {{ hiddenfield({ "name": "clusterId", "value": button.cluster.id }) }}
-			{% set label = "Wartenummer für\n" ~ button.name %}
+		{% if button.type == "link" %}
+			{% set label = button.name|default('Information') %}
 			<div class="variablerwarteschlangebutton" id="variablerwarteschlangebutton">
-                {{ formbutton({ "type":"submit", "name": "Eintragen", "label":label, "value": "Wartenummer anfordern" }) }}
+                {{ custombutton({ "name": "Eintragen", "label":label|trans, "target": button.url }) }}
             </div>
-        </form>
+		{% else %}
+    		<form action="{{ urlGet('TicketprinterProcess', {}, {}) }}" method="post">
+                {{ hiddenfield({ "name": "scopeId", "value": button.scope.id }) }}
+                {{ hiddenfield({ "name": "clusterId", "value": button.cluster.id }) }}
+    			{% set label = "Wartenummer für " ~ button.name %}
+    			<div class="variablerwarteschlangebutton" id="variablerwarteschlangebutton">
+                    {{ formbutton({ "type":"submit", "name": "Eintragen", "label":label|trans, "value": "Wartenummer anfordern" }) }}
+                </div>
+            </form>
+        {% endif %}
 	{% endfor %}
 </div>
 {% endblock %}
 
 {# 2 Buttons #}
 {% block button_multirow_deep %}
-	{% from 'element/helper/form.twig' import formbutton, hiddenfield %}
+	{% from 'element/helper/form.twig' import formbutton, custombutton, hiddenfield %}
 	<div class="wartebuttonbereich_zweizeilig_tief"  data-queue-min=3 data-queue-max=6>
     {% for button in ticketprinter.buttons %}
-    	<form action="{{ urlGet('TicketprinterProcess', {}, {}) }}" method="post">
-            {{ hiddenfield({ "name": "scopeId", "value": button.scope.id }) }}
-            {{ hiddenfield({ "name": "clusterId", "value": button.cluster.id }) }}
-    		{% set label = "Wartenummer für\n" ~ button.name %}
-    		<div class="variablerwarteschlangebutton" id="variablerwarteschlangebutton">
-                {{ formbutton({ "type":"submit", "name": "Eintragen", "label":label, "value": "Wartenummer anfordern" }) }}
+    	{% if button.type == "link" %}
+			{% set label = button.name|default('Information') %}
+			<div class="variablerwarteschlangebutton" id="variablerwarteschlangebutton">
+                {{ custombutton({ "name": "Eintragen", "label":label|trans, "target": button.url }) }}
             </div>
-        </form>
+		{% else %}
+        	<form action="{{ urlGet('TicketprinterProcess', {}, {}) }}" method="post">
+                {{ hiddenfield({ "name": "scopeId", "value": button.scope.id }) }}
+                {{ hiddenfield({ "name": "clusterId", "value": button.cluster.id }) }}
+        		{% set label = "Wartenummer für " ~ button.name %}
+        		<div class="variablerwarteschlangebutton" id="variablerwarteschlangebutton">
+                    {{ formbutton({ "type":"submit", "name": "Eintragen", "label":label|trans, "value": "Wartenummer anfordern" }) }}
+                </div>
+            </form>
+        {% endif %}
 	{% endfor %}
 </div>
 {% endblock %}

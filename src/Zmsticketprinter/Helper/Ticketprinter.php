@@ -7,16 +7,20 @@
  */
 namespace BO\Zmsticketprinter\Helper;
 
+use \BO\Mellon\Validator;
+use \BO\Zmsentities\Ticketprinter as Entity;
+
 class Ticketprinter
 {
     public $entity;
 
     public function __construct($args, $request)
     {
-        if (\array_key_exists('scope', $args)) {
-            $this->entity = static::createInstanceByScope($args['scope'], $request);
+        if (\array_key_exists('scopeId', $args)) {
+            $scopeId = Validator::value($args['scopeId'])->isNumber()->getValue();
+            $this->entity = static::createInstanceByScope($scopeId, $request);
         } else {
-            $this->entity = static::createInstance();
+            $this->entity = static::createInstance($request);
         }
         $this->entity = \App::$http->readPostResult('/ticketprinter/', $this->entity)->getEntity();
     }
@@ -25,13 +29,35 @@ class Ticketprinter
     protected static function createInstanceByScope($scopeId, $request)
     {
         $organisation = \App::$http->readGetResult('/organisation/scope/'. $scopeId . '/')->getEntity();
-        $entity = static::readWithHash($organisation, $request);
-        $entity->buttonlist = 's'. $scopeId;
-        return $entity;
+        $ticketprinter = static::readWithHash($organisation, $request);
+        $ticketprinter->buttonlist = 's'. $scopeId;
+        $ticketprinter->toStructuredButtonList();
+        return $ticketprinter;
     }
 
-    protected static function createInstance()
+    protected static function createInstance($request)
     {
+        $validator = $request->getAttribute('validator');
+        $entity = new Entity($validator->getParameter('ticketprinter')->isArray()->getValue());
+        $entity->toStructuredButtonList();
+        foreach ($entity->buttons as $button) {
+            if ('scope' == $button['type']) {
+                $organisation = \App::$http->readGetResult(
+                    '/organisation/scope/'. $button['scope']['id'] . '/'
+                )->getEntity();
+            } elseif ('cluster' == $button['type']) {
+                $organisation = \App::$http->readGetResult(
+                    '/organisation/cluster/'. $button['cluster']['id'] . '/'
+                )->getEntity();
+            }
+            break;
+        }
+
+        if ($organisation->hasClusterScopesFromButtonList($entity->buttons)) {
+            $ticketprinter = static::readWithHash($organisation, $request);
+            $ticketprinter->buttons = $entity->buttons;
+            return $ticketprinter;
+        }
     }
 
     protected static function readWithHash(\BO\Zmsentities\Organisation $organisation, $request)

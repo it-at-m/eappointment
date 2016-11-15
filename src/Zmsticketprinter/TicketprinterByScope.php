@@ -8,11 +8,7 @@
 namespace BO\Zmsticketprinter;
 
 use \BO\Zmsentities\Ticketprinter as Entity;
-use \BO\Mellon\Validator;
 
-/**
- * Handle requests concerning services
- */
 class TicketprinterByScope extends BaseController
 {
 
@@ -26,9 +22,8 @@ class TicketprinterByScope extends BaseController
         array $args
     ) {
         $validator = $request->getAttribute('validator');
-        $validate = $validator->getParameter('hasWaitinnumber')->isBool()->getValue();
-        $scopeId = Validator::value($args['id'])->isNumber()->getValue();
-        $ticketprinter = (new Helper\Ticketprinter(array('scope' => $scopeId), $request))->getEntity();
+        $validate = $validator->getParameter('hasWaitingnumber')->isBool()->getValue();
+        $ticketprinter = (new Helper\Ticketprinter($args, $request))->getEntity();
 
         return \BO\Slim\Render::withHtml(
             $response,
