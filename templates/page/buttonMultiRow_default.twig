@@ -10,12 +10,15 @@
 {% endblock %}
 {% block content %}
 
+    {% if validate %}
+	{{ block("feedback_print") }}
+	{% endif %}
+
 	<div class="werbeblock_mehrfachkiosk_oben">
         {% trans "Bitte fordern Sie eine Wartenummer an für" %}:<br />
 	</div>
 
-	{{ block("button_multirow") }}
-	{{ block("feedback_print") }}
+	{{ block(wrapper) }}
 	</div>
 </div>
 {% endblock %}
