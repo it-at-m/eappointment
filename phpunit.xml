@@ -9,7 +9,7 @@
          processIsolation="false"
          stopOnFailure="true"
          syntaxCheck="false"
-         bootstrap="tests/Zmsticketprinter/bootstrap.php"
+         bootstrap="tests/bootstrap.php"
 >
     <testsuites>
         <testsuite name="Zmsticketprinter Test Suite">
