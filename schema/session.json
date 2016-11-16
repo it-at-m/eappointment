@@ -140,13 +140,13 @@
                     "description": "Save request IDs and provider IDs from entry query",
                     "properties": {
                         "source" : {
-                            "type": ["number", "string"]
+                            "type": "string"
                         },
                         "providers" : {
                             "type": ["number", "string"]
                         },
                         "requests" :{
-                            "type": "string"
+                            "type": ["number", "string"]
                         },
                         "scope" : {
                             "type": ["number"]
