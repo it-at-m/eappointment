@@ -30,7 +30,6 @@ class DepartmentList extends Base
                 $scopeList->addEntity($scope);
             }
         }
-        error_log(var_export($scopeList, 1));
         return $scopeList->withUniqueScopes();
     }
 
