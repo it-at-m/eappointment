@@ -10,12 +10,41 @@ class TicketprinterTest extends Base
     {
         $response = $this->render([], [
             '__body' => '{
-                "buttonlist": "s141,c4,l[http://www.berlin.de/|Portal+Berlin.de]",
+                "buttonlist": "s141,c110,l[http://www.berlin.de/|Portal+Berlin.de]",
                 "enabled": true,
                 "hash": "65d88282b9a15d355af1dd619cb86e057c",
                 "id": 1234,
                 "lastUpdate": 1447925326000,
-                "name": "Eingangsbereich links"
+                "name": "Eingangsbereich links",
+                "buttons": [
+                    {
+                		"type": "scope",
+                		"url": "/scope/141/",
+                		"scope": {
+                			"id": 141
+                		},
+                		"enabled": true,
+                		"name": "Bürgeramt Heerstraße"
+                	},
+                	{
+                		"type": "cluster",
+                		"url": "/cluster/110/",
+                		"cluster": {
+                			"id": 110
+                		},
+                		"enabled": true,
+                		"name": "Bürgeramt Hohenzollerndamm"
+                	},
+                	{
+                		"type": "link",
+                		"url": "http://www.berlin.de/",
+                		"scope": {
+                			"id": 110
+                		},
+                		"enabled": true,
+                		"name": "Portal berlin.de"
+                	}
+                ]
             }'
         ], []);
         $this->assertContains('ticketprinter.json', (string)$response->getBody());

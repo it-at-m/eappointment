@@ -1193,6 +1193,34 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/organisation/cluster/{id}/":
+ *      get:
+ *          description: Get an organisation by clusterId.
+ *          parameters:
+ *              -   name: id
+ *                  description: cluster number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/organisation.json"
+ *              404:
+ *                  description: "organisation id does not exists"
+ */
+\App::$slim->get('/organisation/cluster/{id:\d{1,4}}/',
+    '\BO\Zmsapi\OrganisationByCluster')
+    ->setName("OrganisationByCluster");
+
+/**
+ *  @swagger
  *  "/organisation/{id}/hash/":
  *      get:
  *          description: Get a hash to identify a ticketprinter. Usually a browser requests a hash once and stores it in a cookie.
@@ -2803,7 +2831,7 @@ use \Psr\Http\Message\ResponseInterface;
         $message->meta->message = $exception->getMessage();
         $message->meta->exception = get_class($exception);
         $message->meta->trace = $exception->getTrace();
-        $response = \BO\Slim\Render::withLastModified($response, time(), '0');
+        \BO\Slim\Render::lastModified(time(), '0');
         $status = 500;
         if ($exception->getCode() >= 200) {
             $status = $exception->getcode();
