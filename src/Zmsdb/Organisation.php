@@ -40,6 +40,15 @@ class Organisation extends Base
         return array ();
     }
 
+    public function readByClusterId($clusterId, $resolveReferences = 0)
+    {
+        $scope = (new Scope())->readByClusterId()->getFirst();
+        if (! $scope->hasId()) {
+            throw new Exception\ClusterWithoutScopes();
+        }
+        return $this->readByScopeId($scope->id);
+    }
+
     public function readByOwnerId($ownerId, $resolveReferences = 0)
     {
         $organisationList = new Collection();
