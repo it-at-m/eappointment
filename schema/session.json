@@ -60,10 +60,10 @@
                     "type": "object",
                     "properties": {
                         "requests" : {
-                            "type": "string"
+                            "type": ["number", "string"]
                         },
                         "providers" : {
-                            "type": "string"
+                            "type": ["number", "string"]
                         },
                         "scope" : {
                             "type": ["number"]
@@ -140,10 +140,10 @@
                     "description": "Save request IDs and provider IDs from entry query",
                     "properties": {
                         "source" : {
-                            "type": "string"
+                            "type": ["number", "string"]
                         },
                         "providers" : {
-                            "type": "string"
+                            "type": ["number", "string"]
                         },
                         "requests" :{
                             "type": "string"
