@@ -92,7 +92,7 @@ class Availability extends Base implements MappingInterface
                     availability.allexWochen
                     AND FLOOR(
                         (
-                            FLOOR(UNIX_TIMESTAMP($date))
+                            FLOOR(UNIX_TIMESTAMP('$date'))
                             - FLOOR(UNIX_TIMESTAMP(availability.Startdatum)))
                             / 86400
                             / 7
@@ -102,10 +102,10 @@ class Availability extends Base implements MappingInterface
                 OR (
                     availability.jedexteWoche
                     AND (
-                        CEIL(DAYOFMONTH($date) / 7) = availability.jedexteWoche
+                        CEIL(DAYOFMONTH('$date') / 7) = availability.jedexteWoche
                         OR (
                             availability.jedexteWoche = 5
-                            AND CEIL(LAST_DAY($date) / 7) = CEIL(DAYOFMONTH($date) / 7)
+                            AND CEIL(LAST_DAY('$date') / 7) = CEIL(DAYOFMONTH('$date') / 7)
                         )
                     )
                 )
