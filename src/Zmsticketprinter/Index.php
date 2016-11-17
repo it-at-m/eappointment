@@ -23,7 +23,8 @@ class Index extends BaseController
     ) {
         $validator = $request->getAttribute('validator');
         $validate = $validator->getParameter('hasWaitingnumber')->isBool()->getValue();
-        $ticketprinter = (new Helper\Ticketprinter($args, $request))->getEntity();
+        $ticketprinterHelper = (new Helper\Ticketprinter($args, $request));
+        $ticketprinter = $ticketprinterHelper->getEntity();
 
         if (1 == count($ticketprinter->buttons) && 'scope' == $ticketprinter->buttons[0]['type']) {
              return \BO\Slim\Render::redirect(
@@ -42,6 +43,7 @@ class Index extends BaseController
                 'debug' => \App::DEBUG,
                 'title' => 'Wartennumer ziehen',
                 'ticketprinter' => $ticketprinter,
+                'organisation' => $ticketprinterHelper::$organisation,
                 'validate' => $validate,
                 'wrapper' => (2 == count($ticketprinter->buttons)) ? 'button_multirow_deep' : 'button_multirow'
             )
