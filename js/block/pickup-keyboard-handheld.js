@@ -1,7 +1,6 @@
 
 import BaseView from '../lib/baseview';
 import $ from "jquery";
-import settings from '../settings';
 
 class View extends BaseView {
 
@@ -25,13 +24,13 @@ class View extends BaseView {
         return false;
     }
 
-    deleteNumber (event) {
+    deleteNumber () {
         this.$numberInput.val(this.$numberInput.val().replace(/.$/, ''));
         this.checkNumber();
         return false;
     }
 
-    clearNumbers (event) {
+    clearNumbers () {
         this.$numberInput.val('');
         this.checkNumber();
         return false;
