@@ -2,10 +2,10 @@
 
 namespace BO\Zmsticketprinter\Tests;
 
-class TicketprinterByScopeTest extends Base
+class IndexTest extends Base
 {
 
-    protected $classname = "TicketprinterByScope";
+    protected $classname = "Index";
 
     protected $arguments = [ ];
 
@@ -27,21 +27,23 @@ class TicketprinterByScopeTest extends Base
             [
                 'function' => 'readPostResult',
                 'url' => '/ticketprinter/',
-                'response' => $this->readFixture("GET_ticketprinter_buttonlist_single.json"),
+                'response' => $this->readFixture("GET_ticketprinter_buttonlist_multi.json"),
             ]
         ];
     }
 
     public function testRendering()
     {
-        $response = $this->render([
-            'scopeId' => 141
-        ], [
+        $response = $this->render([ ], [
             '__cookie' => [
                 'Ticketprinter' => '71ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2',
+            ],
+            'ticketprinter' => [
+                'buttonlist' => 's141,c110,l[http://www.berlin.de/|Portal berlin.de]'
             ]
         ], [ ]);
         $this->assertContains('Wartenummer für', (string) $response->getBody());
-        $this->assertContains('Bürgeramt Heerstraße', (string) $response->getBody());
+        $this->assertContains('Bürgeramt Hohenzollerndamm', (string) $response->getBody());
+        $this->assertContains('Portal berlin.de', (string) $response->getBody());
     }
 }

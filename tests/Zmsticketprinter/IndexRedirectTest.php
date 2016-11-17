@@ -2,10 +2,10 @@
 
 namespace BO\Zmsticketprinter\Tests;
 
-class TicketprinterByScopeTest extends Base
+class IndexRedirectTest extends Base
 {
 
-    protected $classname = "TicketprinterByScope";
+    protected $classname = "Index";
 
     protected $arguments = [ ];
 
@@ -34,14 +34,14 @@ class TicketprinterByScopeTest extends Base
 
     public function testRendering()
     {
-        $response = $this->render([
-            'scopeId' => 141
-        ], [
+        $response = $this->render([ ], [
             '__cookie' => [
                 'Ticketprinter' => '71ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2',
+            ],
+            'ticketprinter' => [
+                'buttonlist' => 's141'
             ]
         ], [ ]);
-        $this->assertContains('Wartenummer für', (string) $response->getBody());
-        $this->assertContains('Bürgeramt Heerstraße', (string) $response->getBody());
+        $this->assertRedirect($response, '/scope/141/');
     }
 }
