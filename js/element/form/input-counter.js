@@ -1,7 +1,6 @@
 
 import BaseView from '../../lib/baseview';
 import $ from "jquery";
-import settings from '../../settings';
 
 class View extends BaseView {
 

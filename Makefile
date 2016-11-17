@@ -9,10 +9,10 @@ now: # Dummy target
 
 build: css js # Build javascript and css
 
-css:
+css: now
 	node_modules/.bin/gulp scss
 
-js:
+js: now
 	node_modules/.bin/gulp js
 
 fix: # run code fixing
