@@ -13,6 +13,7 @@ use \BO\Zmsentities\Ticketprinter as Entity;
 class Ticketprinter
 {
     public $entity;
+    public static $organisation;
 
     public function __construct($args, $request)
     {
@@ -28,8 +29,8 @@ class Ticketprinter
 
     protected static function createInstanceByScope($scopeId, $request)
     {
-        $organisation = \App::$http->readGetResult('/organisation/scope/'. $scopeId . '/')->getEntity();
-        $entity = static::readWithHash($organisation, $request);
+        self::$organisation = \App::$http->readGetResult('/organisation/scope/'. $scopeId . '/')->getEntity();
+        $entity = static::readWithHash($request);
         $entity->buttonlist = 's'. $scopeId;
         $entity->toStructuredButtonList();
         return $entity;
@@ -42,25 +43,25 @@ class Ticketprinter
         $entity->toStructuredButtonList();
         foreach ($entity->buttons as $button) {
             if ('scope' == $button['type']) {
-                $organisation = \App::$http->readGetResult(
+                self::$organisation = \App::$http->readGetResult(
                     '/organisation/scope/'. $button['scope']['id'] . '/'
                 )->getEntity();
             } elseif ('cluster' == $button['type']) {
-                $organisation = \App::$http->readGetResult(
+                self::$organisation = \App::$http->readGetResult(
                     '/organisation/cluster/'. $button['cluster']['id'] . '/'
                 )->getEntity();
             }
             break;
         }
 
-        if ($organisation->hasClusterScopesFromButtonList($entity->buttons)) {
-            $ticketprinter = static::readWithHash($organisation, $request);
+        if (self::$organisation->hasClusterScopesFromButtonList($entity->buttons)) {
+            $ticketprinter = static::readWithHash($request);
             $entity->hash = $ticketprinter->hash;
         }
         return $entity;
     }
 
-    protected static function readWithHash(\BO\Zmsentities\Organisation $organisation, $request)
+    protected static function readWithHash($request)
     {
         $cookies = $request->getCookieParams();
         $ticketprinterHash = \BO\Zmsclient\Ticketprinter::getHash();
@@ -69,7 +70,7 @@ class Ticketprinter
         }
 
         if (!$ticketprinterHash) {
-            $entity = \App::$http->readGetResult('/organisation/'. $organisation->id . '/hash/')->getEntity();
+            $entity = \App::$http->readGetResult('/organisation/'. self::$organisation->id . '/hash/')->getEntity();
             \BO\Zmsclient\Ticketprinter::setHash($entity->hash);
         } else {
             $entity = \App::$http->readGetResult('/ticketprinter/'. $ticketprinterHash . '/')->getEntity();
