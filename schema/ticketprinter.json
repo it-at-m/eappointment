@@ -10,8 +10,7 @@
         "name": "Eingangsbereich links"
     },
     "required": [
-        "hash",
-        "enabled"
+        "hash"
     ],
     "additionalProperties": false,
     "properties": {

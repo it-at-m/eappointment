@@ -8,9 +8,16 @@ class Ticketprinter extends Schema\Entity
 {
     const PRIMARY = 'hash';
 
+    public static $schema = "ticketprinter.json";
+
     protected $allowedButtonTypes = array('s' => 'scope', 'c' => 'cluster', 'l' => 'link');
 
-    public static $schema = "ticketprinter.json";
+    public function getDefaults()
+    {
+        return [
+            'enabled' => true,
+        ];
+    }
 
     public function getHashWith($organisiationId)
     {
@@ -76,8 +83,8 @@ class Ticketprinter extends Schema\Entity
     {
         if (preg_match("/\[([^\]]*)\]/", $value, $matches)) {
             $data = explode('|', $matches[1]);
-            $button['url'] = $data[0];
-            $button['name'] = $data[1];
+            $button['url'] = (isset($data[0])) ? $data[0] : '';
+            $button['name'] = (isset($data[1])) ? $data[1] : "Information";
         }
         return $button;
     }
