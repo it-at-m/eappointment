@@ -92,8 +92,13 @@ class TwigExceptionHandler
             $requestdata = json_encode($requestdata, $json_opt);
         }
         $uniqueId = substr(sha1($servertime . rand(1, 60)), 0, 6);
+        $data = [];
+        if (isset($exception->data)) {
+            $data = $exception->data;
+        }
         return array(
             "debug" => \App::DEBUG,
+            "data" => $data,
             "failed" => $exception->getMessage(),
             "exception" => $exception,
             "exceptionclass" => $exceptionclass,
