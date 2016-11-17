@@ -27,7 +27,7 @@ class TicketprinterByScopeWithoutHashTest extends Base
             [
                 'function' => 'readPostResult',
                 'url' => '/ticketprinter/',
-                'response' => $this->readFixture("GET_ticketprinter_buttonlist.json"),
+                'response' => $this->readFixture("GET_ticketprinter_buttonlist_single.json"),
             ]
         ];
     }

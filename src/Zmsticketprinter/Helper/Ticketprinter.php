@@ -29,10 +29,10 @@ class Ticketprinter
     protected static function createInstanceByScope($scopeId, $request)
     {
         $organisation = \App::$http->readGetResult('/organisation/scope/'. $scopeId . '/')->getEntity();
-        $ticketprinter = static::readWithHash($organisation, $request);
-        $ticketprinter->buttonlist = 's'. $scopeId;
-        $ticketprinter->toStructuredButtonList();
-        return $ticketprinter;
+        $entity = static::readWithHash($organisation, $request);
+        $entity->buttonlist = 's'. $scopeId;
+        $entity->toStructuredButtonList();
+        return $entity;
     }
 
     protected static function createInstance($request)
@@ -55,9 +55,9 @@ class Ticketprinter
 
         if ($organisation->hasClusterScopesFromButtonList($entity->buttons)) {
             $ticketprinter = static::readWithHash($organisation, $request);
-            $ticketprinter->buttons = $entity->buttons;
-            return $ticketprinter;
+            $entity->hash = $ticketprinter->hash;
         }
+        return $entity;
     }
 
     protected static function readWithHash(\BO\Zmsentities\Organisation $organisation, $request)
