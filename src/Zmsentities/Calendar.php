@@ -314,10 +314,8 @@ class Calendar extends Schema\Entity
         foreach ($entity['scopes'] as $scope) {
             if ($scope->toProperty()->provider->data->isAvailable()) {
                 $provider = $scope->toProperty()->provider->get();
-                unset($scope['provider']);
+                unset($scope['provider']['data']);
                 $scope['provider']['data'] = ['payment' => $provider['data']['payment']];
-                $scope['provider']['contact'] = $provider['contact'];
-                $scope['provider']['name'] = $provider['name'];
                 unset($scope['dayoff']);
             }
         }
