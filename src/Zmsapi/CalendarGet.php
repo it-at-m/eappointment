@@ -26,13 +26,15 @@ class CalendarGet extends BaseController
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $calendar = new \BO\Zmsentities\Calendar($input);
         if (!isset($calendar['firstDay']) || !isset($calendar['lastDay'])) {
-            throw new Exception\Calendar\InvalidFirstDay();
+            throw new Exception\Calendar\InvalidFirstDay('First and last day are required');
         } else {
             $calendar = $query->readResolvedEntity($calendar, \App::getNow())->withLessData();
             $message->data = $calendar;
         }
         if (0 == count($message->data['days'])) {
-            throw new Exception\Calendar\AppointmentsMissed();
+            $exception = new Exception\Calendar\AppointmentsMissed();
+            $exception->data = $message->data;
+            throw $exception;
         }
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());

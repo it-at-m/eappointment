@@ -2831,7 +2831,10 @@ use \Psr\Http\Message\ResponseInterface;
         $message->meta->message = $exception->getMessage();
         $message->meta->exception = get_class($exception);
         $message->meta->trace = $exception->getTrace();
-        \BO\Slim\Render::lastModified(time(), '0');
+        if (isset($exception->data)) {
+            $message->data = $exception->data;
+        }
+        $response = \BO\Slim\Render::withLastModified($response, time(), '0');
         $status = 500;
         if ($exception->getCode() >= 200) {
             $status = $exception->getcode();
