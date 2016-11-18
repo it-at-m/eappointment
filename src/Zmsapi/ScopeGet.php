@@ -21,7 +21,7 @@ class ScopeGet extends BaseController
      */
     public static function render($itemId)
     {
-        Helper\User::checkRights('scope');
+        Helper\User::checkRights('basic');
 
         $query = new Query();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
