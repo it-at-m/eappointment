@@ -8,7 +8,9 @@ namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
-use \BO\Zmsdb\Cluster as Query;
+use \BO\Zmsdb\Ticketprinter as Query;
+use \BO\Zmsdb\Cluster;
+use \BO\Zmsdb\Process;
 
 /**
   * Handle requests concerning services
@@ -21,13 +23,16 @@ class TicketprinterWaitingnumberByCluster extends BaseController
     public static function render($clusterId, $hash)
     {
         $message = Response\Message::create(Render::$request);
-        $ticketprinter = (new \BO\Zmsdb\Ticketprinter())->readByHash($hash);
+        $ticketprinter = (new Query())->readByHash($hash);
+
         if (! $ticketprinter->hasId()) {
             throw new Exception\Ticketprinter\TicketprinterHashNotValid();
         }
+        if (! $ticketprinter->isEnabled()) {
+            throw new Exception\Ticketprinter\TicketprinterNotEnabled();
+        }
 
-        $query = new Query();
-        $cluster = $query->readEntity($clusterId);
+        $cluster = (new Cluster())->readEntity($clusterId, 0);
         if (! $cluster) {
             throw new Exception\Cluster\ClusterNotFound();
         }
