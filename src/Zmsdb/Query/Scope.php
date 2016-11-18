@@ -16,6 +16,12 @@ class Scope extends Base implements MappingInterface
             scope.`BehoerdenID` = :department_id
     ';
 
+    public function getQueryLastWaitingNumber()
+    {
+        return 'SELECT letztewartenr FROM `standort` scope
+            WHERE scope.`StandortID` = :scope_id LIMIT 1 FOR UPDATE';
+    }
+
     public function addJoin()
     {
         $this->query->leftJoin(
