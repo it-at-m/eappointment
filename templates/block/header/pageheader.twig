@@ -4,7 +4,8 @@
 <div id="main-header">
 	<span class="noprint">
     	<div class="adressangabe">
-            {% block contact %}{% endblock %}
+            <div class="adressangabe_behoerde">{{ organisation.name }}</div>
+    		<div class="adressangabe_name"> {{ organisation.departments|first.name }}</div>
         </div>
     </span>
     {% block timer %}

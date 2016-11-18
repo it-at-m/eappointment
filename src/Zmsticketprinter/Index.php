@@ -45,7 +45,7 @@ class Index extends BaseController
                 'ticketprinter' => $ticketprinter,
                 'organisation' => $ticketprinterHelper::$organisation,
                 'validate' => $validate,
-                'wrapper' => (2 == count($ticketprinter->buttons)) ? 'button_multirow_deep' : 'button_multirow'
+                'buttonDisplay' => (2 == count($ticketprinter->buttons)) ? 'button_multirow_deep' : 'button_multirow'
             )
         );
     }

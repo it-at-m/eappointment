@@ -158,6 +158,23 @@ div.buttonTelefonnummernachtragen {
   padding: 38px 121px;
   position: absolute; }
 
+a.button {
+  display: block;
+  text-align: center;
+  vertical-align: middle;
+  line-height: 128px;
+  text-decoration: none; }
+
+a.button.ja_nein {
+  background: url(img/ja_nein.png) 0 5px no-repeat;
+  border: 0;
+  color: #fff;
+  font-size: 42px;
+  font-family: Arial, sans-serif;
+  font-weight: bold;
+  height: 141px;
+  width: 314px; }
+
 .wartenummern .kleineSMSRueckmeldung,
 .wartenummern .kleineAusdruckRueckmeldung,
 .wartenummern .kleineAusgabeFehlermeldung,
@@ -208,6 +225,14 @@ div.buttonTelefonnummernachtragen {
   top: 130px;
   left: 95px;
   width: 800px; }
+
+.wartenummern .nummernanzeige {
+  color: #D60C22;
+  font-size: 112px;
+  font-family: Arial, sans-serif;
+  font-weight: bold;
+  line-height: 149px;
+  text-align: center; }
 
 .box {
   line-height: 24px;
