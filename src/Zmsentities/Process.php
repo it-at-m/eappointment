@@ -1,6 +1,10 @@
 <?php
 namespace BO\Zmsentities;
 
+/**
+ * @SuppressWarnings(Coupling)
+ *
+ */
 class Process extends Schema\Entity
 {
     const PRIMARY = 'id';
@@ -55,6 +59,15 @@ class Process extends Schema\Entity
     public function addScope($scopeId)
     {
         $this->scope = new Scope(array('id' => $scopeId));
+        return $this;
+    }
+
+    public function addQueueWithNumber($number, \DateTimeInterface $dateTime)
+    {
+        $this->queue = new Queue(array(
+            'number' => $number,
+            'arrivalTime' => $dateTime->getTimestamp()
+        ));
         return $this;
     }
 

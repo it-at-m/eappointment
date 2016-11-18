@@ -77,6 +77,32 @@ class Scope extends Schema\Entity
         return (1 < count($hint)) ? trim(end($hint)) : null;
     }
 
+    public function updateStatusQueue($dateTime)
+    {
+        $lastQueueUpdateDate = Helper\DateTime::create()
+            ->setTimestamp($this->getStatus('queue', 'lastGivenNumberTimestamp'));
+        if ($lastQueueUpdateDate->format('Y-m-d') == $dateTime->format('Y-m-d')) {
+            $this->setStatusQueue('lastGivenNumber', $this->getStatus('queue', 'lastGivenNumber') + 1);
+            $this->setStatusQueue('givenNumberCount', $this->getStatus('queue', 'givenNumberCount') + 1);
+        } else {
+            $this->setStatusQueue('lastGivenNumber', $this->getPreference('queue', 'firstNumber'));
+            $this->setStatusQueue('givenNumberCount', 1);
+        }
+        if ($this->getStatus('queue', 'lastGivenNumber') < $this->getPreference('queue', 'firstNumber')) {
+            $this->setStatusQueue('lastGivenNumber', $this->getPreference('queue', 'firstNumber'));
+        } elseif ($this->getStatus('queue', 'lastGivenNumber') > $this->getPreference('queue', 'lastNumber')) {
+            $this->setStatusQueue('lastGivenNumber', $this->getPreference('queue', 'firstNumber'));
+        }
+        $this->setStatusQueue('lastGivenNumberTimestamp', $dateTime->getTimestamp());
+        return $this;
+    }
+
+    public function setStatusQueue($key, $value)
+    {
+        $this->status['queue'][$key] = $value;
+        return $this;
+    }
+
     public function __toString()
     {
         $string = 'scope#';
