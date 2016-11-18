@@ -61,6 +61,7 @@ class Ticketprinter extends Base
             ->addEntityMapping()
             ->addConditionHash($hash);
         $ticketprinter = $this->fetchOne($query, new Entity());
+        $ticketprinter->enabled = (1 == $ticketprinter->enabled);
         return $ticketprinter;
     }
 
@@ -84,6 +85,7 @@ class Ticketprinter extends Base
                     if (! $scope) {
                         throw new Exception\TicketprinterUnvalidButtonList();
                     }
+                    $ticketprinter->buttons[$key]['scope'] = $scope;
                     $ticketprinter->buttons[$key]['enabled'] = $query->readIsOpened($scope->id, $now);
                     $ticketprinter->buttons[$key]['name'] = $scope->getPreference('ticketprinter', 'buttonName');
                 } elseif ('cluster' == $button['type']) {
@@ -93,6 +95,7 @@ class Ticketprinter extends Base
                         throw new Exception\TicketprinterUnvalidButtonList();
                     }
                     $scopeList = $query->readIsOpenedScopeList($cluster->id, $now);
+                    $ticketprinter->buttons[$key]['cluster'] = $cluster;
                     $ticketprinter->buttons[$key]['enabled'] = (count($scopeList)) ? true : false;
                     $ticketprinter->buttons[$key]['name'] = $cluster->getName();
                 }
