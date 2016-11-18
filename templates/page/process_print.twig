@@ -1,0 +1,23 @@
+{% extends "layout/main.twig" %}
+
+{% use "block/content/buttons.twig" %}
+{% use "block/content/feedback.twig" %}
+
+{% from 'element/helper/form.twig' import custombutton %}
+
+{% block pageid %}index{% endblock %}
+{% block content %}
+<div class="boxontop">
+	<span class="printausgabe msg_ihre_wartenummer">Ihre Wartenummer:</span>
+    <div class="msg_ihre_nummernanzeige">{{ process.queue.number }}</div>
+    <span class="printausgabe msg_stdname">
+    	<span class="printausgabe msg_ihre_wartenummer">
+    		{{ process.scope.contact.name }}<br>
+    		Info: {{ process.scope.provider.name }}<br>
+    		{{ toGermanDateFromTs(process.appointments|first.date).date }}, {{ toGermanDateFromTs(process.appointments|first.date).time }}<br>
+		</span>
+	</span>
+</div>
+{% endblock %}
+
+

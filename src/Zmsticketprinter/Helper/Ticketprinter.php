@@ -61,7 +61,7 @@ class Ticketprinter
         return $entity;
     }
 
-    protected static function readWithHash($request)
+    public static function readWithHash($request)
     {
         $cookies = $request->getCookieParams();
         $ticketprinterHash = \BO\Zmsclient\Ticketprinter::getHash();

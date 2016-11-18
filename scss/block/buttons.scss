@@ -87,3 +87,22 @@ div.buttonTelefonnummernachtragen
     padding: 38px 121px;
     position:absolute;
 }
+
+a.button {
+	display: block;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 128px;
+    text-decoration:none;
+}
+
+a.button.ja_nein {
+    background: url(img/ja_nein.png) 0 5px no-repeat;
+    border: 0;
+    color: #fff;
+    font-size: 42px;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    height: 141px;
+    width: 314px;
+}

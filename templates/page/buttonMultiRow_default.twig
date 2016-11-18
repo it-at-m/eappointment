@@ -4,10 +4,6 @@
 {% use "block/content/feedback.twig" %}
 
 {% block pageid %}index{% endblock %}
-{% block contact %}
-    <div class="adressangabe_behoerde">{{ organisation.name }}</div>
-    <div class="adressangabe_name"> {{ organisation.departments|first.name }}</div>
-{% endblock %}
 {% block content %}
 
     {% if validate %}
@@ -18,7 +14,7 @@
         {% trans "Bitte fordern Sie eine Wartenummer an für" %}:<br />
 	</div>
 
-	{{ block(wrapper) }}
+	{{ block(buttonDisplay) }}
 	</div>
 </div>
 {% endblock %}

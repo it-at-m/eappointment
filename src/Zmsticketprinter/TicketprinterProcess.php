@@ -22,17 +22,29 @@ class TicketprinterProcess extends BaseController
         array $args
     ) {
         $validator = $request->getAttribute('validator');
-        $validate = $validator->getParameter('hasWaitingnumber')->isBool()->getValue();
-        $ticketprinter = (new Helper\Ticketprinter($args, $request))->getEntity();
+        $scopeId = $validator->getParameter('scopeId')->isNumber()->getValue();
+        $clusterId = $validator->getParameter('clusterId')->isNumber()->getValue();
+        $ticketprinter = Helper\Ticketprinter::readWithHash($request);
+
+        if ($scopeId) {
+            $process = \App::$http->readGetResult(
+                '/scope/'. $scopeId .'/waitingnumber/'. $ticketprinter->hash .'/'
+            )->getEntity();
+        } elseif ($clusterId) {
+            $process = \App::$http->readGetResult(
+                '/cluster/'. $clusterId .'/waitingnumber/'. $ticketprinter->hash .'/'
+            )->getEntity();
+        }
 
         return \BO\Slim\Render::withHtml(
             $response,
-            'page/buttonSingleRow_default.twig',
+            'page/process.twig',
             array(
                 'debug' => \App::DEBUG,
-                'title' => 'Wartennumer ziehen',
+                'title' => 'Anmeldung an der Warteschlange',
                 'ticketprinter' => $ticketprinter,
-                'validate' => $validate
+                'organisation' => \App::$http->readGetResult('/organisation/scope/'. $scopeId . '/')->getEntity(),
+                'process' => $process
             )
         );
     }

@@ -11,13 +11,22 @@
 }
 
 .wartenummern .werbeblock_oben {
-    position: absolute;
-    top: 150px;
+    position: 	absolute;
+    top: 		150px;
 }
 
 .wartenummern .werbeblock_mehrfachkiosk_oben {
-    position: absolute;
-    top: 130px;
-    left: 95px;
-    width: 800px;
+    position: 	absolute;
+    top: 		130px;
+    left: 		95px;
+    width: 		800px;
+}
+
+.wartenummern .nummernanzeige {
+    color: 			#D60C22;
+    font-size: 		112px;
+    font-family: 	Arial, sans-serif;
+    font-weight: 	bold;
+    line-height: 	149px;
+    text-align: 	center;
 }

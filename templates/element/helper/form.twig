@@ -3,87 +3,86 @@
 #}
 
 {% macro formgroup(groupargs, elements) %}
+    <div class="form-group{% if groupargs.errors %} has-error {% endif %}{% if groupargs.class %} {{groupargs.class}} {% endif %}">
+        {% if groupargs.label -%}
+        <label class="label">{{ groupargs.label }}{% if groupargs.required %}<span class="required-symbol">*</span>{% endif %}</label>
+        {% elseif groupargs.divlabel -%}
+        <div class="label">{{ groupargs.divlabel }}{% if groupargs.required %}<span class="required-symbol">*</span>{% endif %}</div>
+        {% endif -%}
+        <div class="controls">
+        {% for element in elements -%}
 
-                    <div class="form-group{% if groupargs.errors %} has-error {% endif %}{% if groupargs.class %} {{groupargs.class}} {% endif %}">
-                        {% if groupargs.label -%}
-                        <label class="label">{{ groupargs.label }}{% if groupargs.required %}<span class="required-symbol">*</span>{% endif %}</label>
-                        {% elseif groupargs.divlabel -%}
-                        <div class="label">{{ groupargs.divlabel }}{% if groupargs.required %}<span class="required-symbol">*</span>{% endif %}</div>
-                        {% endif -%}
-                        <div class="controls">
-                        {% for element in elements -%}
+            {%- if element.type == "select" -%}
+                {{- _self.selectfield(element.parameter) -}}
+            {% endif -%}
 
-                            {%- if element.type == "select" -%}
-                                {{- _self.selectfield(element.parameter) -}}
-                            {% endif -%}
+            {%- if element.type == "checkboxSelect" -%}
+                {{- _self.checkboxselectfield(element.parameter) -}}
+            {% endif -%}
 
-                            {%- if element.type == "checkboxSelect" -%}
-                                {{- _self.checkboxselectfield(element.parameter) -}}
-                            {% endif -%}
+            {%- if element.type == "checkboxDeselect" -%}
+                {{- _self.checkboxdeselectfield(element.parameter) -}}
+            {% endif -%}
 
-                            {%- if element.type == "checkboxDeselect" -%}
-                                {{- _self.checkboxdeselectfield(element.parameter) -}}
-                            {% endif -%}
+            {%- if element.parameter.prepend %}
+            <span class="prepend">
+                {{ element.parameter.prepend }}
+            </span>
+            {% endif -%}
 
-                            {%- if element.parameter.prepend %}
-                            <span class="prepend">
-                                {{ element.parameter.prepend }}
-                            </span>
-                            {% endif -%}
+            {%- if element.type == "input" -%}
+                {{ _self.inputfield(element.parameter) -}}
+            {% endif -%}
 
-                            {%- if element.type == "input" -%}
-                                {{ _self.inputfield(element.parameter) -}}
-                            {% endif -%}
+            {%- if element.type == "hidden" -%}
+                {{ _self.hiddenfield(element.parameter) -}}
+            {% endif -%}
 
-                            {%- if element.type == "hidden" -%}
-                                {{ _self.hiddenfield(element.parameter) -}}
-                            {% endif -%}
+            {%- if element.type == "checkbox" -%}
+                {{- _self.checkboxfield(element.parameter) -}}
+            {% endif -%}
 
-                            {%- if element.type == "checkbox" -%}
-                                {{- _self.checkboxfield(element.parameter) -}}
-                            {% endif -%}
+            {%- if element.type == "radio" -%}
+                {{ _self.radiobuttonfield(element.parameter) -}}
+            {% endif -%}
 
-                            {%- if element.type == "radio" -%}
-                                {{ _self.radiobuttonfield(element.parameter) -}}
-                            {% endif -%}
+            {%- if element.type == "textarea" -%}
+                {{ _self.textareafield(element.parameter) -}}
+            {% endif -%}
 
-                            {%- if element.type == "textarea" -%}
-                                {{ _self.textareafield(element.parameter) -}}
-                            {% endif -%}
+            {%- if element.type == "datepicker" -%}
+                {{ _self.datepickerfield(element.parameter) -}}
+            {% endif -%}
 
-                            {%- if element.type == "datepicker" -%}
-                                {{ _self.datepickerfield(element.parameter) -}}
-                            {% endif -%}
+            {%- if element.type == "file" -%}
+                {{ _self.filefield(element.parameter) -}}
+            {% endif -%}
 
-                            {%- if element.type == "file" -%}
-                                {{ _self.filefield(element.parameter) -}}
-                            {% endif -%}
+            {%- if element.type == "prepend" -%}
+                {{ _self.prepend(element.parameter) -}}
+            {% endif -%}
 
-                            {%- if element.type == "prepend" -%}
-                                {{ _self.prepend(element.parameter) -}}
-                            {% endif -%}
+            {%- if element.type == "append" -%}
+                {{ _self.append(element.parameter) -}}
+            {% endif -%}
 
-                            {%- if element.type == "append" -%}
-                                {{ _self.append(element.parameter) -}}
-                            {% endif -%}
+            {%- if element.type == "counter" -%}
+                {{ _self.counterfield(element.parameter) -}}
+            {% endif -%}
 
-                            {%- if element.type == "counter" -%}
-                                {{ _self.counterfield(element.parameter) -}}
-                            {% endif -%}
+            {%- if element.parameter.append %}
+            <span class="append">{{ element.parameter.append }}</span>
+            {% endif -%}
 
-                            {%- if element.parameter.append %}
-                            <span class="append">{{ element.parameter.append }}</span>
-                            {% endif -%}
-
-                        {% endfor -%}
-                        {% if groupargs.description -%}
-                            {{ _self.groupdescription(groupargs.description) -}}
-                        {% endif -%}
-                        {% if groupargs.errors -%}
-                            {{  _self.errormessage(groupargs.errors) -}}
-                        {% endif %}
-                        </div>
-                    </div>
+        {% endfor -%}
+        {% if groupargs.description -%}
+            {{ _self.groupdescription(groupargs.description) -}}
+        {% endif -%}
+        {% if groupargs.errors -%}
+            {{  _self.errormessage(groupargs.errors) -}}
+        {% endif %}
+        </div>
+    </div>
 {% endmacro %}
 
 

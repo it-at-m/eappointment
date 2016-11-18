@@ -1,0 +1,40 @@
+{% extends "layout/main.twig" %}
+
+{% use "block/content/buttons.twig" %}
+{% use "block/content/feedback.twig" %}
+
+{% from 'element/helper/form.twig' import custombutton %}
+
+{% block pageid %}index{% endblock %}
+{% block content %}
+<div class="boxontop">
+	<span class="noprint">
+		<span class="msg_wartenummer_lautet">
+		    {% trans "Ihre Wartenummer lautet" %}: <br>
+		</span>
+		<div class="nummernanzeige">
+		    {{ process.queue.number }}
+		</div>
+    </span>
+    <span class="noprint">
+    	{% if queue|length > 1 %}{% set plural = 1 %}{% endif %}
+    	{% if queue|length >= 1 %}
+			{% if plural %}
+    		Es warten {{ queue|length }} Kunden vor Ihnen.
+    		{% else %}
+    		Es wartet 1 Kunde vor Ihnen.
+    		{% endif %}
+    	{% else %}
+    	Es wartet niemand vor Ihnen.
+    	{% endif %}
+    	<br>
+    	Bitte warten Sie auf Ihren Aufruf!
+    </span>
+	<span class="noprint">
+		<p>Ihre Wartenummer wird gedruckt.</p>
+		{{ custombutton({ "label":"OK", "target": "", "class": "button ja_nein" }) }}
+	</span>
+</div>
+{% endblock %}
+
+

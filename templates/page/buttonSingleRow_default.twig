@@ -4,12 +4,7 @@
 {% use "block/content/feedback.twig" %}
 
 {% block pageid %}index{% endblock %}
-{% block contact %}
-    <div class="adressangabe_behoerde">{{ organisation.name }}</div>
-    <div class="adressangabe_name"> {{ organisation.departments|first.name }}</div>
-{% endblock %}
 {% block content %}
-
 	{% if validate %}
 	{{ block("feedback_print") }}
 	{% endif %}
