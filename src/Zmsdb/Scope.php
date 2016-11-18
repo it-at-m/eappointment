@@ -153,6 +153,25 @@ class Scope extends Base
     }
 
     /**
+     * get last given waitingnumer and return +1
+     *
+     * * @param
+     * scopeId
+     * now
+     *
+     * @return Bool
+     */
+    public function readWaitingNumberUpdated($scopeId, $dateTime)
+    {
+        $this->getReader()
+            ->fetchValue((new Query\Scope(Query\Base::SELECT))
+            ->getQueryLastWaitingNumber(), ['scope_id' => $scopeId]);
+        $entity = $this->readEntity($scopeId)->updateStatusQueue($dateTime);
+        $scope = $this->updateEntity($scopeId, $entity);
+        return $scope->getStatus('queue', 'lastGivenNumber');
+    }
+
+    /**
      * get waitingtime of scope
      *
      * * @param
