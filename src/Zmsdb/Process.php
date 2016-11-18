@@ -87,6 +87,21 @@ class Process extends Base
         return $process;
     }
 
+    public function writeNewFromTicketprinter($scopeId, \DateTimeInterface $dateTime)
+    {
+        $appointment = new \BO\Zmsentities\Appointment();
+        $appointment->addScope($scopeId);
+        $appointment->addSlotCount(0);
+        $appointment->addDate($dateTime->modify('00:00:00')->getTimestamp());
+        $process = new Entity();
+        $process->addScope($scopeId);
+        $process->setStatus('reserved');
+        $process->addAppointment($appointment);
+        $newQueueNumber = (new Scope())->readWaitingNumberUpdated($scopeId, $dateTime);
+        $process->addQueueWithNumber($newQueueNumber, $dateTime);
+        return $this->writeNewProcess($process, $dateTime);
+    }
+
     /**
      * write a new process to DB
      *
