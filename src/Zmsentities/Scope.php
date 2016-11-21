@@ -77,6 +77,12 @@ class Scope extends Schema\Entity
         return (1 < count($hint)) ? trim(end($hint)) : null;
     }
 
+    public function getAlternateRedirectUrl()
+    {
+        $alternateUrl = $this->toProperty()->preferences->client->alternateAppointmentUrl->get();
+        return ($alternateUrl) ? $alternateUrl : null;
+    }
+
     public function updateStatusQueue($dateTime)
     {
         $lastQueueUpdateDate = Helper\DateTime::create()
