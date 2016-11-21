@@ -256,7 +256,7 @@ class SlotList
         if (isset($slotData['slotnr'])) {
             $slotnumber = $slotData['slotnr'];
             $slotdate = $slotData['slotdate'];
-            if (!array_key_exists($slotdate, $this->slots)) {
+            if (!isset($this->slots[$slotdate])) {
                 $slotDebug = "$slotdate #$slotnumber @" . $slotData['slottime'] . " on " . $this->availability;
                 throw new \BO\Zmsdb\Exception\SlotDataWithoutPreGeneratedSlot(
                     "Found database entry without a generated date for $slotDebug"
@@ -278,21 +278,26 @@ class SlotList
                     "Found two database entries for the same slot $slotDebug <=> " . $slot
                 );
             }
-            $slot->public += $slotData['freeAppointments__public'] -
-                $slotData['availability__workstationCount__public'];
-            $slot->callcenter += $slotData['freeAppointments__callcenter'] -
-                $slotData['availability__workstationCount__callcenter'];
-            $slot->intern += $slotData['freeAppointments__intern'] -
-                $slotData['availability__workstationCount__intern'];
-            $slot->time = (new DateTime($slotData['slottime']))->format('H:i');
-            $slot->type = Slot::TIMESLICE;
-            $slotList[$slotnumber] = $slot;
+            $slotList[$slotnumber] = $this->getCalculatedSlot($slot, $slotData);
         } elseif (isset($slotData['availability__id'])) {
-            // Only availability data for available slots
+            // Only availability data for available slots, do nothing
         } else {
             throw new \BO\Zmsdb\Exception\SlotDataEmpty("Found empty slot: " . var_export($slotData, true));
         }
         return $this;
+    }
+
+    protected function getCalculatedSlot(Slot $slot, $slotData)
+    {
+        $slot->public += $slotData['freeAppointments__public'] -
+            $slotData['availability__workstationCount__public'];
+        $slot->callcenter += $slotData['freeAppointments__callcenter'] -
+            $slotData['availability__workstationCount__callcenter'];
+        $slot->intern += $slotData['freeAppointments__intern'] -
+            $slotData['availability__workstationCount__intern'];
+        $slot->time = (new DateTime($slotData['slottime']))->format('H:i');
+        $slot->type = Slot::TIMESLICE;
+        return $slot;
     }
 
     public function addToCalendar(
@@ -306,6 +311,7 @@ class SlotList
             $datetime = new \DateTimeImmutable($date);
             $day = $calendar->getDayByDateTime($datetime);
             $day['freeAppointments'] = $slotList->getSummerizedSlot($day['freeAppointments']);
+            $day['status'] = 'bookable';
         }
         return $calendar;
     }
