@@ -5,7 +5,7 @@ namespace BO\Zmsentities\Tests;
 class AvailabilityTest extends EntityCommonTests
 {
 
-    const DEFAULT_TIME = '2016-01-01 12:50:00';
+    const DEFAULT_TIME = '2016-01-01 12:50:00'; //friday
 
     public $entityclass = '\BO\Zmsentities\Availability';
 
@@ -305,7 +305,7 @@ class AvailabilityTest extends EntityCommonTests
         $entity = (new $this->entityclass())->getExample();
         $collection->addEntity($entity);
 
-        $entityOH = $this->getExampleWithTypeOpeningHours();
+        $entityOH = $this->getExampleWithTypeOpeningHours($time);
         $collection->addEntity($entityOH);
         $this->assertTrue($collection->isOpened($time));
 
@@ -331,23 +331,23 @@ class AvailabilityTest extends EntityCommonTests
     {
         $time = new \DateTimeImmutable(self::DEFAULT_TIME);
         $collection = new $this->collectionclass();
-        $entityOH = $this->getExampleWithTypeOpeningHours();
+        $entityOH = $this->getExampleWithTypeOpeningHours($time);
         $entityOH->endTime = '11:00:00';
         $collection->addEntity($entityOH);
         $this->assertFalse($collection->isOpened($time));
     }
 
-    protected function getExampleWithTypeOpeningHours()
+    protected function getExampleWithTypeOpeningHours(\DateTimeImmutable $time)
     {
         return new $this->entityclass(
             [
                 'id' => '93181',
                 'weekday' => array (
                     'monday' => '0',
-                    'tuesday' => '4',
+                    'tuesday' => '0',
                     'wednesday' => '0',
                     'thursday' => '0',
-                    'friday' => '0',
+                    'friday' => '1',
                     'saturday' => '0',
                     'sunday' => '0'
                 ),
@@ -365,8 +365,8 @@ class AvailabilityTest extends EntityCommonTests
                     'intern' => '2'
                 ),
                 'slotTimeInMinutes' => '15',
-                'startDate' => '1461024000',
-                'endDate' => '1461024000',
+                'startDate' => $time->getTimestamp(),
+                'endDate' => $time->getTimestamp(),
                 'startTime' => '12:00:00',
                 'endTime' => '16:00:00',
                 'multipleSlotsAllowed' => '0',

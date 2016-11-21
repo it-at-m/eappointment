@@ -10,15 +10,30 @@ class Month extends Schema\Entity
 
     public static $schema = "month.json";
 
+    public function getDefaults()
+    {
+        return [
+            'days' => new Collection\DayList(),
+        ];
+    }
+
     public function getFirstDay()
     {
         $dateTime = Helper\DateTime::create($this['year'] .'-'. $this['month'] .'-1');
         return $dateTime->modify('00:00:00');
     }
 
+    public function getDayList()
+    {
+        if (!$this->days instanceof Collection\DayList) {
+            $this->days = new Collection\DayList($this->days);
+        }
+        return $this->days;
+    }
+
     public function getWithStatedDayList(\DateTimeInterface $now)
     {
-        $dayList = new Collection\DayList($this->days);
+        $dayList = $this->getDayList();
         $uniqueDayList = new Collection\DayList();
         $this->appointmentExists = false;
         $startDate = $this->getFirstDay();
@@ -34,6 +49,14 @@ class Month extends Schema\Entity
             $uniqueDayList->addEntity($dayEntity);
         }
         $this->days = $uniqueDayList;
+        return $this;
+    }
+
+    public function setDays(Collection\DayList $dayList)
+    {
+        foreach ($this->getDayList() as $key => $day) {
+            $this->days[$key] = $dayList->getDayByDay($day);
+        }
         return $this;
     }
 }

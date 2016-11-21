@@ -22,7 +22,7 @@ abstract class EntityCommonTests extends Base
     public function assertEntity($entityClass, $entity)
     {
         $this->assertInstanceOf($entityClass, $entity);
-        $this->assertTrue($entity->isValid());
+        $entity->testValid();
     }
 
     public function assertEntityList($entityClass, $entityList)

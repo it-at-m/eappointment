@@ -10,7 +10,7 @@ class DayTest extends EntityCommonTests
     {
         $time = new \DateTimeImmutable('2015-05-01 11:55:00');
         $entity = $this->getExample();
-        $this->assertContains('Day @2015-11-19 with', $entity->__toString(), 'day to string failed');
+        $this->assertContains('Day bookable@2015-11-19 with', $entity->__toString(), 'day to string failed');
         $this->assertTrue('01' == $entity->setDateTime($time)['day'], 'setDateTime to day failed');
     }
 }

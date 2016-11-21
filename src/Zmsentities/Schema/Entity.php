@@ -37,7 +37,10 @@ class Entity extends \ArrayObject implements \JsonSerializable
     {
         //$this->jsonSchema = self::readJsonSchema();
         $input = $this->getUnflattenedArray($input);
-        $input = array_merge($this->getDefaults(), $input);
+        $defaults = $this->getDefaults();
+        if ($defaults) {
+            $input = array_replace_recursive($defaults, $input);
+        }
         parent::__construct($input, $flags, $iterator_class);
     }
 
