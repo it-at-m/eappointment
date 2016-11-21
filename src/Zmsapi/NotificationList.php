@@ -20,12 +20,17 @@ class NotificationList extends BaseController
      */
     public static function render()
     {
-        Helper\User::checkRights('department');
-
+        $message = Response\Message::create(Render::$request);
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $notificationList = (new Query())->readList($resolveReferences);
-        $message = Response\Message::create(Render::$request);
-        $message->data = $notificationList;
-        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
+
+        if (0 < count($notificationList)) {
+            $message->data = $notificationList;
+        } else {
+            $message->data = new \BO\Zmsentities\Collection\NotificationList();
+            $message->error = false;
+            $message->message = '';
+        }
+        Render::json($message, 200);
     }
 }
