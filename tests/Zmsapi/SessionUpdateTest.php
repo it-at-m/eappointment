@@ -73,22 +73,4 @@ class SessionUpdateTest extends Base
         }',
         ], []);
     }
-
-    public function testInvalid()
-    {
-        $this->setExpectedException('\BO\Zmsapi\Exception\Session\InvalidSession');
-        $this->render([], [
-            '__body' => '{
-                "id": "unittest",
-                "name": "unittest",
-                "status": "start",
-                "content": {
-                    "basket": {
-                        "requests" : "120703",
-                        "providers" : "122282"
-                    }
-                }
-        }',
-        ], []);
-    }
 }
