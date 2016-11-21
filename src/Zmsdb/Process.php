@@ -180,14 +180,14 @@ class Process extends Base
      *
      * @return String authKey
      */
-    public function readProcessListByScopeAndTime($scopeId, \DateTimeInterface $now)
+    public function readProcessListByScopeAndTime($scopeId, \DateTimeInterface $dateTime)
     {
         $processList = new Collection();
         $query = new Query\Process(Query\Base::SELECT);
         $query
             ->addEntityMapping()
             ->addConditionScopeId($scopeId)
-            ->addConditionTime($now);
+            ->addConditionTime($dateTime);
         $statement = $this->fetchStatement($query);
         while ($processData = $statement->fetch(\PDO::FETCH_ASSOC)) {
             $entity = new Entity($query->postProcess($processData));
