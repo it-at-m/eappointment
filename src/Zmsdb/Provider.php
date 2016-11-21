@@ -42,6 +42,16 @@ class Provider extends Base
         return $providerList;
     }
 
+    public function readSlotCountById($providerId)
+    {
+        $query = Query\Provider::getQuerySlots();
+        $slotCounts = $this->getReader()->fetchAll(
+            $query,
+            ['provider_id' => $providerId]
+        );
+        return $slotCounts;
+    }
+
     public function readList($source, $resolveReferences = 0, $isAssigned = null)
     {
         self::testSource($source);

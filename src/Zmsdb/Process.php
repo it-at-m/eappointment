@@ -102,6 +102,23 @@ class Process extends Base
         return $this->writeNewProcess($process, $dateTime);
     }
 
+    public function readSlotCount(\BO\Zmsentities\Process $process)
+    {
+        $scope = new \BO\Zmsentities\Scope($process->scope);
+        $slotCountList = (new Provider())->readSlotCountById($scope->getProviderId());
+        $appointment = $process->getAppointments()->getFirst();
+        $appointment->slotCount = 0;
+        foreach ($process->requests as $request) {
+            foreach ($slotCountList as $slotCount) {
+                if ($slotCount['request__id'] == $request->id) {
+                    $appointment->slotCount += $slotCount['slots'];
+                }
+            }
+        }
+        error_log(print_r($appointment, 1));
+        return $process;
+    }
+
     /**
      * write a new process to DB
      *
