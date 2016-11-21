@@ -110,12 +110,11 @@ class Process extends Base
         $appointment->slotCount = 0;
         foreach ($process->requests as $request) {
             foreach ($slotCountList as $slotCount) {
-                if ($slotCount['request__id'] == $request->id) {
+                if ($slotCount['request__id'] == $request['id']) {
                     $appointment->slotCount += $slotCount['slots'];
                 }
             }
         }
-        error_log(print_r($appointment, 1));
         return $process;
     }
 
