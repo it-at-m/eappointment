@@ -81,15 +81,29 @@ class Availability extends Schema\Entity
         //    error_log("true == hasDate(".$dateTime->format('c').") ".$this);
         //}
 
+        if (!$this->isOpened($dateTime, 'appointment')) {
+            // Out of date range
+            return false;
+        }
+        if (!$this->isBookable($dateTime, $now)) {
+            // out of bookable start and end
+            return false;
+        }
+        return true;
+    }
+
+    public function isOpened(\DateTimeInterface $dateTime, $type = 'openinghours')
+    {
         // First check weekday, greatest difference on an easy check
         $weekDayName = self::$weekdayNameList[$dateTime->format('w')];
         if (!$this['weekday'][$weekDayName]) {
             // Wrong weekday
             return false;
         }
-        $start = $this->getStartDateTime()->modify('0:00');
-        $end = $this->getEndDateTime();
-        if ($dateTime->getTimestamp() < $start->getTimestamp() || $dateTime->getTimestamp() > $end->getTimestamp()) {
+        if ($this->type != $type) {
+            return false;
+        }
+        if (!$this->hasDay($dateTime)) {
             // Out of date range
             return false;
         }
@@ -100,8 +114,22 @@ class Availability extends Schema\Entity
         if ($this->getDuration() > 2 && $this->hasDayOff($dateTime)) {
             return false;
         }
-        if (!$this->isBookable($dateTime, $now)) {
-            // out of bookable start and end
+        return true;
+    }
+
+    /**
+     * Check, if the dateTime is a day covered by availability
+     *
+     * @param \DateTimeInterface $dateTime
+     *
+     * @return Bool
+     */
+    public function hasDay(\DateTimeInterface $dateTime)
+    {
+        $start = $this->getStartDateTime()->modify('0:00');
+        $end = $this->getEndDateTime();
+        if ($dateTime->getTimestamp() < $start->getTimestamp() || $dateTime->getTimestamp() > $end->getTimestamp()) {
+            // Out of date range
             return false;
         }
         return true;
@@ -314,19 +342,6 @@ class Availability extends Schema\Entity
         ]);
         $availability['workstationCount'] = $slot;
         return $availability;
-    }
-
-    /**
-     * check if availability with type openinghours is opened
-     *
-     * @return self cloned
-     */
-    public function isOpened(\DateTimeInterface $now)
-    {
-        $now = Helper\DateTime::create($now)->format('H:i');
-        $startTime = Helper\DateTime::create($this['startTime'])->format('H:i');
-        $stopTime = Helper\DateTime::create($this['endTime'])->format('H:i');
-        return ($startTime <= $now && $stopTime >= $now);
     }
 
     public function __toString()
