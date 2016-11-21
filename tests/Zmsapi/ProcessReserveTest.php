@@ -33,6 +33,29 @@ class ProcessReserveTest extends Base
         $query->deleteEntity($this->processId, $this->authKey);
     }
 
+    public function testMultipleSlots()
+    {
+        $query = new \BO\Zmsdb\Process();
+
+        $processList = new \BO\Zmsentities\Collection\ProcessList(
+            json_decode($this->readFixture("GetFreeProcessList.json"))
+        );
+        $process = $processList->getFirstProcess();
+        $response = $this->render([], [
+            '__body' => json_encode($process)
+        ], []);
+
+        $responseData = json_decode($response->getBody(), 1);
+        $this->processId = $responseData['data']['id'];
+        $this->authKey = $responseData['data']['authKey'];
+
+        $this->assertTrue('reserved' == $responseData['data']['status']);
+        $this->assertTrue(200 == $response->getStatusCode());
+
+        //delete tested data
+        $query->deleteEntity($this->processId, $this->authKey);
+    }
+
     public function testInvalidInput()
     {
         $this->expectException('BO\Mellon\Failure\Exception');

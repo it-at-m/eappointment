@@ -23,11 +23,13 @@ class ProcessReserve extends BaseController
         $message = Response\Message::create(Render::$request);
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $process = new \BO\Zmsentities\Process($input);
+        $query = new Query();
 
         if ($process->hasId()) {
             throw new Exception\Process\ProcessFailedReservation("Prozess existierte bereits");
         }
-        $process = (new Query())->writeEntityReserved($process, \App::$now, 'public');
+        $process = $query->readSlotCount($process);
+        $process = $query->writeEntityReserved($process, \App::$now, 'public');
         $message->data = $process;
 
         Render::lastModified(time(), '0');

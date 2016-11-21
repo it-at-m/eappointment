@@ -24,6 +24,7 @@ class Message implements \JsonSerializable
      */
     public $statuscode = 200;
 
+
     /**
      * @var \Psr\Http\Message\RequestInterface $request;
      *

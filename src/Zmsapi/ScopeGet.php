@@ -21,15 +21,19 @@ class ScopeGet extends BaseController
      */
     public static function render($itemId)
     {
-        Helper\User::checkRights('basic');
-
-        $query = new Query();
-        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
-        $scope = $query->readEntity($itemId, $resolveReferences);
-
         $message = Response\Message::create(Render::$request);
-        $message->data = $scope;
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
+        $query = new Query();
+
+        if (Helper\User::hasRights()) {
+            Helper\User::checkRights('basic');
+            $message->data = $query->readEntity($itemId, $resolveReferences);
+        } else {
+            $message->data = $query->readEntity($itemId, $resolveReferences)->withLessData();
+            $message->meta->reducedData = true;
+        }
+
         Render::lastModified(time(), '0');
-        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
+        Render::json($message, $message->getStatuscode());
     }
 }
