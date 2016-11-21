@@ -22,8 +22,13 @@ class AvailabilityAdd extends BaseController
     {
         $message = Response\Message::create(Render::$request);
         $input = Validator::input()->isJson()->getValue();
-        $entity = new \BO\Zmsentities\Availability($input);
-        $message->data = (new Query())->writeEntity($entity);
+        $collection = new \BO\Zmsentities\Collection\AvailabilityList();
+        foreach ($input as $availability) {
+            $entity = new \BO\Zmsentities\Availability($availability);
+            $entity = (new Query())->writeEntity($entity);
+            $collection[] = $entity;
+        }
+        $message->data = $collection;
         Render::lastModified(time(), '0');
         Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }
