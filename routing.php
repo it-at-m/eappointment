@@ -62,13 +62,15 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/availability/":
  *      post:
- *          description: Create an availability
+ *          description: Create or update availabilities. If an entity has an id, an update is performed
  *          parameters:
  *              -   name: availability
- *                  description: availability data to update
+ *                  description: availabilityList data to update
  *                  in: body
  *                  schema:
- *                      $ref: "schema/availability.json"
+ *                      type: array
+ *                      items:
+ *                          $ref: "schema/availability.json"
  *              -   name: X-Authkey
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
@@ -2162,6 +2164,49 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/scope/{id:\d{1,11}}/availability/',
     '\BO\Zmsapi\AvailabilityList')
     ->setName("AvailabilityList");
+
+/**
+ *  @swagger
+ *  "/scope/{id}/day/{day}/":
+ *      get:
+ *          description: Get a list of availability entries
+ *          parameters:
+ *              -   name: id
+ *                  description: scope number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: day
+ *                  description: day in format YYYY-MM-DD
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/availability.json"
+ *              404:
+ *                  description: "scope id does not exists"
+ */
+\App::$slim->get('/scope/{id:\d{1,11}}/day/{day:\d\d\d\d-\d\d-\d\d}/',
+    '\BO\Zmsapi\ProcessDay')
+    ->setName("ProcessDay");
 
 /**
  *  @swagger

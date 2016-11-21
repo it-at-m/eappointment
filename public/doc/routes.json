@@ -129,14 +129,17 @@
 	},
 	"/availability/": {
 		"post": {
-			"description": "Create an availability",
+			"description": "Create or update availabilities. If an entity has an id, an update is performed",
 			"parameters": [
 				{
 					"name": "availability",
-					"description": "availability data to update",
+					"description": "availabilityList data to update",
 					"in": "body",
 					"schema": {
-						"$ref": "schema/availability.json"
+						"type": "array",
+						"items": {
+							"$ref": "schema/availability.json"
+						}
 					}
 				},
 				{
@@ -1405,6 +1408,39 @@
 			}
 		}
 	},
+	"/organisation/cluster/{id}/": {
+		"get": {
+			"description": "Get an organisation by clusterId.",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "cluster number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/organisation.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "organisation id does not exists"
+				}
+			}
+		}
+	},
 	"/organisation/{id}/hash/": {
 		"get": {
 			"description": "Get a hash to identify a ticketprinter. Usually a browser requests a hash once and stores it in a cookie.",
@@ -2618,6 +2654,61 @@
 				{
 					"name": "id",
 					"description": "scope number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/availability.json"
+								}
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "scope id does not exists"
+				}
+			}
+		}
+	},
+	"/scope/{id}/day/{day}/": {
+		"get": {
+			"description": "Get a list of availability entries",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "scope number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "day",
+					"description": "day in format YYYY-MM-DD",
 					"in": "path",
 					"required": true,
 					"type": "integer"

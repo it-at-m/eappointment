@@ -12,8 +12,8 @@ class User
 {
     public static function checkRights()
     {
-        $xAuthKey = Render::$request->getHeader('X-AuthKey');
-        $userAccount = (new UserAccount())->readEntityByAuthKey(current($xAuthKey));
+        $xAuthKey = static::getXAuthKey();
+        $userAccount = (new UserAccount())->readEntityByAuthKey($xAuthKey);
         if (!$userAccount->hasId()) {
             throw new \BO\Zmsentities\Exception\UserAccountMissingLogin();
         }
@@ -25,8 +25,23 @@ class User
 
     public static function hasRights()
     {
-        $xAuthKey = Render::$request->getHeader('X-AuthKey');
-        $userAccount = (new UserAccount())->readEntityByAuthKey(current($xAuthKey));
+        $xAuthKey = static::getXAuthKey();
+        $userAccount = (new UserAccount())->readEntityByAuthKey($xAuthKey);
         return $userAccount->hasId();
+    }
+
+    public static function getXAuthKey()
+    {
+        $request = Render::$request;
+        $xAuthKey = $request->getHeader('X-AuthKey');
+        if (!$xAuthKey) {
+            $cookies = $request->getCookieParams();
+            if (array_key_exists('Zmsclient', $cookies)) {
+                $xAuthKey = $cookies['Zmsclient'];
+            }
+        } else {
+            $xAuthKey = current($xAuthKey);
+        }
+        return $xAuthKey;
     }
 }
