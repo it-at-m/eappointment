@@ -9,6 +9,7 @@ namespace BO\Zmsadmin;
 class OwnerOverview extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
     public function __invoke(
@@ -16,6 +17,7 @@ class OwnerOverview extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
         $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences'=>4))->getCollection();
         $organisationList = $ownerList->getOrganisationsByOwnerId(23);
         if (!$workstation->hasSuperUseraccount()) {

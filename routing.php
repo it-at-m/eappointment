@@ -70,7 +70,7 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/scope/{id:\d+}/pickup/keyboard/', '\BO\Zmsadmin\PickupKeyboard')
     ->setName("pickup_keyboard");
 
-\App::$slim->get('/scope/{id:\d+}/availability/day/', '\BO\Zmsadmin\ScopeAvailabilityDay')
+\App::$slim->get('/scope/{id:\d+}/availability/day/{date:\d\d\d\d-\d\d-\d\d}/', '\BO\Zmsadmin\ScopeAvailabilityDay')
     ->setName("scopeAvailabilityDay");
 
 \App::$slim->get('/scope/{id:\d+}/availability/month/', '\BO\Zmsadmin\ScopeAvailabilityMonth')
@@ -122,6 +122,14 @@ use \Psr\Http\Message\ResponseInterface;
 
 \App::$slim->get('/owner/delete/{id:\d+}/', '\BO\Zmsadmin\OwnerDelete')
     ->setName("ownerDelete");
+
+\App::$slim->post('/availability/',
+    '\BO\Zmsapi\AvailabilityUpdate')
+    ->setName("AvailabilityUpdate");
+
+\App::$slim->delete('/availability/{id:\d{1,11}}/',
+    '\BO\Zmsapi\AvailabilityDelete')
+    ->setName("AvailabilityDelete");
 
 \App::$slim->get('/availability/day/', '\BO\Zmsadmin\Availability')
     ->setName("availability_day");
