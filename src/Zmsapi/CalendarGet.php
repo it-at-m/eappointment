@@ -25,7 +25,7 @@ class CalendarGet extends BaseController
         $message = Response\Message::create($request);
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $calendar = new \BO\Zmsentities\Calendar($input);
-        if (!isset($calendar['firstDay']) || !isset($calendar['lastDay'])) {
+        if (!$calendar->hasFirstAndLastDay()) {
             throw new Exception\Calendar\InvalidFirstDay('First and last day are required');
         } else {
             $calendar = $query->readResolvedEntity($calendar, \App::getNow())->withLessData();

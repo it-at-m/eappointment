@@ -31,8 +31,6 @@ class SessionUpdate extends BaseController
             throw new Exception\Matching\RequestNotFound();
         } elseif (false === Helper\Matching::hasProviderRequest($session)) {
             throw new Exception\Matching\MatchingNotFound();
-        } elseif (!$session->hasStatus()) {
-            throw new Exception\Session\InvalidSession('Es konnte keine Session ermittelt werden');
         } else {
             $session->getSerializedContent();
             $message->data = (new Query())->updateEntity($session);
