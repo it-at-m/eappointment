@@ -6,6 +6,7 @@ namespace BO\Zmsentities;
  *
  * @SuppressWarnings(CouplingBetweenObjects)
  * @SuppressWarnings(TooManyPublicMethods)
+ * @SuppressWarnings(Complexity)
  */
 class Calendar extends Schema\Entity
 {
@@ -16,7 +17,9 @@ class Calendar extends Schema\Entity
     public function getDefaults()
     {
         return [
-            'days' => [ ],
+            'firstDay' => new Day(),
+            'lastDay' => new Day(),
+            'days' => new Collection\DayList(),
             'clusters' => [ ],
             'providers' => [ ],
             'scopes' => [ ],
@@ -42,7 +45,7 @@ class Calendar extends Schema\Entity
     public function addFirstAndLastDay($date, $timeZone)
     {
         $timeZone = new \DateTimeZone($timeZone);
-        $dateTime = $this->getDateTimeFromTs($date, $timeZone);
+        $dateTime = Helper\DateTime::create()->setTimezone($timeZone)->setTimestamp($date);
         $firstDay = $dateTime->setTime(0, 0, 0);
         $lastDay = $dateTime->modify('last day of next month')->setTime(23, 59, 59);
         $this->firstDay = array (
@@ -153,6 +156,24 @@ class Calendar extends Schema\Entity
         return $list;
     }
 
+    public function getDayList()
+    {
+        if (!$this->days instanceof Collection\DayList) {
+            $this->days = new Collection\DayList($this->days);
+        }
+        return $this->days;
+    }
+
+    /**
+     * Check if given day exists in calendar
+     *
+     * @return bool
+     */
+    public function hasDay($year, $month, $dayNumber)
+    {
+        return $this->getDayList()->hasDay($year, $month, $dayNumber);
+    }
+
     /**
      * Returns a day by given year, month and daynumber
      *
@@ -160,29 +181,12 @@ class Calendar extends Schema\Entity
      */
     public function getDay($year, $month, $dayNumber)
     {
-        foreach ($this['days'] as $key => $day) {
-            if ($day['day'] == $dayNumber && $day['month'] == $month && $day['year'] == $year) {
-                if (! ($day instanceof Day)) {
-                    $day = new Day($day);
-                    $this['days'][$key] = $day;
-                }
-                return $day;
-            }
-        }
-        $day = new Day(
-            [
-                'year' => $year,
-                'month' => $month,
-                'day' => $dayNumber
-            ]
-        );
-        $this['days'][] = $day;
-        return $day;
+        return $this->getDayList()->getDay($year, $month, $dayNumber);
     }
 
     public function getDayByDateTime(\DateTimeInterface $datetime)
     {
-        return $this->getDay($datetime->format('Y'), $datetime->format('m'), $datetime->format('d'));
+        return $this->getDayList()->getDayByDateTime($datetime);
     }
 
     public function getDateTimeFromDate($date)
@@ -230,29 +234,6 @@ class Calendar extends Schema\Entity
         $day->setDateTime($date);
         $this['lastDay'] = $day;
         return $this;
-    }
-
-    public function getDateTimeFromTs($timestamp, $timezone = null)
-    {
-        $dateTime = new Helper\DateTime('@' . $timestamp);
-        $dateTime = $dateTime->setTimezone($timezone);
-        $dateTime = Helper\DateTime::create($dateTime);
-        return $dateTime;
-    }
-
-    /**
-     * Check if given day exists in calendar
-     *
-     * @return bool
-     */
-    public function hasDay($year, $month, $dayNumber)
-    {
-        foreach ($this['days'] as $day) {
-            if ($day['year'] == $year && $day['month'] == $month && $day['day'] == $dayNumber) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**

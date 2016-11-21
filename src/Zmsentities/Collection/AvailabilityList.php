@@ -28,14 +28,30 @@ class AvailabilityList extends Base
         return $list;
     }
 
-    public function isOpened(\DateTimeImmutable $now)
+    public function withDateTime(\DateTimeImmutable $dateTime)
+    {
+        $list = new static();
+        foreach ($this as $availability) {
+            if ($availability->isOpened($dateTime, 'appointment')
+                || $availability->isOpened($dateTime, 'openinghours')
+            ) {
+                $list[] = $availability;
+            }
+        }
+        return $list;
+    }
+
+    public function isOpenendByDate($dateString, $type = 'openinghours')
+    {
+        $dateTime = \BO\Zmsentities\Helper\DateTime::create($dateString);
+        return $this->isOpened($dateTime, $type);
+    }
+
+    public function isOpened(\DateTimeImmutable $dateTime, $type = "openinghours")
     {
         foreach ($this as $availability) {
-            if ('openinghours' == $availability->type) {
-                $isOpened = $availability->isOpened($now);
-                if (true === $isOpened) {
-                    return true;
-                }
+            if ($availability->isOpened($dateTime, $type)) {
+                return true;
             }
         }
         return false;

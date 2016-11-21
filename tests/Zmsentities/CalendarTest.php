@@ -22,7 +22,7 @@ class CalendarTest extends EntityCommonTests
     {
         $entity = (new $this->entityclass())->getExample();
         $time = \DateTime::createFromFormat('Y-m-d', self::FIRST_DAY);
-        $date = $entity->getDateTimeFromTs($time->getTimestamp(), $time->getTimezone());
+        $date = $time;
         $day = $entity->getDayByDateTime($date);
         $this->assertInstanceOf('\BO\Zmsentities\Day', $day, 'Day is not instance of \BO\Zmsentites\Day');
         unset($entity['firstDay']);
@@ -65,8 +65,8 @@ class CalendarTest extends EntityCommonTests
             ->format('Y-m-d') == self::LAST_DAY, 'Last day does not match');
 
         $firstDay = explode('-', self::FIRST_DAY);
-        $this->assertTrue($entity->hasDay(
-            $firstDay[0], $firstDay[1], $firstDay[2]),
+        $this->assertTrue(
+            $entity->hasDay($firstDay[0], $firstDay[1], $firstDay[2]),
             'Day '. self::FIRST_DAY .' should be found'
         );
 
