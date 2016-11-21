@@ -196,6 +196,21 @@ class Calendar extends Schema\Entity
         return Helper\DateTime::create($date);
     }
 
+    /**
+     * Simple quick check, if first and last day are defined
+     *
+     */
+    public function hasFirstAndLastDay()
+    {
+        if (!$this->toProperty()->firstDay->day->get()) {
+            return false;
+        }
+        if (!$this->toProperty()->lastDay->day->get()) {
+            return false;
+        }
+        return true;
+    }
+
     public function getFirstDay()
     {
         if (isset($this['firstDay'])) {
