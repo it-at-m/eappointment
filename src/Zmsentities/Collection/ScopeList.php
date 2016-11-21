@@ -5,13 +5,8 @@ class ScopeList extends Base
 {
     public function getAlternateRedirectUrl()
     {
-        $result = null;
         $scope = reset($this);
-        $alternateUrl = $scope->toProperty()->preferences->client->alternateAppointmentUrl->get();
-        if (1 == count($this) && $alternateUrl) {
-            $result = $alternateUrl;
-        }
-        return $result;
+        return (1 == count($this) && $scope->getAlternateRedirectUrl()) ? $scope->getAlternateRedirectUrl() : null;
     }
 
     public function withUniqueScopes()

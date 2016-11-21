@@ -25,6 +25,10 @@
             "type": "string",
             "description": "contains additional information if property error is true"
         },
+        "reducedData": {
+            "type": "boolean",
+            "description": "has reduced data, do not use for saving data"
+        },
         "server": {
             "type": "string",
             "description": "identifier for the responding server"
