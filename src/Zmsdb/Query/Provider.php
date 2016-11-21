@@ -4,6 +4,20 @@ namespace BO\Zmsdb\Query;
 
 class Provider extends Base
 {
+    public static function getQuerySlots()
+    {
+        $dbname_dldb = \BO\Zmsdb\Connection\Select::$dbname_dldb;
+        return 'SELECT
+            x.`dienstleistung` AS request__id,
+            x.`slots`
+        FROM `' . $dbname_dldb . '`.`xdienst` x
+            LEFT JOIN `' . $dbname_dldb . '`.`dienstleister` d ON x.dienstleister = d.id
+        WHERE
+            x.`dienstleister` = :provider_id
+            AND x.`termin_hide` = 0
+            AND d.`zms_termin` = 1
+            ';
+    }
 
     public static function getTablename()
     {
