@@ -37,10 +37,9 @@ class ProcessReserveTest extends Base
     {
         $query = new \BO\Zmsdb\Process();
 
-        $processList = new \BO\Zmsentities\Collection\ProcessList(
-            json_decode($this->readFixture("GetFreeProcessList.json"))
+        $process = new \BO\Zmsentities\Process(
+            json_decode($this->readFixture("GetProcessWithMultipleSlotCount.json"))
         );
-        $process = $processList->getFirstProcess();
         $response = $this->render([], [
             '__body' => json_encode($process)
         ], []);
@@ -49,11 +48,8 @@ class ProcessReserveTest extends Base
         $this->processId = $responseData['data']['id'];
         $this->authKey = $responseData['data']['authKey'];
 
-        $this->assertTrue('reserved' == $responseData['data']['status']);
+        $this->assertTrue('3' == $responseData['data']['appointments'][0]['slotCount']);
         $this->assertTrue(200 == $response->getStatusCode());
-
-        //delete tested data
-        $query->deleteEntity($this->processId, $this->authKey);
     }
 
     public function testInvalidInput()
