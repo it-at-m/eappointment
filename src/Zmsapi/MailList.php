@@ -20,10 +20,17 @@ class MailList extends BaseController
      */
     public static function render()
     {
+        $message = Response\Message::create(Render::$request);
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $mailList = (new Query())->readList($resolveReferences);
-        $message = Response\Message::create(Render::$request);
-        $message->data = $mailList;
-        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
+
+        if (0 < count($mailList)) {
+            $message->data = $mailList;
+        } else {
+            $message->data = new \BO\Zmsentities\Collection\MailList();
+            $message->error = false;
+            $message->message = '';
+        }
+        Render::json($message, 200);
     }
 }
