@@ -31,7 +31,7 @@ class Calendar extends Schema\Entity
     {
         $validDate = \BO\Mellon\Validator::value($date)->isDate();
         $date = (! $validDate->hasFailed()) ? $validDate->getValue() : $now->format('U');
-        if (! $this->toProperty()->firstDay->get()) {
+        if (! $this->toProperty()->firstDay->day->get()) {
             $this->addFirstAndLastDay($date, $timeZone);
         }
         return $this;
