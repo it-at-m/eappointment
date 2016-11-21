@@ -22,4 +22,11 @@ class User
         }
         return $userAccount;
     }
+
+    public static function hasRights()
+    {
+        $xAuthKey = Render::$request->getHeader('X-AuthKey');
+        $userAccount = (new UserAccount())->readEntityByAuthKey(current($xAuthKey));
+        return $userAccount->hasId();
+    }
 }
