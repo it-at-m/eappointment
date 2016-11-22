@@ -5,6 +5,11 @@ namespace BO\Zmsdb;
 use \BO\Zmsentities\Scope as Entity;
 use \BO\Zmsentities\Collection\ScopeList as Collection;
 
+/**
+ *
+ * @SuppressWarnings(Public)
+ *
+ */
 class Scope extends Base
 {
 
@@ -169,6 +174,15 @@ class Scope extends Base
         $entity = $this->readEntity($scopeId)->updateStatusQueue($dateTime);
         $scope = $this->updateEntity($scopeId, $entity);
         return $scope->getStatus('queue', 'lastGivenNumber');
+    }
+
+
+    public function readQueueList($scopeId, $now)
+    {
+        $queueList = (new Process())
+            ->readProcessListByScopeAndTime($scopeId, $now)
+            ->toQueueList($now);
+        return $queueList;
     }
 
     /**
