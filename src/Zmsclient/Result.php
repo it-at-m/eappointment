@@ -88,6 +88,9 @@ class Result
                 $this->request
             );
             $exception->originalMessage = $entity->message;
+            if (array_key_exists('data', $result)) {
+                $exception->data = $result['data'];
+            }
             if (isset($entity->exception)) {
                 $exception->template = $entity->exception;
             }
