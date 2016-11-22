@@ -28,6 +28,12 @@ class Appointment extends Schema\Entity
         return date('H:i', $this->date) . $suffix;
     }
 
+    public function hasTime()
+    {
+        $time = $this->toDateTime();
+        return ('00:00' != $time->format('H:i'));
+    }
+
     /**
      * Modify time for appointment
      *
