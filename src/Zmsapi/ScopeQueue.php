@@ -7,6 +7,8 @@
 namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
+use \BO\Mellon\Validator;
+use \BO\Zmsdb\Scope as Query;
 
 /**
   * Handle requests concerning services
@@ -18,10 +20,16 @@ class ScopeQueue extends BaseController
      */
     public static function render($itemId)
     {
+        $query = new Query();
         $message = Response\Message::create(Render::$request);
-        $itemId = $itemId; // @todo fetch data
-        $message->data = array(\BO\Zmsentities\Queue::createExample());
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
+        $scope = $query->readEntity($itemId, $resolveReferences)->withLessData();
+        if (! $scope->hasId()) {
+            throw new Exception\Scope\ScopeNotFound();
+        }
+        $message->data = $query->readQueueList($itemId, \App::$now)->withSortedArrival();
+
         Render::lastModified(time(), '0');
-        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
+        Render::json($message, $message->getStatuscode());
     }
 }
