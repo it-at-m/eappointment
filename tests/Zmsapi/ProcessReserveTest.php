@@ -63,7 +63,7 @@ class ProcessReserveTest extends Base
     public function testReservationFailed()
     {
         $query = new \BO\Zmsdb\Process();
-        $this->expectException('BO\Zmsapi\Exception\Process\ProcessFailedReservation');
+        $this->expectException('BO\Zmsapi\Exception\Process\ProcessReserveFailed');
         $this->expectExceptionCode(404);
         $process = $query->readEntity(10030, '1c56'); //dayoff beispiel test
         $this->render([], [
