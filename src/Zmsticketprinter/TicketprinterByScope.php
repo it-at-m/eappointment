@@ -22,7 +22,7 @@ class TicketprinterByScope extends BaseController
         array $args
     ) {
         $validator = $request->getAttribute('validator');
-        $validate = $validator->getParameter('hasWaitingnumber')->isBool()->getValue();
+        $validatePrint = $validator->getParameter('hasWaitingnumber')->isBool()->getValue();
         $ticketprinterHelper = (new Helper\Ticketprinter($args, $request));
         $ticketprinter = $ticketprinterHelper->getEntity();
 
@@ -34,7 +34,7 @@ class TicketprinterByScope extends BaseController
                 'title' => 'Wartennumer ziehen',
                 'ticketprinter' => $ticketprinter,
                 'organisation' => $ticketprinterHelper::$organisation,
-                'validate' => $validate
+                'validatePrint' => $validatePrint
             )
         );
     }

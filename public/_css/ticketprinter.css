@@ -156,16 +156,18 @@ div.buttonTelefonnummernachtragen {
   left: 96px;
   top: 665px;
   padding: 38px 121px;
-  position: absolute; }
+  position: absolute;
+  cursor: pointer; }
 
 a.button {
   display: block;
   text-align: center;
   vertical-align: middle;
   line-height: 128px;
-  text-decoration: none; }
+  text-decoration: none;
+  cursor: pointer; }
 
-a.button.ja_nein {
+a.button.ja_nein, .wartenummern .ja_nein {
   background: url(img/ja_nein.png) 0 5px no-repeat;
   border: 0;
   color: #fff;
@@ -233,6 +235,22 @@ a.button.ja_nein {
   font-weight: bold;
   line-height: 149px;
   text-align: center; }
+
+.wartenummern div.smsoptionbutton {
+  display: table; }
+
+.wartenummern div.smsoptionbutton p {
+  display: table-caption; }
+
+.wartenummern div.smsoptionbutton form {
+  display: table-cell;
+  margin-top: 0px; }
+
+.wartenummern .content {
+  font-size: 28px;
+  font-family: Arial, sans-serif;
+  font-weight: bold;
+  line-height: 36px; }
 
 .box {
   line-height: 24px;

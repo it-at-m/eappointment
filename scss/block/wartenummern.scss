@@ -30,3 +30,23 @@
     line-height: 	149px;
     text-align: 	center;
 }
+
+.wartenummern div.smsoptionbutton {
+	display:table;
+}
+
+.wartenummern div.smsoptionbutton p {
+	display:table-caption;
+}
+
+.wartenummern div.smsoptionbutton form {
+	display: table-cell;
+	margin-top:0px;
+}
+
+.wartenummern .content {
+    font-size: 		28px;
+    font-family: 	Arial, sans-serif;
+    font-weight: 	bold;
+    line-height: 	36px;
+}
