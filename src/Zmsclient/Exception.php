@@ -21,6 +21,12 @@ class Exception extends \Exception
     public $template = 'bo/zmsclient/exception';
 
     /**
+     * @var Mixed $data for rendering exception
+     *
+     */
+    public $data = [];
+
+    /**
      * @param String $message
      * @param \Psr\Http\Message\ResponseInterface $response
      * @param \Psr\Http\Message\RequestInterface $request (optional) reference for better error messages
