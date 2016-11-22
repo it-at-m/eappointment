@@ -5,8 +5,15 @@
 
 {% block pageid %}index{% endblock %}
 {% block content %}
-	{% if validate %}
+
+	{% set scope = ticketprinter.buttons|first.scope %}
+
+	{% if validatePrint %}
 	{{ block("feedback_print") }}
+	{% endif %}
+
+	{% if validateSms %}
+	{{ block("small_sms_feedback") }}
 	{% endif %}
 
 	<div class="werbeblock_oben">
@@ -21,8 +28,14 @@
 	</div>
 
 	{{ block("button_singlerow") }}
-	</div>
-</div>
+
+	{% if
+	    estimatedWaitingTime > scope.preferences.ticketprinter.notificationsDelay and
+	    scope.preferences.ticketprinter.notificationsAmendmentEnabled and
+	    scope.preferences.appointment.notificationConfirmationEnabled
+	%}
+	{{ block("button_append_notification") }}
+	{% endif %}
 {% endblock %}
 
 
