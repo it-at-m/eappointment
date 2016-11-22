@@ -64,7 +64,7 @@ class Process extends Base
         $appointment = $process->getAppointments()->getFirst();
         $freeProcessList = $this->readFreeProcesses($process->toCalendar(), $now);
         if (!$freeProcessList->getAppointmentList()->hasAppointment($appointment)) {
-            throw new Exception\ProcessReserveFailed("Already reserved");
+            throw new Exception\ProcessReserveFailed();
         }
         $slotList = (new Slot)->readByAppointment($appointment);
         /*
