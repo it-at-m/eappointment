@@ -176,6 +176,17 @@ class Process extends Base implements MappingInterface
     public function postProcess($data)
     {
         $data["appointments__0__date"] = (new \DateTime($data["appointments__0__date"]))->getTimestamp();
+        if ('00:00:00' != $data["queue__callTime"]) {
+            $time = explode(':', $data["queue__callTime"]);
+            $data["queue__callTime"] = (new \DateTime())
+                ->setTimestamp($data["appointments__0__date"])
+                ->setTime($time[0], $time[1], $time[2])
+                ->getTimestamp();
+        } else {
+            $data["queue__callTime"] = 0;
+        }
+
+        $data["queue__arrivalTime"] = (new \DateTime($data["queue__arrivalTime"]))->getTimestamp();
         return $data;
     }
 
