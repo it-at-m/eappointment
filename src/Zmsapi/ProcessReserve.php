@@ -26,7 +26,7 @@ class ProcessReserve extends BaseController
         $query = new Query();
 
         if ($process->hasId()) {
-            throw new Exception\Process\ProcessFailedReservation("Prozess existierte bereits");
+            throw new Exception\Process\ProcessReserveFailed();
         }
         $process = $query->readSlotCount($process);
         $process = $query->writeEntityReserved($process, \App::$now, 'public');

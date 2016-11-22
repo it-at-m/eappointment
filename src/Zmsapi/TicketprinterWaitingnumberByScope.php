@@ -39,7 +39,7 @@ class TicketprinterWaitingnumberByScope extends BaseController
 
         $process = (new Process())->writeNewFromTicketprinter($scope->id, \App::$now);
         if (! $process->hasId()) {
-            throw new Exception\Process\ProcessFailedReservation();
+            throw new Exception\Process\ProcessReserveFailed();
         }
 
         $message->data = $process;
