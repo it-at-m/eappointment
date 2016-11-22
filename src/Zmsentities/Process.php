@@ -3,6 +3,7 @@ namespace BO\Zmsentities;
 
 /**
  * @SuppressWarnings(Coupling)
+ * @SuppressWarnings(Public)
  *
  */
 class Process extends Schema\Entity
@@ -233,6 +234,18 @@ class Process extends Schema\Entity
         $calendar->requests = clone $this->getRequests();
         $calendar->scopes = new Collection\ScopeList([$this->scope]);
         return $calendar;
+    }
+
+    public function toQueue(\DateTimeInterface $dateTime)
+    {
+        $queue = new Queue($this->queue);
+        $queue->withAppointment = ($this->getAppointments()->getFirst()->hasTime()) ? true : false;
+        if ($queue->withAppointment) {
+            $queue->arrivalTime = $this->getFirstAppointment()->date;
+        } else {
+            $queue->arrivalTime = $dateTime->getTimestamp();
+        }
+        return $queue;
     }
 
     public function __toString()

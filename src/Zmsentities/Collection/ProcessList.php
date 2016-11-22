@@ -40,29 +40,14 @@ class ProcessList extends Base
         return $appointmentList;
     }
 
-    //check if necessary
-    /*
-    public function toReducedWithinTime($referenceTime)
-    {
-        $processList = new self();
-        foreach ($this as $process) {
-            if ($process->getFirstAppointment()['date'] < $referenceTime) {
-                $processList->addEntity($process);
-            }
-        }
-        return $processList;
-    }
-    */
-
-    /*
-    public function toQueue($now)
+    public function toQueueList($now)
     {
 
-        $queue = new QueueList();
+        $queueList = new QueueList();
         foreach ($this as $process) {
-            $queue->addEntity($process->queue);
+            $queue = $process->toQueue($now);
+            $queueList->addEntity($queue);
         }
-        return $queue;
+        return $queueList;
     }
-    */
 }

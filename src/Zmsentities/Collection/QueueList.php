@@ -11,5 +11,32 @@ class QueueList extends Base
            //to do
         }
     }
-    */
+     */
+
+    public function withSortedArrival()
+    {
+        return $this->sortByCustomKey('arrivalTime');
+    }
+
+    public function withAppointment()
+    {
+        $queueList = new self();
+        foreach ($this as $entity) {
+            if ($entity->withAppointment) {
+                $queueList->addEntity($entity);
+            }
+        }
+        return $queueList;
+    }
+
+    public function withOutAppointment()
+    {
+        $queueList = new self();
+        foreach ($this as $entity) {
+            if (! $entity->withAppointment) {
+                $queueList->addEntity($entity);
+            }
+        }
+        return $queueList;
+    }
 }
