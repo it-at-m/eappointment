@@ -7,7 +7,7 @@ namespace BO\Zmsapi\Exception\Scope;
  */
 class ScopeNotFound extends \Exception
 {
-    protected $code = 500;
+    protected $code = 404;
 
     protected $message = 'Zu den angegebenen Daten konnte kein Standort gefunden werden.';
 }
