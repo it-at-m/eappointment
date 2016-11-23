@@ -62,4 +62,9 @@ class QueueList extends Base
     public function getEstimatedWaitingTime()
     {
     }
+
+    public function getCountOfQueuesBeforeNumber($waitingNumber)
+    {
+
+    }
 }
