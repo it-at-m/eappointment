@@ -198,6 +198,7 @@ class Process extends Base implements MappingInterface
             'absagecode' => $process->authKey,
             'hatFolgetermine' => $childProcessCount,
             'istFolgeterminvon' => $parentProcess,
+            'wartenummer' => $process->queue['number']
         ]);
     }
 }
