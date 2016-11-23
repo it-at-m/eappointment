@@ -44,7 +44,8 @@ class TicketprinterProcess extends BaseController
                 'title' => 'Anmeldung an der Warteschlange',
                 'ticketprinter' => $ticketprinter,
                 'organisation' => \App::$http->readGetResult('/organisation/scope/'. $scopeId . '/')->getEntity(),
-                'process' => $process
+                'process' => $process,
+                'queueList' => \App::$http->readGetResult('/scope/'. $scopeId . '/queue/')->getCollection()
             )
         );
     }
