@@ -17,10 +17,10 @@
 		</div>
     </span>
     <span class="noprint">
-    	{% if queue|length > 1 %}{% set plural = 1 %}{% endif %}
-    	{% if queue|length >= 1 %}
+    	{% if queueList|length > 1 %}{% set plural = 1 %}{% endif %}
+    	{% if queueList|length >= 1 %}
 			{% if plural %}
-    		Es warten {{ queue|length }} Kunden vor Ihnen.
+    		Es warten {{ queueList|length }} Kunden vor Ihnen.
     		{% else %}
     		Es wartet 1 Kunde vor Ihnen.
     		{% endif %}
