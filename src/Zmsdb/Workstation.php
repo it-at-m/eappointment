@@ -18,19 +18,26 @@ class Workstation extends Base
         return $workstation;
     }
 
-    public function readByScope($scopeId, $resolveReferences = 0)
+    public function readByScopeAndDay($scopeId, $dateTime, $resolveReferences = 0)
     {
-        $workstation = null;
+        $workstationList = new \BO\Zmsentities\Collection\WorkstationList();
         $query = new Query\Workstation(Query\Base::SELECT);
         $query
             ->addEntityMapping()
             ->addConditionScopeId($scopeId)
+            ->addConditionTime($dateTime)
             ->addResolvedReferences($resolveReferences);
-        $workstation = $this->fetchOne($query, new Entity());
-        if ($workstation->hasId()) {
-            $workstation->useraccount = (new UserAccount)->readEntity($workstation->id, $resolveReferences);
+        $result = $this->fetchList($query, new Entity());
+
+        if ($result) {
+            foreach ($result as $entity) {
+                if ($entity->hasId()) {
+                    $entity->useraccount = (new UserAccount)->readEntity($entity->id, $resolveReferences);
+                    $workstationList->addEntity($entity);
+                }
+            }
         }
-        return $workstation;
+        return $workstationList;
     }
 
     public function writeEntityLoginByName($loginName, $password)

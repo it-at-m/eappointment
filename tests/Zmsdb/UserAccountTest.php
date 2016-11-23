@@ -50,8 +50,9 @@ class UserAccountTest extends Base
         $this->assertEntityList("\\BO\\Zmsentities\\Department", $departmentList);
     }
 
-    public function testReadWorkstationByScope()
+    public function testReadWorkstationByScopeAndDay()
     {
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
         $query = new Query();
         $input = $this->getTestEntity();
         //first write userAccount example in Database
@@ -64,8 +65,9 @@ class UserAccountTest extends Base
         $workstationInput->id = $workstation->id;
         //update workstation to read by scope testing
         $workstation = (new Workstation())->updateEntity($workstationInput);
-        $workstation = (new Workstation())->readByScope(123);
         $this->assertEntity("\\BO\\Zmsentities\\Workstation", $workstation);
+        $workstationList = (new Workstation())->readByScopeAndDay(123, $now);
+        $this->assertEntityList("\\BO\\Zmsentities\\Workstation", $workstationList);
     }
 
     public function testDelete()
