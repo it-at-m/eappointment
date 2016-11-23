@@ -241,8 +241,10 @@ class Process extends Schema\Entity
         $queue = new Queue($this->queue);
         $queue->withAppointment = ($this->getAppointments()->getFirst()->hasTime()) ? true : false;
         if ($queue->withAppointment) {
+            $queue->number = $this->id;
             $queue->arrivalTime = $this->getFirstAppointment()->date;
         } else {
+            $queue->number = $this->toProperty()->queue->number->get();
             $queue->arrivalTime = $dateTime->getTimestamp();
         }
         return $queue;
