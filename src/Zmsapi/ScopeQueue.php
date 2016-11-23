@@ -27,7 +27,7 @@ class ScopeQueue extends BaseController
         if (! $scope->hasId()) {
             throw new Exception\Scope\ScopeNotFound();
         }
-        $message->data = $query->readQueueList($itemId, \App::$now)->withSortedArrival();
+        $message->data = $query->readWithWaitingTime($itemId, \App::$now);
 
         Render::lastModified(time(), '0');
         Render::json($message, $message->getStatuscode());
