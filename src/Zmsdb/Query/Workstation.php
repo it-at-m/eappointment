@@ -82,6 +82,12 @@ class Workstation extends Base implements MappingInterface
         return $this;
     }
 
+    public function addConditionTime($now)
+    {
+        $this->query->where('workstation.Datum', '=', $now->format('Y-m-d'));
+        return $this;
+    }
+
     public function reverseEntityMapping(\BO\Zmsentities\Workstation $entity, $selectedDepartmentId = null)
     {
         $data = array();

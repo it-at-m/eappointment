@@ -158,7 +158,7 @@ class Scope extends Base
     }
 
     /**
-     * get last given waitingnumer and return +1
+     * get last given waitingnumer and return updated (+1) waitingnumber
      *
      * * @param
      * scopeId
@@ -176,13 +176,21 @@ class Scope extends Base
         return $scope->getStatus('queue', 'lastGivenNumber');
     }
 
-
-    public function readQueueList($scopeId, $now)
+    /**
+     * get list of queues on scope by daytime
+     *
+     * * @param
+     * scopeId
+     * now
+     *
+     * @return number
+     */
+    public function readQueueList($scopeId, $dateTime)
     {
         $queueList = (new Process())
-            ->readProcessListByScopeAndTime($scopeId, $now)
-            ->toQueueList($now);
-        return $queueList;
+            ->readProcessListByScopeAndTime($scopeId, $dateTime)
+            ->toQueueList($dateTime);
+        return $queueList->withSortedArrival();
     }
 
     /**
@@ -192,29 +200,26 @@ class Scope extends Base
      * scopeId
      * now
      *
-     * @return Bool
+     * @return number
      */
-    /*
-    public function readWaitingTime($scopeId, $now)
+    public function readWithWaitingTime($scopeId, $dateTime)
     {
+        $queueList = $this->readQueueList($scopeId, $dateTime);
         //get scope
         $query = new Query\Scope(Query\Base::SELECT);
         $query->addEntityMapping()->addConditionScopeId($scopeId);
         $scope = $this->fetchOne($query, new Entity());
-
+        //get processing time average
+        $timeAverage = $scope->getPreference('queue', 'processingTimeAverage');
         //get workstation count
-        $workstationCount = ('-1' == $scope->getStatus('queue', 'ghostWorkstationCount')) ?
-            count((new Workstation())->readByScope($scopeId)) :
-            $scope->getStatus('queue', 'ghostWorkstationCount');
+        $ghostWorkstations = $scope->getStatus('queue', 'ghostWorkstationCount');
+        if ('-1' == $ghostWorkstations) {
+            $workstationCount = (new Workstation())->readByScopeAndDay($scopeId, $dateTime)->count();
+        }
+        $workstationCount = (0 == $workstationCount) ? 1 : $workstationCount;
 
-        //get queuelist
-        $queueList = (new Process())
-            ->readProcessListByScopeAndTime($scopeId, $now)
-            ->toQueue($now)
-            ->withEstimatedWaitingTime($scope->getPreference('queue', 'processingTimeAverage'), $workstationCount);
-        return $queueList->getEstimatedWaitingTime();
+        return $queueList->withEstimatedWaitingTime($timeAverage, $workstationCount, $dateTime);
     }
-    */
 
     /**
      * write a scope
