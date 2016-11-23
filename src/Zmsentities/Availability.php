@@ -2,6 +2,11 @@
 
 namespace BO\Zmsentities;
 
+/**
+ * @SuppressWarnings(Complexity)
+ * @SuppressWarnings(PublicMethod)
+ *
+ */
 class Availability extends Schema\Entity
 {
     const PRIMARY = 'id';
@@ -23,15 +28,15 @@ class Availability extends Schema\Entity
 
     /**
      * Performance costs for modifying time are high, cache the calculated value
-     * @var \DateTimeImmutable $startTime
+     * @var \DateTimeImmutable $startTimeCache
      */
-    protected $startTime;
+    protected $startTimeCache;
 
     /**
      * Performance costs for modifying time are high, cache the calculated value
-     * @var \DateTimeImmutable $endTime
+     * @var \DateTimeImmutable $endTimeCache
      */
-    protected $endTime;
+    protected $endTimeCache;
 
     /**
      * Set Default values
@@ -67,6 +72,7 @@ class Availability extends Schema\Entity
     /**
      * Check, if the dateTime contains a day and time given by the settings
      * ATTENTION: Time critical function, keep highly optimized
+     * Compared to isOpened() the Booking time is checked too
      *
      * @param \DateTimeInterface $dateTime
      *
@@ -74,36 +80,41 @@ class Availability extends Schema\Entity
      */
     public function hasDate(\DateTimeInterface $dateTime, \DateTimeInterface $now)
     {
-        //$debugAvailabilityId = 0;
         $dateTime = Helper\DateTime::create($dateTime);
-
-        //if ($this->id == $debugAvailabilityId) {
-        //    error_log("true == hasDate(".$dateTime->format('c').") ".$this);
-        //}
-
-        if (!$this->isOpened($dateTime, 'appointment')) {
+        if (!$this->hasWeekDay($dateTime)
+            || !$this->hasDay($dateTime)
+            || !$this->isBookable($dateTime, $now)
+            || !$this->hasWeek($dateTime)
+            || ($this->getDuration() > 2 && $this->hasDayOff($dateTime))
+        ) {
             // Out of date range
-            return false;
-        }
-        if (!$this->isBookable($dateTime, $now)) {
-            // out of bookable start and end
             return false;
         }
         return true;
     }
 
+    /**
+     * Check if date and time is in availability
+     * Compared to hasDate() the time of the day is checked, but not booking time
+     *
+     * @param \DateTimeInterface $dateTime
+     * @param String $type of "openinghours", "appointment" or false to ignore type
+     *
+     */
     public function isOpened(\DateTimeInterface $dateTime, $type = 'openinghours')
     {
-        // First check weekday, greatest difference on an easy check
-        $weekDayName = self::$weekdayNameList[$dateTime->format('w')];
-        if (!$this['weekday'][$weekDayName]) {
-            // Wrong weekday
+        if (!$this->hasWeekDay($dateTime)) {
             return false;
         }
-        if ($this->type != $type) {
+        // First check weekday, greatest difference on an easy check
+        if ($type !== false && $this->type != $type) {
             return false;
         }
         if (!$this->hasDay($dateTime)) {
+            // Out of date range
+            return false;
+        }
+        if (!$this->hasTime($dateTime)) {
             // Out of date range
             return false;
         }
@@ -112,6 +123,45 @@ class Availability extends Schema\Entity
             return false;
         }
         if ($this->getDuration() > 2 && $this->hasDayOff($dateTime)) {
+            return false;
+        }
+        return true;
+    }
+
+    public function hasWeekDay(\DateTimeInterface $dateTime)
+    {
+        $weekDayName = self::$weekdayNameList[$dateTime->format('w')];
+        if (!$this['weekday'][$weekDayName]) {
+            // Wrong weekday
+            return false;
+        }
+        return true;
+    }
+
+    public function hasAppointment(Appointment $appointment)
+    {
+        $dateTime = $appointment->toDateTime();
+        $isOpenedStart = $this->isOpened($dateTime, false);
+        $duration = $this->slotTimeInMinutes * $appointment->slotCount;
+        $endTime = $dateTime->modify("+" . $duration . "minutes");
+        $isOpenedEnd = $this->isOpened($endTime, false);
+        return ($isOpenedStart && $isOpenedEnd);
+    }
+
+    /**
+     * Check, if the dateTime is a time covered by availability
+     *
+     * @param \DateTimeInterface $dateTime
+     *
+     * @return Bool
+     */
+    public function hasTime(\DateTimeInterface $dateTime)
+    {
+        $start = $this->getStartDateTime()->getSecondsOfDay();
+        $end = $this->getEndDateTime()->getSecondsOfDay();
+        $compare = Helper\DateTime::create($dateTime)->getSecondsOfDay();
+        if ($start > $compare || $end <= $compare) {
+            // Out of time range
             return false;
         }
         return true;
@@ -190,12 +240,12 @@ class Availability extends Schema\Entity
      */
     public function getStartDateTime()
     {
-        if (!$this->startTime) {
-            $this->startTime = Helper\DateTime::create()
+        if (!$this->startTimeCache) {
+            $this->startTimeCache = Helper\DateTime::create()
                 ->setTimestamp($this['startDate'])
                 ->modify('today ' .  $this['startTime']);
         }
-        return $this->startTime;
+        return $this->startTimeCache;
     }
 
     /**
@@ -205,12 +255,12 @@ class Availability extends Schema\Entity
      */
     public function getEndDateTime()
     {
-        if (!$this->endTime) {
-            $this->endTime = Helper\DateTime::create()
+        if (!$this->endTimeCache) {
+            $this->endTimeCache = Helper\DateTime::create()
                 ->setTimestamp($this['endDate'])
                 ->modify('today ' .  $this['endTime']);
         }
-        return $this->endTime;
+        return $this->endTimeCache;
     }
 
     /**
@@ -373,10 +423,14 @@ class Availability extends Schema\Entity
         return $info;
     }
 
+    /**
+     * Delete cache on changes
+     *
+     */
     public function offsetSet($index, $value)
     {
-        $this->startTime = null;
-        $this->endTime = null;
+        $this->startTimeCache = null;
+        $this->endTimeCache = null;
         return parent::offsetSet($index, $value);
     }
 }

@@ -50,4 +50,26 @@ class ProcessList extends Base
         }
         return $queueList;
     }
+
+    public function withAvailability(\BO\Zmsentities\Availability $availability)
+    {
+        $processList = new static();
+        foreach ($this as $process) {
+            if ($availability->hasAppointment($process->getFirstAppointment())) {
+                $processList[] = clone $process;
+            }
+        }
+        return $processList;
+    }
+
+    public function withOutAvailability(\BO\Zmsentities\Collection\AvailabilityList $availabilityList)
+    {
+        $processList = new static();
+        foreach ($this as $process) {
+            if (!$availabilityList->hasAppointment($process->getFirstAppointment())) {
+                $processList[] = clone $process;
+            }
+        }
+        return $processList;
+    }
 }

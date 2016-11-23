@@ -52,6 +52,14 @@ class DateTime extends \DateTimeImmutable
         return $weekOfMonth == $lastDay->getWeekOfMonth();
     }
 
+    public function getSecondsOfDay()
+    {
+        $hours = $this->format('G');
+        $minutes = $this->format('i');
+        $seconds = $this->format('s');
+        return $hours * 3600 + $minutes * 60 + $seconds;
+    }
+
     public function __toString()
     {
         return $this->format('c');

@@ -2,6 +2,16 @@
 
 namespace BO\Zmsentities\Tests;
 
+use \BO\Zmsentities\Appointment;
+use \BO\Zmsentities\Availability;
+use \BO\Zmsentities\Process;
+use \BO\Zmsentities\Collection\AvailabilityList;
+use \BO\Zmsentities\Collection\ProcessList;
+
+/**
+ * @SuppressWarnings(CouplingBetweenObjects)
+ *
+ */
 class ProcessTest extends EntityCommonTests
 {
     const DEFAULT_TIME = '2016-01-01 12:50:00';
@@ -74,7 +84,6 @@ class ProcessTest extends EntityCommonTests
     {
         $collection = new $this->collectionclass();
         $entity = $this->getExample();
-        $appointment = (new \BO\Zmsentities\Appointment())->getExample();
         $collection->addEntity($entity);
         $this->assertEntityList($this->entityclass, $collection);
         $this->assertTrue(
@@ -115,6 +124,72 @@ class ProcessTest extends EntityCommonTests
         $collection = $collection->withLessData();
         $this->assertEntityList($this->entityclass, $collection);
         $this->assertFalse(isset($entity->withLessData()['dayoff']), 'Converting to less data failed');
+    }
+
+    public function testAvailability()
+    {
+        $availability = new Availability([
+            'id' => '93181',
+            'weekday' => array (
+                'monday' => '0',
+                'tuesday' => '4',
+                'wednesday' => '0',
+                'thursday' => '0',
+                'friday' => '0',
+                'saturday' => '0',
+                'sunday' => '0'
+            ),
+            'repeat' => array (
+                'afterWeeks' => '1',
+            ),
+            'workstationCount' => array (
+                'public' => '2',
+                'callcenter' => '2',
+                'intern' => '2'
+            ),
+            'slotTimeInMinutes' => '15',
+            'startDate' => strtotime('2016-04-19'),
+            'endDate' => strtotime('2016-04-19'),
+            'startTime' => '12:00:00',
+            'endTime' => '16:00:00',
+        ]);
+        $availabilityList = new AvailabilityList([
+            $availability
+        ]);
+        $processList = new ProcessList([
+            new Process([
+                'id' => '123',
+                'appointments' => [
+                    new Appointment([
+                        'date' => strtotime('2016-04-19 12:15'),
+                        'slotCount' => 1,
+                    ])
+                ],
+                'status' => 'confirmed',
+            ]),
+            new Process([
+                'id' => '123',
+                'appointments' => [
+                    new Appointment([
+                        'date' => strtotime('2016-04-19 11:15'),
+                        'slotCount' => 1,
+                    ])
+                ],
+                'status' => 'confirmed',
+            ]),
+        ]);
+        $withAvailability = $processList->withAvailability($availability);
+        $withOutAvailability = $processList->withOutAvailability($availabilityList);
+        $this->assertEquals(1, $withAvailability->count(), "Wrong count ProcessList::withAvailability()");
+        $this->assertEquals(
+            strtotime('2016-04-19 12:15'),
+            $withAvailability->getIterator()->current()->getFirstAppointment()->date
+        );
+        $this->assertEquals(1, $withOutAvailability->count(), "Wrong count ProcessList::withOutAvailability()");
+        $this->assertEquals(
+            strtotime('2016-04-19 11:15'),
+            $withOutAvailability->getIterator()->current()->getFirstAppointment()->date
+        );
     }
 
     //check if necessary

@@ -57,6 +57,16 @@ class AvailabilityList extends Base
         return false;
     }
 
+    public function hasAppointment(\BO\Zmsentities\Appointment $appointment)
+    {
+        foreach ($this as $availability) {
+            if ($availability->hasAppointment($appointment)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public function getSlotList()
     {
         $slotList = new SlotList();
