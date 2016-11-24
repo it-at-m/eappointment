@@ -24,7 +24,6 @@ class AvailabilityDelete extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $validator = $request->getAttribute('validator');
         $result = \App::$http->readDeleteResult('/availability/' . $args['id'] . '/');
         return $result->getResponse();
     }
