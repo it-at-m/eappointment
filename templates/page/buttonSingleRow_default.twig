@@ -12,20 +12,22 @@
 	{{ block("feedback_print") }}
 	{% endif %}
 
-	{% if validateSms %}
+	{% if validateNotification %}
 	{{ block("small_sms_feedback") }}
 	{% endif %}
 
+	{% if not validatePrint and not validateNotification %}
 	<div class="werbeblock_oben">
 		{% trans "Anzahl vor Ihnen wartender Kunden" %}:
 		<span id="wartende">
-		    {% if waitingQueueAmount %} {{ waitingQueueAmount }} {% else %} {% trans "keine" %} {% endif %}
+		    {% if estimatedData.amountBefore %} {{ estimatedData.amountBefore - 1 }} {% else %} {% trans "keine" %} {% endif %}
 		</span>
 		<br>
 		<div class="wartezeit">
 			<span id="wartezeit">{{ waitingTime }}</span>
 		</div>
 	</div>
+	{% endif %}
 
 	{{ block("button_singlerow") }}
 

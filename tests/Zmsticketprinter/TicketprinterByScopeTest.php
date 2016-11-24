@@ -28,6 +28,11 @@ class TicketprinterByScopeTest extends Base
                 'function' => 'readPostResult',
                 'url' => '/ticketprinter/',
                 'response' => $this->readFixture("GET_ticketprinter_buttonlist_single.json"),
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/scope/141/queue/',
+                'response' => $this->readFixture("GET_queuelist_141.json"),
             ]
         ];
     }

@@ -22,9 +22,11 @@ class TicketprinterByScope extends BaseController
         array $args
     ) {
         $validator = $request->getAttribute('validator');
-        $validatePrint = $validator->getParameter('hasWaitingnumber')->isBool()->getValue();
+        $validatePrint = $validator->getParameter('hasWaitingNumber')->isNumber()->getValue();
         $ticketprinterHelper = (new Helper\Ticketprinter($args, $request));
         $ticketprinter = $ticketprinterHelper->getEntity();
+        $queueList = \App::$http->readGetResult('/scope/'. $args['scopeId'] . '/queue/')->getCollection();
+        $scope = $ticketprinter->getScopeList()->getFirst();
 
         return \BO\Slim\Render::withHtml(
             $response,
@@ -34,6 +36,12 @@ class TicketprinterByScope extends BaseController
                 'title' => 'Wartennumer ziehen',
                 'ticketprinter' => $ticketprinter,
                 'organisation' => $ticketprinterHelper::$organisation,
+                'queueList' => $queueList,
+                'estimatedData' => $queueList->getEstimatedWaitingTime(
+                    $scope->getPreference('queue', 'processingTimeAverage'),
+                    $scope->getCalculatedWorkstationCount(),
+                    \App::$now
+                ),
                 'validatePrint' => $validatePrint
             )
         );
