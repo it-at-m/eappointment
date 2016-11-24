@@ -79,6 +79,14 @@ class Base extends \ArrayObject
         return $this;
     }
 
+    public function addList(Base $list)
+    {
+        foreach ($list as $item) {
+            $this->addEntity($item);
+        }
+        return $this;
+    }
+
     public function getIds()
     {
         $list = [];
