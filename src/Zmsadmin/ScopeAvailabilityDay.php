@@ -22,15 +22,6 @@ class ScopeAvailabilityDay extends BaseController
     {
         $dateTime = new \BO\Zmsentities\Helper\DateTime($dateString);
         $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
-        /*
-        $availabilityList = new AvailabilityList();
-        $prefix = \App::APP_PATH . '/tests/examples/Availability'.$scope_id.'/';
-        foreach (glob($prefix . 'availability_*.json') as $filename) {
-            $availabilityList[] = new Availability(json_decode(file_get_contents($filename), true));
-        }
-        $scope = json_decode(file_get_contents($prefix . 'scope.json'), true);
-        $conflicts = json_decode(file_get_contents($prefix . 'conflicts.json'), true);
-         */
         $scope = \App::$http->readGetResult('/scope/' . intval($scope_id) . '/')->getEntity();
         $availabilityList = \App::$http
             ->readGetResult('/scope/' . intval($scope_id) . '/availability/')
@@ -40,7 +31,10 @@ class ScopeAvailabilityDay extends BaseController
             ->readGetResult('/scope/' . intval($scope_id) . '/day/' . $dateTime->format('Y-m-d') . '/')
             ->getCollection()
             ;
-        $conflicts = [];
+        $conflicts = $availabilityList->getConflicts();
+        if ($processList) {
+            $conflicts->addList($processList->withOutAvailability($availabilityList));
+        }
         \BO\Slim\Render::html('page/availabilityday.twig', array(
             'availabilityList' => $availabilityList,
             'availabilityListSlices' => $availabilityList->withCalculatedSlots(),
