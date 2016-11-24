@@ -212,12 +212,7 @@ class Scope extends Base
         //get processing time average
         $timeAverage = $scope->getPreference('queue', 'processingTimeAverage');
         //get workstation count
-        $ghostWorkstations = $scope->getStatus('queue', 'ghostWorkstationCount');
-        if ('-1' == $ghostWorkstations) {
-            $workstationCount = (new Workstation())->readByScopeAndDay($scopeId, $dateTime)->count();
-        }
-        $workstationCount = (0 == $workstationCount) ? 1 : $workstationCount;
-
+        $workstationCount = $scope->getCalculatedWorkstationCount();
         return $queueList->withEstimatedWaitingTime($timeAverage, $workstationCount, $dateTime);
     }
 

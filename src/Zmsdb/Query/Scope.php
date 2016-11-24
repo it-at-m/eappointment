@@ -51,7 +51,7 @@ class Scope extends Base implements MappingInterface
         );
     }
 
-
+    //Todo: now() Parameter to enable query cache
     public function getEntityMapping()
     {
         return [
@@ -106,6 +106,18 @@ class Scope extends Base implements MappingInterface
             'status__emergency__acceptedByWorkstation' => 'scope.notrufantwort',
             'status__emergency__activated' => 'scope.notrufausgeloest',
             'status__emergency__calledByWorkstation' => 'scope.notrufinitiierung',
+            'status__queue__workstationCount' => self::expression('
+                IF(
+                    `scope`.`virtuellesachbearbeiterzahl` > -1,
+                    `scope`.`virtuellesachbearbeiterzahl`,
+                    (
+                        SELECT COUNT(*)
+                        FROM nutzer
+                        WHERE nutzer.StandortID = scope.StandortID
+                        AND nutzer.Datum = now()
+                    )
+                )
+            '),
             'status__queue__ghostWorkstationCount' => 'scope.virtuellesachbearbeiterzahl',
             'status__queue__givenNumberCount' => 'scope.vergebenewartenummern',
             'status__queue__lastGivenNumber' => 'scope.letztewartenr',
