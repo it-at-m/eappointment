@@ -68,6 +68,21 @@ class Slot extends Schema\Entity
         return $this->toProperty()->time->get();
     }
 
+    public function removeAppointment()
+    {
+        if ($this->intern <= 0) {
+            throw new Exception\SlotFull("Could not add another appointment to slot $this");
+        }
+        $this->intern = $this->intern - 1;
+        if ($this->callcenter > 0) {
+            $this->callcenter = $this->callcenter - 1;
+        }
+        if ($this->public > 0) {
+            $this->public = $this->public - 1;
+        }
+        return $this;
+    }
+
     public function __toString()
     {
         return "slot#{$this->type}@"
