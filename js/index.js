@@ -15,10 +15,18 @@ import PickupKeyboardHandheldView from "./block/pickup-keyboard-handheld";
 // Bind jQuery on $ for testing
 window.$ = $;
 
+const timeTables = []
+const removeAvailability = id => {
+    console.log('remove availability', id)
+    timeTables.forEach(timeTable => {
+        timeTable.removeAvailability(id);
+    })
+}
+
 // Init Views
 $('form').each(function() { new FormView(this);});
-$('.availability-timetable').each(function() { new AvailabilityTimetableView(this);});
-$('.availability-form').each(function() { new AvailabilityFormView(this);});
+$('.availability-timetable').each(function() { timeTables.push(new AvailabilityTimetableView(this));});
+$('.availability-form').each(function() { new AvailabilityFormView(this, { removeAvailability });});
 $('.pickup-keyboard-handheld').each(function() { new PickupKeyboardHandheldView(this);});
 
 // Say hello

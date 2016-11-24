@@ -25,8 +25,7 @@ class AvailabilityDelete extends BaseController
         array $args
     ) {
         $validator = $request->getAttribute('validator');
-        $input = $validator->getInput()->isJson()->assertValid()->getValue();
-        $result = \App::$http->readDeleteResult('/availability/' . $args['id'] . '/', $input);
+        $result = \App::$http->readDeleteResult('/availability/' . $args['id'] . '/');
         return $result->getResponse();
     }
 }
