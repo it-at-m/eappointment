@@ -6,6 +6,8 @@
 
 namespace BO\Zmsentities\Collection;
 
+use \BO\Zmsentities\Availability;
+
 class AvailabilityList extends Base
 {
     public function getMaxWorkstationCount()
@@ -76,5 +78,34 @@ class AvailabilityList extends Base
             }
         }
         return $slotList;
+    }
+
+    public function getConflicts()
+    {
+        $processList = new ProcessList();
+        $availabilityList = new AvailabilityList();
+        foreach ($this as $availability) {
+            $conflict = $availability->getConflict();
+            if ($conflict) {
+                $processList[] = $conflict;
+            }
+            $overlap = $availabilityList->hasOverlapWith($availability);
+            if ($overlap->count()) {
+                $processList->addList($overlap);
+            } else {
+                $availabilityList[] = $availability; // Do not compare entities twice
+            }
+        }
+        return $processList;
+    }
+
+    public function hasOverlapWith(Availability $availability)
+    {
+        $processList = new ProcessList();
+        foreach ($this as $availabilityCompare) {
+            $overlaps = $availability->getTimeOverlaps($availabilityCompare);
+            $processList->addList($overlaps);
+        }
+        return $processList;
     }
 }

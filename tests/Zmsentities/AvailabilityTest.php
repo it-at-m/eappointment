@@ -2,6 +2,13 @@
 
 namespace BO\Zmsentities\Tests;
 
+use \BO\Zmsentities\Availability;
+use \BO\Zmsentities\Collection\AvailabilityList;
+
+/**
+ * @SuppressWarnings(PublicMethod)
+ *
+ */
 class AvailabilityTest extends EntityCommonTests
 {
 
@@ -335,6 +342,101 @@ class AvailabilityTest extends EntityCommonTests
         $entityOH->endTime = '11:00:00';
         $collection->addEntity($entityOH);
         $this->assertFalse($collection->isOpened($time));
+    }
+
+    public function testConflicts()
+    {
+        $availability = new Availability([
+            'id' => '1',
+            'weekday' => array (
+                'monday' => '0',
+                'tuesday' => '4',
+                'wednesday' => '0',
+                'thursday' => '0',
+                'friday' => '0',
+                'saturday' => '0',
+                'sunday' => '0'
+            ),
+            'repeat' => array (
+                'afterWeeks' => '1',
+            ),
+            'workstationCount' => array (
+                'public' => '2',
+                'callcenter' => '2',
+                'intern' => '2'
+            ),
+            'slotTimeInMinutes' => '15',
+            'startDate' => strtotime('2016-04-19'),
+            'endDate' => strtotime('2016-04-19'),
+            'startTime' => '12:00:00',
+            'endTime' => '16:00:00',
+        ]);
+        $availabilityOverlap = new Availability([
+            'id' => '2',
+            'weekday' => array (
+                'monday' => '0',
+                'tuesday' => '4',
+                'wednesday' => '0',
+                'thursday' => '0',
+                'friday' => '0',
+                'saturday' => '0',
+                'sunday' => '0'
+            ),
+            'repeat' => array (
+                'afterWeeks' => '1',
+            ),
+            'workstationCount' => array (
+                'public' => '2',
+                'callcenter' => '2',
+                'intern' => '2'
+            ),
+            'slotTimeInMinutes' => '15',
+            'startDate' => strtotime('2016-04-19'),
+            'endDate' => strtotime('2016-04-19'),
+            'startTime' => '10:00:00',
+            'endTime' => '13:00:00',
+        ]);
+        $availabilitySlotsize = new Availability([
+            'id' => '3',
+            'weekday' => array (
+                'monday' => '0',
+                'tuesday' => '4',
+                'wednesday' => '0',
+                'thursday' => '0',
+                'friday' => '0',
+                'saturday' => '0',
+                'sunday' => '0'
+            ),
+            'repeat' => array (
+                'afterWeeks' => '1',
+            ),
+            'workstationCount' => array (
+                'public' => '2',
+                'callcenter' => '2',
+                'intern' => '2'
+            ),
+            'slotTimeInMinutes' => '25',
+            'startDate' => strtotime('2016-04-19'),
+            'endDate' => strtotime('2016-04-19'),
+            'startTime' => '09:00:00',
+            'endTime' => '10:00:00',
+        ]);
+        $availabilityList = new AvailabilityList([
+            $availability,
+            $availabilityOverlap,
+            $availabilitySlotsize
+        ]);
+        $conflicts = $availabilityList->getConflicts();
+        //foreach ($conflicts as $conflict) { error_log("$conflict " . $conflict->amendment); }
+        $iterator = $conflicts->getIterator();
+        $this->assertEquals('conflict', $iterator->current()->status);
+        $this->assertEquals(strtotime('2016-04-19 12:00'), $iterator->current()->getFirstAppointment()->date);
+        $iterator->next();
+        $this->assertNotNull($iterator->current());
+        $this->assertEquals('conflict', $iterator->current()->status);
+        $this->assertEquals(strtotime('2016-04-19 09:00'), $iterator->current()->getFirstAppointment()->date);
+        $iterator->next();
+        $this->assertNull($iterator->current());
     }
 
     protected function getExampleWithTypeOpeningHours(\DateTimeImmutable $time)

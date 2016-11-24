@@ -369,6 +369,65 @@ class Availability extends Schema\Entity
     }
 
     /**
+     * Get problems on configuration of this availability
+     *
+     * @return Collection\ProcessList with processes in status "conflict"
+     */
+    public function getConflict()
+    {
+        $start = $this->getStartDateTime()->getSecondsOfDay();
+        $end = $this->getEndDateTime()->getSecondsOfDay();
+        $minutesPerDay = floor(($end - $start) / 60);
+        if ($minutesPerDay % $this->slotTimeInMinutes > 0) {
+            $conflict = new Process();
+            $conflict->status = 'conflict';
+            $appointment = $conflict->getFirstAppointment();
+            $appointment->availability = $this;
+            $appointment->date = $this->getStartDateTime()->getTimestamp();
+            $conflict->amendment =
+                "Der eingestellte Zeitschlitz von {$this->slotTimeInMinutes} Minuten"
+                . " sollte in die eingestellte Uhrzeit passen.";
+            return $conflict;
+        }
+        return false;
+    }
+
+    /**
+     * Get overlaps if daytime
+     * This functions does not check, if two availabilities are openend on the same day!
+     *
+     * @param Availability $availability for comparision
+     *
+     * @return Collection\ProcessList with processes in status "conflict"
+     */
+    public function getTimeOverlaps(Availability $availability)
+    {
+        $processList = new Collection\ProcessList();
+        if ($availability->id != $this->id) {
+            $processTemplate = new Process();
+            $processTemplate->amendment = "Zwei Öffnungszeiten überschneiden sich.";
+            $processTemplate->status = 'conflict';
+            $appointment = $processTemplate->getFirstAppointment();
+            $appointment->availability = $this;
+            $appointment->date = $this->getStartDateTime()->getTimestamp();
+            if ($availability->getStartDateTime() > $this->getStartDateTime()
+                && $availability->getStartDateTime() < $this->getEndDateTime()
+            ) {
+                $process = clone $processTemplate;
+                $process->getFirstAppointment()->date = $availability->getStartDateTime()->getTimestamp();
+                $processList[] = $process;
+            } elseif ($availability->getEndDateTime() > $this->getStartDateTime()
+                && $availability->getEndDateTime() < $this->getEndDateTime()
+            ) {
+                $process = clone $processTemplate;
+                $process->getFirstAppointment()->date = $availability->getEndDateTime()->getTimestamp();
+                $processList[] = $process;
+            }
+        }
+        return $processList;
+    }
+
+    /**
      * Update workstationCount to number of calculated appointments
      *
      * @return self cloned
