@@ -143,9 +143,9 @@ class ProcessTest extends EntityCommonTests
                 'afterWeeks' => '1',
             ),
             'workstationCount' => array (
-                'public' => '2',
-                'callcenter' => '2',
-                'intern' => '2'
+                'public' => '1',
+                'callcenter' => '1',
+                'intern' => '1'
             ),
             'slotTimeInMinutes' => '15',
             'startDate' => strtotime('2016-04-19'),
@@ -158,7 +158,7 @@ class ProcessTest extends EntityCommonTests
         ]);
         $processList = new ProcessList([
             new Process([
-                'id' => '123',
+                'id' => '1',
                 'appointments' => [
                     new Appointment([
                         'date' => strtotime('2016-04-19 12:15'),
@@ -168,7 +168,7 @@ class ProcessTest extends EntityCommonTests
                 'status' => 'confirmed',
             ]),
             new Process([
-                'id' => '123',
+                'id' => '2',
                 'appointments' => [
                     new Appointment([
                         'date' => strtotime('2016-04-19 11:15'),
@@ -177,15 +177,27 @@ class ProcessTest extends EntityCommonTests
                 ],
                 'status' => 'confirmed',
             ]),
+            new Process([
+                'id' => '3',
+                'appointments' => [
+                    new Appointment([
+                        'date' => strtotime('2016-04-19 12:15'),
+                        'slotCount' => 1,
+                    ])
+                ],
+                'status' => 'confirmed',
+            ]),
         ]);
         $withAvailability = $processList->withAvailability($availability);
+        $withStrict = $processList->withAvailabilityStrict($availability);
         $withOutAvailability = $processList->withOutAvailability($availabilityList);
-        $this->assertEquals(1, $withAvailability->count(), "Wrong count ProcessList::withAvailability()");
+        $this->assertEquals(2, $withAvailability->count(), "Wrong count ProcessList::withAvailability()");
+        $this->assertEquals(1, $withStrict->count(), "Wrong count ProcessList::withAvailabilityStrict()");
         $this->assertEquals(
             strtotime('2016-04-19 12:15'),
             $withAvailability->getIterator()->current()->getFirstAppointment()->date
         );
-        $this->assertEquals(1, $withOutAvailability->count(), "Wrong count ProcessList::withOutAvailability()");
+        $this->assertEquals(2, $withOutAvailability->count(), "Wrong count ProcessList::withOutAvailability()");
         $this->assertEquals(
             strtotime('2016-04-19 11:15'),
             $withOutAvailability->getIterator()->current()->getFirstAppointment()->date

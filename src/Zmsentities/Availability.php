@@ -70,7 +70,7 @@ class Availability extends Schema\Entity
     }
 
     /**
-     * Check, if the dateTime contains a day and time given by the settings
+     * Check, if the dateTime contains a day given by the settings
      * ATTENTION: Time critical function, keep highly optimized
      * Compared to isOpened() the Booking time is checked too
      *
@@ -81,9 +81,30 @@ class Availability extends Schema\Entity
     public function hasDate(\DateTimeInterface $dateTime, \DateTimeInterface $now)
     {
         $dateTime = Helper\DateTime::create($dateTime);
-        if (!$this->hasWeekDay($dateTime)
-            || !$this->hasDay($dateTime)
+        if (!$this->isOpenedOnDate($dateTime)
             || !$this->isBookable($dateTime, $now)
+        ) {
+            // Out of date range
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Check, if the dateTime contains a day
+     * ATTENTION: Time critical function, keep highly optimized
+     *
+     * @param \DateTimeInterface $dateTime
+     * @param String $type of "openinghours", "appointment" or false to ignore type
+     *
+     * @return Bool
+     */
+    public function isOpenedOnDate(\DateTimeInterface $dateTime, $type = false)
+    {
+        $dateTime = Helper\DateTime::create($dateTime);
+        if (!$this->hasWeekDay($dateTime)
+            || ($type !== false && $this->type != $type)
+            || !$this->hasDay($dateTime)
             || !$this->hasWeek($dateTime)
             || ($this->getDuration() > 2 && $this->hasDayOff($dateTime))
         ) {
@@ -143,7 +164,8 @@ class Availability extends Schema\Entity
         $dateTime = $appointment->toDateTime();
         $isOpenedStart = $this->isOpened($dateTime, false);
         $duration = $this->slotTimeInMinutes * $appointment->slotCount;
-        $endTime = $dateTime->modify("+" . $duration . "minutes");
+        $endTime = $dateTime->modify("+" . $duration . "minutes")
+            ->modify("-1 second"); // To allow the last slot for an appointment
         $isOpenedEnd = $this->isOpened($endTime, false);
         return ($isOpenedStart && $isOpenedEnd);
     }
@@ -393,7 +415,7 @@ class Availability extends Schema\Entity
     }
 
     /**
-     * Get overlaps if daytime
+     * Get overlaps on daytime
      * This functions does not check, if two availabilities are openend on the same day!
      *
      * @param Availability $availability for comparision
@@ -403,24 +425,35 @@ class Availability extends Schema\Entity
     public function getTimeOverlaps(Availability $availability)
     {
         $processList = new Collection\ProcessList();
-        if ($availability->id != $this->id) {
+        if ($availability->id != $this->id && $availability->type == $this->type) {
             $processTemplate = new Process();
             $processTemplate->amendment = "Zwei Öffnungszeiten überschneiden sich.";
             $processTemplate->status = 'conflict';
             $appointment = $processTemplate->getFirstAppointment();
             $appointment->availability = $this;
             $appointment->date = $this->getStartDateTime()->getTimestamp();
-            if ($availability->getStartDateTime() > $this->getStartDateTime()
-                && $availability->getStartDateTime() < $this->getEndDateTime()
+            $thisStart = $this->getStartDateTime()->getSecondsOfDay();
+            $thisEnd = $this->getEndDateTime()->getSecondsOfDay();
+            $availabilityStart = $availability->getStartDateTime()->getSecondsOfDay();
+            $availabilityEnd = $availability->getEndDateTime()->getSecondsOfDay();
+            if ($availabilityStart > $thisStart
+                && $availabilityStart < $thisEnd
             ) {
                 $process = clone $processTemplate;
                 $process->getFirstAppointment()->date = $availability->getStartDateTime()->getTimestamp();
                 $processList[] = $process;
-            } elseif ($availability->getEndDateTime() > $this->getStartDateTime()
-                && $availability->getEndDateTime() < $this->getEndDateTime()
+            } elseif ($availabilityEnd > $thisStart
+                && $availabilityEnd < $thisEnd
             ) {
                 $process = clone $processTemplate;
                 $process->getFirstAppointment()->date = $availability->getEndDateTime()->getTimestamp();
+                $processList[] = $process;
+            } elseif ($availabilityStart == $thisStart
+                && $availabilityEnd == $thisEnd
+            ) {
+                $process = clone $processTemplate;
+                $process->amendment = "Zwei Öffnungszeiten sind gleich.";
+                $process->getFirstAppointment()->date = $availability->getStartDateTime()->getTimestamp();
                 $processList[] = $process;
             }
         }

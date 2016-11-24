@@ -34,16 +34,14 @@ class AvailabilityList extends Base
     {
         $list = new static();
         foreach ($this as $availability) {
-            if ($availability->isOpened($dateTime, 'appointment')
-                || $availability->isOpened($dateTime, 'openinghours')
-            ) {
+            if ($availability->isOpenedOnDate($dateTime)) {
                 $list[] = $availability;
             }
         }
         return $list;
     }
 
-    public function isOpenendByDate($dateString, $type = 'openinghours')
+    public function isOpenedByDate($dateString, $type = 'openinghours')
     {
         $dateTime = \BO\Zmsentities\Helper\DateTime::create($dateString);
         return $this->isOpened($dateTime, $type);

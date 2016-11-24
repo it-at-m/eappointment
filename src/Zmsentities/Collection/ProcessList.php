@@ -62,11 +62,24 @@ class ProcessList extends Base
         return $processList;
     }
 
+    public function withAvailabilityStrict(\BO\Zmsentities\Availability $availability)
+    {
+        $processList = new static();
+        $slotList = $availability->getSlotList();
+        foreach ($this as $process) {
+            if ($slotList->removeAppointment($process->getFirstAppointment())) {
+                $processList[] = clone $process;
+            }
+        }
+        return $processList;
+    }
+
     public function withOutAvailability(\BO\Zmsentities\Collection\AvailabilityList $availabilityList)
     {
         $processList = new static();
+        $slotList = $availabilityList->getSlotList();
         foreach ($this as $process) {
-            if (!$availabilityList->hasAppointment($process->getFirstAppointment())) {
+            if (!$slotList->removeAppointment($process->getFirstAppointment())) {
                 $processList[] = clone $process;
             }
         }

@@ -83,6 +83,16 @@ class SlotList extends Base
         return $slotList;
     }
 
+    public function removeAppointment(\BO\Zmsentities\Appointment $appointment)
+    {
+        $slot = $this->getByDateTime($appointment->toDateTime());
+        if ($slot && $slot->intern > 0) {
+            $slot->removeAppointment();
+            return true;
+        }
+        return false;
+    }
+
     public function getSlot($index)
     {
         $index = intval($index);
