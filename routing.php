@@ -128,7 +128,7 @@ use \Psr\Http\Message\ResponseInterface;
     ->setName("AvailabilityUpdate");
 
 \App::$slim->delete('/availability/{id:\d{1,11}}/',
-    '\BO\Zmsapi\AvailabilityDelete')
+                    '\BO\Zmsadmin\AvailabilityDelete')
     ->setName("AvailabilityDelete");
 
 \App::$slim->get('/availability/day/', '\BO\Zmsadmin\Availability')

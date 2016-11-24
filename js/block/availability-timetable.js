@@ -50,6 +50,7 @@ class View extends BaseView {
 
     changeformData(data) {
         let $form = $('.availability-form');
+        $form.find('input[name=id]').val(data.id);
         $form.find('input[name=description]').val(data.description);
         $form.find('input[name=slotTimeInMinutes]').val(data.slotTimeInMinutes);
         $form.find('input[name=time_start_hour]').val(data.startTime.replace(/:\d+$/, ''));
@@ -61,6 +62,16 @@ class View extends BaseView {
         $form.find('input[name=workstationCount_intern]').val(data.workstationCount.intern);
         $form.find('select[name=workstationCount_callcenter]').val(data.workstationCount.callcenter);
         $form.find('select[name=workstationCount_public]').val(data.workstationCount.public);
+    }
+
+    removeAvailability(itemId) {
+        this.$.find('.item-bar[data-availability]').each((index, itemBar) => {
+            const $itemBar = $(itemBar)
+            const { id } = $itemBar.data('availability') || {};
+            if (id === itemId) {
+                $itemBar.remove();
+            }
+        })
     }
 }
 
