@@ -62,6 +62,7 @@ class QueueList extends Base
 
     public function getEstimatedWaitingTime($processTimeAverage, $workstationCount, \DateTimeInterface $dateTime)
     {
+        $workstationCount = (0 == $workstationCount) ? 1 : $workstationCount;
         $queueList = clone $this;
         $entity = new \BO\Zmsentities\Queue();
         $entity->number = self::FAKE_WAITINGNUMBER;
@@ -72,7 +73,6 @@ class QueueList extends Base
             ->withEstimatedWaitingTime($processTimeAverage, $workstationCount, $dateTime);
         $newEntity = $queueList->getQueueByNumber(self::FAKE_WAITINGNUMBER);
         $lastEntity = end($queueList);
-        error_log(var_export($queueList, 1));
         return ($newEntity) ? array(
             'amountBefore' => $queueList->getQueuePositionByNumber($newEntity->number),
             'waitingTimeEstimate' => $newEntity->waitingTimeEstimate
