@@ -27,16 +27,11 @@ class ScopeAvailabilityMonth extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        /*
-        $availabilityList = new AvailabilityList();
-        $prefix = \App::APP_PATH . '/tests/examples/Availability'.$scope_id.'/';
-        foreach (glob($prefix . 'availability_*.json') as $filename) {
-            $availabilityList[] = new Availability(json_decode(file_get_contents($filename), true));
+        if (isset($args['date'])) {
+            $dateTime = new \BO\Zmsentities\Helper\DateTime($args['date']);
+        } else {
+            $dateTime = \App::$now;
         }
-        $scope = json_decode(file_get_contents($prefix . 'scope.json'), true);
-        $conflicts = json_decode(file_get_contents($prefix . 'conflicts.json'), true);
-        */
-        $dateTime = \App::$now;
         $scopeId = Validator::value($args['id'])->isNumber()->getValue();
         $scope = \App::$http->readGetResult('/scope/'. $scopeId .'/')->getEntity();
         $availabilityList = \App::$http->readGetResult('/scope/'. $scopeId .'/availability/')->getCollection();
@@ -44,7 +39,14 @@ class ScopeAvailabilityMonth extends BaseController
         $calendar->firstDay->setDateTime($dateTime->modify('first day of this month'));
         $calendar->lastDay->setDateTime($dateTime->modify('last day of this month'));
         $calendar->scopes[] = $scope;
-        $calendar = \App::$http->readPostResult('/calendar/', $calendar)->getEntity();
+        try {
+            $calendar = \App::$http->readPostResult('/calendar/', $calendar)->getEntity();
+        } catch (\BO\Zmsclient\Exception $exception) {
+            if ($exception->template != 'BO\Zmsapi\Exception\Calendar\AppointmentsMissed') {
+                throw $exception;
+            }
+            // TODO Berechne die Tage im Kalendar
+        }
         $month = (new Month(["year" => $dateTime->format('Y'), "month" => $dateTime->format('m')]))
             ->getWithStatedDayList($dateTime)
             ->setDays($calendar->getDayList());
@@ -57,14 +59,16 @@ class ScopeAvailabilityMonth extends BaseController
                 'availabilityListSlices' => $availabilityList->withCalculatedSlots(),
                 //'conflicts' => $conflicts,
                 'calendar' => $calendar,
+                'dateTime' => $dateTime,
+                'timestamp' => $dateTime->getTimeStamp(),
                 'month' => $month,
                 'scope' => $scope,
                 'menuActive' => 'availability',
                 'maxWorkstationCount' => $availabilityList->getMaxWorkstationCount(),
-                'today' => \App::$now->format('Y-m-d'),
-                'baseMonthString' => \App::$now->format('m'),
-                'baseYearString' => \App::$now->format('Y'),
-                'baseMonth_timestamp' => \App::$now->getTimeStamp()
+                'today' => $dateTime->format('Y-m-d'),
+                'baseMonthString' => $dateTime->modify('first day of this month')->format('m'),
+                'baseYearString' => $dateTime->modify('first day of this month')->format('Y'),
+                'baseMonth_timestamp' => $dateTime->modify('first day of this month')->getTimeStamp()
             )
         );
     }
