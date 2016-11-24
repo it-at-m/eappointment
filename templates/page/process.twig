@@ -20,7 +20,7 @@
     	{% if queueList|length > 1 %}{% set plural = 1 %}{% endif %}
     	{% if queueList|length >= 1 %}
 			{% if plural %}
-    		Es warten {{ queueList|length }} Kunden vor Ihnen.
+    		Es warten {{ estimatedData.amountBefore - 1 }} Kunden vor Ihnen.
     		{% else %}
     		Es wartet 1 Kunde vor Ihnen.
     		{% endif %}
@@ -32,23 +32,23 @@
     </span>
 
 	{% if
-	    estimatedWaitingTime > scope.preferences.ticketprinter.notificationsDelay and
-	    scope.preferences.ticketprinter.notificationsAmendmentEnabled and
-	    scope.preferences.appointment.notificationConfirmationEnabled
+	    estimatedWaitingTime > process.scope.preferences.ticketprinter.notificationsDelay and
+	    process.scope.preferences.ticketprinter.notificationsAmendmentEnabled and
+	    process.scope.preferences.appointment.notificationConfirmationEnabled
 	%}
     <div class="smsoptionbutton noprint">
         <p>Wartenummer wird im Anschluss ausgedruckt.</p>
-        <p>
+        <span class="noprint">
             Wünschen Sie eine SMS-Benachrichtigung<br/>
             {{ button.scope.preferences.notifications.headsUpTime }} Minuten vor ihrem Aufruf?
-        </p>
-		<form action="{{ urlGet('TicketprinterNotification', {}, {}) }}" method="post">
+        </span
+		<form action="{{ urlGet('TicketprinterNotification', {'processId': process.id, 'authKey': process.authKey}, {}) }}" method="post">
             {{ hiddenfield({ "name": "scopeId", "value": button.scope.id }) }}
             {{ hiddenfield({ "name": "organisationId", "value": organisation.id }) }}
             {{ formbutton({ "type":"submit", "class": "ja_nein", "name": "submit_yes", "label":"Ja"|trans }) }}
         </form>
 
-		<form action="{{ urlGet('TicketprinterProcess', {}, {}) }}" method="post">
+		<form action="{{ urlGet('TicketprinterByScope', {'scopeId': process.scope.id}, {}) }}" method="post">
             {{ hiddenfield({ "name": "hasWaitingNumber", "value": 1 }) }}
             {{ formbutton({ "type":"submit", "class": "ja_nein option_nein", "name": "submit_no", "label":"Nein"|trans }) }}
         </form>
@@ -56,7 +56,7 @@
 	{% else %}
 	<span class="noprint">
 		<p>Ihre Wartenummer wird gedruckt.</p>
-		<form action="{{ urlGet('TicketprinterProcess', {}, {}) }}" method="post">
+		<form action="{{ urlGet('TicketprinterByScope', {'scopeId': process.scope.id}, {}) }}" method="post">
             {{ hiddenfield({ "name": "hasWaitingNumber", "value": 1 }) }}
             {{ formbutton({ "type":"submit", "class": "ja_nein", "name": "submit_ok", "label":"OK" }) }}
         </form>
@@ -64,5 +64,3 @@
 	{% endif %}
 </div>
 {% endblock %}
-
-

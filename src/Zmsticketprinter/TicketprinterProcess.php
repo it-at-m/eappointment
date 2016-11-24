@@ -36,6 +36,9 @@ class TicketprinterProcess extends BaseController
             )->getEntity();
         }
 
+        $scope = new \BO\Zmsentities\Scope($process->scope);
+        $queueList = \App::$http->readGetResult('/scope/'. $scope->id . '/queue/')->getCollection();
+
         return \BO\Slim\Render::withHtml(
             $response,
             'page/process.twig',
@@ -43,9 +46,14 @@ class TicketprinterProcess extends BaseController
                 'debug' => \App::DEBUG,
                 'title' => 'Anmeldung an der Warteschlange',
                 'ticketprinter' => $ticketprinter,
-                'organisation' => \App::$http->readGetResult('/organisation/scope/'. $scopeId . '/')->getEntity(),
+                'organisation' => \App::$http->readGetResult('/organisation/scope/'. $scope->id . '/')->getEntity(),
                 'process' => $process,
-                'queueList' => \App::$http->readGetResult('/scope/'. $scopeId . '/queue/')->getCollection()
+                'queueList' => $queueList,
+                'estimatedData' => $queueList->getEstimatedWaitingTime(
+                    $scope->getPreference('queue', 'processingTimeAverage'),
+                    $scope->getCalculatedWorkstationCount(),
+                    \App::$now
+                )
             )
         );
     }

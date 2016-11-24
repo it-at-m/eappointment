@@ -16,7 +16,7 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/', '\BO\Zmsticketprinter\Index')
     ->setName("Index");
 
-\App::$slim->get('/scope/{scopeId:\d+}/', '\BO\Zmsticketprinter\TicketprinterByScope')
+\App::$slim->map(['GET','POST'], '/scope/{scopeId:\d+}/', '\BO\Zmsticketprinter\TicketprinterByScope')
     ->setName("TicketprinterByScope");
 
 \App::$slim->post('/process/', '\BO\Zmsticketprinter\TicketprinterProcess')
