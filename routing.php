@@ -27,6 +27,15 @@ use \Psr\Http\Message\ResponseInterface;
 
     \App::$slim->post('/notification/', '\BO\Zmsticketprinter\TicketprinterProcessNotification')
     ->setName("TicketprinterProcessNotification");
+
+/*
+ * ---------------------------------------------------------------------------
+ * redirects from old to new
+ * -------------------------------------------------------------------------
+ */
+    \App::$slim->get('/mehrfachkiosk.php', '\BO\Zmsticketprinter\RedirectOld')
+    ->setName("RedirectOld");
+
 /*
  * ---------------------------------------------------------------------------
  * maintenance
