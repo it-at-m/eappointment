@@ -83,13 +83,22 @@ class Scope extends Schema\Entity
         return ($alternateUrl) ? $alternateUrl : null;
     }
 
+    public function getWaitingTimeFromQueueList(Collection\QueueList $queueList, \DateTimeInterface $dateTime)
+    {
+        return $queueList->getEstimatedWaitingTime(
+            $this->getPreference('queue', 'processingTimeAverage'),
+            $this->getCalculatedWorkstationCount(),
+            $dateTime
+        );
+    }
+
     public function getCalculatedWorkstationCount()
     {
         $workstationCount = $this->getStatus('queue', 'workstationCount');
         return ('0' == $workstationCount) ? 1 : $workstationCount;
     }
 
-    public function updateStatusQueue($dateTime)
+    public function updateStatusQueue(\DateTimeInterface $dateTime)
     {
         $lastQueueUpdateDate = Helper\DateTime::create()
             ->setTimestamp($this->getStatus('queue', 'lastGivenNumberTimestamp'));
