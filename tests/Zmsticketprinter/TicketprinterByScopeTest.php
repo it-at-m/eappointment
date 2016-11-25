@@ -16,8 +16,8 @@ class TicketprinterByScopeTest extends Base
         return [
             [
                 'function' => 'readGetResult',
-                'url' => '/organisation/scope/141/',
-                'response' => $this->readFixture("GET_organisation_71.json"),
+                'url' => '/organisation/scope/312/',
+                'response' => $this->readFixture("GET_organisation_78.json"), //Treptow Köpenick
             ],
             [
                 'function' => 'readGetResult',
@@ -31,8 +31,8 @@ class TicketprinterByScopeTest extends Base
             ],
             [
                 'function' => 'readGetResult',
-                'url' => '/scope/141/queue/',
-                'response' => $this->readFixture("GET_queuelist_141.json"),
+                'url' => '/scope/312/queue/',
+                'response' => $this->readFixture("GET_queuelist_312.json"), //Bürgeramt 1 in Köpenick
             ]
         ];
     }
@@ -40,13 +40,13 @@ class TicketprinterByScopeTest extends Base
     public function testRendering()
     {
         $response = $this->render([
-            'scopeId' => 141
+            'scopeId' => 312
         ], [
             '__cookie' => [
                 'Ticketprinter' => '71ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2',
             ]
         ], [ ]);
         $this->assertContains('Wartenummer für', (string) $response->getBody());
-        $this->assertContains('Bürgeramt Heerstraße', (string) $response->getBody());
+        $this->assertContains('Köpenick', (string) $response->getBody());
     }
 }

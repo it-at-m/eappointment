@@ -25,6 +25,7 @@ class TicketprinterByScope extends BaseController
         $validatePrint = $validator->getParameter('hasWaitingNumber')->isNumber()->getValue();
         $ticketprinterHelper = (new Helper\Ticketprinter($args, $request));
         $ticketprinter = $ticketprinterHelper->getEntity();
+
         $queueList = \App::$http->readGetResult('/scope/'. $args['scopeId'] . '/queue/')->getCollection();
         $scope = $ticketprinter->getScopeList()->getFirst();
 
@@ -37,11 +38,8 @@ class TicketprinterByScope extends BaseController
                 'ticketprinter' => $ticketprinter,
                 'organisation' => $ticketprinterHelper::$organisation,
                 'queueList' => $queueList,
-                'estimatedData' => $queueList->getEstimatedWaitingTime(
-                    $scope->getPreference('queue', 'processingTimeAverage'),
-                    $scope->getCalculatedWorkstationCount(),
-                    \App::$now
-                ),
+                'scope' => $scope,
+                'estimatedData' => $scope->getWaitingTimeFromQueueList($queueList, \App::$now),
                 'validatePrint' => $validatePrint
             )
         );

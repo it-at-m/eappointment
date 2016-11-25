@@ -16,8 +16,8 @@ class IndexRedirectTest extends Base
         return [
             [
                 'function' => 'readGetResult',
-                'url' => '/organisation/scope/141/',
-                'response' => $this->readFixture("GET_organisation_71.json"),
+                'url' => '/organisation/scope/312/',
+                'response' => $this->readFixture("GET_organisation_78.json"),
             ],
             [
                 'function' => 'readGetResult',
@@ -39,9 +39,9 @@ class IndexRedirectTest extends Base
                 'Ticketprinter' => '71ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2',
             ],
             'ticketprinter' => [
-                'buttonlist' => 's141'
+                'buttonlist' => 's312'
             ]
         ], [ ]);
-        $this->assertRedirect($response, '/scope/141/');
+        $this->assertRedirect($response, '/scope/312/');
     }
 }

@@ -49,11 +49,7 @@ class TicketprinterProcess extends BaseController
                 'organisation' => \App::$http->readGetResult('/organisation/scope/'. $scope->id . '/')->getEntity(),
                 'process' => $process,
                 'queueList' => $queueList,
-                'estimatedData' => $queueList->getEstimatedWaitingTime(
-                    $scope->getPreference('queue', 'processingTimeAverage'),
-                    $scope->getCalculatedWorkstationCount(),
-                    \App::$now
-                )
+                'estimatedData' => $scope->getWaitingTimeFromQueueList($queueList, \App::$now),
             )
         );
     }

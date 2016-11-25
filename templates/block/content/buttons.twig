@@ -1,6 +1,7 @@
 {# 1 Button #}
 {% block button_singlerow %}
 	{% from 'element/helper/form.twig' import formbutton, custombutton, hiddenfield %}
+	{% if button.enabled %}{% set disabled = "" %}{% else %}{% set disabled = " disabled" %}{% endif %}
 	<div class="wartebuttonbereich_einzeilig" data-queue-min=1 data-queue-max=2>
 		{% if button.type == "link" %}
 			{% set label = button.name|default('Information') %}
@@ -16,7 +17,7 @@
     			{% set label = "Information" %}
     			{% endif %}
     			<div class="warteschlangebutton_gross" id="warteschlangebutton_gross">
-                    {{ formbutton({ "type":"submit", "name": "Eintragen", "label":label|trans, "value": "Wartenummer anfordern" }) }}
+                    {{ formbutton({ "type":"submit", "name": "Eintragen", "class": "eintragen" ~ disabled, "label":label|trans, "value": "Wartenummer anfordern" }) }}
                 </div>
             </form>
         {% endif %}
@@ -28,6 +29,7 @@
 	{% from 'element/helper/form.twig' import formbutton, custombutton, hiddenfield %}
 	<div class="wartebuttonbereich_zweizeilig"  data-queue-min=3 data-queue-max=6>
 	{% for button in ticketprinter.buttons %}
+		{% if button.enabled %}{% set disabled = "" %}{% else %}{% set disabled = " disabled" %}{% endif %}
 		{% if button.type == "link" %}
 			{% set label = button.name|default('Information') %}
 			<div class="variablerwarteschlangebutton" id="variablerwarteschlangebutton">
@@ -39,7 +41,7 @@
                 {{ hiddenfield({ "name": "clusterId", "value": button.cluster.id }) }}
     			{% set label = "Wartenummer für " ~ button.name %}
     			<div class="variablerwarteschlangebutton" id="variablerwarteschlangebutton">
-                    {{ formbutton({ "type":"submit", "name": "Eintragen", "label":label|trans, "value": "Wartenummer anfordern" }) }}
+                    {{ formbutton({ "type":"submit", "name": "Eintragen", "class": "eintragen" ~ disabled, "label":label|trans, "value": "Wartenummer anfordern" }) }}
                 </div>
             </form>
         {% endif %}
@@ -52,6 +54,7 @@
 	{% from 'element/helper/form.twig' import formbutton, custombutton, hiddenfield %}
 	<div class="wartebuttonbereich_zweizeilig_tief"  data-queue-min=3 data-queue-max=6>
     {% for button in ticketprinter.buttons %}
+    	{% if button.enabled %}{% set disabled = "" %}{% else %}{% set disabled = " disabled" %}{% endif %}
     	{% if button.type == "link" %}
 			{% set label = button.name|default('Information') %}
 			<div class="variablerwarteschlangebutton" id="variablerwarteschlangebutton">
@@ -63,7 +66,7 @@
                 {{ hiddenfield({ "name": "clusterId", "value": button.cluster.id }) }}
         		{% set label = "Wartenummer für " ~ button.name %}
         		<div class="variablerwarteschlangebutton" id="variablerwarteschlangebutton">
-                    {{ formbutton({ "type":"submit", "name": "Eintragen", "label":label|trans, "value": "Wartenummer anfordern" }) }}
+                    {{ formbutton({ "type":"submit", "name": "Eintragen", "class": "eintragen" ~ disabled, "label":label|trans, "value": "Wartenummer anfordern" }) }}
                 </div>
             </form>
         {% endif %}

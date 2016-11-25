@@ -6,8 +6,6 @@
 {% block pageid %}index{% endblock %}
 {% block content %}
 
-	{% set scope = ticketprinter.buttons|first.scope %}
-
 	{% if validatePrint %}
 	{{ block("feedback_print") }}
 	{% endif %}
@@ -20,19 +18,31 @@
 	<div class="werbeblock_oben">
 		{% trans "Anzahl vor Ihnen wartender Kunden" %}:
 		<span id="wartende">
-		    {% if estimatedData.amountBefore %} {{ estimatedData.amountBefore - 1 }} {% else %} {% trans "keine" %} {% endif %}
+		    {% if estimatedData.amountBefore %}
+		        {{ estimatedData.amountBefore - 1 }}
+		    {% else %}
+		        {% trans "keine" %}
+		    {% endif %}
 		</span>
 		<br>
-		<div class="wartezeit">
-			<span id="wartezeit">{{ waitingTime }}</span>
-		</div>
+
+		{% trans "Vorraussichtliche Wartezeit" %}:
+		{% if estimatedData.waitingTimeEstimate %}
+			{% if estimatedData.waitingTimeEstimate < 120 %}
+		        {{ estimatedData.waitingTimeEstimate }} {% trans "Minuten" %}
+		    {% else %}
+		    	{{ (estimatedData.waitingTimeEstimate / 60)|round(0, 'floor') }} {% trans "Stunden" %}
+		    {% endif %}
+		{% else %}
+		    {% trans "keine" %}
+		{% endif %}
 	</div>
 	{% endif %}
 
 	{{ block("button_singlerow") }}
 
 	{% if
-	    estimatedWaitingTime > scope.preferences.ticketprinter.notificationsDelay and
+	    estimatedData.waitingTimeEstimate > (scope.preferences.ticketprinter.notificationsDelay)|round() and
 	    scope.preferences.ticketprinter.notificationsAmendmentEnabled and
 	    scope.preferences.appointment.notificationConfirmationEnabled
 	%}
