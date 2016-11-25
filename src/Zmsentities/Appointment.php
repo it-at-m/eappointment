@@ -12,7 +12,7 @@ class Appointment extends Schema\Entity
     {
         return [
             'date' => 0,
-            'scope' => new Scope(),
+            'scope' => [],
             'slotCount' => 0,
         ];
     }
@@ -53,8 +53,19 @@ class Appointment extends Schema\Entity
 
     public function addScope($scopeId)
     {
-        $this->scope['id'] = $scopeId;
+        $this->getScope()->id = $scopeId;
         return $this;
+    }
+
+    public function getScope()
+    {
+        if (!isset($this['scope'])) {
+            $this->scope = new Scope();
+        }
+        if (!$this->scope instanceof Scope) {
+            $this->scope = new Scope($this->scope);
+        }
+        return $this->scope;
     }
 
     public function addSlotCount()
