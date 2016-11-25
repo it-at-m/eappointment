@@ -92,8 +92,19 @@ class Process extends Base implements MappingInterface
             'queue__arrivalTime' => 'process.wsm_aufnahmezeit',
             'queue__callCount' => 'process.AnzahlAufrufe',
             'queue__callTime' => 'process.aufrufzeit',
-            'queue__number' => 'process.wartenummer',
+            'queue__number' => self::expression(
+                'IF(`process`.`wartenummer`,
+                    `process`.`wartenummer`,
+                    `process`.`BuergerID`
+                )'
+            ),
             'queue__waitingTime' => 'process.wartezeit',
+            'queue__withAppointment' => self::expression(
+                'IF(`process`.`wartenummer`,
+                    "0",
+                    "1"
+                )'
+            ),
             'reminderTimestamp' => 'process.Erinnerungszeitpunkt.'
         ];
     }
