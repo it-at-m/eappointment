@@ -1,0 +1,605 @@
+{
+  "$schema": "https://localhost/terminvereinbarung/api/2/",
+  "meta": {
+    "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+    "error": false,
+    "generated": "2016-11-25T08:56:32+01:00",
+    "server": "Zmsapi-ENV"
+  },
+  "data": {
+    "0": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459488600,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "79142",
+      "withAppointment": true,
+      "waitingTimeEstimate": 0
+    },
+    "1": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459488600,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "150666",
+      "withAppointment": true,
+      "waitingTimeEstimate": 12
+    },
+    "2": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459488600,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "196249",
+      "withAppointment": true,
+      "waitingTimeEstimate": 24
+    },
+    "3": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459489500,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "12291058",
+      "withAppointment": true,
+      "waitingTimeEstimate": 36
+    },
+    "4": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459489500,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "12291157",
+      "withAppointment": true,
+      "waitingTimeEstimate": 48
+    },
+    "5": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459489500,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "196838",
+      "withAppointment": true,
+      "waitingTimeEstimate": 60
+    },
+    "6": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459490400,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "61832",
+      "withAppointment": true,
+      "waitingTimeEstimate": 72
+    },
+    "7": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459490400,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "157818",
+      "withAppointment": true,
+      "waitingTimeEstimate": 84
+    },
+    "8": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459490400,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "197049",
+      "withAppointment": true,
+      "waitingTimeEstimate": 96
+    },
+    "9": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459491300,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "12291961",
+      "withAppointment": true,
+      "waitingTimeEstimate": 108
+    },
+    "10": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459491300,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "159779",
+      "withAppointment": true,
+      "waitingTimeEstimate": 120
+    },
+    "11": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459491300,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "197922",
+      "withAppointment": true,
+      "waitingTimeEstimate": 132
+    },
+    "12": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459492200,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "59766",
+      "withAppointment": true,
+      "waitingTimeEstimate": 144
+    },
+    "13": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459492200,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "159491",
+      "withAppointment": true,
+      "waitingTimeEstimate": 156
+    },
+    "14": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459492200,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "198573",
+      "withAppointment": true,
+      "waitingTimeEstimate": 168
+    },
+    "15": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459493100,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "161322",
+      "withAppointment": true,
+      "waitingTimeEstimate": 180
+    },
+    "16": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459493100,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "198878",
+      "withAppointment": true,
+      "waitingTimeEstimate": 192
+    },
+    "17": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459493100,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "160977",
+      "withAppointment": true,
+      "waitingTimeEstimate": 204
+    },
+    "18": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459494000,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "116368",
+      "withAppointment": true,
+      "waitingTimeEstimate": 216
+    },
+    "19": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459494000,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "161167",
+      "withAppointment": true,
+      "waitingTimeEstimate": 228
+    },
+    "20": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459494000,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "199004",
+      "withAppointment": true,
+      "waitingTimeEstimate": 240
+    },
+    "21": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459494900,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "199053",
+      "withAppointment": true,
+      "waitingTimeEstimate": 252
+    },
+    "22": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459494900,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "116526",
+      "withAppointment": true,
+      "waitingTimeEstimate": 264
+    },
+    "23": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459494900,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "173222",
+      "withAppointment": true,
+      "waitingTimeEstimate": 276
+    },
+    "24": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459495800,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "12301471",
+      "withAppointment": true,
+      "waitingTimeEstimate": 288
+    },
+    "25": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459495800,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "48103",
+      "withAppointment": true,
+      "waitingTimeEstimate": 300
+    },
+    "26": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459495800,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "116875",
+      "withAppointment": true,
+      "waitingTimeEstimate": 312
+    },
+    "27": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459496700,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "80185",
+      "withAppointment": true,
+      "waitingTimeEstimate": 324
+    },
+    "28": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459496700,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "163452",
+      "withAppointment": true,
+      "waitingTimeEstimate": 336
+    },
+    "29": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459496700,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "199073",
+      "withAppointment": true,
+      "waitingTimeEstimate": 348
+    },
+    "30": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459497600,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "194301",
+      "withAppointment": true,
+      "waitingTimeEstimate": 360
+    },
+    "31": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459497600,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "80302",
+      "withAppointment": true,
+      "waitingTimeEstimate": 372
+    },
+    "32": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459497600,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "158338",
+      "withAppointment": true,
+      "waitingTimeEstimate": 384
+    },
+    "33": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459498500,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "12291175",
+      "withAppointment": true,
+      "waitingTimeEstimate": 396
+    },
+    "34": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459498500,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "11745",
+      "withAppointment": true,
+      "waitingTimeEstimate": 408
+    },
+    "35": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459498500,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "194335",
+      "withAppointment": true,
+      "waitingTimeEstimate": 420
+    },
+    "36": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459499400,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "156694",
+      "withAppointment": true,
+      "waitingTimeEstimate": 432
+    },
+    "37": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459499400,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "173583",
+      "withAppointment": true,
+      "waitingTimeEstimate": 444
+    },
+    "38": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459499400,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "199219",
+      "withAppointment": true,
+      "waitingTimeEstimate": 456
+    },
+    "39": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459500300,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "157373",
+      "withAppointment": true,
+      "waitingTimeEstimate": 468
+    },
+    "40": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459500300,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "170826",
+      "withAppointment": true,
+      "waitingTimeEstimate": 480
+    },
+    "41": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459500300,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "198289",
+      "withAppointment": true,
+      "waitingTimeEstimate": 492
+    },
+    "42": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459501200,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "195171",
+      "withAppointment": true,
+      "waitingTimeEstimate": 504
+    },
+    "43": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459501200,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "88698",
+      "withAppointment": true,
+      "waitingTimeEstimate": 516
+    },
+    "44": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459501200,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "195149",
+      "withAppointment": true,
+      "waitingTimeEstimate": 528
+    },
+    "45": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459502100,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "195199",
+      "withAppointment": true,
+      "waitingTimeEstimate": 540
+    },
+    "46": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459502100,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "12301702",
+      "withAppointment": true,
+      "waitingTimeEstimate": 552
+    },
+    "47": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459502100,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "13115741",
+      "withAppointment": true,
+      "waitingTimeEstimate": 564
+    },
+    "48": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459503000,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "188068",
+      "withAppointment": true,
+      "waitingTimeEstimate": 576
+    },
+    "49": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459503000,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "197248",
+      "withAppointment": true,
+      "waitingTimeEstimate": 588
+    },
+    "50": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459503000,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "95867",
+      "withAppointment": true,
+      "waitingTimeEstimate": 600
+    },
+    "51": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459503900,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "195929",
+      "withAppointment": true,
+      "waitingTimeEstimate": 612
+    },
+    "52": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459503900,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "120238",
+      "withAppointment": true,
+      "waitingTimeEstimate": 624
+    },
+    "53": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459503900,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "195223",
+      "withAppointment": true,
+      "waitingTimeEstimate": 636
+    },
+    "54": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459504800,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "55293",
+      "withAppointment": true,
+      "waitingTimeEstimate": 648
+    },
+    "55": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459504800,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "195180",
+      "withAppointment": true,
+      "waitingTimeEstimate": 660
+    },
+    "56": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459504800,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "198615",
+      "withAppointment": true,
+      "waitingTimeEstimate": 672
+    },
+    "57": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459505700,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "197355",
+      "withAppointment": true,
+      "waitingTimeEstimate": 684
+    },
+    "58": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459505700,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "12299659",
+      "withAppointment": true,
+      "waitingTimeEstimate": 696
+    },
+    "59": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459505700,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "195036",
+      "withAppointment": true,
+      "waitingTimeEstimate": 708
+    },
+    "60": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459506600,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "199543",
+      "withAppointment": true,
+      "waitingTimeEstimate": 720
+    },
+    "61": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459506600,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "67346",
+      "withAppointment": true,
+      "waitingTimeEstimate": 732
+    },
+    "62": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459506600,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "199453",
+      "withAppointment": true,
+      "waitingTimeEstimate": 744
+    },
+    "63": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459507500,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "195468",
+      "withAppointment": true,
+      "waitingTimeEstimate": 756
+    },
+    "64": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459507500,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "199459",
+      "withAppointment": true,
+      "waitingTimeEstimate": 768
+    },
+    "65": {
+      "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
+      "arrivalTime": 1459507500,
+      "callCount": "0",
+      "callTime": 0,
+      "number": "195413",
+      "withAppointment": true,
+      "waitingTimeEstimate": 780
+    }
+  }
+}
