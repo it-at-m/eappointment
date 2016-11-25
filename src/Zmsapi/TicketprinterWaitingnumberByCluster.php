@@ -37,10 +37,13 @@ class TicketprinterWaitingnumberByCluster extends BaseController
             throw new Exception\Cluster\ClusterNotFound();
         }
 
-        /*
-        $scope = $query->readScopeWithShortestWaitingTime($cluster->id, \App::$now);
+        $scope = (new Cluster())->readScopeWithShortestWaitingTime($cluster->id, \App::$now);
+        $process = (new Process())->writeNewFromTicketprinter($scope, \App::$now);
+        if (! $process->hasId()) {
+            throw new Exception\Process\ProcessReserveFailed();
+        }
+
         $message->data = $process;
-        */
 
         Render::lastModified(time(), '0');
         Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
