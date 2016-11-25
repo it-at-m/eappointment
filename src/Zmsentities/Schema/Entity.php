@@ -33,13 +33,17 @@ class Entity extends \ArrayObject implements \JsonSerializable
     /**
      * Read the json schema and let array act like an object
      */
-    public function __construct($input = [], $flags = \ArrayObject::ARRAY_AS_PROPS, $iterator_class = "ArrayIterator")
+    public function __construct($input = null, $flags = \ArrayObject::ARRAY_AS_PROPS, $iterator_class = "ArrayIterator")
     {
         //$this->jsonSchema = self::readJsonSchema();
-        $input = $this->getUnflattenedArray($input);
-        $defaults = $this->getDefaults();
-        if ($defaults) {
-            $input = array_replace_recursive($defaults, $input);
+        if ($input) {
+            $input = $this->getUnflattenedArray($input);
+            $defaults = $this->getDefaults();
+            if ($defaults) {
+                $input = array_replace_recursive($defaults, $input);
+            }
+        } else {
+            $input = $this->getDefaults();
         }
         parent::__construct($input, $flags, $iterator_class);
     }
@@ -67,21 +71,20 @@ class Entity extends \ArrayObject implements \JsonSerializable
       */
     public function getUnflattenedArray($hash)
     {
-        $splittedHash = array();
         foreach ($hash as $key => $value) {
-            $position = strpos($key, '__');
-            if (false !== $position && 0 < $position) {
-                list($subkey, $newkey) = explode('__', $key, 2);
-                if (!isset($splittedHash[$subkey])) {
-                    $splittedHash[$subkey] = array();
+            if (false !== strpos($key, '__')) {
+                $currentLevel =& $hash;
+                unset($hash[$key]);
+                foreach (explode('__', $key) as $currentKey) {
+                    if (!isset($currentLevel[$currentKey])) {
+                        $currentLevel[$currentKey] = [];
+                    }
+                    $currentLevel =& $currentLevel[$currentKey];
                 }
-                $splittedHash[$subkey][$newkey] = $value;
-                $splittedHash[$subkey] = $this->getUnflattenedArray($splittedHash[$subkey]);
-            } else {
-                $splittedHash[$key] = $value;
+                $currentLevel = $value;
             }
         }
-        return $splittedHash;
+        return (array)$hash;
     }
 
     /**
