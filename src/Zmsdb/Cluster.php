@@ -87,14 +87,14 @@ class Cluster extends Base
      *
      * @return Bool
      */
-    public function readIsOpenedScopeList($clusterId, $now)
+    public function readOpenedScopeList($clusterId, \DateTimeInterface $dateTime)
     {
         $scopeList = new \BO\Zmsentities\Collection\ScopeList();
         $cluster = $this->readEntity($clusterId, 1);
         if ($cluster && $cluster->toProperty()->scopes->get()) {
             foreach ($cluster->scopes as $scope) {
-                $availabilityList = (new Availability())->readOpeningHoursListByDate($scope['id'], $now);
-                if ($availabilityList->isOpened($now) && ! $scope->getStatus('ticketprinter', 'deactivated')) {
+                $availabilityList = (new Availability())->readOpeningHoursListByDate($scope['id'], $dateTime);
+                if ($availabilityList->isOpened($dateTime) && ! $scope->getStatus('ticketprinter', 'deactivated')) {
                     $scopeList->addEntity($scope);
                 }
             }
@@ -103,7 +103,7 @@ class Cluster extends Base
     }
 
     /**
-     * get a scope with shortest waitingtime
+     * get the scope with shortest estimated waitingtime
      *
      ** @param
      *            clusterId
@@ -111,22 +111,23 @@ class Cluster extends Base
      *
      * @return Bool
      */
-    /*
-    public function readScopeWithShortestWaitingTime($clusterId, $now)
+    public function readScopeWithShortestWaitingTime($clusterId, \DateTimeInterface $dateTime)
     {
-        $scopeList = $this->readIsOpenedScopeList($clusterId, $now);
-        $preferedScope = reset($scopeList);
-        $waitingTimeReference = 10000000;
-        foreach ($scopeList as $scope) {
-            $waitingTime = (new Scope())->readWaitingTime($scope->id, $now);
-            if ($waitingTime && $waitingTimeReference >= $waitingTime) {
-                $waitingTimeReference = $waitingTime;
-                $preferedScope = $scope;
+        $scopeList = $this->readOpenedScopeList($clusterId, $dateTime)->getArrayCopy();
+        $nextScope = array_shift($scopeList);
+        $preferedScope = null;
+        $preferedWaitingTime = 0;
+        while ($nextScope) {
+            $queueList = (new Scope())->readWithWaitingTime($nextScope->id, $dateTime);
+            $data = $nextScope->getWaitingTimeFromQueueList($queueList, $dateTime);
+            if ($data['waitingTimeEstimate'] <= $preferedWaitingTime || 0 == $preferedWaitingTime) {
+                $preferedWaitingTime = $data['waitingTimeEstimate'];
+                $preferedScope = $nextScope;
+                $nextScope = array_shift($scopeList);
             }
         }
         return $preferedScope;
     }
-    */
 
     /**
     * remove an cluster

@@ -40,11 +40,10 @@ class ClusterTest extends Base
         $query = new Query();
         $input = $this->getTestEntity();
         $now = new \DateTimeImmutable("2016-04-01 11:55");
-        $entityList = $query->readIsOpenedScopeList(60, $now); //by Egon-Erwin-Kisch-Str. Cluster
-        $this->assertEquals(true, 0 <= count($entityList));
+        $entityList = $query->readOpenedScopeList(60, $now); //by Egon-Erwin-Kisch-Str. Cluster
+        $this->assertEquals(true, 0 <= $entityList->count());
     }
 
-    /*
     public function testReadScopeWithShortestWaitingTime()
     {
         $query = new Query();
@@ -52,9 +51,11 @@ class ClusterTest extends Base
         $now = new \DateTimeImmutable("2016-04-01 11:55");
         //by Schöneberg with test ghostWorkstationCount of 3
         $scope = $query->readScopeWithShortestWaitingTime(4, $now);
-        $this->assertTrue(146 == $scope->id);
+        $queueList = (new \BO\Zmsdb\Scope())->readWithWaitingTime($scope->id, $now);
+        $estimatedData = $scope->getWaitingTimeFromQueueList($queueList, $now);
+        $this->assertTrue(456 == $scope->id);
+        $this->assertTrue(270 == $estimatedData['waitingTimeEstimate']);
     }
-    */
 
     public function testWriteEntity()
     {
