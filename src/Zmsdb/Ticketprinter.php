@@ -94,9 +94,9 @@ class Ticketprinter extends Base
                     if (! $cluster) {
                         throw new Exception\TicketprinterUnvalidButtonList();
                     }
-                    $scopeList = $query->readIsOpenedScopeList($cluster->id, $now);
+                    $scopeList = $query->readOpenedScopeList($cluster->id, $now);
                     $ticketprinter->buttons[$key]['cluster'] = $cluster;
-                    $ticketprinter->buttons[$key]['enabled'] = (count($scopeList)) ? true : false;
+                    $ticketprinter->buttons[$key]['enabled'] = (1 <= $scopeList->count()) ? true : false;
                     $ticketprinter->buttons[$key]['name'] = $cluster->getName();
                 }
             }

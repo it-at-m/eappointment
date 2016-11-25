@@ -207,7 +207,10 @@ class Scope extends Base
         $queueList = $this->readQueueList($scopeId, $dateTime);
         //get scope
         $query = new Query\Scope(Query\Base::SELECT);
-        $query->addEntityMapping()->addConditionScopeId($scopeId);
+        $query
+            ->addEntityMapping()
+            ->addConditionScopeId($scopeId)
+            ->addSelectWorkstationCount($dateTime);
         $scope = $this->fetchOne($query, new Entity());
         //get processing time average
         $timeAverage = $scope->getPreference('queue', 'processingTimeAverage');
