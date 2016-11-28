@@ -35,12 +35,13 @@ class ScopeAvailabilityDay extends BaseController
         if ($processList) {
             $conflicts->addList($processList->withOutAvailability($availabilityList));
         }
+
         \BO\Slim\Render::html('page/availabilityday.twig', array(
-            'availabilityList' => $availabilityList,
+            'availabilityList' => $availabilityList->getArrayCopy(),
             'availabilityListSlices' => $availabilityList->withCalculatedSlots(),
-            'conflicts' => $conflicts,
+            'conflicts' => $conflicts->getArrayCopy(),
             'scope' => $scope,
-            'processList' => $processList,
+            'processList' => $processList->getArrayCopy(),
             'dateString' => $dateString,
             'timestamp' => $dateTime->getTimestamp(),
             'workstation' => $workstation,
