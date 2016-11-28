@@ -93,7 +93,7 @@
 
 
 {% macro inputfield(args) %}
-    <input type="{{ args.type|default('text') }}" name="{{ args.name }}" value="{{ args.value|e }}"{% if args.size %} size="{{ args.size }}"{% endif %}{% if args.readonly %} readonly="readonly"{% endif %}{% if args.maxlength %} maxlength="{{ args.maxlength }}"{% endif %}{% if args.placeholder %} placeholder="{{ args.placeholder }}"{% endif %} class="form-input{% if args.width %} input--size-{{ args.width }}{% endif %}"{% if args.accesskey %} accesskey="{{ args.accesskey }}"{% endif %}{% if args.id %} id="{{ args.id }}"{% endif %}>
+    <input type="{{ args.type|default('text') }}" name="{{ args.name }}" value="{{ args.value|e }}"{% if args.size %} size="{{ args.size }}"{% endif %}{% if args.readonly %} readonly="readonly"{% endif %}{% if args.maxlength %} maxlength="{{ args.maxlength }}"{% endif %}{% if args.placeholder %} placeholder="{{ args.placeholder }}"{% endif %} class="{{ args.class }}"{% if args.accesskey %} accesskey="{{ args.accesskey }}"{% endif %}{% if args.id %} id="{{ args.id }}"{% endif %}>
 {% endmacro %}
 
 {% macro hiddenfield(args) %}

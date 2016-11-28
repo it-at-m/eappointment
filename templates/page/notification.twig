@@ -1,0 +1,68 @@
+{% extends "layout/main.twig" %}
+
+{% use "block/content/buttons.twig" %}
+{% use "block/content/feedback.twig" %}
+
+{% from 'element/helper/form.twig' import formbutton, custombutton, hiddenfield, inputfield %}
+
+{% block pageid %}notification{% endblock %}
+{% block content %}
+<div class="boxontop">
+	<div class="noprint">
+        <form action="{{ urlGet('TicketprinterProcessNotification', {}, {}) }}" method="post" class="smseintragen">
+            <div class="smsbox" id="smsbox">
+                <div class="smshinweis">
+                    Bitte geben Sie hier<br/> Ihre Handynummer ein:
+                </div>
+                {% if scope.preferences.ticketprinter.confirmationEnabled %}
+                	<div class="sms_bestaetigung">
+                		Zur Bestätigung des Eintrags erhalten Sie eine SMS mit Ihrer Wartenummer.
+                	</div>
+                {% endif %}
+
+                <div class="label">
+                    Handynummer:
+                </div>
+                <div class="eingabe">
+                	{{ inputfield({ "name": "telephone", "id": "Handynummer", "class": "nummerneingabe", "value": process.clients|first.telephone }) }}
+                </div>
+                <div class="nummernblock">
+                	<button type="button" class="ziffer" id="digit1" >1</button>
+                	<button type="button" class="ziffer" id="digit2" >2</button>
+                	<button type="button" class="ziffer" id="digit3" >3</button><br />
+                	<button type="button" class="ziffer" id="digit4" >4</button>
+                	<button type="button" class="ziffer" id="digit5" >5</button>
+                	<button type="button" class="ziffer" id="digit6" >6</button><br />
+                	<button type="button" class="ziffer" id="digit7" >7</button>
+                	<button type="button" class="ziffer" id="digit8" >8</button>
+                	<button type="button" class="ziffer" id="digit9" >9</button><br />
+                	<button type="button" class="ziffer" id="removelastdigit" title="das letzte Zeichen löschen" >&lt;</button>
+                	<button type="button" class="ziffer" id="0" >0</button>
+                	<button type="button" class="ziffer" id="removealldigitsphone" >C</button>
+                </div>
+                <div class="anleitung">
+                    Mit der Taste "&lt;" können Sie die letzte Ziffer löschen, mit der "C"-Taste löschen Sie Ihre komplette Eingabe.
+                </div>
+                <div class="disclaimer">
+                    Ihre Handynummer wird nur zu diesem Zweck gespeichert und anschlie&szlig;end gelöscht.
+                </div>
+                <div class="smsbuttons">
+                	{{ hiddenfield({ "name": "scopeId", "value": scope.id }) }}
+					{{ hiddenfield({ "name": "clusterId", "value": cluster.id }) }}
+					{{ hiddenfield({ "name": "processId", "value": process.id }) }}
+        	        {% if scope.preferences.ticketprinter.confirmationEnabled %}
+            	    {{ hiddenfield({ "name": "confirmNotification", "value": 1 }) }}
+            	    {% endif %}
+            	    {% if process.id %}
+            	    {{ hiddenfield({ "name": "processId", "value": process.id }) }}
+            	    {% endif %}
+
+            	    {% set label = "Handynummer übermitteln" %}
+            	    {{ custombutton({ "class": "button abbrechen", "label":"Abbrechen", "target":urlGet('TicketprinterByScope', {'scopeId': scope.id}, {} ) }) }}
+            	    {{ formbutton({ "type":"submit", "name": "Telefonnachtragen", "id":"Telefonnachtragen", "class": "button nachtrag", "label":label|trans, "value": label|trans }) }}
+                </div>
+            </div>
+        </form>
+	</div>
+</div>
+{% endblock %}

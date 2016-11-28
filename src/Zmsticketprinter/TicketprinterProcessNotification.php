@@ -38,7 +38,7 @@ class TicketprinterProcessNotification extends BaseController
 
         return \BO\Slim\Render::withHtml(
             $response,
-            'page/process.twig',
+            'page/notification.twig',
             array(
                 'debug' => \App::DEBUG,
                 'title' => 'Anmeldung an der Warteschlange',

@@ -22,10 +22,7 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->post('/process/', '\BO\Zmsticketprinter\TicketprinterProcess')
     ->setName("TicketprinterProcess");
 
-\App::$slim->get('/notification/{processId:\d+}/{authKey}/', '\BO\Zmsticketprinter\TicketprinterNotification')
-    ->setName("TicketprinterNotification");
-
-    \App::$slim->post('/notification/', '\BO\Zmsticketprinter\TicketprinterProcessNotification')
+\App::$slim->post('/notification/', '\BO\Zmsticketprinter\TicketprinterProcessNotification')
     ->setName("TicketprinterProcessNotification");
 
 /*
