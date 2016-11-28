@@ -72,7 +72,7 @@ div.variablerwarteschlangebutton button.disabled {
 	background: url(img/multibutton_disabled.png) 0 24px no-repeat;
 }
 
-div.buttonTelefonnummernachtragen
+button.buttonTelefonnummernachtragen
 { 
     background: url(img/handynummer_nachtragen.png) 0 24px no-repeat;
     border:0;
@@ -90,15 +90,15 @@ div.buttonTelefonnummernachtragen
 }
 
 a.button {
-	display: block;
+	display: table-cell;
     text-align: center;
     vertical-align: middle;
-    line-height: 128px;
+    line-height: auto;
     text-decoration:none;
     cursor:pointer;
 }
 
-a.button.ja_nein, .wartenummern .ja_nein {
+a.button.ja_nein, .ja_nein {
     background: url(img/ja_nein.png) 0 5px no-repeat;
     border: 0;
     color: #fff;
@@ -107,4 +107,59 @@ a.button.ja_nein, .wartenummern .ja_nein {
     font-weight: bold;
     height: 141px;
     width: 314px;
+}
+
+.smsbuttons
+{
+    left:155px;
+    position:absolute;
+    top:545px;
+    width:700px;
+    display:table;
+}
+.smsbuttons .nachtrag
+{
+    background: url(img/handynummer_uebermitteln.png) 5px 10px no-repeat;
+    border:0;
+    color:#fff;
+    font-size:28px;
+    font-family: Arial, sans-serif;
+    font-weight:bold;
+    height: 80px;
+    margin: 0px 0 0 0px;
+    padding:0;
+    width: 439px;
+}
+
+.smsbuttons .nachtrag.active
+{
+    background: url(img/handynummer_uebermitteln_a.png) 5px 10px no-repeat;
+}
+
+.smsbuttons .nachtrag.disabled
+{
+    background: url(img/handynummer_uebermitteln_i.png) 5px 10px no-repeat;
+}
+
+.smsbuttons .abbrechen
+{
+    background: url(img/abbrechen.png) 5px 10px no-repeat;
+    border:0;
+    color:#fff;
+    font-size:28px;
+    font-family: Arial, sans-serif;
+    font-weight:bold;
+    height: 80px;
+    width: 220px;
+    line-height: 80px;
+}
+
+.smsbuttons .abbrechen.active
+{
+    background: url(img/abbrechen_a.png) 5px 10px no-repeat;
+}
+.smsbuttons .hilfe
+{
+	margin-top: 20px;
+    font-size: 20px;
 }
