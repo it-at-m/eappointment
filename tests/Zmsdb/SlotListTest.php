@@ -46,17 +46,6 @@ class SlotListTest extends Base
         ));
     }
 
-    public function testExceptionDublicateEntryFound()
-    {
-        $this->setExpectedException('\BO\Zmsdb\Exception\SlotDataDublicateEntryFound');
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
-        $slotData = $this->getTestSlotData();
-        $dateTime = \DateTimeImmutable::createFromFormat('Y-m-d', '2016-04-05');
-        $slotList = new SlotList($this->getTestSlotData(), $dateTime, $dateTime->modify('+1day'), $now);
-        $slotList->setSlotData($this->getTestSlotList());
-        $slotList->addQueryData($slotData);
-    }
-
     protected function getTestSlotData()
     {
         return array (

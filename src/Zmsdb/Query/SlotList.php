@@ -272,11 +272,7 @@ class SlotList
                 );
             }
             if ($slot->type !== Slot::FREE) {
-                $slotDebug = "$slotdate #$slotnumber @" . $slotData['slottime'] . " on " . $this->availability;
-                // error_log("Debugdata: Found two database entries for the same slot $slotDebug <=> $slot");
-                throw new \BO\Zmsdb\Exception\SlotDataDublicateEntryFound(
-                    "Found two database entries for the same slot $slotDebug <=> " . $slot
-                );
+                // We do not throw an exception, cause availability slotTime might have changed
             }
             $slotList[$slotnumber] = $this->getCalculatedSlot($slot, $slotData);
         } elseif (isset($slotData['availability__id'])) {
