@@ -13,7 +13,7 @@ var transform_shim = require('browserify-shim');
 var notifier = require('node-notifier');
 var crypto = require('crypto');
 
-gulp.task('js', ['lint'], function () {
+gulp.task('js', ['lint'], function (cb) {
     //gutil.log('[browserify] ' +  'build js');
     var bundler = browserify('./js/index.js', {
         'transform': [
@@ -22,7 +22,7 @@ gulp.task('js', ['lint'], function () {
                 minify: true
             }),
             transform_babelify.configure({
-                'presets': ['es2015'],
+                'presets': ['es2015', 'react'],
                 'plugins': []
             }),
             transform_shim
@@ -44,30 +44,31 @@ gulp.task('js', ['lint'], function () {
         });
     });
     bundler.bundle()
-        .on('error', function (message) {
-            gutil.log('[browserify] ' +  gutil.colors.red(message));
-            notifier.notify({
-                "title": "zmsbot-Build-Error",
-                "message" : "Error: " + message
-            });
-        })
-        .pipe(source('index.js'))
-        .pipe(buffer())
-        .pipe(plumber())
-        .pipe(sourcemaps.init({
-            'loadMaps': true,
-            'identityMap': true,
-            'debug': true
-        }))
-        .pipe(plumber())
-        .pipe(uglify())
-        .pipe(sourcemaps.write('./', {
-            sourceMappingURL: function (file) {
-                //gutil.log('[sourcemaps] Rewrite path ' +  gutil.colors.green(file.relative));
-                // Avoid caching of source
-                return file.relative + '.map?build=' + crypto.createHash('sha1').update(file.contents).digest('hex');
-            },
-            'debug': true
-        }))
-        .pipe(gulp.dest('./public/_js/'));
+           .on('error', function (message) {
+               gutil.log('[browserify] ' +  gutil.colors.red(message));
+               notifier.notify({
+                   "title": "zmsbot-Build-Error",
+                   "message" : "Error: " + message
+               });
+           })
+           .pipe(source('index.js'))
+           .pipe(buffer())
+           .pipe(plumber())
+           .pipe(sourcemaps.init({
+               'loadMaps': true,
+               'identityMap': true,
+               'debug': true
+           }))
+           .pipe(plumber())
+           .pipe(uglify())
+           .pipe(sourcemaps.write('./', {
+               sourceMappingURL: function (file) {
+                   //gutil.log('[sourcemaps] Rewrite path ' +  gutil.colors.green(file.relative));
+                   // Avoid caching of source
+                   return file.relative + '.map?build=' + crypto.createHash('sha1').update(file.contents).digest('hex');
+               },
+               'debug': true
+           }))
+           .pipe(gulp.dest('./public/_js/'))
+           .on('end', cb);
 });
