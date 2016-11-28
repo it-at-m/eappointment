@@ -74,18 +74,12 @@
 </div>
 {% endblock %}
 
-{# 2 Buttons #}
+{# 2 append notification to process #}
 {% block button_append_notification %}
-	{% from 'element/helper/form.twig' import custombutton %}
-	<div class="buttonTelefonnummernachtragen"
+	{% from 'element/helper/form.twig' import formbutton, hiddenfield %}
 	{% set label = "Handynummer nachträglich eintragen" %}
-	{{ custombutton({
-		"name": "appendNotifcation",
-		"label":label|trans,
-		"target":
-	        urlGet("TicketprinterProcessNotification",
-	        { "processId": process.id, "authKey": process.authKey },
-	        {} )
-    }) }}
-    </div>
+    <form action="{{ urlGet('TicketprinterProcessNotification', {}, {}) }}" method="post">
+        {{ hiddenfield({ "name": "scopeId", "value": ticketprinter.buttons|first.scope.id }) }}
+        {{ formbutton({ "type":"submit", "class": "buttonTelefonnummernachtragen", "name": "appendNotifcation", "label":label|trans, "value": label|trans }) }}
+    </form>
 {% endblock %}
