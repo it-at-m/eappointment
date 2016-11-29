@@ -217,7 +217,7 @@
 {% endmacro %}
 
 {% macro custombutton(args) %}
-    <a href="{{ args.target }}" class="{{ args.class|default('eintragen') }}" target="_blank">{{ args.label }}</a>
+    <a href="{{ args.href }}" class="{{ args.class|default('eintragen') }}" target="{{ args.target|default('_self') }}">{{ args.label }}</a>
 {% endmacro %}
 
 {% macro errormessage(messages) %}
