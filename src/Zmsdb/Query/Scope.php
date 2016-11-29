@@ -22,6 +22,19 @@ class Scope extends Base implements MappingInterface
             WHERE scope.`StandortID` = :scope_id LIMIT 1 FOR UPDATE';
     }
 
+    public function getQueryGivenNumbersInContingent()
+    {
+        return 'SELECT * FROM `standort` scope
+            WHERE
+                scope.`StandortID` = :scope_id AND
+                IF(
+                    scope.`wartenummernkontingent` > 0,
+                    scope.`vergebenewartenummern` < scope.`wartenummernkontingent`,
+                    scope.`StandortID`
+                )
+        ';
+    }
+
     public function addJoin()
     {
         $this->query->leftJoin(

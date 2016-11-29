@@ -168,12 +168,33 @@ class Scope extends Base
      */
     public function readWaitingNumberUpdated($scopeId, $dateTime)
     {
+        if (! $this->readIsGivenNumberInContingent($scopeId)) {
+            throw new Exception\Scope\GivenNumberCountExceeded();
+        }
+
         $this->getReader()
             ->fetchValue((new Query\Scope(Query\Base::SELECT))
             ->getQueryLastWaitingNumber(), ['scope_id' => $scopeId]);
         $entity = $this->readEntity($scopeId)->updateStatusQueue($dateTime);
         $scope = $this->updateEntity($scopeId, $entity);
         return $scope->getStatus('queue', 'lastGivenNumber');
+    }
+
+    /**
+     * get last given waitingnumer and return updated (+1) waitingnumber
+     *
+     * * @param
+     * scopeId
+     * now
+     *
+     * @return Bool
+     */
+    protected function readIsGivenNumberInContingent($scopeId)
+    {
+        $isInContingent = $this->getReader()
+            ->fetchValue((new Query\Scope(Query\Base::SELECT))
+            ->getQueryGivenNumbersInContingent(), ['scope_id' => $scopeId]);
+        return ($isInContingent) ? true : false;
     }
 
     /**
