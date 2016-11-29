@@ -30,6 +30,9 @@ class Config extends Schema\Entity
                 ',
                 'costs' => '0.15',
                 'erinnerungsvorlauf' => 180,
+            ],
+            'ticketprinter' => [
+                'baseUrl' => '/terminvereinbarung/ticketprinter/'
             ]
         ];
     }

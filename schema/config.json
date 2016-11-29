@@ -20,7 +20,66 @@
     		}
     	},
     	"notifications" : {
-    		"type" : "object"
-    	}     
+    		"type" : "object",
+    		"propterties" : {
+    			"kommandoAbsage" : {
+    				"type" : "string",
+    				"description" : ""
+    			},
+    			"kommandoAbfrage" : {
+    				"type" : "string",
+    				"description" : ""
+    			},
+    			"number" : {
+    				"type" : "string",
+    				"description" : "default telephone number for notifications"
+    			},
+    			"absage" : {
+    				"type" : "boolean",
+    				"description" : ""
+    			},
+    			"gateway" : {
+    				"type" : "string",
+    				"description" : ""
+    			},
+    			"gatewayUrl" : {
+    				"type" : "string",
+    				"description" : ""
+    			},
+    			"eMailkonfigurierbar" : {
+    				"type" : "boolean",
+    				"description" : ""
+    			},
+    			"benachrichtigungsfrist" : {
+    				"type" : "number",
+    				"description" : ""
+    			},
+    			"headsUpContent" : {
+    				"type" : "string",
+    				"description" : "message for heads-up notification"
+    			},
+    			"confirmationContent" : {
+    				"type" : "string",
+    				"description" : "message for confirmation notification"
+    			},
+    			"costs" : {
+    				"type" : "string",
+    				"description" : "calculated cost of one notification"
+    			},
+    			"erinnerungsvorlauf" : {
+    				"type" : "number",
+    				"description" : ""
+    			}
+    		}
+    	},
+    	"ticketprinter" : {
+    		"type" : "object",
+    		"properties": {
+                "baseUrl": {
+                    "type": "string",
+                    "description": "base uri too ticketprinter frontend"
+                }
+            }
+    	}    
     }
 }
