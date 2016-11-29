@@ -23,6 +23,12 @@ class Index extends BaseController
     ) {
         $validator = $request->getAttribute('validator');
         $validate = $validator->getParameter('hasWaitingnumber')->isBool()->getValue();
+        $homeUrl = $validator->getParameter('home')->isUrl()->getValue();
+
+        if ($homeUrl) {
+            return \BO\Slim\Render::redirect('Home', [], ['home' => $homeUrl]);
+        }
+
         $ticketprinterHelper = (new Helper\Ticketprinter($args, $request));
         $ticketprinter = $ticketprinterHelper->getEntity();
 

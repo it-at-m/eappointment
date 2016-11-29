@@ -1,0 +1,42 @@
+{% extends "layout/main.twig" %}
+
+{% use "block/content/numberpad.twig" %}
+
+{% from 'element/helper/form.twig' import formbutton, custombutton, hiddenfield, inputfield %}
+
+{% block pageid %}notification{% endblock %}
+{% block content %}
+<div class="boxontop">
+	<div class="noprint">
+        <form action="{{ urlGet('Notification', {}, {}) }}" method="post" class="smseintragen">
+            <div class="smsbox" id="smsbox">
+                <div class="smshinweis">
+                    Bitte geben Sie hier Ihre Wartenummer ein:
+                </div>
+
+                <div class="label">
+                    Wartenummer:
+                </div>
+                <div class="eingabe">
+                	{{ inputfield({ "name": "waitingNumber", "id": "waitingNumber", "class": "nummerneingabe" }) }}
+                </div>
+                {{ block("numberpad") }}
+                <div class="anleitung">
+                    Mit der Taste "&lt;" können Sie die letzte Eingabe löschen, mit der "C"-Taste löschen Sie Ihre komplette Eingabe.
+                </div>
+                <div class="smsbuttons">
+            	    {% set label = "Wartenummer übermitteln" %}
+            	    {% if scope %}
+                	{{ hiddenfield({ "name": "scopeId", "value": scope.id }) }}
+                	{% endif %}
+                	{% if cluster %}
+					{{ hiddenfield({ "name": "clusterId", "value": cluster.id }) }}
+					{% endif %}
+            	    {{ custombutton({ "class": "button abbrechen", "label":"Abbrechen", "target":urlGet('TicketprinterByScope', {'scopeId': scope.id}, {} ) }) }}
+            	    {{ formbutton({ "type":"submit", "name": "Telefonnachtragen", "id":"Telefonnachtragen", "class": "button nachtrag", "label":label|trans, "value": label|trans }) }}
+                </div>
+            </div>
+        </form>
+	</div>
+</div>
+{% endblock %}

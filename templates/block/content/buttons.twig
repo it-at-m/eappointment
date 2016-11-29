@@ -9,7 +9,7 @@
                 {{ custombutton({ "name": "Eintragen", "label":label|trans, "target": button.url }) }}
             </div>
 		{% else %}
-    		<form action="{{ urlGet('TicketprinterProcess', {}, {}) }}" method="post">
+    		<form action="{{ urlGet('Process', {}, {}) }}" method="post">
                 {{ hiddenfield({ "name": "scopeId", "value": ticketprinter.buttons|first.scope.id }) }}
                 {{ hiddenfield({ "name": "clusterId", "value": ticketprinter.buttons|first.cluster.id }) }}
     			{% set label = "Wartenummer für " ~ ticketprinter.buttons|first.name %}
@@ -36,7 +36,7 @@
                 {{ custombutton({ "name": "Eintragen", "label":label|trans, "target": button.url }) }}
             </div>
 		{% else %}
-    		<form action="{{ urlGet('TicketprinterProcess', {}, {}) }}" method="post">
+    		<form action="{{ urlGet('Process', {}, {}) }}" method="post">
                 {{ hiddenfield({ "name": "scopeId", "value": button.scope.id }) }}
                 {{ hiddenfield({ "name": "clusterId", "value": button.cluster.id }) }}
     			{% set label = "Wartenummer für " ~ button.name %}
@@ -61,7 +61,7 @@
                 {{ custombutton({ "name": "Eintragen", "label":label|trans, "target": button.url }) }}
             </div>
 		{% else %}
-        	<form action="{{ urlGet('TicketprinterProcess', {}, {}) }}" method="post">
+        	<form action="{{ urlGet('Process', {}, {}) }}" method="post">
                 {{ hiddenfield({ "name": "scopeId", "value": button.scope.id }) }}
                 {{ hiddenfield({ "name": "clusterId", "value": button.cluster.id }) }}
         		{% set label = "Wartenummer für " ~ button.name %}
@@ -78,7 +78,7 @@
 {% block button_append_notification %}
 	{% from 'element/helper/form.twig' import formbutton, hiddenfield %}
 	{% set label = "Handynummer nachträglich eintragen" %}
-    <form action="{{ urlGet('TicketprinterProcessNotification', {}, {}) }}" method="post">
+    <form action="{{ urlGet('NotificationAmendment', {}, {}) }}" method="post">
         {{ hiddenfield({ "name": "scopeId", "value": ticketprinter.buttons|first.scope.id }) }}
         {{ formbutton({ "type":"submit", "class": "buttonTelefonnummernachtragen", "name": "appendNotifcation", "label":label|trans, "value": label|trans }) }}
     </form>
