@@ -173,6 +173,26 @@ class Process extends Base
     }
 
     /**
+     * Read process by queue number and scopeId
+     *
+     * @param
+     * scopeId
+     *
+     * @return String authKey
+     */
+    public function readByQueueNumberAndScope($queueNumber, $scopeId)
+    {
+        $query = new Query\Process(Query\Base::SELECT);
+        $query
+            ->addEntityMapping()
+            ->addConditionScopeId($scopeId)
+            ->addConditionQueueNumber($queueNumber);
+        $process = $this->fetchOne($query, new Entity());
+        return $process;
+    }
+
+
+    /**
      * Read processList by scopeId
      *
      * @param
