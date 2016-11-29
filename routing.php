@@ -1761,6 +1761,42 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/process/queue/{number}/scope/{id}/":
+ *      get:
+ *          description: Get a process by queue number and scope id
+ *          parameters:
+ *              -   name: number
+ *                  description: waitingnumber in scope for a process
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: id
+ *                  description: number of scope
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: get a process
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/process.json"
+ *              404:
+ *                  description: "Could not find a process or scope not found"
+ */
+\App::$slim->get('/process/queue/{number:\d{1,4}}/scope/{id:\d{1,4}}/',
+    '\BO\Zmsapi\ProcessByQueueNumber')
+    ->setName("ProcessByQueueNumber");
+
+
+/**
+ *  @swagger
  *  "/provider/{source}/{id}/":
  *      get:
  *          description: Get an provider by id
