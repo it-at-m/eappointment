@@ -76,7 +76,7 @@ body {
   overflow-y: auto;
   width: 800px;
   height: 600px;
-  margin: 130px 0px 0px 160px;
+  margin: 110px 0px 0px 160px;
   padding: 0px; }
 
 div.wartebuttonbereich_einzeilig {
@@ -280,10 +280,8 @@ a.button.ja_nein, .ja_nein {
   text-align: center; }
 
 .wartenummern div.smsoptionbutton {
-  display: table; }
-
-.wartenummern div.smsoptionbutton p {
-  display: table-caption; }
+  display: table;
+  margin-top: 10px; }
 
 .wartenummern div.smsoptionbutton form {
   display: table-cell;

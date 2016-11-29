@@ -13,10 +13,10 @@ use \Psr\Http\Message\ResponseInterface;
  * html, basic routes
  * -------------------------------------------------------------------------
  */
-\App::$slim->get('/', '\BO\Zmsticketprinter\Home')
+\App::$slim->get('/home/', '\BO\Zmsticketprinter\Home')
     ->setName("Home");
 
-\App::$slim->get('/home/', '\BO\Zmsticketprinter\Index')
+\App::$slim->get('/', '\BO\Zmsticketprinter\Index')
     ->setName("Index");
 
 \App::$slim->map(['GET','POST'], '/scope/{scopeId:\d+}/', '\BO\Zmsticketprinter\TicketprinterByScope')

@@ -39,7 +39,7 @@
             	    {% endif %}
 
             	    {% set label = "Handynummer übermitteln" %}
-            	    {{ custombutton({ "class": "button abbrechen", "label":"Abbrechen", "target":homeUrl } ) }}
+            	    {{ custombutton({ "class": "button abbrechen", "label":"Abbrechen", "href":homeUrl } ) }}
             	    {{ formbutton({ "type":"submit", "name": "Telefonnachtragen", "id":"Telefonnachtragen", "class": "button nachtrag", "label":label|trans, "value": label|trans }) }}
                 </div>
             </div>
