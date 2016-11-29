@@ -46,24 +46,27 @@ class Notification extends Base
         $queueId = null;
         $process = new \BO\Zmsentities\Process($notification->process);
         $client = $process->getFirstClient();
-        if ($client->hasTelephone()
-            && $notification->hasProperties('message', 'process')
-        ) {
-            $query = new Query\Notification(Query\Base::INSERT);
-            $query->addValues(array(
-                'processID' => $notification->process['id'],
-                'departmentID' => $notification->department['id'],
-                'createIP' => $notification->createIP,
-                'createTimestamp' => time(),
-                'message' => $notification->message,
-                'clientFamilyName' => $client->familyName,
-                'clientTelephone' => $client->telephone,
-            ));
-            $result = $this->writeItem($query);
-            if ($result) {
-                $queueId = $this->getWriter()->lastInsertId();
-                $this->updateProcess($notification);
-            }
+        if (! $client->hasTelephone()) {
+            throw new Exception\Notification\ClientWithoutTelephone();
+        }
+        if (! $notification->hasProperties('message', 'process')) {
+            throw new Exception\Notification\MessageNotFound();
+        }
+
+        $query = new Query\Notification(Query\Base::INSERT);
+        $query->addValues(array(
+            'processID' => $notification->process['id'],
+            'departmentID' => $notification->department['id'],
+            'createIP' => $notification->createIP,
+            'createTimestamp' => time(),
+            'message' => $notification->message,
+            'clientFamilyName' => $client->familyName,
+            'clientTelephone' => $client->telephone,
+        ));
+        $result = $this->writeItem($query);
+        if ($result) {
+            $queueId = $this->getWriter()->lastInsertId();
+            $this->updateProcess($notification);
         }
         return $queueId;
     }
