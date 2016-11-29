@@ -9,7 +9,7 @@ namespace BO\Zmsticketprinter;
 
 use \BO\Zmsentities\Ticketprinter as Entity;
 
-class TicketprinterNotification extends BaseController
+class NotificationAmendment extends BaseController
 {
 
     /**
@@ -26,25 +26,19 @@ class TicketprinterNotification extends BaseController
         $clusterId = $validator->getParameter('clusterId')->isNumber()->getValue();
         $ticketprinter = Helper\Ticketprinter::readWithHash($request);
 
-        if ($scopeId) {
-            $process = \App::$http->readGetResult(
-                '/scope/'. $scopeId .'/waitingnumber/'. $ticketprinter->hash .'/'
-            )->getEntity();
-        } elseif ($clusterId) {
-            $process = \App::$http->readGetResult(
-                '/cluster/'. $clusterId .'/waitingnumber/'. $ticketprinter->hash .'/'
-            )->getEntity();
-        }
+        $scope = ($scopeId) ? \App::$http->readGetResult('/scope/'. $scopeId .'/')->getEntity() : null;
+        $cluster = ($clusterId) ? \App::$http->readGetResult('/cluster/'. $clusterId .'/')->getEntity() : null;
 
         return \BO\Slim\Render::withHtml(
             $response,
-            'page/process.twig',
+            'page/notificationAmendment.twig',
             array(
                 'debug' => \App::DEBUG,
                 'title' => 'Anmeldung an der Warteschlange',
                 'ticketprinter' => $ticketprinter,
-                'organisation' => \App::$http->readGetResult('/organisation/scope/'. $scopeId . '/')->getEntity(),
-                'process' => $process
+                'scope' => $scope,
+                'cluster' => $cluster,
+                'organisation' => \App::$http->readGetResult('/organisation/scope/'. $scopeId . '/')->getEntity()
             )
         );
     }

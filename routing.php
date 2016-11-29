@@ -13,17 +13,29 @@ use \Psr\Http\Message\ResponseInterface;
  * html, basic routes
  * -------------------------------------------------------------------------
  */
-\App::$slim->get('/', '\BO\Zmsticketprinter\Index')
+\App::$slim->get('/', '\BO\Zmsticketprinter\Home')
+    ->setName("Home");
+
+\App::$slim->get('/home/', '\BO\Zmsticketprinter\Index')
     ->setName("Index");
 
 \App::$slim->map(['GET','POST'], '/scope/{scopeId:\d+}/', '\BO\Zmsticketprinter\TicketprinterByScope')
     ->setName("TicketprinterByScope");
 
-\App::$slim->post('/process/', '\BO\Zmsticketprinter\TicketprinterProcess')
-    ->setName("TicketprinterProcess");
+\App::$slim->post('/process/', '\BO\Zmsticketprinter\Process')
+    ->setName("Process");
 
-\App::$slim->post('/notification/', '\BO\Zmsticketprinter\TicketprinterProcessNotification')
-    ->setName("TicketprinterProcessNotification");
+//input queue number to get process for notification
+\App::$slim->post('/notification/amendment/', '\BO\Zmsticketprinter\NotificationAmendment')
+    ->setName("NotificationAmendment");
+
+//set notification number and send to assign controller
+\App::$slim->post('/notification/', '\BO\Zmsticketprinter\Notification')
+    ->setName("Notification");
+
+//assign notification number for process in notification queue
+\App::$slim->post('/notification/assign/', '\BO\Zmsticketprinter\NotificationAssign')
+    ->setName("NotificationAssign");
 
 /*
  * ---------------------------------------------------------------------------

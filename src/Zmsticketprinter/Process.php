@@ -9,7 +9,7 @@ namespace BO\Zmsticketprinter;
 
 use \BO\Zmsentities\Ticketprinter as Entity;
 
-class TicketprinterProcess extends BaseController
+class Process extends BaseController
 {
 
     /**
