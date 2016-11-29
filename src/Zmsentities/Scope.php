@@ -47,7 +47,7 @@ class Scope extends Schema\Entity
         if (!$isBool && null !== $preference) {
             return $preference;
         }
-        return ($isBool && null !== $preference) ? 1 : 0;
+        return ($isBool && $preference) ? 1 : 0;
     }
 
     public function getStatus($statusKey, $index)
