@@ -66,7 +66,8 @@ class Notification extends Base
         $result = $this->writeItem($query);
         if ($result) {
             $queueId = $this->getWriter()->lastInsertId();
-            $this->updateProcess($notification);
+            $client->notificationsSendCount += 1;
+            (new Process())->updateEntity($process);
         }
         return $queueId;
     }
@@ -83,17 +84,5 @@ class Notification extends Base
         $query = Query\Notification::QUERY_DELETE_BY_PROCESS;
         $statement = $this->getWriter()->prepare($query);
         return $statement->execute(array($processId));
-    }
-
-    private function updateProcess(\BO\Zmsentities\Notification $notification)
-    {
-        $query = new Process();
-        $process = $query->readEntity($notification->getProcessId(), $notification->getProcessAuthKey());
-        if ($process->hasId()) {
-            $client = $process->getFirstClient();
-            $client->notificationsSendCount += 1;
-            $process->updateClients($client);
-            $query->updateEntity($process);
-        }
     }
 }

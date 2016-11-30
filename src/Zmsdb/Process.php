@@ -131,7 +131,7 @@ class Process extends Base
         $query = new Query\Process(Query\Base::INSERT);
         $process->id = $this->readNewProcessId();
         $process->setRandomAuthKey();
-        $process->setCreateTimestamp($now);
+        $process->createTimestamp = $now->getTimestamp();
         $query->addValuesNewProcess($process, $parentProcess, $childProcessCount);
         $query->addValuesUpdateProcess($process);
         $this->writeItem($query);

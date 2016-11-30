@@ -71,7 +71,8 @@ class Mail extends Base
         $queueId = $this->getWriter()->lastInsertId();
         $this->writeMailParts($queueId, $mail->multipart);
         if ('deleted' != $process->status) {
-            $this->updateProcessClient($process, $client);
+            $client->emailSendCount += 1;
+            (new Process())->updateEntity($process);
         }
         return $this->readEntity($queueId);
     }
@@ -124,14 +125,5 @@ class Mail extends Base
         $query->addEntityMapping()
             ->addConditionQueueId($queueId);
         return $this->fetchList($query, new MailPart());
-    }
-
-    private function updateProcessClient(\BO\Zmsentities\Process $process, \BO\Zmsentities\Client $client)
-    {
-        $query = new Process();
-        $client->emailSendCount += 1;
-        // update process
-        $process->updateClients($client);
-        $query->updateEntity($process);
     }
 }
