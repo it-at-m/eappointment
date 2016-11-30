@@ -8,42 +8,55 @@
 {% block content %}
 <div class="boxontop">
 	<div class="noprint">
-        <form action="{{ urlGet('NotificationAssign', {}, {}) }}" method="post" class="smseintragen">
-            <div class="smsbox" id="smsbox">
-                <div class="smshinweis">
-                    Bitte geben Sie hier<br/> Ihre Handynummer ein:
-                </div>
-                {% if scope.preferences.ticketprinter.confirmationEnabled %}
-                	<div class="sms_bestaetigung">
-                		Zur Bestätigung des Eintrags erhalten Sie eine SMS mit Ihrer Wartenummer.
-                	</div>
-                {% endif %}
-
-                <div class="label">
-                    Handynummer:
-                </div>
-                <div class="eingabe">
-                	{{ inputfield({ "name": "client[telephone]", "id": "telephone", "class": "nummerneingabe", "value": process.clients|first.telephone }) }}
-                </div>
-                {{ block("numberpad") }}
-                <div class="anleitung">
-                    Mit der Taste "&lt;" können Sie die letzte Ziffer löschen, mit der "C"-Taste löschen Sie Ihre komplette Eingabe.
-                </div>
-                <div class="disclaimer">
-                    Ihre Handynummer wird nur zu diesem Zweck gespeichert und anschlie&szlig;end gelöscht.
-                </div>
-                <div class="smsbuttons">
-            	    {% if process.id %}
-            	    {{ hiddenfield({ "name": "processId", "value": process.id }) }}
-            	    {{ hiddenfield({ "name": "authKey", "value": process.authKey }) }}
-            	    {% endif %}
-
-            	    {% set label = "Handynummer übermitteln" %}
-            	    {{ custombutton({ "class": "button abbrechen", "label":"Abbrechen", "href":homeUrl } ) }}
-            	    {{ formbutton({ "type":"submit", "name": "Telefonnachtragen", "id":"Telefonnachtragen", "class": "button nachtrag", "label":label|trans, "value": label|trans }) }}
-                </div>
+		<div class="smsbox" id="smsbox">
+    		<div class="smshinweis">
+                Bitte geben Sie hier<br/> Ihre Handynummer ein:
             </div>
+            {% if scope.preferences.ticketprinter.confirmationEnabled %}
+            	<div class="sms_bestaetigung">
+            		Zur Bestätigung des Eintrags erhalten Sie eine SMS mit Ihrer Wartenummer.
+            	</div>
+            {% endif %}
+
+            {{ block("numberpad") }}
+
+            <div class="anleitung">
+                Mit der Taste "&lt;" können Sie die letzte Ziffer löschen, mit der "C"-Taste löschen Sie Ihre komplette Eingabe.
+            </div>
+            <div class="disclaimer">
+                Ihre Handynummer wird nur zu diesem Zweck gespeichert und anschließend gelöscht.
+            </div>
+        </div>
+
+        <form action="{{ urlGet('NotificationAssign', {}, {}) }}" method="post" class="smseintragen" id="postNotification">
+            <div class="label">
+                Handynummer:
+            </div>
+            <div class="eingabe">
+            	{{ inputfield({ "name": "client[telephone]", "id": "telephone", "class": "nummerneingabe", "value": process.clients|first.telephone }) }}
+            </div>
+    	    {% if process.id %}
+    	    {{ hiddenfield({ "name": "processId", "value": process.id }) }}
+    	    {{ hiddenfield({ "name": "authKey", "value": process.authKey }) }}
+    	    {% endif %}
         </form>
+
+        <form action="{{ urlGet('Message', {}, {}) }}" method="post" class="smseintragen" id="postCancel">
+        	{{ hiddenfield({ "name": "scopeId", "value": process.scope.id }) }}
+        	{% if hasProcess %}
+        	{{ hiddenfield({ "name": "status", "value": "process_notification_amendment_canceled" }) }}
+        	{% else %}
+        	{{ hiddenfield({ "name": "status", "value": "notification_amendment_canceled" }) }}
+        	{% endif %}
+        </form>
+
+        <div class="smsbuttons">
+            {% set label = "Handynummer übermitteln" %}
+            {{ formbutton({ "type":"submit", "name": "Telefonnachtragen", "formTarget":"postNotification", "id":"Telefonnachtragen", "class": "button nachtrag", "label":label|trans, "value": label|trans }) }}
+
+            {% set label = "Abbrechen" %}
+            {{ formbutton({ "type":"submit", "name": "Telefonnachtragen", "formTarget":"postCancel", "id":"Telefonnachtragen", "class": "button abbrechen", "label":label|trans, "value": label|trans }) }}
+		</div>
 	</div>
 </div>
 {% endblock %}

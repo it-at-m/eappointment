@@ -1,8 +1,5 @@
 {% extends "layout/main.twig" %}
 
-{% use "block/content/buttons.twig" %}
-{% use "block/content/feedback.twig" %}
-
 {% from 'element/helper/form.twig' import formbutton, custombutton, hiddenfield %}
 
 {% block pageid %}index{% endblock %}
@@ -39,33 +36,45 @@
 	{% else %}
 	    {% trans "keine" %}
 	{% endif %}
+
 	{% if
 	    estimatedData.waitingTimeEstimate > (scope.preferences.ticketprinter.notificationsDelay)|round() and
 	    process.scope.preferences.ticketprinter.notificationsEnabled
 	%}
-
     <p>Wartenummer wird im Anschluss ausgedruckt.</p>
     <span class="noprint">
         Wünschen Sie eine SMS-Benachrichtigung<br/>
         {{ process.scope.preferences.notifications.headsUpTime }} Minuten vor ihrem Aufruf?
     </span>
+
+	<form action="{{ urlGet('Notification', {}, {}) }}" method="post" id="postNotification">
+        {{ hiddenfield({ "name": "waitingNumber", "value": process.queue.number }) }}
+        {{ hiddenfield({ "name": "scopeId", "value": process.scope.id }) }}
+        {{ hiddenfield({ "name": "organisationId", "value": organisation.id }) }}
+    </form>
+
+	<form action="{{ urlGet('Message', {}, {}) }}" method="post" id="postCancel">
+    	{{ hiddenfield({ "name": "scopeId", "value": process.scope.id }) }}
+    	{{ hiddenfield({ "name": "status", "value": "process_notification_amendment_canceled" }) }}
+    </form>
+
     <div class="smsoptionbutton noprint">
-    	<form action="{{ urlGet('Notification', {'processId': process.id, 'authKey': process.authKey}, {}) }}" method="post">
-            {{ hiddenfield({ "name": "waitingNumber", "value": process.queue.number }) }}
-            {{ hiddenfield({ "name": "scopeId", "value": process.scope.id }) }}
-            {{ hiddenfield({ "name": "organisationId", "value": organisation.id }) }}
-            {{ formbutton({ "type":"submit", "class": "button ja_nein", "name": "submit_yes", "label":"Ja"|trans }) }}
-        </form>
-        {{ custombutton({ "type":"submit", "href":urlGet('Home', {}, {}), "class": "button ja_nein option_nein", "name": "submit_no", "label":"Nein"|trans }) }}
-	</div>
+        {% set label = "Ja" %}
+        {{ formbutton({ "type":"submit", "name": "processWithNotifiation", "formTarget":"postNotification", "class": "button ja_nein", "label":label|trans, "value": 1 }) }}
+
+        {% set label = "Nein" %}
+        {{ formbutton({ "type":"submit", "name": "processWithNotification", "formTarget":"postCancel", "class": "button ja_nein option_nein", "label":label|trans, "value": 0 }) }}
+	 </div>
 
 	{% else %}
 	<span class="noprint">
 		<p>Ihre Wartenummer wird gedruckt.</p>
-		<form action="{{ urlGet('TicketprinterByScope', {'scopeId': process.scope.id}, {}) }}" method="post">
-            {{ hiddenfield({ "name": "hasWaitingNumber", "value": 1 }) }}
-            {{ formbutton({ "type":"submit", "class": "ja_nein", "name": "submit_ok", "label":"OK" }) }}
+		<form action="{{ urlGet('TicketprinterByScope', {'scopeId': process.scope.id}, {}) }}" method="post" id="postSuccess">
+        {{ hiddenfield({ "name": "scopeId", "value": process.scope.id }) }}
+        {{ hiddenfield({ "name": "status", "value": "process_success" }) }}
         </form>
+        {% set label = "OK" %}
+        {{ formbutton({ "type":"submit", "name": "submit_ok", "formTarget":"postSuccess", "class": "button ja_nein", "label":label|trans, "value": label|trans }) }}
 	</span>
 	{% endif %}
 </div>

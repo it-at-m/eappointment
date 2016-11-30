@@ -150,7 +150,20 @@ a.button.ja_nein, .ja_nein {
     font-family: Arial, sans-serif;
     font-weight:bold;
     height: 80px;
-    width: 220px;
+    width: 210px;
+    line-height: 80px;
+}
+
+#message .back
+{
+    background: url(img/abbrechen.png) 5px 10px no-repeat;
+    border:0;
+    color:#fff;
+    font-size:20px;
+    font-family: Arial, sans-serif;
+    font-weight:bold;
+    height: 80px;
+    width: 210px;
     line-height: 80px;
 }
 

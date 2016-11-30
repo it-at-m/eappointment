@@ -8,35 +8,45 @@
 {% block content %}
 <div class="boxontop">
 	<div class="noprint">
-        <form action="{{ urlGet('Notification', {}, {}) }}" method="post" class="smseintragen">
-            <div class="smsbox" id="smsbox">
-                <div class="smshinweis">
-                    Bitte geben Sie hier Ihre Wartenummer ein:
-                </div>
-
-                <div class="label">
-                    Wartenummer:
-                </div>
-                <div class="eingabe">
-                	{{ inputfield({ "name": "waitingNumber", "id": "waitingNumber", "class": "nummerneingabe" }) }}
-                </div>
-                {{ block("numberpad") }}
-                <div class="anleitung">
-                    Mit der Taste "&lt;" können Sie die letzte Eingabe löschen, mit der "C"-Taste löschen Sie Ihre komplette Eingabe.
-                </div>
-                <div class="smsbuttons">
-            	    {% set label = "Wartenummer übermitteln" %}
-            	    {% if scope %}
-                	{{ hiddenfield({ "name": "scopeId", "value": scope.id }) }}
-                	{% endif %}
-                	{% if cluster %}
-					{{ hiddenfield({ "name": "clusterId", "value": cluster.id }) }}
-					{% endif %}
-            	    {{ custombutton({ "class": "button abbrechen", "label":"Abbrechen", "target":urlGet('TicketprinterByScope', {'scopeId': scope.id}, {} ) }) }}
-            	    {{ formbutton({ "type":"submit", "name": "Telefonnachtragen", "id":"Telefonnachtragen", "class": "button nachtrag", "label":label|trans, "value": label|trans }) }}
-                </div>
+		<div class="smsbox" id="smsbox">
+            <div class="smshinweis">
+                Bitte geben Sie hier Ihre Wartenummer ein:
             </div>
+
+
+            {{ block("numberpad") }}
+            <div class="anleitung">
+                Mit der Taste "&lt;" können Sie die letzte Eingabe löschen, mit der "C"-Taste löschen Sie Ihre komplette Eingabe.
+            </div>
+
+            </div>
+        </div>
+
+        <form action="{{ urlGet('Notification', {}, {}) }}" method="post" class="smseintragen" id="postQueueNumber">
+        	<div class="label">
+                Wartenummer:
+            </div>
+            <div class="eingabe">
+            	{{ inputfield({ "name": "waitingNumber", "id": "waitingNumber", "class": "nummerneingabe" }) }}
+            </div>
+        	{% if scope %}
+            	{{ hiddenfield({ "name": "scopeId", "value": scope.id }) }}
+			{% endif %}
         </form>
+        <form action="{{ urlGet('Message', {}, {}) }}" method="post" class="smseintragen" id="postCancel">
+        	{% if scope %}
+            	{{ hiddenfield({ "name": "scopeId", "value": scope.id }) }}
+			{% endif %}
+        	{{ hiddenfield({ "name": "status", "value": "notification_amendment_canceled" }) }}
+        </form>
+
+        <div class="smsbuttons">
+            {% set label = "Wartenummer übermitteln" %}
+            {{ formbutton({ "type":"submit", "name": "Telefonnachtragen", "formTarget":"postQueueNumber", "id":"Telefonnachtragen", "class": "button nachtrag", "label":label|trans, "value": label|trans }) }}
+
+            {% set label = "Abbrechen" %}
+            {{ formbutton({ "type":"submit", "name": "Telefonnachtragen", "formTarget":"postCancel", "id":"Telefonnachtragen", "class": "button abbrechen", "label":label|trans, "value": label|trans }) }}
+		 </div>
 	</div>
 </div>
 {% endblock %}
