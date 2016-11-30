@@ -1,20 +1,10 @@
 {% extends "layout/main.twig" %}
 
 {% use "block/content/buttons.twig" %}
-{% use "block/content/feedback.twig" %}
 
 {% block pageid %}index{% endblock %}
 {% block content %}
 
-	{% if validatePrint %}
-	{{ block("feedback_print") }}
-	{% endif %}
-
-	{% if validateNotification %}
-	{{ block("small_sms_feedback") }}
-	{% endif %}
-
-	{% if not validatePrint and not validateNotification %}
 	<div class="werbeblock_oben">
 		{% trans "Anzahl vor Ihnen wartender Kunden" %}:
 		<span id="wartende">
@@ -37,7 +27,6 @@
 		    {% trans "keine" %}
 		{% endif %}
 	</div>
-	{% endif %}
 
 	{{ block("button_singlerow") }}
 

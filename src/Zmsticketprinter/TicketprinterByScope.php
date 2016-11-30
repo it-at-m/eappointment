@@ -21,8 +21,6 @@ class TicketprinterByScope extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $validator = $request->getAttribute('validator');
-        $validatePrint = $validator->getParameter('hasWaitingNumber')->isNumber()->getValue();
         $ticketprinterHelper = (new Helper\Ticketprinter($args, $request));
         $ticketprinter = $ticketprinterHelper->getEntity();
 
@@ -39,8 +37,7 @@ class TicketprinterByScope extends BaseController
                 'organisation' => $ticketprinterHelper::$organisation,
                 'queueList' => $queueList,
                 'scope' => $scope,
-                'estimatedData' => $scope->getWaitingTimeFromQueueList($queueList, \App::$now),
-                'validatePrint' => $validatePrint
+                'estimatedData' => $scope->getWaitingTimeFromQueueList($queueList, \App::$now)
             )
         );
     }

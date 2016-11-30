@@ -213,7 +213,7 @@
 
 
 {% macro formbutton(args) %}
-    <button class="{{ args.class|default('eintragen') }}" type="submit"{% if args.name %}name="{{ args.name }}"{% endif %} value="{{ args.value }}"{% if args.id %} id="{{ args.id }}"{% endif %}>{{ args.label}}</button>
+    <button class="{{ args.class|default('eintragen') }}" {% if args.formTarget %}form="{{ args.formTarget }}"{% endif %} type="submit"{% if args.name %}name="{{ args.name }}"{% endif %} value="{{ args.value }}"{% if args.id %} id="{{ args.id }}"{% endif %}>{{ args.label}}</button>
 {% endmacro %}
 
 {% macro custombutton(args) %}

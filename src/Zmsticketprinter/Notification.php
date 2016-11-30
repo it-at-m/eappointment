@@ -23,6 +23,7 @@ class Notification extends BaseController
     ) {
         $validator = $request->getAttribute('validator');
         $waitingNumber = $validator->getParameter('waitingNumber')->isNumber()->getValue();
+        $hasProcess = $validator->getParameter('processWithNotifiation')->isNumber()->getValue();
         $scopeId = $validator->getParameter('scopeId')->isNumber()->getValue();
         $clusterId = $validator->getParameter('clusterId')->isNumber()->getValue();
         $ticketprinter = Helper\Ticketprinter::readWithHash($request);
@@ -50,6 +51,7 @@ class Notification extends BaseController
             'page/notification.twig',
             array(
                 'debug' => \App::DEBUG,
+                'hasProcess' => $hasProcess,
                 'homeUrl' => \BO\Zmsclient\Ticketprinter::getHomeUrl(),
                 'title' => 'Anmeldung an der Warteschlange',
                 'ticketprinter' => $ticketprinter,

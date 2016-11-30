@@ -1,10 +1,10 @@
 {# 1 Button #}
 {% block button_singlerow %}
 	{% from 'element/helper/form.twig' import formbutton, custombutton, hiddenfield %}
-	{% if button.enabled %}{% set disabled = "" %}{% else %}{% set disabled = " disabled" %}{% endif %}
+	{% if ticketprinter.buttons|first.enabled %}{% set disabled = "" %}{% else %}{% set disabled = " disabled" %}{% endif %}
 	<div class="wartebuttonbereich_einzeilig" data-queue-min=1 data-queue-max=2>
-		{% if button.type == "link" %}
-			{% set label = button.name|default('Information') %}
+		{% if ticketprinter.buttons|first.type == "link" %}
+			{% set label = ticketprinter.buttons|first.name|default('Information') %}
 			<div class="variablerwarteschlangebutton" id="variablerwarteschlangebutton">
                 {{ custombutton({ "name": "Eintragen", "label":label|trans, "target": button.url }) }}
             </div>

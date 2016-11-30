@@ -32,6 +32,14 @@ class NotificationAssign extends BaseController
             '/process/'. $process->id .'/'. $process->authKey .'/confirmation/notification/',
             $process
         );
-        return \BO\Slim\Render::redirect('Home', [], []);
+
+        return \BO\Slim\Render::redirect(
+            'Message',
+            [],
+            [
+                'status' => 'process_notification_success',
+                'scopeId' => $process->getScopeId()
+            ]
+        );
     }
 }
