@@ -6,3 +6,4 @@ config.php
 bower_components
 tests/*.html
 public/_tests
+cache
