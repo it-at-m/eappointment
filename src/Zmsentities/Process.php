@@ -2,7 +2,6 @@
 namespace BO\Zmsentities;
 
 /**
- * @SuppressWarnings(Complexity)
  * @SuppressWarnings(Coupling)
  * @SuppressWarnings(Public)
  *
@@ -102,12 +101,6 @@ class Process extends Schema\Entity
         return ($timestamp) ? $timestamp : 0;
     }
 
-    public function updateClients($client)
-    {
-        $this->clients[0] = $client;
-        return $this;
-    }
-
     /**
      * @return \BO\Zmsentities\Collection\AppointmentList
      *
@@ -171,11 +164,6 @@ class Process extends Schema\Entity
     public function setRandomAuthKey()
     {
         $this->authKey = substr(md5(rand()), 0, 4);
-    }
-
-    public function setCreateTImestamp($now)
-    {
-        $this->createTimestamp = $now->getTimestamp();
     }
 
     public function getFirstClient()
