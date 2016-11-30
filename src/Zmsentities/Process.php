@@ -2,6 +2,7 @@
 namespace BO\Zmsentities;
 
 /**
+ * @SuppressWarnings(Complexity)
  * @SuppressWarnings(Coupling)
  * @SuppressWarnings(Public)
  *
