@@ -33,7 +33,7 @@
                 Handynummer:
             </div>
             <div class="eingabe">
-            	{{ inputfield({ "name": "client[telephone]", "id": "telephone", "class": "nummerneingabe", "value": process.clients|first.telephone }) }}
+            	{{ inputfield({ "name": "client[telephone]", "id": "telephone", "class": "nummerneingabe", "value": "" }) }}
             </div>
     	    {% if process.id %}
     	    {{ hiddenfield({ "name": "processId", "value": process.id }) }}
