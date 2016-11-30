@@ -116,12 +116,29 @@ class Process extends Schema\Entity
         if (!$this['appointments'] instanceof Collection\AppointmentList) {
             $this['appointments'] = new Collection\AppointmentList($this['appointments']);
             foreach ($this['appointments'] as $index => $appointment) {
-                if (!$appointment instanceof Appointment) {
+                if (! $appointment instanceof Appointment) {
                     $this['appointments'][$index] = new Appointment($appointment);
                 }
             }
         }
         return $this['appointments'];
+    }
+
+    /**
+     * @return \BO\Zmsentities\Collection\ClientList
+     *
+     */
+    public function getClients()
+    {
+        if (!$this['clients'] instanceof Collection\ClientList) {
+            $this['clients'] = new Collection\ClientList($this['clients']);
+            foreach ($this['clients'] as $index => $client) {
+                if (! $client instanceof Client) {
+                    $this['clients'][$index] = new Client($client);
+                }
+            }
+        }
+        return $this['clients'];
     }
 
     public function hasAppointment($date, $scopeId)
@@ -162,10 +179,10 @@ class Process extends Schema\Entity
 
     public function getFirstClient()
     {
-        $client = null;
-        if (count($this->clients) > 0) {
-            $data = current($this->clients);
-            $client = new Client($data);
+        $client = $this->getClients()->getFirst();
+        if (!$client) {
+            $client = new Client();
+            $this->clients->addEntity($client);
         }
         return $client;
     }
