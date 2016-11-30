@@ -33,21 +33,23 @@ class Department extends Schema\Entity
     public function withOutClusterDuplicates()
     {
         $department = clone $this;
-        $clusterScopeList = new Collection\ScopeList();
-        foreach ($department->clusters as $cluster) {
-            foreach ($cluster['scopes'] as $clusterScope) {
-                $scope = new Scope($clusterScope);
-                $clusterScopeList->addEntity($scope);
+        if ($department->toProperty()->clusters->get()) {
+            $clusterScopeList = new Collection\ScopeList();
+            foreach ($department->clusters as $cluster) {
+                foreach ($cluster['scopes'] as $clusterScope) {
+                    $scope = new Scope($clusterScope);
+                    $clusterScopeList->addEntity($scope);
+                }
             }
-        }
-        $scopeList = new Collection\ScopeList();
-        foreach ($department->scopes as $scope) {
-            if (! $clusterScopeList->hasEntity($scope['id'])) {
-                $scope = new Scope($scope);
-                $scopeList->addEntity($scope);
+            $scopeList = new Collection\ScopeList();
+            foreach ($department->scopes as $scope) {
+                if (! $clusterScopeList->hasEntity($scope['id'])) {
+                    $scope = new Scope($scope);
+                    $scopeList->addEntity($scope);
+                }
             }
+            $department->scopes = $scopeList;
         }
-        $department->scopes = $scopeList;
         return $department;
     }
 }
