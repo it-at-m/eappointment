@@ -108,8 +108,6 @@ class SlotList
                     AND b.Uhrzeit < o.Terminendzeit
                     AND b.Datum >= o.Startdatum
                     AND b.Datum <= o.Endedatum
-                    -- appointment should be half an hour after current time
-                    AND UNIX_TIMESTAMP(:currentTime) + 1800 <= UNIX_TIMESTAMP(CONCAT(b.Datum, " ", b.Uhrzeit))
 
                     -- match day off
                     AND (
@@ -201,7 +199,6 @@ class SlotList
             'end_availability' => $monthDateTime->format('Y-m-t'),
             'nowStart' => $now->format('Y-m-d'),
             'nowEnd' => $now->format('Y-m-d'),
-            'currentTime' => $now->format('Y-m-d H:i:s')
         ];
         return $parameters;
     }
@@ -219,7 +216,6 @@ class SlotList
             'end_availability' => $dateTime->format('Y-m-d'),
             'nowStart' => $now->format('Y-m-d'),
             'nowEnd' => $now->format('Y-m-d'),
-            'currentTime' => $now->format('Y-m-d H:i:s')
         ];
         return $parameters;
     }
@@ -298,11 +294,17 @@ class SlotList
 
     public function addToCalendar(
         \BO\Zmsentities\Calendar $calendar,
+        \DateTimeInterface $now,
         $freeProcessesDate,
         $slotType = 'public',
         $slotsRequired = 1
     ) {
+        $nowDate = $now->format('Y-m-d');
         foreach ($this->slots as $date => $slotList) {
+            if ($nowDate == $date) {
+                $slotList = $slotList->withTimeGreaterThan($now);
+                $this->slots[$date] = $slotList;
+            }
             $this->addFreeProcessesToCalendar($calendar, $freeProcessesDate, $date, $slotType, $slotsRequired);
             $datetime = new \DateTimeImmutable($date);
             $day = $calendar->getDayByDateTime($datetime);
@@ -364,9 +366,6 @@ class SlotList
             $date = $time->format('Y-m-d');
             if ($this->availability->hasDate($time, $nowDate)) {
                 $this->slots[$date] = clone $slotlist;
-                if ($nowDate == $time) {
-                    $this->slots[$date] = $this->slots[$date]->withTimeGreaterThan($now);
-                }
             }
             $time = $time->modify('+1day');
         } while ($time->getTimestamp() <= $stopDate->getTimestamp());

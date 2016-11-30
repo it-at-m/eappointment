@@ -180,6 +180,7 @@ class Calendar extends Base
             $calendar['processing']['slotlist']->toReducedBySlots($slotsRequired);
             $calendar['processing']['slotlist']->addToCalendar(
                 $calendar,
+                $now,
                 $freeProcessesDate,
                 $slotType,
                 $slotsRequired
