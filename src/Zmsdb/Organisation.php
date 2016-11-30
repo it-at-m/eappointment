@@ -33,11 +33,8 @@ class Organisation extends Base
         if (isset($organisation['id'])) {
             $organisation['departments'] = (new Department())
                 ->readByOrganisationId($organisation['id'], $resolveReferences);
-            $organisation['ticketprinters'] = (new Ticketprinter())
-                ->readByOrganisationId($organisation['id'], $resolveReferences);
-            return $organisation;
         }
-        return array ();
+        return $organisation;
     }
 
     public function readByClusterId($clusterId, $resolveReferences = 0)

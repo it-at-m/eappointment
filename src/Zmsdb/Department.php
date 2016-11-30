@@ -25,13 +25,21 @@ class Department extends Base
             ->addConditionDepartmentId($departmentId);
         $department = $this->fetchOne($query, new Entity());
         if (isset($department['id'])) {
-            $department['clusters'] = (new Cluster())->readByDepartmentId($departmentId, $resolveReferences);
-            $department['scopes'] = (new Scope())->readByDepartmentId($departmentId, $resolveReferences);
-            $department['dayoff'] = (new DayOff())->readByDepartmentId($departmentId);
+            $department = $this->readEntityReferences($department, $resolveReferences);
             self::$departmentCache[$departmentId] = $department;
             return $department->withOutClusterDuplicates();
         }
         return null;
+    }
+
+    protected function readEntityReferences($entity, $resolveReferences = 0)
+    {
+        if (0 < $resolveReferences) {
+            $entity['clusters'] = (new Cluster())->readByDepartmentId($entity->id, $resolveReferences - 1);
+            $entity['scopes'] = (new Scope())->readByDepartmentId($entity->id, $resolveReferences - 1);
+            $entity['dayoff'] = (new DayOff())->readByDepartmentId($entity->id);
+        }
+        return $entity;
     }
 
     public function readList($resolveReferences = 0)
@@ -58,21 +66,24 @@ class Department extends Base
             ->addResolvedReferences($resolveReferences)
             ->addConditionScopeId($scopeId);
         $department = $this->fetchOne($query, new Entity());
-        return (isset($department['id'])) ? $department : null;
+        $department = $this->readEntityReferences($department, $resolveReferences);
+        return (isset($department['id'])) ? $department->withOutClusterDuplicates() : null;
     }
 
     public function readByOrganisationId($organisationId, $resolveReferences = 0)
     {
         $departmentList = new Collection();
         $query = new Query\Department(Query\Base::SELECT);
-        $query->addEntityMapping()
+        $query
+            ->addEntityMapping()
+            ->addResolvedReferences($resolveReferences)
             ->addConditionOrganisationId($organisationId);
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
-            foreach ($result as $entity) {
-                $department = $this->readEntity($entity['id'], $resolveReferences - 1);
+            foreach ($result as $department) {
                 if ($department instanceof Entity) {
-                    $departmentList->addEntity($department);
+                    $department = $this->readEntityReferences($department, $resolveReferences);
+                    $departmentList->addEntity($department->withOutClusterDuplicates());
                 }
             }
         }
