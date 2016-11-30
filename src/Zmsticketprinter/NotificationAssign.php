@@ -22,11 +22,20 @@ class NotificationAssign extends BaseController
         array $args
     ) {
         $validator = $request->getAttribute('validator');
+
+        //get process
         $processId = $validator->getParameter('processId')->isNumber()->getValue();
         $authKey = $validator->getParameter('authKey')->isString()->getValue();
-        $client = new \BO\Zmsentities\Client($validator->getParameter('client')->isArray()->getValue());
         $process = \App::$http->readGetResult('/process/'. $processId .'/'. $authKey .'/')->getEntity();
-        $process->updateClients($client);
+
+        //update process client data
+        $client = $process->getClients()->getFirst();
+        $client->telephone = $validator->getParameter('client')->isArray()->getValue()['telephone'];
+        $process = \App::$http
+            ->readPostResult('/process/'. $process->id .'/'. $process->authKey .'/', $process)
+            ->getEntity();
+
+        //add notification to queue
         $process->status = 'queued';
         \App::$http->readPostResult(
             '/process/'. $process->id .'/'. $process->authKey .'/confirmation/notification/',
