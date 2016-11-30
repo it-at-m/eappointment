@@ -24,8 +24,6 @@ class ProcessTest extends EntityCommonTests
     {
         $now = new \DateTimeImmutable(self::DEFAULT_TIME);
         $entity = (new $this->entityclass())->getExample();
-        $entity->setCreateTimestamp($now);
-        $this->assertTrue('1451649000' == $entity->createTimestamp, 'Creating Timestamp failed');
 
         $entity->addRequests('dldb', '122305');
         $this->assertContains('122305', $entity->getRequestCSV(), 'requests are not accessible');
@@ -52,10 +50,8 @@ class ProcessTest extends EntityCommonTests
     public function testClient()
     {
         $entity = (new $this->entityclass())->getExample();
-        $client = (new \BO\Zmsentities\Client())->getExample();
-        $entity->updateClients($client);
-        $this->assertFalse($entity->clients[0]['surveyAccepted'], 'client update failed');
         $firstClient = $entity->getFirstClient();
+        $this->assertFalse($firstClient['surveyAccepted'], 'client update failed');
         $this->assertTrue('Max Mustermann' == $firstClient['familyName'], 'first client not found');
     }
 
