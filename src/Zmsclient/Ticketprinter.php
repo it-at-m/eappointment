@@ -6,6 +6,9 @@ namespace BO\Zmsclient;
  */
 class Ticketprinter
 {
+    const HASH_COOKIE_NAME = 'Ticketprinter';
+    const HOME_URL_COOKIE_NAME = 'Ticketprinter_Homeurl';
+
     /**
      *
      * @SuppressWarnings(Superglobals)
@@ -13,9 +16,9 @@ class Ticketprinter
      */
     public static function setHash($hash)
     {
-        $_COOKIE[self::getCookieName()] = $hash;
+        $_COOKIE[self::HASH_COOKIE_NAME] = $hash;
         if (!headers_sent()) {
-            setcookie(self::getCookieName(), $hash, 0, '/', null, true, true);
+            setcookie(self::HASH_COOKIE_NAME, $hash, 0, '/', null, true, true);
         }
     }
 
@@ -26,14 +29,35 @@ class Ticketprinter
      */
     public static function getHash()
     {
-        if (array_key_exists(self::getCookieName(), $_COOKIE)) {
-            return $_COOKIE[self::getCookieName()];
+        if (array_key_exists(self::HASH_COOKIE_NAME, $_COOKIE)) {
+            return $_COOKIE[self::HASH_COOKIE_NAME];
         }
         return false;
     }
 
-    protected static function getCookieName()
+    /**
+     *
+     * @SuppressWarnings(Superglobals)
+     *
+     */
+    public static function setHomeUrl($url)
     {
-        return 'Ticketprinter';
+        $_COOKIE[self::HOME_URL_COOKIE_NAME] = $url;
+        if (!headers_sent()) {
+            setcookie(self::HOME_URL_COOKIE_NAME, $url, 0, '/', null, true, true);
+        }
+    }
+
+    /**
+     *
+     * @SuppressWarnings(Superglobals)
+     *
+     */
+    public static function getHomeUrl()
+    {
+        if (array_key_exists(self::HOME_URL_COOKIE_NAME, $_COOKIE)) {
+            return $_COOKIE[self::HOME_URL_COOKIE_NAME];
+        }
+        return false;
     }
 }
