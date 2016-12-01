@@ -1,0 +1,11 @@
+{% block estimatedWaitingClients %}
+{% trans "Anzahl vor Ihnen wartender Kunden" %}:
+<span id="wartende">
+    {% if estimatedData.amountBefore %}
+        {{ estimatedData.amountBefore - 1 }}
+    {% else %}
+        {% trans "keine" %}
+    {% endif %}
+</span>
+<br>
+{% endblock %}

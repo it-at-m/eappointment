@@ -1,0 +1,12 @@
+{% block estimatedWaitingTime %}
+{% trans "Vorraussichtliche Wartezeit" %}:
+{% if estimatedData.waitingTimeEstimate %}
+	{% if estimatedData.waitingTimeEstimate < 120 %}
+        {{ estimatedData.waitingTimeEstimate }} {% trans "Minuten" %}
+    {% else %}
+    	{{ (estimatedData.waitingTimeEstimate / 60)|round(0, 'floor') }} {% trans "Stunden" %}
+    {% endif %}
+{% else %}
+    {% trans "keine" %}
+{% endif %}
+{% endblock %}

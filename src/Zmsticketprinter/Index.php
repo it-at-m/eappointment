@@ -30,7 +30,7 @@ class Index extends BaseController
 
         $ticketprinterHelper = (new Helper\Ticketprinter($args, $request));
         $ticketprinter = $ticketprinterHelper->getEntity();
-
+        $organisation = $ticketprinterHelper::$organisation;
         if (1 == count($ticketprinter->buttons) && 'scope' == $ticketprinter->buttons[0]['type']) {
              return \BO\Slim\Render::redirect(
                  'TicketprinterByScope',
@@ -40,15 +40,16 @@ class Index extends BaseController
                  array ()
              );
         }
+        $template = Helper\TemplateFinder::getCustomizedMultiButtonTemplate($ticketprinter->buttons, $organisation);
 
         return \BO\Slim\Render::withHtml(
             $response,
-            'page/buttonMultiRow_default.twig',
+            $template,
             array(
                 'debug' => \App::DEBUG,
                 'title' => 'Wartennumer ziehen',
                 'ticketprinter' => $ticketprinter,
-                'organisation' => $ticketprinterHelper::$organisation,
+                'organisation' => $organisation,
                 'buttonDisplay' => (2 == count($ticketprinter->buttons)) ? 'button_multirow_deep' : 'button_multirow'
             )
         );

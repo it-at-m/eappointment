@@ -12,7 +12,7 @@
     		<form action="{{ urlGet('Process', {}, {}) }}" method="post">
                 {{ hiddenfield({ "name": "scopeId", "value": ticketprinter.buttons|first.scope.id }) }}
                 {{ hiddenfield({ "name": "clusterId", "value": ticketprinter.buttons|first.cluster.id }) }}
-    			{% set label = "Wartenummer für " ~ ticketprinter.buttons|first.name %}
+    			{% set label = buttonLabelPrefix ~ ticketprinter.buttons|first.name %}
                 {% if ticketprinter.buttons|first.type == "link" %}
     			{% set label = "Information" %}
     			{% endif %}
@@ -39,7 +39,7 @@
     		<form action="{{ urlGet('Process', {}, {}) }}" method="post">
                 {{ hiddenfield({ "name": "scopeId", "value": button.scope.id }) }}
                 {{ hiddenfield({ "name": "clusterId", "value": button.cluster.id }) }}
-    			{% set label = "Wartenummer für " ~ button.name %}
+    			{% set label = buttonLabelPrefix ~ button.name %}
     			<div class="variablerwarteschlangebutton" id="variablerwarteschlangebutton">
                     {{ formbutton({ "type":"submit", "name": "Eintragen", "class": "eintragen" ~ disabled, "label":label|trans, "value": "Wartenummer anfordern" }) }}
                 </div>
@@ -64,7 +64,7 @@
         	<form action="{{ urlGet('Process', {}, {}) }}" method="post">
                 {{ hiddenfield({ "name": "scopeId", "value": button.scope.id }) }}
                 {{ hiddenfield({ "name": "clusterId", "value": button.cluster.id }) }}
-        		{% set label = "Wartenummer für " ~ button.name %}
+        		{% set label = buttonLabelPrefix ~ button.name %}
         		<div class="variablerwarteschlangebutton" id="variablerwarteschlangebutton">
                     {{ formbutton({ "type":"submit", "name": "Eintragen", "class": "eintragen" ~ disabled, "label":label|trans, "value": "Wartenummer anfordern" }) }}
                 </div>

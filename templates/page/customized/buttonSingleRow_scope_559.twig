@@ -1,5 +1,6 @@
 {% extends "layout/main.twig" %}
 
+{% use "block/content/IntroText.twig" %}
 {% use "block/content/buttons.twig" %}
 {% use "block/content/estimatedWaitingTime.twig" %}
 {% use "block/content/estimatedWaitingClients.twig" %}
@@ -9,9 +10,9 @@
 
 	<div class="werbeblock_oben">
 		{{ block("estimatedWaitingClients") }}
-		{{ block("estimatedWaitingTime") }}
+		{{ block("IntroText") }}
 	</div>
-	{% set buttonLabelPrefix = "Wartenummer für " %}
+
 	{{ block("button_singlerow") }}
 
 	{% if
