@@ -24,7 +24,6 @@ class OrganisationByScope extends BaseController
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $scope = (new Scope())->readEntity($itemId, 0);
         if (! $scope->hasId()) {
-            error_log(print_r($scope, 1));
             throw new Exception\Scope\ScopeNotFound();
         }
         $organisation = (new Query())->readByScopeId($itemId, $resolveReferences);
