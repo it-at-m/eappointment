@@ -28,6 +28,8 @@ umask(0002); // Allow group to delete twig cache files
 \App::$http = new \BO\Zmsclient\Http(\App::HTTP_BASE_URL);
 \BO\Zmsclient\Psr7\Client::$curlopt = \App::$http_curl_config;
 
+\App::$now = (\App::$now) ? \App::$now : new \DateTimeImmutable();
+
 // load middleware
 \App::$slim->add(new \BO\Slim\Middleware\TrailingSlash());
 

@@ -24,8 +24,9 @@ class TicketprinterByScope extends BaseController
         $ticketprinterHelper = (new Helper\Ticketprinter($args, $request));
         $ticketprinter = $ticketprinterHelper->getEntity();
 
-        $queueList = \App::$http->readGetResult('/scope/'. $args['scopeId'] . '/queue/')->getCollection();
         $scope = $ticketprinter->getScopeList()->getFirst();
+        $queueList = \App::$http->readGetResult('/scope/'. $args['scopeId'] . '/queue/')->getCollection();
+        $estimatedData = ($queueList) ? $scope->getWaitingTimeFromQueueList($queueList, \App::$now) : null;
 
         return \BO\Slim\Render::withHtml(
             $response,
@@ -37,7 +38,7 @@ class TicketprinterByScope extends BaseController
                 'organisation' => $ticketprinterHelper::$organisation,
                 'queueList' => $queueList,
                 'scope' => $scope,
-                'estimatedData' => $scope->getWaitingTimeFromQueueList($queueList, \App::$now)
+                'estimatedData' => $estimatedData
             )
         );
     }
