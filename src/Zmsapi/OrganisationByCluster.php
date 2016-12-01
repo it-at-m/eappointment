@@ -20,7 +20,7 @@ class OrganisationByCluster extends BaseController
      */
     public static function render($itemId)
     {
-        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $organisation = (new Query())->readByClusterId($itemId, $resolveReferences);
         if (! $organisation) {
             throw new Exception\Organisation\OrganisationNotFound();
