@@ -39,11 +39,11 @@ class Organisation extends Base
 
     public function readByClusterId($clusterId, $resolveReferences = 0)
     {
-        $scope = (new Scope())->readByClusterId($clusterId, $resolveReferences - 1)->getFirst();
+        $scope = (new Scope())->readByClusterId($clusterId, $resolveReferences)->getFirst();
         if (! $scope->hasId()) {
             throw new Exception\ClusterWithoutScopes();
         }
-        return $this->readByScopeId($scope->id);
+        return $this->readByScopeId($scope->id, $resolveReferences);
     }
 
     public function readByOwnerId($ownerId, $resolveReferences = 0)
