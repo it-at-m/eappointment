@@ -98,7 +98,7 @@ class Process extends Base
         $process->setStatus('reserved');
         $process->addAppointment($appointment);
         $newQueueNumber = (new Scope())->readWaitingNumberUpdated($scope->id, $dateTime);
-        $process->addQueueWithNumber($newQueueNumber, $dateTime);
+        $process->addQueue($newQueueNumber, $dateTime);
         return $this->writeNewProcess($process, $dateTime);
     }
 
