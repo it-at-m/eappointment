@@ -160,6 +160,8 @@ class SessionData implements SessionInterface
     {
         if (session_status() === PHP_SESSION_ACTIVE) {
             session_regenerate_id(true);
+            $_SESSION = array();
+            $this->data = $_SESSION;
         }
     }
 
