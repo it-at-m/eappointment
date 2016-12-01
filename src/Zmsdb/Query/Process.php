@@ -89,7 +89,12 @@ class Process extends Base implements MappingInterface
             ),
             'createIP' => 'process.IPAdresse',
             'createTimestamp' => 'process.IPTimeStamp',
-            'queue__arrivalTime' => 'process.wsm_aufnahmezeit',
+            'queue__arrivalTime' => self::expression(
+                'IF(`process`.`Uhrzeit`,
+                    CONCAT(`process`.`Datum`, " ", `process`.`Uhrzeit`),
+                    FROM_UNIXTIME(`process`.`IPTimeStamp`)
+                )'
+            ),
             'queue__callCount' => 'process.AnzahlAufrufe',
             'queue__callTime' => 'process.aufrufzeit',
             'queue__number' => self::expression(
@@ -202,7 +207,6 @@ class Process extends Base implements MappingInterface
         } else {
             $data["queue__callTime"] = 0;
         }
-
         $data["queue__arrivalTime"] = (new \DateTime($data["queue__arrivalTime"]))->getTimestamp();
         return $data;
     }
