@@ -38,15 +38,19 @@ class Ticketprinter
 
     protected static function createInstance($request)
     {
+        $scopeList = array();
+        $clusterList = array();
         $validator = $request->getAttribute('validator');
         $entity = new Entity($validator->getParameter('ticketprinter')->isArray()->getValue());
         $entity->toStructuredButtonList();
         foreach ($entity->buttons as $button) {
             if ('scope' == $button['type']) {
+                $scopeList[] = $button['scope'];
                 self::$organisation = \App::$http->readGetResult(
                     '/organisation/scope/'. $button['scope']['id'] . '/'
                 )->getEntity();
             } elseif ('cluster' == $button['type']) {
+                $clusterList[] = $button['cluster'];
                 self::$organisation = \App::$http->readGetResult(
                     '/organisation/cluster/'. $button['cluster']['id'] . '/'
                 )->getEntity();

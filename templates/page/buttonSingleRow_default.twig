@@ -1,33 +1,17 @@
 {% extends "layout/main.twig" %}
 
 {% use "block/content/buttons.twig" %}
+{% use "block/content/estimatedWaitingTime.twig" %}
+{% use "block/content/estimatedWaitingClients.twig" %}
 
 {% block pageid %}index{% endblock %}
 {% block content %}
 
 	<div class="werbeblock_oben">
-		{% trans "Anzahl vor Ihnen wartender Kunden" %}:
-		<span id="wartende">
-		    {% if estimatedData.amountBefore %}
-		        {{ estimatedData.amountBefore - 1 }}
-		    {% else %}
-		        {% trans "keine" %}
-		    {% endif %}
-		</span>
-		<br>
-
-		{% trans "Vorraussichtliche Wartezeit" %}:
-		{% if estimatedData.waitingTimeEstimate %}
-			{% if estimatedData.waitingTimeEstimate < 120 %}
-		        {{ estimatedData.waitingTimeEstimate }} {% trans "Minuten" %}
-		    {% else %}
-		    	{{ (estimatedData.waitingTimeEstimate / 60)|round(0, 'floor') }} {% trans "Stunden" %}
-		    {% endif %}
-		{% else %}
-		    {% trans "keine" %}
-		{% endif %}
+		{{ block("estimatedWaitingClients") }}
+		{{ block("estimatedWaitingTime") }}
 	</div>
-
+	{% set buttonLabelPrefix = "Wartenummer für " %}
 	{{ block("button_singlerow") }}
 
 	{% if

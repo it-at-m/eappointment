@@ -25,17 +25,20 @@ class TicketprinterByScope extends BaseController
         $ticketprinter = $ticketprinterHelper->getEntity();
 
         $scope = $ticketprinter->getScopeList()->getFirst();
+        $organisation = $ticketprinterHelper::$organisation;
         $queueList = \App::$http->readGetResult('/scope/'. $args['scopeId'] . '/queue/')->getCollection();
         $estimatedData = ($queueList) ? $scope->getWaitingTimeFromQueueList($queueList, \App::$now) : null;
 
+        $template = Helper\TemplateFinder::getCustomizedSingleButtonTemplate($scope, $organisation);
+
         return \BO\Slim\Render::withHtml(
             $response,
-            'page/buttonSingleRow_default.twig',
+            $template,
             array(
                 'debug' => \App::DEBUG,
                 'title' => 'Wartennumer ziehen',
                 'ticketprinter' => $ticketprinter,
-                'organisation' => $ticketprinterHelper::$organisation,
+                'organisation' => $organisation,
                 'queueList' => $queueList,
                 'scope' => $scope,
                 'estimatedData' => $estimatedData

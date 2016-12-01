@@ -42,7 +42,6 @@ class IndexByClusterFirstButtonTest extends Base
                 'buttonlist' => 'c110,s141'
             ]
         ], [ ]);
-        $this->assertContains('Wartenummer für', (string) $response->getBody());
         $this->assertContains('Bürgeramt Hohenzollerndamm', (string) $response->getBody());
     }
 }

@@ -2,7 +2,7 @@
 
 /**
  *
- * @package Zmsappointment
+ * @package Zmsticketprinter
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
