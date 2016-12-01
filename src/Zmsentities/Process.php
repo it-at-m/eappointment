@@ -2,6 +2,7 @@
 namespace BO\Zmsentities;
 
 /**
+ * @SuppressWarnings(Complexity)
  * @SuppressWarnings(Coupling)
  * @SuppressWarnings(Public)
  *
@@ -63,7 +64,7 @@ class Process extends Schema\Entity
         return $this;
     }
 
-    public function addQueueWithNumber($number, \DateTimeInterface $dateTime)
+    public function addQueue($number, \DateTimeInterface $dateTime)
     {
         $this->queue = new Queue(array(
             'number' => $number,
@@ -251,7 +252,7 @@ class Process extends Schema\Entity
             $queue->arrivalTime = $this->getFirstAppointment()->date;
         } else {
             $queue->number = $this->toProperty()->queue->number->get();
-            $queue->arrivalTime = $dateTime->getTimestamp();
+            $queue->arrivalTime = ($queue->arrivalTime) ? $queue->arrivalTime : $dateTime->getTimestamp();
         }
         return $queue;
     }
