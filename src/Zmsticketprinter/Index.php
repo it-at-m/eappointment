@@ -22,7 +22,6 @@ class Index extends BaseController
         array $args
     ) {
         $validator = $request->getAttribute('validator');
-        $validate = $validator->getParameter('hasWaitingnumber')->isBool()->getValue();
         $homeUrl = $validator->getParameter('home')->isUrl()->getValue();
 
         if ($homeUrl) {
@@ -50,7 +49,6 @@ class Index extends BaseController
                 'title' => 'Wartennumer ziehen',
                 'ticketprinter' => $ticketprinter,
                 'organisation' => $ticketprinterHelper::$organisation,
-                'validate' => $validate,
                 'buttonDisplay' => (2 == count($ticketprinter->buttons)) ? 'button_multirow_deep' : 'button_multirow'
             )
         );
