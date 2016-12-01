@@ -37,9 +37,11 @@ class DepartmentList extends Base
     {
         $clusterList = new ClusterList();
         foreach ($this as $department) {
-            foreach ($department['clusters'] as $cluster) {
-                $entity = new \BO\Zmsentities\Cluster($cluster);
-                $clusterList->addEntity($entity);
+            if (array_key_exists('clusters', $department)) {
+                foreach ($department['clusters'] as $cluster) {
+                    $entity = new \BO\Zmsentities\Cluster($cluster);
+                    $clusterList->addEntity($entity);
+                }
             }
         }
         return $clusterList->withUniqueClusters();
