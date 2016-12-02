@@ -1,0 +1,23 @@
+{% extends "layout/main.twig" %}
+
+{% use "block/content/IntroText.twig" %}
+{% use "block/content/buttons.twig" %}
+{% use "block/content/estimatedWaitingTime.twig" %}
+{% use "block/content/estimatedWaitingClients.twig" %}
+
+{% block pageid %}index{% endblock %}
+{% block content %}
+
+	{% set buttonLabelPrefix = "Wartenummer für " %}
+	{{ block(buttonDisplay) }}
+
+	{% if
+	    estimatedData.waitingTimeEstimate > (scope.preferences.ticketprinter.notificationsDelay)|round() and
+	    scope.preferences.ticketprinter.notificationsAmendmentEnabled and
+	    scope.preferences.ticketprinter.notificationsEnabled
+	%}
+	{{ block("button_append_notification") }}
+	{% endif %}
+{% endblock %}
+
+

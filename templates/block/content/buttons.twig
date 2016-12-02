@@ -1,5 +1,5 @@
 {# 1 Button #}
-{% block button_singlerow %}
+{% block button_single %}
 	{% from 'element/helper/form.twig' import formbutton, custombutton, hiddenfield %}
 	{% if ticketprinter.buttons|first.enabled %}{% set disabled = "" %}{% else %}{% set disabled = " disabled" %}{% endif %}
 	<div class="wartebuttonbereich_einzeilig" data-queue-min=1 data-queue-max=2>
@@ -25,7 +25,7 @@
 {% endblock %}
 
 {# > 2 Buttons #}
-{% block button_multirow %}
+{% block button_multi %}
 	{% from 'element/helper/form.twig' import formbutton, custombutton, hiddenfield %}
 	<div class="wartebuttonbereich_zweizeilig"  data-queue-min=3 data-queue-max=6>
 	{% for button in ticketprinter.buttons %}
@@ -50,7 +50,7 @@
 {% endblock %}
 
 {# 2 Buttons #}
-{% block button_multirow_deep %}
+{% block button_multi_deep %}
 	{% from 'element/helper/form.twig' import formbutton, custombutton, hiddenfield %}
 	<div class="wartebuttonbereich_zweizeilig_tief"  data-queue-min=3 data-queue-max=6>
     {% for button in ticketprinter.buttons %}

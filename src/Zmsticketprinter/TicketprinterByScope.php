@@ -29,7 +29,7 @@ class TicketprinterByScope extends BaseController
         $queueList = \App::$http->readGetResult('/scope/'. $args['scopeId'] . '/queue/')->getCollection();
         $estimatedData = ($queueList) ? $scope->getWaitingTimeFromQueueList($queueList, \App::$now) : null;
 
-        $template = Helper\TemplateFinder::getCustomizedSingleButtonTemplate($scope, $organisation);
+        $template = Helper\TemplateFinder::getCustomizedTemplate($ticketprinter, $organisation);
 
         return \BO\Slim\Render::withHtml(
             $response,
@@ -41,7 +41,8 @@ class TicketprinterByScope extends BaseController
                 'organisation' => $organisation,
                 'queueList' => $queueList,
                 'scope' => $scope,
-                'estimatedData' => $estimatedData
+                'estimatedData' => $estimatedData,
+                'buttonDisplay' => Helper\TemplateFinder::getButtonTemplateType($ticketprinter)
             )
         );
     }
