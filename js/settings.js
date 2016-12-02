@@ -1,4 +1,4 @@
+
 export default {
-    'refreshSessionInterval': 60,
-    'includepath': '',
+    'animationEnd': 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend'
 };
