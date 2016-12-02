@@ -5,21 +5,17 @@
 // Import base libs
 import window from "window";
 import $ from "jquery";
-import welcomeText from "./template/welcome.html";
-import settings from './settings';
 
 // Import Views
-//import DayselectView from "./page/dayselectView";
+import DigitalTime from "./block/digital-clock";
+import PickupKeyboardHandheldView from "./block/pickup-keyboard-handheld";
 
 // Bind jQuery on $ for testing
 window.$ = $;
-window.bo = {
-    "zmsticketprinter": settings,
-    "test": {
-    },
-};
+
 // Init Views
-//$('#dayselect').each(() => new DayselectView(this));
+$('.digitaluhr').each(function() { new DigitalTime(this);});
+$('.pickup-keyboard-handheld').each(function() { new PickupKeyboardHandheldView(this);});
 
 // Say hello
-console.log(welcomeText);
+console.log("Welcome to the ZMS admin interface..."); 
