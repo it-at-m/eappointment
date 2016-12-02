@@ -40,7 +40,7 @@ class Organisation extends Base
     public function readByClusterId($clusterId, $resolveReferences = 0)
     {
         $scope = (new Scope())->readByClusterId($clusterId, $resolveReferences)->getFirst();
-        if (! $scope->hasId()) {
+        if (! $scope) {
             throw new Exception\ClusterWithoutScopes();
         }
         return $this->readByScopeId($scope->id, $resolveReferences);
