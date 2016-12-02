@@ -44,7 +44,7 @@ class Ticketprinter
     {
         $_COOKIE[self::HOME_URL_COOKIE_NAME] = $url;
         if (!headers_sent()) {
-            setcookie(self::HOME_URL_COOKIE_NAME, $url, 0, '/', null, true, true);
+            setcookie(self::HOME_URL_COOKIE_NAME, $url, 0, '/', null);
         }
     }
 
