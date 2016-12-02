@@ -40,7 +40,7 @@ class Index extends BaseController
                  array ()
              );
         }
-        $template = Helper\TemplateFinder::getCustomizedMultiButtonTemplate($ticketprinter->buttons, $organisation);
+        $template = Helper\TemplateFinder::getCustomizedTemplate($ticketprinter, $organisation);
 
         return \BO\Slim\Render::withHtml(
             $response,
@@ -50,7 +50,7 @@ class Index extends BaseController
                 'title' => 'Wartennumer ziehen',
                 'ticketprinter' => $ticketprinter,
                 'organisation' => $organisation,
-                'buttonDisplay' => (2 == count($ticketprinter->buttons)) ? 'button_multirow_deep' : 'button_multirow'
+                'buttonDisplay' => Helper\TemplateFinder::getButtonTemplateType($ticketprinter)
             )
         );
     }

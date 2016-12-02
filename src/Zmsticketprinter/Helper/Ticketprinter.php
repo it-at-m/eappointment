@@ -13,7 +13,7 @@ use \BO\Zmsentities\Ticketprinter as Entity;
 class Ticketprinter
 {
     public $entity;
-    public static $organisation;
+    public static $organisation = null;
 
     public function __construct($args, $request)
     {
@@ -24,45 +24,6 @@ class Ticketprinter
             $this->entity = static::createInstance($request);
         }
         $this->entity = \App::$http->readPostResult('/ticketprinter/', $this->entity)->getEntity();
-    }
-
-
-    protected static function createInstanceByScope($scopeId, $request)
-    {
-        self::$organisation = \App::$http->readGetResult('/organisation/scope/'. $scopeId . '/')->getEntity();
-        $entity = static::readWithHash($request);
-        $entity->buttonlist = 's'. $scopeId;
-        $entity->toStructuredButtonList();
-        return $entity;
-    }
-
-    protected static function createInstance($request)
-    {
-        $scopeList = array();
-        $clusterList = array();
-        $validator = $request->getAttribute('validator');
-        $entity = new Entity($validator->getParameter('ticketprinter')->isArray()->getValue());
-        $entity->toStructuredButtonList();
-        foreach ($entity->buttons as $button) {
-            if ('scope' == $button['type']) {
-                $scopeList[] = $button['scope'];
-                self::$organisation = \App::$http->readGetResult(
-                    '/organisation/scope/'. $button['scope']['id'] . '/'
-                )->getEntity();
-            } elseif ('cluster' == $button['type']) {
-                $clusterList[] = $button['cluster'];
-                self::$organisation = \App::$http->readGetResult(
-                    '/organisation/cluster/'. $button['cluster']['id'] . '/'
-                )->getEntity();
-            }
-            break;
-        }
-
-        if (self::$organisation->hasClusterScopesFromButtonList($entity->buttons)) {
-            $ticketprinter = static::readWithHash($request);
-            $entity->hash = $ticketprinter->hash;
-        }
-        return $entity;
     }
 
     public static function readWithHash($request)
@@ -85,5 +46,51 @@ class Ticketprinter
     public function getEntity()
     {
         return $this->entity;
+    }
+
+    protected static function createInstanceByScope($scopeId, $request)
+    {
+        $entity = new Entity();
+        $entity->buttonlist = 's'. $scopeId;
+        $entity->toStructuredButtonList();
+        self::readOrganisation($entity, $scopeId);
+        $ticketprinter = static::readWithHash($request);
+        $entity->hash = $ticketprinter->hash;
+        return $entity;
+    }
+
+    protected static function createInstance($request)
+    {
+        $validator = $request->getAttribute('validator');
+        $entity = new Entity($validator->getParameter('ticketprinter')->isArray()->getValue());
+        $entity->toStructuredButtonList();
+        self::readOrganisation($entity);
+        if (self::$organisation->hasClusterScopesFromButtonList($entity->buttons)) {
+            $ticketprinter = static::readWithHash($request);
+            $entity->hash = $ticketprinter->hash;
+        }
+        return $entity;
+    }
+
+    protected static function readOrganisation($entity, $scopeId = false)
+    {
+        self::$organisation = null;
+        $ticketprinter = clone $entity;
+        if ($scopeId) {
+            self::$organisation = \App::$http->readGetResult('/organisation/scope/'. $scopeId . '/')->getEntity();
+        }
+        $nextButton = array_shift($ticketprinter->buttons);
+        while (! self::$organisation && $nextButton) {
+            if ('scope' == $nextButton['type']) {
+                self::$organisation = \App::$http->readGetResult(
+                    '/organisation/scope/'. $nextButton['scope']['id'] . '/'
+                )->getEntity();
+            } elseif ('cluster' == $nextButton['type']) {
+                self::$organisation = \App::$http->readGetResult(
+                    '/organisation/cluster/'. $nextButton['cluster']['id'] . '/'
+                )->getEntity();
+            }
+            $nextButton = array_shift($ticketprinter->buttons);
+        }
     }
 }

@@ -106,9 +106,10 @@ div.warteschlangebutton_gross a.eintragen {
   font-family: Arial, sans-serif;
   font-weight: bold;
   height: 195px;
-  width: 657px;
+  width: 660px;
   display: block;
-  text-align: center; }
+  text-align: center;
+  padding: 0px 35px; }
 
 div.variablerwarteschlangebutton {
   float: left;

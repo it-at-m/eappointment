@@ -10,6 +10,8 @@ namespace BO\Zmsticketprinter\Helper;
 
 class TemplateFinder
 {
+    const DEFAULT_TEMPLATE = '/page/buttonDisplay_default.twig';
+
     const SUBPATH = '/page/customized';
 
     /**
@@ -17,53 +19,58 @@ class TemplateFinder
      * department preferred before cluster
      *
      **/
-    public static function getCustomizedSingleButtonTemplate($scope, $organisation)
+    public static function getCustomizedTemplate($ticketprinter, $organisation)
     {
-        $template = 'page/buttonSingleRow_default.twig';
-        if ($scope->hasId() &&
-            file_exists(self::getTemplatePath(). '/buttonSingleRow_scope_'. $scope->id .'.twig')
+        $template = null;
+        //look for customized templates by single scope or single cluster
+        if (1 == count($ticketprinter->buttons)) {
+            $entity = null;
+            if ($ticketprinter->getScopeList()->getFirst()) {
+                $entity = $ticketprinter->getScopeList()->getFirst();
+            } elseif ($ticketprinter->getClusterList()->getFirst()) {
+                $entity = $ticketprinter->getClusterList()->getFirst();
+            }
+            $template = self::getExistingTemplate($entity);
+        }
+        //look for customized template in clusterlist, overwrite template before
+        foreach ($ticketprinter->getClusterList() as $entity) {
+            if (self::getExistingTemplate($entity)) {
+                $template = self::getExistingTemplate($entity);
+                break;
+            }
+        }
+        //look for customized template in departmentlist, overwrite template before
+        foreach ($organisation->departments as $departmentData) {
+            $entity = new \BO\Zmsentities\Department($departmentData);
+            if (self::getExistingTemplate($entity)) {
+                $template = self::getExistingTemplate($entity);
+                break;
+            }
+        }
+        return ($template) ? $template : self::DEFAULT_TEMPLATE;
+    }
+
+    public static function getButtonTemplateType($ticketprinter)
+    {
+        $buttonDisplay = 'button_multi';
+        if (1 == count($ticketprinter->buttons)) {
+            $buttonDisplay = 'button_single';
+        } elseif (2 == count($ticketprinter->buttons)) {
+            $buttonDisplay = 'button_multi_deep';
+        }
+        return $buttonDisplay;
+    }
+
+    protected static function getExistingTemplate(\BO\Zmsentities\Schema\Entity $entity)
+    {
+        if ($entity->hasId() &&
+            file_exists(
+                self::getTemplatePath(). '/buttonDisplay_'. $entity->getEntityName() .'_'. $entity->id .'.twig'
+            )
         ) {
-            $template = self::SUBPATH .'/buttonSingleRow_scope_'. $scope->id .'.twig';
+            return self::SUBPATH .'/buttonDisplay_'. $entity->getEntityName() .'_'. $entity->id .'.twig';
         }
-        foreach ($organisation->departments as $department) {
-            $department = new \BO\Zmsentities\Department($department);
-            if ($department->hasId() &&
-                file_exists(self::getTemplatePath(). '/buttonSingleRow_department_'. $department->id .'.twig')
-            ) {
-                $template = self::SUBPATH .'/buttonSingleRow_department_'. $department->id .'.twig';
-            }
-        }
-        return $template;
-    }
-
-    public static function getCustomizedMultiButtonTemplate($buttons, $organisation)
-    {
-        $template = 'page/buttonMultiRow_default.twig';
-        foreach (self::getClusterFromButtonList($buttons) as $cluster) {
-            if (file_exists(self::getTemplatePath(). '/buttonMultiRow_cluster_'. $cluster['id'] .'.twig')) {
-                $template = self::SUBPATH .'/buttonMultiRow_cluster_'. $cluster['id'] .'.twig';
-            }
-        }
-        foreach ($organisation->departments as $department) {
-            $department = new \BO\Zmsentities\Department($department);
-            if ($department->hasId() &&
-                file_exists(self::getTemplatePath(). '/buttonMultiRow_department_'. $department->id .'.twig')
-            ) {
-                $template = self::SUBPATH .'/buttonMultiRow_department_'. $department->id .'.twig';
-            }
-        }
-        return $template;
-    }
-
-    protected static function getClusterFromButtonList($buttons)
-    {
-        $clusterList = array();
-        foreach ($buttons as $button) {
-            if ('cluster' == $button['type']) {
-                $clusterList[] = $button['cluster'];
-            }
-        }
-        return $clusterList;
+        return null;
     }
 
     /**
