@@ -37,6 +37,7 @@ class Department extends Base
         if (0 < $resolveReferences) {
             $entity['clusters'] = (new Cluster())->readByDepartmentId($entity->id, $resolveReferences - 1);
             $entity['scopes'] = (new Scope())->readByDepartmentId($entity->id, $resolveReferences - 1);
+        } elseif (1 < $resolveReferences) {
             $entity['dayoff'] = (new DayOff())->readByDepartmentId($entity->id);
         }
         return $entity;
