@@ -10,7 +10,7 @@ import settings from './settings';
 // Import Views
 import Reload from "./page/main";
 import DigitalTime from "./block/digital-clock";
-import PickupKeyboardHandheldView from "./block/pickup-keyboard-handheld";
+import NotificationKeyboardHandheldView from "./block/notification-keyboard-handheld";
 
 window.bo = {
     "zmsticketprinter": settings
@@ -19,7 +19,7 @@ window.bo = {
 // Init Views
 new Reload(this);
 $('.digitaluhr').each(function() { new DigitalTime(this);});
-$('.pickup-keyboard-handheld').each(function() { new PickupKeyboardHandheldView(this);});
+$('.smsbox').each(function() { new NotificationKeyboardHandheldView(this);});
 
 // Say hello
-console.log("Welcome to the ZMS admin interface..."); 
+console.log("Welcome to the ZMS Ticketprinter interface..."); 

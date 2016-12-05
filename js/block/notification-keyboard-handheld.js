@@ -6,18 +6,24 @@ class View extends BaseView {
 
 
     constructor (element) {
-        super(element);
-        this.minNumberLength = 5;
+        super(element);        
+        this.source = this.$.attr('id');        
+        if (this.source == "waitingNumberPad") {
+            this.minNumberLength = 1;
+        } else {
+            this.minNumberLength = 10;
+        }
+        
         this.bindPublicMethods('appendNumber', 'deleteNumber', 'clearNumbers', 'checkNumber');
-        console.log("Found pickup-keyboard-handheld");
+        console.log("Found keyboard-handheld");
         this.$.find('button.ziffer').on('click', this.appendNumber);
-        this.$.find('button.deleteNumber').on('click', this.deleteNumber);
-        this.$.find('button.clearNumbers').on('click', this.clearNumbers);
-        this.$numberInput = this.$.find('#Nummer');
+        this.$.find('button#removelastdigit').on('click', this.deleteNumber);
+        this.$.find('button#removealldigitsphone').on('click', this.clearNumbers);
+        this.$numberInput = this.$.find('.nummerneingabe');
     }
 
-    appendNumber (event) {
-        let $content = $(event.target).closest('button').find('.number');
+    appendNumber () {
+	let $content = $(event.target).closest('button');
         let number = $content.text();
         this.$numberInput.val(this.$numberInput.val() + '' + number);
         this.checkNumber();
@@ -37,11 +43,13 @@ class View extends BaseView {
     }
 
     checkNumber () {
-        console.log(this.$numberInput.val());
+        //console.log(this.$numberInput.val());
         var number = this.$numberInput.val();
-        number = number.replace(/^0+/, '');
+        if (this.source == 'waitingNumberPad') {
+            number = number.replace(/^0+/, '');
+        }        
         number = number.replace(/[^\d]/g, '');
-        var $button = this.$.find('.aufrufen');
+        var $button = this.$.find('.nachtrag');
         if (number.length >= this.minNumberLength) {
             $button.removeClass('disabled').attr('disabled', false);
         } else {
