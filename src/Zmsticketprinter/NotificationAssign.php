@@ -22,7 +22,7 @@ class NotificationAssign extends BaseController
         array $args
     ) {
         $validator = $request->getAttribute('validator');
-        $telephone = $validator->getParameter('telephone')->isNumber();
+        $telephone = $validator->getParameter('telephone')->isString()->isBiggerThan(10);
         //get process
         $processId = $validator->getParameter('processId')->isNumber()->getValue();
         $authKey = $validator->getParameter('authKey')->isString()->getValue();
