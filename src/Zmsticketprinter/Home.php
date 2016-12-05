@@ -31,7 +31,7 @@ class Home extends BaseController
         }
 
         if (! $homeUrl) {
-            throw new Exception('No Home URL found');
+            throw new Exception\HomeNotFound();
         }
 
         return $response->withRedirect($homeUrl);
