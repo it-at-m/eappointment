@@ -1,0 +1,5 @@
+#!/bin/bash
+DIR=$(dirname ${BASH_SOURCE[0]})
+BIN=$DIR/../vendor/bin
+EXPORT=$DIR/../data/
+
