@@ -28,6 +28,18 @@ class Notification extends BaseController
         $clusterId = $validator->getParameter('clusterId')->isNumber()->getValue();
         $ticketprinter = Helper\Ticketprinter::readWithHash($request);
 
+        if (! $waitingNumber) {
+            return \BO\Slim\Render::redirect(
+                'Message',
+                [],
+                [
+                    'status' => 'process_notification_amendment_waitingnumber_unvalid',
+                    'scopeId' => $scopeId,
+                    'notHome' => 1
+                ]
+            );
+        }
+
         if ($waitingNumber && $scopeId) {
             $process = \App::$http
                 ->readGetResult('/process/queue/'. $waitingNumber .'/scope/'. $scopeId .'/')
