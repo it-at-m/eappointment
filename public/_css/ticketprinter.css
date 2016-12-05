@@ -79,6 +79,9 @@ body {
   margin: 110px 0px 0px 160px;
   padding: 0px; }
 
+.content p {
+  width: 85%; }
+
 div.wartebuttonbereich_einzeilig {
   position: absolute;
   top: 295px;

@@ -26,6 +26,7 @@ class Message extends BaseController
         $validator = $request->getAttribute('validator');
         $validateStatus = $validator->getParameter('status')->isString()->getValue();
         $scopeId = $validator->getParameter('scopeId')->isNumber()->getValue();
+        $notHome = $validator->getParameter('notHome')->isNumber()->getValue();
 
         $messages = explode(',', $validateStatus);
 
@@ -34,8 +35,10 @@ class Message extends BaseController
             'page/message.twig',
             array(
                 'debug' => \App::DEBUG,
+                'homeRedirect' => ($notHome) ? false : true,
                 'title' => 'Wartennumernausgabe erfolgreich',
                 'ticketprinter' => $ticketprinter,
+                'scopeId' => $scopeId,
                 'organisation' => \App::$http->readGetResult('/organisation/scope/'. $scopeId . '/')->getEntity(),
                 'messages' => $messages
             )
