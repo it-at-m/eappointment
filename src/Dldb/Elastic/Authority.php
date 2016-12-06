@@ -19,40 +19,42 @@ class Authority extends Base
  *
  * @return Collection\Authorities
  */
-    /*
-     * public function fetchList(Array $servicelist = null)
-     * {
-     * $query = Helper::boolFilteredQuery();
-     * $limit = 1000;
-     * $filter = null;
-     * if (count($servicelist)) {
-     * $filter = new \Elastica\Filter\Terms('services.service', $servicelist);
-     * $filter->setExecution('and');
-     * $query->getFilter()->addMust($filter);
-     * }
-     *
-     * $resultList = $this->access()
-     * ->getIndex()
-     * ->getType('location')
-     * ->search($query, $limit);
-     * return $this->fromLocationResults($resultList);
-     * }
-     */
+
+     public function fetchList($servicelist = false)
+     {
+         $boolquery = Helper::boolFilteredQuery();
+         $boolquery->getFilter()->addMust(Helper::localeFilter($this->locale));
+         $query = \Elastica\Query::create($boolquery);
+         $limit = 1000;
+         $filter = null;
+         if (count($servicelist)) {
+            $filter = new \Elastica\Filter\Terms('services.service', $servicelist);
+            $filter->setExecution('and');
+            $query->setPostFilter($filter);
+         }
+         $query->addSort(['sort' => 'asc']);
+         $resultList = $this
+            ->access()
+            ->getIndex()
+            ->getType('location')
+            ->search($query, $limit);
+         return $this->fromLocationResults($resultList);
+     }
+
 
 /**
  * Take an elasticsearch result and return a authority list
  *
  * @return Collection\Authorities
  */
-    /*
-     * public function fromLocationResults($resultList)
-     * {
-     * $authoritylist = new Collection();
-     * foreach ($resultList as $result) {
-     * $location = new \BO\Dldb\Entity\Location($result->getData());
-     * $authoritylist->addLocation($location);
-     * }
-     * return $authoritylist;
-     * }
-     */
+
+     public function fromLocationResults($resultList)
+     {
+         $authorityList = new Collection();
+         foreach ($resultList as $result) {
+             $location = new \BO\Dldb\Entity\Location($result->getData());
+             $authorityList->addLocation($location);
+         }
+         return $authorityList;
+     }
 }

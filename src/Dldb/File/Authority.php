@@ -28,8 +28,9 @@ class Authority extends Base
      *
      * @return Collection
      */
-    public function fetchList($service_csv = false)
+    public function fetchList($servicelist = false)
     {
+        $service_csv = implode(',', $servicelist);
         $authoritylist = $this->getItemList()->removeLocations();
         $locationlist = $this->access()->fromLocation($this->locale)->fetchList($service_csv);
         if ($service_csv) {
