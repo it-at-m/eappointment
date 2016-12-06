@@ -212,12 +212,8 @@ class Location extends Base
             ->getIndex()
             ->getType('location')
             ->search($mainquery, $limit);
-        $locationList = new Collection();
-        foreach ($resultList as $result) {
-            $location = new Entity($result->getData());
-            $locationList[$location['id']] = $location;
-        }
-
-        return $locationList;
+        return $this->access()
+            ->fromAuthority()
+            ->fromLocationResults($resultList);
     }
 }

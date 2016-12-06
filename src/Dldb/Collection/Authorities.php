@@ -42,6 +42,17 @@ class Authorities extends Base
         return array_key_exists($authority_id, $this);
     }
 
+    public function readByExtendedService($service)
+    {
+        foreach ($service['authorities'] as $authority) {
+            if (! $this->hasAuthority($authority['id'])) {
+                $this->addAuthority($authority['id'], $authority['name']);
+                $this[$authority['id']]['webinfo'] = $authority['webinfo'];
+            }
+        }
+        return $this;
+    }
+
     /**
      * Check if appointments are available
      *
