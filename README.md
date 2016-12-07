@@ -90,6 +90,10 @@ Locations
                 "lat": "52.45´",
                 "lon": "13.45"
             },
+            "urgent": {
+                "note": "Aktuelle Meldung am Standort", // Aktuelle Meldung am Standort
+                "date": "2016-06-23 20:00:00" // Ablauf der aktuellen Meldung am Standort
+            },
             "name": "Bürgeramt Märkisches Viertel", // Name des Standortes
             "authority" : { // Behörde zu welcher der Standort gehört
                 "name" : "Bezirksamt Mitte", // Name der Behörde
