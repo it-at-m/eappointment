@@ -139,6 +139,7 @@ class Render
         if ($parameter) {
             $url .= '?' . http_build_query($parameter);
         }
+        $response = \App::$slim->getContainer()->cache->denyCache($response);
         return $response->withRedirect($url);
     }
 }
