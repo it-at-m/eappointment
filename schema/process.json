@@ -28,7 +28,8 @@
             "callCount": 1,
             "callTime": 1447922938000,
             "number": "123",
-            "waitingTime": 2
+            "waitingTime": 2,
+            "withAppointment": 1
         },
         "reminderTimestamp": 1447931730000,
         "requests": [
@@ -39,7 +40,18 @@
             }
         ],
         "scope": {
-            "id": 123
+            "id": 123,
+            "hint": "Standort aus Beispiel-Termin",
+            "provider": {
+                "name": "Bürgeramt 1",
+                "contact": {
+                    "name": "Bürgeramt 1",
+                    "street": "Unter den Linden",
+                    "streetNumber": "1",
+                    "postalCode": "12345",
+                    "city": "Berlin"
+                }
+            }
         },
         "status": "confirmed"
     },

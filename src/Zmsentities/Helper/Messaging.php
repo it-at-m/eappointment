@@ -11,15 +11,16 @@ class Messaging
 {
     protected static $templates = array(
         'notification' => array(
+            'appointment' => 'notification_appointment.twig',
             'confirmed' => 'notification_confirmation.twig',
             'queued' => 'notification_headsup.twig',
         ),
         'mail' => array(
-            'confirmed' => 'mail_confirmation.twig',
+            'appointment' => 'mail_confirmation.twig',
             'deleted' => 'mail_delete.twig'
         ),
         'ics' => array(
-            'confirmed' => 'icsappointment.twig',
+            'appointment' => 'icsappointment.twig',
             'deleted' => 'icsappointment_delete.twig'
         )
     );
@@ -41,7 +42,7 @@ class Messaging
     public static function getMailContent(\BO\Zmsentities\Process $process, \BO\Zmsentities\Config $config)
     {
         $appointment = $process->getFirstAppointment();
-        $template = self::getTemplateByProcessStatus('mail', $process->status);
+        $template = self::getTemplateByProcessStatus('mail', $process);
         $message = self::twigView()->render(
             'messaging/' . $template,
             array(
@@ -51,13 +52,13 @@ class Messaging
                 'config' => $config
             )
         );
-            return $message;
+        return $message;
     }
 
     public static function getNotificationContent(\BO\Zmsentities\Process $process, \BO\Zmsentities\Config $config)
     {
         $appointment = $process->getFirstAppointment();
-        $template = self::getTemplateByProcessStatus('notification', $process->status);
+        $template = self::getTemplateByProcessStatus('notification', $process);
         $message = self::twigView()->render(
             'messaging/' . $template,
             array(
@@ -70,8 +71,12 @@ class Messaging
             return $message;
     }
 
-    protected static function getTemplateByProcessStatus($type, $status)
+    protected static function getTemplateByProcessStatus($type, \BO\Zmsentities\Process $process)
     {
+        $status = $process->status;
+        if ('confirmed' == $status &&  $process->toProperty()->queue->withAppointment->get()) {
+            $status = 'appointment';
+        }
         $template = null;
         if (array_key_exists($type, self::$templates)) {
             if (array_key_exists($status, self::$templates[$type])) {
@@ -101,7 +106,7 @@ class Messaging
     public static function getMailIcs(\BO\Zmsentities\Process $process, \BO\Zmsentities\Config $config, $now = false)
     {
         $ics = new \BO\Zmsentities\Ics();
-        $template = self::getTemplateByProcessStatus('ics', $process->status);
+        $template = self::getTemplateByProcessStatus('ics', $process);
         $message = self::getMailContent($process, $config);
         $plainContent = self::getPlainText($message);
         $appointment = $process->getFirstAppointment();
