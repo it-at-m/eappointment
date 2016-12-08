@@ -31,7 +31,7 @@ class NotificationTest extends EntityCommonTests
     public function testHasProperties()
     {
         $entity = (new $this->entityclass())->getExample();
-        $this->assertTrue($entity->hasProperties('id','department','process'), 'properties missed, please check');
+        $this->assertTrue($entity->hasProperties('id', 'department', 'process'), 'properties missed, please check');
         try {
             $entity->hasProperties('no_property');
             $this->fail("Expected exception NotificationMissedProperty not thrown");
@@ -44,12 +44,30 @@ class NotificationTest extends EntityCommonTests
     {
         $entity = (new $this->entityclass())->getExample();
         $process = (new \BO\Zmsentities\Process())->getExample();
+        $process['queue']['withAppointment'] = 0;
         $config = (new \BO\Zmsentities\Config())->getExample();
         $department = (new \BO\Zmsentities\Department())->getExample();
 
         $resolvedEntity = $entity->toResolvedEntity($process, $config, $department);
         $this->assertContains(
             'Ihre Telefonnummer wurde erfolgreich registriert',
+            $resolvedEntity['message'],
+            'resolving entity failed'
+        );
+    }
+
+    public function testToResolvedEntityAppointment()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $process = (new \BO\Zmsentities\Process())->getExample();
+        $process['queue']['withAppointment'] = 1;
+        $process['id'] = 4567;
+        $config = (new \BO\Zmsentities\Config())->getExample();
+        $department = (new \BO\Zmsentities\Department())->getExample();
+
+        $resolvedEntity = $entity->toResolvedEntity($process, $config, $department);
+        $this->assertContains(
+            'Ihr Termin: Vorgangsnr. 4567',
             $resolvedEntity['message'],
             'resolving entity failed'
         );
