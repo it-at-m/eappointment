@@ -36,6 +36,9 @@ class ScopeAvailabilityDay extends BaseController
             $conflicts->addList($processList->withOutAvailability($availabilityList));
         }
 
+        $maxSlots = self::getMaxSlotsForAvailabilities($availabilityList);
+        $busySlots = self::getBusySlotsForAvailabilities($availabilityList, $processList);
+
         \BO\Slim\Render::html('page/availabilityday.twig', array(
             'availabilityList' => $availabilityList->getArrayCopy(),
             'availabilityListSlices' => $availabilityList->withCalculatedSlots(),
@@ -47,6 +50,32 @@ class ScopeAvailabilityDay extends BaseController
             'workstation' => $workstation,
             'menuActive' => 'availability',
             'maxWorkstationCount' => $availabilityList->getMaxWorkstationCount(),
+            'maxSlotsForAvailabilities' => $maxSlots,
+            'busySlotsForAvailabilities' => $busySlots,
         ));
+    }
+
+    /**
+     * @return integer
+     */
+    protected static function getMaxSlotsForAvailabilities($availabilityList) {
+        return array_reduce($availabilityList->getArrayCopy(), function($carry, $item) {
+            $id = $item->id;
+            $maxSlots = (int) $item->getSlotList()->getSummerizedSlot()->intern;
+            $carry[$id] = $maxSlots;
+            return $carry;
+        }, []);
+    }
+
+    /**
+     * @return integer
+     */
+    protected static function getBusySlotsForAvailabilities($availabilityList, $processList) {
+        return array_reduce($availabilityList->getArrayCopy(), function($carry, $item) use ($processList) {
+            $id = $item->id;
+            $busySlots = count($processList->withAvailability($item));
+            $carry[$id] = $busySlots;
+            return $carry;
+        }, []);
     }
 }

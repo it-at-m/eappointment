@@ -11,7 +11,7 @@ const hours = (() => {
 const background = () => {
     return <div className="background-level">
         {hours.map(i => (
-            <div className="time-level_item" style={{ left: `${i}em` }}>
+            <div key={i} className="time-level_item" style={{ left: `${i}em` }}>
                 <div className="time-level_item--top">
                     <span className="text">{i}:00</span>
                 </div>
@@ -21,6 +21,14 @@ const background = () => {
             </div>
          ))}
     </div>
+}
+
+const conflicts = (showConflicts, conflicts) => {
+    if ( showConflicts) {
+        return (
+            <div className="bars conflict-level">{conflicts}</div>
+        )
+    }
 }
 
 const TimeTableBodyLayout = (props) => {
@@ -37,8 +45,11 @@ const TimeTableBodyLayout = (props) => {
             <div className="grid__item nine-tenths">
                 <div className="availability-timetable_container" id="js-timetable" style={{fontSize: "70px"}} >
                     <div className="inner">
-                      {background()}
-                      {props.showConflicts ? props.conflicts : null}
+                        {background()}
+                        {conflicts(props.showConflicts, props.conflicts)}
+                        <div className="bars numberofappointment-level">{props.numberOfAppointments}</div>
+                        <div className="bars appointment-level">{props.appointments}</div>
+                        <div className="bars opening-level">{props.openings}</div>
                     </div>
                 </div>
             </div>
@@ -48,6 +59,9 @@ const TimeTableBodyLayout = (props) => {
 
 TimeTableBodyLayout.propTypes = {
     conflicts: PropTypes.node,
+    numberOfAppointments: PropTypes.node,
+    appointments: PropTypes.node,
+    openings: PropTypes.node,
     showConflicts: PropTypes.bool
 }
 

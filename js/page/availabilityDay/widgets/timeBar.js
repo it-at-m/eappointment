@@ -8,7 +8,7 @@ const timeToFloat = (time) => {
 }
 
 const TimeBar = (props) => {
-    const { type, data } = props
+    const { type, data, heightEm } = props
 
     const timeItemStart = timeToFloat(data.startTime)
     const timeItemEnd = timeToFloat(data.endTime)
@@ -33,11 +33,35 @@ const TimeBar = (props) => {
             </div>
         )
     }
+
+    if (type === 'numberOfAppointments') {
+        return null //TODO
+    }
+
+    if (type === 'appointment') {
+        const title = `${data.description}, ${data.startTime} - ${data.endTime} - Intern:${data.workstationCount.intern} / Public: ${data.workstationCount.public} / Callcenter: ${data.workstationCount.callcenter}`
+        const style = {
+            height: `${heightEm}em`,
+            left: `${timeItemStart}em`,
+            widht: `${timeItemLength}em`
+        }
+
+        return (
+            <a href="#" className="item-bar" {...{title, style}}>
+                <span className="item-bar_inner">{data.workstationCount.intern}</span>
+            </a>
+        )
+    }
+}
+
+TimeBar.defaultProps = {
+    heightEm: 0
 }
 
 TimeBar.propTypes = {
     type: PropTypes.string,
-    data: PropTypes.object
+    data: PropTypes.object,
+    heightEm: PropTypes.number
 }
 
 export default TimeBar
