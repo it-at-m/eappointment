@@ -98,7 +98,7 @@ class SendQueue
             return $exception->getMessage();
         }
         if (false !== $action) {
-            if (null !== $mailer && 'viaGateway' != $mailer) {
+            if (null !== $mailer) {
                 if (!$mailer->Send()) {
                     \App::$log->debug('Zmsmessaging Failed', [$mailer->ErrorInfo]);
                 }
@@ -152,29 +152,17 @@ class SendQueue
     {
         $preferences = (new \BO\Zmsentities\Config())->getNotificationPreferences();
         $sender = $message->getIdentification();
-        if ('mail' == $preferences['gateway']) {
-            $url = $preferences['gatewayUrl'] .
-            urlencode($message->getMessage()) .
-            '&sender='. urlencode($sender) .
-            '&recipient=' .
-            urlencode($message->client['telephone'])
-            ;
-            $request = fopen($url, 'r');
-            fclose($request);
-            return 'viaGateway';
-        } else {
-            $mailer = new PHPMailer(true);
-            $mailer->Subject = $message->getMessage();
-            $mailer->Body = '&nbsp;';
-            $telephone = preg_replace('[^0-9]', '', $message->client['telephone']);
-            $recipient = 'SMS='.preg_replace('/^0049/', '+49', $telephone).'@example.com';
-            $mailer->AddAddress($recipient);
-            $mailer->SetFrom($message['department']['email']);
-            $mailer->FromName = $sender;
-            $mailer->CharSet = 'UTF-8';
-            $mailer->SetLanguage("de");
-            return $mailer;
-        }
+        $mailer = new PHPMailer(true);
+        $mailer->Subject = $message->getMessage();
+        $mailer->Body = '&nbsp;';
+        $telephone = preg_replace('[^0-9]', '', $message->client['telephone']);
+        $recipient = 'SMS='.preg_replace('/^0049/', '+49', $telephone).'@example.com';
+        $mailer->AddAddress($recipient);
+        $mailer->SetFrom($message['department']['email']);
+        $mailer->FromName = $sender;
+        $mailer->CharSet = 'UTF-8';
+        $mailer->SetLanguage("de");
+        return $mailer;
     }
 
 
