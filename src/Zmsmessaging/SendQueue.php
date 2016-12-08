@@ -153,7 +153,7 @@ class SendQueue
         $preferences = (new \BO\Zmsentities\Config())->getNotificationPreferences();
         $sender = $message->getIdentification();
         $mailer = new PHPMailer(true);
-        $mailer->Subject = $message->getMessage();
+        $mailer->Subject = trim($message->getMessage());
         $mailer->Body = '';
         $mailer->AllowEmpty = true;
         $telephone = preg_replace('[^0-9]', '', $message->client['telephone']);
