@@ -24,8 +24,13 @@ class NotificationDelete extends BaseController
         $query = new Query();
         $message = Response\Message::create(Render::$request);
         $notification = $query->readEntity($itemId);
-        $query->deleteEntity($itemId);
-        $message->data = $notification;
+        if ($query->deleteEntity($itemId)) {
+            $message->data = $notification;
+        } else {
+            $message->meta->statuscode = 500;
+            $message->meta->error = true;
+            $message->meta->message = "Could not delete notification";
+        }
         Render::lastModified(time(), '0');
         Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }
