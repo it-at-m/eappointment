@@ -96,8 +96,7 @@ class CalendarTest extends EntityCommonTests
         $entity['lastDay'] = array ('day' => $firstDay[2], 'month' => $firstDay[1], 'year' => $firstDay[0]);
 
         $time = \DateTime::createFromFormat('Y-m-d', self::FIRST_DAY);
-        $monthList = $entity->getMonthListWithStatedDays($time);
-        foreach ($monthList as $month) {
+        foreach ($entity->getMonthList() as $month) {
             foreach ($month->days as $day) {
                 if ($day->isBookable()) {
                     $this->assertTrue(
