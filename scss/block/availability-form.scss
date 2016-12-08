@@ -1,14 +1,10 @@
 .availability-form {
-    @extend .board;
+  form {
+    @extend .form--horizontal;
+  }
 
-    display: none;
-
-    form {
-        @extend .form--horizontal;
-    }
-
-    h2.title:before {
-        content: "✎ ";
-        padding-right: 1em;
-    }
+  h2.title:before {
+    content: "✎ ";
+    padding-right: 1em;
+  }
 }
