@@ -68,7 +68,7 @@ class Scope extends Base implements MappingInterface
     public function getEntityMapping()
     {
         return [
-            'hint' => self::expression('CONCAT(`scope`.`standortinfozeile`, " | ", `scope`.`Hinweis`)'),
+            'hint' => 'scope.Hinweis',
             'id' => 'scope.StandortID',
             'contact__name' => 'scope.Bezeichnung',
             'contact__street' => 'scope.Adresse',
