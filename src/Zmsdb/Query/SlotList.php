@@ -69,7 +69,7 @@ class SlotList
         FROM
             standort s
             LEFT JOIN oeffnungszeit o USING(StandortID)
-            LEFT JOIN buerger b ON 
+            LEFT JOIN buerger b ON
                 (
                     b.StandortID = o.StandortID
 
@@ -309,7 +309,7 @@ class SlotList
             $datetime = new \DateTimeImmutable($date);
             $day = $calendar->getDayByDateTime($datetime);
             $day['freeAppointments'] = $slotList->getSummerizedSlot($day['freeAppointments']);
-            $day['status'] = 'bookable';
+            $day->getWithStatus($slotType, $now);
         }
         return $calendar;
     }
