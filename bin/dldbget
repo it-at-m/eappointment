@@ -32,7 +32,7 @@ $client = Request::init()
     ->withoutAutoParsing()
     ->followRedirects()
     ->timeout(30);
-$proxy = $args->getOpt('proxy');
+$proxy = $args->getOpt('proxy') ? $args->getOpt('proxy') : getenv('HTTP_PROXY');
 if ($proxy) {
     $proxyconf = array();
     preg_match('#^(?:(?P<user>[^:]+):(?P<pass>[^@]+)@)?(?P<host>[^:]+):?(?P<port>\d+)?$#', $proxy, $proxyconf);
