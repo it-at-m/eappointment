@@ -12,10 +12,11 @@ class MonthTest extends EntityCommonTests
 
     public function testBasic()
     {
+        $time = \DateTime::createFromFormat('Y-m-d', self::FIRST_DAY);
         $entity = (new $this->entityclass())->getExample();
         foreach ($entity->days as $day) {
             $day = new \BO\Zmsentities\Day($day);
-            $day->getWithStatus();
+            $day->getWithStatus('public', $time);
             if ($day->isBookable()) {
                 $this->assertTrue(
                     $day->year .'-'. $day->month .'-'. $day->day == self::FIRST_DAY,

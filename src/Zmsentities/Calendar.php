@@ -279,23 +279,13 @@ class Calendar extends Schema\Entity
                     'month' => $currentDate->format('m'),
                     'calHeadline' => strftime('%B %Y', $currentDate->getTimestamp()),
                     'startDow' => ($startDow == 0) ? 6 : $startDow - 1, // change for week start with monday on 0,
-                    'days' => $dayList->withAssociatedDays($currentDate->format('m'))
+                    'days' => $dayList->withAssociatedDays($currentDate),
+                    'appointmentExists' => $dayList->hasDayWithAppointments()
                 )
             ));
             $monthList->addEntity($month);
             $currentDate = $currentDate->modify('+1 month');
-        } while ($currentDate->getTimestamp() <= $lastDay->getTimestamp());
-        return $monthList;
-    }
-
-    public function getMonthListWithStatedDays(\DateTimeInterface $now)
-    {
-        $monthList = new Collection\MonthList();
-        if ($this->toProperty()->days->get()) {
-            foreach ($this->getMonthList() as $month) {
-                $monthList->addEntity($month->getWithStatedDayList($now));
-            }
-        }
+        } while ($currentDate->getTimestamp() < $lastDay->getTimestamp());
         return $monthList;
     }
 

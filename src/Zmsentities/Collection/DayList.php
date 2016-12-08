@@ -58,23 +58,52 @@ class DayList extends Base implements JsonUnindexed
         return $result;
     }
 
-    public function withAssociatedDays($month)
+    public function getMonthIndex()
+    {
+        $daysByMonth = array();
+        foreach ($this as $day) {
+            $day = new Day($day);
+            $daysByMonth[$day->toDateTime()->format('m')][] = $day;
+        }
+        return array_keys($daysByMonth);
+    }
+
+    public function withAssociatedDays($currentDate)
     {
         $dayList = new self();
-        foreach ($this as $day) {
-            $day = new \BO\Zmsentities\Day($day);
-            if ($day->month == $month) {
-                $dayList->addEntity($day);
+        foreach ($this->getMonthIndex() as $monthIndex) {
+            if ($currentDate->format('m') == $monthIndex) {
+                for ($dayNumber = 1; $dayNumber <= $currentDate->format('t'); $dayNumber ++) {
+                    $day = str_pad($dayNumber, 2, '0', STR_PAD_LEFT);
+                    $entity = $this->getDay($currentDate->format('Y'), $currentDate->format('m'), $day);
+                    $dayList->addEntity($entity);
+                }
             }
         }
         return $dayList->sortByCustomKey('day');
     }
 
+    /*
+     * There is a collection function sortByCustomKey, that does the same !!!
+     *
+     */
     public function setSort($property = 'day')
     {
         $this->uasort(function ($dayA, $dayB) use ($property) {
             return strnatcmp($dayA[$property], $dayB[$property]);
         });
         return $this;
+    }
+
+    public function hasDayWithAppointments()
+    {
+        foreach ($this as $hash => $day) {
+            $hash = null;
+            $day = new Day($day);
+            if ($day->isBookable()) {
+                return true;
+            }
+        }
+        return false;
     }
 }

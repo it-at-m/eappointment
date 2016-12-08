@@ -48,9 +48,9 @@ class Day extends Schema\Entity
         return Helper\DateTime::create($date);
     }
 
-    public function getFreePublicAppointments()
+    public function getAppointmentsByType($slotType)
     {
-        return $this->toProperty()->freeAppointments->public->get();
+        return (0 < $this->toProperty()->freeAppointments->{$slotType}->get());
     }
 
     public function isBookable()
@@ -64,16 +64,15 @@ class Day extends Schema\Entity
      *
      * @return \ArrayObject or String
      */
-    public function getWithStatus()
+    public function getWithStatus($slotType, \DateTimeInterface $dateTime)
     {
-        if (self::NOTBOOKABLE != $this->status) {
-            $this->status = self::RESTRICTED;
-            $publicAppointments = $this->getFreePublicAppointments();
-            if (0 < $publicAppointments) {
-                $this->status = self::BOOKABLE;
-            } elseif (0 == $publicAppointments) {
-                $this->status =  self::FULL;
-            }
+        $hasAppointments = $this->getAppointmentsByType($slotType);
+        if ($this->status != self::RESTRICTED) {
+            $this->status = ($hasAppointments) ? self::BOOKABLE : self::FULL;
+        }
+        // if time < todays time + half an hour, it is restricted
+        if ($this->toDateTime()->getTimestamp() <= $dateTime->getTimestamp() + 1800) {
+            $this->status =  self::RESTRICTED;
         }
         return $this;
     }
