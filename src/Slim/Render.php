@@ -94,7 +94,6 @@ class Render
      */
     public static function lastModified($date, $expires = '+5 minutes')
     {
-        self::$response = (! self::$response) ? new Response() : self::$response;
         self::$response = self::withLastModified(self::$response, $date, $expires);
         return self::$response;
     }
