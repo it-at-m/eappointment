@@ -10,6 +10,8 @@ class Day extends Schema\Entity
 
     const BOOKABLE = 'bookable';
 
+    const NOTBOOKABLE = 'notBookable';
+
     const RESTRICTED = 'restricted';
 
     public static $schema = "day.json";
@@ -20,7 +22,7 @@ class Day extends Schema\Entity
             'year' => '',
             'month' => '',
             'day' => '',
-            'status' => 'notBookable',
+            'status' => self::NOTBOOKABLE,
             'freeAppointments' => new Slot(),
         ];
     }
@@ -64,12 +66,14 @@ class Day extends Schema\Entity
      */
     public function getWithStatus()
     {
-        $this->status = self::RESTRICTED;
-        $publicAppointments = $this->getFreePublicAppointments();
-        if (0 < $publicAppointments) {
-            $this->status = self::BOOKABLE;
-        } elseif (0 == $publicAppointments) {
-            $this->status =  self::FULL;
+        if (self::NOTBOOKABLE != $this->status) {
+            $this->status = self::RESTRICTED;
+            $publicAppointments = $this->getFreePublicAppointments();
+            if (0 < $publicAppointments) {
+                $this->status = self::BOOKABLE;
+            } elseif (0 == $publicAppointments) {
+                $this->status =  self::FULL;
+            }
         }
         return $this;
     }
