@@ -19,7 +19,7 @@ class IcsTest extends Base
         $ics = \BO\Zmsentities\Helper\Messaging::getMailIcs($process, $config, $testTimestamp);
 
         $this->assertEntity("\\BO\\Zmsentities\\Ics", $ics);
-        $this->assertEquals(base64_decode($testEntity->content), $ics->getContent());
+        $this->assertEquals($testEntity->content, $ics->getContent());
         $this->assertContains('UID:20160408-169530', $ics->getContent());
     }
 
@@ -39,7 +39,45 @@ class IcsTest extends Base
     {
         // @codingStandardsIgnoreStart
         $input = new Entity(array(
-            'content' => 'QkVHSU46VkNBTEVOREFSClgtTE9UVVMtQ0hBUlNFVDpVVEYtOApWRVJTSU9OOjIuMApQUk9ESUQ6Wk1TLUJlcmxpbgpCRUdJTjpWVElNRVpPTkUKVFpJRDpFdXJvcGUvQmVybGluClgtTElDLUxPQ0FUSU9OOkV1cm9wZS9CZXJsaW4KQkVHSU46REFZTElHSFQKVFpPRkZTRVRGUk9NOiswMTAwClRaT0ZGU0VUVE86KzAyMDAKVFpOQU1FOkNFU1QKRFRTVEFSVDoxOTcwMDMyOVQwMjAwMDAKUlJVTEU6RlJFUT1ZRUFSTFk7SU5URVJWQUw9MTtCWURBWT0tMVNVO0JZTU9OVEg9MwpFTkQ6REFZTElHSFQKQkVHSU46U1RBTkRBUkQKVFpPRkZTRVRGUk9NOiswMjAwClRaT0ZGU0VUVE86KzAxMDAKVFpOQU1FOkNFVApEVFNUQVJUOjE5NzAxMDI1VDAzMDAwMApSUlVMRTpGUkVRPVlFQVJMWTtJTlRFUlZBTD0xO0JZREFZPS0xU1U7QllNT05USD0xMApFTkQ6U1RBTkRBUkQKRU5EOlZUSU1FWk9ORQpNRVRIT0Q6UFVCTElTSApCRUdJTjpWRVZFTlQKVUlEOjIwMTYwNDA4LTE2OTUzMApEVFNUQVJUO1RaSUQ9RXVyb3BlL0JlcmxpbjoyMDE2MDQwOFQwOTEwMDAKRFRFTkQ7VFpJRD1FdXJvcGUvQmVybGluOjIwMTYwNDA4VDA5MjAwMApEVFNUQU1QOjIwMTYwNTEyVDE2MDgwOVoKTE9DQVRJT046QsO8cmdlcmFtdCBSYXRoYXVzIFRpZXJnYXJ0ZW4gTWF0aGlsZGUtSmFjb2ItUGxhdHosIDEwNTUxIEJlcmxpbgpTVU1NQVJZOkJlcmxpbi1UZXJtaW46IDE2OTUzMApERVNDUklQVElPTjogU2VociBnZWVocnRlL3IgRnJhdSBvZGVyIEhlcnIgWjY1NjM1IFxuXG4gaGllcm1pdCBiZXN0w6R0aWdlbiB3aXIgSWhuZW4gSWhyZW4gZ2VidWNodGVuIFRlcm1pbiBhbSBGci4gMDguIEFwcmlsIDIwMTYgdW0gMDk6MTAgVWhyXG5cbiBPcnQ6IELDvHJnZXJhbXQgUmF0aGF1cyBUaWVyZ2FydGVuIE1hdGhpbGRlLUphY29iLVBsYXR6LCAxMDU1MSBCZXJsaW5cbiAoQsO8cmdlcmFtdCApIFxuXG4gSWhyZSBWb3JnYW5nc251bW1lciBpc3QgZGllICIxNjk1MzAiXG4gSWhyIENvZGUgenVyIFRlcm1pbmFic2FnZSBvZGVyIC3DpG5kZXJ1bmcgbGF1dGV0ICJiM2IwIlxuXG4gWmFobHVuZ3NoaW53ZWlzOiBBbSBTdGFuZG9ydCBrYW5uIG51ciBtaXQgZ2lyb2NhcmQgKG1pdCBQSU4pIGJlemFobHQgd2VyZGVuLlxuXG4gU2llIGhhYmVuIGZvbGdlbmRlIERpZW5zdGxlaXN0dW5nIGF1c2dld8OkaGx0OiBcbiBcbkFubWVsZHVuZyBlaW5lciBXb2hudW5nXG4gIFxuVm9yYXVzc2V0enVuZ2VuXG4gIFxuLSAgcGVyc8O2bmxpY2hlIFZvcnNwcmFjaGUgb2RlciBWZXJ0cmV0dW5nIGR1cmNoIGVpbmUgYW5kZXJlIFBlcnNvbiAgIElocmUgcGVyc8O2bmxpY2hlIFZvcnNwcmFjaGUgaXN0IGVyZm9yZGVybGljaCBvZGVyIHNpZSB3ZXJkZW4gZHVyY2ggZWluZSBhbmRlcmUgUGVyc29uIHZlcnRyZXRlbi5cbiBCZWkgZGVyIEFiZ2FiZSBkZXMgQW5tZWxkZWZvcm11bGFycyB1bmQgZGVyIMO8YnJpZ2VuIGVyZm9yZGVybGljaGVuIFVudGVybGFnZW4ga8O2bm5lbiBTaWUgc2ljaCBkdXJjaCBlaW5lIGdlZWlnbmV0ZSBQZXJzb24gdmVydHJldGVuIGxhc3Nlbi4gRGllIHZvbiBJaG5lbiBiZWF1ZnRyYWd0ZSBQZXJzb24gbXVzcyBpbiBkZXIgTGFnZSBzZWluLCBkaWUgenVyIG9yZG51bmdzZ2Vtw6TDn2VuIEbDvGhydW5nIGRlcyBNZWxkZXJlZ2lzdGVycyBlcmZvcmRlcmxpY2hlbiBBdXNrw7xuZnRlIHp1IGVydGVpbGVuLiBEYXMgQW5tZWxkZWZvcm11bGFyIG3DvHNzZW4gU2llIGVpZ2VuaMOkbmRpZyB1bnRlcnNjaHJlaWJlbi4gICAgICBcbkVyZm9yZGVybGljaGUgVW50ZXJsYWdlblxuICBcbi0gIElkZW50aXTDpHRzbmFjaHdlaXMgICBQZXJzb25hbGF1c3dlaXMsIFJlaXNlcGFzcywgS2luZGVycmVpc2VwYXNzIGbDvHIgZGV1dHNjaGUgU3RhYXRzYW5nZWjDtnJpZ2Ugb2RlciBOYXRpb25hbHBhc3Mgb2RlciBQYXNzZXJzYXR6cGFwaWVyZSBmw7xyIGF1c2zDpG5kaXNjaGUgU3RhYXRzYW5nZWjDtnJpZ2UuXG4gQml0dGUgYnJpbmdlbiBTaWUgYWxsZSBnZW5hbm50ZW4gdW5kIElobmVuIHZvcmxpZWdlbmRlbiBEb2t1bWVudGUgZsO8ciBhbGxlIHVtemllaGVuZGVuIFBlcnNvbmVuIG1pdC4gICBcbi0gIEJlaWJsYXR0IHp1ciBBbm1lbGR1bmcgKGJlaSBtZWhyZXJlbiBXb2hudW5nZW4pICAgTnVyIHdlbm4gU2llIElocmUgYmlzaGVyaWdlIFdvaG51bmcgaW4gRGV1dHNjaGxhbmQgbmljaHQgYXVmZ2ViZW4gdW5kIGRpZSBuZXVlIFdvaG51bmcgenVzw6R0emxpY2ggYW5tZWxkZW4gd29sbGVuLCBtdXNzIGbDvHIgU2llIHVuZCBJaHJlIGdnZi4gbWl0emllaGVuZGVuIEZhbWlsaWVubWl0Z2xpZWRlciBlaW5lIFdvaG51bmcgYWxzIEhhdXB0d29obnVuZyBiZXN0aW1tdCB3ZXJkZW4uIEJpdHRlIGxlc2VuIFNpZSBzaWNoIGluIGRpZXNlbSBGYWxsZSBkaWUgSGlud2Vpc2UgYXVmIGRlbSBGb3JtdWxhciBkdXJjaC4gICBcbi0gIEFubWVsZGVmb3JtdWxhciAgIFBlcnNvbmVuIGVpbmVyIEZhbWlsaWUsIGRpZSBhdXMgZGVyIGJpc2hlcmlnZW4gV29obnVuZyB6dXNhbW1lbiBpbiBkaWUgbmV1ZSBXb2hudW5nIHppZWhlbiwga8O2bm5lbiBnZW1laW5zYW0gZWluIEFubWVsZGVmb3JtdWxhciBiZW51dHplbi5cbiBCZWkgbWVociBhbHMgMiBhbnp1bWVsZGVuZGVuIFBlcnNvbmVuIGJpdHRlIHdlaXRlcmVuIE1lbGRlc2NoZWluIGJlbnV0emVuLlxuIEJpdHRlIGJlYWNodGVuIFNpZSBpbSBCZXJlaWNoICJXZWl0ZXJmw7xocmVuZGUgSW5mb3JtYXRpb25lbiIgZGllICJXZWl0ZXJmw7xocmVuZGVuIEhpbndlaXNlIHp1IEFubWVsZHVuZ2VuIiAuICAgXG4tICBQZXJzb25lbnN0YW5kc3Vya3VuZGUgICBOdXIgZsO8ciBJaHJlIGVyc3RlIEFubWVsZHVuZyBpbiBCZXJsaW4gaXN0IGVzIHp3ZWNrZGllbmxpY2gsIHdlbm4gU2llIGVpbmUgUGVyc29uZW5zdGFuZHN1cmt1bmRlIHp1ciBBbm1lbGR1bmcgbWl0YnJpbmdlbiB1bmQgdm9ybGVnZW4gKHouQi4gSGVpcmF0c3Vya3VuZGUsIEdlYnVydHN1cmt1bmRlKS4gICBcbi0gIEVpbnp1Z3NiZXN0w6R0aWd1bmcgZGVzIFdvaG51bmdzZ2ViZXJzIChWZXJtaWV0ZXIpICAgU2VpdCBkZW0gMS4gTm92ZW1iZXIgMjAxNSBpc3QgZGVyIFdvaG51bmdzZ2ViZXIgdmVycGZsaWNodGV0LCBkZW0gTWVsZGVwZmxpY2h0aWdlbiBkZW4gRWluenVnIGlubmVyaGFsYiB2b24gendlaSBXb2NoZW4gbmFjaCBkZW0gRWluenVnIHNjaHJpZnRsaWNoIG1pdCBVbnRlcnNjaHJpZnQgenUgYmVzdMOkdGlnZW4uIERpZSBCZXN0w6R0aWd1bmcgbXVzcyBmb2xnZW5kZSBEYXRlbiBlbnRoYWx0ZW46IE5hbWUgdW5kIEFuc2NocmlmdCBkZXMgV29obnVuZ3NnZWJlcnMsIEVpbnp1Z3NkYXR1bSwgQW5zY2hyaWZ0IGRlciBXb2hudW5nIHVuZCBOYW1lbiBkZXIgbWVsZGVwZmxpY2h0aWdlbiBQZXJzb25lbi4gRGllIFZvcmxhZ2UgZWluZXMgTWlldHZlcnRyYWdlcyBlcnNldHp0IG5pY2h0IGRpZSBFaW56dWdzYmVzdMOkdGlndW5nLlxuIEVpbiBNdXN0ZXIgZsO8ciBkaWUgRWluenVnc2Jlc3TDpHRpZ3VuZyBkZXMgV29obnVuZ3NnZWJlcnMgc3RlaHQgSWhuZW4gdW50ZXIgIkZvcm11bGFyZSIgenVyIFZlcmbDvGd1bmcuICAgICAgXG5HZWLDvGhyZW5cbiBnZWLDvGhyZW5mcmVpOyBkYXMgZ2lsdCBhdWNoIGbDvHIgZGllIE1lbGRlYmVzdMOkdGlndW5nLiBcbiBTb2xsdGVuIFNpZSBkZW4gVGVybWluIG5pY2h0IHdhaHJuZWhtZW4ga8O2bm5lbiwgc2FnZW4gU2llIGlobiBiaXR0ZSBhYi4gXG5cbiBEaWVzIGvDtm5uZW4gU2llIMO8YmVyIHVuc2VyZSBJbnRlcm5ldGJ1Y2h1bmdzc2VpdGUgaHR0cHM6Ly9zZXJ2aWNlLWJlcmxpbi90ZXJtaW52ZXJlaW5iYXJ1bmcvdGVybWluL21hbmFnZS8xNjk1MzAvIHVudGVyIEFuZ2FiZSBJaHJlciBWb3JnYW5nc251bW1lciAiMTY5NTMwIiB1bmQgSWhyZXMgcGVyc8O2bmxpY2hlbiBBYnNhZ2UtQ29kZXMgImIzYjAiIGVybGVkaWdlbi5cblxuIFxuIE1pdCBmcmV1bmRsaWNoZW0gR3J1w59cbiBJaHJlIFRlcm1pbnZlcndhbHR1bmcgZGVzIExhbmRlcyBCZXJsaW4gXG5cbiBodHRwczovL3NlcnZpY2UtYmVybGluL3Rlcm1pbnZlcmVpbmJhcnVuZy8gCkJFR0lOOlZBTEFSTQpBQ1RJT046RElTUExBWQpUUklHR0VSOi1QMUQKREVTQ1JJUFRJT046RXJpbm5lcnVuZwpFTkQ6VkFMQVJNCkVORDpWRVZFTlQKRU5EOlZDQUxFTkRBUgo='
+            'content' => 'BEGIN:VCALENDAR
+X-LOTUS-CHARSET:UTF-8
+VERSION:2.0
+PRODID:ZMS-Berlin
+BEGIN:VTIMEZONE
+TZID:Europe/Berlin
+X-LIC-LOCATION:Europe/Berlin
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+0100
+TZOFFSETTO:+0200
+TZNAME:CEST
+DTSTART:19700329T020000
+RRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=-1SU;BYMONTH=3
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+0200
+TZOFFSETTO:+0100
+TZNAME:CET
+DTSTART:19701025T030000
+RRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=-1SU;BYMONTH=10
+END:STANDARD
+END:VTIMEZONE
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:20160408-169530
+DTSTART;TZID=Europe/Berlin:20160408T091000
+DTEND;TZID=Europe/Berlin:20160408T092000
+DTSTAMP:20160512T160809Z
+LOCATION:Bürgeramt Rathaus Tiergarten Mathilde-Jacob-Platz, 10551 Berlin
+SUMMARY:Berlin-Termin: 169530
+DESCRIPTION: Sehr geehrte/r Frau oder Herr Z65635 \n\n hiermit bestätigen wir Ihnen Ihren gebuchten Termin am Fr. 08. April 2016 um 09:10 Uhr\n\n Ort: Bürgeramt Rathaus Tiergarten Mathilde-Jacob-Platz, 10551 Berlin\n \n\n Ihre Vorgangsnummer ist die "169530"\n Ihr Code zur Terminabsage oder -änderung lautet "b3b0"\n\n Zahlungshinweis: Am Standort kann nur mit girocard (mit PIN) bezahlt werden.\n\n Sie haben folgende Dienstleistung ausgewählt: \n \nAnmeldung einer Wohnung\n  \nVoraussetzungen\n  \n-  persönliche Vorsprache oder Vertretung durch eine andere Person   Ihre persönliche Vorsprache ist erforderlich oder sie werden durch eine andere Person vertreten.\n Bei der Abgabe des Anmeldeformulars und der übrigen erforderlichen Unterlagen können Sie sich durch eine geeignete Person vertreten lassen. Die von Ihnen beauftragte Person muss in der Lage sein, die zur ordnungsgemäßen Führung des Melderegisters erforderlichen Auskünfte zu erteilen. Das Anmeldeformular müssen Sie eigenhändig unterschreiben.      \nErforderliche Unterlagen\n  \n-  Identitätsnachweis   Personalausweis, Reisepass, Kinderreisepass für deutsche Staatsangehörige oder Nationalpass oder Passersatzpapiere für ausländische Staatsangehörige.\n Bitte bringen Sie alle genannten und Ihnen vorliegenden Dokumente für alle umziehenden Personen mit.   \n-  Beiblatt zur Anmeldung (bei mehreren Wohnungen)   Nur wenn Sie Ihre bisherige Wohnung in Deutschland nicht aufgeben und die neue Wohnung zusätzlich anmelden wollen, muss für Sie und Ihre ggf. mitziehenden Familienmitglieder eine Wohnung als Hauptwohnung bestimmt werden. Bitte lesen Sie sich in diesem Falle die Hinweise auf dem Formular durch.   \n-  Anmeldeformular   Personen einer Familie, die aus der bisherigen Wohnung zusammen in die neue Wohnung ziehen, können gemeinsam ein Anmeldeformular benutzen.\n Bei mehr als 2 anzumeldenden Personen bitte weiteren Meldeschein benutzen.\n Bitte beachten Sie im Bereich "Weiterführende Informationen" die "Weiterführenden Hinweise zu Anmeldungen" .   \n-  Personenstandsurkunde   Nur für Ihre erste Anmeldung in Berlin ist es zweckdienlich, wenn Sie eine Personenstandsurkunde zur Anmeldung mitbringen und vorlegen (z.B. Heiratsurkunde, Geburtsurkunde).   \n-  Einzugsbestätigung des Wohnungsgebers (Vermieter)   Seit dem 1. November 2015 ist der Wohnungsgeber verpflichtet, dem Meldepflichtigen den Einzug innerhalb von zwei Wochen nach dem Einzug schriftlich mit Unterschrift zu bestätigen. Die Bestätigung muss folgende Daten enthalten: Name und Anschrift des Wohnungsgebers, Einzugsdatum, Anschrift der Wohnung und Namen der meldepflichtigen Personen. Die Vorlage eines Mietvertrages ersetzt nicht die Einzugsbestätigung.\n Ein Muster für die Einzugsbestätigung des Wohnungsgebers steht Ihnen unter "Formulare" zur Verfügung.      \nGebühren\n gebührenfrei; das gilt auch für die Meldebestätigung. \n Sollten Sie den Termin nicht wahrnehmen können, sagen Sie ihn bitte ab. \n\n Dies können Sie über unsere Internetbuchungsseite https://service-berlin/terminvereinbarung/termin/manage/169530/ unter Angabe Ihrer Vorgangsnummer "169530" und Ihres persönlichen Absage-Codes "b3b0" erledigen.\n\n \n Mit freundlichem Gruß\n Ihre Terminverwaltung des Landes Berlin \n\n https://service-berlin/terminvereinbarung/ 
+BEGIN:VALARM
+ACTION:DISPLAY
+TRIGGER:-P1D
+DESCRIPTION:Erinnerung
+END:VALARM
+END:VEVENT
+END:VCALENDAR
+'
         ));
         // @codingStandardsIgnoreEnd
         return $input;
