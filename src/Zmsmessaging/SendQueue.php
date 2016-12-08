@@ -154,7 +154,8 @@ class SendQueue
         $sender = $message->getIdentification();
         $mailer = new PHPMailer(true);
         $mailer->Subject = $message->getMessage();
-        $mailer->Body = '&nbsp;';
+        $mailer->Body = '';
+        $mailer->AllowEmpty = true;
         $telephone = preg_replace('[^0-9]', '', $message->client['telephone']);
         $recipient = 'SMS='.preg_replace('/^0049/', '+49', $telephone).'@example.com';
         $mailer->AddAddress($recipient);
