@@ -23,9 +23,11 @@
 
             <script type="text/javascript" src="{{ includeUrl() }}/_js/index.js"></script>
             <script type="text/javascript">window.bo.zmsticketprinter.includepath="{{ includeUrl() }}"</script>
-            <script type="text/javascript">window.bo.zmsticketprinter.reload="{{ ticketprinter.reload }}"</script>
+            {% if ticketprinter.reload %}
+            <script type="text/javascript">window.bo.zmsticketprinter.reloadInterval={{ ticketprinter.reload }}</script>
+            {% endif %}
             {% if debug %}
-            <div class="debug">
+            <div class="debug noprint">
             <!-- httplog -->{{ dumpHttpLog() }}
             </div>
         {% endif %}

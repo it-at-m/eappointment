@@ -1,73 +1,74 @@
 {% extends "layout/main.twig" %}
 
 {% from 'element/helper/form.twig' import formbutton, custombutton, hiddenfield %}
+{% use "block/content/print.twig" %}
 
-{% block pageid %}index{% endblock %}
+{% block pageid %}process{% endblock %}
 {% block content %}
+
 <div class="boxontop">
-	<span class="noprint">
+	{{ block("print") }}
+	<div class="noprint">
 		<span class="msg_wartenummer_lautet">
 		    {% trans "Ihre Wartenummer lautet" %}: <br>
 		</span>
 		<div class="nummernanzeige">
 		    {{ process.queue.number }}
 		</div>
-    </span>
-    <span class="noprint">
-    	{% if queueList|length > 1 %}{% set plural = 1 %}{% endif %}
-    	{% if queueList|length >= 1 %}
-			{% if plural %}
-    		Es warten {{ estimatedData.amountBefore - 1 }} Kunden vor Ihnen.
-    		{% else %}
-    		Es wartet 1 Kunde vor Ihnen.
-    		{% endif %}
+        <span>
+        	{% if queueList|length > 1 %}{% set plural = 1 %}{% endif %}
+        	{% if queueList|length >= 1 %}
+    			{% if plural %}
+        		Es warten {{ estimatedData.amountBefore - 1 }} Kunden vor Ihnen.
+        		{% else %}
+        		Es wartet 1 Kunde vor Ihnen.
+        		{% endif %}
+        	{% else %}
+        	Es wartet niemand vor Ihnen.
+        	{% endif %}
+        </span>
+    	<br />
+
+        {% trans "Vorraussichtliche Wartezeit" %}:
+    	{% if estimatedData.waitingTimeEstimate %}
+    		{% if estimatedData.waitingTimeEstimate < 120 %}
+    	        {{ estimatedData.waitingTimeEstimate }} {% trans "Minuten" %}
+    	    {% else %}
+    	    	{{ (estimatedData.waitingTimeEstimate / 60)|round(0, 'floor') }} {% trans "Stunden" %}
+    	    {% endif %}
     	{% else %}
-    	Es wartet niemand vor Ihnen.
+    	    {% trans "keine" %}
     	{% endif %}
-    </span>
-	<br />
-    {% trans "Vorraussichtliche Wartezeit" %}:
-	{% if estimatedData.waitingTimeEstimate %}
-		{% if estimatedData.waitingTimeEstimate < 120 %}
-	        {{ estimatedData.waitingTimeEstimate }} {% trans "Minuten" %}
-	    {% else %}
-	    	{{ (estimatedData.waitingTimeEstimate / 60)|round(0, 'floor') }} {% trans "Stunden" %}
-	    {% endif %}
-	{% else %}
-	    {% trans "keine" %}
-	{% endif %}
-
-	{% if
-	    estimatedData.waitingTimeEstimate > (scope.preferences.ticketprinter.notificationsDelay)|round() and
-	    process.scope.preferences.ticketprinter.notificationsEnabled
-	%}
-    <p>Wartenummer wird im Anschluss ausgedruckt.</p>
-    <span class="noprint">
-        Wünschen Sie eine SMS-Benachrichtigung<br/>
-        {{ process.scope.preferences.notifications.headsUpTime }} Minuten vor ihrem Aufruf?
-    </span>
-
-	<form action="{{ urlGet('Notification', {}, {}) }}" method="post" id="postNotification">
-        {{ hiddenfield({ "name": "waitingNumber", "value": process.queue.number }) }}
-        {{ hiddenfield({ "name": "scopeId", "value": process.scope.id }) }}
-        {{ hiddenfield({ "name": "organisationId", "value": organisation.id }) }}
-    </form>
-
-	<form action="{{ urlGet('Message', {}, {}) }}" method="post" id="postCancel">
-    	{{ hiddenfield({ "name": "scopeId", "value": process.scope.id }) }}
-    	{{ hiddenfield({ "name": "status", "value": "process_notification_amendment_canceled" }) }}
-    </form>
-
-    <div class="smsoptionbutton noprint">
-        {% set label = "Ja" %}
-        {{ formbutton({ "type":"submit", "name": "processWithNotifiation", "formTarget":"postNotification", "class": "button ja_nein", "label":label|trans, "value": 1 }) }}
-
-        {% set label = "Nein" %}
-        {{ formbutton({ "type":"submit", "name": "processWithNotification", "formTarget":"postCancel", "class": "button ja_nein option_nein", "label":label|trans, "value": 0 }) }}
-	 </div>
-
-	{% else %}
-	<span class="noprint">
+    	{% if
+    	    estimatedData.waitingTimeEstimate > (scope.preferences.ticketprinter.notificationsDelay)|round() and
+    	    process.scope.preferences.ticketprinter.notificationsEnabled
+    	%}
+        <p>Wartenummer wird im Anschluss ausgedruckt.</p>
+        <span>
+            Wünschen Sie eine SMS-Benachrichtigung<br/>
+            {{ process.scope.preferences.notifications.headsUpTime }} Minuten vor ihrem Aufruf?
+        </span>
+    
+    	<form action="{{ urlGet('Notification', {}, {}) }}" method="post" id="postNotification">
+            {{ hiddenfield({ "name": "waitingNumber", "value": process.queue.number }) }}
+            {{ hiddenfield({ "name": "scopeId", "value": process.scope.id }) }}
+            {{ hiddenfield({ "name": "organisationId", "value": organisation.id }) }}
+        </form>
+    
+    	<form action="{{ urlGet('Message', {}, {}) }}" method="post" id="postCancel">
+        	{{ hiddenfield({ "name": "scopeId", "value": process.scope.id }) }}
+        	{{ hiddenfield({ "name": "status", "value": "process_notification_amendment_canceled" }) }}
+        </form>
+    
+        <div class="smsoptionbutton">
+            {% set label = "Ja" %}
+            {{ formbutton({ "type":"submit", "name": "processWithNotifiation", "formTarget":"postNotification", "class": "button ja_nein", "label":label|trans, "value": 1 }) }}
+    
+            {% set label = "Nein" %}
+            {{ formbutton({ "type":"submit", "name": "processWithNotification", "formTarget":"postCancel", "class": "button ja_nein option_nein", "label":label|trans, "value": 0 }) }}
+    	 </div>
+    
+    	{% else %}
 		<p>Ihre Wartenummer wird gedruckt.</p>
 		<form action="{{ urlGet('TicketprinterByScope', {'scopeId': process.scope.id}, {}) }}" method="post" id="postSuccess">
         {{ hiddenfield({ "name": "scopeId", "value": process.scope.id }) }}
@@ -75,7 +76,7 @@
         </form>
         {% set label = "OK" %}
         {{ formbutton({ "type":"submit", "name": "submit_ok", "formTarget":"postSuccess", "class": "button ja_nein", "label":label|trans, "value": label|trans }) }}
-	</span>
-	{% endif %}
+    	{% endif %}	
+    </div>
 </div>
 {% endblock %}
