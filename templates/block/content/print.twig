@@ -6,7 +6,7 @@
     	<span class="printausgabe msg_ihre_wartenummer">
     		{{ process.scope.contact.name }}<br>
     		{% if process.scope.hint %}Info: {{ process.scope.hint }}<br>{% endif %}
-    		{{ toGermanDateFromTs(process.appointments|first.date).date }}, {{ toGermanDateFromTs(process.appointments|first.date).time }}<br>
+    		{{ toGermanDateFromTs(now|date("U")).date }}, {{ toGermanDateFromTs(now|date("U")).time }}<br>
 		</span>
 	</span>
 </div>
