@@ -1,0 +1,15 @@
+{% block print %}
+<div class="print" media="print">
+	<span class="printausgabe msg_ihre_wartenummer">Ihre Wartenummer:</span>
+    <div class="printausgabe msg_ihre_nummernanzeige nummernanzeige">{{ process.queue.number }}</div>
+    <span class="printausgabe msg_stdname">
+    	<span class="printausgabe msg_ihre_wartenummer">
+    		{{ process.scope.contact.name }}<br>
+    		{% if process.scope.hint %}Info: {{ process.scope.hint }}<br>{% endif %}
+    		{{ toGermanDateFromTs(process.appointments|first.date).date }}, {{ toGermanDateFromTs(process.appointments|first.date).time }}<br>
+		</span>
+	</span>
+</div>
+{% endblock %}
+
+
