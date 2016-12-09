@@ -62,18 +62,18 @@ const renderBody = (data, onChange, onSave) => {
                 <FormGroup>
                     <Label>Wochentage:</Label>
                     <Controls>
-                        <Inputs.CheckboxGroup name="weekdays"
-                            value={data.weekdays}
+                        <Inputs.CheckboxGroup name="weekday"
+                            value={data.weekday}
                             inline={true}
                             {...{ onChange }}
                             boxes={[
-                                {value: "Mo", label: "Mo"},
-                                {value: "Di", label: "Di"},
-                                {value: "Mi", label: "Mi"},
-                                {value: "Do", label: "Do"},
-                                {value: "Fr", label: "Fr"},
-                                {value: "Sa", label: "Sa"},
-                                {value: "So", label: "So"}
+                                {value: "monday", label: "Mo"},
+                                {value: "tuesday", label: "Di"},
+                                {value: "wednesday", label: "Mi"},
+                                {value: "thursday", label: "Do"},
+                                {value: "friday", label: "Fr"},
+                                {value: "saturday", label: "Sa"},
+                                {value: "sunday", label: "So"}
                             ]} />
                     </Controls>
                 </FormGroup>
@@ -89,8 +89,9 @@ const renderBody = (data, onChange, onSave) => {
                 <FormGroup>
                     <Label>Datum:</Label>
                     <Controls>
-                            Startdatum: <Inputs.Date name="startDate" value={data.startDate} {...{ onChange}}/>
-                            Enddatum: <Inputs.Date name="endDate" value={data.endDate} {...{ onChange }}/>
+                        Startdatum: <Inputs.Date name="startDate" value={data.startDate} {...{ onChange}}/>
+                        {" "}
+                        Enddatum: <Inputs.Date name="endDate" value={data.endDate} {...{ onChange }}/>
                     </Controls>
                 </FormGroup>
 
@@ -140,22 +141,23 @@ const renderBody = (data, onChange, onSave) => {
                 </FormGroup>
 
                 <FormGroup>
-                    <Label title="wieviele der insgesamt verfügbaren Terminarbeitsplätze sollen für das Callcenter zur Verfügung gestellt werden.">Callcenter</Label>
+                    <Label>Callcenter</Label>
                     <Controls>
                         <Inputs.Select name="workstationCount_callcenter"
                             value={data.workstationCount_callcenter}
                             {...{ onChange }}
-                            options={range(0, 21).map(n => {
+                            options={range(0, data.workstationCount_intern).map(n => {
                                     return {
                                         value: `${n}`,
                                         name: `${n}`
                                     }
                                 })}/>
+                        <Description>wieviele der insgesamt verfügbaren Terminarbeitsplätze sollen für das Callcenter zur Verfügung gestellt werden.</Description>
                     </Controls>
                 </FormGroup>
 
                 <FormGroup>
-                    <Label title="wieviele der insgesamt verfügbaren Terminarbeitsplätze sollen für das Internet zur Verfügung gestellt werden.">Internet</Label>
+                    <Label>Internet</Label>
                     <Controls>
                         <Inputs.Select name="workstationCount_public"
                             value={data.workstationCount_public}
@@ -166,6 +168,7 @@ const renderBody = (data, onChange, onSave) => {
                                         name: `${n}`
                                     }
                                 })}/>
+                        <Description>wieviele der insgesamt verfügbaren Terminarbeitsplätze sollen für das Internet zur Verfügung gestellt werden.</Description>
                     </Controls>
                 </FormGroup>
             </fieldset>
@@ -214,12 +217,23 @@ const getFormValuesfromData = data => {
 
     console.log('formData', data)
 
+    const workstations = Object.assign({}, data.workstationCount)
+
+    if (workstations.callcenter > workstations.intern) {
+        workstations.callcenter = workstations.intern
+    }
+
+    if (workstations.public > workstations.callcenter) {
+        workstations.public = workstations.callcenter
+    }
+
     return Object.assign({}, getFirstLevelValues(data), {
         open_from: data.bookable.startInDays,
         open_to: data.bookable.endInDays,
-        workstationCount_intern: data.workstationCount.intern,
-        workstationCount_callcenter: data.workstationCount.callcenter,
-        workstationCount_public: data.workstationCount.public
+        workstationCount_intern: workstations.intern,
+        workstationCount_callcenter: workstations.callcenter,
+        workstationCount_public: workstations.public,
+        weekday: Object.keys(data.weekday).filter(key => parseInt(data.weekday[key], 10) > 0)
     })
 }
 
@@ -233,7 +247,10 @@ const getDataValuesFromForm = form => {
             intern: form.workstationCount_intern,
             callcenter: form.workstationCount_callcenter,
             "public": form.workstationCount_public
-        }
+        },
+        weekday: form.weekday.reduce((carry, current) => {
+            return Object.assign({}, carry, {[current]: 1})
+        }, {})
     })
 }
 

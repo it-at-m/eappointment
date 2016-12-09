@@ -41,7 +41,6 @@ const renderFooter = () => <small>Zum Bearbeiten einer Öffnungszeit, bitte auf 
 
 
 const TimeTable = (props) => {
-    console.log(props)
     const { onSelect, timestamp } = props;
     const titleTime = moment(timestamp).format('dddd, DD.MM.YYYY')
 

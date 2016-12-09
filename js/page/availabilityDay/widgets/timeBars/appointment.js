@@ -2,7 +2,6 @@ import React, { PropTypes } from 'react'
 import { timeToFloat } from '../../../../lib/utils'
 
 const Appointment = props => {
-    console.log('AppointmentTimeBar', props)
     const { data, maxWorkstationCount, onSelect } = props
 
     const heightEm = maxWorkstationCount > 0
