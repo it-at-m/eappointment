@@ -7,8 +7,6 @@
  */
 namespace BO\Zmsticketprinter;
 
-use \BO\Zmsentities\Ticketprinter as Entity;
-
 class TicketprinterByScope extends BaseController
 {
 
@@ -20,7 +18,9 @@ class TicketprinterByScope extends BaseController
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {
+    ) {        
+        Helper\HomeUrl::create($request);
+        
         $ticketprinterHelper = (new Helper\Ticketprinter($args, $request));
         $ticketprinter = $ticketprinterHelper->getEntity();
 

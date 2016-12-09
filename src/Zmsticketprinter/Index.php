@@ -7,8 +7,6 @@
  */
 namespace BO\Zmsticketprinter;
 
-use \BO\Zmsentities\Ticketprinter as Entity;
-
 class Index extends BaseController
 {
 
@@ -21,12 +19,7 @@ class Index extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $validator = $request->getAttribute('validator');
-        $homeUrl = $validator->getParameter('home')->isUrl()->getValue();
-
-        if ($homeUrl) {
-            return \BO\Slim\Render::redirect('Home', [], ['home' => $homeUrl]);
-        }
+        Helper\HomeUrl::create($request);
 
         $ticketprinterHelper = (new Helper\Ticketprinter($args, $request));
         $ticketprinter = $ticketprinterHelper->getEntity();
