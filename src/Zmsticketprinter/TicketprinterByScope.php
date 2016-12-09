@@ -18,7 +18,7 @@ class TicketprinterByScope extends BaseController
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
-    ) {        
+    ) {
         Helper\HomeUrl::create($request);
         
         $ticketprinterHelper = (new Helper\Ticketprinter($args, $request));
