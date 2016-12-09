@@ -26,7 +26,6 @@ class AvailabilityPage extends Component {
 
     renderTimeTable() {
         const onSelect = data => {
-            console.log('onSelect', data)
             this.setState({
                 selectedAvailability: data
             })
@@ -48,7 +47,6 @@ class AvailabilityPage extends Component {
     }
 
     render() {
-        console.log('AvailabilityPage', this.props)
         return (
             <PageLayout
                 timeTable={this.renderTimeTable()}

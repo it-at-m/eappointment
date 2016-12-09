@@ -2,7 +2,6 @@ import React, { PropTypes } from 'react'
 import { timeToFloat } from '../../../../lib/utils'
 
 const Opening = props => {
-    console.log('OpeningTimeBar', props)
     const { data, onSelect } = props
     const title = `${data.description}, ${data.startTime} - ${data.endTime}`
 

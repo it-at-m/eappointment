@@ -1,59 +1,56 @@
 /* eslint-disable react/prop-types */
-import React, { Component, PropTypes } from 'react'
+import React, { PropTypes } from 'react'
 
 const noOp = () => {}
 
 export const Checkbox = ({name, value, checked = false, onChange = noOp, attributes = {}}) => {
-    const onInput = (ev) => {
-        ev.preventDefault()
+    console.log('Checkbox', name, value, checked)
+    const onInput = () => {
+        //ev.preventDefault()
         onChange(!checked)
     }
 
     if (checked) {
-        attributes.checked = true
+        attributes.checked = "checked"
     }
 
     return <input type="checkbox" {...{ name, value }} {...attributes} onChange={onInput} />
 }
 
-export class CheckboxGroup extends Component {
-    toggle(name) {
-        const boxes = this.props.boxes.map(box => {
-            if (box.name === name) {
-                const newBox = Object.assign({}, box)
-                newBox.checked = !box.checekd
-                return newBox
-            } else {
-                return box
-            }
-        })
+export const CheckboxGroup = (props) => {
+    console.log('CheckboxGroup', props.value)
 
-        const values = boxes.filter(box => box.checked).map(box => box.value)
-        this.props.onChange(values)
+    const toggle = (toggleValue) => {
+        const oldValue = props.value
+        const newValue = (oldValue.indexOf(toggleValue) > -1)
+                       ? oldValue.filter(v => v !== toggleValue)
+                       : oldValue.concat([toggleValue])
+
+        console.log('newValue', newValue)
+
+        props.onChange(props.name, newValue)
     }
 
-    renderCheckbox(box, key) {
-        const checked = this.props.value.indexOf(box.value) > -1
+    return (
+        <span>
+        {props.boxes.map((box, key) => {
+            const checked = props.value.indexOf(box.value) > -1
+            const className = `checkbox-lalbel ${props.inline ? 'checkbox-inline' : ''}`
 
-        const className = `checkbox-lalbel ${this.props.inline ? 'checkbox-inline' : ''}`
-
-        return (
-            <label {...{ key, className }}>
-                <Checkbox name={box.name}
-                    value={box.value}
-                    checked={checked}
-                    onChange={() => this.toggle(box.name)} />
+            return (
+                <label {...{ key, className }}>
+                    <Checkbox name={`${props.name}[]`}
+                        value={box.value}
+                        checked={checked}
+                        onChange={() => toggle(box.value)} />
                 {box.label}
-            </label>
-        )
-    }
-
-    render() {
-        return <span>
-        {this.props.boxes.map(this.renderCheckbox.bind(this))}
+                </label>
+            )
+        })}
         </span>
-    }
+    )
 }
+
 
 CheckboxGroup.defaultProps = {
     onChange: noOp,
