@@ -17,7 +17,8 @@ class View extends BaseView {
     }
     
     setInterval () {
-	setInterval(this.reload, 30000);
+    	let reloadTime = window.bo.zmsticketprinter.reload;
+    	setInterval(this.reload, reloadTime * 1000);
     }
     
     getUrl (relativePath) {
