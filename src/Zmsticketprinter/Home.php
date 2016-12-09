@@ -7,8 +7,6 @@
  */
 namespace BO\Zmsticketprinter;
 
-use \BO\Zmsentities\Ticketprinter as Entity;
-
 class Home extends BaseController
 {
 
@@ -21,14 +19,7 @@ class Home extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $validator = $request->getAttribute('validator');
-        $homeUrl = $validator->getParameter('home')->isUrl()->getValue();
-
-        if ($homeUrl) {
-            \BO\Zmsclient\Ticketprinter::setHomeUrl($homeUrl);
-        } else {
-            $homeUrl = \BO\Zmsclient\Ticketprinter::getHomeUrl();
-        }
+        $homeUrl = \BO\Zmsclient\Ticketprinter::getHomeUrl();
 
         if (! $homeUrl) {
             throw new Exception\HomeNotFound();
