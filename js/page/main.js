@@ -18,7 +18,6 @@ class View extends BaseView {
     
     setInterval () {
     	var reloadTime = window.bo.zmsticketprinter.reloadInterval;  
-    	console.log(reloadTime);
     	setInterval(this.reloadPage, reloadTime * 1000);
     }
     
