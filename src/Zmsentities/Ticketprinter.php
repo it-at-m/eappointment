@@ -16,6 +16,7 @@ class Ticketprinter extends Schema\Entity
     {
         return [
             'enabled' => true,
+            'reload' => 10
         ];
     }
 
