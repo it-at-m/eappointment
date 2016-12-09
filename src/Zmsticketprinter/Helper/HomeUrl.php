@@ -22,8 +22,8 @@ class HomeUrl
         $homeUrl = $validator->getParameter('home')->isUrl()->getValue();
         if ($homeUrl) {
             \BO\Zmsclient\Ticketprinter::setHomeUrl($homeUrl);
-        } else if (! \BO\Zmsclient\Ticketprinter::getHomeUrl()) {
-            \BO\Zmsclient\Ticketprinter::setHomeUrl($request->getUri()); 
+        } elseif (! \BO\Zmsclient\Ticketprinter::getHomeUrl()) {
+            \BO\Zmsclient\Ticketprinter::setHomeUrl($request->getUri());
         }
     }
 }
