@@ -265,8 +265,8 @@ class Session extends Schema\Entity
             $this->getRequests() &&
             $this->getEntryData() &&
             (
-                !($this->getProviders() == $newEntryData['providers']) ||
-                !($this->getRequests() == $newEntryData['requests']) ||
+                !($this->getProviders() == Helper\Sorter::toSortedCsv($newEntryData['providers'])) ||
+                !($this->getRequests() == Helper\Sorter::toSortedCsv($newEntryData['requests'])) ||
                 !($this->getScope() == $newEntryData['scope'])
             )
          ) ? true : false;
