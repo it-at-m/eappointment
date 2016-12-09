@@ -4,405 +4,409 @@
 /**
  * Import our css
  */
-#main {
-  margin: 0 auto auto;
-  max-width: 1024px;
-  padding: 0;
-  background-color: #FFFFFF; }
+@media print {
+  body {
+    text-align: center;
+    font-family: Arial;
+    font-size: 19px;
+    padding: 0; }
+  .hinweis {
+    font-size: 14px;
+    text-align: center; }
+  .msg_ihre_nummernanzeige {
+    font-size: 38pt !important;
+    font-weight: bold;
+    color: #993300;
+    text-align: center;
+    margin: 10px; }
+  .printausgabe {
+    font-size: 24px;
+    display: block;
+    width: 7cm;
+    text-align: center; }
+  .kleineSchrift {
+    font-size: 11px; }
+  .center {
+    margin: 0px;
+    text-align: left; }
+  .box {
+    margin: 3px;
+    padding: 4px;
+    background: #FFFFFF;
+    display: none; }
+  .boxontop {
+    margin-top: 0px;
+    padding-top: 0px;
+    text-align: center;
+    width: 7cm;
+    margin: auto; }
+  .ueberschrift {
+    display: none; }
+  div.label {
+    text-align: right;
+    float: left;
+    padding-right: 6px; }
+  div.input {
+    margin: 0px 0px 6px 170px; }
+  div.eingabe {
+    text-align: right;
+    float: left;
+    padding-right: 6px; }
+  div.nummernblock {
+    float: left;
+    padding-right: 6px; }
+  .noprint {
+    display: none; } }
 
-html {
-  font-family: Arial, sans-serif;
-  line-height: 36px;
-  font-size: 28px;
-  font-weight: bold;
-  display: block;
-  background: url(img/background_eingabe.png) top left no-repeat #C8D5E6;
-  color: #494C4A;
-  margin: 0;
-  padding: 0; }
-
-body {
-  width: 1024px;
-  height: 768px;
-  /*overflow: 		hidden;*/
-  margin: 0;
-  padding: 0; }
-
-#main-header {
-  font-size: 14px;
-  line-height: 18px;
-  color: #FFFFFF; }
-
-#main-header .adressangabe {
-  color: #FFFFFF;
-  font-size: 22px;
-  line-height: 23px;
-  margin: 16px 0px 0px 36px; }
-
-.alert {
-  font-size: 14px;
-  line-height: 18px; }
-
-.alert.alert-info {
-  background-color: #d9edf7;
-  border-radius: 4px;
-  color: #000000;
-  padding: .7em 1em;
-  margin-bottom: 1.385em;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
-  border: 1px solid #c0e1f2; }
-
-.devhint {
-  position: absolute;
-  right: 10px;
-  top: 10px;
-  width: 300px; }
-
-.textile {
-  width: 800px;
-  font-size: 14px;
-  line-height: 18px; }
-
-.digitaluhr {
-  position: absolute;
-  left: 922px;
-  top: 56px;
-  font-weight: normal;
-  font-size: 20px;
-  color: #FFFFFF;
-  text-align: left; }
-
-.content {
-  overflow-y: auto;
-  width: 800px;
-  height: 600px;
-  margin: 110px 0px 0px 160px;
-  padding: 0px; }
-
-.content p {
-  width: 85%; }
-
-div.wartebuttonbereich_einzeilig {
-  position: absolute;
-  top: 295px;
-  width: 875px;
-  left: 160px; }
-
-div.wartebuttonbereich_zweizeilig {
-  position: absolute;
-  top: 180px;
-  width: 875px;
-  left: 95px; }
-
-div.wartebuttonbereich_zweizeilig_tief {
-  position: absolute;
-  top: 295px;
-  width: 875px;
-  left: 95px; }
-
-div.warteschlangebutton_gross button.eintragen,
-div.warteschlangebutton_gross a.eintragen {
-  background: url(img/wartenummer_anfordern.png) 0 24px no-repeat;
-  border: 0;
-  color: #fff;
-  font-size: 42px;
-  font-family: Arial, sans-serif;
-  font-weight: bold;
-  height: 195px;
-  width: 660px;
-  display: block;
-  text-align: center;
-  padding: 0px 35px; }
-
-div.variablerwarteschlangebutton {
-  float: left;
-  margin-right: 25px; }
-
-div.variablerwarteschlangebutton button.eintragen,
-div.variablerwarteschlangebutton a.eintragen {
-  background: url(img/multibutton.png) 0 24px no-repeat;
-  border: 0;
-  color: #fff;
-  padding-bottom: 0px;
-  padding-top: 15px;
-  font-size: 28px;
-  line-height: 36px;
-  font-family: Arial, sans-serif;
-  font-weight: bold;
-  height: 158px;
-  padding-right: 10px;
-  width: 385px;
-  display: block; }
-
-div.variablerwarteschlangebutton a.eintragen,
-div.warteschlangebutton_gross a.eintragen {
-  text-align: center;
-  display: table-cell;
-  vertical-align: middle;
-  padding: 0px;
-  margin: 0px;
-  text-decoration: none; }
-
-div.variablerwarteschlangebutton button.disabled {
-  cursor: none;
-  color: #999;
-  background: url(img/multibutton_disabled.png) 0 24px no-repeat; }
-
-button.buttonTelefonnummernachtragen {
-  background: url(img/handynummer_nachtragen.png) 0 24px no-repeat;
-  border: 0;
-  color: #fff;
-  font-size: 28px;
-  font-family: Arial, sans-serif;
-  font-weight: bold;
-  height: 105px;
-  width: 800px;
-  left: 96px;
-  top: 665px;
-  padding: 38px 121px;
-  position: absolute;
-  cursor: pointer; }
-
-a.button {
-  display: table-cell;
-  text-align: center;
-  vertical-align: middle;
-  line-height: auto;
-  text-decoration: none;
-  cursor: pointer; }
-
-a.button.ja_nein, .ja_nein {
-  background: url(img/ja_nein.png) 0 5px no-repeat;
-  border: 0;
-  color: #fff;
-  font-size: 42px;
-  font-family: Arial, sans-serif;
-  font-weight: bold;
-  height: 141px;
-  width: 314px; }
-
-.smsbuttons {
-  left: 155px;
-  position: absolute;
-  top: 545px;
-  width: 700px;
-  display: table; }
-
-.smsbuttons .nachtrag {
-  background: url(img/handynummer_uebermitteln.png) 5px 10px no-repeat;
-  border: 0;
-  color: #fff;
-  font-size: 28px;
-  font-family: Arial, sans-serif;
-  font-weight: bold;
-  height: 80px;
-  margin: 0px 0 0 0px;
-  padding: 0;
-  width: 439px; }
-
-.smsbuttons .nachtrag.active {
-  background: url(img/handynummer_uebermitteln_a.png) 5px 10px no-repeat; }
-
-.smsbuttons .nachtrag.disabled {
-  background: url(img/handynummer_uebermitteln_i.png) 5px 10px no-repeat; }
-
-.smsbuttons .abbrechen {
-  background: url(img/abbrechen.png) 5px 10px no-repeat;
-  border: 0;
-  color: #fff;
-  font-size: 28px;
-  font-family: Arial, sans-serif;
-  font-weight: bold;
-  height: 80px;
-  width: 210px;
-  line-height: 80px; }
-
-#message .back {
-  background: url(img/abbrechen.png) 5px 10px no-repeat;
-  border: 0;
-  color: #fff;
-  font-size: 20px;
-  font-family: Arial, sans-serif;
-  font-weight: bold;
-  height: 80px;
-  width: 210px;
-  line-height: 80px; }
-
-.smsbuttons .abbrechen.active {
-  background: url(img/abbrechen_a.png) 5px 10px no-repeat; }
-
-.smsbuttons .hilfe {
-  margin-top: 20px;
-  font-size: 20px; }
-
-.wartenummern .kleineSMSRueckmeldung,
-.wartenummern .kleineAusdruckRueckmeldung,
-.wartenummern .kleineAusgabeFehlermeldung,
-.wartenummern .kleineSMSDruckRueckmeldung {
-  background: url(img/textflaeche_gross.png) no-repeat 0 0px;
-  border: 0;
-  font-size: 28px;
-  font-family: Arial, sans-serif;
-  font-weight: bold;
-  height: 117px;
-  line-height: 60px;
-  padding: 1px 0 0;
-  margin: 0px 5px 0px 6px;
-  text-align: center;
-  width: 830px;
-  position: absolute;
-  left: 62px;
-  top: 85px; }
-
-.wartenummern .SMSRueckmeldung,
-.wartenummern .AusdruckRueckmeldung,
-.wartenummern .AusgabeFehlermeldung,
-.wartenummern .SMSDruckRueckmeldung {
-  background: url(img/textflaeche_gross.png) no-repeat 0 0px;
-  border: 0;
-  font-size: 28px;
-  font-family: Arial, sans-serif;
-  font-weight: bold;
-  height: 155px;
-  line-height: 30px;
-  padding: 1px 0 0;
-  text-align: center;
-  width: 857px;
-  position: absolute;
-  left: 62px;
-  top: 150px; }
-
-.wartenummern {
-  height: 758px;
-  width: 1014px; }
-
-.wartenummern .werbeblock_oben {
-  position: absolute;
-  top: 150px; }
-
-.wartenummern .werbeblock_mehrfachkiosk_oben {
-  position: absolute;
-  top: 130px;
-  left: 95px;
-  width: 800px; }
-
-.wartenummern .nummernanzeige {
-  color: #D60C22;
-  font-size: 112px;
-  font-family: Arial, sans-serif;
-  font-weight: bold;
-  line-height: 149px;
-  text-align: center; }
-
-.wartenummern div.smsoptionbutton {
-  display: table;
-  margin-top: 10px; }
-
-.wartenummern div.smsoptionbutton form {
-  display: table-cell;
-  margin-top: 0px; }
-
-.wartenummern .content {
-  font-size: 28px;
-  font-family: Arial, sans-serif;
-  font-weight: bold;
-  line-height: 36px; }
-
-.box {
-  line-height: 24px;
-  font-size: 24px;
-  width: 780px; }
-
-.debug {
-  font-size: 14px;
-  line-height: 18px;
-  color: #000000;
-  margin-left: 20px; }
-
-.wartenummern .smshinweis {
-  left: 160px;
-  position: absolute;
-  top: 129px;
-  width: 400px; }
-
-.wartenummern .sms_bestaetigung {
-  left: 160px;
-  position: absolute;
-  top: 640px;
-  width: 640px; }
-
-.wartenummern form.smseintragen .label {
-  display: none; }
-
-.wartenummern .anleitung {
-  left: 160px;
-  position: absolute;
-  top: 227px;
-  width: 400px; }
-
-.wartenummern .anleitung .radioauswahl {
-  margin-top: 20px;
-  font-size: 18px;
-  border: black;
-  border-width: 5px;
-  border-style: outset;
-  padding: 5px; }
-
-.wartenummern .disclaimer {
-  left: 160px;
-  position: absolute;
-  top: 397px;
-  width: 410px; }
-
-.wartenummern .nummernblock {
-  left: 621px;
-  position: absolute;
-  top: 223px;
-  width: 400px; }
-
-.wartenummern .nummernblock .ziffer {
-  background: url(img/zahl.png) 9px 10px no-repeat;
-  border: 0;
-  color: #fff;
-  font-size: 28px;
-  font-family: Arial, sans-serif;
-  font-weight: bold;
-  height: 80px;
-  margin: -8px 0 0 -19px;
-  padding: 0;
-  width: 80px; }
-
-.wartenummern .nummernblock .ziffer.active {
-  background: url(img/zahl_a.png) 9px 10px no-repeat; }
-
-.wartenummern .eingabe {
-  background: url(img/textflaeche_klein.png) 0px 0px no-repeat;
-  height: 60px;
-  left: 610px;
-  position: absolute;
-  top: 135px;
-  width: 200px; }
-
-.wartenummern .nummerneingabe {
-  border: 0;
-  background: transparent;
-  color: #4C4C4C;
-  font-size: 20px;
-  font-family: Arial, sans-serif;
-  font-weight: bold;
-  margin: 16px 10px;
-  width: 180px; }
-
-.wartenummern .sms_next {
-  background: url(img/naechster_kunde.png) 0px 10px no-repeat;
-  border: 0;
-  color: #fff;
-  font-size: 42px;
-  font-family: Arial, sans-serif;
-  font-weight: bold;
-  height: 166px;
-  margin: 54px 0 0 -1px;
-  padding: 0;
-  width: 660px; }
+@media screen {
+  #main {
+    margin: 0 auto auto;
+    max-width: 1024px;
+    padding: 0;
+    background-color: #FFFFFF; }
+  html {
+    font-family: Arial, sans-serif;
+    line-height: 36px;
+    font-size: 28px;
+    font-weight: bold;
+    display: block;
+    background: url(img/background_eingabe.png) top left no-repeat #C8D5E6;
+    color: #494C4A;
+    margin: 0;
+    padding: 0; }
+  body {
+    width: 1024px;
+    height: 768px;
+    /*overflow: 		hidden;*/
+    margin: 0;
+    padding: 0; }
+  #main-header {
+    font-size: 14px;
+    line-height: 18px;
+    color: #FFFFFF; }
+  #main-header .adressangabe {
+    color: #FFFFFF;
+    font-size: 22px;
+    line-height: 23px;
+    margin: 16px 0px 0px 36px; }
+  .alert {
+    font-size: 14px;
+    line-height: 18px; }
+  .alert.alert-info {
+    background-color: #d9edf7;
+    border-radius: 4px;
+    color: #000000;
+    padding: .7em 1em;
+    margin-bottom: 1.385em;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+    border: 1px solid #c0e1f2; }
+  .devhint {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    width: 300px; }
+  .textile {
+    width: 800px;
+    font-size: 14px;
+    line-height: 18px; }
+  .digitaluhr {
+    position: absolute;
+    left: 922px;
+    top: 56px;
+    font-weight: normal;
+    font-size: 20px;
+    color: #FFFFFF;
+    text-align: left; }
+  .content {
+    overflow-y: auto;
+    width: 800px;
+    height: 600px;
+    margin: 110px 0px 0px 160px;
+    padding: 0px; }
+  .content p {
+    width: 85%; }
+  .print {
+    display: none; }
+  div.wartebuttonbereich_einzeilig {
+    position: absolute;
+    top: 295px;
+    width: 875px;
+    left: 160px; }
+  div.wartebuttonbereich_zweizeilig {
+    position: absolute;
+    top: 180px;
+    width: 875px;
+    left: 95px; }
+  div.wartebuttonbereich_zweizeilig_tief {
+    position: absolute;
+    top: 295px;
+    width: 875px;
+    left: 95px; }
+  div.warteschlangebutton_gross button.eintragen,
+  div.warteschlangebutton_gross a.eintragen {
+    background: url(img/wartenummer_anfordern.png) 0 24px no-repeat;
+    border: 0;
+    color: #fff;
+    font-size: 42px;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    height: 195px;
+    width: 660px;
+    display: block;
+    text-align: center;
+    padding: 0px 35px; }
+  div.variablerwarteschlangebutton {
+    float: left;
+    margin-right: 25px; }
+  div.variablerwarteschlangebutton button.eintragen,
+  div.variablerwarteschlangebutton a.eintragen {
+    background: url(img/multibutton.png) 0 24px no-repeat;
+    border: 0;
+    color: #fff;
+    padding-bottom: 0px;
+    padding-top: 15px;
+    font-size: 28px;
+    line-height: 36px;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    height: 158px;
+    padding-right: 10px;
+    width: 385px;
+    display: block; }
+  div.variablerwarteschlangebutton a.eintragen,
+  div.warteschlangebutton_gross a.eintragen {
+    text-align: center;
+    display: table-cell;
+    vertical-align: middle;
+    padding: 0px;
+    margin: 0px;
+    text-decoration: none; }
+  div.variablerwarteschlangebutton button.disabled {
+    cursor: none;
+    color: #999;
+    background: url(img/multibutton_disabled.png) 0 24px no-repeat; }
+  button.buttonTelefonnummernachtragen {
+    background: url(img/handynummer_nachtragen.png) 0 24px no-repeat;
+    border: 0;
+    color: #fff;
+    font-size: 28px;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    height: 105px;
+    width: 800px;
+    left: 96px;
+    top: 665px;
+    padding: 38px 121px;
+    position: absolute;
+    cursor: pointer; }
+  a.button {
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+    line-height: auto;
+    text-decoration: none;
+    cursor: pointer; }
+  a.button.ja_nein, .ja_nein {
+    background: url(img/ja_nein.png) 0 5px no-repeat;
+    border: 0;
+    color: #fff;
+    font-size: 42px;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    height: 141px;
+    width: 314px; }
+  .smsbuttons {
+    left: 155px;
+    position: absolute;
+    top: 545px;
+    width: 700px;
+    display: table; }
+  .smsbuttons .nachtrag {
+    background: url(img/handynummer_uebermitteln.png) 5px 10px no-repeat;
+    border: 0;
+    color: #fff;
+    font-size: 28px;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    height: 80px;
+    margin: 0px 0 0 0px;
+    padding: 0;
+    width: 439px; }
+  .smsbuttons .nachtrag.active {
+    background: url(img/handynummer_uebermitteln_a.png) 5px 10px no-repeat; }
+  .smsbuttons .nachtrag.disabled {
+    background: url(img/handynummer_uebermitteln_i.png) 5px 10px no-repeat; }
+  .smsbuttons .abbrechen {
+    background: url(img/abbrechen.png) 5px 10px no-repeat;
+    border: 0;
+    color: #fff;
+    font-size: 28px;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    height: 80px;
+    width: 210px;
+    line-height: 80px; }
+  #message .back {
+    background: url(img/abbrechen.png) 5px 10px no-repeat;
+    border: 0;
+    color: #fff;
+    font-size: 20px;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    height: 80px;
+    width: 210px;
+    line-height: 80px; }
+  .smsbuttons .abbrechen.active {
+    background: url(img/abbrechen_a.png) 5px 10px no-repeat; }
+  .smsbuttons .hilfe {
+    margin-top: 20px;
+    font-size: 20px; }
+  .wartenummern .kleineSMSRueckmeldung,
+  .wartenummern .kleineAusdruckRueckmeldung,
+  .wartenummern .kleineAusgabeFehlermeldung,
+  .wartenummern .kleineSMSDruckRueckmeldung {
+    background: url(img/textflaeche_gross.png) no-repeat 0 0px;
+    border: 0;
+    font-size: 28px;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    height: 117px;
+    line-height: 60px;
+    padding: 1px 0 0;
+    margin: 0px 5px 0px 6px;
+    text-align: center;
+    width: 830px;
+    position: absolute;
+    left: 62px;
+    top: 85px; }
+  .wartenummern .SMSRueckmeldung,
+  .wartenummern .AusdruckRueckmeldung,
+  .wartenummern .AusgabeFehlermeldung,
+  .wartenummern .SMSDruckRueckmeldung {
+    background: url(img/textflaeche_gross.png) no-repeat 0 0px;
+    border: 0;
+    font-size: 28px;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    height: 155px;
+    line-height: 30px;
+    padding: 1px 0 0;
+    text-align: center;
+    width: 857px;
+    position: absolute;
+    left: 62px;
+    top: 150px; }
+  .wartenummern {
+    height: 758px;
+    width: 1014px; }
+  .wartenummern .werbeblock_oben {
+    position: absolute;
+    top: 150px; }
+  .wartenummern .werbeblock_mehrfachkiosk_oben {
+    position: absolute;
+    top: 130px;
+    left: 95px;
+    width: 800px; }
+  .wartenummern .nummernanzeige {
+    color: #D60C22;
+    font-size: 112px;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    line-height: 149px;
+    text-align: center; }
+  .wartenummern div.smsoptionbutton {
+    display: table;
+    margin-top: 10px; }
+  .wartenummern div.smsoptionbutton form {
+    display: table-cell;
+    margin-top: 0px; }
+  .wartenummern .content {
+    font-size: 28px;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    line-height: 36px; }
+  .box {
+    line-height: 24px;
+    font-size: 24px;
+    width: 780px; }
+  .debug {
+    font-size: 14px;
+    line-height: 18px;
+    color: #000000;
+    margin-left: 20px; }
+  .wartenummern .smshinweis {
+    left: 160px;
+    position: absolute;
+    top: 129px;
+    width: 400px; }
+  .wartenummern .sms_bestaetigung {
+    left: 160px;
+    position: absolute;
+    top: 640px;
+    width: 640px; }
+  .wartenummern form.smseintragen .label {
+    display: none; }
+  .wartenummern .anleitung {
+    left: 160px;
+    position: absolute;
+    top: 227px;
+    width: 400px; }
+  .wartenummern .anleitung .radioauswahl {
+    margin-top: 20px;
+    font-size: 18px;
+    border: black;
+    border-width: 5px;
+    border-style: outset;
+    padding: 5px; }
+  .wartenummern .disclaimer {
+    left: 160px;
+    position: absolute;
+    top: 397px;
+    width: 410px; }
+  .wartenummern .nummernblock {
+    left: 621px;
+    position: absolute;
+    top: 223px;
+    width: 400px; }
+  .wartenummern .nummernblock .ziffer {
+    background: url(img/zahl.png) 9px 10px no-repeat;
+    border: 0;
+    color: #fff;
+    font-size: 28px;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    height: 80px;
+    margin: -8px 0 0 -19px;
+    padding: 0;
+    width: 80px; }
+  .wartenummern .nummernblock .ziffer.active {
+    background: url(img/zahl_a.png) 9px 10px no-repeat; }
+  .wartenummern .eingabe {
+    background: url(img/textflaeche_klein.png) 0px 0px no-repeat;
+    height: 60px;
+    left: 610px;
+    position: absolute;
+    top: 135px;
+    width: 200px; }
+  .wartenummern .nummerneingabe {
+    border: 0;
+    background: transparent;
+    color: #4C4C4C;
+    font-size: 20px;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    margin: 16px 10px;
+    width: 180px; }
+  .wartenummern .sms_next {
+    background: url(img/naechster_kunde.png) 0px 10px no-repeat;
+    border: 0;
+    color: #fff;
+    font-size: 42px;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    height: 166px;
+    margin: 54px 0 0 -1px;
+    padding: 0;
+    width: 660px; } }
 
 /*# sourceMappingURL=ticketprinter.css.map */
