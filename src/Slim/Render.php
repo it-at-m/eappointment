@@ -116,7 +116,11 @@ class Render
         }
         if (false === strtotime($expires)) {
             $expires = '+' + $expires + ' seconds';
+            $maxAge = intval($expires);
+        } else {
+            $maxAge = strtotime($expires) - time();
         }
+        $response = $response->withAddedHeader('Cache-Control', 'max-age=' . $maxAge);
         $response = \App::$slim->getContainer()->cache->withExpires($response, $expires);
         $response = \App::$slim->getContainer()->cache->withLastModified($response, $date);
         return $response;
@@ -140,6 +144,7 @@ class Render
             $url .= '?' . http_build_query($parameter);
         }
         $response = \App::$slim->getContainer()->cache->denyCache($response);
+        $response = $response->withAddedHeader('Cache-Control', 'max-age=0');
         return $response->withRedirect($url);
     }
 }
