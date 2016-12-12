@@ -8,7 +8,7 @@ use \Psr\Http\Message\ResponseInterface;
 class TwigExceptionViewer extends \BO\Slim\Controller
 {
     /**
-     *
+     * @SuppressWarnings(Superglobals)
      */
     public function __invoke(RequestInterface $request, ResponseInterface $response, array $args)
     {
