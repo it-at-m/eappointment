@@ -26,6 +26,22 @@ class OrganisationTest extends Base
         $this->assertEquals(23, $collection->hasEntity(78)); //Treptow-Köpenick exists
     }
 
+    public function testReadByScopeId()
+    {
+        $query = new Query();
+        $entity = $query->readByScopeId(141); //Berlin
+        $this->assertEntity("\\BO\\Zmsentities\\Organisation", $entity);
+        $this->assertEquals('Charlottenburg-Wilmersdorf', $entity->name);
+    }
+
+    public function testReadByClusterId()
+    {
+        $query = new Query();
+        $entity = $query->readByClusterId(110); //Berlin
+        $this->assertEntity("\\BO\\Zmsentities\\Organisation", $entity);
+        $this->assertEquals('Charlottenburg-Wilmersdorf', $entity->name);
+    }
+
     public function testReadList()
     {
         $query = new Query();
