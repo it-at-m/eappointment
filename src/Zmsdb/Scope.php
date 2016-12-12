@@ -45,7 +45,7 @@ class Scope extends Base
                 if (0 == $resolveReferences) {
                     $entity = new Entity(
                         array (
-                            // 'id' => $entity->id,
+                            'id' => $entity->id,
                             '$ref' => '/scope/' . $entity->id . '/'
                         )
                     );
