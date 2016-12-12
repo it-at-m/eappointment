@@ -59,7 +59,7 @@ class Ticketprinter extends Schema\Entity
         $clusterList = new Collection\ClusterList();
         foreach ($this->buttons as $button) {
             if ('cluster' == $button['type']) {
-                $clusterList->addEntity(new Scope($button['cluster']));
+                $clusterList->addEntity(new Cluster($button['cluster']));
             }
         }
         return $clusterList;
