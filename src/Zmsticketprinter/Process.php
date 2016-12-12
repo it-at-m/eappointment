@@ -34,6 +34,7 @@ class Process extends BaseController
             $process = \App::$http->readGetResult(
                 '/cluster/'. $clusterId .'/waitingnumber/'. $ticketprinter->hash .'/'
             )->getEntity();
+            $scope = $process->scope;
         }
 
         $scope = new \BO\Zmsentities\Scope($process->scope);

@@ -2,10 +2,10 @@
 
 namespace BO\Zmsticketprinter\Tests;
 
-class NotificationFailedTest extends Base
+class NotificationAmendmentTest extends Base
 {
 
-    protected $classname = "Notification";
+    protected $classname = "NotificationAmendment";
 
     protected $arguments = [ ];
 
@@ -18,6 +18,16 @@ class NotificationFailedTest extends Base
                 'function' => 'readGetResult',
                 'url' => '/ticketprinter/71ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2/',
                 'response' => $this->readFixture("GET_ticketprinter.json"),
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/scope/141/',
+                'response' => $this->readFixture("GET_scope_lessdata.json"),
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/organisation/scope/141/',
+                'response' => $this->readFixture("GET_organisation_71.json"),
             ]
         ];
     }
@@ -30,20 +40,6 @@ class NotificationFailedTest extends Base
             ],
             'scopeId' => 141
         ], [ ]);
-        $this->assertRedirect(
-            $response,
-            '/message/?status=process_notification_amendment_waitingnumber_unvalid&scopeId=141&notHome=1'
-        );
-    }
-
-    public function testFailedWithException()
-    {
-        $this->setExpectedException('\BO\Zmsticketprinter\Exception\ScopeAndClusterNotFound');
-        $response = $this->render([], [
-            '__cookie' => [
-                'Ticketprinter' => '71ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2',
-            ],
-            'waitingNumber' => 2
-        ], [ ]);
+        $this->assertContains('Bitte geben Sie hier Ihre Wartenummer ein:', (string) $response->getBody());
     }
 }
