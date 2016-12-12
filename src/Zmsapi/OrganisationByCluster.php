@@ -23,7 +23,7 @@ class OrganisationByCluster extends BaseController
     {
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $cluster = (new Cluster())->readEntity($itemId, 0);
-        if (! $cluster->hasId()) {
+        if ($cluster && ! $cluster->hasId()) {
             throw new Exception\Cluster\ClusterNotFound();
         }
         $organisation = (new Query())->readByClusterId($itemId, $resolveReferences);
