@@ -7,7 +7,7 @@
     {% block head %}
     	{{ parent() }}
     {% endblock %}
-    <body class="locale_{{ currentLang() }}" id="{% block pageid %}{% endblock %}">
+    <body class="locale_{{ currentLang() }}" id="{% block pageid %}{% endblock %}" type="{% block pagetype %}{% endblock %}">
             {% block devhint %}
             	{{ parent() }}
             {% endblock %}

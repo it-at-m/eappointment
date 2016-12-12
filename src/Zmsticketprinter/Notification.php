@@ -48,14 +48,7 @@ class Notification extends BaseController
             $process = \App::$http
                 ->readGetResult('/process/queue/'. $waitingNumber .'/cluster/'. $clusterId .'/')
                 ->getEntity();
-        } elseif ($scopeId) {
-            $process = \App::$http
-                ->readGetResult('/scope/'. $scopeId .'/waitingnumber/'. $ticketprinter->hash .'/')
-                ->getEntity();
-        } elseif ($clusterId) {
-            $process = \App::$http
-                ->readGetResult('/cluster/'. $clusterId .'/waitingnumber/'. $ticketprinter->hash .'/')
-                ->getEntity();
+            $scopeId = $process->getScopeId();
         }
 
         return \BO\Slim\Render::withHtml(

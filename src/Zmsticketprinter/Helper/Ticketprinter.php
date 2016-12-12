@@ -33,7 +33,6 @@ class Ticketprinter
         if (array_key_exists('Ticketprinter', $cookies) && ! $ticketprinterHash) {
             $ticketprinterHash = $cookies['Ticketprinter'];
         }
-
         if (!$ticketprinterHash) {
             $entity = \App::$http->readGetResult('/organisation/'. self::$organisation->id . '/hash/')->getEntity();
             \BO\Zmsclient\Ticketprinter::setHash($entity->hash);

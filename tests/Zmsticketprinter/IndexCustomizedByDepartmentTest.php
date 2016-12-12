@@ -2,7 +2,7 @@
 
 namespace BO\Zmsticketprinter\Tests;
 
-class IndexRedirectTest extends Base
+class IndexCustomizedByDepartmentTest extends Base
 {
 
     protected $classname = "Index";
@@ -16,8 +16,8 @@ class IndexRedirectTest extends Base
         return [
             [
                 'function' => 'readGetResult',
-                'url' => '/organisation/scope/312/',
-                'response' => $this->readFixture("GET_organisation_78.json"),
+                'url' => '/organisation/cluster/283/',
+                'response' => $this->readFixture("GET_organisation_70.json"),
             ],
             [
                 'function' => 'readGetResult',
@@ -27,7 +27,7 @@ class IndexRedirectTest extends Base
             [
                 'function' => 'readPostResult',
                 'url' => '/ticketprinter/',
-                'response' => $this->readFixture("GET_ticketprinter_buttonlist_single.json"),
+                'response' => $this->readFixture("GET_ticketprinter_buttonlist_cluster_283.json"),
             ]
         ];
     }
@@ -39,9 +39,9 @@ class IndexRedirectTest extends Base
                 'Ticketprinter' => '71ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2',
             ],
             'ticketprinter' => [
-                'buttonlist' => 's312'
+                'buttonlist' => 'c283'
             ]
         ], [ ]);
-        $this->assertRedirect($response, '/scope/312/');
+        $this->assertContains('customized', (string) $response->getBody());
     }
 }

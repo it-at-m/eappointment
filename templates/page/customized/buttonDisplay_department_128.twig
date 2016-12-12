@@ -6,20 +6,19 @@
 {% use "block/content/IntroText.twig" %}
 
 {% block pageid %}index{% endblock %}
+{% block pagetype %}customized{% endblock %}
 {% block content %}
-
 	{% if buttonDisplay == "button_single" %}
 	<div class="werbeblock_oben">
 		{{ block("estimatedWaitingClients") }}
 		{{ block("estimatedWaitingTime") }}
 	</div>
 	{% set buttonLabelPrefix = "Wartenummer für " %}
+	{{ block("button_single") }}
 	{% else %}
 	{{ block("IntroMultiButtonText") }}
 	{{ block("button_multi_deep") }}
 	{% endif %}
-
-
 
 	{% if
 	    estimatedData.waitingTimeEstimate > (scope.preferences.ticketprinter.notificationsDelay)|round() and
