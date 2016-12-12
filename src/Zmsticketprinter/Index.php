@@ -28,6 +28,7 @@ class Index extends BaseController
 
         $ticketprinterHelper = (new Helper\Ticketprinter($args, $request));
         $ticketprinter = $ticketprinterHelper->getEntity();
+
         $organisation = $ticketprinterHelper::$organisation;
         if (1 == count($ticketprinter->buttons) && 'scope' == $ticketprinter->buttons[0]['type']) {
              return \BO\Slim\Render::redirect(
@@ -39,7 +40,6 @@ class Index extends BaseController
              );
         }
         $template = Helper\TemplateFinder::getCustomizedTemplate($ticketprinter, $organisation);
-
         return \BO\Slim\Render::withHtml(
             $response,
             $template,

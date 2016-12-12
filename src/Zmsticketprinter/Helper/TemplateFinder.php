@@ -52,11 +52,12 @@ class TemplateFinder
 
     public static function getButtonTemplateType($ticketprinter)
     {
-        $buttonDisplay = 'button_multi';
         if (1 == count($ticketprinter->buttons)) {
             $buttonDisplay = 'button_single';
         } elseif (2 == count($ticketprinter->buttons)) {
             $buttonDisplay = 'button_multi_deep';
+        } else {
+            $buttonDisplay = 'button_multi';
         }
         return $buttonDisplay;
     }

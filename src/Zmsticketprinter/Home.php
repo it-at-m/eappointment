@@ -20,7 +20,6 @@ class Home extends BaseController
         array $args
     ) {
         $homeUrl = \BO\Zmsclient\Ticketprinter::getHomeUrl();
-
         if (! $homeUrl) {
             throw new Exception\HomeNotFound();
         }

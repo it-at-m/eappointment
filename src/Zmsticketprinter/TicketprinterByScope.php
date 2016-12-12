@@ -20,10 +20,9 @@ class TicketprinterByScope extends BaseController
         array $args
     ) {
         Helper\HomeUrl::create($request);
-        
+
         $ticketprinterHelper = (new Helper\Ticketprinter($args, $request));
         $ticketprinter = $ticketprinterHelper->getEntity();
-
         $scope = $ticketprinter->getScopeList()->getFirst();
         $organisation = $ticketprinterHelper::$organisation;
         $queueList = \App::$http->readGetResult('/scope/'. $args['scopeId'] . '/queue/')->getCollection();
