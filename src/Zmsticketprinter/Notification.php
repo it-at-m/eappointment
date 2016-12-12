@@ -40,15 +40,17 @@ class Notification extends BaseController
             );
         }
 
-        if ($waitingNumber && $scopeId) {
+        if ($scopeId) {
             $process = \App::$http
                 ->readGetResult('/process/queue/'. $waitingNumber .'/scope/'. $scopeId .'/')
                 ->getEntity();
-        } elseif ($waitingNumber && $clusterId) {
+        } elseif ($clusterId) {
             $process = \App::$http
                 ->readGetResult('/process/queue/'. $waitingNumber .'/cluster/'. $clusterId .'/')
                 ->getEntity();
             $scopeId = $process->getScopeId();
+        } else {
+            throw new Exception\ScopeAndClusterNotFound();
         }
 
         return \BO\Slim\Render::withHtml(

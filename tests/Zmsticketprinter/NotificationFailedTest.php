@@ -35,4 +35,15 @@ class NotificationFailedTest extends Base
             '/message/?status=process_notification_amendment_waitingnumber_unvalid&scopeId=141&notHome=1'
         );
     }
+
+    public function testFailedWithException()
+    {
+        $this->setExpectedException('\BO\Zmsticketprinter\Exception\ScopeAndClusterNotFound');
+        $response = $this->render([], [
+            '__cookie' => [
+                'Ticketprinter' => '71ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2',
+            ],
+            'waitingNumber' => 2
+        ], [ ]);
+    }
 }

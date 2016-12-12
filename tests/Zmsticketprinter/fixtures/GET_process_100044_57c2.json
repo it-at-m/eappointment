@@ -1,0 +1,1560 @@
+{
+    "$schema": "https://localhost/terminvereinbarung/api/2/",
+    "meta": {
+        "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+        "error": false,
+        "exception": null,
+        "generated": "2016-09-08T15:25:50+02:00",
+        "server": "Zmsapi-ENV"
+    },
+    "data": {
+        "$schema": "https://schema.berlin.de/queuemanagement/process.json",
+        "amendment": null,
+        "id": "100044",
+        "appointments": [
+        {
+            "date": "1464605400",
+            "scope": {
+                "id": "141"
+            },
+            "slotCount": "1",
+            "availability": {
+                "id": "94666",
+                "scope": {
+                    "id": "141"
+                },
+                "bookable": {
+                    "startInDays": "0",
+                    "endInDays": "60"
+                },
+                "description": "",
+                "startDate": "1463954400",
+                "startTime": "08:00:00",
+                "endDate": "1609365600",
+                "endTime": "15:50:00",
+                "multipleSlotsAllowed": "0",
+                "repeat": {
+                    "afterWeeks": "1",
+                    "weekOfMonth": "0"
+                },
+                "slotTimeInMinutes": "10",
+                "weekday": {
+                    "monday": "2",
+                    "tuesday": "0",
+                    "wednesday": "0",
+                    "thursday": "0",
+                    "friday": "0",
+                    "saturday": "0",
+                    "sunday": "0"
+                },
+                "workstationCount": {
+                    "callcenter": "2",
+                    "intern": "2",
+                    "public": "2"
+                }
+            }
+        }
+        ],
+            "scope": {
+                "$schema": "https://schema.berlin.de/queuemanagement/scope.json",
+                "hint": "Bürgeramt | Nr. wird zum Termin aufgerufen",
+                "id": "141",
+                "contact": {
+                    "name": "Bürgeramt Heerstraße",
+                    "street": "Heerstr. 12, 14052 Berlin",
+                    "email": "",
+                    "country": "Germany"
+                },
+                "preferences": {
+                    "appointment": {
+                        "deallocationDuration": "10",
+                        "endInDaysDefault": "60",
+                        "multipleSlotsEnabled": "0",
+                        "reservationDuration": "20",
+                        "startInDaysDefault": "0"
+                    },
+                    "client": {
+                        "alternateAppointmentUrl": "",
+                        "amendmentActivated": "0",
+                        "amendmentLabel": "",
+                        "emailRequired": "0",
+                        "telephoneActivated": "0",
+                        "telephoneRequired": "0"
+                    },
+                    "notifications": {
+                        "confirmationContent": "",
+                        "enabled": "1",
+                        "headsUpContent": "Ihre Wartezeit beträgt noch ca. 30 Min., bitte informieren Sie sich über die Aufrufanzeige im Bürgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
+                        "headsUpTime": "30"
+                    },
+                    "pickup": {
+                        "alternateName": "Ausgabe",
+                        "isDefault": "0"
+                    },
+                    "queue": {
+                        "callCountMax": "0",
+                        "callDisplayText": "Herzlich Willkommen \r\nin Charlottenburg-Wilmersdorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp://www.berlin.de/ba-charlottenburg-wilmersdorf/org/buergerdienste/buergeraemter.html",
+                        "firstNumber": "1",
+                        "lastNumber": "499",
+                        "processingTimeAverage": "15",
+                        "publishWaitingTimeEnabled": "1",
+                        "statisticsEnabled": "1"
+                    },
+                    "survey": {
+                        "emailContent": "",
+                        "enabled": "0",
+                        "label": ""
+                    },
+                    "ticketprinter": {
+                        "confirmationEnabled": "0",
+                        "deactivatedText": "",
+                        "notificationsAmendmentEnabled": "0",
+                        "notificationsDelay": "0"
+                    },
+                    "workstation": {
+                        "emergencyEnabled": "1"
+                    }
+                },
+                "shortName": "",
+                "status": {
+                    "emergency": {
+                        "acceptedByWorkstation": "-1",
+                        "activated": "0",
+                        "calledByWorkstation": "-1"
+                    },
+                    "queue": {
+                        "ghostWorkstationCount": "-1",
+                        "givenNumberCount": "46",
+                        "lastGivenNumber": "47",
+                        "lastGivenNumberTimestamp": "1447925159"
+                    },
+                    "ticketprinter": {
+                        "deactivated": "0"
+                    }
+                },
+                "provider": {
+                    "id": "122217",
+                    "contact": {
+                        "email": "buergeramt@charlottenburg-wilmersdorf.de",
+                        "city": "Berlin",
+                        "country": "Germany",
+                        "name": "Bürgeramt Heerstraße",
+                        "postalCode": "14052",
+                        "region": "Berlin",
+                        "street": "Heerstr.",
+                        "streetNumber": "12"
+                    },
+                    "source": "dldb",
+                    "link": "https://service.berlin.de/standort/122217/",
+                    "name": "Bürgeramt Heerstraße",
+                    "data": {
+                        "services": [
+                        {
+                            "contact": [],
+                            "service": "120656",
+                            "hint": "",
+                            "appointment": {
+                                "link": "",
+                                "slots": "0",
+                                "external": false,
+                                "allowed": false
+                            }
+                        },
+                        {
+                            "contact": [],
+                            "service": "120658",
+                            "hint": "",
+                            "appointment": {
+                                "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122217&anliegen[]=120658",
+                                "slots": "0",
+                                "external": false,
+                                "allowed": true
+                            }
+                        },
+                        {
+                            "contact": [],
+                            "service": "120665",
+                            "hint": "",
+                            "appointment": {
+                                "link": "",
+                                "slots": "0",
+                                "external": false,
+                                "allowed": false
+                            }
+                        },
+                        {
+                            "contact": [],
+                            "service": "120671",
+                            "hint": "",
+                            "appointment": {
+                                "link": "",
+                                "slots": "0",
+                                "external": false,
+                                "allowed": false
+                            }
+                        },
+                        {
+                            "contact": [],
+                            "service": "120678",
+                            "hint": "",
+                            "appointment": {
+                                "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122217&anliegen[]=120678",
+                                "slots": "0",
+                                "external": false,
+                                "allowed": true
+                            }
+                        },
+                        {
+                            "contact": [],
+                            "service": "120682",
+                            "hint": "",
+                            "appointment": {
+                                "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122217&anliegen[]=120682",
+                                "slots": "0",
+                                "external": false,
+                                "allowed": true
+                            }
+                        },
+                        {
+                            "contact": [],
+                            "service": "120702",
+                            "hint": "",
+                            "appointment": {
+                                "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122217&anliegen[]=120702",
+                                "slots": "0",
+                                "external": false,
+                                "allowed": true
+                            }
+                        },
+                        {
+                            "contact": [],
+                            "service": "120703",
+                            "hint": "",
+                            "appointment": {
+                                "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122217&anliegen[]=120703",
+                                "slots": "0",
+                                "external": false,
+                                "allowed": true
+                            }
+                        },
+                        {
+                            "contact": [],
+                            "service": "120726",
+                            "hint": "",
+                            "appointment": {
+                                "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122217&anliegen[]=120726",
+                                "slots": "0",
+                                "external": false,
+                                "allowed": true
+                            }
+                        },
+                        {
+                            "contact": [],
+                            "service": "120732",
+                            "hint": "",
+                            "appointment": {
+                                "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122217&anliegen[]=120732",
+                                "slots": "0",
+                                "external": false,
+                                "allowed": true
+                            }
+                        },
+                        {
+                            "contact": [],
+                            "service": "120877",
+                            "hint": "",
+                            "appointment": {
+                                "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122217&anliegen[]=120877",
+                                "slots": "0",
+                                "external": false,
+                                "allowed": true
+                            }
+                        },
+                        {
+                            "contact": [],
+                            "service": "120926",
+                            "hint": "",
+                            "appointment": {
+                                "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122217&anliegen[]=120926",
+                                "slots": "0",
+                                "external": false,
+                                "allowed": true
+                            }
+                        },
+                        {
+                            "contact": [],
+                            "service": "121151",
+                            "hint": "",
+                            "appointment": {
+                                "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122217&anliegen[]=121151",
+                                "slots": "0",
+                                "external": false,
+                                "allowed": true
+                            }
+                        },
+                        {
+                            "contact": [],
+                            "service": "121153",
+                            "hint": "",
+                            "appointment": {
+                                "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122217&anliegen[]=121153",
+                                "slots": "0",
+                                "external": false,
+                                "allowed": true
+                            }
+                        },
+                        {
+                            "contact": [],
+                            "service": "121368",
+                            "hint": "",
+                            "appointment": {
+                                "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122217&anliegen[]=121368",
+                                "slots": "0",
+                                "external": false,
+                                "allowed": true
+                            }
+                        },
+                        {
+                            "contact": [],
+                            "service": "121469",
+                            "hint": "",
+                            "appointment": {
+                                "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122217&anliegen[]=121469",
+                                "slots": "0",
+                                "external": false,
+                                "allowed": true
+                            }
+                        },
+                        {
+                            "contact": [],
+                            "service": "121543",
+                            "hint": "",
+                            "appointment": {
+                                "link": "",
+                                "slots": "0",
+                                "external": false,
+                                "allowed": false
+                            }
+                        },
+                        {
+                            "contact": [],
+                            "service": "121575",
+                            "hint": "",
+                            "appointment": {
+                                "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122217&anliegen[]=121575",
+                                "slots": "0",
+                                "external": false,
+                                "allowed": true
+                            }
+                        },
+                        {
+                            "contact": [],
+                            "service": "121589",
+                            "hint": "",
+                            "appointment": {
+                                "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122217&anliegen[]=121589",
+                                "slots": "0",
+                                "external": false,
+                                "allowed": true
+                            }
+                        },
+                        {
+                            "contact": [],
+                            "service": "121591",
+                            "hint": "",
+                            "appointment": {
+                                "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122217&anliegen[]=121591",
+                                "slots": "0",
+                                "external": false,
+                                "allowed": true
+                            }
+                        },
+                        {
+                            "contact": [],
+                            "service": "121593",
+                            "hint": "",
+                            "appointment": {
+                                "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122217&anliegen[]=121593",
+                                "slots": "0",
+                                "external": false,
+                                "allowed": true
+                            }
+                        },
+                        {
+                            "contact": [],
+                            "service": "121598",
+                            "hint": "",
+                            "appointment": {
+                                "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122217&anliegen[]=121598",
+                                "slots": "0",
+                                "external": false,
+                                "allowed": true
+                            }
+                        },
+                        {
+                            "contact": [],
+                            "service": "121615",
+                            "hint": "",
+                            "appointment": {
+                                "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122217&anliegen[]=121615",
+                                "slots": "0",
+                                "external": false,
+                                "allowed": true
+                            }
+                        },
+                        {
+                            "contact": [],
+                            "service": "121616",
+                            "hint": "",
+                            "appointment": {
+                                "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122217&anliegen[]=121616",
+                                "slots": "0",
+                                "external": false,
+                                "allowed": true
+                            }
+                        },
+                        {
+                            "contact": [],
+                            "service": "121622",
+                            "hint": "",
+                            "appointment": {
+                                "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122217&anliegen[]=121622",
+                                "slots": "0",
+                                "external": false,
+                                "allowed": true
+                            }
+                        },
+                        {
+                            "contact": [],
+                            "service": "121627",
+                            "hint": "",
+                            "appointment": {
+                                "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122217&anliegen[]=121627",
+                                "slots": "0",
+                                "external": false,
+                                "allowed": true
+                            }
+                        },
+                        {
+                            "contact": [],
+                            "service": "121629",
+                            "hint": "",
+                            "appointment": {
+                                "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122217&anliegen[]=121629",
+                                "slots": "0",
+                                "external": false,
+                                "allowed": true
+                            }
+                        },
+                        {
+                            "contact": [],
+                            "service": "121634",
+                            "hint": "",
+                            "appointment": {
+                                "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122217&anliegen[]=121634",
+                                "slots": "0",
+                                "external": false,
+                                "allowed": true
+                            }
+                        },
+                        {
+                            "contact": [],
+                            "service": "121637",
+                            "hint": "",
+                            "appointment": {
+                                "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122217&anliegen[]=121637",
+                                "slots": "0",
+                                "external": false,
+                                "allowed": true
+                            }
+                        },
+                        {
+                            "contact": [],
+                            "service": "121701",
+                            "hint": "",
+                            "appointment": {
+                                "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122217&anliegen[]=121701",
+                                "slots": "0",
+                                "external": false,
+                                "allowed": true
+                            }
+                        },
+                        {
+                            "contact": [],
+                            "service": "121721",
+                            "hint": "",
+                            "appointment": {
+                                "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122217&anliegen[]=121721",
+                                "slots": "0",
+                                "external": false,
+                                "allowed": true
+                            }
+                        },
+                        {
+                            "contact": [],
+                            "service": "121742",
+                            "hint": "",
+                            "appointment": {
+                                "link": "",
+                                "slots": "0",
+                                "external": false,
+                                "allowed": false
+                            }
+                        },
+                        {
+                            "contact": [],
+                            "service": "121874",
+                            "hint": "",
+                            "appointment": {
+                                "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122217&anliegen[]=121874",
+                                "slots": "0",
+                                "external": false,
+                                "allowed": true
+                            }
+                        },
+                        {
+                            "contact": [],
+                            "service": "124556",
+                            "hint": "",
+                            "appointment": {
+                                "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122217&anliegen[]=124556",
+                                "slots": "0",
+                                "external": false,
+                                "allowed": true
+                            }
+                        },
+                        {
+                            "contact": [],
+                            "service": "150169",
+                            "hint": "",
+                            "appointment": {
+                                "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122217&anliegen[]=150169",
+                                "slots": "0",
+                                "external": false,
+                                "allowed": true
+                            }
+                        },
+                        {
+                            "contact": [],
+                            "service": "150177",
+                            "hint": "",
+                            "appointment": {
+                                "link": "",
+                                "slots": "0",
+                                "external": false,
+                                "allowed": false
+                            }
+                        },
+                        {
+                            "contact": [],
+                            "service": "158142",
+                            "hint": "",
+                            "appointment": {
+                                "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122217&anliegen[]=158142",
+                                "slots": "0",
+                                "external": false,
+                                "allowed": true
+                            }
+                        },
+                        {
+                            "contact": [],
+                            "service": "297016",
+                            "hint": "",
+                            "appointment": {
+                                "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122217&anliegen[]=297016",
+                                "slots": "0",
+                                "external": false,
+                                "allowed": true
+                            }
+                        },
+                        {
+                            "contact": [],
+                            "service": "319141",
+                            "hint": "",
+                            "appointment": {
+                                "link": "",
+                                "slots": "0",
+                                "external": false,
+                                "allowed": false
+                            }
+                        },
+                        {
+                            "contact": [],
+                            "service": "324269",
+                            "hint": "",
+                            "appointment": {
+                                "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122217&anliegen[]=324269",
+                                "slots": "0",
+                                "external": false,
+                                "allowed": true
+                            }
+                        },
+                        {
+                            "contact": [],
+                            "service": "324280",
+                            "hint": "",
+                            "appointment": {
+                                "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122217&anliegen[]=324280",
+                                "slots": "0",
+                                "external": false,
+                                "allowed": true
+                            }
+                        },
+                        {
+                            "contact": [],
+                            "service": "324325",
+                            "hint": "",
+                            "appointment": {
+                                "link": "",
+                                "slots": "0",
+                                "external": false,
+                                "allowed": false
+                            }
+                        },
+                        {
+                            "contact": [],
+                            "service": "324389",
+                            "hint": "",
+                            "appointment": {
+                                "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122217&anliegen[]=324389",
+                                "slots": "0",
+                                "external": false,
+                                "allowed": true
+                            }
+                        },
+                        {
+                            "contact": [],
+                            "service": "324450",
+                            "hint": "",
+                            "appointment": {
+                                "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122217&anliegen[]=324450",
+                                "slots": "0",
+                                "external": false,
+                                "allowed": true
+                            }
+                        },
+                        {
+                            "contact": [],
+                            "service": "324573",
+                            "hint": "",
+                            "appointment": {
+                                "link": "",
+                                "slots": "0",
+                                "external": false,
+                                "allowed": false
+                            }
+                        },
+                        {
+                            "contact": [],
+                            "service": "324921",
+                            "hint": "",
+                            "appointment": {
+                                "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122217&anliegen[]=324921",
+                                "slots": "0",
+                                "external": false,
+                                "allowed": true
+                            }
+                        },
+                        {
+                            "contact": [],
+                            "service": "325147",
+                            "hint": "",
+                            "appointment": {
+                                "link": "",
+                                "slots": "0",
+                                "external": false,
+                                "allowed": false
+                            }
+                        },
+                        {
+                            "contact": [],
+                            "service": "327044",
+                            "hint": "",
+                            "appointment": {
+                                "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122217&anliegen[]=327044",
+                                "slots": "0",
+                                "external": false,
+                                "allowed": true
+                            }
+                        }
+                        ],
+                            "transit": {
+                                "bus": "Württembergallee: 218, 349, M49\r\nReichsstraße/ Kastanienallee: 104, N2",
+                                "sbahn": false,
+                                "tram": false,
+                                "ubahn": "U Theodor-Heuss-Platz: U2",
+                                "vbb": {
+                                    "api": false,
+                                    "distance": 2000,
+                                    "limit": 10
+                                }
+                            },
+                            "address": {
+                                "house_number": "12",
+                                "city": "Berlin",
+                                "postal_code": "14052",
+                                "street": "Heerstr."
+                            },
+                            "note": "Sie finden uns nahe Theodor-Heuss-Platz, Haupteingang, Erdgeschoss, auf der linken Seite.<br />\nFür die Abholung fertiggestellter Reisepässe und Personalausweise ist keine Terminvereinbarung möglich.",
+                            "meta": {
+                                "lastupdate": "2016-02-12T14:05:00+01:00",
+                                "locale": "de",
+                                "keywords": "Bürgeramt, Bürgerämter, Bürgeramt Heerstraße, Meldestelle Heerstaße, Meldestellen, Meldeamt Heerstraße, Meldeämter, Einwohnermeldeamt Heerstraße, Einwohnermeldeämter, Heerstraße 12/ 14, Heerstraße 12 - 14"
+                            },
+                            "accessibility": {
+                                "elevator": "0",
+                                "access": "rollstuhlgerecht",
+                                "parking": "1",
+                                "wc": "3",
+                                "note": false
+                            },
+                            "authority": {
+                                "id": "12667",
+                                "name": "Bezirksamt Charlottenburg - Wilmersdorf"
+                            },
+                            "office": "buergeramt",
+                            "contact": {
+                                "email": "buergeramt@charlottenburg-wilmersdorf.de",
+                                "fax": "(030) 9029-17780",
+                                "phone": "(030) 115",
+                                "webinfo": "http://www.berlin.de/ba-charlottenburg-wilmersdorf/org/buergerdienste/buea_heerstr.html",
+                                "competence": ""
+                            },
+                            "payment": "Am Standort kann nur mit girocard (mit PIN) bezahlt werden.",
+                            "paymentcode": "2",
+                            "appointment": {
+                                "note": "",
+                                "multiple": "1"
+                            },
+                            "id": "122217",
+                            "geo": {
+                                "lat": "52.50938000",
+                                "lon": "13.26766000"
+                            },
+                            "name": "Bürgeramt Heerstraße",
+                            "opening_times": {
+                                "tuesday": "11.00-18.00 Uhr - nur mit Termin*",
+                                "thursday": "10.00-18.00 Uhr - nur mit Termin*",
+                                "friday": "08.00-14.00 Uhr - nur mit Termin*",
+                                "wednesday": "08.00-13.00 Uhr - nur mit Termin*",
+                                "monday": "08.00-16.00 Uhr - nur mit Termin*",
+                                "saturday": false,
+                                "sunday": false,
+                                "special": "Das Bürgeramt Heerstraße ist ein reiner Terminstandort!*<br />\n<br />\n<ul class=\"list\"><li>*einige Dienstleistungen erfordern keinen Termin. Achten Sie auf die Hinweise unter &quot;Zuständige Behörden&quot; bei der jeweiligen Dienstleistung oder informieren Sie sich auf unserer <a href=\"http://www.berlin.de/ba-charlottenburg-wilmersdorf/verwaltung/aemter/amt-fuer-buergerdienste/buergeraemter/\"  >Homepage</a>.</li><br />\n</ul>Auskünfte und Berlinpässe erhalten Sie beim Empfang. Dort sind auch Terminvereinbarungen möglich."
+                            }
+                    }
+                },
+                "department": {
+                    "id": "74",
+                    "contact": {
+                        "city": "Berlin",
+                        "street": "Otto-Suhr-Allee 100, 10585 Berlin",
+                        "country": "Germany",
+                        "name": "Fr. Krause-Jentsch"
+                    },
+                    "email": "buergeramt@charlottenburg-wilmersdorf.de",
+                    "name": "Bürgeramt",
+                    "preferences": {
+                        "notifications": {
+                            "enabled": null,
+                            "identification": null,
+                            "sendConfirmationEnabled": null,
+                            "sendReminderEnabled": null
+                        }
+                    }
+                }
+            },
+            "authKey": "57c2",
+            "clients": [
+            {
+                "email": "unittest@service.berlinonline.de",
+                "emailSendCount": "1",
+                "familyName": "BO",
+                "notificationsSendCount": "0",
+                "surveyAccepted": null,
+                "telephone": null
+            }
+        ],
+            "createIP": "",
+            "createTimestamp": "1473340535",
+            "queue": {
+                "arrivalTime": "00:00:00",
+                "callCount": "0",
+                "callTime": "00:00:00",
+                "number": "0",
+                "waitingTime": null
+            },
+            "workstation": {
+                "id": "0"
+            },
+            "reminderTimestamp": "0",
+            "requests": {
+                "0": {
+                    "$schema": "https://schema.berlin.de/queuemanagement/request.json",
+                    "id": "120703",
+                    "link": "https://service.berlin.de/dienstleistung/120703/",
+                    "name": "Personalausweis beantragen",
+                    "source": "dldb",
+                    "data": {
+                        "authorities": [
+                        {
+                            "id": "12667",
+                            "name": "Bezirksamt Charlottenburg - Wilmersdorf",
+                            "webinfo": "http://www.berlin.de/ba-charlottenburg-wilmersdorf/"
+                        },
+                        {
+                            "id": "12668",
+                            "name": "Bezirksamt Friedrichshain - Kreuzberg",
+                            "webinfo": "http://www.berlin.de/ba-friedrichshain-kreuzberg/"
+                        },
+                        {
+                            "id": "12669",
+                            "name": "Bezirksamt Lichtenberg",
+                            "webinfo": "http://www.berlin.de/ba-lichtenberg/"
+                        },
+                        {
+                            "id": "12670",
+                            "name": "Bezirksamt Marzahn - Hellersdorf",
+                            "webinfo": "http://www.berlin.de/ba-marzahn-hellersdorf/"
+                        },
+                        {
+                            "id": "12671",
+                            "name": "Bezirksamt Mitte",
+                            "webinfo": "http://www.berlin.de/ba-mitte/"
+                        },
+                        {
+                            "id": "12672",
+                            "name": "Bezirksamt Neukölln",
+                            "webinfo": "http://www.berlin.de/ba-neukoelln/"
+                        },
+                        {
+                            "id": "12673",
+                            "name": "Bezirksamt Pankow",
+                            "webinfo": "http://www.berlin.de/ba-pankow/"
+                        },
+                        {
+                            "id": "12674",
+                            "name": "Bezirksamt Reinickendorf",
+                            "webinfo": "http://www.berlin.de/ba-reinickendorf/"
+                        },
+                        {
+                            "id": "12675",
+                            "name": "Bezirksamt Spandau",
+                            "webinfo": "http://www.berlin.de/ba-spandau/"
+                        },
+                        {
+                            "id": "12676",
+                            "name": "Bezirksamt Steglitz-Zehlendorf",
+                            "webinfo": "http://www.berlin.de/ba-steglitz-zehlendorf/"
+                        },
+                        {
+                            "id": "12677",
+                            "name": "Bezirksamt Tempelhof-Schöneberg",
+                            "webinfo": "http://www.berlin.de/ba-tempelhof-schoeneberg/"
+                        },
+                        {
+                            "id": "12678",
+                            "name": "Bezirksamt Treptow-Köpenick",
+                            "webinfo": "http://www.berlin.de/ba-treptow-koepenick/"
+                        }
+                        ],
+                            "locations": [
+                            {
+                                "location": "122231",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122231&anliegen[]=120703",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122252",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122252&anliegen[]=120703",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122260",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122260&anliegen[]=120703",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122238",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122238&anliegen[]=120703",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122262",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122262&anliegen[]=120703",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122243",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122243&anliegen[]=120703",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122254",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122254&anliegen[]=120703",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122271",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122271&anliegen[]=120703",
+                                    "slots": "2",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "327278",
+                                "appointment": {
+                                    "link": "",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": false
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122291",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122291&anliegen[]=120703",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122210",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122210&anliegen[]=120703",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122217",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122217&anliegen[]=120703",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122312",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122312&anliegen[]=120703",
+                                    "slots": "2",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122273",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122273&anliegen[]=120703",
+                                    "slots": "2",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "327274",
+                                "appointment": {
+                                    "link": "",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": false
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122219",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122219&anliegen[]=120703",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122208",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122208&anliegen[]=120703",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122226",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122226&anliegen[]=120703",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "150230",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=150230&anliegen[]=120703",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122276",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122276&anliegen[]=120703",
+                                    "slots": "1",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122246",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122246&anliegen[]=120703",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122314",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122314&anliegen[]=120703",
+                                    "slots": "2",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122277",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122277&anliegen[]=120703",
+                                    "slots": "2",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "327276",
+                                "appointment": {
+                                    "link": "",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": false
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122301",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122301&anliegen[]=120703",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122297",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122297&anliegen[]=120703",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122280",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122280&anliegen[]=120703",
+                                    "slots": "2",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122285",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122285&anliegen[]=120703",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122304",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122304&anliegen[]=120703",
+                                    "slots": "2",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122282",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122282&anliegen[]=120703",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122311",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122311&anliegen[]=120703",
+                                    "slots": "2",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122251",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122251&anliegen[]=120703",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122286",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122286&anliegen[]=120703",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122281",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122281&anliegen[]=120703",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "327352",
+                                "appointment": {
+                                    "link": "",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": false
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "324414",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=324414&anliegen[]=120703",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122283",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122283&anliegen[]=120703",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122279",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122279&anliegen[]=120703",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "327354",
+                                "appointment": {
+                                    "link": "",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": false
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122274",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122274&anliegen[]=120703",
+                                    "slots": "1",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122309",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122309&anliegen[]=120703",
+                                    "slots": "2",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122257",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122257&anliegen[]=120703",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122284",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122284&anliegen[]=120703",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122294",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122294&anliegen[]=120703",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122227",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122227&anliegen[]=120703",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122267",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122267&anliegen[]=120703",
+                                    "slots": "1",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "122296",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=122296&anliegen[]=120703",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "1",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "327262",
+                                "appointment": {
+                                    "link": "",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": false
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "317869",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=317869&anliegen[]=120703",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "324433",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=324433&anliegen[]=120703",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "325341",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=325341&anliegen[]=120703",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "324434",
+                                "appointment": {
+                                    "link": "https://service.berlin.de/terminvereinbarung/termin/tag.php?termin=1&dienstleister=324434&anliegen[]=120703",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": true
+                                },
+                                "hint": ""
+                            },
+                            {
+                                "location": "325657",
+                                "appointment": {
+                                    "link": "",
+                                    "slots": "0",
+                                    "external": false,
+                                    "multiple": "0",
+                                    "allowed": false
+                                },
+                                "hint": ""
+                            }
+                        ],
+                            "meta": {
+                                "lastupdate": "2015-07-31T17:35:21+02:00",
+                                "locale": "de",
+                                "keywords": "Personaldokument, PA, Ausweisantrag, Personalausweisantrag, Reisen, ausweispflicht, befreiung, Personalausweis, Personalausweiss, Personalausweiß"
+                            },
+                            "process_time": "etwa 3 bis 4 Wochen<br />\n<br />\nIm Einzelfall kann die Herstellung des Personalausweises deutlich länger dauern. Bitte fragen Sie nach, wenn Sie den Antrag stellen.<br />\nFalls Sie dringend einen Personalausweis benötigen, können Sie zusätzlich einen vorläufigen Personalausweis beantragen. Mehr zum Thema: <a href=\"https://service.berlin.de/dienstleistung/120682/\"  target_=blank>Personalausweis vorläufig beantragen</a>",
+                            "requirements": [
+                            {
+                                "description": "Das Foto muss aktuell sein. Es muss die Anforderungen an Fotos für elektronische Reisepässe erfüllen. Die einzelnen Anforderungen enthält die <a href=\"http://www.personalausweisportal.de/SharedDocs/Downloads/DE/Weitere-Informationen/Fotomustertafel.pdf?__blob=publicationFile\"  target_=blank>Foto-Mustertafel der Bundesdruckerei</a>.",
+                                "name": "Aktuelles, biometrisches Passfoto ",
+                                "link": ""
+                            },
+                            {
+                                "description": "Falls Sie einen alten Personalausweis haben, bringen Sie diesen bitte mit, auch wenn er schon abgelaufen ist.",
+                                "name": "Falls vorhanden: Ihr alter Personalausweis",
+                                "link": ""
+                            },
+                            {
+                                "description": "Bitte bringen Sie Ihren Reisepass mit, falls<br />\n<ul class=\"list\"><li>Sie noch nie einen Personalausweis hatten oder</li><li>Sie Ihren alten Personalausweis nicht mehr haben.</li></ul>",
+                                "name": "Unter Umständen: Ihr Reisepass, falls vorhanden",
+                                "link": ""
+                            },
+                            {
+                                "description": "Bringen Sie bitte eine Geburtsurkunde oder Eheurkunde oder Lebenspartnerschaftsurkunde mit, falls<br />\n<ul class=\"list\"><li>Sie noch nie einen Personalausweis oder einen Reisepass hatten,</li><li>Ihre Angaben zu Ihrer Person abweichen von den Daten, die im Melderegister gespeichert sind. Das kann zum Beispiel nach einer Heirat oder nach einer Namensänderung sein.</li></ul>Mehr zum Thema:<br />\n<ul class=\"list\"><li><a href=\"http://service.berlin.de/dienstleistung/318960/\"  target_=blank>Urkunden – Ausstellung – Geburtsurkunde</a></li><li><a href=\"http://service.berlin.de/dienstleistung/318969/\"  target_=blank>Urkunden – Ausstellung – Eheurkunde</a></li><li><a href=\"http://service.berlin.de/dienstleistung/324955/\"  target_=blank>Lebenspartnerschaft - Ausstellung von Personenstandsurkunden (für bereits beurkundete Personenstandsfälle) - Lebenspartnerschaftsregister</a></li><li><a href=\"https://www.xurkundenportal.de/xsta-urkunden/programm/startseite.seam?cid=287007\"  target_=blank>Urkunden bei Standesämtern anfordern</a></li></ul>",
+                                "name": "Unter Umständen: Geburtsurkunde oder Eheurkunde oder Lebenspartnerschaftsurkunde",
+                                "link": ""
+                            },
+                            {
+                                "description": "Dies ist nicht erforderlich, falls Sie alleine sorgeberechtigt sind oder falls beide Elternteile anwesend sind.<br />\nBitte nutzen Sie für die Zustimmung das Formular „Zustimmung zum Antrag auf einen Personalausweis für mein Kind“, siehe Abschnitt „Formulare“.",
+                                "name": "Bei Anträgen eines gesetzlichen Vertreters: schriftliche Zustimmung des anderen gesetzlichen Vertreters",
+                                "link": ""
+                            }
+                        ],
+                            "responsibility": "alle Bürgerämter",
+                            "forms": [
+                            {
+                                "description": false,
+                                "name": "Zustimmung zum Antrag auf einen Personalausweis für mein Kind",
+                                "link": "http://www.berlin.de/formularserver/formular.php?362420"
+                            },
+                            {
+                                "description": "Bitte nehmen Sie Kontakt zu Ihrem Bürgeramt auf.",
+                                "name": "Antrag auf Befreiung von der Ausweispflicht",
+                                "link": "http://www.berlin.de/formularserver/formular.php?70259"
+                            }
+                        ],
+                            "fees": "<ul class=\"list\"><li>wenn Sie jünger als 24 Jahre sind: 22,80 Euro</li><li>wenn Sie 24 Jahre oder älter sind: 28,80 Euro</li><li>zusätzlich, wenn Berlin Ihr Zweit-Wohnsitz ist: 13,00 Euro</li></ul>",
+                            "prerequisites": [
+                            {
+                                "description": false,
+                                "name": "Deutsche Staatsangehörigkeit",
+                                "link": ""
+                            },
+                            {
+                                "description": "Den Antrag können Sie nur vor Ort stellen.",
+                                "name": "Persönliches Erscheinen",
+                                "link": ""
+                            },
+                            {
+                                "description": "Für Kinder unter 16 Jahren können nur die gesetzlichen Vertreter den Antrag stellen. Die gesetzlichen Vertreter sind im Normalfall die Eltern. Bei der Antragstellung muss das Kind ebenfalls anwesend sein.",
+                                "name": "Für Kinder unter 16 Jahren: Antrag der gesetzlichen Vertreter",
+                                "link": ""
+                            },
+                            {
+                                "description": "Sie wohnen in Berlin und sind hier gemeldet.<br />\nEin Zweit-Wohnsitz in Berlin reicht aus. In diesem Fall kostet der Personalausweis jedoch mehr, weil die Gemeinde Ihres Haupt-Wohnsitzes zustimmen muss; siehe Abschnitt „Gebühren“.<br />\nWenn Sie in Deutschland keinen festen Wohnsitz haben, können den Personalausweis dennoch bekommen; mehr zum Thema: <a href=\"http://service.berlin.de/dienstleistung/326550/\"  target_=blank>Personalausweis für in Berlin nicht gemeldete Personen, Touristen und Deutsche mit Wohnsitz im Ausland</a>",
+                                "name": "Wohnsitz in Berlin (Ausnahmen möglich)",
+                                "link": ""
+                            }
+                        ],
+                            "id": "120703",
+                            "description": "Mit einem Personalausweis können Sie sich ausweisen.<br />\n<br />\n<strong>Wann brauchen Sie einen Personalausweis?</strong><br />\nEinen Personalausweis brauchen alle Deutschen ab 16 Jahren, die keinen gültigen Reisepass haben.<br />\n<br />\nIn folgenden Fällen sollten Sie einen Personalausweis beantragen:<br />\n<ul class=\"list\"><li>Sie werden 16 Jahre alt (siehe <strong>Hinweis</strong> am Ende dieser Beschreibung);</li><li>Ihr alter Personalausweises ist nicht mehr gültig;</li><li>Sie haben Ihren alten Personalausweis nicht mehr, zum Beispiel weil er gestohlen wurde oder weil Sie ihn verloren haben;</li><li>Sie haben einen neuen Namen bekommen, zum Beispiel nach einer Heirat.</li><br />\n</ul><strong>Gibt es Ausnahmen?</strong><br />\nIn folgenden Fällen brauchen Sie keinen Personalausweis:<br />\n<br />\n<ul class=\"list\"><li>Wenn Sie von der Ausweispflicht befreit wurden; mehr zum Thema: <a href=\"http://service.berlin.de/dienstleistung/327044/\"  target_=blank>Befreiung von der Ausweispflicht</a></li><li>Wenn Sie keinen Wohnsitz in Deutschland haben. In diesem Fall können Sie trotzdem einen Personalausweis beantragen, wenn Sie möchten. Bitte wenden Sie sich dazu an Ihre deutsche Auslandsvertretung, zum Beispiel an eine deutsche Botschaft. Wahlweise können Sie den Personalausweis auch in Berlin beantragen; mehr zum Thema:  <a href=\"http://service.berlin.de/dienstleistung/326550/\"  target_=blank>Personalausweis für in Berlin nicht gemeldete Personen, Touristen und Deutsche mit Wohnsitz im Ausland</a></li><br />\n</ul><strong>Hinweis</strong>:<br />\nMit Vollendung des 16. Lebensjahres beginnt die sogenannte Ausweispflicht.<br />\nAuf Antrag seiner gesetzlichen Vertreter kann aber auch für Kinder unter 16 Jahren ein Personalausweis ausgestellt werden. Hierzu berät Sie gern Ihr Bürgeramt.",
+                            "leika": "99008001012001",
+                            "links": [
+                            {
+                                "description": false,
+                                "name": "Der neue Personalausweis (Informationsseite des Bundes-Innenministeriums)",
+                                "link": "http://www.personalausweisportal.de/"
+                            },
+                            {
+                                "description": false,
+                                "name": "Reiseratgeber des Auswärtigen Amtes",
+                                "link": "http://www.auswaertiges-amt.de/sid_824A236A96E4E3F4D9A1E605B60000DF/DE/Laenderinformationen/SicherheitshinweiseA-Z-Laenderauswahlseite_node.html"
+                            },
+                            {
+                                "description": false,
+                                "name": "Foto-Mustertafel der Bundesdruckerei ",
+                                "link": "http://www.personalausweisportal.de/SharedDocs/Downloads/DE/Weitere-Informationen/Fotomustertafel.pdf?__blob=publicationFile"
+                            }
+                        ],
+                            "responsibility_all": true,
+                            "name": "Personalausweis beantragen",
+                            "onlineprocessing": {
+                                "description": false,
+                                "link": ""
+                            },
+                            "publications": [],
+                            "legal": [
+                            {
+                                "description": "Seit 1.11.2010 gilt diese gesetzliche Grundlage",
+                                "name": "Personalausweisgesetz (PAuswG)",
+                                "link": "http://www.gesetze-im-internet.de/pauswg/"
+                            }
+                        ],
+                            "relation": {
+                                "root_topic": "324835"
+                            },
+                            "appointment": {
+                                "link": ""
+                            }
+                    }
+                }
+            },
+            "status": "confirmed"
+    }
+}
