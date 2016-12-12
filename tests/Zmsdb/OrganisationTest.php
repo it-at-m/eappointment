@@ -42,6 +42,13 @@ class OrganisationTest extends Base
         $this->assertEquals('Charlottenburg-Wilmersdorf', $entity->name);
     }
 
+    public function testReadByClusterIdFailed()
+    {
+        $query = new Query();
+        $this->setExpectedException('\BO\Zmsdb\Exception\ClusterWithoutScopes');
+        $entity = $query->readByClusterId(999);
+    }
+
     public function testReadList()
     {
         $query = new Query();
