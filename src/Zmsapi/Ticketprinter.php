@@ -35,6 +35,9 @@ class Ticketprinter extends BaseController
             throw new Exception\Ticketprinter\TicketprinterNotEnabled();
         }
 
+        if (! $entity->toProperty()->buttons->get()) {
+            $entity->toStructuredButtonList();
+        }
         $message->data = $query->readByButtonList($entity, \App::$now);
         Render::lastModified(time(), '0');
         Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
