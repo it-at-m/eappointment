@@ -38,6 +38,24 @@ class NotificationTest extends Base
         $this->assertFalse($entity->hasId($queueId), "Deleted Notification still exists in Database.");
     }
 
+    public function testExceptionWithoutTelephone()
+    {
+        $this->setExpectedException('\BO\Zmsdb\Exception\Notification\ClientWithoutTelephone');
+        $query = new Query();
+        $input = $this->getTestEntity();
+        $input->process['clients'][0]['telephone'] = '';
+        $queueId = $query->writeInQueue($input);
+    }
+
+    public function testExceptionMissingProperty()
+    {
+        $this->setExpectedException('\BO\Zmsentities\Exception\NotificationMissedProperty');
+        $query = new Query();
+        $input = $this->getTestEntity();
+        unset($input->message);
+        $queueId = $query->writeInQueue($input);
+    }
+
     protected function getTestEntity()
     {
         $input = new Entity(array(

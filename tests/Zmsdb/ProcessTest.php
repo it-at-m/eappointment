@@ -19,6 +19,16 @@ class ProcessTest extends Base
         $process = $query->readEntity($process->id, '1234');
     }
 
+    public function testReadByQueueNumberAndScope()
+    {
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $query = new Query();
+        $scope = (new \BO\Zmsdb\Scope())->readEntity(141);
+        $process = $query->writeNewFromTicketprinter($scope, $now);
+        $process = $query->readByQueueNumberAndScope($process->queue['number'], $scope->id);
+        $this->assertEquals(1, $process->queue['number']);
+    }
+
     public function testExceptionAlreadyReserved()
     {
         $this->setExpectedException('\BO\Zmsdb\Exception\ProcessReserveFailed');
@@ -60,6 +70,16 @@ class ProcessTest extends Base
 
         $process = $query->updateProcessStatus($process, 'confirmed');
         $this->assertEquals('confirmed', $process->getStatus());
+    }
+
+    public function testReadSlotCount()
+    {
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $query = new Query();
+        $input = $this->getTestProcessEntity();
+        $process = $query->writeEntityReserved($input, $now);
+        $process = $query->readSlotCount($process);
+        $this->assertEquals(3, $process->getAppointments()->getFirst()['slotCount']);
     }
 
     public function testMultipleSlots()

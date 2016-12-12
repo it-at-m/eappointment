@@ -49,9 +49,7 @@ class Notification extends Base
         if (! $client->hasTelephone()) {
             throw new Exception\Notification\ClientWithoutTelephone();
         }
-        if (! $notification->hasProperties('message', 'process')) {
-            throw new Exception\Notification\MessageNotFound();
-        }
+        $notification->hasProperties('message', 'process');
 
         $query = new Query\Notification(Query\Base::INSERT);
         $query->addValues(array(
