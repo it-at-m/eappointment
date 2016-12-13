@@ -219,7 +219,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  type: integer
 *          responses:
 *              200:
-*                  description: get an updated calendar objects with updated days list
+*                  description: get an updated calldislay object with updated scope and cluster list
 *                  schema:
 *                      type: object
 *                      properties:
