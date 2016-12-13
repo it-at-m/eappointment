@@ -135,7 +135,7 @@ class Http
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function readPostResult($relativeUrl, \BO\Zmsentities\Schema\Entity $entity, array $getParameters = null)
+    public function readPostResult($relativeUrl, $entity, array $getParameters = null)
     {
         $uri = $this->uri->withPath($this->http_baseurl . $relativeUrl);
         if (null !== $getParameters) {
