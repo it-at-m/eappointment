@@ -78,6 +78,29 @@ class Calldisplay extends Schema\Entity
         return $name;
     }
 
+    public function withOutClusterDuplicates()
+    {
+        $calldisplay = clone $this;
+        if ($calldisplay->hasClusterList() && $calldisplay->hasScopeList()) {
+            $clusterScopeList = new Collection\ScopeList();
+            foreach ($calldisplay->clusters as $cluster) {
+                foreach ($cluster['scopes'] as $clusterScope) {
+                    $scope = new Scope($clusterScope);
+                    $clusterScopeList->addEntity($scope);
+                }
+            }
+            $scopeList = new Collection\ScopeList();
+            foreach ($calldisplay->scopes as $scope) {
+                if (! $clusterScopeList->hasEntity($scope['id'])) {
+                    $scope = new Scope($scope);
+                    $scopeList->addEntity($scope);
+                }
+            }
+            $calldisplay->scopes = $scopeList;
+        }
+        return $calldisplay;
+    }
+
     protected function getScopeListFromCsv($scopeIds = '')
     {
         $scopeList = new Collection\ScopeList();
