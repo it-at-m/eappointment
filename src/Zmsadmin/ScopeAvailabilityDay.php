@@ -58,11 +58,12 @@ class ScopeAvailabilityDay extends BaseController
     /**
      * @return integer
      */
-    protected static function getMaxSlotsForAvailabilities($availabilityList) {
-        return array_reduce($availabilityList->getArrayCopy(), function($carry, $item) {
-            $id = $item->id;
+    protected static function getMaxSlotsForAvailabilities($availabilityList)
+    {
+        return array_reduce($availabilityList->getArrayCopy(), function ($carry, $item) {
+            $itemId = $item->id;
             $maxSlots = (int) $item->getSlotList()->getSummerizedSlot()->intern;
-            $carry[$id] = $maxSlots;
+            $carry[$itemId] = $maxSlots;
             return $carry;
         }, []);
     }
@@ -70,11 +71,12 @@ class ScopeAvailabilityDay extends BaseController
     /**
      * @return integer
      */
-    protected static function getBusySlotsForAvailabilities($availabilityList, $processList) {
-        return array_reduce($availabilityList->getArrayCopy(), function($carry, $item) use ($processList) {
-            $id = $item->id;
+    protected static function getBusySlotsForAvailabilities($availabilityList, $processList)
+    {
+        return array_reduce($availabilityList->getArrayCopy(), function ($carry, $item) use ($processList) {
+            $itemId = $item->id;
             $busySlots = count($processList->withAvailability($item));
-            $carry[$id] = $busySlots;
+            $carry[$itemId] = $busySlots;
             return $carry;
         }, []);
     }
