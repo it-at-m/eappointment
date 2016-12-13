@@ -4,7 +4,6 @@ import React, { PropTypes } from 'react'
 const noOp = () => {}
 
 export const Checkbox = ({name, value, checked = false, onChange = noOp, attributes = {}}) => {
-    console.log('Checkbox', name, value, checked)
     const onInput = () => {
         //ev.preventDefault()
         onChange(!checked)
@@ -18,15 +17,11 @@ export const Checkbox = ({name, value, checked = false, onChange = noOp, attribu
 }
 
 export const CheckboxGroup = (props) => {
-    console.log('CheckboxGroup', props.value)
-
     const toggle = (toggleValue) => {
         const oldValue = props.value
         const newValue = (oldValue.indexOf(toggleValue) > -1)
                        ? oldValue.filter(v => v !== toggleValue)
                        : oldValue.concat([toggleValue])
-
-        console.log('newValue', newValue)
 
         props.onChange(props.name, newValue)
     }

@@ -21,21 +21,21 @@ const headerRight = (links, onNewClick) => {
 
 const renderConflicts = (availabilities) => availabilities
     .filter(availability => availability.type === 'conflict')
-    .map(data => <ConflictTimeBar key={data.id} {...{ data }} />)
+    .map((data, key) => <ConflictTimeBar {...{ key, data }} />)
 
 const renderNumberOfAppointments = (items) => items
     .filter(item => item.type === 'numberOfAppointments')
-    .map(data => <NumberOfAppointmentsTimeBar key={data.id} {...{ data }} />)
+    .map((data, key) => <NumberOfAppointmentsTimeBar {...{ key, data }} />)
 
 
 const renderAppointments = (items, maxWorkstationCount, onSelect) => items
     .filter(item => item.type === 'appointment')
-    .map(data => <AppointmentTimeBar key={data.id} {...{ data, maxWorkstationCount, onSelect }} />)
+    .map((data, key) => <AppointmentTimeBar {...{ key, data, maxWorkstationCount, onSelect }} />)
 
 
 const renderOpenings = (items, onSelect) => items
     .filter(item => item.type === "openinghours")
-    .map(data => <OpeningTimebar key={data.id} {...{ data, onSelect }} />)
+    .map((data, key) => <OpeningTimebar {...{ key, data, onSelect }} />)
 
 const renderFooter = () => <small>Zum Bearbeiten einer Öffnungszeit, bitte auf den entsprechenden blauen oder grünen Zeitstrahl klicken.</small>
 

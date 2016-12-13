@@ -3,18 +3,11 @@ import React, { PropTypes, Component } from 'react'
 import Board from '../layouts/board'
 import * as Inputs from './inputs'
 
+import {range} from '../../../lib/utils'
+
 const { Label, FormGroup, Controls, Description } = Inputs
 
-const range = (start, end) => {
-    const result = []
-    for (let i = start; i <= end; i++) {
-        result.push(i)
-    }
-
-    return result
-}
-
-const renderBody = (data, onChange, onSave) => {
+const renderBody = (data, onChange, onSave, onDelete) => {
     return (
         <form>
             <fieldset>
@@ -174,7 +167,7 @@ const renderBody = (data, onChange, onSave) => {
             </fieldset>
 
             <div className="form-actions">
-                <button className="button-delete" type="delete" value="delete">Löschen</button>
+                <button className="button-delete" type="delete" value="delete" onClick={onDelete}>Löschen</button>
                 <div className="right">
                     <button className="button-save" type="save" value="save" onClick={onSave}>Speichern</button>
                 </div>
@@ -254,6 +247,27 @@ const getDataValuesFromForm = form => {
     })
 }
 
+const renderHeaderRight = (onCopy, onException, onEditInFuture) => {
+    const preventLink = handler => ev => {
+        ev.preventDefault()
+        handler(ev)
+    }
+
+    return (
+        <div>
+            <a href="#" onClick={preventLink(onCopy)}
+                title="Öffnungszeit kopieren und bearbeiten"
+                className="btn btn--b3igicon">+ Kopieren</a>
+            <a href="#" onClick={preventLink(onException)}
+                title="Ausnahme von dieser Öffnungszeit eintragen"
+                className="btn btn--b3igicon">  Ausnahme</a>
+            <a href="#" onClick={preventLink(onEditInFuture)}
+                title="Öffnungszeit ab diesem Tag ändern"
+                className="btn btn--b3igicon"> Ab diesem Tag ändern</a>
+        </div>
+    )
+}
+
 class AvailabilityForm extends Component {
     constructor(props) {
         super(props);
@@ -274,24 +288,30 @@ class AvailabilityForm extends Component {
             data: Object.assign({}, this.state.data, {
                 [name]: value
             })
+        }, () => {
+            this.props.onChange(getDataValuesFromForm(this.state.data))
         })
     }
 
     render() {
         const { data } = this.state
         const onChange = (name, value) => {
-            console.log('onChange', name, value)
             this.handleChange(name, value)
         }
 
         const onSave = (ev) => {
             ev.preventDefault()
-            console.log('onSave', getDataValuesFromForm(this.state.data))
+            this.props.onSave(getDataValuesFromForm(this.state.data))
+        }
+
+        const onDelete = ev => {
+            ev.preventDefault()
+            this.props.onDelete(getDataValuesFromForm(this.state.data))
         }
 
         return <Board title="Öffnungszeit bearbeiten"
-                   headerRight=""
-                   body={renderBody(data, onChange, onSave)}
+                   headerRight={renderHeaderRight(this.props.onCopy, this.props.onException, this.props.onEditInFuture)}
+                   body={renderBody(data, onChange, onSave, onDelete)}
                    footer=""
                    className="availability-form" />
     }
@@ -299,7 +319,12 @@ class AvailabilityForm extends Component {
 
 AvailabilityForm.propTypes = {
     data: PropTypes.object,
-    onSave: PropTypes.func
+    onSave: PropTypes.func,
+    onDelete: PropTypes.func,
+    onChange: PropTypes.func,
+    onCopy: PropTypes.func,
+    onException: PropTypes.func,
+    onEditInFuture: PropTypes.func
 }
 
 export default AvailabilityForm

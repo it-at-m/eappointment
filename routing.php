@@ -124,7 +124,7 @@ use \Psr\Http\Message\ResponseInterface;
     ->setName("ownerDelete");
 
 \App::$slim->post('/availability/',
-    '\BO\Zmsapi\AvailabilityUpdate')
+                  '\BO\Zmsadmin\AvailabilityUpdate')
     ->setName("AvailabilityUpdate");
 
 \App::$slim->delete('/availability/{id:\d{1,11}}/',
