@@ -77,6 +77,18 @@ class Select
     protected static $useTransaction = false;
 
     /**
+     * @var Bool $useProfiling
+     *
+     */
+    protected static $useProfiling = false;
+
+    /**
+     * @var Bool $useQueryCache
+     *
+     */
+    protected static $useQueryCache = true;
+
+    /**
      * Create a PDO compatible object
      *
      * @param  String $dataSourceName compatible with PDO
@@ -123,6 +135,12 @@ class Select
             self::$readProfiler = new \Aura\Sql\Profiler();
             self::$readProfiler->setActive(self::$enableProfiling);
             self::$readConnection->setProfiler(self::$readProfiler);
+            if (!self::$useQueryCache) {
+                self::$readConnection->exec('SET SESSION query_cache_type = 0;');
+            }
+            if (self::$useProfiling) {
+                self::$readConnection->exec('SET profiling = 1;');
+            }
         }
         return self::$readConnection;
     }
@@ -172,6 +190,12 @@ class Select
             if (self::$useTransaction) {
                 self::$writeConnection->beginTransaction();
             }
+            if (!self::$useQueryCache) {
+                self::$writeConnection->exec('SET SESSION query_cache_type = 0;');
+            }
+            if (self::$useProfiling) {
+                self::$writeConnection->exec('SET profiling = 1;');
+            }
             // On writing, use the same host to avoid racing/transcation conditions
             self::$readConnection = self::$writeConnection;
         }
@@ -194,6 +218,28 @@ class Select
     public static function closeWriteConnection()
     {
         self::$writeConnection = null;
+    }
+
+    /**
+     * Set query cache
+     *
+     * @param Bool $useQueryCache
+     *
+     */
+    public static function setQueryCache($useQueryCache = true)
+    {
+        static::$useQueryCache = $useQueryCache;
+    }
+
+    /**
+     * Set profiling
+     *
+     * @param Bool $useProfiling
+     *
+     */
+    public static function setProfiling($useProfiling = true)
+    {
+        static::$useProfiling = $useProfiling;
     }
 
     /**
