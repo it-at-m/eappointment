@@ -186,6 +186,7 @@ class Process extends Base implements MappingInterface
         $data['IPAdresse'] = $process['createIP'];
         $data['vorlaeufigeBuchung'] = ($process['status'] == 'reserved') ? 1 : 0;
         $data['Erinnerungszeitpunkt'] = $process->getReminderTimestamp();
+        $data['aufrufzeit'] = (new \DateTime())->setTimestamp($process->queue['callTime'])->format('H:i:s');
         $data = array_filter(
             $data,
             function ($value) {
