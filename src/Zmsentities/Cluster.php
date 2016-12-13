@@ -11,7 +11,7 @@ class Cluster extends Schema\Entity
     public function getDefaults()
     {
         return [
-            'name' => '',
+            //'name' => '',
             'scopes' => new Collection\ScopeList(),
         ];
     }
