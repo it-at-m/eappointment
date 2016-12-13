@@ -65,7 +65,6 @@ class Calldisplay extends Base
     public function readImage(Entity $entity)
     {
         $name = $entity->getImageName();
-        $mime = pathinfo($name, PATHINFO_EXTENSION);
         $image = $this->getReader()
             ->fetchOne((new Query\Calldisplay(Query\Base::SELECT))
             ->getQueryImage(), ['name' => $name]);
@@ -74,6 +73,7 @@ class Calldisplay extends Base
             ->fetchOne((new Query\Calldisplay(Query\Base::SELECT))
                 ->getQueryImage(), ['name' => "baer.png"]);
         }
+        $mime = pathinfo($image['name'], PATHINFO_EXTENSION);
         $image['mime'] = ($mime == 'jpg') ? 'jpeg' : $mime;
         return $image;
     }
