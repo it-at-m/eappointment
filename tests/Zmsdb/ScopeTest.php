@@ -95,7 +95,7 @@ class ScopeTest extends Base
     {
         $query = new Query();
         $now = new \DateTimeImmutable("2016-04-01 11:55");
-        $this->assertEquals(1, $query->readWaitingNumberUpdated(141, $now));
+        $this->assertTrue(1 <= $query->readWaitingNumberUpdated(141, $now));
     }
 
     public function testReadUpdatedWaitingNumberFailed()

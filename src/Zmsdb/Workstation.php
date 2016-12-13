@@ -27,6 +27,7 @@ class Workstation extends Base
             ->addConditionScopeId($scopeId)
             ->addConditionTime($dateTime)
             ->addResolvedReferences($resolveReferences);
+
         $result = $this->fetchList($query, new Entity());
 
         if ($result) {
@@ -40,7 +41,7 @@ class Workstation extends Base
         return $workstationList;
     }
 
-    public function writeEntityLoginByName($loginName, $password)
+    public function writeEntityLoginByName($loginName, $password, \DateTimeInterface $dateTime)
     {
         $userAccount = new UserAccount();
         $workstation = new Entity();
@@ -51,7 +52,7 @@ class Workstation extends Base
             $result = $statement->execute(
                 array(
                     $authKey,
-                    (new \DateTimeImmutable())->format('Y-m-d'),
+                    $dateTime->format('Y-m-d'),
                     $loginName,
                     md5($password)
                 )

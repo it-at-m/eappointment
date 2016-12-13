@@ -36,8 +36,6 @@ class DepartmentTest extends Base
         $entity = $query->writeEntity($input, 75);
         $entity = $query->readEntity($entity->id, 2, true);
         $this->assertTrue(53 == count($entity->dayoff));
-
-
     }
 
     public function testReadList()
