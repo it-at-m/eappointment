@@ -22,12 +22,17 @@ class Index extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        $calldisplayHelper = (new Helper\Calldisplay($request));
+        $calldisplay = $calldisplayHelper->getEntity();
+
+        $template = Helper\TemplateFinder::getCustomizedTemplate($calldisplay);
         return \BO\Slim\Render::withHtml(
             $response,
-            'page/index.twig',
+            $template,
             array(
                 'debug' => \App::DEBUG,
-                'title' => 'Wartennumer ziehen',
+                'title' => 'Aufrufanzeige',
+                'calldisplay' => $calldisplay->withOutClusterDuplicates()
             )
         );
     }

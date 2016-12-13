@@ -1,0 +1,196 @@
+/* ----------------------------------------------
+    Spezial-Groessen
+---------------------------------------------- */
+@media screen and (max-width:900px) { /* 768 * 1366 */
+    body{
+        background: url(img/background_anzeige1_hoch.png) top left no-repeat #C8D5E6;
+    }
+    .aufrufanzeige .uhr {
+        left:21px;
+        top:154px;
+        width:275px;
+    }
+    .aufrufanzeige .aufrufanzeige_Datum {
+        font-size:20px;
+        left:21px;
+        top:410px;
+        width:275px;
+    }
+    .aufrufanzeige .aufrufanzeige_main {
+        left:222px;
+        top:155px;
+    }
+    .aufrufanzeige table.aufrufanzeige_aufruf td,
+    .aufrufanzeige table.aufrufanzeige_aufruf th {
+        border-right: 4px solid #C8D5E6;
+    }
+    .aufrufanzeige table.aufrufanzeige_aufruf th {
+        font-size: 20px;
+        line-height: 37px;
+    }
+    .aufrufanzeige table.aufrufanzeige_aufruf th.wartenummer {
+        width:61.5%;
+    }
+    .aufrufanzeige table.aufrufanzeige_aufruf {
+        width:376px;
+    }
+    .aufrufanzeige .aufrufanzeige_text {
+        line-height:26px;
+        left: 28px;
+        top:699px;
+    }
+    .aufrufanzeige .wartende_aktuell {
+        font-size:20px;
+        left:15px;
+        top:501px;
+        width:275px;
+    }
+}
+
+
+@media screen and (min-width:900px) and (max-width:1180px) { /* 1080 * 1920 */
+    body{
+        background: url(img/background_anzeige1_hoch_1920.png) top left no-repeat #C8D5E6;
+        height:1920px;
+    }
+    .aufrufanzeige .adressangabe {
+        font-size:3em;
+        left:54px;
+        top:22px;
+    }
+    .aufrufanzeige .uhr {
+        left:40px;
+        top:223px;
+        width:350px;
+    }
+    .aufrufanzeige .uhr #clock {
+        display:none;
+    }
+    .aufrufanzeige .uhr #clock_medium {
+        display:block;
+    }
+    .aufrufanzeige .aufrufanzeige_Datum {
+        font-size:28px;
+        left:21px;
+        top:575px;
+        width:350px;
+    }
+    .aufrufanzeige .aufrufanzeige_main {
+        left:344px;
+        top:216px;
+    }
+    .aufrufanzeige table.aufrufanzeige_aufruf td,
+    .aufrufanzeige table.aufrufanzeige_aufruf th {
+        border-right: 6px solid #C8D5E6;
+    }
+    .aufrufanzeige table.aufrufanzeige_aufruf th {
+        font-size: 32px;
+        line-height: 54px;
+    }
+    .aufrufanzeige table.aufrufanzeige_aufruf th.wartenummer {
+        width:61.5%;
+    }
+    .aufrufanzeige table.aufrufanzeige_aufruf {
+        width:530px;
+    }
+    .aufrufanzeige .aufrufanzeige_text {
+        line-height:26px;
+        left: 28px;
+        top:985px;
+        width:350px;
+    }
+    .aufrufanzeige_text img {height:260px;}
+    .aufrufanzeige .wartende_aktuell {
+        font-size:26px;
+        left:15px;
+        top:705px;
+        width:350px;
+    }
+}
+
+@media screen and (min-width:1820px) { /* 1920 * 1080 */
+    body{
+        background: url(img/background_anzeige1_1920.png) top left no-repeat #C8D5E6;
+        width:1920px;
+        height:1080px;
+        overflow: hidden;
+    }
+    .aufrufanzeige .adressangabe {
+        font-size:3em;
+        left:54px;
+        top:22px;
+    }
+    .aufrufanzeige .uhr {
+        left:47px;
+        top:160px;
+        width:400px;
+    }
+    .aufrufanzeige .uhr #clock {
+        display:none;
+    }
+    .aufrufanzeige .uhr #clock_big {
+        display:block;
+    }
+    .aufrufanzeige .aufrufanzeige_Datum {
+        font-size:32px;
+        top:580px;
+        width:400px;
+    }
+    .aufrufanzeige .aufrufanzeige_main {
+        left:554px;
+        top:162px;
+    }
+    .aufrufanzeige table.aufrufanzeige_aufruf td,
+    .aufrufanzeige table.aufrufanzeige_aufruf th {
+        border-right: 28px solid #C8D5E6;
+        font-size:120px;
+        line-height:150px;
+    }
+    span.terminkundennummer {
+        font-size:80px;
+        line-height: 80px;
+    }
+    .aufrufanzeige table.aufrufanzeige_aufruf th {
+        font-size: 32px;
+        line-height: 58px;
+    }
+    .aufrufanzeige table.aufrufanzeige_aufruf th.wartenummer {
+        width:66%;
+    }
+    .aufrufanzeige table.aufrufanzeige_aufruf {
+        width:745px;
+    }
+    .aufrufanzeige .aufrufanzeige_text {
+        line-height:26px;
+        left: 1535px;
+        top:104px;
+        width:361px;
+    }
+    .aufrufanzeige_text img {height:244px;}
+    .aufrufanzeige .wartende_aktuell {
+        font-size:32px;
+        top:723px;
+        width:400px;
+    }
+
+    div.aber_zweispaltig {
+        margin-left:-25px;
+    }
+    .aufrufanzeige table.zweispaltig {
+        width:440px;
+    }
+    .aufrufanzeige table.zweispaltig th.wartenummer {
+        width:60%;
+    }
+    .aufrufanzeige table.zweispaltig th,
+    .aufrufanzeige table.zweispaltig td {
+        border-right:6px solid #C8D5E6;
+    }
+    .aufrufanzeige table.zweispaltig td {
+        font-size: 80px;
+    }
+    .zweispaltig span.terminkundennummer {
+        font-size:60px;
+    }
+    .puffer {padding-left:40px;}
+}

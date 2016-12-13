@@ -6,7 +6,7 @@ var uglify = require('gulp-uglify');
 gulp.task('scss', [
     //'watch'
 ], function () {
-    gulp.src('scss/index.scss')
+    gulp.src('scss/calldisplay.scss')
         .pipe(sourcemaps.init())
         .pipe(sass().on('error', sass.logError))
         //.pipe(uglify())
