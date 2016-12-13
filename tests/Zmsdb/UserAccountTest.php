@@ -18,6 +18,7 @@ class UserAccountTest extends Base
 
     public function testReadByAuthKey()
     {
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
         $query = new Query();
         $input = $this->getTestEntity();
         $userAccount = $query->writeEntity($input);
@@ -26,7 +27,7 @@ class UserAccountTest extends Base
         $userAccount->setRights('organisation');
         $userAccount = $query->updateEntity($userAccount->id, $userAccount);
 
-        $workstation = (new Workstation())->writeEntityLoginByName($userAccount->id, $input->password);
+        $workstation = (new Workstation())->writeEntityLoginByName($userAccount->id, $input->password, $now);
         $this->assertEquals(true, $workstation->hasAuthKey());
 
         $userAccount = $query->readEntityByAuthKey($workstation->authKey, 1);
@@ -57,15 +58,13 @@ class UserAccountTest extends Base
         $input = $this->getTestEntity();
         //first write userAccount example in Database
         $userAccount = $query->writeEntity($input);
-        $this->assertEntity("\\BO\\Zmsentities\\UserAccount", $userAccount);
         //login workstation by useraccount
-        $workstation = (new Workstation())->writeEntityLoginByName($userAccount->id, $input->password);
+        $workstation = (new Workstation())->writeEntityLoginByName($userAccount->id, $input->password, $now);
         //get example workstation account with scope etc and give id from logged in workstation for update
         $workstationInput = (new WorkstationEntity())->getExample();
         $workstationInput->id = $workstation->id;
         //update workstation to read by scope testing
         $workstation = (new Workstation())->updateEntity($workstationInput);
-        $this->assertEntity("\\BO\\Zmsentities\\Workstation", $workstation);
         $workstationList = (new Workstation())->readByScopeAndDay(123, $now);
         $this->assertEntityList("\\BO\\Zmsentities\\Workstation", $workstationList);
     }
