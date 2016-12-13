@@ -119,7 +119,7 @@ class SlotList
                     )
                 )
         WHERE
-            o.StandortID = :scope_id
+            s.StandortID = :scope_id
             AND o.OeffnungszeitID IS NOT NULL
 
             -- ignore availability out of date range
