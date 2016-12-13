@@ -31,6 +31,10 @@ const conflicts = (showConflicts, conflicts) => {
     }
 }
 
+const refScroll = (element) => {
+    element.scrollLeft += 470
+}
+
 const TimeTableBodyLayout = (props) => {
     return (
         <div className="grid">
@@ -43,7 +47,7 @@ const TimeTableBodyLayout = (props) => {
                 </div>
             </div>
             <div className="grid__item nine-tenths">
-                <div className="availability-timetable_container" id="js-timetable" style={{fontSize: "70px"}} >
+                <div className="availability-timetable_container" ref={refScroll} style={{fontSize: "70px"}} >
                     <div className="inner">
                         {background()}
                         {conflicts(props.showConflicts, props.conflicts)}
