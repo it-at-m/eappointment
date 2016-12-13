@@ -40,13 +40,35 @@ class TicketprinterTest extends Base
         $this->assertTrue('https://service.berlin.de' == $entity->buttons[2]['url']);
     }
 
-    public function testUnvalidButtonList()
+    public function testUnvalidButtonListNoCluster()
     {
         $this->setExpectedException('\BO\Zmsdb\Exception\TicketprinterUnvalidButtonList');
         $now = new \DateTimeImmutable("2016-04-01 11:55");
         $query = new Query();
         $input = (new Entity)->getExample()->toStructuredButtonList();
         $entity = $query->readByButtonList($input, $now);
+    }
+
+    public function testUnvalidButtonListNoScope()
+    {
+        $this->setExpectedException('\BO\Zmsdb\Exception\TicketprinterUnvalidButtonList');
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $query = new Query();
+        $buttonlist = 's999';
+        $input = (new Entity)->getExample();
+        $input['buttonlist'] = $buttonlist;
+        $entity = $query->readByButtonList($input->toStructuredButtonList(), $now);
+    }
+
+    public function testUnvalidDisabledByScope()
+    {
+        $this->setExpectedException('\BO\Zmsdb\Exception\TicketprinterDisabledByScope');
+        $now = new \DateTimeImmutable("2016-04-02 11:55");
+        $query = new Query();
+        $buttonlist = 's141';
+        $input = (new Entity)->getExample();
+        $input['buttonlist'] = $buttonlist;
+        $entity = $query->readByButtonList($input->toStructuredButtonList(), $now);
     }
 
     public function testReadByButtonListClusterFailed()

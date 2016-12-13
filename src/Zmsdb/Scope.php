@@ -23,6 +23,9 @@ class Scope extends Base
                 ->addResolvedReferences($resolveReferences)
                 ->addConditionScopeId($scopeId);
             $scope = $this->fetchOne($query, new Entity());
+            if (! $scope->hasId()) {
+                return null;
+            }
             $scope = $this->addDldbData($scope, $resolveReferences);
             if (0 < $resolveReferences) {
                 $scope['dayoff'] = (new DayOff())->readByScopeId($scopeId);

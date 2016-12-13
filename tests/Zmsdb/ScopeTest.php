@@ -16,6 +16,9 @@ class ScopeTest extends Base
             '1',
             $entity->toProperty()->preferences->appointment->notificationConfirmationEnabled->get()
         );
+
+        $entity = (new Query())->readEntity(999);
+        $this->assertTrue(null === $entity);
     }
 
     public function testCluster()
@@ -65,6 +68,14 @@ class ScopeTest extends Base
         $this->assertEquals(true, $entityList->hasEntity('123')); //Test Entity exists
     }
 
+    public function testReadWithWaitingTime()
+    {
+        $query = new Query();
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $queueList = $query->readWithWaitingTime('141', $now);
+        $this->assertTrue(105 == count($queueList));
+    }
+
     public function testWriteEntity()
     {
         $query = new Query();
@@ -78,6 +89,21 @@ class ScopeTest extends Base
 
         $deleteTest = $query->deleteEntity($entity->id);
         $this->assertTrue($deleteTest, "Failed to delete Scope from Database.");
+    }
+
+    public function testReadUpdatedWaitingNumber()
+    {
+        $query = new Query();
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $this->assertEquals(1, $query->readWaitingNumberUpdated(141, $now));
+    }
+
+    public function testReadUpdatedWaitingNumberFailed()
+    {
+        $this->setExpectedException('\BO\Zmsdb\Exception\Scope\GivenNumberCountExceeded');
+        $query = new Query();
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $this->assertEquals(1, $query->readWaitingNumberUpdated(109, $now));
     }
 
     public function testReadIsOpened()

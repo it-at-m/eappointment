@@ -267,9 +267,9 @@ class SlotList
                     "Found database entry without a pre-generated slot $slotDebug"
                 );
             }
-            if ($slot->type !== Slot::FREE) {
+            //if ($slot->type !== Slot::FREE) {
                 // We do not throw an exception, cause availability slotTime might have changed
-            }
+            //}
             $slotList[$slotnumber] = $this->getCalculatedSlot($slot, $slotData);
         } elseif (isset($slotData['availability__id'])) {
             // Only availability data for available slots, do nothing

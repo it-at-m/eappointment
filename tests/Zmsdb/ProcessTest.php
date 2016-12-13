@@ -69,7 +69,7 @@ class ProcessTest extends Base
         $this->assertEquals(151, $process->getScopeId());
 
         $process = $query->updateProcessStatus($process, 'confirmed');
-        $this->assertEquals('confirmed', $process->getStatus());
+        $this->assertEquals('called', $process->getStatus());
     }
 
     public function testReadSlotCount()
@@ -124,8 +124,14 @@ class ProcessTest extends Base
     {
         $now = new \DateTimeImmutable("2016-04-01 11:55");
         $query = new Query();
+        $input = $this->getTestProcessEntity();
         $processList = $query->readProcessListByScopeAndTime(141, $now); //Heerstraße
         $this->assertTrue(105 == count($processList), "Scope 141 Heerstraße should have 105 assigned processes");
+    }
+
+    public function testPostProcess()
+    {
+        $data = $this->getTestProcessEntity();
     }
 
     public function testStatusFree()
@@ -293,14 +299,14 @@ class ProcessTest extends Base
                 ]
             ],
             "createIP"=>"127.0.0.1",
-            "createTimestamp"=>"1459028767",
+            "createTimestamp" =>"1459028767",
             "queue"=>[
-                "arrivalTime"=>"00:00:00",
-                "callCount"=>"0",
-                "callTime"=>"00:00:00",
-                "number"=>"0",
-                "waitingTime"=>null,
-                "reminderTimestamp"=>"0"
+                "arrivalTime" =>"1464339600",
+                "callCount" =>"0",
+                "callTime" => "1464350400",
+                "number" =>"0",
+                "waitingTime" => 60,
+                "reminderTimestamp" =>"0"
             ],
             "requests"=>[
                 [
