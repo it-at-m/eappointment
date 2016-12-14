@@ -37,7 +37,7 @@ class Index extends BaseController
             );
         }
 
-        $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences'=>1))->getCollection();
+        $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences'=>3))->getCollection();
         $organisationList = $ownerList->getOrganisationsByOwnerId(23);
 
         return \BO\Slim\Render::withHtml(
