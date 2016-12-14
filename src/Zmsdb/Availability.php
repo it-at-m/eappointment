@@ -99,11 +99,13 @@ class Availability extends Base
      */
     public function writeEntity(\BO\Zmsentities\Availability $entity)
     {
+        $entity->testValid();
         $query = new Query\Availability(Query\Base::INSERT);
         $values = $query->reverseEntityMapping($entity);
         $query->addValues($values);
         $this->writeItem($query);
-        return $this->getWriter()->lastInsertId();
+        $entity->id = $this->getWriter()->lastInsertId();
+        return $entity;
     }
 
     /**
