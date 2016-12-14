@@ -302,7 +302,7 @@ class AvailabilityTest extends EntityCommonTests
         $entity['endDate'] = $time->modify("+2month")->getTimestamp();
         $entity['repeat']['afterWeeks'] = 1;
         $entity['repeat']['weekOfMonth'] = 1;
-        $this->assertContains('Availability #1234', $entity->__toString());
+        $this->assertContains('Availability.appointment #1234', $entity->__toString());
     }
 
     public function testCollection()
@@ -332,6 +332,10 @@ class AvailabilityTest extends EntityCommonTests
             81 == $collection->withCalculatedSlots()[0]['workstationCount']['public'],
             'Failed to get list with calculated slots'
         );
+        $collection->addEntity($entity);
+        $this->assertTrue($collection->count() == 3);
+        $collection = $collection->withOutDoubles();
+        $this->assertTrue($collection->count() == 2);
     }
 
     public function testUnopened()

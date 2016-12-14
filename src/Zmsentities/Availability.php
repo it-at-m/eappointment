@@ -415,6 +415,32 @@ class Availability extends Schema\Entity
     }
 
     /**
+     * Check of a different availability has the same opening configuration
+     *
+     */
+    public function isMatchOf(Availability $availability)
+    {
+        if ($this->type != $availability->type
+            || $this->startTime != $availability->startTime
+            || $this->endTime != $availability->endTime
+            || $this->startDate != $availability->startDate
+            || $this->endDate != $availability->endDate
+            || $this->repeat['afterWeeks'] != $availability->repeat['afterWeeks']
+            || $this->repeat['weekOfMonth'] != $availability->repeat['weekOfMonth']
+            || (bool)$this->weekday['monday'] != (bool)$availability->weekday['monday']
+            || (bool)$this->weekday['tuesday'] != (bool)$availability->weekday['tuesday']
+            || (bool)$this->weekday['wednesday'] != (bool)$availability->weekday['wednesday']
+            || (bool)$this->weekday['thursday'] != (bool)$availability->weekday['thursday']
+            || (bool)$this->weekday['friday'] != (bool)$availability->weekday['friday']
+            || (bool)$this->weekday['saturday'] != (bool)$availability->weekday['saturday']
+            || (bool)$this->weekday['sunday'] != (bool)$availability->weekday['sunday']
+        ) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * Get overlaps on daytime
      * This functions does not check, if two availabilities are openend on the same day!
      *
@@ -488,7 +514,7 @@ class Availability extends Schema\Entity
 
     public function __toString()
     {
-        $info = "Availability #" . $this['id'];
+        $info = "Availability.".$this['type']." #" . $this['id'];
         $info .= " starting " . $this->startDate . $this->getStartDateTime()->format(' Y-m-d');
         $info .= "||now+" . $this['bookable']['startInDays'] . " ";
         $info .= " until " . $this->getEndDateTime()->format('Y-m-d');
