@@ -45,7 +45,8 @@ class Calldisplay extends Base
         $calldisplay->setServerTime($dateTime->getTimestamp());
         $calldisplay->organisation = $this->readResolvedOrganisation($calldisplay);
         $calldisplay->image = $this->readImage($calldisplay);
-        return $calldisplay;
+        $calldisplay->contact = $this->readContactData($calldisplay);
+        return $calldisplay->withOutClusterDuplicates();
     }
 
     public function readResolvedOrganisation(Entity $entity)
@@ -76,5 +77,17 @@ class Calldisplay extends Base
         $mime = pathinfo($image['name'], PATHINFO_EXTENSION);
         $image['mime'] = ($mime == 'jpg') ? 'jpeg' : $mime;
         return $image;
+    }
+
+    public function readContactData(Entity $entity)
+    {
+        $contact = new \BO\Zmsentities\Contact();
+        if ($entity->hasClusterList() && 1 == $entity->getClusterList()->count()) {
+            $contact->name = $entity->getClusterList()->getFirst()->name;
+        } elseif ($entity->hasScopeList() && 1 == $entity->getScopeList()->count()) {
+            $department = (new Department())->readByScopeId($entity->getScopeList()->getFirst()->id);
+            $contact->name = $department->name;
+        }
+        return $contact;
     }
 }
