@@ -34,7 +34,7 @@ class Result
         \Psr\Http\Message\RequestInterface $request = null
     ) {
         $this->request = $request;
-        $this->setResponse($response);
+        $this->response = $response;
     }
 
     /**
@@ -44,7 +44,6 @@ class Result
      */
     public function setResponse(\Psr\Http\Message\ResponseInterface $response)
     {
-        $this->response = $response;
         $this->testMeta();
         $body = Validator::value((string)$response->getBody())->isJson();
         $result = $body->getValue();
@@ -115,10 +114,11 @@ class Result
      */
     public function getEntity()
     {
-        if (null !== $this->data) {
-            return reset($this->data);
+        if (null !== $this->getData()) {
+            return reset($this->getData());
         }
     }
+
     /**
      * Description
      *
@@ -131,7 +131,7 @@ class Result
             $class = get_class($entity);
             $alias = ucfirst(preg_replace('#^.*\\\#', '', $class));
             $className = "\\BO\\Zmsentities\\Collection\\" . $alias . "List";
-            return new $className($this->data);
+            return new $className($this->getData());
         }
     }
     /**
@@ -141,6 +141,9 @@ class Result
      */
     public function getData()
     {
+        if (null === $this->data) {
+            $this->setResponse($this->response);
+        }
         return $this->data;
     }
 

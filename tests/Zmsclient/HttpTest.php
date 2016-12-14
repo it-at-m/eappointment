@@ -40,20 +40,23 @@ class HttpTest extends Base
     {
         $this->setExpectedException('\BO\Zmsclient\Exception');
         $http = $this->createHttpClient();
-        $http->readGetResult('/doc/index.html');
+        $result = $http->readGetResult('/doc/index.html');
+        $result->getEntity();
     }
 
     public function testWrongFormat()
     {
         $this->setExpectedException('\BO\Zmsclient\Exception');
         $http = $this->createHttpClient();
-        $http->readGetResult('/doc/swagger.json');
+        $result = $http->readGetResult('/doc/swagger.json');
+        $result->getEntity();
     }
 
     public function testUnknownUrl()
     {
         $this->setExpectedException('\BO\Zmsclient\Exception');
         $http = $this->createHttpClient();
-        $http->readGetResult('/unknownUri/');
+        $result = $http->readGetResult('/unknownUri/');
+        $result->getEntity();
     }
 }
