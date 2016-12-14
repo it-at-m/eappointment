@@ -4,6 +4,10 @@ namespace BO\Zmsdb;
 
 use \BO\Zmsentities\Calldisplay as Entity;
 
+/**
+ *
+ * @SuppressWarnings(CouplingBetweenObjects)
+ */
 class Calldisplay extends Base
 {
 
