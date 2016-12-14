@@ -13,7 +13,7 @@ class SlotListTest extends Base
         $dateTime = \DateTimeImmutable::createFromFormat('Y-m-d', '2016-04-05');
         $slotList = new SlotList($this->getTestSlotData(), $dateTime, $dateTime->modify('+1day'), $now);
         $slotList->setSlotData($this->getTestSlotList());
-        $this->assertContains('SlotList: Availability #68979 starting', (string)$slotList);
+        $this->assertContains('SlotList: Availability.appointment #68979 starting', (string)$slotList);
     }
 
     public function testExceptionEmpty()

@@ -18,10 +18,6 @@ class Availability extends Base
                 ->addConditionAvailabilityId($availabilityId);
             $availability = $this->fetchOne($query, new Entity());
             $availability['scope'] = (new Scope())->readEntity($availability['scope']['id'], $resolveReferences);
-            //if (!isset($availability['department'])) {
-            //    $availability['department'] = (new Department())
-            //        ->readEntity($availability['scope']['department']['id'], $resolveReferences);
-            //}
             self::$cache[$availabilityId] = $availability;
         }
         return self::$cache[$availabilityId];
@@ -43,20 +39,45 @@ class Availability extends Base
                 }
             }
         }
+        // TODO Remove after DB optimization
         $query = new Query\Availability(Query\Base::SELECT);
         $query
             ->addEntityMapping('openinghours')
+            ->addConditionDoubleTypes()
             ->addResolvedReferences($resolveReferences)
             ->addConditionScopeId($scopeId);
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
             foreach ($result as $entity) {
                 if ($entity instanceof Entity) {
+                    $tempAvailability = $this->writeEntity(new Entity([
+                        'description' => '--temporary--',
+                        'endDate' => time() + 86000,
+                        'scope' => new \BO\Zmsentities\Scope([
+                            'id' => 0,
+                            ]),
+                    ]));
+                    $entity->id = $tempAvailability->id;
                     $collection->addEntity($entity);
                 }
             }
         }
+        // End remove
         return $collection;
+    }
+
+    /**
+     * Delete temporary availabilities reserving IDs
+     * @see self::readList()
+     *
+     * Remove after DB optimization
+     *
+     */
+    public function writeTemporaryDelete(\DateTimeInterface $now)
+    {
+        $statement = $this->getReader()->prepare(Query\Availability::TEMPORARY_DELETE);
+        $statement->execute(['date' => $now->format('Y-m-d')]);
+        return $statement->rowCount();
     }
 
     public function readOpeningHoursListByDate($scopeId, \DateTimeInterface $now, $resolveReferences = 0)
@@ -67,6 +88,7 @@ class Availability extends Base
             ->addEntityMapping('openinghours')
             ->addResolvedReferences($resolveReferences)
             ->addConditionScopeId($scopeId)
+            ->addConditionOpeningHours()
             ->addConditionDate($now);
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
@@ -118,6 +140,7 @@ class Availability extends Base
      */
     public function updateEntity($entityId, \BO\Zmsentities\Availability $entity)
     {
+        $entity->testValid();
         $query = new Query\Availability(Query\Base::UPDATE);
         $query->addConditionAvailabilityId($entityId);
         $values = $query->reverseEntityMapping($entity);

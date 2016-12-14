@@ -9,6 +9,8 @@ class Availability extends Base implements MappingInterface
      */
     const TABLE = 'oeffnungszeit';
 
+    const TEMPORARY_DELETE = 'DELETE FROM oeffnungszeit WHERE kommentar = "--temporary--" AND Endedatum <= :date ';
+
     public function addRequiredJoins()
     {
          $this->query->leftJoin(
@@ -19,10 +21,9 @@ class Availability extends Base implements MappingInterface
          );
     }
 
-    public function getEntityMapping($type = 'appointment')
+    public function getEntityMapping($type = null)
     {
-        $type = (! $type) ? 'appointment' : $type;
-        return [
+        $mapping = [
             'id' => 'availability.OeffnungszeitID',
             'scope__id' => 'availability.StandortID',
             'bookable__startInDays' => self::expression(
@@ -33,14 +34,20 @@ class Availability extends Base implements MappingInterface
             ),
             'description' => 'availability.kommentar',
             'startDate' => 'availability.Startdatum',
-            'startTime' => ('appointment' == $type) ? 'availability.Terminanfangszeit' : 'availability.Anfangszeit',
+            'startTime' => self::expression(
+                'IF(`availability`.`Terminanfangszeit`,`availability`.`Terminanfangszeit`,`availability`.`Anfangszeit`)'
+            ),
             'endDate' => 'availability.Endedatum',
-            'endTime' => ('appointment' == $type) ? 'availability.Terminendzeit' : 'availability.Endzeit',
+            'endTime' => self::expression(
+                'IF(`availability`.`Terminanfangszeit`, `availability`.`Terminendzeit`, `availability`.`Endzeit`)'
+            ),
             'multipleSlotsAllowed' => 'availability.erlaubemehrfachslots',
             'repeat__afterWeeks' => 'availability.allexWochen',
             'repeat__weekOfMonth' => 'availability.jedexteWoche',
             'slotTimeInMinutes' => self::expression('FLOOR(TIME_TO_SEC(`availability`.`Timeslot`) / 60)') ,
-            'type' => self::expression('"'. $type .'"') ,
+            'type' => self::expression(
+                "IF(`availability`.`Terminanfangszeit`, 'appointment', 'openinghours')"
+            ),
             'weekday__monday' => self::expression('`availability`.`Wochentag` & 2'),
             'weekday__tuesday' => self::expression('`availability`.`Wochentag` & 4'),
             'weekday__wednesday' => self::expression('`availability`.`Wochentag` & 8'),
@@ -56,6 +63,12 @@ class Availability extends Base implements MappingInterface
                 'GREATEST(0, `availability`.`Anzahlterminarbeitsplaetze` - `availability`.`reduktionTermineImInternet`)'
             )
         ];
+        if ('openinghours' == $type) {
+            $mapping['type'] = self::expression('"openinghours"');
+            $mapping['startTime'] = 'availability.Anfangszeit';
+            $mapping['endTime'] = 'availability.Endzeit';
+        }
+        return $mapping;
     }
 
     public function getReferenceMapping()
@@ -74,6 +87,24 @@ class Availability extends Base implements MappingInterface
     public function addConditionScopeId($scopeId)
     {
         $this->query->where('scope.StandortID', '=', $scopeId);
+        return $this;
+    }
+
+    public function addConditionOpeningHours()
+    {
+        $this->query
+            ->where('availability.Anfangszeit', '!=', '00:00:00')
+            ->where('availability.Endzeit', '!=', '00:00:00');
+        return $this;
+    }
+
+    public function addConditionDoubleTypes()
+    {
+        $this->query
+            ->where('availability.Terminanfangszeit', '!=', '00:00:00')
+            ->where('availability.Terminendzeit', '!=', '00:00:00')
+            ->where('availability.Anfangszeit', '!=', '00:00:00')
+            ->where('availability.Endzeit', '!=', '00:00:00');
         return $this;
     }
 
@@ -122,10 +153,7 @@ class Availability extends Base implements MappingInterface
 
         return $this;
     }
-    /*
-     * Todo
-     * Es muss noch nach Typ unterschieden werden appointment und openinghours
-     */
+
     public function reverseEntityMapping(\BO\Zmsentities\Availability $entity)
     {
         $data = array();
@@ -135,8 +163,17 @@ class Availability extends Base implements MappingInterface
         $data['kommentar'] = $entity->description;
         $data['Startdatum'] = (new \DateTimeImmutable('@'. $entity->startDate))->format('Y-m-d');
         $data['Endedatum'] = (new \DateTimeImmutable('@'. $entity->endDate))->format('Y-m-d');
-        $data['Terminanfangszeit'] = $entity->startTime;
-        $data['Terminendzeit'] = $entity->endTime;
+        if ('openinghours' == $entity->type) {
+            $data['Anfangszeit'] = $entity->startTime;
+            $data['Endzeit'] = $entity->endTime;
+            $data['Terminanfangszeit'] = 0;
+            $data['Terminendzeit'] = 0;
+        } else {
+            $data['Anfangszeit'] = 0;
+            $data['Endzeit'] = 0;
+            $data['Terminanfangszeit'] = $entity->startTime;
+            $data['Terminendzeit'] = $entity->endTime;
+        }
         $data['allexWochen'] = (isset($entity->repeat['afterWeeks'])) ? 1 : 0;
         $data['jedexteWoche'] = (isset($entity->repeat['weekOfMonth'])) ? 1 : 0;
         $data['Timeslot'] = gmdate("H:i", $entity->slotTimeInMinutes * 60);
