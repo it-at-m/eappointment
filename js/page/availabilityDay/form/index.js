@@ -180,28 +180,26 @@ const renderBody = (data, onChange, onSave, onDelete) => {
 
 const getFirstLevelValues = data => {
     const {
+        scope,
         description,
         startTime,
         endTime,
         startDate,
         endDate,
-        maxSlots,
         multipleSlotsAllowed,
-        busySlots,
         id,
         type,
         slotTimeInMinutes
     } = data
 
     return {
+        scope,
         description,
         startTime,
         endTime,
         startDate,
         endDate,
-        maxSlots,
         multipleSlotsAllowed,
-        busySlots,
         id,
         type,
         slotTimeInMinutes
@@ -209,8 +207,6 @@ const getFirstLevelValues = data => {
 }
 
 const getFormValuesfromData = data => {
-
-    console.log('formData', data)
 
     const workstations = Object.assign({}, data.workstationCount)
 
