@@ -42,7 +42,7 @@ const renderFooter = () => <small>Zum Bearbeiten einer Öffnungszeit, bitte auf 
 
 const TimeTable = (props) => {
     const { onSelect, timestamp } = props;
-    const titleTime = moment(timestamp).format('dddd, DD.MM.YYYY')
+    const titleTime = moment(timestamp, 'X').format('dddd, DD.MM.YYYY')
 
     const timeTableBody = <TimeTableBodyLayout
                               showConflicts={props.conflicts.length > 0}

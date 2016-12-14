@@ -1,6 +1,7 @@
 /* global confirm */
 import React, { Component, PropTypes } from 'react'
 import $ from 'jquery'
+import moment from 'moment'
 
 import AvailabilityForm from './form'
 import Conflicts from './conflicts'
@@ -8,6 +9,11 @@ import TimeTable from './timetable'
 import UpdateBar from './updateBar'
 
 import PageLayout from './layouts/page'
+
+import { getInitialState,
+         mergeAvailabilityListIntoState,
+         updateAvailabilityInState,
+         deleteAvailabilityInState } from "./helpers"
 
 const tempId = (() => {
     let lastId = -1
@@ -18,54 +24,6 @@ const tempId = (() => {
     }
 })()
 
-const getStateFromProps = props => {
-    return {
-        availabilitylist: props.availabilitylist.map(item => {
-            return Object.assign({}, item, {
-                maxSlots: props.maxslots[item.id] || 0,
-                busySlots: props.busyslots[item.id] || 0
-            })
-        })
-    }
-}
-
-const mergeAvailabilityListIntoState = (state, list) => list.reduce(updateAvailabilityInState, state)
-
-const updateAvailabilityInState = (state, newAvailability) => {
-    let updated = false
-
-    const newState = Object.assign({}, state, {
-        availabilitylist: state.availabilitylist.map(availabilty => {
-            if (availabilty.id === newAvailability.id) {
-                updated = true
-                return newAvailability
-            } else {
-                return availabilty
-            }
-        })
-    })
-
-    if (!updated) {
-        newState.availabilitylist.push(newAvailability)
-    }
-
-    newState.stateChanged = true
-
-    return newState
-}
-
-const deleteAvailabilityInState = (state, deleteAvailability) => {
-    return Object.assign({}, state, {
-        stateChanged: true,
-        availabilitylist: state.availabilitylist.filter(availabilty => availabilty.id !== deleteAvailability.id)
-    })
-}
-
-const getInitialState = (props) => Object.assign({}, {
-    availabilitylist: [],
-    selectedAvailability: null,
-    stateChanged: false
-}, getStateFromProps(props))
 
 class AvailabilityPage extends Component {
     constructor(props) {
@@ -82,9 +40,12 @@ class AvailabilityPage extends Component {
     onSaveUpdates() {
 
         const sendData = this.state.availabilitylist.map(availability => {
-            if (/^___temp___\d+$/.test(availability.id)) {
-                return Object.assign({}, availability, { id: null })
+            const sendAvailability = Object.assign({}, availability)
+            if (availability.tempId) {
+                delete sendAvailability.tempId
             }
+
+            return sendAvailability
         })
 
         console.log('save updates', sendData)
@@ -100,6 +61,10 @@ class AvailabilityPage extends Component {
         }).fail((err) => {
             console.log('save error', err)
         })
+    }
+
+    onRevertUpdates() {
+        this.setState(getInitialState(this.props))
     }
 
     onDeleteAvailability(availability) {
@@ -121,8 +86,42 @@ class AvailabilityPage extends Component {
 
     onCopyAvailability(availability) {
         this.setState({
-            selectedAvailability: Object.assign({}, availability, { id: tempId() })
+            selectedAvailability: Object.assign({}, availability, { tempId: tempId() })
         })
+    }
+
+    onCreateExceptionForAvailability(availability) {
+        const today = moment(this.props.timestamp, 'X').startOf('day')
+
+        const yesterday = today.clone().subtract(1, 'days')
+        const tomorrow = today.clone().add(1, 'days')
+
+        const pastAvailability = Object.assign({}, availability, {
+            endDate: parseInt(yesterday.format('X'), 10)
+        })
+
+        const exceptionAvailability = Object.assign({}, availability, {
+            startDate: parseInt(today.format('X'), 10),
+            endDate: parseInt(today.format('X'), 10),
+            tempId: tempId(),
+            id: null
+        })
+
+        const futureAvailability = Object.assign({}, availability, {
+            startDate: parseInt(tomorrow.format('X'), 10),
+            tempId: tempId(),
+            id: null
+        })
+
+        this.setState(Object.assign(
+            {},
+            mergeAvailabilityListIntoState(this.state, [
+                pastAvailability,
+                exceptionAvailability,
+                futureAvailability
+            ] ),
+            { selectedAvailability: exceptionAvailability }
+        ))
     }
 
     renderTimeTable() {
@@ -132,10 +131,19 @@ class AvailabilityPage extends Component {
             })
         }
 
+        const todaysAvailabilities = this.state.availabilitylist.filter(availability => {
+            const start = moment(availability.startDate, 'X')
+            const end = moment(availability.endDate, 'X')
+            const today = moment(this.props.timestamp, 'X').startOf('day')
+
+            return start.isSameOrBefore(today) && end.isSameOrAfter(today)
+        })
+
+
         return <TimeTable
                    timestamp={this.props.timestamp}
                    conflicts={this.props.conflicts}
-                   availabilities={this.state.availabilitylist}
+                   availabilities={todaysAvailabilities}
                    maxWorkstationCount={this.props.maxworkstationcount}
                    links={this.props.links}
                    onSelect={onSelect} />
@@ -147,13 +155,14 @@ class AvailabilityPage extends Component {
                        onSave={this.onUpdateAvailability.bind(this)}
                        onDelete={this.onDeleteAvailability.bind(this)}
                        onCopy={this.onCopyAvailability.bind(this)}
+                       onException={this.onCreateExceptionForAvailability.bind(this)}
                    />
         }
     }
 
     renderUpdateBar() {
         if (this.state.stateChanged) {
-            return <UpdateBar onSave={this.onSaveUpdates.bind(this)}/>
+            return <UpdateBar onSave={this.onSaveUpdates.bind(this)} onRevert={this.onRevertUpdates.bind(this)}/>
         }
     }
 
