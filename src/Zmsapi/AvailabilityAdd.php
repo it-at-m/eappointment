@@ -25,10 +25,14 @@ class AvailabilityAdd extends BaseController
         $collection = new \BO\Zmsentities\Collection\AvailabilityList();
         foreach ($input as $availability) {
             $entity = new \BO\Zmsentities\Availability($availability);
-            $entity = (new Query())->writeEntity($entity);
+            if ($entity->id) {
+                $entity = (new Query())->updateEntity($entity->id, $entity);
+            } else {
+                $entity = (new Query())->writeEntity($entity);
+            }
             $collection[] = $entity;
         }
-        $message->data = $collection;
+        $message->data = $collection->getArrayCopy();
         Render::lastModified(time(), '0');
         Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }
