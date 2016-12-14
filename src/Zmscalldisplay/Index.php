@@ -32,7 +32,7 @@ class Index extends BaseController
             array(
                 'debug' => \App::DEBUG,
                 'title' => 'Aufrufanzeige',
-                'calldisplay' => $calldisplay->withOutClusterDuplicates()
+                'calldisplay' => $calldisplay
             )
         );
     }
