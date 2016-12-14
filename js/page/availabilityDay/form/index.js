@@ -3,6 +3,8 @@ import React, { PropTypes, Component } from 'react'
 import Board from '../layouts/board'
 import * as Inputs from './inputs'
 
+import HeaderButtons from './headerButtons'
+
 import {range} from '../../../lib/utils'
 
 const { Label, FormGroup, Controls, Description } = Inputs
@@ -247,27 +249,6 @@ const getDataValuesFromForm = form => {
     })
 }
 
-const renderHeaderRight = (onCopy, onException, onEditInFuture) => {
-    const preventLink = handler => ev => {
-        ev.preventDefault()
-        handler(ev)
-    }
-
-    return (
-        <div>
-            <a href="#" onClick={preventLink(onCopy)}
-                title="Öffnungszeit kopieren und bearbeiten"
-                className="btn btn--b3igicon">+ Kopieren</a>
-            <a href="#" onClick={preventLink(onException)}
-                title="Ausnahme von dieser Öffnungszeit eintragen"
-                className="btn btn--b3igicon">  Ausnahme</a>
-            <a href="#" onClick={preventLink(onEditInFuture)}
-                title="Öffnungszeit ab diesem Tag ändern"
-                className="btn btn--b3igicon"> Ab diesem Tag ändern</a>
-        </div>
-    )
-}
-
 class AvailabilityForm extends Component {
     constructor(props) {
         super(props);
@@ -301,20 +282,38 @@ class AvailabilityForm extends Component {
 
         const onSave = (ev) => {
             ev.preventDefault()
-            this.props.onSave(getDataValuesFromForm(this.state.data))
+            this.props.onSave(getDataValuesFromForm(data))
         }
 
         const onDelete = ev => {
             ev.preventDefault()
-            this.props.onDelete(getDataValuesFromForm(this.state.data))
+            this.props.onDelete(getDataValuesFromForm(data))
         }
 
+        const onCopy = ev => {
+            ev.preventDefault()
+            this.props.onCopy(getDataValuesFromForm(data))
+        }
+
+        const onException = () => {}
+        const onEditInFuture = () => {}
+
         return <Board title="Öffnungszeit bearbeiten"
-                   headerRight={renderHeaderRight(this.props.onCopy, this.props.onException, this.props.onEditInFuture)}
+                   headerRight={<HeaderButtons {...{ onCopy, onException, onEditInFuture}} />}
                    body={renderBody(data, onChange, onSave, onDelete)}
                    footer=""
                    className="availability-form" />
     }
+}
+
+AvailabilityForm.defaultProps = {
+    data: {},
+    onSave: () => {},
+    onChange: () => {},
+    onDelete: () => {},
+    onCopy: () => {},
+    onException: () => {},
+    onEditInFuture: () => {}
 }
 
 AvailabilityForm.propTypes = {

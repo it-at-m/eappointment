@@ -5,8 +5,18 @@ import $ from 'jquery'
 import AvailabilityForm from './form'
 import Conflicts from './conflicts'
 import TimeTable from './timetable'
+import UpdateBar from './updateBar'
 
 import PageLayout from './layouts/page'
+
+const tempId = (() => {
+    let lastId = -1
+
+    return () => {
+        lastId += 1
+        return `__temp__${lastId}`
+    }
+})()
 
 const getStateFromProps = props => {
     return {
@@ -15,40 +25,81 @@ const getStateFromProps = props => {
                 maxSlots: props.maxslots[item.id] || 0,
                 busySlots: props.busyslots[item.id] || 0
             })
-        }),
-        selectedAvailability: null
+        })
     }
 }
 
-const updateAvailabilityInProps = (props, newAvailabilty) => {
-    return Object.assign({}, props, {
-        availabilitylist: props.availabilitylist.map(availabilty => {
-            return availabilty.id === newAvailabilty.id ? newAvailabilty : availabilty
+const mergeAvailabilityListIntoState = (state, list) => list.reduce(updateAvailabilityInState, state)
+
+const updateAvailabilityInState = (state, newAvailability) => {
+    let updated = false
+
+    const newState = Object.assign({}, state, {
+        availabilitylist: state.availabilitylist.map(availabilty => {
+            if (availabilty.id === newAvailability.id) {
+                updated = true
+                return newAvailability
+            } else {
+                return availabilty
+            }
         })
     })
+
+    if (!updated) {
+        newState.availabilitylist.push(newAvailability)
+    }
+
+    newState.stateChanged = true
+
+    return newState
 }
+
+const deleteAvailabilityInState = (state, deleteAvailability) => {
+    return Object.assign({}, state, {
+        stateChanged: true,
+        availabilitylist: state.availabilitylist.filter(availabilty => availabilty.id !== deleteAvailability.id)
+    })
+}
+
+const getInitialState = (props) => Object.assign({}, {
+    availabilitylist: [],
+    selectedAvailability: null,
+    stateChanged: false
+}, getStateFromProps(props))
 
 class AvailabilityPage extends Component {
     constructor(props) {
         super(props)
-        this.state = getStateFromProps(props)
+        this.state = getInitialState(props)
     }
 
-    onSaveAvailability(availability) {
-        console.log('save', availability)
+    onUpdateAvailability(availability) {
+        this.setState(Object.assign({}, updateAvailabilityInState(this.state, availability), {
+            selectedAvailability: availability
+        }))
+    }
+
+    onSaveUpdates() {
+
+        const sendData = this.state.availabilitylist.map(availability => {
+            if (/^___temp___\d+$/.test(availability.id)) {
+                return Object.assign({}, availability, { id: null })
+            }
+        })
+
+        console.log('save updates', sendData)
+
         $.ajax('/availability/', {
             method: 'POST',
-            data: JSON.stringify(availability)
-        }).done(() => {
-            console.log('save success')
-            this.setState(getStateFromProps(updateAvailabilityInProps(this.props, availability)))
-        }).fail(() => {
-            console.log('save failure')
+            data: JSON.stringify(sendData)
+        }).done((success) => {
+            console.log('save success', success)
+            if (success.data) {
+                this.setState(mergeAvailabilityListIntoState(this.state, success.data))
+            }
+        }).fail((err) => {
+            console.log('save error', err)
         })
-    }
-
-    onChangeAvailability(availability) {
-        console.debug('change', availability)
     }
 
     onDeleteAvailability(availability) {
@@ -59,12 +110,19 @@ class AvailabilityPage extends Component {
             $.ajax(`/availability/${id}`, {
                 method: 'DELETE'
             }).done(() => {
-                this.options.removeAvailability(id)
-                this.$.hide();
+                this.setState(Object.assign({}, deleteAvailabilityInState(this.state, availability), {
+                    selectedAvailability: null
+                }))
             }).fail(err => {
-                console.log('ajax error', err)
+                console.log('delete error', err)
             })
-        } 
+        }
+    }
+
+    onCopyAvailability(availability) {
+        this.setState({
+            selectedAvailability: Object.assign({}, availability, { id: tempId() })
+        })
     }
 
     renderTimeTable() {
@@ -86,10 +144,16 @@ class AvailabilityPage extends Component {
     renderForm() {
         if (this.state.selectedAvailability) {
             return <AvailabilityForm data={this.state.selectedAvailability}
-                       onSave={this.onSaveAvailability.bind(this)}
+                       onSave={this.onUpdateAvailability.bind(this)}
                        onDelete={this.onDeleteAvailability.bind(this)}
-                       onChange={this.onChangeAvailability.bind(this)}
+                       onCopy={this.onCopyAvailability.bind(this)}
                    />
+        }
+    }
+
+    renderUpdateBar() {
+        if (this.state.stateChanged) {
+            return <UpdateBar onSave={this.onSaveUpdates.bind(this)}/>
         }
     }
 
@@ -97,6 +161,7 @@ class AvailabilityPage extends Component {
         return (
             <PageLayout
                 timeTable={this.renderTimeTable()}
+                updateBar={this.renderUpdateBar()}
                 form={this.renderForm()}
                 conflicts={<Conflicts />}
             />
