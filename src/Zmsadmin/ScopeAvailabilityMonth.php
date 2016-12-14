@@ -47,9 +47,7 @@ class ScopeAvailabilityMonth extends BaseController
             }
             // TODO Berechne die Tage im Kalendar
         }
-        $month = (new Month(["year" => $dateTime->format('Y'), "month" => $dateTime->format('m')]))
-            ->getWithStatedDayList($dateTime)
-            ->setDays($calendar->getDayList());
+        $month = $calendar->getMonthList()->getFirst();
 
         return \BO\Slim\Render::withHtml(
             $response,
