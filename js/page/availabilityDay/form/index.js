@@ -300,7 +300,10 @@ class AvailabilityForm extends Component {
             this.props.onException(getDataValuesFromForm(data))
         }
 
-        const onEditInFuture = () => {}
+        const onEditInFuture = ev => {
+            ev.preventDefault()
+            this.props.onEditInFuture(getDataValuesFromForm(data))
+        }
 
         return <Board title="Öffnungszeit bearbeiten"
                    headerRight={<HeaderButtons {...{ onCopy, onException, onEditInFuture}} />}

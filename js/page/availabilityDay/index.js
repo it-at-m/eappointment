@@ -124,6 +124,30 @@ class AvailabilityPage extends Component {
         ))
     }
 
+    onEditAvailabilityInFuture(availability) {
+        const today = moment(this.props.timestamp, 'X').startOf('day')
+        const yesterday = today.clone().subtract(1, 'days')
+
+        const pastAvailability = Object.assign({}, availability, {
+            endDate: parseInt(yesterday.format('X'), 10)
+        })
+
+        const futureAvailability = Object.assign({}, availability, {
+            startDate: parseInt(today.format('X'), 10),
+            tempId: tempId(),
+            id: null
+        })
+
+        this.setState(Object.assign(
+            {},
+            mergeAvailabilityListIntoState(this.state, [
+                pastAvailability,
+                futureAvailability
+            ] ),
+            { selectedAvailability: futureAvailability }
+        ))
+    }
+
     renderTimeTable() {
         const onSelect = data => {
             this.setState({
@@ -156,6 +180,7 @@ class AvailabilityPage extends Component {
                        onDelete={this.onDeleteAvailability.bind(this)}
                        onCopy={this.onCopyAvailability.bind(this)}
                        onException={this.onCreateExceptionForAvailability.bind(this)}
+                       onEditInFuture={this.onEditAvailabilityInFuture.bind(this)}
                    />
         }
     }
