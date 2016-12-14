@@ -9,6 +9,9 @@
         ],
         "organisation": {
         	"id": 123
+        },
+        "contact": {
+        	"name": "Bürgeramt"
         }
     },
     "required": [
@@ -53,6 +56,9 @@
         },
         "organisation": {
             "$ref": "organisation.json"
+        },
+        "contact": {
+            "$ref": "contact.json"
         }
     }
 }
