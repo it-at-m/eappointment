@@ -1,4 +1,5 @@
 /* global confirm */
+/* global alert */
 import React, { Component, PropTypes } from 'react'
 import $ from 'jquery'
 import moment from 'moment'
@@ -48,7 +49,7 @@ class AvailabilityPage extends Component {
             return sendAvailability
         })
 
-        console.log('save updates', sendData)
+        console.log('Saving updates', sendData)
 
         $.ajax('/availability/', {
             method: 'POST',
@@ -68,7 +69,7 @@ class AvailabilityPage extends Component {
     }
 
     onDeleteAvailability(availability) {
-        console.log('delete', availability)
+        console.log('Deleting', availability)
         const ok = confirm('Soll diese Öffnungszeit wirklich gelöscht werden?')
         const id = availability.id
         if (ok) {
@@ -95,6 +96,19 @@ class AvailabilityPage extends Component {
 
         const yesterday = today.clone().subtract(1, 'days')
         const tomorrow = today.clone().add(1, 'days')
+
+        const start = moment(availability.startDate, 'X')
+        const end = moment(availability.endDate, 'X')
+
+        if (start.isAfter(yesterday, 'day')) {
+            alert('Beginn der Öffnungszeit muss mind. 1 Tag zurückliegen.')
+            return
+        }
+
+        if (end.isBefore(tomorrow, 'day')) {
+            alert('Ende der Öffnungszeit muss mind. 1 Tag vorausliegen.')
+            return
+        }
 
         const pastAvailability = Object.assign({}, availability, {
             endDate: parseInt(yesterday.format('X'), 10)
@@ -127,6 +141,13 @@ class AvailabilityPage extends Component {
     onEditAvailabilityInFuture(availability) {
         const today = moment(this.props.timestamp, 'X').startOf('day')
         const yesterday = today.clone().subtract(1, 'days')
+
+        const start = moment(availability.startDate, 'X')
+
+        if (start.isAfter(yesterday, 'day')) {
+            alert('Beginn der Öffnungszeit muss mind. 1 Tag zurückliegen.')
+            return
+        }
 
         const pastAvailability = Object.assign({}, availability, {
             endDate: parseInt(yesterday.format('X'), 10)
@@ -194,10 +215,10 @@ class AvailabilityPage extends Component {
     render() {
         return (
             <PageLayout
-                timeTable={this.renderTimeTable()}
-                updateBar={this.renderUpdateBar()}
-                form={this.renderForm()}
-                conflicts={<Conflicts />}
+            timeTable={this.renderTimeTable()}
+            updateBar={this.renderUpdateBar()}
+            form={this.renderForm()}
+            conflicts={<Conflicts conflicts={this.props.conflicts} />}
             />
         )
     }
