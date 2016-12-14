@@ -35,10 +35,20 @@ class AvailabilityTest extends Base
 
     public function testReadList()
     {
+        $now = new \DateTimeImmutable();
         $query = new Query();
-        $collection = $query->readList(141); //by scope Heerstraße
+        $collection = $query->readList(109); //by scope Helle Mitte
         $this->assertEntityList("\\BO\\Zmsentities\\Availability", $collection);
-        $this->assertEquals(true, $collection->hasEntity('68985')); //2016-01-28 until 2016-05-22
+        $this->assertEquals(true, $collection->hasEntity('99755'));
+        $this->assertEquals(
+            $collection->withType('appointment')->count(),
+            $collection->withType('openinghours')->count(),
+            'Should have the same count'
+        );
+        $this->assertTrue(
+            0 < $query->writeTemporaryDelete($now->modify('+1day')),
+            'No temporary availabilities created'
+        );
     }
 
     public function testWriteEntity()
