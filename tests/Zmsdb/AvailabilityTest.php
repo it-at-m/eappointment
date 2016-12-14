@@ -45,7 +45,8 @@ class AvailabilityTest extends Base
     {
         $query = new Query();
         $input = $this->getTestEntity();
-        $lastInsertedId = $query->writeEntity($input);
+        $entity = $query->writeEntity($input);
+        $lastInsertedId = $entity->id;
 
         $entity = $query->readEntity($lastInsertedId, 1);
         $this->assertEquals(12, $entity->slotTimeInMinutes);
