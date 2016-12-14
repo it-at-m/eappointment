@@ -1,6 +1,5 @@
 <?php
 /**
- * @package 115Mandant
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -28,6 +27,38 @@ class AvailabilityList extends Base
             $list[$key] = $availability->withCalculatedSlots();
         }
         return $list;
+    }
+
+    public function withType($type)
+    {
+        $collection = new static();
+        foreach ($this as $availability) {
+            if ($availability->type == $type) {
+                $collection[] = clone $availability;
+            }
+        }
+        return $collection;
+    }
+
+    public function withOutDoubles()
+    {
+        $collection = new static();
+        foreach ($this as $availability) {
+            if (false === $collection->hasMatchOf($availability)) {
+                $collection[] = clone $availability;
+            }
+        }
+        return $collection;
+    }
+
+    public function hasMatchOf(Availability $availability)
+    {
+        foreach ($this as $item) {
+            if ($item->isMatchOf($availability)) {
+                return $item;
+            }
+        }
+        return false;
     }
 
     public function withDateTime(\DateTimeImmutable $dateTime)
