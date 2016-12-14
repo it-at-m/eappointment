@@ -295,7 +295,11 @@ class AvailabilityForm extends Component {
             this.props.onCopy(getDataValuesFromForm(data))
         }
 
-        const onException = () => {}
+        const onException = ev => {
+            ev.preventDefault()
+            this.props.onException(getDataValuesFromForm(data))
+        }
+
         const onEditInFuture = () => {}
 
         return <Board title="Öffnungszeit bearbeiten"

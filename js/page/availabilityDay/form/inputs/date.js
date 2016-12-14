@@ -3,17 +3,14 @@ import React from 'react'
 import DatePicker from 'react-datepicker'
 import moment from 'moment'
 
-const toSeconds = millis => Math.floor(parseInt(millis, 10) / 1000)
-const toMilliseconds = seconds => 1000 * parseInt(seconds, 10)
-
 export const Date = ({name, value, onChange}) => {
     const onPick = (date) => {
-        onChange(name, toSeconds(date.format('x')))
+        onChange(name, date.format('X'))
     }
 
     return (
         <div className="add-date-picker">
-            <DatePicker selected={moment(toMilliseconds(value), 'x')} onChange={onPick} />
+            <DatePicker selected={moment(value, 'X')} onChange={onPick} />
         </div>
     )
 }
