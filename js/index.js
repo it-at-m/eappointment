@@ -5,21 +5,17 @@
 // Import base libs
 import window from "window";
 import $ from "jquery";
-import welcomeText from "./template/welcome.html";
 import settings from './settings';
 
-// Import Views
-//import DayselectView from "./page/dayselectView";
-
-// Bind jQuery on $ for testing
-window.$ = $;
 window.bo = {
-    "zmscalldisplay": settings,
-    "test": {
-    },
+    "zmscalldisplay": settings
 };
+
+// Import Views
+import AnalogClock from "./block/analog-clock";
+
 // Init Views
-//$('#dayselect').each(() => new DayselectView(this));
+$('#Uhr').each(function() { new AnalogClock(this);});
 
 // Say hello
-console.log(welcomeText);
+console.log("Welcome to the ZMS Calldisplay interface..."); 

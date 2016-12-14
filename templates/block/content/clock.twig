@@ -1,9 +1,10 @@
 {% block clock %}
 <div id="Uhr" class="uhr">
-    <canvas id="clock" class="CoolClock:themed:120:1481632739 myClock" width="240" height="240" style="width: 240px; height: 240px;"></canvas>
-    <canvas id="clock_medium" class="CoolClock:themed:160:1481632739 myClock" width="320" height="320" style="width: 320px; height: 320px;"></canvas>
-    <canvas id="clock_big" class="CoolClock:themed:200:1481632739 myClock" width="400" height="400" style="width: 400px; height: 400px;"></canvas>
+    <canvas id="clock" class="CoolClock:themed:120:showSecondHand::{{ calldisplay.serverTime * 1000 }} myClock"></canvas>
+    <canvas id="clock_medium" class="CoolClock:themed:160:showSecondHand::{{ calldisplay.serverTime * 1000 }} myClock"></canvas>
+    <canvas id="clock_big" class="CoolClock:themed:200:showSecondHand::{{ calldisplay.serverTime * 1000 }} myClock"></canvas>
 </div>
+
 <div id="aufrufanzeige_Datum" class="aufrufanzeige_Datum">
     {{ toGermanDateFromTs(calldisplay.serverTime).fulldate }}<br>
 </div>

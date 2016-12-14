@@ -129,7 +129,7 @@
         display:none;
     }
     .aufrufanzeige .uhr #clock_big {
-        display:block;
+        display:block !important;
     }
     .aufrufanzeige .aufrufanzeige_Datum {
         font-size:32px;

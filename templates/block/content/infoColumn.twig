@@ -3,12 +3,10 @@
 <div align="center">
    	<img src="data:image/{{ calldisplay.image.mime }};base64,{{ calldisplay.image.data }}" width="200" border="0" alt="">
 	<br><br>
-	{% if calldisplay.scopes|length == 1 and calldisplay.scopes|first.preferences.queue.callDisplayText %}
+	{% if calldisplay.clusters|length == 1 and calldisplay.clusters|first.callDisplayText %}
+	{{ calldisplay.clusters|first.callDisplayText|raw }}
+	{% elseif calldisplay.scopes|length == 1 and calldisplay.scopes|first.preferences.queue.callDisplayText%}
 	{{ calldisplay.scopes|first.preferences.queue.callDisplayText|raw }}
-	{% endif %}
-
-	{% if not calldisplay.scopes and calldisplay.clusters|length == 1 and calldisplay.clusters|first.scopes|first.preferences.queue.callDisplayText %}
-	{{ calldisplay.clusters|first.scopes|first.preferences.queue.callDisplayText|raw }}
 	{% endif %}
 </div>
 {% endblock %}

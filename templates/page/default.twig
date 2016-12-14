@@ -11,7 +11,9 @@
 {% block content %}
 <div class="aufrufanzeige_leftcol">
 	{{ block("clock") }}
+	{% if calldisplay.scopes|length == 1 or calldisplay.clusters|length == 1 %}
 	{{ block("estimatedWaitingClients") }}
+	{% endif %}
 </div>
 
 <div class="aufrufanzeige_main">
