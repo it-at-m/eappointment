@@ -15,6 +15,7 @@ import { getInitialState,
          getNewAvailability,
          mergeAvailabilityListIntoState,
          updateAvailabilityInState,
+         cleanupAvailabilityForSave,
          deleteAvailabilityInState } from "./helpers"
 
 const tempId = (() => {
@@ -48,7 +49,7 @@ class AvailabilityPage extends Component {
             }
 
             return sendAvailability
-        })
+        }).map(cleanupAvailabilityForSave)
 
         console.log('Saving updates', sendData)
 
