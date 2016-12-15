@@ -25,6 +25,7 @@ class ScopeAvailabilityDay extends BaseController
         $data = static::getAvailabilityData($scope_id, $dateString);
         $data['workstation'] = $workstation;
         $data['scope'] = $scope;
+        \BO\Slim\Render::lastModified(0, 0);
         \BO\Slim\Render::html('page/availabilityday.twig', $data);
     }
 
