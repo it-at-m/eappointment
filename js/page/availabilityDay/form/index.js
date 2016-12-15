@@ -12,6 +12,7 @@ import {range} from '../../../lib/utils'
 const { Label, FormGroup, Controls, Description } = Inputs
 
 const renderBody = (data, onChange, onSave, onDelete) => {
+    console.log('render Form Body', data)
     return (
         <form>
             <fieldset>
@@ -221,9 +222,20 @@ const getFormValuesfromData = data => {
         workstations.public = workstations.callcenter
     }
 
+    const repeat = (repeat => {
+        if (repeat.afterWeeks > 0) {
+            return repeat.afterWeeks
+        } else if (repeat.weekOfMonth > 0) {
+            return -repeat.weekOfMonth
+        } else {
+            return 0
+        }
+    })(data.repeat)
+
     return Object.assign({}, getFirstLevelValues(data), {
         open_from: data.bookable.startInDays,
         open_to: data.bookable.endInDays,
+        repeat,
         workstationCount_intern: workstations.intern,
         workstationCount_callcenter: workstations.callcenter,
         workstationCount_public: workstations.public,
@@ -244,7 +256,11 @@ const getDataValuesFromForm = form => {
         },
         weekday: form.weekday.reduce((carry, current) => {
             return Object.assign({}, carry, {[current]: 1})
-        }, {})
+        }, {}),
+        repeat: {
+            weekOfMonth: form.repeat < 0 ? -form.repeat : 0,
+            afterWeeks: form.repeat > 0 ? form.repeat : 0
+        }
     })
 }
 

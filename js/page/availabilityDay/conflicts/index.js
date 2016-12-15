@@ -30,7 +30,6 @@ const renderConflicts = conflicts => {
 }
 
 const Conflicts = (props) => {
-    console.log("Conflicts", props)
     return (
         <Board className="availability-conflicts"
             title="Konflikte"

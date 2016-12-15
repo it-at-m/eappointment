@@ -1,20 +1,24 @@
 import React, { PropTypes } from 'react'
-import { timeToFloat } from '../../../../lib/utils'
+import { timestampToFloat } from '../../../../lib/utils'
 import moment from 'moment'
 
 const Conflict = props => {
     const { data } = props
 
-    const timeItemStart = timeToFloat(data.startTime)
-    const timeItemEnd = timeToFloat(data.endTime)
+    const appointment = data.appointments[0]
+    const availability = appointment.availability || {}
+    const slotTime = availability.slotTimeInMinutes || 0
+
+    const timeItemStart = timestampToFloat(appointment.date)
+    const timeItemEnd = timestampToFloat(appointment.date + slotTime * 60 * appointment.slotCount)
     const timeItemLength = timeItemEnd - timeItemStart
 
-    const firstAppointmentTime = moment(data.appointments[0].date)
+    const firstAppointmentTime = moment(data.appointments[0].date, 'X')
 
     const title = `${data.amendment} ${firstAppointmentTime.format('HH:mm')}`
 
     const style = {
-        left: `${firstAppointmentTime.format('HH')}em`,
+        left: `${timeItemStart}em`,
         width: `${timeItemLength}em`
     }
 
