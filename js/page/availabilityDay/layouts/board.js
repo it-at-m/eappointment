@@ -25,9 +25,10 @@ const Board = (props) => {
             <div className="body">
                 {props.body}
             </div>
-            <div className="footer">
+            {props.footer ?
+             <div className="footer">
                 {props.footer}
-            </div>
+            </div> : null }
         </div>
     )
 }

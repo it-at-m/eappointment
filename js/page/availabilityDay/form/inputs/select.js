@@ -22,6 +22,8 @@ export const Select = ({name, options = [], groups = [], value, onChange = noOp,
 
     const onSelect = ev => onChange(name, ev.target.value)
 
+    console.log('select', attributes)
+
     return (
         <select onChange={onSelect} {...{ name}} defaultValue={value} {...attributes}>
             {renderGroups(groups)}

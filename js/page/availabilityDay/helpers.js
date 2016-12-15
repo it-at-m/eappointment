@@ -1,3 +1,4 @@
+import moment from 'moment'
 
 export const getStateFromProps = props => {
     return {
@@ -51,3 +52,44 @@ export const getInitialState = (props) => Object.assign({}, {
     selectedAvailability: null,
     stateChanged: false
 }, getStateFromProps(props))
+
+export const getNewAvailability = (timestamp, tempId, scope) => {
+    const now = moment(timestamp, 'X')
+    const weekday = [
+        'monday',
+        'tuesday',
+        'wednesday',
+        'thursday',
+        'friday',
+        'saturday',
+        'sunday'
+    ][now.isoWeekday() - 1]
+
+    const newAvailability = {
+        id: null,
+        tempId,
+        scope: Object.assign({}, scope),
+        description: '',
+        startDate: timestamp,
+        endDate: timestamp,
+        startTime: '00:00:00',
+        endTime: '00:00:00',
+        bookable: {
+            startInDays: 0,
+            endInDays: 0
+        },
+        multipleSlotAllowed: 1,
+        slotTimeInMinutes: 10,
+        weekday: {
+            [weekday]: 1
+        },
+        workstationCount: {
+            intern: 0,
+            callcenter: 0,
+            'public': 0
+        },
+        type: null
+    }
+
+    return newAvailability
+}
