@@ -20,29 +20,7 @@ class ScopeAvailabilityDayConflicts extends ScopeAvailabilityDay
      */
     public static function render($scope_id, $dateString)
     {
-        $dateTime = new \BO\Zmsentities\Helper\DateTime($dateString);
-        //$workstation = \App::$http->readGetResult('/workstation/')->getEntity();
-        $availabilityList = \App::$http
-            ->readGetResult('/scope/' . intval($scope_id) . '/availability/')
-            ->getCollection()
-            ->withDateTime($dateTime);
-        $processList = \App::$http
-            ->readGetResult('/scope/' . intval($scope_id) . '/day/' . $dateTime->format('Y-m-d') . '/')
-            ->getCollection()
-            ;
-        $conflicts = $availabilityList->getConflicts();
-        if ($processList) {
-            $conflicts->addList($processList->withOutAvailability($availabilityList));
-        }
-
-        $maxSlots = static::getMaxSlotsForAvailabilities($availabilityList);
-        $busySlots = static::getBusySlotsForAvailabilities($availabilityList, $processList);
-
-        \BO\Slim\Render::json(array(
-            'availabilityListSlices' => $availabilityList->withCalculatedSlots(),
-            'conflicts' => $conflicts->getArrayCopy(),
-            'maxSlotsForAvailabilities' => $maxSlots,
-            'busySlotsForAvailabilities' => $busySlots,
-        ));
+        $data = static::getAvailabilityData($scope_id, $dateString);
+        \BO\Slim\Render::json($data);
     }
 }

@@ -20,9 +20,17 @@ class ScopeAvailabilityDay extends BaseController
      */
     public static function render($scope_id, $dateString)
     {
-        $dateTime = new \BO\Zmsentities\Helper\DateTime($dateString);
         $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
         $scope = \App::$http->readGetResult('/scope/' . intval($scope_id) . '/')->getEntity();
+        $data = static::getAvailabilityData($scope_id, $dateString);
+        $data['workstation'] = $workstation;
+        $data['scope'] = $scope;
+        \BO\Slim\Render::html('page/availabilityday.twig', $data);
+    }
+
+    protected static function getAvailabilityData($scope_id, $dateString)
+    {
+        $dateTime = new \BO\Zmsentities\Helper\DateTime($dateString);
         $availabilityList = \App::$http
             ->readGetResult('/scope/' . intval($scope_id) . '/availability/')
             ->getCollection()
@@ -38,21 +46,18 @@ class ScopeAvailabilityDay extends BaseController
 
         $maxSlots = self::getMaxSlotsForAvailabilities($availabilityList);
         $busySlots = self::getBusySlotsForAvailabilities($availabilityList, $processList);
-
-        \BO\Slim\Render::html('page/availabilityday.twig', array(
+        return [
             'availabilityList' => $availabilityList->getArrayCopy(),
             'availabilityListSlices' => $availabilityList->withCalculatedSlots(),
             'conflicts' => $conflicts->getArrayCopy(),
-            'scope' => $scope,
             'processList' => $processList->getArrayCopy(),
             'dateString' => $dateString,
             'timestamp' => $dateTime->getTimestamp(),
-            'workstation' => $workstation,
             'menuActive' => 'availability',
             'maxWorkstationCount' => $availabilityList->getMaxWorkstationCount(),
             'maxSlotsForAvailabilities' => $maxSlots,
             'busySlotsForAvailabilities' => $busySlots,
-        ));
+        ];
     }
 
     /**
