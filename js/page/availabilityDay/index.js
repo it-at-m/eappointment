@@ -12,6 +12,7 @@ import UpdateBar from './updateBar'
 import PageLayout from './layouts/page'
 
 import { getInitialState,
+         getStateFromProps,
          getNewAvailability,
          mergeAvailabilityListIntoState,
          updateAvailabilityInState,
@@ -40,6 +41,28 @@ class AvailabilityPage extends Component {
         }))
     }
 
+    refreshData() {
+        const currentDate = moment(this.props.timestamp, 'X').format('YYYY-MM-DD')
+        const url = `/scope/${this.props.scope.id}/availability/day/${currentDate}/conflicts/`
+        $.ajax(url, {
+            method:'GET'
+        }).done(data => {
+            const newProps = {
+                conflicts: data.conflicts,
+                availabilitylist: data.availabilityList,
+                busyslots: data.busySlotsForAvailabilities,
+                maxslots: data.maxSlotsForAvailabilities
+            }
+
+            this.setState(Object.assign({}, getStateFromProps(Object.assign({}, this.props, newProps )), {
+                stateChanged: false,
+                selectedAvailability: null
+            }))
+        }).fail(err => {
+            console.log('refreshData error', err)
+        })
+    }
+
     onSaveUpdates() {
 
         const sendData = this.state.availabilitylist.map(availability => {
@@ -58,9 +81,7 @@ class AvailabilityPage extends Component {
             data: JSON.stringify(sendData)
         }).done((success) => {
             console.log('save success', success)
-            if (success.data) {
-                this.setState(mergeAvailabilityListIntoState(this.state, success.data))
-            }
+            this.refreshData()
         }).fail((err) => {
             console.log('save error', err)
         })
@@ -196,7 +217,7 @@ class AvailabilityPage extends Component {
 
         return <TimeTable
                    timestamp={this.props.timestamp}
-                   conflicts={this.props.conflicts}
+                   conflicts={this.state.conflicts}
                    availabilities={todaysAvailabilities}
                    maxWorkstationCount={this.props.maxworkstationcount}
                    links={this.props.links}
@@ -224,12 +245,13 @@ class AvailabilityPage extends Component {
     }
 
     render() {
+        console.log('AvailabilityPage', this.state)
         return (
             <PageLayout
             timeTable={this.renderTimeTable()}
             updateBar={this.renderUpdateBar()}
             form={this.renderForm()}
-            conflicts={<Conflicts conflicts={this.props.conflicts} />}
+            conflicts={<Conflicts conflicts={this.state.conflicts} />}
             />
         )
     }

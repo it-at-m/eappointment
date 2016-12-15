@@ -7,7 +7,8 @@ export const getStateFromProps = props => {
                 maxSlots: props.maxslots[item.id] || 0,
                 busySlots: props.busyslots[item.id] || 0
             })
-        })
+        }),
+        conflicts: props.conflicts
     }
 }
 
