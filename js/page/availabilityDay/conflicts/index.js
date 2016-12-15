@@ -1,14 +1,24 @@
 import React, { PropTypes } from 'react'
 import Board from '../layouts/board'
+import moment from 'moment'
 
 const renderConflicts = conflicts => {
     if (conflicts.length > 0) {
         return conflicts.map((conflict, key) => {
 
+            const appointment = conflict.appointments[0]
+            const startTime = moment(appointment.date, 'X').format('YYYY-MM-DD HH:mm')
+            const availability = appointment.availability || {}
+            const slotTime = availability.slotTimeInMinutes || 0
+            const endTime = moment(appointment.date + slotTime * 60 * appointment.slotCount, 'X').format('HH:mm')
+
             return (
-                <span>
-                    <a key={key}>{conflict.startTime} - {conflict.endTime}</a>
-                    <p>{conflict.description}</p>
+                <span key={key}>
+                    <a href='#'>{startTime} - {endTime}</a>
+                    {conflict.queue.withAppointment
+                     ? <p>Termin außerhalb der Öffnungszeiten oder überbucht</p>
+                     : <p title={ appointment.availability} >{conflict.amendment}</p>
+                    }
                 </span>
             )
         })

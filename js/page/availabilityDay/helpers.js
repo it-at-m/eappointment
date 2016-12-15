@@ -93,3 +93,17 @@ export const getNewAvailability = (timestamp, tempId, scope) => {
 
     return newAvailability
 }
+
+export const cleanupAvailabilityForSave = availability => {
+    const newAvailability = Object.assign({}, availability)
+
+    if (newAvailability.busySlots) {
+        delete newAvailability.busySlots
+    }
+
+    if (newAvailability.maxSlots) {
+        delete newAvailability.maxSlots
+    }
+
+    return newAvailability
+}
