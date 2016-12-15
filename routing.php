@@ -73,6 +73,9 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/scope/{id:\d+}/availability/day/{date:\d\d\d\d-\d\d-\d\d}/', '\BO\Zmsadmin\ScopeAvailabilityDay')
     ->setName("scopeAvailabilityDay");
 
+\App::$slim->get('/scope/{id:\d+}/availability/day/{date:\d\d\d\d-\d\d-\d\d}/conflicts/', '\BO\Zmsadmin\ScopeAvailabilityDayConflicts')
+    ->setName("scopeAvailabilityDayConflict");
+
 \App::$slim->get('/scope/{id:\d+}/availability/month/[{date:\d\d\d\d-\d\d}/]', '\BO\Zmsadmin\ScopeAvailabilityMonth')
     ->setName("scopeAvailabilityMonth");
 
