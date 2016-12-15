@@ -14,10 +14,10 @@ class AvailabilityTest extends Base
         $entity = $query->readEntity(21202, 0); //check without cache
 
         $this->assertEntity("\\BO\\Zmsentities\\Availability", $entity);
-        $this->assertEquals(64, $entity->weekday['saturday']);
+        $this->assertTrue((bool)$entity->weekday['saturday']);
 
         $entity = $query->readEntity(21202, 0, true); //check cache
-        $this->assertEquals(64, $entity->weekday['saturday']);
+        $this->assertTrue((bool)$entity->weekday['saturday']);
     }
 
 
@@ -35,7 +35,6 @@ class AvailabilityTest extends Base
 
     public function testReadList()
     {
-        $now = new \DateTimeImmutable();
         $query = new Query();
         $collection = $query->readList(109); //by scope Helle Mitte
         $this->assertEntityList("\\BO\\Zmsentities\\Availability", $collection);
@@ -45,21 +44,21 @@ class AvailabilityTest extends Base
             $collection->withType('openinghours')->count(),
             'Should have the same count'
         );
-        $this->assertTrue(
-            0 < $query->writeTemporaryDelete($now->modify('+1day')),
-            'No temporary availabilities created'
-        );
     }
 
     public function testWriteEntity()
     {
         $query = new Query();
         $input = $this->getTestEntity();
+        $input->weekday['thursday'] = true;
+        $input->weekday['friday'] = true;
         $entity = $query->writeEntity($input);
         $lastInsertedId = $entity->id;
 
         $entity = $query->readEntity($lastInsertedId, 1);
         $this->assertEquals(12, $entity->slotTimeInMinutes);
+        $this->assertTrue((bool)$entity->weekday['thursday']);
+        $this->assertTrue((bool)$entity->weekday['friday']);
 
         $entity->slotTimeInMinutes = 10;
         $entity = $query->updateEntity($lastInsertedId, $entity);
