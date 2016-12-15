@@ -102,6 +102,7 @@ class Department extends Base
      */
     public function deleteEntity($departmentId)
     {
+        self::$departmentCache = [];
         $query = new Query\Department(Query\Base::DELETE);
         $query->addConditionDepartmentId($departmentId);
         $entityDelete = $this->deleteItem($query);
@@ -129,6 +130,7 @@ class Department extends Base
      */
     public function writeEntity(\BO\Zmsentities\Department $entity, $parentId)
     {
+        self::$departmentCache = [];
         $query = new Query\Department(Query\Base::INSERT);
         $values = $query->reverseEntityMapping($entity, $parentId);
         // get owner by organisation
@@ -153,6 +155,7 @@ class Department extends Base
      */
     public function updateEntity($departmentId, \BO\Zmsentities\Department $entity)
     {
+        self::$departmentCache = [];
         $query = new Query\Department(Query\Base::UPDATE);
         $query->addConditionDepartmentId($departmentId);
         $values = $query->reverseEntityMapping($entity);
@@ -174,6 +177,7 @@ class Department extends Base
      */
     protected function writeDepartmentMail($departmentId, $email)
     {
+        self::$departmentCache = [];
         $query = Query\Department::QUERY_MAIL_INSERT;
         $statement = $this->getWriter()
             ->prepare($query);
@@ -195,6 +199,7 @@ class Department extends Base
      */
     protected function writeDepartmentNotifications($departmentId, $preferences)
     {
+        self::$departmentCache = [];
         $query = Query\Department::QUERY_NOTIFICATIONS_INSERT;
         $statement = $this->getWriter()
             ->prepare($query);
@@ -221,6 +226,7 @@ class Department extends Base
      */
     protected function updateDepartmentMail($departmentId, $email)
     {
+        self::$departmentCache = [];
         $query = Query\Department::QUERY_MAIL_UPDATE;
         return $this->getWriter()
             ->fetchAffected($query, array (
@@ -240,6 +246,7 @@ class Department extends Base
      */
     protected function updateDepartmentNotifications($departmentId, $preferences)
     {
+        self::$departmentCache = [];
         $query = Query\Department::QUERY_NOTIFICATIONS_UPDATE;
         return $this->getWriter()
             ->fetchAffected(

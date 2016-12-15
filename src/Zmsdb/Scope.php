@@ -252,6 +252,7 @@ class Scope extends Base
      */
     public function writeEntity(\BO\Zmsentities\Scope $entity, $parentId)
     {
+        self::$cache = [];
         $query = new Query\Scope(Query\Base::INSERT);
         $values = $query->reverseEntityMapping($entity, $parentId);
         $query->addValues($values);
@@ -271,6 +272,7 @@ class Scope extends Base
      */
     public function updateEntity($scopeId, \BO\Zmsentities\Scope $entity)
     {
+        self::$cache = [];
         $query = new Query\Scope(Query\Base::UPDATE);
         $query->addConditionScopeId($scopeId);
         $values = $query->reverseEntityMapping($entity);
@@ -289,6 +291,7 @@ class Scope extends Base
      */
     public function deleteEntity($scopeId)
     {
+        self::$cache = [];
         $query = new Query\Scope(Query\Base::DELETE);
         $query->addConditionScopeId($scopeId);
         return $this->deleteItem($query);

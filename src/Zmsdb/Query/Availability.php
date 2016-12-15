@@ -9,7 +9,7 @@ class Availability extends Base implements MappingInterface
      */
     const TABLE = 'oeffnungszeit';
 
-    const TEMPORARY_DELETE = 'DELETE FROM oeffnungszeit WHERE kommentar = "--temporary--" AND Endedatum <= :date ';
+    const TEMPORARY_DELETE = 'DELETE FROM oeffnungszeit WHERE kommentar = "--temporary--"';
 
     public function addRequiredJoins()
     {
@@ -178,7 +178,22 @@ class Availability extends Base implements MappingInterface
         $data['jedexteWoche'] = (isset($entity->repeat['weekOfMonth'])) ? 1 : 0;
         $data['Timeslot'] = gmdate("H:i", $entity->slotTimeInMinutes * 60);
         ;
-        $data['Wochentag'] = current((array_filter(array_values($entity->weekday))));
+        $wochentagBinaryCoded = 0;
+        $binaryCodes = [
+            'sunday' => 1,
+            'monday' => 2,
+            'tuesday' => 4,
+            'wednesday' => 8,
+            'thursday' => 16,
+            'friday' => 32,
+            'saturday' => 64,
+            ];
+        foreach ($entity->weekday as $weekday => $isActive) {
+            if ($isActive) {
+                $wochentagBinaryCoded |= $binaryCodes[$weekday];
+            }
+        }
+        $data['Wochentag'] = $wochentagBinaryCoded;
         $data['Anzahlterminarbeitsplaetze'] = $entity->workstationCount['intern'];
         $data['reduktionTermineImInternet'] =
             $entity->workstationCount['intern'] - $entity->workstationCount['public'];
