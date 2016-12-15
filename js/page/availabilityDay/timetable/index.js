@@ -19,8 +19,7 @@ const headerRight = (links, onNewClick) => {
     )
 }
 
-const renderConflicts = (availabilities) => availabilities
-    .filter(availability => availability.type === 'conflict')
+const renderConflicts = conflicts => conflicts
     .map((data, key) => <ConflictTimeBar {...{ key, data }} />)
 
 const renderNumberOfAppointments = (items) => items
@@ -43,6 +42,8 @@ const renderFooter = () => <small>Zum Bearbeiten einer Öffnungszeit, bitte auf 
 const TimeTable = (props) => {
     const { onSelect, timestamp } = props;
     const titleTime = moment(timestamp, 'X').format('dddd, DD.MM.YYYY')
+
+    console.log('timetable', props)
 
     const timeTableBody = <TimeTableBodyLayout
                               showConflicts={props.conflicts.length > 0}
