@@ -12,6 +12,7 @@ import UpdateBar from './updateBar'
 import PageLayout from './layouts/page'
 
 import { getInitialState,
+         getNewAvailability,
          mergeAvailabilityListIntoState,
          updateAvailabilityInState,
          deleteAvailabilityInState } from "./helpers"
@@ -169,6 +170,13 @@ class AvailabilityPage extends Component {
         ))
     }
 
+    onNewAvailability() {
+        console.log('new availability')
+        const newAvailability = getNewAvailability(this.props.timestamp, tempId(), this.props.scope)
+
+        this.setState(Object.assign({}, { selectedAvailability: newAvailability }))
+    }
+
     renderTimeTable() {
         const onSelect = data => {
             this.setState({
@@ -191,7 +199,9 @@ class AvailabilityPage extends Component {
                    availabilities={todaysAvailabilities}
                    maxWorkstationCount={this.props.maxworkstationcount}
                    links={this.props.links}
-                   onSelect={onSelect} />
+                   onSelect={onSelect}
+                   onNewAvailability={this.onNewAvailability.bind(this)}
+               />
     }
 
     renderForm() {

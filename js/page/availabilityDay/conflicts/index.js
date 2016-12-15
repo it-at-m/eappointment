@@ -4,9 +4,13 @@ import Board from '../layouts/board'
 const renderConflicts = conflicts => {
     if (conflicts.length > 0) {
         return conflicts.map((conflict, key) => {
-            console.log('conflict', conflict)
 
-            return <a key={key}>Conflict</a>
+            return (
+                <span>
+                    <a key={key}>{conflict.startTime} - {conflict.endTime}</a>
+                    <p>{conflict.description}</p>
+                </span>
+            )
         })
     } else {
         return (
@@ -16,6 +20,7 @@ const renderConflicts = conflicts => {
 }
 
 const Conflicts = (props) => {
+    console.log("Conflicts", props)
     return (
         <Board className="availability-conflicts"
             title="Konflikte"

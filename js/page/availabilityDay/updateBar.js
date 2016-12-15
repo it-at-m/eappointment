@@ -13,9 +13,15 @@ const UpdateBar = (props) => {
     }
 
     return (
-        <div>
-            <button onClick={onSave}>Save Changes</button>
-            <button onClick={onRevert}>Revert Changes</button>
+        <div className="availability-updatebar lineup">
+            <div className="lineup_actor lineup_actor--left">
+            </div>
+            <div className="lineup_actor lineup_actor--right">
+                <p>
+                    <button className="btn" onClick={onRevert}>Zurücksetzen</button>
+                    <button className="btn" onClick={onSave}>Änderungen speichern</button>
+                </p>
+            </div>
         </div>
     )
 }

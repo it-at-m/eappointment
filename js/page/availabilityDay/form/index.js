@@ -5,6 +5,8 @@ import * as Inputs from './inputs'
 
 import HeaderButtons from './headerButtons'
 
+import validate from './validate'
+
 import {range} from '../../../lib/utils'
 
 const { Label, FormGroup, Controls, Description } = Inputs
@@ -24,6 +26,7 @@ const renderBody = (data, onChange, onSave, onDelete) => {
                     <Label>Typ</Label>
                     <Controls>
                         <Inputs.Select name="type"
+                            attributes={{disabled: data.type ? 'disabled' : null}}
                             value={data.type}
                             {...{ onChange}}
                             options={[
@@ -171,7 +174,7 @@ const renderBody = (data, onChange, onSave, onDelete) => {
             <div className="form-actions">
                 <button className="button-delete" type="delete" value="delete" onClick={onDelete}>Löschen</button>
                 <div className="right">
-                    <button className="button-save" type="save" value="save" onClick={onSave}>Speichern</button>
+                    <button className="button-save" type="save" value="save" onClick={onSave}>OK</button>
                 </div>
             </div>
         </form>
@@ -250,7 +253,8 @@ class AvailabilityForm extends Component {
         super(props);
 
         this.state = {
-            data: getFormValuesfromData(this.props.data)
+            data: getFormValuesfromData(this.props.data),
+            errors: {}
         }
     }
 
@@ -278,7 +282,14 @@ class AvailabilityForm extends Component {
 
         const onSave = (ev) => {
             ev.preventDefault()
-            this.props.onSave(getDataValuesFromForm(data))
+            const validationResult = validate(data)
+
+            if (validationResult.valid) {
+                this.props.onSave(getDataValuesFromForm(data))
+            } else {
+                console.log('errors', validationResult.errors)
+                this.setState({ errors: validationResult.errors })
+            }
         }
 
         const onDelete = ev => {
