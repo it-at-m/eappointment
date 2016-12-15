@@ -21,6 +21,7 @@ class ScopeAvailabilityDayConflicts extends ScopeAvailabilityDay
     public static function render($scope_id, $dateString)
     {
         $data = static::getAvailabilityData($scope_id, $dateString);
+        \BO\Slim\Render::lastModified(0, 0);
         \BO\Slim\Render::json($data);
     }
 }
