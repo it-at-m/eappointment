@@ -8,11 +8,12 @@
 
 @import "layout/main";
 
+// Element rules
+@import "element/ring";
 // Block rules
 @import "block/alerts";
 @import "block/timer";
 @import "block/aufrufanzeige";
 @import "block/tabellen";
 @import "block/debug";
-
 @import "layout/media";

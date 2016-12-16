@@ -2,7 +2,7 @@
 import BaseView from '../lib/baseview';
 import $ from "jquery";
 import settings from '../settings';
-import CoolClock from '../lib/coolclock.js';
+import CoolClock from '../lib/coolclock';
 
 class View extends BaseView {
 
