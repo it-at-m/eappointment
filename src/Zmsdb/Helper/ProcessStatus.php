@@ -68,6 +68,39 @@ class ProcessStatus extends \BO\Zmsdb\Process
         return $status;
     }
 
+    /**
+     * get the current process status from given Id and authKey
+     *
+     * @return String
+     */
+    public function readQueueStatus($processId, $authKey)
+    {
+        $status = '';
+        $processData = $this->getReader()->fetchOne(
+            'SELECT
+            *
+            FROM buerger AS b
+            WHERE
+                b.BuergerID = "' . $processId . '"
+                AND b.absagecode = "' . $authKey . '"
+            LIMIT 1
+            '
+        );
+        $statusList = [
+            'queued' => $this->isQueuedProcess($processData),
+            'called' => $this->isCalledProcess($processData),
+            'processing' => $this->isProcessingProcess($processData),
+            'pending' => $this->isPendingProcess($processData),
+            'missed' => $this->isMissedProcess($processData)
+        ];
+        foreach ($statusList as $statusType => $statusCheck) {
+            if ($statusCheck) {
+                $status = $statusType;
+            }
+        }
+        return $status;
+    }
+
     protected function createConfirmedProcessEntity($process)
     {
         $process['status'] = 'confirmed';

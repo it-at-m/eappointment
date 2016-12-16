@@ -79,6 +79,28 @@ class Cluster extends Base
     }
 
     /**
+     * get a queueList from opened scopes by cluster id and dateTime
+     *
+     ** @param
+     *            clusterId
+     *            now
+     *
+     * @return Bool
+     */
+    public function readQueueList($clusterId, \DateTimeInterface $dateTime)
+    {
+        $scopeList = $this->readOpenedScopeList($clusterId, $dateTime);
+        $queueList = new \BO\Zmsentities\Collection\QueueList();
+        foreach ($scopeList as $scope) {
+            $scopeQueueList = (new Scope())->readWithWaitingTime($scope['id'], $dateTime);
+            if (0 < $scopeQueueList->count()) {
+                $queueList->addList($scopeQueueList);
+            }
+        }
+        return $queueList->withSortedArrival();
+    }
+
+    /**
      * get a scopeList with opened scopes
      *
      ** @param
@@ -94,7 +116,7 @@ class Cluster extends Base
         if ($cluster && $cluster->toProperty()->scopes->get()) {
             foreach ($cluster->scopes as $scope) {
                 $availabilityList = (new Availability())->readOpeningHoursListByDate($scope['id'], $dateTime);
-                if ($availabilityList->isOpened($dateTime) && ! $scope->getStatus('ticketprinter', 'deactivated')) {
+                if ($availabilityList->isOpened($dateTime)) {
                     $scopeList->addEntity($scope);
                 }
             }
