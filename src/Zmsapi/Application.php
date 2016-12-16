@@ -16,12 +16,12 @@ class Application extends \BO\Slim\Application
     /**
      * @var String VERSION_MAJOR
      */
-    const VERSION_MAJOR = '0';
+    const VERSION_MAJOR = '2';
 
     /**
      * @var String VERSION_MINOR
      */
-    const VERSION_MINOR = '1';
+    const VERSION_MINOR = '9';
 
     /**
      * @var String VERSION_PATCH
