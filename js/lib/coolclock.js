@@ -239,8 +239,12 @@ CoolClock.prototype = {
 
 		// Draw the tick marks. Every 5th one is a big one
 		for (var i=0;i<60;i++) {
-		    (i%5)  && skin.smallIndicator && this.radialLineAtAngle(this.tickAngle(i),skin.smallIndicator);
-		    !(i%5) && skin.largeIndicator && this.radialLineAtAngle(this.tickAngle(i),skin.largeIndicator);
+		    if (0 < i % 5 && skin.smallIndicator) {
+			this.radialLineAtAngle(this.tickAngle(i),skin.smallIndicator);
+		    }
+		    if (0 === i % 5 && skin.largeIndicator) {
+			this.radialLineAtAngle(this.tickAngle(i),skin.largeIndicator);
+		    }
 		}
 
 		// Write the time
