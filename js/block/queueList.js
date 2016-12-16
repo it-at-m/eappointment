@@ -15,11 +15,14 @@ class View extends BaseView {
     initRequest () {
 	$.post( this.getUrl('/queue/'), window.bo.zmscalldisplay)
 		.done(data => {
-        	    $( "#queueImport" ).html( data );
+        	    $( "#queueImport" ).html( data );        	    
         	    this.setWaitingClients(data);
         	    this.setWaitingTime(data);
         	    this.setInterval();
 	});
+	
+	this.startRingAudio();
+	this.stopRingAudio();
     }   
     
     setInterval () {
@@ -52,6 +55,19 @@ class View extends BaseView {
 	    }
 	    
 	}
+    }
+    
+    startRingAudio()
+    {
+	$( "#ring" ).trigger('play');
+    }
+    
+    stopRingAudio(){
+	setTimeout(function(){
+	    $("#ring").trigger('pause');
+	    //set play time to 0
+	    $("#ring").prop("currentTime",0);
+	},4000);	  
     }
 }
 
