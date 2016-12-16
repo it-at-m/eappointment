@@ -30,6 +30,7 @@ class Process extends Base
         $process['requests'] = (new Request())->readRequestByProcessId($processId, $resolveReferences);
         $process['status'] = (new Status())->readProcessStatus($processId, $authKey);
         $process['scope'] = (new Scope())->readEntity($process->getScopeId(), $resolveReferences);
+        $process['queue']['status'] = (new Status())->readQueueStatus($processId, $authKey);
         $process = $this->addDldbData($process, $resolveReferences);
         return $process;
     }
@@ -212,6 +213,7 @@ class Process extends Base
         while ($processData = $statement->fetch(\PDO::FETCH_ASSOC)) {
             $entity = new Entity($query->postProcess($processData));
             if ($entity instanceof Entity) {
+                $entity['queue']['status'] = (new Status())->readQueueStatus($entity->id, $entity->authKey);
                 $processList->addEntity($entity);
             }
         }

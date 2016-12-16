@@ -103,6 +103,8 @@ class Process extends Base implements MappingInterface
                     `process`.`BuergerID`
                 )'
             ),
+            'queue__destination' => 'processuser.Arbeitsplatznr',
+            'queue__destinationHint' => 'processuser.aufrufzusatz',
             'queue__waitingTime' => 'process.wartezeit',
             'queue__withAppointment' => self::expression(
                 'IF(`process`.`wartenummer`,
@@ -224,5 +226,15 @@ class Process extends Base implements MappingInterface
             'istFolgeterminvon' => $parentProcess,
             'wartenummer' => $process->queue['number']
         ]);
+    }
+
+    protected function addRequiredJoins()
+    {
+        $this->query->leftJoin(
+            new Alias(UserAccount::TABLE, 'processuser'),
+            'process.StandortID',
+            '=',
+            'processuser.StandortID'
+        );
     }
 }

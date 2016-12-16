@@ -5,6 +5,10 @@ namespace BO\Zmsdb;
 use \BO\Zmsentities\Ticketprinter as Entity;
 use \BO\Zmsentities\Collection\TicketprinterList as Collection;
 
+/**
+ *
+ * @SuppressWarnings(CouplingBetweenObjects)
+ */
 class Ticketprinter extends Base
 {
     /**
@@ -108,8 +112,19 @@ class Ticketprinter extends Base
     protected function readDisabledByScope($ticketprinter)
     {
         if (1 == count($ticketprinter->buttons) && ! $ticketprinter->buttons[0]['enabled']) {
-            $scope = (new Scope())->readEntity($ticketprinter->buttons[0]['scope']['id']);
-            throw new Exception\TicketprinterDisabledByScope($scope->getPreference('ticketprinter', 'deactivatedText'));
+            if (0 < $ticketprinter->getScopeList()->count()) {
+                $scope = $ticketprinter->getScopeList()->getFirst();
+                $scope = (new Scope())->readEntity($scope['id']);
+            } elseif (0 < $ticketprinter->getClusterList()->count()) {
+                $scopeList = $ticketprinter->getClusterList()->getFirst()->scopes;
+                $scopeList = new \BO\Zmsentities\Collection\ScopeList($scopeList);
+                $scope = (new Scope())->readEntity($scopeList->getFirst()['id']);
+            }
+            if ($scope->getStatus('ticketprinter', 'deactivated')) {
+                throw new Exception\TicketprinterDisabledByScope(
+                    $scope->getPreference('ticketprinter', 'deactivatedText')
+                );
+            }
         }
     }
 

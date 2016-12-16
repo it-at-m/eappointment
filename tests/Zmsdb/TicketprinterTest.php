@@ -65,7 +65,7 @@ class TicketprinterTest extends Base
         $this->setExpectedException('\BO\Zmsdb\Exception\TicketprinterDisabledByScope');
         $now = new \DateTimeImmutable("2016-04-02 11:55");
         $query = new Query();
-        $buttonlist = 's141';
+        $buttonlist = 's101';
         $input = (new Entity)->getExample();
         $input['buttonlist'] = $buttonlist;
         $entity = $query->readByButtonList($input->toStructuredButtonList(), $now);
