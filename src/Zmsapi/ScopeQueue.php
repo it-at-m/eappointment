@@ -24,7 +24,7 @@ class ScopeQueue extends BaseController
         $message = Response\Message::create(Render::$request);
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $scope = $query->readEntity($itemId, $resolveReferences)->withLessData();
-        if (! $scope->hasId()) {
+        if (! $scope) {
             throw new Exception\Scope\ScopeNotFound();
         }
         $message->data = $query->readWithWaitingTime($itemId, \App::$now);
