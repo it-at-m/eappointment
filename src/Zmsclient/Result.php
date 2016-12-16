@@ -115,7 +115,8 @@ class Result
     public function getEntity()
     {
         if (null !== $this->getData()) {
-            return reset($this->getData());
+            $data = $this->getData();
+            return reset($data);
         }
     }
 
