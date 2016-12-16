@@ -16,7 +16,7 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/', '\BO\Zmscalldisplay\Index')
     ->setName("index");
 
-\App::$slim->get('/queue/', '\BO\Zmscalldisplay\Queue')
+\App::$slim->post('/queue/', '\BO\Zmscalldisplay\Queue')
     ->setName("queue");
 
 /*

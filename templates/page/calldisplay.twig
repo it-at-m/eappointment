@@ -1,0 +1,24 @@
+{% extends "layout/main.twig" %}
+
+{% use "block/marginal/clock.twig" %}
+{% use "block/queue/estimatedWaitingClients.twig" %}
+{% use "block/queue/estimatedWaitingTime.twig" %}
+
+{% block title %}{% trans "calldisplay" %}{% endblock %}
+{% block pageid %}index{% endblock %}
+
+{% block content %}
+<div class="aufrufanzeige_leftcol">
+	{{ block("clock") }}
+	{{ block("estimatedWaitingClients") }}
+	{{ block("estimatedWaitingTime") }}
+</div>
+<div class="aufrufanzeige_main">
+	{% include "block/default/importContainer.twig" %}
+</div>
+
+<div class="aufrufanzeige_text">
+	{% include "block/marginal/infoColumn.twig" %}
+</div>
+{% endblock %}
+

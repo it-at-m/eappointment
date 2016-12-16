@@ -31,8 +31,9 @@ class Index extends BaseController
             $template,
             array(
                 'debug' => \App::DEBUG,
+                'collections' => $calldisplayHelper->collections,
                 'title' => 'Aufrufanzeige',
-                'calldisplay' => $calldisplay
+                'calldisplay' => $calldisplay,
             )
         );
     }

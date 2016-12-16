@@ -1,0 +1,12 @@
+{% block estimatedWaitingTime %}
+{% if calldisplay.scopes|length == 1 or calldisplay.clusters|length == 1 %}
+    <div class="wartezeit_aktuell">
+    	<div class="wartezeit_text">{% trans "Aktuelle Wartezeit" %}:</div>
+        <div id="wartezeit">
+        {% trans "keine" %}
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
