@@ -101,4 +101,16 @@ class QueueList extends Base
         }
         return null;
     }
+
+    public function withStatus()
+    {
+        $queueList = new self();
+        $statusList = func_get_args();
+        foreach ($this as $entity) {
+            if ($entity->toProperty()->status->isAvailable() && in_array($entity->status, $statusList)) {
+                $queueList->addEntity(clone $entity);
+            }
+        }
+        return $queueList;
+    }
 }

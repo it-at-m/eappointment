@@ -20,6 +20,12 @@ class Base extends \ArrayObject
         return $item;
     }
 
+    public function getLast()
+    {
+        $item = end($this);
+        return $item;
+    }
+
     public function sortByName()
     {
         $this->uasort(function ($a, $b) {

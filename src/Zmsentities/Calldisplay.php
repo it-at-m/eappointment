@@ -49,7 +49,9 @@ class Calldisplay extends Schema\Entity
             if ($this->scopes instanceof Collection\ScopeList) {
                 $scopeList = $this->scopes;
             } else {
-                $scopeList = new Collection\ScopeList($this->scopes);
+                foreach ($this->scopes as $scope) {
+                    $scopeList->addEntity(new Scope($scope));
+                }
             }
         }
         return $scopeList;
@@ -62,7 +64,9 @@ class Calldisplay extends Schema\Entity
             if ($this->clusters instanceof Collection\ClusterList) {
                 $clusterList = $this->clusters;
             } else {
-                $clusterList = new Collection\ClusterList($this->clusters);
+                foreach ($this->clusters as $cluster) {
+                    $clusterList->addEntity(new Cluster($cluster));
+                }
             }
         }
         return $clusterList;
@@ -70,6 +74,7 @@ class Calldisplay extends Schema\Entity
 
     public function getImageName()
     {
+        $name = '';
         if (1 == $this->getScopeList()->count()) {
             $name = "s_" . $this->getScopeList()->getFirst()->id . "_bild.jpg";
         } elseif (1 == $this->getClusterList()->count()) {
