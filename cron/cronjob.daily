@@ -2,4 +2,7 @@
 DIR=$(dirname ${BASH_SOURCE[0]})
 BIN=$DIR/../vendor/bin
 EXPORT=$DIR/../data/
+set -a
+[ -e /etc/sysconfig/zms ] && source /etc/sysconfig/zms
+set +a
 
