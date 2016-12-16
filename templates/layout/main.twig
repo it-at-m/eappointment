@@ -7,7 +7,7 @@
     {% block head %}
     	{{ parent() }}
     {% endblock %}
-    <body class="locale_{{ currentLang() }}" id="{% block pageid %}{% endblock %}" type="{% block pagetype %}{% endblock %}">
+    <body class="locale_{{ currentLang() }}{% block customizedClass %}{% endblock %}" id="{% block pageid %}{% endblock %}" type="{% block pagetype %}{% endblock %}">
             {% block devhint %}
             	{{ parent() }}
             {% endblock %}
@@ -20,12 +20,15 @@
                 </div>
             </div>
             <div id="musicdiv"></div>
-
-            <script type="text/javascript" src="{{ includeUrl() }}/_js/index.js"></script>
+			<script type="text/javascript" src="{{ includeUrl() }}/_js/index.js"></script>
             <script type="text/javascript">window.bo.zmscalldisplay.includepath="{{ includeUrl() }}"</script>
+            {% for key, item in collections %}
+            <script type="text/javascript">window.bo.zmscalldisplay.collections.{{ key }}="{{ item }}"</script>
+            {% endfor %}
             {% if zmscalldisplay.reload %}
             <script type="text/javascript">window.bo.zmscalldisplay.reloadInterval={{ zmscalldisplay.reload }}</script>
             {% endif %}
+            {% block tableLayoutSettings %}{% endblock %}
             {% if debug %}
             <div class="debug noprint">
             <!-- httplog -->{{ dumpHttpLog() }}

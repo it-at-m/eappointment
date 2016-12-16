@@ -1,0 +1,21 @@
+<td class="rechterRand wartenummer">
+	{% if queue.status == "called" %}
+		<div class="aufrufanzeigeneuenummer neuerBuerger" id="neuerBuerger">
+	{% elseif queue.status == "missed" %}
+		<div class="aufrufanzeigeneuenummer neuerBuerger" id="keinneuerBuerger">
+	{% else %}
+		<div class="aufrufanzeigenummer">
+	{% endif %}
+        {% if queue.withAppointment %}
+			<span class="terminkundenanzeige">Terminkunde</span><br>
+			{% if queue.number|length == 7 %}
+				{% set addClass = " smallerFont7Chars" %}
+			{% elseif queue.number|length == 8 %}
+				{% set addClass = " smallerFont8Chars" %}
+			{% endif %}
+			<span class="terminkundennummer{{ addClass }}">{{ queue.number }}</span>
+		{% else %}
+		    {{ queue.number }}
+		{% endif %}
+	</div>
+</td>

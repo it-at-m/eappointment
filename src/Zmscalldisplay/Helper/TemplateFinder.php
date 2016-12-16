@@ -10,7 +10,7 @@ namespace BO\Zmscalldisplay\Helper;
 
 class TemplateFinder
 {
-    const DEFAULT_TEMPLATE = '/page/default.twig';
+    const DEFAULT_TEMPLATE = '/page/calldisplay.twig';
 
     const SUBPATH = '/page/customized';
 
@@ -51,26 +51,14 @@ class TemplateFinder
         return ($template) ? $template : self::DEFAULT_TEMPLATE;
     }
 
-    public static function getButtonTemplateType($ticketprinter)
-    {
-        if (1 == count($ticketprinter->buttons)) {
-            $buttonDisplay = 'button_single';
-        } elseif (2 == count($ticketprinter->buttons)) {
-            $buttonDisplay = 'button_multi_deep';
-        } else {
-            $buttonDisplay = 'button_multi';
-        }
-        return $buttonDisplay;
-    }
-
     protected static function getExistingTemplate(\BO\Zmsentities\Schema\Entity $entity)
     {
         if ($entity->hasId() &&
             file_exists(
-                self::getTemplatePath(). '/buttonDisplay_'. $entity->getEntityName() .'_'. $entity->id .'.twig'
+                self::getTemplatePath(). '/calldisplay_'. $entity->getEntityName() .'_'. $entity->id .'.twig'
             )
         ) {
-            return self::SUBPATH .'/buttonDisplay_'. $entity->getEntityName() .'_'. $entity->id .'.twig';
+            return self::SUBPATH .'/calldisplay_'. $entity->getEntityName() .'_'. $entity->id .'.twig';
         }
         return null;
     }

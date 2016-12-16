@@ -1,0 +1,26 @@
+{% block multiColumn %}
+<div class="aufrufanzeige_anzeigebereich_einzeilig aber_zweispaltig columns-{{ tableSettings.multiColumns }}">
+<table>
+    <tbody>
+        <tr>
+        	{% for batchQueue in queueList|batch((queueList|length / tableSettings.multiColumns)) %}
+           	<td style="vertical-align:top;" class="{% if not loop.first %}puffer{% endif %}">
+                <table class="aufrufanzeige_aufruf zweispaltig" >
+                    {% include "element/queueTable/head.twig" with {"leftHead": tableSettings.head.left, "rightHead": tableSettings.head.right} %}
+                    <tbody>
+                        {% for queue in batchQueue %}
+                        	{% if loop.index <= tableSettings.maxResults / tableSettings.multiColumns %}
+                        	<tr>
+                        		{% include "element/queueTable/leftCol.twig" %}
+                				{% include "element/queueTable/rightCol.twig" %}
+                        	</tr>
+                        	{% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </td>
+            {% endfor %}
+         </tr>
+     </tbody>
+</div>
+{% endblock %}

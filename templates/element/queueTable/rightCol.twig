@@ -1,0 +1,13 @@
+<td class="platznummer">
+	{% if queue.status == "called" %}
+	    <div class="aufrufanzeigeneuenummer">
+	{% else %}
+	     <div class="aufrufanzeigeplatz">
+	{% endif %}
+		{% if queue.destination %}
+		{{ queue.destination }}
+		{% else %}
+        <span class="abholeranzeige">{{ queue.destination }} {% if queue.destinationHint %}{{ queue.destinationHint }}{% endif %}</span>
+		{% endif %}
+	</div>
+</td>

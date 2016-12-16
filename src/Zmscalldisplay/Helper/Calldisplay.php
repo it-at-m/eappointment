@@ -14,10 +14,13 @@ class Calldisplay
 {
     public $entity;
 
+    public $collections = '';
+
     public function __construct($request)
     {
         $this->entity = static::createInstance($request);
         $this->entity = \App::$http->readPostResult('/calldisplay/', $this->entity)->getEntity();
+        $this->collections = static::getCollections($request);
     }
 
     public function getEntity()
@@ -27,12 +30,16 @@ class Calldisplay
 
     protected static function createInstance($request)
     {
-        $validator = $request->getAttribute('validator');
-        $input = $validator->getParameter('calldisplay')->isArray()->getValue();
         $calldisplay = new Entity();
         if ($calldisplay instanceof \BO\Zmsentities\Schema\Entity) {
-            $calldisplay->withResolvedCollections($input);
+            $calldisplay->withResolvedCollections(static::getCollections($request));
         }
         return $calldisplay;
+    }
+
+    protected static function getCollections($request)
+    {
+        $validator = $request->getAttribute('validator');
+        return $validator->getParameter('collections')->isArray()->getValue();
     }
 }
