@@ -153,7 +153,9 @@ class SendQueue
         $preferences = (new \BO\Zmsentities\Config())->getNotificationPreferences();
         $sender = $message->getIdentification();
         $mailer = new PHPMailer(true);
-        $mailer->Subject = trim($message->getMessage());
+        $mailer->Encoding = 'base64';
+        // Without base64, encoding leads to additional spaces
+        $mailer->Subject = "=?UTF-8?B?".$mailer->base64EncodeWrapMB(trim($message->getMessage()))."?=";
         $mailer->Body = '';
         $mailer->AllowEmpty = true;
         $telephone = preg_replace('[^0-9]', '', $message->client['telephone']);
