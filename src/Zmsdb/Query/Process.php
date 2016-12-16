@@ -186,7 +186,9 @@ class Process extends Base implements MappingInterface
         $data['IPAdresse'] = $process['createIP'];
         $data['vorlaeufigeBuchung'] = ($process['status'] == 'reserved') ? 1 : 0;
         $data['Erinnerungszeitpunkt'] = $process->getReminderTimestamp();
-        $data['aufrufzeit'] = (new \DateTime())->setTimestamp($process->queue['callTime'])->format('H:i:s');
+        if ($process->queue['callTime']) {
+            $data['aufrufzeit'] = (new \DateTime())->setTimestamp($process->queue['callTime'])->format('H:i:s');
+        }
         $data = array_filter(
             $data,
             function ($value) {
@@ -198,7 +200,7 @@ class Process extends Base implements MappingInterface
 
     public function postProcess($data)
     {
-        $data["appointments__0__date"] = (new \DateTime($data["appointments__0__date"]))->getTimestamp();
+        $data["appointments__0__date"] = strtotime($data["appointments__0__date"]);
         if ('00:00:00' != $data["queue__callTime"]) {
             $time = explode(':', $data["queue__callTime"]);
             $data["queue__callTime"] = (new \DateTime())
@@ -208,7 +210,7 @@ class Process extends Base implements MappingInterface
         } else {
             $data["queue__callTime"] = 0;
         }
-        $data["queue__arrivalTime"] = (new \DateTime($data["queue__arrivalTime"]))->getTimestamp();
+        $data["queue__arrivalTime"] = strtotime($data["queue__arrivalTime"]);
         return $data;
     }
 

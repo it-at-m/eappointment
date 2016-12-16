@@ -69,6 +69,24 @@ class ProcessTest extends Base
         $this->assertEquals(151, $process->getScopeId());
 
         $process = $query->updateProcessStatus($process, 'confirmed');
+        $this->assertEquals('confirmed', $process->getStatus());
+    }
+
+    public function testProcessStatusCalled()
+    {
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $query = new Query();
+        $input = $this->getTestProcessEntity();
+        $input->queue['callTime'] = 1464350400;
+        $process = $query->writeEntityReserved($input, $now);
+        $process->amendment = 'Test amendment';
+        $process = $query->updateEntity($process);
+
+        $this->assertEntity("\\BO\\Zmsentities\\Process", $process);
+        $this->assertEquals('Test amendment', $process->amendment);
+        $this->assertEquals(151, $process->getScopeId());
+
+        $process = $query->updateProcessStatus($process, 'confirmed');
         $this->assertEquals('called', $process->getStatus());
     }
 
@@ -303,7 +321,7 @@ class ProcessTest extends Base
             "queue"=>[
                 "arrivalTime" =>"1464339600",
                 "callCount" =>"0",
-                "callTime" => "1464350400",
+                "callTime" => "0",
                 "number" =>"0",
                 "waitingTime" => 60,
                 "reminderTimestamp" =>"0"
