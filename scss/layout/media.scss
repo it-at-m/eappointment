@@ -1,4 +1,29 @@
 /* ----------------------------------------------
+    Infospalte verstecken
+---------------------------------------------- */
+body.noInfoColumn{
+    background: url(img/background_anzeige1_behoerde_80.png) top left no-repeat #C8D5E6  !important;
+}
+@media screen and (max-width:900px) { /* 768 * 1366 */
+    body.noInfoColumn{
+        background: url(img/background_anzeige1_hoch_behoerde_80.png) top left no-repeat #C8D5E6  !important;
+    }
+}
+@media screen and (min-width:900px) and (max-width:1180px) { /* 1080 * 1920 */
+    body.noInfoColumn{
+        background: url(img/background_anzeige1_hoch_1920_behoerde_80.png) top left no-repeat #C8D5E6  !important;
+    }
+}
+@media screen and (min-width:1820px) { /* 1920 * 1080 */
+    body.noInfoColumn{
+        background: url(img/background_anzeige1_1920_behoerde_80.png) top left no-repeat #C8D5E6 !important;
+    }
+}
+body.noInfoColumn .aufrufanzeige table.aufrufanzeige_aufruf {
+    table-layout: auto !important;
+}
+
+/* ----------------------------------------------
     Spezial-Groessen
 ---------------------------------------------- */
 @media screen and (max-width:900px) { /* 768 * 1366 */
@@ -42,7 +67,14 @@
     .aufrufanzeige .wartende_aktuell {
         font-size:20px;
         left:15px;
-        top:501px;
+        top:540px;
+        width:275px;
+    }
+    
+    .aufrufanzeige .wartezeit_aktuell {
+        font-size:20px;
+        left:15px;
+        top:450px;
         width:275px;
     }
 }
@@ -53,7 +85,7 @@
         background: url(img/background_anzeige1_hoch_1920.png) top left no-repeat #C8D5E6;
         height:1920px;
     }
-    .aufrufanzeige .adressangabe {
+    #main-header .adressangabe {
         font-size:3em;
         left:54px;
         top:22px;
@@ -103,7 +135,14 @@
     .aufrufanzeige .wartende_aktuell {
         font-size:26px;
         left:15px;
-        top:705px;
+        top:715px;
+        width:350px;
+    }
+    
+    .aufrufanzeige .wartezeit_aktuell {
+        font-size:26px;
+        left:15px;
+        top:625px;
         width:350px;
     }
 }
@@ -115,7 +154,7 @@
         height:1080px;
         overflow: hidden;
     }
-    .aufrufanzeige .adressangabe {
+    #main-header .adressangabe {
         font-size:3em;
         left:54px;
         top:22px;
@@ -169,7 +208,13 @@
     .aufrufanzeige_text img {height:244px;}
     .aufrufanzeige .wartende_aktuell {
         font-size:32px;
-        top:723px;
+        top:730px;
+        width:400px;
+    }
+    
+    .aufrufanzeige .wartezeit_aktuell {
+        font-size:32px;
+        top:630px;
         width:400px;
     }
 

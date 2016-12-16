@@ -17,7 +17,7 @@
 /* ----------------------------------------------
     Adresse
 ---------------------------------------------- */
-.aufrufanzeige .adressangabe
+#main-header .adressangabe
 {
     color:#fff;
     font-size:2.2em;
@@ -27,7 +27,7 @@
     position: absolute;
     top:14px;
 }
-.aufrufanzeige .adressangabe .adressangabe_adresse
+#main-header .adressangabe .adressangabe_adresse
 {
     display:none;
 }
@@ -40,18 +40,50 @@
     font-size:2.4em;
     font-family: Arial, sans-serif;
     font-weight:bold;
-    left:44px;
+    left:40px;
     position: absolute;
     text-align:center;
-    top:539px;
+    top:560px;
     width:275px;
+}
+.aufrufanzeige .wartende_text {
+	background:#ffffff;
+	padding:5px 0px;
 }
 .aufrufanzeige .wartende_aktuell #wartende
 {
     font-size:52px;
     font-family: Arial, sans-serif;
     font-weight:bold;
-    margin-top:5px;
+    margin-top:3px;
+    background:#E0E9F2;
+}
+
+/* ----------------------------------------------
+    Wartezeit
+---------------------------------------------- */
+.aufrufanzeige .wartezeit_aktuell
+{
+    font-size:2.4em;
+    font-family: Arial, sans-serif;
+    font-weight:bold;
+    left:40px;
+    position: absolute;
+    text-align:center;
+    top:470px;
+    width:275px;  
+}
+.aufrufanzeige .wartezeit_text {
+	background:#ffffff;
+	padding:5px 0px;
+}
+.aufrufanzeige .wartezeit_aktuell #wartezeit
+{
+    font-size:35px;
+    font-family: Arial, sans-serif;
+    font-weight:bold;
+    margin-top:3px;
+    background:#E0E9F2;
 }
 
 /* ----------------------------------------------
@@ -60,10 +92,9 @@
 .aufrufanzeige .uhr
 {
     position: absolute;
-    left:40px;
+    left:60px;
     top:114px;
     width:275px;
-    height:240px;
   }
 .aufrufanzeige .uhr #clock_medium,
 .aufrufanzeige .uhr #clock_big {
@@ -79,7 +110,7 @@
     text-align:center;
     font-size:24px;
     left:40px;
-    top:410px;
+    top:370px;
     width:275px;
 }
 
