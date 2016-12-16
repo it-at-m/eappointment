@@ -54,6 +54,18 @@
             "type": "boolean",
             "description": "true if corresponding process has an appointment",
             "default": false
+        },
+        "status": {
+            "type": "string",
+            "enum": [               
+                "queued",
+                "called",
+                "processing",
+                "pending",
+                "finished",
+                "missed"
+            ],
+            "description": "Status of the process. The following values are possible:\n  * queued: confirmed and in waiting queue\n  * called: show on call displays\n  * processing: client appeared and gets service\n  * pending: client has to return for getting papers\n  * finished: successfully processed\n  * missed: no client appeared\n"
         }
     }
 }

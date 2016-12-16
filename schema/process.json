@@ -29,7 +29,8 @@
             "callTime": 1447922938000,
             "number": "123",
             "waitingTime": 2,
-            "withAppointment": 1
+            "withAppointment": 1,
+            "status": "queued"
         },
         "reminderTimestamp": 1447931730000,
         "requests": [
