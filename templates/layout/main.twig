@@ -19,6 +19,9 @@
                 {% block content %}{% endblock %}
                 </div>
             </div>
+
+            {% include("element/ring.twig") %} 
+            
 			<script type="text/javascript" src="{{ includeUrl() }}/_js/index.js"></script>
             <script type="text/javascript">window.bo.zmscalldisplay.includepath="{{ includeUrl() }}"</script>
             {% for key, item in collections %}
@@ -31,8 +34,7 @@
             {% if debug %}
             <div class="debug noprint">
             <!-- httplog -->{{ dumpHttpLog() }}
-            </div>
-            {% include("element/ring.twig") %}
+            </div>            
         {% endif %}
     </body>
 </html>

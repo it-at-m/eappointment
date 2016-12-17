@@ -10,6 +10,9 @@ export default {
     },
     'collections': {
     },
+    'queue': {
+    	'calledIds' : ''
+    },
     'reloadInterval': 5,
     'animationEnd': 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend'
 };

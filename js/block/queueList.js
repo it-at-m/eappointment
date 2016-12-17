@@ -1,29 +1,31 @@
 
 import BaseView from '../lib/baseview';
 import $ from "jquery";
+import RingAudio from "../block/ringAudio";
 
 class View extends BaseView {
 
     constructor (element) {	
         super(element);  
         this.bindPublicMethods('initRequest', 'setInterval');
-        console.log("Found queueList container");
-        this.$.ready(this.initRequest);
+        console.log('Found queueList container');
+        this.$.ready(this.initRequest);        
         $.ajaxSetup({ cache: false });
     }    
     
     initRequest () {
 	$.post( this.getUrl('/queue/'), window.bo.zmscalldisplay)
 		.done(data => {
-        	    $( "#queueImport" ).html( data );        	    
+        	    $( '#queueImport' ).html( data );        	    
         	    this.setWaitingClients(data);
-        	    this.setWaitingTime(data);
+        	    this.setWaitingTime(data);        	    
         	    this.setInterval();
-	});
-	
-	this.startRingAudio();
-	this.stopRingAudio();
-    }   
+        	    var audioCheck = new RingAudio();
+        	    audioCheck.initSoundCheck();
+		});
+    }
+    
+    
     
     setInterval () {
     	var reloadTime = window.bo.zmscalldisplay.reloadInterval;  
@@ -46,28 +48,14 @@ class View extends BaseView {
     
     setWaitingTime (data)
     {
-	var waitingTime = $(data).filter("div#waitingTime").text();
-	if (0 < waitingTime) {
-	    if (120 < waitingTime) {
-		$("#wartezeit").html(Math.floor(waitingTime/60) + " Stunden");
-	    } else {
-		$("#wartezeit").html(waitingTime + " Minuten");
-	    }
-	    
-	}
-    }
-    
-    startRingAudio()
-    {
-	$( "#ring" ).trigger('play');
-    }
-    
-    stopRingAudio(){
-	setTimeout(function(){
-	    $("#ring").trigger('pause');
-	    //set play time to 0
-	    $("#ring").prop("currentTime",0);
-	},4000);	  
+		var waitingTime = $(data).filter("div#waitingTime").text();
+		if (0 < waitingTime) {
+		    if (120 < waitingTime) {
+		    	$("#wartezeit").html(Math.floor(waitingTime/60) + " Stunden");
+		    } else {
+		    	$("#wartezeit").html(waitingTime + " Minuten");
+		    }	    
+		}
     }
 }
 
