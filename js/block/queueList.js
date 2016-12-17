@@ -60,9 +60,7 @@ class View extends BaseView {
     setColorForNewCall()
     {
     	let isNewTime = window.bo.zmscalldisplay.serverTime;    	
-    	console.log(isNewTime);
     	$( '#queueImport td.wartenummer[data-callTime]').each(function() {
-    		console.log(parseInt($(this).attr('data-callTime')));
     		if (parseInt($(this).attr('data-callTime')) + window.bo.zmscalldisplay.queue.timeUntilOld > isNewTime) {    			
     			$("div.aufrufanzeigenummer", this).addClass('newprocess');
     		}
