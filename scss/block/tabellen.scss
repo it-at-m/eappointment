@@ -68,15 +68,11 @@ div.aufrufanzeige_anzeigebereich_zweizeilig
 }
 
 
-.aufrufanzeige table.aufrufanzeige_aufruf td div.aufrufanzeigeneuenummer
+.aufrufanzeige table.aufrufanzeige_aufruf td div.newprocess
 {
-    color: #D60C22;
+    color: #D60C22 !important;
     font-size: 70px;
     line-height:0;
-}
-.aufrufanzeige table.aufrufanzeige_aufruf td div.aufrufanzeigeneuenummer.blink
-{
-/*    color:#000;*/
 }
 
 span.terminkundenanzeige

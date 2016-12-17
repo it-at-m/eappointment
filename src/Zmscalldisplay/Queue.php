@@ -32,7 +32,8 @@ class Queue extends BaseController
             'block/queue/queueTable.twig',
             array(
                 'tableSettings' => $validator->getParameter('tableLayout')->isArray()->getValue(),
-                'queueList' => $queueList->withStatus('called', 'processing'),
+                'calldisplay' => $calldisplay,
+                'queueList' => $queueList->withStatus('called'),
                 'waitingClients' => $queueList->count(),
                 'waitingTime' => $queueList->getLast()->waitingTimeEstimate
             )

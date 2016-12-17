@@ -16,16 +16,15 @@ class View extends BaseView {
     initRequest () {
 	$.post( this.getUrl('/queue/'), window.bo.zmscalldisplay)
 		.done(data => {
-        	    $( '#queueImport' ).html( data );        	    
+        	    $( '#queueImport' ).html( data );    
+        	    this.setColorForNewCall();
         	    this.setWaitingClients(data);
         	    this.setWaitingTime(data);        	    
         	    this.setInterval();
         	    var audioCheck = new RingAudio();
         	    audioCheck.initSoundCheck();
 		});
-    }
-    
-    
+    }    
     
     setInterval () {
     	var reloadTime = window.bo.zmscalldisplay.reloadInterval;  
@@ -56,6 +55,18 @@ class View extends BaseView {
 		    	$("#wartezeit").html(waitingTime + " Minuten");
 		    }	    
 		}
+    }
+    
+    setColorForNewCall()
+    {
+    	let isNewTime = window.bo.zmscalldisplay.serverTime;    	
+    	console.log(isNewTime);
+    	$( '#queueImport td.wartenummer[data-callTime]').each(function() {
+    		console.log(parseInt($(this).attr('data-callTime')));
+    		if (parseInt($(this).attr('data-callTime')) + window.bo.zmscalldisplay.queue.timeUntilOld > isNewTime) {    			
+    			$("div.aufrufanzeigenummer", this).addClass('newprocess');
+    		}
+    	});
     }
 }
 
