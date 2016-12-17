@@ -1,5 +1,4 @@
 {% block queueTable %}
-
 {% if queueList|length <= 5 or tableSettings.maxResults <= 5 or tableSettings.multiColumns == 1 %}
 {% include "block/queue/table/oneColumn.twig" with {"settings": tableSettings} %}
 {% else %}
@@ -8,4 +7,6 @@
 
 {% include "element/queueTable/tempWaitingValues.twig" %}
 
+{# Give ServerTime (\App::$now) from calldisplay to queue call - important for testing #}
+<script type="text/javascript">window.bo.zmscalldisplay.serverTime={{ calldisplay.serverTime }}</script>
 {% endblock %}

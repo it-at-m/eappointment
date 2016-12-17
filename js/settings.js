@@ -11,7 +11,8 @@ export default {
     'collections': {
     },
     'queue': {
-    	'calledIds' : ''
+    	'calledIds' : '',
+    	'timeUntilOld': 60
     },
     'reloadInterval': 5,
     'animationEnd': 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend'
