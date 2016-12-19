@@ -12,7 +12,8 @@ export default {
     },
     'queue': {
     	'calledIds' : '',
-    	'timeUntilOld': 60
+    	'timeUntilOld': 60,
+    	'status': 'called'
     },
     'reloadInterval': 5,
     'animationEnd': 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend'

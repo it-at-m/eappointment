@@ -31,6 +31,7 @@ class Index extends BaseController
             $template,
             array(
                 'debug' => \App::DEBUG,
+                'queueStatusRequested' => $calldisplayHelper::getRequestedQueueStatus($request),
                 'collections' => $calldisplayHelper->collections,
                 'title' => 'Aufrufanzeige',
                 'calldisplay' => $calldisplay,

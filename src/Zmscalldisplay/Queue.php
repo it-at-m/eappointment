@@ -24,16 +24,16 @@ class Queue extends BaseController
     ) {
         $validator = $request->getAttribute('validator');
 
-        $calldisplay = (new Helper\Calldisplay($request))->getEntity();
-        $queueList = \App::$http->readPostResult('/calldisplay/queue/', $calldisplay)->getCollection();
+        $calldisplay = new Helper\Calldisplay($request);
+        $queueList = \App::$http->readPostResult('/calldisplay/queue/', $calldisplay->getEntity())->getCollection();
 
         return \BO\Slim\Render::withHtml(
             $response,
             'block/queue/queueTable.twig',
             array(
                 'tableSettings' => $validator->getParameter('tableLayout')->isArray()->getValue(),
-                'calldisplay' => $calldisplay,
-                'queueList' => $queueList->withStatus('called'),
+                'calldisplay' => $calldisplay->getEntity(),
+                'queueList' => $queueList->withStatus($calldisplay::getRequestedQueueStatus($request)),
                 'waitingClients' => $queueList->count(),
                 'waitingTime' => $queueList->getLast()->waitingTimeEstimate
             )

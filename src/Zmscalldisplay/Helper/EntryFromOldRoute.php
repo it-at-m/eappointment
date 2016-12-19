@@ -12,6 +12,10 @@ use BO\Mellon\Validator;
 
 class EntryFromOldRoute
 {
+    protected static $allowedStatus = array(
+        'nurabholer' => 'pending'
+    );
+
     protected static function getScopes($request)
     {
         $scopes = [ ];
@@ -48,10 +52,20 @@ class EntryFromOldRoute
         return (0 < count($clusters)) ? implode(',', $clusters) : null;
     }
 
+    protected static function getStatus($request)
+    {
+        $validator = $request->getAttribute('validator');
+        $status = $validator->getParameter('nurabholer')
+            ->isNumber()
+            ->getValue();
+        return ($status) ? self::$allowedStatus['nurabholer'] : null;
+    }
+
     public static function getFromOldRoute($request)
     {
         $collections['collections']['scopelist'] = self::getScopes($request);
         $collections['collections']['clusterlist'] = self::getClusters($request);
+        $collections['queue']['status'] = self::getStatus($request);
         return $collections;
     }
 }
