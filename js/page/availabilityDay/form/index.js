@@ -130,7 +130,7 @@ const renderBody = (data, errors, onChange, onSave, onDelete) => {
                 </fieldset>
 
                 <fieldset>
-                    <legend>Terminarbeitsplätze</legend>
+                    <legend>{data.type === "appointment" ? "Terminarbeitsplätze" : "Arbeitsplätze"}</legend>
                     <FormGroup>
                         <Label>Insgesamt</Label>
                         <Controls>
