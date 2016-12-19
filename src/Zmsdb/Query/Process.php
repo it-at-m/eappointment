@@ -104,6 +104,8 @@ class Process extends Base implements MappingInterface
                 )'
             ),
             'queue__destination' => 'processuser.Arbeitsplatznr',
+            'queue__destinationShortName' => 'processscope.standortkuerzel',
+            'queue__destinationShortNameEnabled' => 'clusterscope.standortkuerzelanzeigen',
             'queue__destinationHint' => 'processuser.aufrufzusatz',
             'queue__waitingTime' => 'process.wartezeit',
             'queue__withAppointment' => self::expression(
@@ -236,5 +238,23 @@ class Process extends Base implements MappingInterface
             '=',
             'processuser.StandortID'
         );
+        $this->query->leftJoin(
+            new Alias(Scope::TABLE, 'processscope'),
+            'process.StandortID',
+            '=',
+            'processscope.StandortID'
+        );
+        $this->query->leftJoin(
+            new Alias('clusterzuordnung', 'clusterassignedscope'),
+            'process.StandortID',
+            '=',
+            'clusterassignedscope.standortID'
+        );
+        $this->query->leftJoin(
+            new Alias(Cluster::TABLE, 'clusterscope'),
+            'clusterscope.clusterID',
+            '=',
+            'clusterassignedscope.clusterID'
+            );
     }
 }
