@@ -33,6 +33,9 @@ class Config extends Schema\Entity
             ],
             'ticketprinter' => [
                 'baseUrl' => '/terminvereinbarung/ticketprinter/'
+            ],
+            'calldisplay' => [
+                'baseUrl' => '/terminvereinbarung/calldisplay/'
             ]
         ];
     }
