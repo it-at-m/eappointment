@@ -35,6 +35,12 @@ class Availability extends Base
         if (count($result)) {
             foreach ($result as $entity) {
                 if ($entity instanceof Entity) {
+                    error_log($resolveReferences);
+                    if (1 <= $resolveReferences) {
+                        $entity['scope'] = (new Scope())
+                            ->readEntity($entity['scope']['id'], $resolveReferences)
+                            ->withLessData();
+                    }
                     $collection->addEntity($entity);
                 }
             }
