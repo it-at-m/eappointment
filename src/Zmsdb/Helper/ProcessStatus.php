@@ -202,6 +202,7 @@ class ProcessStatus extends \BO\Zmsdb\Process
             && $process['vorlaeufigeBuchung'] == 0
             && $process['StandortID'] != 0
             && $process['Abholer'] != 0
+            && $process['AbholortID'] != 0
             && empty($process['istFolgeterminvon'])
         );
     }
