@@ -64,6 +64,12 @@ class Db
         self::startExecuteSqlFile($fixtures . '/mysql_zmsbo.sql');
     }
 
+    public static function startConfigDataImport()
+    {
+        $defaults = new \BO\Zmsentities\Config();
+        (new \BO\Zmsdb\Config())->updateEntity($defaults);
+    }
+
     public static function startMigrations($migrationList, $commit = true)
     {
         if (!is_array($migrationList)) {
