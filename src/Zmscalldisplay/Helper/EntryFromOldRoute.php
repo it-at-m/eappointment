@@ -6,7 +6,7 @@
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
-namespace BO\Zmsticketprinter\Helper;
+namespace BO\Zmscalldisplay\Helper;
 
 use BO\Mellon\Validator;
 
@@ -23,7 +23,7 @@ class EntryFromOldRoute
             foreach ($scopeData as $scope) {
                 $scope = Validator::value($scope)->isNumber();
                 if (! $scope->hasFailed()) {
-                    $scopes[] = 's'. $scope->getValue();
+                    $scopes[] = $scope->getValue();
                 }
             }
         }
@@ -41,19 +41,17 @@ class EntryFromOldRoute
             foreach ($clusterData as $cluster) {
                 $cluster = Validator::value($cluster)->isNumber();
                 if (! $cluster->hasFailed()) {
-                    $clusters[] = 'c'. $cluster->getValue();
+                    $clusters[] = $cluster->getValue();
                 }
             }
         }
         return (0 < count($clusters)) ? implode(',', $clusters) : null;
     }
 
-    public static function getFromOldMehrfachKiosk($request)
+    public static function getFromOldRoute($request)
     {
-        $buttonList = '';
-        $scopes = self::getScopes($request);
-        $clusters = self::getClusters($request);
-        $buttonList = implode(',', array_filter(array($scopes, $clusters)));
-        return $buttonList;
+        $collections['collections']['scopelist'] = self::getScopes($request);
+        $collections['collections']['clusterlist'] = self::getClusters($request);
+        return $collections;
     }
 }
