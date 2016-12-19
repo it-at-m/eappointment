@@ -255,6 +255,6 @@ class Process extends Base implements MappingInterface
             'clusterscope.clusterID',
             '=',
             'clusterassignedscope.clusterID'
-            );
+        );
     }
 }
