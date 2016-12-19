@@ -14,7 +14,7 @@ class ScopeList extends Base
         $scopeList = new self();
         foreach ($this as $scope) {
             if (! $scopeList->hasEntity($scope->id)) {
-                $scopeList->addEntity($scope);
+                $scopeList->addEntity(clone $scope);
             }
         }
         return $scopeList;
