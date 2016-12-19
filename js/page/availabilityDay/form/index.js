@@ -27,7 +27,7 @@ const renderBody = (data, onChange, onSave, onDelete) => {
                     <Label>Typ</Label>
                     <Controls>
                         <Inputs.Select name="type"
-                            attributes={{disabled: data.type ? 'disabled' : null}}
+                            attributes={{disabled: data.id ? 'disabled' : null}}
                             value={data.type}
                             {...{ onChange}}
                             options={[
@@ -211,7 +211,6 @@ const getFirstLevelValues = data => {
 }
 
 const getFormValuesfromData = data => {
-
     const workstations = Object.assign({}, data.workstationCount)
 
     if (workstations.callcenter > workstations.intern) {

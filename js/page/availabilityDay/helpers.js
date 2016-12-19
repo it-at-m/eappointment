@@ -89,6 +89,10 @@ export const getNewAvailability = (timestamp, tempId, scope) => {
             callcenter: 0,
             'public': 0
         },
+        repeat: {
+            afterWeeks: 0,
+            weekOfMonth: 0
+        },
         type: null
     }
 
