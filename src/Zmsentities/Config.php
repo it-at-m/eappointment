@@ -42,6 +42,22 @@ class Config extends Schema\Entity
         return $this->toProperty()->notifications->get();
     }
 
+    public function hasType($type)
+    {
+        if (isset($this[$type])) {
+            return true;
+        }
+        return false;
+    }
+
+    public function hasPreference($type, $key)
+    {
+        if ($this->hasType($type) && isset($this[$type][$key])) {
+            return true;
+        }
+        return false;
+    }
+
     public function getPreference($type, $key)
     {
         return $this->toProperty()->$type->$key->get();
