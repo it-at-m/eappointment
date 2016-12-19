@@ -17,6 +17,7 @@ if (isset($argv[1]) && $argv[1] == '--commit') {
     $migrations = realpath(__DIR__ . '/../migrations/');
     \BO\Zmsdb\Cli\Db::startTestDataImport($fixtures);
     \BO\Zmsdb\Cli\Db::startMigrations($migrations);
+    \BO\Zmsdb\Cli\Db::startConfigDataImport();
 } else {
     echo "Usage: {$argv[0]} --commit\n\tATTENTION! Drops Database and writes Testdata. USE WITH CAUTION!\n\n"
         . "\t!!!!!!!!!!!!!!!!!!!!!!!\n"
