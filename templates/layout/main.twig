@@ -20,8 +20,8 @@
                 </div>
             </div>
 
-            {% include("element/ring.twig") %} 
-            
+            {% include("element/ring.twig") %}
+
 			<script type="text/javascript" src="{{ includeUrl() }}/_js/index.js"></script>
             <script type="text/javascript">window.bo.zmscalldisplay.includepath="{{ includeUrl() }}"</script>
             {% for key, item in collections %}
@@ -29,13 +29,14 @@
             {% endfor %}
             {% if zmscalldisplay.reload %}
             <script type="text/javascript">window.bo.zmscalldisplay.reloadInterval={{ zmscalldisplay.reload }}</script>
-            {% endif %}            
+            {% endif %}
             <script type="text/javascript">window.bo.zmscalldisplay.queue.timeUntilOld=60</script>
+            <script type="text/javascript">window.bo.zmscalldisplay.queue.status="{{ queueStatusRequested }}"</script>
             {% block tableLayoutSettings %}{% endblock %}
             {% if debug %}
             <div class="debug noprint">
             <!-- httplog -->{{ dumpHttpLog() }}
-            </div>            
+            </div>
         {% endif %}
     </body>
 </html>

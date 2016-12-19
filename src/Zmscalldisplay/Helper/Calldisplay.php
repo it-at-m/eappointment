@@ -23,6 +23,14 @@ class Calldisplay
         $this->collections = static::getCollections($request);
     }
 
+    public static function getRequestedQueueStatus($request)
+    {
+        $validator = $request->getAttribute('validator');
+        $queue = $validator->getParameter('queue')->isArray()->getValue();
+        $status = Validator::value($queue['status'])->isString()->getValue();
+        return ($status) ? $status : 'called';
+    }
+
     public function getEntity()
     {
         return $this->entity;
