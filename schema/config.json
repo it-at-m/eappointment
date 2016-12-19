@@ -11,10 +11,10 @@
         "appointments" : {
     		"type" : "object",
     		"properties" : {
-    			"urlChange" : {
+    			"urlAppointments" : {
     				"type": "string"
     			},
-    			"urlAppointments" : {
+    			"urlChange" : {
     				"type": "string"
     			}
     		}
@@ -22,20 +22,28 @@
     	"notifications" : {
     		"type" : "object",
     		"propterties" : {
-    			"kommandoAbsage" : {
-    				"type" : "string",
-    				"description" : ""
-    			},
-    			"kommandoAbfrage" : {
-    				"type" : "string",
-    				"description" : ""
-    			},
-    			"number" : {
-    				"type" : "string",
-    				"description" : "default telephone number for notifications"
-    			},
     			"absage" : {
     				"type" : "boolean",
+    				"description" : ""
+    			},
+    			"benachrichtigungsfrist" : {
+    				"type" : "number",
+    				"description" : ""
+    			},
+    			"confirmationContent" : {
+    				"type" : "string",
+    				"description" : "message for confirmation notification"
+    			},
+    			"costs" : {
+    				"type" : "string",
+    				"description" : "calculated cost of one notification"
+    			},
+    			"eMailkonfigurierbar" : {
+    				"type" : "boolean",
+    				"description" : ""
+    			},
+    			"erinnerungsvorlauf" : {
+    				"type" : "number",
     				"description" : ""
     			},
     			"gateway" : {
@@ -46,29 +54,21 @@
     				"type" : "string",
     				"description" : ""
     			},
-    			"eMailkonfigurierbar" : {
-    				"type" : "boolean",
-    				"description" : ""
-    			},
-    			"benachrichtigungsfrist" : {
-    				"type" : "number",
-    				"description" : ""
-    			},
     			"headsUpContent" : {
     				"type" : "string",
     				"description" : "message for heads-up notification"
     			},
-    			"confirmationContent" : {
+    			"kommandoAbfrage" : {
     				"type" : "string",
-    				"description" : "message for confirmation notification"
-    			},
-    			"costs" : {
-    				"type" : "string",
-    				"description" : "calculated cost of one notification"
-    			},
-    			"erinnerungsvorlauf" : {
-    				"type" : "number",
     				"description" : ""
+    			},
+    			"kommandoAbsage" : {
+    				"type" : "string",
+    				"description" : ""
+    			},
+    			"number" : {
+    				"type" : "string",
+    				"description" : "default telephone number for notifications"
     			}
     		}
     	},
