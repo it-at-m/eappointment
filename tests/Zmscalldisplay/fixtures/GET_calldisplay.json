@@ -1,0 +1,249 @@
+{
+  "$schema": "https://localhost/terminvereinbarung/api/2/",
+  "meta": {
+    "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+    "error": false,
+    "generated": "2016-04-29T11:53:31+02:00",
+    "server": "Zmsapi-unconfigured"
+  },
+  "data": {
+	"$schema": "https:\/\/schema.berlin.de\/queuemanagement\/calldisplay.json",
+	"serverTime": 1459504500,
+	"scopes": [{
+		"id": "141",
+		"hint": "Nr. wird zum Termin aufgerufen",
+		"shortName": "",
+		"contact": {
+			"name": "B\u00fcrgeramt Heerstra\u00dfe",
+			"street": "Heerstr. 12, 14052 Berlin",
+			"email": "",
+			"country": "Germany"
+		},
+		"preferences": {
+			"appointment": {
+				"deallocationDuration": "10",
+				"endInDaysDefault": "60",
+				"multipleSlotsEnabled": "0",
+				"reservationDuration": "20",
+				"startInDaysDefault": "0",
+				"notificationConfirmationEnabled": "1",
+				"notificationHeadsUpEnabled": "1"
+			},
+			"client": {
+				"alternateAppointmentUrl": "",
+				"amendmentActivated": "0",
+				"amendmentLabel": "",
+				"emailRequired": "0",
+				"telephoneActivated": "0",
+				"telephoneRequired": "0"
+			},
+			"notifications": {
+				"confirmationContent": "",
+				"headsUpContent": "Ihre Wartezeit betr\u00e4gt noch ca. 30 Min., bitte informieren Sie sich \u00fcber die Aufrufanzeige im B\u00fcrgeramt, in welchem Raum Sie erwartet werden. Wartenr:",
+				"headsUpTime": "30"
+			},
+			"pickup": {
+				"alternateName": "Ausgabe",
+				"isDefault": "0"
+			},
+			"queue": {
+				"callCountMax": "0",
+				"callDisplayText": "Herzlich Willkommen \r\nin Charlottenburg-Wilmersdorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp:\/\/www.berlin.de\/ba-charlottenburg-wilmersdorf\/org\/buergerdienste\/buergeraemter.html",
+				"firstNumber": "1",
+				"lastNumber": "499",
+				"processingTimeAverage": "15",
+				"publishWaitingTimeEnabled": "1",
+				"statisticsEnabled": "1"
+			},
+			"survey": {
+				"emailContent": "",
+				"enabled": "0",
+				"label": ""
+			},
+			"ticketprinter": {
+				"buttonName": "B\u00fcrgeramt Heerstra\u00dfe",
+				"confirmationEnabled": "0",
+				"deactivatedText": "",
+				"notificationsAmendmentEnabled": "0",
+				"notificationsEnabled": "1",
+				"notificationsDelay": "0"
+			},
+			"workstation": {
+				"emergencyEnabled": "1"
+			}
+		},
+		"status": {
+			"emergency": {
+				"acceptedByWorkstation": "-1",
+				"activated": "0",
+				"calledByWorkstation": "-1"
+			},
+			"queue": {
+				"ghostWorkstationCount": "-1",
+				"givenNumberCount": "46",
+				"lastGivenNumber": "47",
+				"lastGivenNumberTimestamp": 1458774000
+			},
+			"ticketprinter": {
+				"deactivated": "0"
+			}
+		},
+		"provider": {
+			"id": "122217",
+			"$ref": "\/provider\/122217\/"
+		}
+	}],
+	"clusters": [{
+		"id": "110",
+		"name": "B\u00fcrgeramt Hohenzollerndamm",
+		"hint": "",
+		"shortNameEnabled": "1",
+		"callDisplayText": "",
+		"scopes": [{
+			"hint": "Vorgangsnr.aufruf im Warteraum",
+			"id": "140",
+			"shortName": "",
+			"contact": {
+				"name": "B\u00fcrgeramt Hohenzollerndamm",
+				"street": "Hohenzollerndamm 177, 10713 Berlin",
+				"email": "",
+				"country": "Germany"
+			},
+			"preferences": {
+				"appointment": {
+					"deallocationDuration": "10",
+					"endInDaysDefault": "60",
+					"multipleSlotsEnabled": "0",
+					"reservationDuration": "20",
+					"startInDaysDefault": "0",
+					"notificationConfirmationEnabled": "1",
+					"notificationHeadsUpEnabled": "1"
+				},
+				"client": {
+					"alternateAppointmentUrl": "",
+					"amendmentActivated": "0",
+					"amendmentLabel": "",
+					"emailRequired": "0",
+					"telephoneActivated": "0",
+					"telephoneRequired": "0"
+				},
+				"notifications": {
+					"confirmationContent": "",
+					"headsUpContent": "Ihre Wartezeit betr\u00e4gt noch ca. 30 Min., bitte informieren Sie sich \u00fcber die Aufrufanzeige im B\u00fcrgeramt, an welchem Platz Sie erwartet werden. Wartenr",
+					"headsUpTime": "30"
+				},
+				"pickup": {
+					"alternateName": "Ausgabe",
+					"isDefault": "0"
+				},
+				"queue": {
+					"callCountMax": "0",
+					"callDisplayText": "Herzlich Willkommen \r\nin Charlottenburg-Wilmersdorf\r\n=====================\r\nTIP: Termin statt Wartezeit!\r\n=====================\r\nNutzen Sie die Online Terminvergabe unter:\r\nhttp:\/\/www.berlin.de\/ba-charlottenburg-wilmersdorf\/org\/buergerdienste\/buergeraemter.html",
+					"firstNumber": "1",
+					"lastNumber": "499",
+					"processingTimeAverage": "15",
+					"publishWaitingTimeEnabled": "1",
+					"statisticsEnabled": "1"
+				},
+				"survey": {
+					"emailContent": "",
+					"enabled": "0",
+					"label": ""
+				},
+				"ticketprinter": {
+					"buttonName": "B\u00fcrgeramt Hohenzollerndamm",
+					"confirmationEnabled": "0",
+					"deactivatedText": "",
+					"notificationsAmendmentEnabled": "0",
+					"notificationsEnabled": "1",
+					"notificationsDelay": "0"
+				},
+				"workstation": {
+					"emergencyEnabled": "1"
+				}
+			},
+			"status": {
+				"emergency": {
+					"acceptedByWorkstation": "-1",
+					"activated": "0",
+					"calledByWorkstation": "-1"
+				},
+				"queue": {
+					"ghostWorkstationCount": "-1",
+					"givenNumberCount": "15",
+					"lastGivenNumber": "16",
+					"lastGivenNumberTimestamp": 1458774000
+				},
+				"ticketprinter": {
+					"deactivated": "0"
+				}
+			},
+			"provider": {
+				"id": "122219",
+				"contact": {
+					"email": "test@example.com",
+					"city": "Berlin",
+					"country": "Germany",
+					"name": "B\u00fcrgeramt Hohenzollerndamm",
+					"postalCode": "10713",
+					"region": "Berlin",
+					"street": "Hohenzollerndamm",
+					"streetNumber": "177"
+				},
+				"source": "dldb",
+				"link": "https:\/\/service.berlin.de\/standort\/122219\/",
+				"name": "B\u00fcrgeramt Hohenzollerndamm"
+			}
+		}]
+	}],
+	"organisation": {
+		"name": "Charlottenburg-Wilmersdorf",
+		"id": "71",
+		"contact": {
+			"city": "",
+			"street": "",
+			"country": "Germany",
+			"name": "Charlottenburg-Wilmersdorf"
+		},
+		"preferences": {
+			"ticketPrinterProtectionEnabled": "0"
+		},
+		"departments": [{
+			"email": "test@example.com",
+			"id": "74",
+			"name": "B\u00fcrgeramt",
+			"contact": {
+				"city": "Berlin",
+				"street": "Otto-Suhr-Allee 100, 10585 Berlin",
+				"country": "Germany",
+				"name": "Fr. Muster"
+			},
+			"preferences": {
+				"notifications": {
+					"enabled": "1",
+					"identification": "test@example.com",
+					"sendConfirmationEnabled": "1",
+					"sendReminderEnabled": "1"
+				}
+			}
+		}, {
+			"id": "127",
+			"name": "Ordnungsamt",
+			"contact": {
+				"city": "174\/177",
+				"street": "Hohenzollerndamm 174\/177",
+				"country": "Germany",
+				"name": "Herr Muster"
+			}
+		}]
+	},
+	"image": {
+		"name": "baer.png",
+		"data": "iVBORw0KGgoAAAANSUhEUgAAAKoAAACqCAYAAAA9dtSCAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A\/wD\/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9oIBQw7O\/x80WIAACAASURBVHja7Z13fBRV94efme0lvRd6JzQBRUCaoIiCqIAvlteOKIoFe0MFK6KI+toBK6gUC0WkSFMR6b2XhBLSk81uNtvm\/P7YEALSRHzfH2G+H+YDujt378x95txzzi2jiAi6dP1\/l6rfAl06qLp06aDq0kHVpUsHVZcuHVRdOqi6dOmg6tKlg6pLB1WXLh1UXbp0UHXpoOrSpYOqSwdVly4dVF26dFB16aDq0qWDqkuXDqouHVRdunRQdenSQdWlg6pLlw6qLh1UXbp0UHXp0kHVpYOqS5cOajXXrDlLZNW6bfo2iTqo\/5xGvvTO3wLs\/Y+\/kfGjbmbY7Zfx85JVp13W2o07ZfjzY3TYdVD\/rA4Xdpa62mguaNVMJk6e\/ZchuWrA3VKy5iGmjN3Dwnf2Mun1\/gx\/\/q+DP+LFd+Xpuy+hvrxBz1436LACyrm+ke8ddz4g3S+5jNdffo7JT2ylTutiZL+Fpz5JYUNJL6wWhcYN0xjx3JPKsc7\/esp0efLhYcREGnntjjy6dS0AF2AEzCqfTEvl9SkRuMv8\/PLHMtKS445ZzoABN0pSWkPWr1vL9e2WMbhfDkQFmTMzgVdmdee66\/qzZeMaXh89UtFBPcs0Y\/bPkpycSttWjU+r8b79Ya68\/PRdtG4kPDkgn5oNSqEYsABOWLkynp9XOvh0SS02rF10zN\/4Ztoc2TbnNp5+oAA85eACTQMBDEYgArDauPf5dJ4Yu\/S4oMbG1ZHnbjVwVft8ajYsCdcjBMTBvHlxfLM4ioXrFCZNm0mblo1O63oXLFkuJqOBi9q3PutgN57NT9nkSZPI3bkAn5om9TI6kpHRhM5d2vPufz7k3qF30iqj\/gkb5NPPpzHoCh+DBu+HbJAiCAkoXlB90Oa8fNo0LuXdH8zHLePaay5VHp0WEkJhSEOhMKQCEASDCzB5KSoNHBfSRb+ulJR4M\/fdmAlBH5IXrgeAMR96dCygxzUFPPFsTZYtW02blo1O8gDOkcW\/LOPaa6\/h5\/m\/sH3bVnZuXEic3UPXq4ZxUfvW6KD+F3VF3\/60Kp9Kw0a72bR5M18vNPPaDEhLsDN\/XgNaZdQ\/4fnZ+\/dxyQAP5IKUgVYBhwZICIxFQJyfdk2Ehb+ukq4dj22JIhMzIHQQJHzuIWkCBgGCZhJrdTpuPX7\/fRVtGlQ8HaUQqrDIAMEQGNygWKBVHTfz1qwHBp7wuhYuWIijeApvPvkBHZsZeL6Xi1rDSvh+Rjp97xt8VroOZzWo117TUxn9YLI83KaIpo3yeL45YIJgtpUbxq0EBp3w\/FDQQ4yjDILhXraqE6QAIqAoQpwjH007fjmtu9wChvmggiJgUMLAKlJxhwMakYn1jnt+Xn4h6XEBkPBvVq2HHKqHBjGRBnLX55\/0vmxaOYu5H+yEgBauSDB8QUv3d6CvHvX\/b5SnXgxuoAykAMgDY0I5Uf5fTnquwxmNL2gCQxhMBTAaQFVBFFCU8B0qLo\/ix5nzGDzk0SMc+iefekHe\/+hrOVhiJ3t7FMSB0QhlPgNaSEE1AvGwZHkcosby5PDR8u0PP8nhFNQOuePuRyVz1z5EFDCFK6EoYFDDh3roqVGhzBui9XktTnhN23YdkM5NCyGoQQFIIeCH0kwb7S8dpKen\/ldq2a4Xe3bFgCXc1WrBsBnq2eoAK9dtP2ak+NXkH2Tq93Olfr3GfP5zHESHAx+jCXIKjfj9CkYViIbiPU4mznOw9ff38O79hnGfTq4sc92y6Rxc\/ghPPPIojW9LZNGiWIiFOStUcooAh8qELxPpPDSG6d+MRbLeZvp30yrrMfHLr6jNN2Rumsl7MyLwZ1tRnOGHxetTcZerGIygWsKWefKSSOJiY3h97Mfy67I1x7y2efMWcGuPIvBWuBAC2GDpFid9e3dXdFD\/R7r+2iuUSQssYAtbIgHwQfN6RubMWQhAnyuvP6JRZ8\/4gbXTB7F00Tc8\/J6N76YlgFWBSFi1XThQGP73hg3RdH4onRG3ufhhQha3Xerhiy++P1yQIZLnHjpIzvf7eXKgh67D0pgzP5Ud+wP4AsLIcXW4+814Jj5byOqvMxl5YzZTps6pPP2LL77nvj4H+OPLfVzaNsCFD9TAVWiBSPh9k0JWjkA0aCEzz7+ZysTZFn6d\/iQHl4\/k22k\/HHEfrul\/qwBs3rCCtDgv+CsauALNpQd6nNXtXC0S\/rlcDEEVVT3sYPqCMPGz77n+2mtEcS1n9YbD1tUZW4u+7cvYNHUnC8cU8cbUKC4Y3BRXoZP9BRqbMoVQqYnWd9fglp5unrlvH+RqdG3poiB7AwAr120Xu+wETwCknMcGHyB\/6m56tC7mt40GdmUr3HtVPsXf7uC6vrngDmK0adRPU9i2a78ANEgqIDJBg\/IA34zezWVty+n6UCMwmti4RzCbhGmz0zH1bMDSzXb2TD7IpPczaZhejsUaWXn9P879RVIMv3HrLYNk5qzFaChU\/AEzBItM1Gpx9VndxsbqAGrDVpdTlD2NmLhy1PJwVzd1gcqGjTtY8lo2u\/cbeOLRV5g9a1z4og1CtN0LAehyYS6LL8jl12XROExBsnIUJs030KeLxp7P9pDaoBQKKwKSWD\/dWpQBMG3qLO66ogQMFY97COIauZnzg0pKrIGZS1U6tijBmk7Yh9aAqBDXdguwbNlqysp8MqRvOZhDleW\/9OBe7tziIpCrMGG2gVb1hWa1iln0mouL2rvCEV8hJEQJqw+6Kq\/\/gw++ZOKdB9hbMJlPPk1mxrIY+vbMQ\/GH78XilZHccv8ARbeo\/2PdfecNyo8rE8LdvwV2bbAzamoCKz7MJ7qmi\/Pqudm7cxHLVm0SgNzMldSr74VSwBMuo2PPYjbvLMdqMTC0n8Zrnyu4PKVsWW0gO8cQjvoFOjUtBGDn9q00r12OFMHXs8w8PtrEpTeYGD\/TxLv\/CfDEDRqtB1m49WEjL75vYtkaIwShW0s3mzZupdTtpkPTcvCDPwh79xrYvEqhxF3Cm5M1nr5NY8EaIzVi3Vx0qSsMenkY+qs6FhPw7KsIyHaJzfMT9gQ3jVqU8NXzhQweG4+\/0IxiCg9erM1rc9a3cbUZ65+9oW64r4uBiQvieGKgizYdCiAXiAowdoiLt94KW1QnOWAJewJZ2SYm\/WDkX3eZ6Pu0lUevDXL1nSGWbYSbXzYzY6mR3GKVoBa+WyHNAECpuzTsZVigQ7MgA7qEeODaEAnRGit\/MjBzmcr13UPcfrnGlR1DNKoZTo6aDBoFRcUkJycpe3JMYAznSvfkGPhsnpn+z5qIiYR+94bo016j7g0W7nzYzIx5ZvIKDWEn3Kqham4A3nnnI0bfkR+2tgXwr6vyuKytn8VrbRANFFsIRPY869vXWF1ArdeiD+9PysRug5t6ukmJLCR3q5kIuxFbaRk9OhTw8AffAa\/jN8ZVDEGB0x6iTSNoUQ827FF47WsjdRYrdG6pcd\/NFRFJebhrB1ie3Y5\/AXHxSWzZayGhVhk1kjRqpIe72e4tNcb\/qFI7Ocht1wkEwsEdoXCOd9H6SBx2O1FREYxbauWizmC3Qae2fjpdBC8Phlc\/NzFxjIldmfDFkyGSYzVsZrCYK0yLphDQTACYS2aS1rgU8sDjNWPyC58M38fOXTY+nVqLrZkm0tun6qD+f1HR\/j949q49ZO+O4orn6tEgyUav9gpXt3dh08rAotGsngWA2k27U7B\/MXHJbmI1jdjo8J3IaOWnZD9k5ag0P08L5zXdFZBFwfpV0dRq+S8Abvz3AD4aPY1O3YrCVk4DDBAUB9dfolHiVqE0CJG+MOgGoFzhq5\/NfPzNdQBoqbfh2TcaR4w7\/J0AEAuP\/TvAmi0q13bQMMaHc8QEK37DCatXRpFety0AjZNzKx+iAm8MPy2N59e1BjZnCcve3IiIiUdnrOJko1l61\/9fUs7BvWBQKSg1cVtPF1+P3MstvbKIshRXDBNBqGIA\/blnhilD\/5MYnnxiqoDACMECMyHNTPNWGl\/9kMR7n6WTfTAS4hVCJRZuGVOboXfdoABc2q2dstffjo0rY6AmELTx4cQ0Wj3YjpnLLDz4noPuw7vw7ewEsJggHab8lET7S28nKSlRAbjuxhu4ZkQqOExgV9m1y8kbH6SybHMcrc7XyHM5oFQNuzRBwA6UWhnyVhQjhg9VAIxGA6ggGtSMzWHQpRt5e\/BmOmSE8PjMKKqCqqq6Rf3\/okdGfkqHO27mxq653HvlTgiA+MPGTrUAxVasCe0qv3\/JDW8w\/M0HGDE0C2I0Nq2K5V+vNCYQcLPlw\/W8PMnBQ8+MZeBbE0gyr6V+Soi2HS8\/4jdfevlpnnjod24+aOO9H5ty70NP8\/5lTmrsv4T9hSb+9eQkJRgMcc+IB6VPxnyGT7CxcPkDldF3WlqqkutNkrHjVaYuDlAzow8N6jdg8i9jsJqFHo82pE0TL7NHboXEcvCa6fdsGpdfO6yyDptz6oJ2AMUAEgwP20bEBnjl9h0890Udtrs6MGXyK2f91MBqY1FbN2+gvDD6HTo2KoRIAYuCEgOqDXDA8E\/iaNCsY+X3b72xrxLbagS3P1eDQH4kN7+exvwlc0lPT4UohcsvDNCkaQMW\/TxVufzG15i9oT59r7zkiN9s3zZDOb\/n\/ZQkv828BXOVq3p3UaZN\/pqGjUvo1ryUD97\/XJxOB8+O+lDZZhnFEyNe\/1O9B915K18urcdzb0zijTEvKpGRTvqcn4dRDdGpcxsmTF3CoDeS8ZdEcNn9Nek+8AWeeXJIJXhazKXMmpMKEaA4wsEkioIl1U9aVCFTJo+vHvNXRaRaHW883ExkiU2u6NxA3hiaKmVz7CJZyMAeSfLb8g1y9Pc\/m\/i91EypLW+\/O0FyCj3SrV19ka2I60en9Op9k\/zV33\/qlpoiOxFZr0iPCxvItt3Z5BR6Tvm4oHUbkRUGkV8M0rJFO8kp9MiQe5+Q9JTaMv7TKX+qz9yFy+X9x+qJ7EP2To2WR29IkXsG1BNZZ5B7br9aqku7Vpuuv9LCJPQH5yjW7hIuGzia2yfMI1n9mR0HVdq3zfiTdfn3dVcqtWulS6cOrZVXR4+Tvhd6wKsSkeSmW635vDH2Uxl2\/82nZJX6Xd1Ppo48wAuj0mjX2MPk4fvoeOWNsmDRD6d0\/r+vHyov3rgbzApYg3TJyGHb1p385+2XlH79+8rFXdr9qZweXdoqb490yMr762BKuxFTkg3X1nfBY6Zm4x7Vp2Grm0Wd+dMvUjo7Qj57JlVeee1jySn0yK\/L1snCX5af1Lo0aNBS5HerfPhYqnw5PF5kDzKkX1158uk3T3ju\/EUrpVfP3uKaY5eV46KkfatG0qltY3HPs8qqT2OleYsuMmfBH3I8K7prbx7dL71JRt9XUyQTueXKBvLHBzFSPtcirS+4\/KT1\/m76PPl95SbJKfTIZX1ul4LpkTLt5WRZvmZrtbGo1Q5UEeHzEU1FtivStlkDmTRl9ik1Vo9LbpYpLySKrEWSUxpLXHxjCS40i2xHxj+ZKhmNW8pDj42Sid\/8KLPm\/CLTpv8sY976TDp36ye39a0tsswmxbON0qJJhsgSi6z8OEo6tm4ish5xzXFI\/x515ZprB8vXU+fIus17ZNvuA8xduFyeem6sNKzXUGaMShDJRb57OUGgsVzSoZ5IJvLETeky9P4Rp3QNz454Wwb1rS2yH7mxT4ZUpzatlov7hj1wv7xx5zt4D1ppPSiVex8ZwT13XXfc7vfSnrdKr8ZzefDR\/TzyeG2a1AyRXwLjZ0ewedx2lDoB2GNi0dooZq+IZNdBM2YTdGzq4l9di4hp7WXzvEiuHJ7OyFvyyaiVj8EI05emM2uZnUVvb4fUEDkrbcxbE8mvm6Ip8Rqol1TOZW0L6dCmFGqEWDQljq4PJjL7tXzmroigRV0vN92azcC76mJMvpovPht93GsY8eK78vtPo5n1nz34ci2MWPQcL454TNG7\/v\/PFvWrGTKkX22RLESWmmXw1bWlfef+8v7H31Ramd+Wb5T7hr0obc9rKQvfThA5gEx8NkF6XdRIZA0iG5DR96ZJw3pN5Oe3YkW2ILIbkV2IbEdkDyL7EVlhkGduS5PO5zeS9RNjpH+P+jK4b6z0vihJXhmSJvPfSpCuFzSQ6aMSRLYisreinB0VZWSGy3j85jRxRjaROWPiRLYggflGadakhWz50i6yE3nzwTSpXfd8GTL0Ofnp52UiIqzbvEdGvT5eLujQW166q4bIRkS2Iv+6tI78vGSFblHPBtkj6kvvDiofD8sispmP7GURfL04ik27AygGAwnRBnqd76Vj2yKoEWLmFwl8OS+aiS\/sBKcWHvaMgpULErnv7XgsJh8DLiqmVpKGoirkFWss3hDB978YqZFs5YbufiwWP6u2mRnap4ClWyNZt8tAk1ohiktNfD7Pit1USv\/OARqne4h0GHGVCSu3O5i40EabhgYmPp6NvW5JeDTMAa4dVvqPTOfte3Jo1L2U8vUWpv4Sy28bwOMJYLObaN9EY0CXYmwZPrKWOhj6Tg2WbDRSmLu+Wi2rrragDr7lKmmTvJKxUx0M6OriuRvzoH7w8BoiQ\/jv4B4jT02I56Mfk3nu1jJKSwvYm2vD5TWiaQoWi4ncItiWWYbNqhBlC5CUEElkhAmrRWPxyhBur8ZHjxbTs0chC+dFMHpyJN4AfPl4Ecm1yxg3OYEH3nHSpqmFBjUg4FMocPnIyfNQ6jUimkaLRlFYDL7wYj7FR5QD6qeXUeBJ442vQrx8ez73X1sIacHwSJVWMaqmQcl6My9OSubXTTaG9Cljwd5L+XjcxzqoZ4NeGfW2PN7tfsDAk++m8c0iM+fV0+ja3IXJqBAUlfWZDn783YjVHKJNfS8xERqRNo2MembqJblJiVeItJRgMirYrQq+UDRFpUH8QQ2v14tqVHjow9r8554D1Krn5vqnGxHt9LJwjYGaiSbio\/2kxCq8NnIX302MZ\/Iv0Tx\/025CASNWqxWzyUhCJBAqwusz4A8Jxd5oDuSF2JrtYOueEGW+8IqD1TudqKhccaFG4xqlmBQNr1+YtTKa\/BKVmy91c9+Q\/Wz4NYodcd9z1RVddFDPBn0\/c6GULLuejHplfPVzPJMXGihxeWlax0Dv9goXNXWRGltGUqwJpyNIfpGfEo+FwlIbG7Ms7M6JZH+uG69PQVOMZB0El1ulSQM7JoMRoyHI8o1+WtXxMvHjTG6\/tyFdmru46a6D3DGkJj3OVxl4wx4ee64mETaVpx\/cQ+PedUhPcpAarxIIGQkEy1m52U\/jmhBt92M0KjhtCmmJZuoll9I03Uuk3U9clJ9Ip5kSt0J2vkZWfiTzVtuZu1zYsV+jbg07113so1+XHMZNj+GVT\/dVu91UjFRT+XxeXvvGwU09zXRrXsBjA4RoWzmZBRH8usHC97+aySmxs7\/Iya59Qfp11kiK8eIwB4iP8nPlBbnUiHPhtAaxx8GPi2OYt8LE6y\/uCE+4joaZX9lZvSuSknU2NFXhpmsPQiGUehU8Xg3K4NVBWVz5TD0oVmhc08Dnjx4gok5h2AfWoPd9dfnisYNEO8sodRso9ZrYmetgT7bK4g0mynx29uRG8OMfGk1rqiRHu0mJC3JhEx\/3X+MlJcrDvgI7f2xR+fKneCYvMvFKNWzPaguqy+Xm6ouCdD3PxY+\/Onj7exs2q4rNHCDWKVzY2EejtALSE3K57uU0Xr89ExJD4al2h5aXKIRntZigfWMvH8xOBncR+AWKhJIyI6qqsi\/XT1qMu3L3CU1AEzVclhGinaCVhSc957pMRLiMoCoESkwoqhCdXgZmiIgPEaGESG1STietwg+1w\/KFcWQXxvHRQ7vZutvMpr2RzP7DxLe\/2ilxxyOE6H5eOf26usjMjWHbrv3SsG6aooN6FuiOWwYo9V95Wxaugeu6lzLy32W0bVwKjuDhqzaGLWPzOiH+2BHNBbEFeA8q7C2IYnu2jaUbFfblK3jKFIrLbCxer9F8YAYoIXyBIPtyNF66vRijCppWsevEoWk+hzyqEARDCqpRwef30f6+WKKdMVgsFvwBhQO5bnrfVwe7KUiUQ6NemnBB4xB1k8pIjy3FWAN+2WBiYOd8Elr6Sajl56KgmzsBAhAoNrFko5P1mRb6DU\/kupvvorpBWq1BBZg69RMmvtqVu4cWQEEYGgxhiLQiK79usrE1W2H1dhPfLI6jca04rCYzJqOf+SuEy9t5aVxDpWENjfTYbN64U\/D5waD4cUYGmfxzBD6fE+3UEtaYLWbGP5hDw5RCSsvDi\/WNRoWDhUJWQRzb9sJPy828MMlBj9YBPOW1CGo+1mwVLm3jI6BB81ohWjX0QEQQTGCKDXBx9yIuNsPCzfV4fviD1XK3v2oNasuMuspncf2E\/Pco3Ccs3RzFbxtNbMg0szs3glJ3Oc1qhxfLNawRJKOmRt00L8T46f9AHSYMyyOiXsUM\/UM0qhVHFLTO8rFiV8SfftesetGwH8mpBgoqF7cMYa8LlPtAfKBBSwDVA9EwY1IMy7YLIx\/NJLDPzNZ9drbuVdiYaWPcjwnsOagRH2WhTkoJLeqG6NTETaeWHnwBGzWbdKu2bVmtQQW4uGdfBjw2m725UDO5nHkrbDw0wM8Xj28jIsIPdjmclzy0DZ8Dzquv8fP6GPrWPwge0MoVXGUmXOWRlJSB0RLil40qEQ4N5dD2PxW2TFVDlRs\/hHMroKhCKBhgxnIHzfLDTnCETYi2FeO0CYpNgwhYm+mgQ+MiUMEU7adZjJ9mLaCfWsTwEOCBg8U2nvs0na9+FlbuMPPUZylE2IQX3\/23DurZqisu66p8OTYgv0\/IhOgg4z9IpqQMIuqGd86rhNRjJDvXwIF8hWyXk41ZNt6baeelSTYKihVQrSjiw2y2ouLFZjexNTPEi7e6sZhDWIwaWMPW1mQUrCYNbGHwnZZQxZZDIR7+0ElirJNyn0ZIsxAMRCGKFVXKSYjR2LLXwfU9LJhMRpKivKTHacQkBMEaCrstDkhO9KKg8MXjOZzX2QW5Fq58thVtWjRUdFDPYtliGoI5vDylb\/sihr5fk8CBAuauiGfGUgOZOSYy86243EHqpalk1AzSoXEu\/TsEiHFCSjzUSlKx2VxhEgMhsBt4d3ISOw6Y2Xkgmp0HHezemogC7Ms3s3mfk91bEgiWK+wtsJC1N4ISr43Jz5bRrsn+cObAZAIJUeKJZs8BPzlFBkrKCsnMtTJpcTyb9qjszdFIjlNIi\/XRqIbQv7OHuokl7MsLcV6b8Hp\/rVyo0+ziat2G58TW6F9+9YM0KRtMZm6AeSuimDDXQfsmIeIi3DSr46dPOy\/1UrxERimgGigqtrAjK0BWnkpBqZXsQiNb9tnJKdJQFRWH1YjFaiXkL6XMW4rZaCKk2DAYTeF1eCEfqqKgqCYUFAKBckyKD295kOiYGELY8Hk9eHxgUEOkJ5ponFpMYlSIhCg\/NZI06qcZcEQFwBcgv1hlY5aTGb+b2XXQRlaeje37Qtzb180l57spcjmI7TSDzh1a6Rb1bNamjZt44INIup\/no1urYlZfnU+jlqVghqJtRqYsiWbMt06KSm0UeQz4AhqJMQYapXpJjPaRFuulRS0PtVJMpMR4iY8MYTIDZl\/FTr1UbusDhzMLlQGYoeIzFQjkQ8BMeblGbomVfQUmDuSGyCsxcqDQxMqdkWzOMuLyCHa7kWi7n6RoLz3b+nnh1jwstYJQbGL5Siu\/brTzysQElm5SeL\/uXqCVblHPZpkstWTWKx4uuakAvEARTP8xlvFzkvD5gzRK99CukUaPNh7ik0vBSdjfrAqcVgHboUP7GxVSqwBsqDAXFXugVi6N9gKlCplZ0cxeYWPtLpXNe23UTNAY2jePtl1dYR\/YDMOfSOed75wU5m9WdFDPMl111QAp83jwBwIsWrSQrq3MxESqhDSVTbsC7Dig0KKek+6tA0RafYREo7wcyoMqWgg0FEQU7CY3RiU82nQo7kJAUTkysj+lXGoYRBEqd7BWKsBVCW8Q7Q1EgKphUASjChZzCKtZQVFV8lxWvv9F5UC+mwsaG0iOM2A2Czv2qazZ7qZnz16EQkEymjXnzTGj9EkpZ4NSktKkd58rUFUDwVCIErfgDyogCmaT4LAJvoDgLYegpiCiHt6SvMot0VCPtJ6KgqIoFBcXU+4tQ1ENf4axAkFFAVUN563UiuHYoKbhjHAS4XAQkvDOGEolsRJenH8oz6WAUjHcpSoaRlVwWMFgUCgtVwgFw79hs2g4bQpGoxGXq4RVK9awZftGfQj1bJDZbOajjz\/kXFNubh6X9LhMD6bOFgUCAQLBACaj6X9aj507dzH7x9nszdqLIKSlpdGlS2datmpZ+Z0HHxhG79696d7j76eYiooK0TSt+jVodVwzJSIkJ6ZKua9c\/lfavXuPdO92yaGxrqMORRo1aCIfvP+h9L68T+X\/nz59xt\/+3U2bNktGRkupbu1Zvd+F+l9wv0OhEMv\/WM6WLVspKMjH5\/Mzc8ZM6tSpzbo1a+nR7RLsVidx0QkkJaSQlJBKQlwi+\/fv5+67hjB\/\/gISY5MAeOetd86E5dHzqLr+rPLycjq270RA8xEdEYvZYiY3\/yCtW7Vl5erlAHzyyWcMum0Q8QnxqKqKwaBiNBqJiIgAEQQwG614PB79hp4ko6frNOVwOLiwY\/vwrVTCvrERE5f2vIQpU6axccNGbrnlJho0bIDf56u0egqgKOG0k6Io+IN+2l3YTr+h555FVSqzPP+0ru7fjyVLFqKFQtjsduIS4vnwg48oGzMWo9FIbGwcmhbCZDYfkeaq7K0rgp9u3bqegcuunjl\/3aICeN2nf+66lVzYsjmPPzWc+MRESkpKKC4qQVVUIiMisFqteNylBAIBVIPhBHAJy1es1Nvi3ANVTh5MFeXif38MwRuugo1rTutXSh99gJo1a2BKW4I3HQAAFFNJREFUiOeVMW\/wwmujuLhnD1xuNx6PF5PRiNliwaAohw38Iasnh\/5TwaAYWbtmzRm6dkUHtVognJ9D4Lsv4fEHcE+exLiFvzL\/68mnF\/XXrIXy+P1cXrcmF7dpiVkLMurNMYx4Zyw1Mpri8njCPB5re3LlyChdC2ln7iHVQT1LnG+jEZPp2Ml+2bML36sv8tOvy7h6Vx53uVQGfvbNaf1O9PufEdWsBRf88A1xY15h6J4N1Hn+IR5zaMwb8RRWq41gMFgZRB3xdxWsNAmRlp52BhgVqqOXWm2DKaViTP6YT2fb9jxRqvHOjjzMDgexURHkZ+5g8eLFdO7c+S8+6iqOZ14k21XK7wsXcXXvXjgK8mDHNtL27qRvjQS+3JVNrMkUrk\/43ep\/gkvQyMjIODPBlKJ3\/dVGgcv6gq+UaIOK2WhAQWXSxK9Ou7wfvpnCitWrWL5hEx\/PWci2+hnMSm7IsrIQdvUEUbmiVEb9tWvXPgOdvhDw+3WLWl009Lab+eD11xEthGIwEOGMZOaMWadvyEJB3nxlNG++Mhq7w47DYSczK5Po6FjsFsvhLv8oUEWEQDCEzezgvNYt\/75BFQiFqt9Y\/zlrUTOaNqVZ02aUlpaComCz2di7P5NXXxl1WuXdOXgQi5cs4PbbbyU5KZHs\/dkkxMZjs1iqwKkcM+bxuEtp374dqalnwEfV86jVT3cMuo1yfxmapqGqKjFRcYwcMZKFCxedVnlt2rbhrXfGsn7jOu6+525cLtcRfugRnFYEVKIJvmA5l13e6wwF\/KKDWt10\/wP3UTO9FqUuFyJgsVgwqEYu7dGTh4c9jP80fb2pU6cxY\/oM7E7nYXCO4ZuGZ\/trqBjpdaZA1S1q9dTYt8ZS5vMQCgZQALvTQUREBK+PeZ3aNety7z1DmfPTnFMq67ffltKlYxf69+9HXl4eNosF5VD+9GhLVyXZrxFi86bN6NJBPa6uurovV\/W9hrzCXLSKHKTFYiEpIYWysjLeffddel7Wk3q1G3D9wOsZP24CmzZvxlfF2oZCQe6770E6duzAb0uXkhiXhMPhONK6\/cnSScXaKxWTwcy4j8edoSuqnl1\/tV0zVTO9tmTu3X3cXGpVaZpGs6Yt2bx1I8kJyZUzmion7oYEr8+L2+1GI7ymyWq2s27DGuLiYmnfrgPbdmwlNjoeszn8olzlFNPuIoLHU4bVYiY7dz+qavhb17158xb69rmabTuq14rU6j3Wf6o3QVX55bfFNGnclIN52YRCIUQTFEWpmD+q4HA4SEpKIjE+GRCGDLmLBg3q0+a889mxYwdJCSlYLBZURUUR5cQBjvzZrdQ0Db8\/oFvUcw7Uv9hesbEx\/P77b3Tt3I3c\/IP4\/L7w2iNNq1x5qigKmqYRHRnD62NG89ijT7InaxeJCYmoFVYYhT9H95WTUOTP0T8QCoSIS4jHarWekesWHdSz6MIMhlPq9qsqMiqSBYt+5pFHHqGwOJ+ioiJCFTPwD3XT3rJyWrduDcAnE8YTExFb6SochvEEUfgx6lReXk6zZs3O3DOq6Qn\/s8f5\/htpmlGjRrH0t9+pU6cOOXnZeMvCuVYRwe8v5\/wLzmfe3Pnk5udgtlhQqpKpVJmwXTkJ5fiQighB\/DRrlnGmLpxAMKCDeq7owvbt2Lx1Iy+MfJFAIMDB3Gx8Ph8BLUBKSgoFBQUVYBDeNqVqV1\/Vqh6jqz8cxYEWCm9KdUXvK\/SbrgdTp6+nnn6STVs3cvONN1FS4gKEQCCAr2L9U9nRC\/IOzV5Sqvz7OJkVUQRfuY\/UpBTant\/mzPUmOqhnVed\/MkeO0NZ1aAtOnsyvWbMmn3z+Cb\/8tpiMps3Ztm079erV46FhD3Pf\/ffhdrlOyy8UEVweF\/0G9DvldNa5Gvefm7On\/OX4Z0\/HvGo5ebNnEfXjQswx8Sc9rX37C9mwcR1FRcXExERjNBq54\/ZBGM3mCst5dMTPYct6jCyAaBqCxuWXX\/HffER1i3pWKODDP+EdzOM\/ZNa0b2m\/bje3P\/TEXyqipKSYXj2voGP7jmRlZWG1WA+npo4wa3IkoEcFVIFgkJioONp3PJPLpPU8ajVwWzXYugFt0lc8vnIDfQ+42KmY+WLCODZu2nTS0zds2Mh1A6+nYf0mzJ07l9i4uIqh0mOwoshJqiL4fD5q165NVGSUHi3poFaRrwy+nMBCVF4tCWBXDSQ57RgVIw\/e9+BxT8vOPsiQu++hbau2fPX1JCIjI0hISMBoNB47DXZoH8kTjfVXbFaREB9\/hh9GPeF\/9svqxJtcgxd+XYPRZMCuqqhAbGwcc+fP4f333j\/SlfUHeGHkyzSs34j33n8Xh9NBcmIqZrP58EjU35CmCVab9cxeYzXdc\/qcC6byb7iD3x9\/Eau3HIxGFFXFoCjERsXx4P3DMJnMdOrSiZkzZzH6ldc4kLOf6IgYkhNTT7hg8Ag\/tKoFPRRQHcNHVRXltOe8nmMu6rkHao34OL767BMGXNsPs8mI1WZDURQsVisoKnffNQSj0Ui5rxynw0lSQsqR1lNOYLWO6wYc+zOT0XB44OAMWlQ96q8m6j\/gGt4cM5YiVyE+ry88D1VRsFjMxMXFEeF0kpSYhNPpxKCqRza8cqTlqrqH53Gt63FMnclsJjv7IGeaVN1HrUa6\/4H7eG3UaApd+ZR7PGiaFp7Wp6gYTaawFT1kCY8xuiQIIU3DV15OQX4+fr\/\/SFj\/ZEGVo4yvgsls5sCBA6xbv0EP689dUE9uVx5+5CHGj5tAsbuYkuLi8DxUqljHqjvuSTilpGkagUCA4sJicnIPYHc4ePf9d2nTpg1er\/fw605OoVqqoqARZOvmTWfwsgV976mzSqfWWLfedguzfvyRuLh4cvKyKS4qory8PPwOgIrD5\/NRVlZGYVEhB3MPkFeQR7PmGbw5Zixr1q3GZrOydu3a8BZCqnriQEs5DKtqCG98sWjRkjN42Uq17Pyr7VKUOrXqye7Mnaf8\/bIyL6Nfe4MpkyeTlZWFp4o7YLPYiIiKpE69OnS\/uBs9e15Kx4s6AnBln6uYPuN74mISMZtNR2YFjucKVL5vSnCXlhKXEM\/uPTvPyHVv3ryFy3peTmbWLv31PdVRdruN4c8+xfBnn6KkxMWBAwfwer2YTCYSExOIjY3DZPrz7VIVFQUVk8l4pA0\/emZ\/1YyBcthPtVqtHNi3nz17Mqldu5beEHowdeqKioqkSZPGtG59Hs2bNyMpKemYkAJ073ExQnhS9THTU0dDelQPpqoq\/pCPOXPn6TdeB\/WfU+8rr8CoWggFg8eO+hXlSJf5KJjDu1AbWL5s2RkMpnRQdR3tC9euQ\/PmGRQWFXFcf\/8ko1lOu5Mli89QQKXvlKLreBr12qsIGqWlpX\/trXkVAw0Oh52t27fw7n\/e0y2qDuo\/px6X9GDZ8j8wqAbcpaWH102divVTFFRFIdoZw2OPPvH3h1Sr6aQUHdS\/KbfbzeOPPEZeTg6FJXnUrFWL8nLfkaAei1k5bP0UVCw2K+6yEp4d\/vzf7fv\/9qwuHdT\/ooLBEP90jviZp4dTI7UWr44exdVX9ePll16lUaOGaFoIqZr4V45j+Q4BpYaj\/+jIWMaPm8C+\/Qf+VtdvNluqXXtW4z38\/zlIszKz6HdNf1asWk6kM5rE+GRE0xg54gXsDgd2u\/1In\/HofOoxLJ4igsViodhVyB+\/\/056v2tOO5iqjoM41fvNff+Adu3aTbvz21NQmE9ifHJ4dpWqIiLExcUd7unl0G59yskjciE89BoKAZCXl6\/7VOcOqGfeqrg9bjp17ExJcRFJiUlHTKSu6hd63G6CgSDOyAhUOcFKgKMs7CFL6Ck9\/Zf3qtXUmTvnJ6X8Fd1+yx0cOLiPuLi4o\/abohI0V0kJA68byOgxoykpLkY0Of4zVOVVO6IJLpeL3pf34fY7bz\/tOnq95dUyRVVtQQ2FtDP6dpA5P83lmylfkxCbGIb0OM9EKBTCU1bGXXcPxmK1EggG\/uwzKseyquDzl5PRLIOoqMjTrmcgGDzui+B0UP8fStNChELBM1be2LFvYcCA4XgrTytkt9v5cWb4NUAXd+sazqueyBs5qiyPx\/O36hnhjMBoNOignj0XduYWD+3bt5+FCxYSFRVz1DQ+juhmFUXBaDRSVFzEnj17uKJPb3zB8rBFleORKme0qxYRRJ84fRaFUsdax3Sa+u7b7ygrd2M6NN9UqnbhRy0xUVU0NKZOmcZ11w\/EoJgIBgJVZlcdvfC+ip8Kf3trdI\/HUy2H+6stqIFAgIDvzOwTumXLlrCNrpwJVeXlu1X2QpWKPVSNipGpU6dht9vp3LkzLlcpldsBV7Wsx3iOjjed8NSDKS9G3Uc9iyyqCoHgmVkzv237DiyGqrP3lT\/5l+E3RAvFxcUEJYC3zAvAyBdH4A+Vo4VCYS6rvlS3qhehaYCG3Wr\/W3V1lRRjsZp1UM8WWcxW3KWeM1JW9r79GE5gpbSK1ag5edk0a9aMRYsWs3rtSgA6duzAhe3aU1BQcOytKQ9Z1YoEqGr8e01SVuYlIiJCB\/VsUVJqMps3bzkzGQTRjhu5a5qGp7SU0lI3b731DitW\/UHnzp2O+M4nn0wARaG8zHuk3yzypwIDgb\/nrmRnH6Rxkwwd1LNFrdu0Ye4ZWt4REx1bsYX5Ud21CB6Ph6Cm8f2M7xg69J5jnt+ocSPe+c\/bFLuLCAQCRy7HPjSyVdEch1yG09XqVavpdnEPHdSzRRkZLfhj+fIzUlbdBnXxV7V0FWv8\/X4\/Xk8ZU7+bSq9el52wjLvuHsyNN9xMfmHukctWqlhYAwZKSktO3\/KHNGbP\/omrr7xM0UE9S9S5azfWrl5DTk7uyb9cnIf\/rhtY89gDPPjM86xes\/aIjxvWb4BG8HA+VAm7AwVFeQy59x56XdbzlOr0+Ref0LH9ReQW5FS+ZaXqLixms4ntW7ef9jUvWrQYZ6SjmkbHVfZOqm5Halq6PP3UM3IyeT99X3xtGspFEY4Kp1GRd975T+XnC35eIKBIckKKpCanS0pSmkQ4oqVGak0JBALyVxQMBeW8lq1FwSDJiWmSkpgqqUlpkpqcLnHR8eKwOiU3N1dORxdffIk8+9xLUh3bslrP8B\/71nuM+3g8IicY8w\/4Me3cwTLFxHJzJDFxSUQ5Y7j33nvod3V\/1q5Zx\/KVK7CYrJVvihYRSj3F3HnXnRiNfy3vaVANLFq8gEYNGlJSXIRU8VONRjOecjdffjHxL1\/rst\/\/YMmSRTz37BPVcjFKtd0p5ZAu791X0lOS+fCjD479haAfefhuJs1ZxA25HhINBgwKhIJBikvC\/qLJZMLpdKJWgBrw+ykuKmb77m3Url37tOq1bv162rVpR0REBCazufIBKCkuJjklmR27tv+lJSXNmrZk6IPDGDzo5moJarVfMzVrxvfKlGlT+Prrb47n+0BkJHEEUEMBNC0c3RsMBuLi4oiJiSGyAtJD4Ljdbjp0uui0IQVo0bw5Xbp1xeMuq8yviqahqioHDhygpOTUg6p\/33gzabXSqy2kcI5s6bNs+VoyGtYjwunk8isuP\/JDkwWl33XE5BaifTCRfEJEOaOx2qyoFW+XrvqeUxGhPODlqquu\/Ft12puVxZ7dezBbzICCaEIwFMLtLeXFF18mOjr6lMq547ZBrNuwjrVrVivVuhGrczBV9VizYbtERETLm2PGHDcYWb5ilQwYMFCSE5IFEBWjxETFSXJiqqQkhQOfxLgkAWTRwkWnHORopUUSevYh+a57R8m4sJO0Pu8CiYqIkUhHVGXZh8q95+57T6nMQCAgvS67Qjp26iznQvudM6AeOho1biJX971GcnJyjg+BPyBffPGl9L9mgMRExgkgEY4oSYhNlEhHlDisTvF4PKcMaihru4Tuv0UmNKwhYBab1SnxMQmSnJQWhjQ+\/GBcdeXVp1TeihUrpX7dhjLw+n\/LudJu5xyoIsLdQ+6XSEeUjH3zrZNCkZeXJw8Ne1iSE1MOjXfKZT2v+Gt5o2BA5PMPZVabJmKITpDEhAoLnZQmibGJAkif3n1PWozP75eh99wnTnukfD3lBzmX2uycBFVEmL9oqdSr10CaNGoq33773SnlPxf8vFBmzJh5GhlOTbQvx8ua8xqJPSZRYuNTJCkhRaIjYwWQAf3\/ddISxr75lqQkpsnQ+x+Sc7G9zllQDx1j3\/5AoqKipFfPy2XlqtXyTykw53spu7KrnBcVJWAUQMxGqzz\/3IgTnvfD9OlyXss20ufKq2X1+m1yrrbTOQ\/qoePBYY+J1WSXIYPvOaH\/eroK7d8jMuwu+bx7Z2nevpM88cRTsmXrtuN+f9269XJV32ukaUYzmT5rnpzr7aNDetRxx513S4QjSka\/9rpoZ5LUUyysoKBA7h0yVGJjEuXNt98XvU3OgSHU09FHH7yruNzFypr1G6hbqy7ffD35DI0BnvwrL77wEvXrNsQZHUNBYY5y\/72DFb1FzrE86ukcq9ZtlSv7XiPtL+goixcv+cf813Hjxkvd2vXljjvv1i2o3vWf\/jHrp4XStnU7uW7gDbJjx84zBuj8efPlog6d5Mq+18jy1Rt1SHVQz8wx5u33JC2lhjz15HAp85adNqBbNm+RgddeJ23PbyczfpyvA6qD+s8cgwYPkeTENBk\/\/pO\/BKjLVSoPPfiw1K1VX8Z\/OkkHVAf1nz\/Wb94lXbt1l2ZNm8vs2T+dFNIxb7wpqUlp8vqb7+iA6qD+94+ZsxdIw0aNpVPHzvLLkl\/+BOgXn30hdWvVl2GPPK4DqoP6vz8+Gve51KvTQAb+6zrZsmWr\/Prbb9K1cze57oZ\/y77sPB1SHdT\/X8eo18ZKekoNOb9te\/lp3hId0DN0VPulKLr0pSi6dOmg6tKlg6pLB1WXLh1UXTqounTpoOrSpYOqSwdVly4dVF26dFB16aDq0qWDqkvXMfV\/iGNxmsSAB0UAAAAASUVORK5CYII=",
+		"mime": "png"
+	},
+	"contact": {
+		"name": "B\u00fcrgeramt Hohenzollerndamm"
+	}
+	}
+}

@@ -43,11 +43,15 @@ class TemplateFinder
                 break;
             }
         }
+        // @codeCoverageIgnoreStart
+        // not in use in the moment
         //look for customized template by organisation, overwrite template before
         $organisation = new \BO\Zmsentities\Organisation($calldisplay->organisation);
         if (self::getExistingTemplate($organisation)) {
             $template = self::getExistingTemplate($organisation);
         }
+        // @codeCoverageIgnoreEnd
+
         return ($template) ? $template : self::DEFAULT_TEMPLATE;
     }
 
