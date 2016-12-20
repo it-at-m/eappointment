@@ -50,6 +50,7 @@ class AvailabilityPage extends Component {
             const newProps = {
                 conflicts: data.conflicts,
                 availabilitylist: data.availabilityList,
+                availabilitylistslices: data.availabilityListSlices,
                 busyslots: data.busySlotsForAvailabilities,
                 maxslots: data.maxSlotsForAvailabilities
             }
@@ -219,6 +220,7 @@ class AvailabilityPage extends Component {
                    timestamp={this.props.timestamp}
                    conflicts={this.state.conflicts}
                    availabilities={todaysAvailabilities}
+                   availabilityListSlices={this.state.availabilitylistslices}
                    maxWorkstationCount={this.props.maxworkstationcount}
                    links={this.props.links}
                    onSelect={onSelect}
@@ -245,7 +247,8 @@ class AvailabilityPage extends Component {
     }
 
     render() {
-        console.log('AvailabilityPage', this.state)
+        console.log('AvailabilityPage Props', this.props)
+        console.log('AvailabilityPage State', this.state)
         return (
             <PageLayout
             timeTable={this.renderTimeTable()}
@@ -260,6 +263,7 @@ class AvailabilityPage extends Component {
 AvailabilityPage.propTypes = {
     conflicts: PropTypes.array,
     availabilitylist: PropTypes.array,
+    availabilitylistslices: PropTypes.array,
     maxworkstationcount: PropTypes.number,
     timestamp: PropTypes.number,
     scope: PropTypes.object,

@@ -186,7 +186,10 @@ const renderBody = (data, errors, onChange, onSave, onDelete) => {
                 <div className="form-actions">
                     <button className="button-delete" type="delete" value="delete" onClick={onDelete}>Löschen</button>
                     <div className="right">
-                        <button className="button-save" type="save" value="save" onClick={onSave}>OK</button>
+                        <button className={data.__modified ? "button-save" : "btn"}
+                            type="save"
+                            value="save"
+                            onClick={onSave}>Schließen</button>
                     </div>
                 </div>
             </form>
