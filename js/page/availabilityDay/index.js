@@ -1,3 +1,4 @@
+/* global window */
 /* global confirm */
 /* global alert */
 import React, { Component, PropTypes } from 'react'
@@ -34,6 +35,22 @@ class AvailabilityPage extends Component {
     constructor(props) {
         super(props)
         this.state = getInitialState(props)
+    }
+
+    componentWillMount() {
+        this.unloadHandler = ev => {
+            const confirmMessage = "Es wurden nicht alle Änderungen gespeichert. Diese gehen beim schließen verloren."
+                if (this.state.stateChanged) {
+                    ev.returnValue = confirmMessage
+                    return confirmMessage
+                }
+        }
+
+        window.addEventListener('beforeunload', this.unloadHandler)
+    }
+
+    componentWillUnMount() {
+        window.removeEventListener('beforeunload', this.unloadHandler)
     }
 
     onUpdateAvailability(availability) {
@@ -243,40 +260,40 @@ class AvailabilityPage extends Component {
                    links={this.props.links}
                    onSelect={onSelect}
                    onNewAvailability={this.onNewAvailability.bind(this)}
+               />
+    }
+
+    renderForm() {
+        if (this.state.selectedAvailability) {
+            return <AvailabilityForm data={this.state.selectedAvailability}
+                       title={this.state.formTitle}
+                       onSave={this.onUpdateAvailability.bind(this)}
+                       onDelete={this.onDeleteAvailability.bind(this)}
+                       onCopy={this.onCopyAvailability.bind(this)}
+                       onException={this.onCreateExceptionForAvailability.bind(this)}
+                       onEditInFuture={this.onEditAvailabilityInFuture.bind(this)}
                    />
         }
+    }
 
-        renderForm() {
-            if (this.state.selectedAvailability) {
-                return <AvailabilityForm data={this.state.selectedAvailability}
-                           title={this.state.formTitle}
-                           onSave={this.onUpdateAvailability.bind(this)}
-                           onDelete={this.onDeleteAvailability.bind(this)}
-                           onCopy={this.onCopyAvailability.bind(this)}
-                           onException={this.onCreateExceptionForAvailability.bind(this)}
-                           onEditInFuture={this.onEditAvailabilityInFuture.bind(this)}
-                       />
-            }
+    renderUpdateBar() {
+        if (this.state.stateChanged) {
+            return <UpdateBar onSave={this.onSaveUpdates.bind(this)} onRevert={this.onRevertUpdates.bind(this)}/>
         }
+    }
 
-        renderUpdateBar() {
-            if (this.state.stateChanged) {
-                return <UpdateBar onSave={this.onSaveUpdates.bind(this)} onRevert={this.onRevertUpdates.bind(this)}/>
-            }
-        }
-
-        render() {
-            console.log('AvailabilityPage Props', this.props)
-            console.log('AvailabilityPage State', this.state)
-            return (
-                <PageLayout
-                    timeTable={this.renderTimeTable()}
-                    updateBar={this.renderUpdateBar()}
-                    form={this.renderForm()}
-                    conflicts={<Conflicts conflicts={this.state.conflicts} />}
-                />
-            )
-        }
+    render() {
+        console.log('AvailabilityPage Props', this.props)
+        console.log('AvailabilityPage State', this.state)
+        return (
+            <PageLayout
+                timeTable={this.renderTimeTable()}
+                updateBar={this.renderUpdateBar()}
+                form={this.renderForm()}
+                conflicts={<Conflicts conflicts={this.state.conflicts} />}
+            />
+        )
+    }
     }
 
 AvailabilityPage.propTypes = {
