@@ -7,6 +7,4 @@
 
 {% include "element/queueTable/tempWaitingValues.twig" %}
 
-{# Give ServerTime (\App::$now) from calldisplay to queue call - important for testing #}
-<script type="text/javascript">window.bo.zmscalldisplay.serverTime={{ calldisplay.serverTime }}</script>
 {% endblock %}
