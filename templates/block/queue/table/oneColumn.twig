@@ -3,14 +3,14 @@
     <table class="aufrufanzeige_aufruf einspaltig">
         {% include "element/queueTable/head.twig" with {"leftHead": tableSettings.head.left, "rightHead": tableSettings.head.right} %}
         <tbody>
-            {% for queue in queueList %}
-            	{% if loop.index <= tableSettings.maxResults %}
-            	<tr>
-            		{% include "element/queueTable/leftCol.twig" %}
-    				{% include "element/queueTable/rightCol.twig" %}
-            	</tr>
-            	{% endif %}
-            {% endfor %}
+        {% for queue in queueList %}
+        	{% if loop.index <= tableSettings.maxResults %}
+        	<tr>
+        		{% include "element/queueTable/leftCol.twig" %}
+				{% include "element/queueTable/rightCol.twig" %}
+        	</tr>
+        	{% endif %}
+        {% endfor %}
         </tbody>
     </table>
 </div>

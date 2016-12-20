@@ -13,7 +13,8 @@ export default {
     'queue': {
     	'calledIds' : '',
     	'timeUntilOld': 60,
-    	'status': 'called'
+    	'status': 'called',
+    	'showOnlyNumeric':false
     },
     'reloadInterval': 5,
     'animationEnd': 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend'
