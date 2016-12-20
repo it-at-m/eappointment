@@ -39,7 +39,7 @@ Board.propTypes = {
     titleAside: PropTypes.node,
     headerRight: PropTypes.node,
     body: PropTypes.node.isRequired,
-    footer: PropTypes.node.isRequired
+    footer: PropTypes.node
 }
 
 export default Board
