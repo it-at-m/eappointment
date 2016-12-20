@@ -17,8 +17,14 @@ const NumberOfAppointments = props => {
     const busy = data.busySlots
     const max = data.maxSlots
 
+    const busyBarStyle = {
+        height: `${Math.round(100 * busy/max, 2)}%`
+    }
+
+
     return (
         <div className="item-bar" {... { title, style }}>
+            <div style={busyBarStyle} className="busy-bar"></div>
             <span className="item-bar_inner">{busy}/{max}</span>
         </div>
     )
