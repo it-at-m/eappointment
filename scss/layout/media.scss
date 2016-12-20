@@ -179,12 +179,6 @@ body.noInfoColumn .aufrufanzeige table.aufrufanzeige_aufruf {
         left:554px;
         top:162px;
     }
-    .aufrufanzeige table.aufrufanzeige_aufruf td,
-    .aufrufanzeige table.aufrufanzeige_aufruf th {
-        border-right: 28px solid #C8D5E6;
-        font-size:120px;
-        line-height:150px;
-    }
     span.terminkundennummer {
         font-size:80px;
         line-height: 80px;
@@ -192,10 +186,7 @@ body.noInfoColumn .aufrufanzeige table.aufrufanzeige_aufruf {
     .aufrufanzeige table.aufrufanzeige_aufruf th {
         font-size: 32px;
         line-height: 58px;
-    }
-    .aufrufanzeige table.aufrufanzeige_aufruf th.wartenummer {
-        width:66%;
-    }
+    }    
     .aufrufanzeige table.aufrufanzeige_aufruf {
         width:745px;
     }
