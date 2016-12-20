@@ -34,7 +34,7 @@ const getFirstLevelValues = data => {
     }
 }
 
-const getFormValuesfromData = data => {
+const getFormValuesFromData = data => {
     const workstations = Object.assign({}, data.workstationCount)
 
     if (workstations.callcenter > workstations.intern) {
@@ -60,22 +60,24 @@ const getFormValuesfromData = data => {
     const openTo = data.bookable.startInDays
     const openToDefault = data.scope.preferences.appointment.endInDaysDefault
 
-    return Object.assign({}, getFirstLevelValues(data), {
-        open_from: openFrom === 0 || openFrom === openFromDefault ? null : openFrom,
-        open_to: openTo === 0 || openTo === openToDefault ? null : openTo,
+    return cleanupFormData(Object.assign({}, getFirstLevelValues(data), {
+        open_from: openFrom,
+        open_to: openTo,
+        openFromDefault,
+        openToDefault,
         repeat,
         workstationCount_intern: workstations.intern,
         workstationCount_callcenter: workstations.callcenter,
         workstationCount_public: workstations.public,
         weekday: Object.keys(data.weekday).filter(key => parseInt(data.weekday[key], 10) > 0)
-    })
+    }))
 }
 
-const getDataValuesFromForm = form => {
+const getDataValuesFromForm = (form, scope) => {
     return Object.assign({}, getFirstLevelValues(form), {
         bookable: {
-            startInDays: form.open_from,
-            endInDays: form.open_to
+            startInDays: form.open_from === "" ? scope.preferences.appointment.startInDaysDefault : form.open_from,
+            endInDays: form.open_to === "" ? scope.preferences.appointment.endInDaysDefault : form.open_to
         },
         workstationCount: {
             intern: form.workstationCount_intern,
@@ -92,30 +94,37 @@ const getDataValuesFromForm = form => {
     })
 }
 
+const cleanupFormData = data => {
+    return Object.assign({}, data, {
+        open_from: (data.open_from === "0" || data.open_from === data.openFromDefault) ? "" : data.open_from,
+        open_to: (data.open_to === "0" || data.open_to === data.openToDefault) ? "" : data.open_to
+    })
+}
+
 class AvailabilityForm extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            data: getFormValuesfromData(this.props.data),
+            data: getFormValuesFromData(this.props.data),
             errors: {}
         }
     }
 
     componentWillReceiveProps(newProps) {
         this.setState({
-            data: getFormValuesfromData(newProps.data)
+            data: getFormValuesFromData(newProps.data)
         })
     }
 
     handleChange(name, value) {
         this.setState({
-            data: Object.assign({}, this.state.data, {
+            data: cleanupFormData(Object.assign({}, this.state.data, {
                 [name]: value,
                 __modified: true
-            })
+            }))
         }, () => {
-            this.props.onChange(getDataValuesFromForm(this.state.data))
+            this.props.onChange(getDataValuesFromForm(this.state.data, this.props.data.scope))
         })
     }
 

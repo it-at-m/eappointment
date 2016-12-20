@@ -6,7 +6,6 @@ const { Label, FormGroup, Controls, Description } = Inputs
 import {range} from '../../../lib/utils'
 
 const renderBody = (data, errors, onChange, onSave, onDelete) => {
-    console.log('render Form Body', data)
     return (
         <div>
             <Errors {...{ errors }}/>
