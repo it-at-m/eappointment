@@ -113,4 +113,31 @@ class QueueList extends Base
         }
         return $queueList;
     }
+
+    public function withShortNameDestinationHint(\BO\Zmsentities\Cluster $cluster, \BO\Zmsentities\Scope $scope)
+    {
+        $queueList = clone $this;
+        $list = new self();
+        foreach ($queueList as $entity) {
+            if ($cluster->shortNameEnabled && $scope->shortName) {
+                $entity->destinationHint = $scope->shortName;
+            }
+            $list->addEntity($entity);
+        }
+        $listWithPickups = $list->withPickupDestination($scope);
+        return $listWithPickups;
+    }
+
+    public function withPickupDestination(\BO\Zmsentities\Scope $scope)
+    {
+        $queueList = clone $this;
+        $list = new self();
+        foreach ($queueList as $entity) {
+            if (! $entity->destination) {
+                $entity->destination = $scope->toProperty()->preferences->pickup->alternateName->get();
+            }
+            $list->addEntity($entity);
+        }
+        return $list;
+    }
 }
