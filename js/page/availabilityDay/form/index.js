@@ -61,8 +61,8 @@ const getFormValuesfromData = data => {
     const openToDefault = data.scope.preferences.appointment.endInDaysDefault
 
     return Object.assign({}, getFirstLevelValues(data), {
-        open_from: openFrom === 0 || openFrom === openFromDefault ? "" : openFrom,
-        open_to: openTo === 0 || openTo === openToDefault ? "" : openTo,
+        open_from: openFrom === 0 || openFrom === openFromDefault ? null : openFrom,
+        open_to: openTo === 0 || openTo === openToDefault ? null : openTo,
         repeat,
         workstationCount_intern: workstations.intern,
         workstationCount_callcenter: workstations.callcenter,
