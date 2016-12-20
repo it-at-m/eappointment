@@ -103,6 +103,7 @@ class AvailabilityPage extends Component {
                 this.setState(Object.assign({}, deleteAvailabilityInState(this.state, availability), {
                     selectedAvailability: null
                 }))
+                this.refreshData()
             }).fail(err => {
                 console.log('delete error', err)
             })
@@ -111,7 +112,7 @@ class AvailabilityPage extends Component {
 
     onCopyAvailability(availability) {
         this.setState({
-            selectedAvailability: Object.assign({}, availability, { tempId: tempId() })
+            selectedAvailability: Object.assign({}, availability, { tempId: tempId(), id: null })
         })
     }
 

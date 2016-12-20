@@ -77,8 +77,8 @@ export const getNewAvailability = (timestamp, tempId, scope) => {
         startTime: '00:00:00',
         endTime: '00:00:00',
         bookable: {
-            startInDays: 0,
-            endInDays: 0
+            startInDays: "0",
+            endInDays: "0"
         },
         multipleSlotAllowed: 1,
         slotTimeInMinutes: 10,
