@@ -76,7 +76,7 @@ TimeTable.propTypes = {
     conflicts: PropTypes.array,
     availabilities: PropTypes.array,
     maxWorkstationCount: PropTypes.number,
-    onSelect: PropTypes.func.isRequried
+    onSelect: PropTypes.func.isRequired
 }
 
 export default TimeTable

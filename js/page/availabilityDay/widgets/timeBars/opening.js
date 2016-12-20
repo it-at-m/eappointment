@@ -30,7 +30,7 @@ Opening.propTypes = {
     data: PropTypes.shape({
         type: PropTypes.oneOf(['openinghours'])
     }),
-    onSelect: PropTypes.func.isRequried
+    onSelect: PropTypes.func.isRequired
 }
 
 export default Opening

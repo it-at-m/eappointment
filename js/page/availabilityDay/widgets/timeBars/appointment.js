@@ -37,7 +37,7 @@ Appointment.propTypes = {
         type: PropTypes.oneOf(['appointment'])
     }),
     maxWorkstationCount: PropTypes.number,
-    onSelect: PropTypes.func.isRequried
+    onSelect: PropTypes.func.isRequired
 }
 
 export default Appointment
