@@ -111,7 +111,8 @@ class AvailabilityForm extends Component {
     handleChange(name, value) {
         this.setState({
             data: Object.assign({}, this.state.data, {
-                [name]: value
+                [name]: value,
+                __modified: true
             })
         }, () => {
             this.props.onChange(getDataValuesFromForm(this.state.data))

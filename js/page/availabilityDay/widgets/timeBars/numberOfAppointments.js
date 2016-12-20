@@ -26,7 +26,7 @@ const NumberOfAppointments = props => {
 
 NumberOfAppointments.propTypes = {
     data: PropTypes.shape({
-        type: PropTypes.oneOf(['numberOfAppointments'])
+        type: PropTypes.oneOf(['appointment'])
     })
 }
 

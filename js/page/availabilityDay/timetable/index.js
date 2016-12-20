@@ -23,7 +23,7 @@ const renderConflicts = conflicts => conflicts
     .map((data, key) => <ConflictTimeBar {...{ key, data }} />)
 
 const renderNumberOfAppointments = (items) => items
-    .filter(item => item.type === 'numberOfAppointments')
+    .filter(item => item.type === 'appointment')
     .map((data, key) => <NumberOfAppointmentsTimeBar {...{ key, data }} />)
 
 
@@ -49,7 +49,7 @@ const TimeTable = (props) => {
                               showConflicts={props.conflicts.length > 0}
                               conflicts={renderConflicts(props.conflicts)}
                               appointments={renderAppointments(props.availabilities, props.maxWorkstationCount, onSelect)}
-                              numberOfAppointments={renderNumberOfAppointments(props.availabilities, onSelect)}
+                              numberOfAppointments={renderNumberOfAppointments(props.availabilityListSlices)}
                               openings={renderOpenings(props.availabilities, onSelect)}
                           />
 
@@ -75,6 +75,7 @@ TimeTable.propTypes = {
     onNewAvailability: PropTypes.func,
     conflicts: PropTypes.array,
     availabilities: PropTypes.array,
+    availabilityListSlices: PropTypes.array,
     maxWorkstationCount: PropTypes.number,
     onSelect: PropTypes.func.isRequired
 }

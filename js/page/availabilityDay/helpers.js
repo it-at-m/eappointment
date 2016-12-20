@@ -2,12 +2,13 @@ import moment from 'moment'
 
 export const getStateFromProps = props => {
     return {
-        availabilitylist: props.availabilitylist.map(item => {
+        availabilitylistslices: props.availabilitylistslices.map(item => {
             return Object.assign({}, item, {
                 maxSlots: props.maxslots[item.id] || 0,
                 busySlots: props.busyslots[item.id] || 0
             })
         }),
+        availabilitylist: props.availabilitylist,
         conflicts: props.conflicts
     }
 }
@@ -108,6 +109,10 @@ export const cleanupAvailabilityForSave = availability => {
 
     if (newAvailability.maxSlots) {
         delete newAvailability.maxSlots
+    }
+
+    if (newAvailability.__modified) {
+        delete newAvailability.__modified
     }
 
     return newAvailability

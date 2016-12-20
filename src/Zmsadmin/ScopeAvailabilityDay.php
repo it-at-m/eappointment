@@ -49,7 +49,7 @@ class ScopeAvailabilityDay extends BaseController
         $busySlots = self::getBusySlotsForAvailabilities($availabilityList, $processList);
         return [
             'availabilityList' => $availabilityList->getArrayCopy(),
-            'availabilityListSlices' => $availabilityList->withCalculatedSlots(),
+            'availabilityListSlices' => $availabilityList->withCalculatedSlots()->getArrayCopy(),
             'conflicts' => $conflicts->getArrayCopy(),
             'processList' => $processList->getArrayCopy(),
             'dateString' => $dateString,
