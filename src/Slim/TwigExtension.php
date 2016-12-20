@@ -46,7 +46,13 @@ class TwigExtension extends \Twig_Extension
             new \Twig_SimpleFunction('toGermanDateFromTs', array($this, 'toGermanDateFromTs')),
             new \Twig_SimpleFunction('toTextFormat', array($this, 'toTextFormat')),
             new \Twig_SimpleFunction('getNow', array($this, 'getNow')),
+            new \Twig_SimpleFunction('isNumeric', array($this, 'isNumeric')),
         );
+    }
+
+    public static function isNumeric($var)
+    {
+        return is_numeric($var);
     }
 
     public static function getNow()
