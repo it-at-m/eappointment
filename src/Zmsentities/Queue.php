@@ -4,6 +4,8 @@ namespace BO\Zmsentities;
 
 class Queue extends Schema\Entity
 {
+    const PRIMARY = 'arrivalTime';
+
     public static $schema = "queue.json";
 
     public function getDefaults()

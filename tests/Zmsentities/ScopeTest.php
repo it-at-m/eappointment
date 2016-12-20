@@ -4,6 +4,9 @@ namespace BO\Zmsentities\Tests;
 
 class ScopeTest extends EntityCommonTests
 {
+    const DEFAULT_TIME = '2016-04-01 11:50:00';
+    const LAST_GIVEN_NUMBER_TIME = '2015-11-19 10:25:59';
+
     public $entityclass = '\BO\Zmsentities\Scope';
 
     public $collectionclass = '\BO\Zmsentities\Collection\ScopeList';
@@ -52,5 +55,28 @@ class ScopeTest extends EntityCommonTests
         $collection->addEntity($entity);
         $newCollection->addScopeList($collection);
         $this->assertTrue($newCollection->hasEntity($entity->id), 'Failed to add scopelist to another list');
+    }
+
+    public function testCalculatedWorkstationCount()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $this->assertEquals(1, $entity->getCalculatedWorkstationCount());
+    }
+
+    public function testUpdateStatusQueue()
+    {
+        $now = new \DateTimeImmutable(self::DEFAULT_TIME);
+        $lastGivenNumberTime = new \DateTimeImmutable(self::LAST_GIVEN_NUMBER_TIME);
+        $entity = (new $this->entityclass())->getExample();
+        $entity->status['queue']['lastGivenNumber'] = 0;
+        $this->assertEquals(23, $entity->toProperty()->status->queue->givenNumberCount->get());
+        $updatedEntity = $entity->updateStatusQueue($lastGivenNumberTime);
+        $this->assertEquals(24, $entity->toProperty()->status->queue->givenNumberCount->get());
+        $updatedEntity = $entity->updateStatusQueue($now);
+        $this->assertEquals(1, $entity->toProperty()->status->queue->givenNumberCount->get());
+
+        $entity->status['queue']['lastGivenNumber'] = 501;
+        $updatedEntity = $entity->updateStatusQueue($now);
+        $this->assertEquals(300, $updatedEntity->toProperty()->status->queue->lastGivenNumber->get());
     }
 }

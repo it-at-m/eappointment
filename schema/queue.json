@@ -2,9 +2,9 @@
     "type": "object",
     "description": "A queue represents a waiting queue for processes/clients.",
     "example": {
-        "arrivalTime": 1447922893000,
+        "arrivalTime": 1447922893,
         "callCount": 1,
-        "callTime": 1447922938000,
+        "callTime": 1447922938,
         "number": "123",
         "waitingTime": 2,
         "withAppointment": false
