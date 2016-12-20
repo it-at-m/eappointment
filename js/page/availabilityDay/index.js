@@ -28,6 +28,7 @@ const tempId = (() => {
     }
 })()
 
+const formatTimestampDate = timestamp => moment(timestamp, 'X').format('YYYY-MM-DD')
 
 class AvailabilityPage extends Component {
     constructor(props) {
@@ -36,13 +37,17 @@ class AvailabilityPage extends Component {
     }
 
     onUpdateAvailability(availability) {
-        this.setState(Object.assign({}, updateAvailabilityInState(this.state, availability), {
-            selectedAvailability: availability
-        }))
+        if (availability.__modified) {
+            this.setState(Object.assign({}, updateAvailabilityInState(this.state, availability), {
+                selectedAvailability: null
+            }))
+        } else {
+            this.setState({ selectedAvailability: null })
+        }
     }
 
     refreshData() {
-        const currentDate = moment(this.props.timestamp, 'X').format('YYYY-MM-DD')
+        const currentDate = formatTimestampDate(this.props.timestamp)
         const url = `/scope/${this.props.scope.id}/availability/day/${currentDate}/conflicts/`
         $.ajax(url, {
             method:'GET'
@@ -111,8 +116,15 @@ class AvailabilityPage extends Component {
     }
 
     onCopyAvailability(availability) {
+        const start = formatTimestampDate(availability.startDate)
+        const end = formatTimestampDate(availability.endDate)
         this.setState({
-            selectedAvailability: Object.assign({}, availability, { tempId: tempId(), id: null })
+            selectedAvailability: Object.assign({}, availability, {
+                tempId: tempId(),
+                id: null,
+                description: `Kopie von "${start} - ${end}"`
+            }),
+            formTitle: "Öffnungszeit kopieren"
         })
     }
 
@@ -143,7 +155,8 @@ class AvailabilityPage extends Component {
             startDate: parseInt(today.format('X'), 10),
             endDate: parseInt(today.format('X'), 10),
             tempId: tempId(),
-            id: null
+            id: null,
+            description: `Ausnahme für ${formatTimestampDate(this.props.timestamp)}`
         })
 
         const futureAvailability = Object.assign({}, availability, {
@@ -159,7 +172,7 @@ class AvailabilityPage extends Component {
                 exceptionAvailability,
                 futureAvailability
             ] ),
-            { selectedAvailability: exceptionAvailability }
+            { selectedAvailability: exceptionAvailability, formTitle: "Ausnahme-Öffnungszeit" }
         ))
     }
 
@@ -181,7 +194,8 @@ class AvailabilityPage extends Component {
         const futureAvailability = Object.assign({}, availability, {
             startDate: parseInt(today.format('X'), 10),
             tempId: tempId(),
-            id: null
+            id: null,
+            description: `Änderung ab ${formatTimestampDate(this.props.timestamp)}`
         })
 
         this.setState(Object.assign(
@@ -190,7 +204,7 @@ class AvailabilityPage extends Component {
                 pastAvailability,
                 futureAvailability
             ] ),
-            { selectedAvailability: futureAvailability }
+            { selectedAvailability: futureAvailability, formTitle: "Neue Öffnungszeit ab Datum"}
         ))
     }
 
@@ -198,13 +212,16 @@ class AvailabilityPage extends Component {
         console.log('new availability')
         const newAvailability = getNewAvailability(this.props.timestamp, tempId(), this.props.scope)
 
-        this.setState(Object.assign({}, { selectedAvailability: newAvailability }))
+        this.setState(Object.assign({}, {
+            selectedAvailability: newAvailability,
+            formTitle: "Neue Öffnungszeit" }))
     }
 
     renderTimeTable() {
         const onSelect = data => {
             this.setState({
-                selectedAvailability: data
+                selectedAvailability: data,
+                formTitle: null
             })
         }
 
@@ -226,40 +243,41 @@ class AvailabilityPage extends Component {
                    links={this.props.links}
                    onSelect={onSelect}
                    onNewAvailability={this.onNewAvailability.bind(this)}
-               />
-    }
-
-    renderForm() {
-        if (this.state.selectedAvailability) {
-            return <AvailabilityForm data={this.state.selectedAvailability}
-                       onSave={this.onUpdateAvailability.bind(this)}
-                       onDelete={this.onDeleteAvailability.bind(this)}
-                       onCopy={this.onCopyAvailability.bind(this)}
-                       onException={this.onCreateExceptionForAvailability.bind(this)}
-                       onEditInFuture={this.onEditAvailabilityInFuture.bind(this)}
                    />
         }
-    }
 
-    renderUpdateBar() {
-        if (this.state.stateChanged) {
-            return <UpdateBar onSave={this.onSaveUpdates.bind(this)} onRevert={this.onRevertUpdates.bind(this)}/>
+        renderForm() {
+            if (this.state.selectedAvailability) {
+                return <AvailabilityForm data={this.state.selectedAvailability}
+                           title={this.state.formTitle}
+                           onSave={this.onUpdateAvailability.bind(this)}
+                           onDelete={this.onDeleteAvailability.bind(this)}
+                           onCopy={this.onCopyAvailability.bind(this)}
+                           onException={this.onCreateExceptionForAvailability.bind(this)}
+                           onEditInFuture={this.onEditAvailabilityInFuture.bind(this)}
+                       />
+            }
+        }
+
+        renderUpdateBar() {
+            if (this.state.stateChanged) {
+                return <UpdateBar onSave={this.onSaveUpdates.bind(this)} onRevert={this.onRevertUpdates.bind(this)}/>
+            }
+        }
+
+        render() {
+            console.log('AvailabilityPage Props', this.props)
+            console.log('AvailabilityPage State', this.state)
+            return (
+                <PageLayout
+                    timeTable={this.renderTimeTable()}
+                    updateBar={this.renderUpdateBar()}
+                    form={this.renderForm()}
+                    conflicts={<Conflicts conflicts={this.state.conflicts} />}
+                />
+            )
         }
     }
-
-    render() {
-        console.log('AvailabilityPage Props', this.props)
-        console.log('AvailabilityPage State', this.state)
-        return (
-            <PageLayout
-            timeTable={this.renderTimeTable()}
-            updateBar={this.renderUpdateBar()}
-            form={this.renderForm()}
-            conflicts={<Conflicts conflicts={this.state.conflicts} />}
-            />
-        )
-    }
-}
 
 AvailabilityPage.propTypes = {
     conflicts: PropTypes.array,

@@ -13,13 +13,15 @@ const UpdateBar = (props) => {
     }
 
     return (
-        <div className="availability-updatebar lineup">
+        <div className="availability-updatebar lineup lineup--availability">
             <div className="lineup_actor lineup_actor--left">
+                <p>
+                    <button className="btn" onClick={onRevert}>Zurücksetzen</button>
+                </p>
             </div>
             <div className="lineup_actor lineup_actor--right">
                 <p>
-                    <button className="btn" onClick={onRevert}>Zurücksetzen</button>
-                    <button className="btn" onClick={onSave}>Änderungen speichern</button>
+                    <button className="button-save" onClick={onSave}>Änderungen speichern</button>
                 </p>
             </div>
         </div>

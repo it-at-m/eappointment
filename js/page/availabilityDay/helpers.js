@@ -52,6 +52,7 @@ export const deleteAvailabilityInState = (state, deleteAvailability) => {
 export const getInitialState = (props) => Object.assign({}, {
     availabilitylist: [],
     selectedAvailability: null,
+    formTitle: null,
     stateChanged: false
 }, getStateFromProps(props))
 
