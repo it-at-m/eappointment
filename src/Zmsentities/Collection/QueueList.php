@@ -16,7 +16,6 @@ class QueueList extends Base
 
         $waitingTime = 0;
         $timeSlot = $processTimeAverage * 60 / $workstationCount;
-
         while ($nextWithAppointment || $nextNoAppointment) {
             if ($nextWithAppointment && $currentTime >= $nextWithAppointment->arrivalTime) {
                 $nextWithAppointment->waitingTimeEstimate = $waitingTime;
@@ -73,13 +72,17 @@ class QueueList extends Base
             ->withEstimatedWaitingTime($processTimeAverage, $workstationCount, $dateTime);
         $newEntity = $queueList->getQueueByNumber(self::FAKE_WAITINGNUMBER);
         $lastEntity = end($queueList);
-        return ($newEntity) ? array(
-            'amountBefore' => $queueList->getQueuePositionByNumber($newEntity->number),
-            'waitingTimeEstimate' => $newEntity->waitingTimeEstimate
-        ) : array(
+
+        $dataOfLastEntity = array(
             'amountBefore' =>$queueList->count(),
             'waitingTimeEstimate' => $lastEntity->waitingTimeEstimate
         );
+        $dataOfFackedEntity = array(
+            'amountBefore' => $queueList->getQueuePositionByNumber($newEntity->number),
+            'waitingTimeEstimate' => $newEntity->waitingTimeEstimate
+        );
+
+        return ($newEntity) ? $dataOfFackedEntity : $dataOfLastEntity;
     }
 
     public function getQueueByNumber($number)
@@ -133,7 +136,7 @@ class QueueList extends Base
         $queueList = clone $this;
         $list = new self();
         foreach ($queueList as $entity) {
-            if (! $entity->destination) {
+            if (! $entity->toProperty()->destination->get()) {
                 $entity->destination = $scope->toProperty()->preferences->pickup->alternateName->get();
             }
             $list->addEntity($entity);
