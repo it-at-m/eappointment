@@ -8,6 +8,7 @@ import renderBody from './renderBody'
 
 const getFirstLevelValues = data => {
     const {
+        __modified,
         scope,
         description,
         startTime,
@@ -21,6 +22,7 @@ const getFirstLevelValues = data => {
     } = data
 
     return {
+        __modified,
         scope,
         description,
         startTime,
@@ -138,8 +140,8 @@ class AvailabilityForm extends Component {
             ev.preventDefault()
             const validationResult = validate(data)
 
-            if (validationResult.valid) {
-                this.props.onSave(getDataValuesFromForm(data))
+            if (!data.__modified || validationResult.valid) {
+                this.props.onSave(getDataValuesFromForm(data, this.props.data.scope))
             } else {
                 console.log('errors', validationResult.errors)
                 this.setState({ errors: validationResult.errors })
@@ -148,25 +150,25 @@ class AvailabilityForm extends Component {
 
         const onDelete = ev => {
             ev.preventDefault()
-            this.props.onDelete(getDataValuesFromForm(data))
+            this.props.onDelete(getDataValuesFromForm(data, this.props.data.scope))
         }
 
         const onCopy = ev => {
             ev.preventDefault()
-            this.props.onCopy(getDataValuesFromForm(data))
+            this.props.onCopy(getDataValuesFromForm(data, this.props.data.scope))
         }
 
         const onException = ev => {
             ev.preventDefault()
-            this.props.onException(getDataValuesFromForm(data))
+            this.props.onException(getDataValuesFromForm(data, this.props.data.scope))
         }
 
         const onEditInFuture = ev => {
             ev.preventDefault()
-            this.props.onEditInFuture(getDataValuesFromForm(data))
+            this.props.onEditInFuture(getDataValuesFromForm(data, this.props.data.scope))
         }
 
-        return <Board title="Öffnungszeit bearbeiten"
+        return <Board title={this.props.title || "Öffnungszeit bearbeiten"}
                    headerRight={<HeaderButtons {...{ onCopy, onException, onEditInFuture}} />}
                    body={renderBody(data, errors, onChange, onSave, onDelete)}
                    footer=""
@@ -186,6 +188,7 @@ AvailabilityForm.defaultProps = {
 
 AvailabilityForm.propTypes = {
     data: PropTypes.object,
+    title: PropTypes.string,
     onSave: PropTypes.func,
     onDelete: PropTypes.func,
     onChange: PropTypes.func,

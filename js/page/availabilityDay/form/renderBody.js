@@ -188,7 +188,7 @@ const renderBody = (data, errors, onChange, onSave, onDelete) => {
                         <button className={data.__modified ? "button-save" : "btn"}
                             type="save"
                             value="save"
-                            onClick={onSave}>Schließen</button>
+                            onClick={onSave}>{data.__modified? "Änderungen hinzufügen" : "Schließen"}</button>
                     </div>
                 </div>
             </form>
