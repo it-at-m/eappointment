@@ -15,16 +15,17 @@ class View extends BaseView {
     
     initRequest () {
 	$.post( this.getUrl('/queue/'), window.bo.zmscalldisplay)
-		.done(data => {
-        	    $( '#queueImport' ).html( data );    
-        	    this.setColorForNewCall();
-        	    this.setWaitingClients(data);
-        	    this.setWaitingTime(data);        	    
-        	    this.setInterval();
-        	    var audioCheck = new RingAudio();
-        	    audioCheck.initSoundCheck();
-		});
-    }    
+	    .done(data => {
+        	$( '#queueImport' ).html( data );
+        	this.setColorForNewCall();
+        	this.setWaitingClients(data);
+        	this.setWaitingTime(data);
+        	this.setInterval();
+        	var audioCheck = new RingAudio();
+        	audioCheck.initSoundCheck();
+        	this.getDestinationToNumber();
+	    });
+    }
     
     setInterval () {
     	var reloadTime = window.bo.zmscalldisplay.reloadInterval;  
@@ -65,6 +66,20 @@ class View extends BaseView {
     			$("div.aufrufanzeigenummer", this).addClass('newprocess');
     		}
     	});
+    }
+    
+    getDestinationToNumber()
+    {
+	if (window.bo.zmscalldisplay.queue.showOnlyNumeric) {	    
+	    $( '#queueImport .destination').each(function() {		
+		    let string = $(this).text();
+		    let regex = /\d/g;
+		    if (regex.test(string)) {
+			$(this).text(string.replace(/\D/g,''));
+		    }
+		    
+		});
+	}	
     }
 }
 

@@ -2,12 +2,15 @@
 	{% if queue.status == "called" %}
 	    <div class="aufrufanzeigeneuenummer">
 	{% else %}
-	     <div class="aufrufanzeigeplatz">
+	    <div class="aufrufanzeigeplatz">
 	{% endif %}
-		{% if queue.destination %}
-		{{ queue.destination }}
-		{% else %}
-        <span class="abholeranzeige">{{ queue.destination }} {% if queue.destinationHint %}{{ queue.destinationHint }}{% endif %}</span>
-		{% endif %}
+	{% if queue.destinationHint %}
+	<span class="terminkundenanzeige">{{ queue.destinationHint | raw }}</span><br/>
+	{% endif %}
+
+	{% set destination = queue.destination %}
+    <span class="destination terminkundennummer{% if not isNumeric(queue.destination) %} abholeranzeige{% endif %}">
+        {{ queue.destination | raw }}
+    </span>
 	</div>
 </td>
