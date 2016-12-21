@@ -122,31 +122,9 @@ class Availability extends Schema\Entity
      * @param String $type of "openinghours", "appointment" or false to ignore type
      *
      */
-    public function isOpened(\DateTimeInterface $dateTime, $type = 'openinghours')
+    public function isOpened(\DateTimeInterface $dateTime, $type = false)
     {
-        if (!$this->hasWeekDay($dateTime)) {
-            return false;
-        }
-        // First check weekday, greatest difference on an easy check
-        if ($type !== false && $this->type != $type) {
-            return false;
-        }
-        if (!$this->hasDay($dateTime)) {
-            // Out of date range
-            return false;
-        }
-        if (!$this->hasTime($dateTime)) {
-            // Out of date range
-            return false;
-        }
-        if (!$this->hasWeek($dateTime)) {
-            // series settings for the week do not match
-            return false;
-        }
-        if ($this->getDuration() > 2 && $this->hasDayOff($dateTime)) {
-            return false;
-        }
-        return true;
+        return (!$this->isOpenedOnDate($dateTime, $type) || !$this->hasTime($dateTime)) ? false : true;
     }
 
     public function hasWeekDay(\DateTimeInterface $dateTime)

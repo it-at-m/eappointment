@@ -338,7 +338,7 @@ class AvailabilityTest extends EntityCommonTests
         $this->assertTrue($collection->count() == 2);
     }
 
-    public function testUnopened()
+    public function testUnopenedNoDay()
     {
         $time = new \DateTimeImmutable(self::DEFAULT_TIME);
         $collection = new $this->collectionclass();
@@ -346,6 +346,24 @@ class AvailabilityTest extends EntityCommonTests
         $entityOH->endTime = '11:00:00';
         $collection->addEntity($entityOH);
         $this->assertFalse($collection->isOpened($time));
+    }
+
+    public function testUnopenedWrongType()
+    {
+        $time = new \DateTimeImmutable(self::DEFAULT_TIME);
+        $entityOH = $this->getExampleWithTypeOpeningHours($time);
+        $entityOH->endTime = '11:00:00';
+        $this->assertFalse($entityOH->isOpened($time, 'appointment'));
+    }
+
+    public function testUnopenedNoWeek()
+    {
+        $time = new \DateTimeImmutable(self::DEFAULT_TIME);
+        $entity = $this->getExample();
+        $entityOH = $this->getExampleWithTypeOpeningHours($time);
+        $entityOH->offsetSet('endTime', '13:00:00');
+        $entityOH->offsetSet('repeat', array('afterWeeks' => 0, 'weekOfMonth' => 0));
+        $this->assertFalse($entityOH->isOpened($time));
     }
 
     public function testConflicts()
@@ -401,7 +419,7 @@ class AvailabilityTest extends EntityCommonTests
             'endTime' => '13:00:00',
         ]);
         $availabilitySlotsize = new Availability([
-            'id' => '3',
+            'id' => '4',
             'weekday' => array (
                 'monday' => '0',
                 'tuesday' => '4',
@@ -425,10 +443,62 @@ class AvailabilityTest extends EntityCommonTests
             'startTime' => '09:00:00',
             'endTime' => '10:00:00',
         ]);
+        $availabilityOverlap2 = new Availability([
+            'id' => '3',
+            'weekday' => array (
+                'monday' => '0',
+                'tuesday' => '4',
+                'wednesday' => '0',
+                'thursday' => '0',
+                'friday' => '0',
+                'saturday' => '0',
+                'sunday' => '0'
+            ),
+            'repeat' => array (
+                'afterWeeks' => '1',
+            ),
+            'workstationCount' => array (
+                'public' => '2',
+                'callcenter' => '2',
+                'intern' => '2'
+            ),
+            'slotTimeInMinutes' => '15',
+            'startDate' => strtotime('2016-04-19'),
+            'endDate' => strtotime('2016-04-19'),
+            'startTime' => '15:00:00',
+            'endTime' => '17:00:00',
+        ]);
+        $availabilityEqual = new Availability([
+            'id' => '3',
+            'weekday' => array (
+                'monday' => '0',
+                'tuesday' => '4',
+                'wednesday' => '0',
+                'thursday' => '0',
+                'friday' => '0',
+                'saturday' => '0',
+                'sunday' => '0'
+            ),
+            'repeat' => array (
+                'afterWeeks' => '1',
+            ),
+            'workstationCount' => array (
+                'public' => '2',
+                'callcenter' => '2',
+                'intern' => '2'
+            ),
+            'slotTimeInMinutes' => '15',
+            'startDate' => strtotime('2016-04-19'),
+            'endDate' => strtotime('2016-04-19'),
+            'startTime' => '12:00:00',
+            'endTime' => '16:00:00',
+        ]);
         $availabilityList = new AvailabilityList([
             $availability,
             $availabilityOverlap,
-            $availabilitySlotsize
+            $availabilitySlotsize,
+            $availabilityOverlap2,
+            $availabilityEqual
         ]);
         $conflicts = $availabilityList->getConflicts();
         //foreach ($conflicts as $conflict) { error_log("$conflict " . $conflict->amendment); }
@@ -439,6 +509,12 @@ class AvailabilityTest extends EntityCommonTests
         $this->assertNotNull($iterator->current());
         $this->assertEquals('conflict', $iterator->current()->status);
         $this->assertEquals(strtotime('2016-04-19 09:00'), $iterator->current()->getFirstAppointment()->date);
+        $iterator->next();
+        $this->assertEquals('conflict', $iterator->current()->status);
+        $this->assertEquals(strtotime('2016-04-19 16:00'), $iterator->current()->getFirstAppointment()->date);
+        $iterator->next();
+        $this->assertEquals('conflict', $iterator->current()->status);
+        $this->assertEquals(strtotime('2016-04-19 12:00'), $iterator->current()->getFirstAppointment()->date);
         $iterator->next();
         $this->assertNull($iterator->current());
     }

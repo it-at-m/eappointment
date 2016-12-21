@@ -59,12 +59,7 @@ class Appointment extends Schema\Entity
 
     public function getScope()
     {
-        if (!isset($this['scope'])) {
-            $this->scope = new Scope();
-        }
-        if (!$this->scope instanceof Scope) {
-            $this->scope = new Scope($this->scope);
-        }
+        $this->scope = ($this->toProperty()->scope->isAvailable()) ? new Scope($this['scope']) : new Scope();
         return $this->scope;
     }
 

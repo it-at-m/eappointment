@@ -47,18 +47,12 @@ class Config extends Schema\Entity
 
     public function hasType($type)
     {
-        if (isset($this[$type])) {
-            return true;
-        }
-        return false;
+        return (isset($this[$type])) ? true : false;
     }
 
     public function hasPreference($type, $key)
     {
-        if ($this->hasType($type) && isset($this[$type][$key])) {
-            return true;
-        }
-        return false;
+        return ($this->hasType($type) && isset($this[$type][$key])) ? true : false;
     }
 
     public function getPreference($type, $key)

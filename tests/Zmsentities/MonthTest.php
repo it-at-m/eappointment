@@ -25,5 +25,13 @@ class MonthTest extends EntityCommonTests
             }
             $this->assertInstanceOf('BO\Zmsentities\Day', $day);
         }
+
+        $firstDay = $entity->getFirstDay();
+        $this->assertEquals('2015-11-01', $firstDay->format('Y-m-d'));
+        $this->assertEquals(1, $entity->getDayList()->count());
+
+        $dayList = new \BO\Zmsentities\Collection\DayList();
+        $dayList->addEntity((new \BO\Zmsentities\Day())->setDateTime($time));
+        $entity->setDays($dayList);
     }
 }
