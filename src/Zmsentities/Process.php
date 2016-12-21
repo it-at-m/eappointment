@@ -27,7 +27,7 @@ class Process extends Schema\Entity
             'reminderTimestamp' => 0,
             'requests' => new Collection\RequestList(),
             'scope' => new Scope(),
-            'status' => ''
+            'status' => 'free'
         ];
     }
 
@@ -247,6 +247,7 @@ class Process extends Schema\Entity
     {
         $queue = new Queue($this->queue);
         $queue->withAppointment = ($this->getAppointments()->getFirst()->hasTime()) ? true : false;
+        $queue->waitingTime = ($queue->waitingTime) ? $queue->waitingTime : 0;
         if ($queue->withAppointment) {
             $queue->number = $this->id;
             $queue->arrivalTime = $this->getFirstAppointment()->date;
