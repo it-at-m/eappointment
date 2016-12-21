@@ -31,7 +31,7 @@ class DepartmentTest extends EntityCommonTests
             'id' => 1234
         ]);
         $cluster['scopes'][] = $scope;
-        $example['clusters'][] = $cluster;
+        $example['clusters'] = (new ClusterList())->addEntity($cluster);
         $example['scopes'][] = $scope;
         $reduced = $example->withOutClusterDuplicates();
         $this->assertTrue($example['scopes']->hasEntity(1234));

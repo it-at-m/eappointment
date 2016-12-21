@@ -34,6 +34,9 @@ class Month extends Schema\Entity
     public function setDays(Collection\DayList $dayList)
     {
         foreach ($this->getDayList() as $key => $day) {
+            if (!$day instanceof Day) {
+                $day = new Day($day);
+            }
             $this->days[$key] = $dayList->getDayByDay($day);
         }
         return $this;

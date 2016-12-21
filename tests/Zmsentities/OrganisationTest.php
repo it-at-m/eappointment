@@ -38,4 +38,36 @@ class OrganisationTest extends EntityCommonTests
         $this->assertTrue(96 == $organisationList[0]->departments[0]->id, 'Getting organisation by department failed');
         $this->assertTrue(123 == $organisationList->getEntity(123)['id']);
     }
+
+    public function testValidClusterScopeCombination()
+    {
+        $ticketprinter = (new \BO\Zmsentities\Ticketprinter())->getExample();
+        $ticketprinter = $ticketprinter->toStructuredButtonList();
+
+        $entity = $this->getExample();
+        $department = (new \BO\Zmsentities\Department())->getExample();
+        $entity->departments = (new \BO\Zmsentities\Collection\DepartmentList())->addEntity($department);
+        $entity->hasClusterScopesFromButtonList($ticketprinter->buttons);
+    }
+
+    public function testScopeFromButtonListNotInDepartment()
+    {
+        $this->setExpectedException('\BO\Zmsentities\Exception\TicketprinterUnvalidButtonList');
+        $ticketprinter = (new \BO\Zmsentities\Ticketprinter())->getExample();
+        $ticketprinter = $ticketprinter->toStructuredButtonList();
+        $entity = $this->getExample();
+        $entity->hasClusterScopesFromButtonList($ticketprinter->buttons);
+    }
+
+    public function testClusterFromButtonListNotInDepartment()
+    {
+        $this->setExpectedException('\BO\Zmsentities\Exception\TicketprinterUnvalidButtonList');
+        $ticketprinter = (new \BO\Zmsentities\Ticketprinter())->getExample();
+        $ticketprinter->buttonlist = 's123,c99';
+        $ticketprinter = $ticketprinter->toStructuredButtonList();
+        $entity = $this->getExample();
+        $department = (new \BO\Zmsentities\Department())->getExample();
+        $entity->departments = (new \BO\Zmsentities\Collection\DepartmentList())->addEntity($department);
+        $entity->hasClusterScopesFromButtonList($ticketprinter->buttons);
+    }
 }

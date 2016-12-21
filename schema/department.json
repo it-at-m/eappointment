@@ -41,6 +41,11 @@
             {
                 "id": 123
             }
+        ],
+        "clusters": [
+        	{
+        		"id": 45
+        	}
         ]
     },
     "additionalProperties": false,
