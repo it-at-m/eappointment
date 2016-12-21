@@ -9,9 +9,9 @@ const renderLink = (conflict, onClick) => {
     const slotTime = availability.slotTimeInMinutes || 0
     const endTime = moment(appointment.date + slotTime * 60 * appointment.slotCount, 'X').format('HH:mm')
     if (availability.id) {
-        return <a href="#" onClick={onClick}>{startTime} - {endTime}</a>
+        return <a href="#" onClick={onClick}><strong>{startTime} - {endTime}</strong></a>
     } else {
-        return <span>{startTime}</span>
+        return <span><strong>{startTime}</strong></span>
     }
 }
 

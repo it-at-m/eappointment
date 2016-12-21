@@ -43,8 +43,6 @@ const TimeTable = (props) => {
     const { onSelect, timestamp } = props;
     const titleTime = moment(timestamp, 'X').format('dddd, DD.MM.YYYY')
 
-    console.log('timetable', props)
-
     const timeTableBody = <TimeTableBodyLayout
                               showConflicts={props.conflicts.length > 0}
                               conflicts={renderConflicts(props.conflicts)}
