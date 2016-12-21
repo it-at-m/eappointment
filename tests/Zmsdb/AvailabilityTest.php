@@ -36,7 +36,7 @@ class AvailabilityTest extends Base
     public function testReadList()
     {
         $query = new Query();
-        $collection = $query->readList(109); //by scope Helle Mitte
+        $collection = $query->readList(109, 1); //by scope Helle Mitte
         $this->assertEntityList("\\BO\\Zmsentities\\Availability", $collection);
         $this->assertEquals(true, $collection->hasEntity('99755'));
         $this->assertEquals(
@@ -66,6 +66,20 @@ class AvailabilityTest extends Base
 
         $deleteTest = $query->deleteEntity($lastInsertedId);
         $this->assertTrue($deleteTest, "Failed to delete Availability from Database.");
+    }
+
+    public function testWriteOpeningHour()
+    {
+        $query = new Query();
+        $input = $this->getTestEntity();
+        $input->weekday['thursday'] = true;
+        $input->weekday['friday'] = true;
+        $input->type = 'openinghours';
+        $entity = $query->writeEntity($input);
+        $lastInsertedId = $entity->id;
+
+        $entity = $query->readEntity($lastInsertedId, 1);
+        $this->assertEquals('openinghours', $entity->type);
     }
 
     protected function getTestEntity()

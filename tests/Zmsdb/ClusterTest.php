@@ -35,6 +35,16 @@ class ClusterTest extends Base
         $this->assertEquals(true, $entityList->hasScope('135')); //Bürgeramt 2 (Lichtenberg) Normannenstr. exists
     }
 
+    public function testReadQueueList()
+    {
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $query = new Query();
+        $input = $this->getTestEntity();
+        $queueList = $query->readQueueList(110, $now);
+        $this->assertEntityList("\\BO\\Zmsentities\\Queue", $queueList);
+        $this->assertEquals(105, $queueList->count());
+    }
+
     public function testReadIsOpenedScopeList()
     {
         $query = new Query();
