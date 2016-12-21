@@ -72,12 +72,22 @@ class AvailabilityList extends Base
         return $list;
     }
 
-    public function isOpenedByDate($dateString, $type = 'openinghours')
+    /*
+     * is opened on a day -> not specified by a time
+     */
+    public function isOpenedByDate(\DateTimeImmutable $dateTime, $type = false)
     {
-        $dateTime = \BO\Zmsentities\Helper\DateTime::create($dateString);
-        return $this->isOpened($dateTime, $type);
+        foreach ($this as $availability) {
+            if ($availability->isOpenedOnDate($dateTime, $type)) {
+                return true;
+            }
+        }
+        return false;
     }
 
+    /*
+     * is opened on a day with specified time
+     */
     public function isOpened(\DateTimeImmutable $dateTime, $type = "openinghours")
     {
         foreach ($this as $availability) {
