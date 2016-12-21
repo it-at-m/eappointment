@@ -12,7 +12,7 @@ class View extends BaseView {
 	initSoundCheck ()
     {
     	if (this.hasNewQueueId()) {
-    		this.playSound();    		
+    	    $( "#ring" ).trigger('play');
     	}
     	let newQueueIds = this.getCalledQueueIds();    		
     	this.writeCalledQueueIds(newQueueIds);
@@ -34,16 +34,6 @@ class View extends BaseView {
     	});
     	queueIds.sort((a,b) => {return a - b;}).join(',');
     	return queueIds;
-    }
-
-    playSound()
-    {
-    	$( "#ring" ).trigger('play');
-		setTimeout(function(){
-		    $("#ring").trigger('pause');
-		    //set play time to 0
-		    $("#ring").prop("currentTime",0);
-		},4000);
     }
     
     writeCalledQueueIds (newQueueIds)
