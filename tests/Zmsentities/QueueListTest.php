@@ -2,7 +2,7 @@
 
 namespace BO\Zmsentities\Tests;
 
-class QueueTest extends EntityCommonTests
+class QueueListTest extends EntityCommonTests
 {
     const DEFAULT_TIME = '2016-11-19 08:50:00';
 
