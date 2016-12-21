@@ -152,6 +152,14 @@ class SlotTest extends EntityCommonTests
         );
     }
 
+    public function testSlotFullException()
+    {
+        $this->setExpectedException('\BO\Zmsentities\Exception\SlotFull');
+        $entity = $this->getExample();
+        $entity->intern = 0;
+        $entity->removeAppointment();
+    }
+
     public function testGetFreeProcessesFailed()
     {
         $this->setExpectedException('\BO\Zmsentities\Exception\SlotRequiredWithoutReducing');

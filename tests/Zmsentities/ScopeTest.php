@@ -63,6 +63,22 @@ class ScopeTest extends EntityCommonTests
         $this->assertEquals(1, $entity->getCalculatedWorkstationCount());
     }
 
+    public function testGetWaitingTimeFromQueueList()
+    {
+        $now = new \DateTimeImmutable(self::DEFAULT_TIME);
+
+        $queue = (new \BO\Zmsentities\Queue())->getExample();
+        $queueList = new \BO\Zmsentities\Collection\QueueList();
+        $queueList->addEntity($queue);
+
+        $scope = (new $this->entityclass())->getExample();
+        $queueEstimatedData = $scope->getWaitingTimeFromQueueList($queueList, $now);
+        $this->assertEquals(
+            $scope->getPreference('queue', 'processingTimeAverage'),
+            $queueEstimatedData['waitingTimeEstimate']
+        );
+    }
+
     public function testUpdateStatusQueue()
     {
         $now = new \DateTimeImmutable(self::DEFAULT_TIME);

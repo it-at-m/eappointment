@@ -53,6 +53,8 @@ class ProcessTest extends EntityCommonTests
         $firstClient = $entity->getFirstClient();
         $this->assertFalse($firstClient['surveyAccepted'], 'client update failed');
         $this->assertTrue('Max Mustermann' == $firstClient['familyName'], 'first client not found');
+        $entity->getClients()[0] = null;
+        $this->assertFalse($entity->getFirstClient()->hasEmail());
     }
 
     public function testAppointment()
@@ -104,6 +106,23 @@ class ProcessTest extends EntityCommonTests
         $collection->addEntity($entity);
         $scopeList = $collection->getScopeList();
         $this->assertTrue(count($scopeList) > 0);
+    }
+
+    public function testToQueue()
+    {
+        $now = new \DateTimeImmutable(self::DEFAULT_TIME);
+        $entityWithAppointment = $this->getExample();
+
+        $dateWithoutTime = (new \DateTimeImmutable())->setTimestamp(1447801200);
+        $entityWithoutAppointment = $this->getExample();
+        $entityWithoutAppointment->addQueue(123, $dateWithoutTime);
+        $entityWithoutAppointment->getFirstAppointment()->setTime($dateWithoutTime->format('Y-m-d H:i'));
+
+        $queueWithAppointment = $entityWithAppointment->toQueue($now);
+        $queueWithoutAppointment = $entityWithoutAppointment->toQueue($now);
+
+        $this->assertTrue($queueWithAppointment->withAppointment);
+        $this->assertFalse($queueWithoutAppointment->withAppointment);
     }
 
     public function testLessData()
