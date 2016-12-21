@@ -2,22 +2,34 @@ import React, { PropTypes } from 'react'
 import Board from '../layouts/board'
 import moment from 'moment'
 
-const renderConflicts = conflicts => {
+const renderLink = (conflict, onClick) => {
+    const appointment = conflict.appointments[0]
+    const availability = appointment.availability || {}
+    const startTime = moment(appointment.date, 'X').format('YYYY-MM-DD HH:mm')
+    const slotTime = availability.slotTimeInMinutes || 0
+    const endTime = moment(appointment.date + slotTime * 60 * appointment.slotCount, 'X').format('HH:mm')
+    if (availability.id) {
+        return <a href="#" onClick={onClick}>{startTime} - {endTime}</a>
+    } else {
+        return <span>{startTime}</span>
+    }
+}
+
+const renderConflicts = (conflicts, onSelect) => {
     if (conflicts.length > 0) {
         return conflicts.map((conflict, key) => {
 
-            const appointment = conflict.appointments[0]
-            const startTime = moment(appointment.date, 'X').format('YYYY-MM-DD HH:mm')
-            const availability = appointment.availability || {}
-            const slotTime = availability.slotTimeInMinutes || 0
-            const endTime = moment(appointment.date + slotTime * 60 * appointment.slotCount, 'X').format('HH:mm')
+            const onClick = ev => {
+                ev.preventDefault()
+                onSelect(conflict.availability.id)
+            }
 
             return (
                 <span key={key}>
-                    <a href='#'>{startTime} - {endTime}</a>
+                    {renderLink(conflict, onClick)}
                     {conflict.queue.withAppointment
                      ? <p>Termin außerhalb der Öffnungszeiten oder überbucht</p>
-                     : <p title={ appointment.availability} >{conflict.amendment}</p>
+                     : <p>{conflict.amendment}</p>
                     }
                 </span>
             )
@@ -33,7 +45,7 @@ const Conflicts = (props) => {
     return (
         <Board className="availability-conflicts"
             title="Konflikte"
-            body={renderConflicts(props.conflicts)} 
+            body={renderConflicts(props.conflicts, props.onSelect)} 
         />
     )
 }
@@ -43,7 +55,8 @@ Conflicts.defaultProps = {
 }
 
 Conflicts.propTypes = {
-    conflicts: PropTypes.array
+    conflicts: PropTypes.array,
+    onSelect: PropTypes.func.isRequired
 }
 
 export default Conflicts
