@@ -61,11 +61,12 @@ class AvailabilityPage extends Component {
         } else {
             this.setState({ selectedAvailability: null })
         }
+        $('body').scrollTop(0);
     }
 
     refreshData() {
         const currentDate = formatTimestampDate(this.props.timestamp)
-        const url = `/scope/${this.props.scope.id}/availability/day/${currentDate}/conflicts/`
+        const url = this.props.links.includeurl + `/scope/${this.props.scope.id}/availability/day/${currentDate}/conflicts/`
         $.ajax(url, {
             method:'GET'
         }).done(data => {
@@ -99,7 +100,7 @@ class AvailabilityPage extends Component {
 
         console.log('Saving updates', sendData)
 
-        $.ajax('/availability/', {
+        $.ajax(this.props.links.includeurl + '/availability/', {
             method: 'POST',
             data: JSON.stringify(sendData)
         }).done((success) => {
@@ -119,7 +120,7 @@ class AvailabilityPage extends Component {
         const ok = confirm('Soll diese Öffnungszeit wirklich gelöscht werden?')
         const id = availability.id
         if (ok) {
-            $.ajax(`/availability/${id}`, {
+            $.ajax(this.props.links.includeurl + `/availability/${id}`, {
                 method: 'DELETE'
             }).done(() => {
                 this.setState(Object.assign({}, deleteAvailabilityInState(this.state, availability), {
