@@ -25,6 +25,24 @@ class CalldisplayTest extends Base
         $this->assertEquals('Bürgeramt', $contact['name']);
     }
 
+    public function testBasicWithCluster()
+    {
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $query = new Query();
+        $input = $this->getTestEntity();
+        $cluster = (new \BO\Zmsentities\Cluster())->getExample();
+        $cluster->id = 110;
+        $input->clusters[] = $cluster;
+        $entity = $query->readResolvedEntity($input, $now);
+        $this->assertEntity("\\BO\\Zmsentities\\Calldisplay", $entity);
+
+        $organisation = $query->readResolvedOrganisation($entity);
+        $this->assertEntity("\\BO\\Zmsentities\\Organisation", $organisation);
+
+        $contact = $query->readContactData($entity);
+        $this->assertEquals('Bürgeramt Hohenzollerndamm', $contact['name']);
+    }
+
     protected function getTestEntity()
     {
         return $input = (new Entity())->getExample();

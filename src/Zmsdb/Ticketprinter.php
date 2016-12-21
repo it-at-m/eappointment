@@ -126,6 +126,7 @@ class Ticketprinter extends Base
                 );
             }
         }
+        return true;
     }
 
     /**

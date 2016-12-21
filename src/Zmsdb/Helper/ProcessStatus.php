@@ -87,6 +87,7 @@ class ProcessStatus extends \BO\Zmsdb\Process
             '
         );
         $statusList = [
+            'confirmed' => $this->isConfirmedProcess($processData),
             'queued' => $this->isQueuedProcess($processData),
             'called' => $this->isCalledProcess($processData),
             'processing' => $this->isProcessingProcess($processData),
