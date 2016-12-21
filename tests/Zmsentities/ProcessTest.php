@@ -80,6 +80,7 @@ class ProcessTest extends EntityCommonTests
 
     public function testCollection()
     {
+        $now = new \DateTimeImmutable(self::DEFAULT_TIME);
         $collection = new $this->collectionclass();
         $entity = $this->getExample();
         $collection->addEntity($entity);
@@ -97,6 +98,10 @@ class ProcessTest extends EntityCommonTests
         );
         $this->assertTrue(123456 == $collection->getFirstProcess()->id, 'First process not found in process list');
         $this->assertTrue(1 == count($collection->getAppointmentList()));
+
+        $queueList = $collection->toQueueList($now);
+        $this->assertEquals('queued', $queueList->getFirst()->status);
+        $this->assertEquals('1447869171', $queueList->getFirst()->arrivalTime);
     }
 
     public function testScopeList()

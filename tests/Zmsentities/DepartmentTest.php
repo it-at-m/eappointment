@@ -44,4 +44,29 @@ class DepartmentTest extends EntityCommonTests
         $reduced = $example->withOutClusterDuplicates();
         $this->assertTrue($example['scopes']->hasEntity(141));
     }
+
+    public function testCollection()
+    {
+        $entity = $this->getExample();
+
+        $entity['scopes'] = new ScopeList();
+        $cluster = (new Cluster())->getExample();
+        $scope = new Scope([
+            'id' => 1234
+        ]);
+        $cluster['scopes'][] = $scope;
+        $entity['clusters'] = (new ClusterList());
+        $entity['clusters']->addEntity($cluster);
+        $entity['clusters']->addEntity($cluster);
+        $entity['scopes'][] = $scope;
+        $entity['scopes'][] = $scope;
+
+        $collection = new $this->collectionclass();
+        $collection->addEntity($entity);
+        $this->assertEquals(2, $collection->getUniqueScopeList()->count());
+
+        $this->assertEquals(2, $collection->getFirst()->scopes->count());
+        $collection = $collection->withOutClusterDuplicates();
+        $this->assertEquals(0, $collection->getFirst()->scopes->count());
+    }
 }

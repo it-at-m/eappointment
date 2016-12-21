@@ -40,9 +40,21 @@ class CalendarTest extends EntityCommonTests
             $entity->getScopeList(),
             'ScopeList does not exists'
         );
-
-
+        $this->assertTrue($entity->isValid());
         $this->assertTrue(self::FIRST_DAY == $date->format('Y-m-d'), 'Getting date from timestamp failed');
+    }
+
+    public function testHasFirstAndLastDay()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $this->assertTrue($entity->hasFirstAndLastDay());
+
+        unset($entity['firstDay']);
+        $this->assertFalse($entity->hasFirstAndLastDay());
+
+        $entity = (new $this->entityclass())->getExample();
+        unset($entity['lastDay']);
+        $this->assertFalse($entity->hasFirstAndLastDay());
     }
 
     public function testDays()
