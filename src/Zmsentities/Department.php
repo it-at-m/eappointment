@@ -36,9 +36,11 @@ class Department extends Schema\Entity
         if ($department->toProperty()->clusters->get()) {
             $clusterScopeList = new Collection\ScopeList();
             foreach ($department->clusters as $cluster) {
-                foreach ($cluster['scopes'] as $clusterScope) {
-                    $scope = new Scope($clusterScope);
-                    $clusterScopeList->addEntity($scope);
+                if (array_key_exists('scopes', $cluster)) {
+                    foreach ($cluster['scopes'] as $clusterScope) {
+                        $scope = new Scope($clusterScope);
+                        $clusterScopeList->addEntity($scope);
+                    }
                 }
             }
             $scopeList = new Collection\ScopeList();

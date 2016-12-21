@@ -46,12 +46,8 @@ class Calldisplay extends Schema\Entity
     {
         $scopeList = new Collection\ScopeList();
         if ($this->hasScopeList()) {
-            if ($this->scopes instanceof Collection\ScopeList) {
-                $scopeList = $this->scopes;
-            } else {
-                foreach ($this->scopes as $scope) {
-                    $scopeList->addEntity(new Scope($scope));
-                }
+            foreach ($this->scopes as $scope) {
+                $scopeList->addEntity(new Scope($scope));
             }
         }
         return $scopeList;
@@ -61,12 +57,8 @@ class Calldisplay extends Schema\Entity
     {
         $clusterList = new Collection\ClusterList();
         if ($this->hasClusterList()) {
-            if ($this->clusters instanceof Collection\ClusterList) {
-                $clusterList = $this->clusters;
-            } else {
-                foreach ($this->clusters as $cluster) {
-                    $clusterList->addEntity(new Cluster($cluster));
-                }
+            foreach ($this->clusters as $cluster) {
+                $clusterList->addEntity(new Cluster($cluster));
             }
         }
         return $clusterList;
@@ -85,13 +77,15 @@ class Calldisplay extends Schema\Entity
 
     public function withOutClusterDuplicates()
     {
-        $calldisplay = clone $this;
+        $calldisplay = new self($this);
         if ($calldisplay->hasClusterList() && $calldisplay->hasScopeList()) {
             $clusterScopeList = new Collection\ScopeList();
             foreach ($calldisplay->clusters as $cluster) {
-                foreach ($cluster['scopes'] as $clusterScope) {
-                    $scope = new Scope($clusterScope);
-                    $clusterScopeList->addEntity($scope);
+                if (array_key_exists('scopes', $cluster)) {
+                    foreach ($cluster['scopes'] as $clusterScope) {
+                        $scope = new Scope($clusterScope);
+                        $clusterScopeList->addEntity($scope);
+                    }
                 }
             }
             $scopeList = new Collection\ScopeList();
