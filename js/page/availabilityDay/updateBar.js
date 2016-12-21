@@ -29,8 +29,8 @@ const UpdateBar = (props) => {
 }
 
 UpdateBar.propTypes = {
-    onSave: PropTypes.func.isRequried,
-    onRevert: PropTypes.func.isRequried
+    onSave: PropTypes.func.isRequired,
+    onRevert: PropTypes.func.isRequired
 }
 
 export default UpdateBar

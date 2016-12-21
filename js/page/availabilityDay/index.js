@@ -234,6 +234,14 @@ class AvailabilityPage extends Component {
             formTitle: "Neue Öffnungszeit" }))
     }
 
+    onConflictedIdSelect(id) {
+        const availability = this.state.availabilitylist.filter(availability => availability.id === id)[0]
+
+        if (availability) {
+            this.setState({ selectedAvailability: availability })
+        }
+    }
+
     renderTimeTable() {
         const onSelect = data => {
             this.setState({
@@ -290,7 +298,7 @@ class AvailabilityPage extends Component {
                 timeTable={this.renderTimeTable()}
                 updateBar={this.renderUpdateBar()}
                 form={this.renderForm()}
-                conflicts={<Conflicts conflicts={this.state.conflicts} />}
+                conflicts={<Conflicts conflicts={this.state.conflicts} onSelect={this.onConflictedIdSelect.bind(this)} />}
             />
         )
     }
