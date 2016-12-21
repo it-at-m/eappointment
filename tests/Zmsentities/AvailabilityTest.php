@@ -315,6 +315,7 @@ class AvailabilityTest extends EntityCommonTests
         $entityOH = $this->getExampleWithTypeOpeningHours($time);
         $collection->addEntity($entityOH);
         $this->assertTrue($collection->isOpened($time));
+        $this->assertTrue($collection->isOpenedByDate($time));
 
         $this->assertEntityList($this->entityclass, $collection);
         $this->assertTrue(
@@ -336,6 +337,15 @@ class AvailabilityTest extends EntityCommonTests
         $this->assertTrue($collection->count() == 3);
         $collection = $collection->withOutDoubles();
         $this->assertTrue($collection->count() == 2);
+
+        $this->assertEquals(1, $collection->withDateTime($time)->count());
+        $this->assertEquals(1, $collection->withType('openinghours')->count());
+        $this->assertEquals(1, $collection->withType('appointment')->count());
+
+        $appointment = (new \BO\Zmsentities\Appointment())->getExample();
+        $this->assertFalse($collection->hasAppointment($appointment));
+        $appointment->setTime(self::DEFAULT_TIME);
+        $this->assertTrue($collection->hasAppointment($appointment));
     }
 
     public function testUnopenedNoDay()
@@ -346,6 +356,7 @@ class AvailabilityTest extends EntityCommonTests
         $entityOH->endTime = '11:00:00';
         $collection->addEntity($entityOH);
         $this->assertFalse($collection->isOpened($time));
+        $this->assertFalse($collection->isOpenedByDate($time));
     }
 
     public function testUnopenedWrongType()
