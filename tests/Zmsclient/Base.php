@@ -18,13 +18,9 @@ abstract class Base extends \PHPUnit_Framework_TestCase
      *
      * @return \BO\Zmsclient\Http
      */
-    protected function createHttpClient($mockup = null, $testWithComponents = false)
+    protected function createHttpClient($mockup = null)
     {
         $http = new \BO\Zmsclient\Http($this::$http_baseurl, $mockup);
-        if ($testWithComponents) {
-            $baseurlPersonalized = 'https://berlinonline:1palme1@localhost:443/terminvereinbarung/api/2';
-            $http = new \BO\Zmsclient\Http($baseurlPersonalized, $mockup);
-        }
         return $http;
     }
 

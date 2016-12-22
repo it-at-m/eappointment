@@ -16,17 +16,6 @@ class HttpTest extends Base
         $this->assertTrue($result->getResponse() instanceof \Psr\Http\Message\ResponseInterface);
     }
 
-    public function testStatusWithUserAndPort()
-    {
-        $http = $this->createHttpClient(null, true);
-        $result = $http->readGetResult('/status/');
-        $uri = $result->getRequest()->getUri();
-        $entity = $result->getEntity();
-        $this->assertEquals('berlinonline', $uri->getUser());
-        $this->assertTrue($entity instanceof \BO\Zmsentities\Schema\Entity);
-        $this->assertTrue($result->getResponse() instanceof \Psr\Http\Message\ResponseInterface);
-    }
-
     public function testScopes()
     {
         $http = $this->createHttpClient();
