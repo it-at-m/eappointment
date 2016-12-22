@@ -16,7 +16,7 @@
     },
     "required": [
         "serverTime",
-        "scopes"
+        "organisation"
     ],
     "additionalProperties": false,
     "properties": {
