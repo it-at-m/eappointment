@@ -18,4 +18,12 @@ class ClientTest extends Base
         $body = Validator::value($bodyContent)->isJson();
         $this->assertFalse($body->hasFailed());
     }
+
+    public function testStatusFailed()
+    {
+        $this->setExpectedException('\BO\Zmsclient\Psr7\RequestException');
+        $uri = new Uri(self::$http_baseurl . '/status/');
+        $request = new Request('GET', $uri);
+        $response = Client::readResponse($request, array('CURLOPT_TIMEOUT' => 1));
+    }
 }

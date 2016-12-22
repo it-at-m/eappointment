@@ -10,6 +10,7 @@ class HttpTest extends Base
     {
         $http = $this->createHttpClient();
         $result = $http->readGetResult('/status/');
+        $result = \BO\Zmsclient\Status::testStatus($result);
         $entity = $result->getEntity();
         $this->assertTrue($entity instanceof \BO\Zmsentities\Schema\Entity);
         $this->assertTrue($result->getResponse() instanceof \Psr\Http\Message\ResponseInterface);
