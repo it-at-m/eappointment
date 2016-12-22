@@ -9,6 +9,9 @@ namespace BO\Zmsclient\PhpUnit;
 
 use \Prophecy\Argument;
 
+/**
+ * @codeCoverageIgnore
+ */
 abstract class Base extends \BO\Slim\PhpUnit\Base
 {
     /**

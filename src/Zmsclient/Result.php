@@ -98,6 +98,16 @@ class Result
     }
 
     /**
+     * Get the origin request
+     *
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function getRequest()
+    {
+        return $this->request;
+    }
+
+    /**
      * Get the origin response
      *
      * @return \Psr\Http\Message\ResponseInterface
@@ -114,10 +124,12 @@ class Result
      */
     public function getEntity()
     {
+        $entity = null;
         if (null !== $this->getData()) {
             $data = $this->getData();
-            return reset($data);
+            $entity = reset($data);
         }
+        return $entity;
     }
 
     /**
@@ -127,13 +139,15 @@ class Result
      */
     public function getCollection()
     {
+        $collection = null;
         $entity = $this->getEntity();
         if (null !== $entity) {
             $class = get_class($entity);
             $alias = ucfirst(preg_replace('#^.*\\\#', '', $class));
             $className = "\\BO\\Zmsentities\\Collection\\" . $alias . "List";
-            return new $className($this->getData());
+            $collection = new $className($this->getData());
         }
+        return $collection;
     }
     /**
      * Description
