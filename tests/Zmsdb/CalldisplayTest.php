@@ -32,7 +32,9 @@ class CalldisplayTest extends Base
         $input = $this->getTestEntity();
         $cluster = (new \BO\Zmsentities\Cluster())->getExample();
         $cluster->id = 110;
+        $cluster->scopes = $input->scopes;
         $input->clusters[] = $cluster;
+        $input->scopes = new \BO\Zmsentities\Collection\ScopeList();
         $entity = $query->readResolvedEntity($input, $now);
         $this->assertEntity("\\BO\\Zmsentities\\Calldisplay", $entity);
 
@@ -41,6 +43,18 @@ class CalldisplayTest extends Base
 
         $contact = $query->readContactData($entity);
         $this->assertEquals('Bürgeramt Hohenzollerndamm', $contact['name']);
+    }
+
+    public function testExceptionClusterNotFound()
+    {
+        $this->setExpectedException('\BO\Zmsdb\Exception\Calldisplay\ClusterNotFound');
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $query = new Query();
+        $input = $this->getTestEntity();
+        $cluster = (new \BO\Zmsentities\Cluster())->getExample();
+        $cluster->id = 999;
+        $input->clusters[] = $cluster;
+        $entity = $query->readResolvedEntity($input, $now);
     }
 
     protected function getTestEntity()

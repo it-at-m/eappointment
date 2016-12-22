@@ -111,22 +111,29 @@ class Ticketprinter extends Base
 
     protected function readDisabledByScope($ticketprinter)
     {
-        if (1 == count($ticketprinter->buttons) && ! $ticketprinter->buttons[0]['enabled']) {
-            if (0 < $ticketprinter->getScopeList()->count()) {
-                $scope = $ticketprinter->getScopeList()->getFirst();
-                $scope = (new Scope())->readEntity($scope['id']);
-            } elseif (0 < $ticketprinter->getClusterList()->count()) {
-                $scopeList = $ticketprinter->getClusterList()->getFirst()->scopes;
-                $scopeList = new \BO\Zmsentities\Collection\ScopeList($scopeList);
+        $scope = $this->readSingleScopeFromButtonList($ticketprinter);
+        if ($scope && $scope->getStatus('ticketprinter', 'deactivated')) {
+            throw new Exception\TicketprinterDisabledByScope(
+                $scope->getPreference('ticketprinter', 'deactivatedText')
+            );
+        }
+    }
+
+    public function readSingleScopeFromButtonList(Entity $ticketprinter)
+    {
+        $scope = null;
+        $isOneDisabledButton = (1 == count($ticketprinter->buttons) && ! $ticketprinter->buttons[0]['enabled']);
+        if ($isOneDisabledButton && 1 == $ticketprinter->getScopeList()->count()) {
+            $scope = $ticketprinter->getScopeList()->getFirst();
+            $scope = (new Scope())->readEntity($scope['id']);
+        } elseif ($isOneDisabledButton && 1 == $ticketprinter->getClusterList()->count()) {
+            $scopeList = $ticketprinter->getClusterList()->getFirst()->scopes;
+            $scopeList = new \BO\Zmsentities\Collection\ScopeList($scopeList);
+            if (1 == $scopeList->count()) {
                 $scope = (new Scope())->readEntity($scopeList->getFirst()['id']);
             }
-            if ($scope->getStatus('ticketprinter', 'deactivated')) {
-                throw new Exception\TicketprinterDisabledByScope(
-                    $scope->getPreference('ticketprinter', 'deactivatedText')
-                );
-            }
         }
-        return true;
+        return $scope;
     }
 
     /**
