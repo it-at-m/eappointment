@@ -53,9 +53,11 @@ class Http
         $this->uri = $this->uri->withScheme(parse_url($baseUrl, PHP_URL_SCHEME));
         $this->uri = $this->uri->withHost(parse_url($baseUrl, PHP_URL_HOST));
         $port = parse_url($baseUrl, PHP_URL_PORT);
+        // @codeCoverageIgnoreStart
         if ($port) {
             $this->uri = $this->uri->withPort($port);
         }
+        // @codeCoverageIgnoreEnd
         $user = parse_url($baseUrl, PHP_URL_USER);
         $pass = parse_url($baseUrl, PHP_URL_PASS);
         if ($user) {
