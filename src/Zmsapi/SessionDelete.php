@@ -24,7 +24,7 @@ class SessionDelete extends BaseController
         $message = Response\Message::create(Render::$request);
         $query = new Query();
         $session = $query->readEntity($sessionName, $sessionId);
-        if (! $session->hasId() || ! $query->deleteEntity($sessionName, $sessionId)) {
+        if (! $session || ! $query->deleteEntity($sessionName, $sessionId)) {
             throw new Exception\Session\SessionDeleteFailed();
         }
 
