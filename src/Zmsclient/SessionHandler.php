@@ -40,12 +40,16 @@ class SessionHandler implements \SessionHandlerInterface
             $session = $this->http->readGetResult('/session/' . $this->sessionName . '/' . $sessionId . '/')
                 ->getEntity();
         } catch (Exception\ApiFailed $exception) {
+            // @codeCoverageIgnoreStart
             throw $exception;
+            // @codeCoverageIgnoreEnd
         } catch (Exception $exception) {
             if ($exception->getCode() == 404) {
                 $session = null;
             } else {
+                // @codeCoverageIgnoreStart
                 throw $exception;
+                // @codeCoverageIgnoreEnd
             }
         }
         return (isset($session) && array_key_exists('content', $session)) ? $session['content'] : null;
@@ -62,9 +66,11 @@ class SessionHandler implements \SessionHandlerInterface
             $session = $this->http->readPostResult('/session/', $entity)
                 ->getEntity();
         } catch (Exception $exception) {
+            // @codeCoverageIgnoreStart
             if ($exception->getCode() == 404) {
                 $session = null;
             }
+            // @codeCoverageIgnoreEnd
             throw $exception;
         }
 
@@ -80,6 +86,7 @@ class SessionHandler implements \SessionHandlerInterface
     /**
      * @SuppressWarnings(UnusedFormalParameter)
      * @SuppressWarnings(ShortMethodName)
+     * @codeCoverageIgnore
      */
     public function gc($maxlifetime)
     {

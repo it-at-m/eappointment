@@ -24,8 +24,9 @@ abstract class Base extends \PHPUnit_Framework_TestCase
         return $http;
     }
 
-    protected function createSession($http)
+    protected function createSession()
     {
+        $http = $this->createHttpClient();
         return new \BO\Zmsclient\SessionHandler($http);
     }
 }
