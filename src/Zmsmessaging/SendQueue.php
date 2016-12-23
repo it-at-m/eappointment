@@ -33,15 +33,18 @@ class SendQueue
                 $result = $this->startTransmission($mail, $action);
                 if ($result instanceof \PHPMailer) {
                     $resultList[] = array(
-                        'id' => $result->getLastMessageID(),
+                        'id' => ($result->getLastMessageID()) ? $result->getLastMessageID() : $mail->id,
                         'recipients' => $result->getAllRecipientAddresses(),
                         'mime' => $result->getMailMIME(),
+                        'attachments' => $result->getAttachments(),
                         'customHeaders' => $result->getCustomHeaders(),
                     );
                 } else {
+                    // @codeCoverageIgnoreStart
                     $resultList[] = array(
                         'errorInfo' => $result->ErrorInfo
                     );
+                    // @codeCoverageIgnoreEnd
                 }
             }
         } else {
@@ -61,7 +64,7 @@ class SendQueue
                 $result = $this->startTransmission($notification, $action);
                 if ($result instanceof \PHPMailer) {
                     $resultList[] = array(
-                        'id' => $result->getLastMessageID(),
+                        'id' => ($result->getLastMessageID()) ? $result->getLastMessageID() : $notification->id,
                         'recipients' => $result->getAllRecipientAddresses(),
                         'mime' => $result->getMailMIME(),
                         'customHeaders' => $result->getCustomHeaders(),
@@ -69,9 +72,11 @@ class SendQueue
                 } elseif ('viaGateway' == $result) {
                     $resultList[] = array('viaGateway' => true, 'item' => $item);
                 } else {
+                    // @codeCoverageIgnoreStart
                     $resultList[] = array(
                         'errorInfo' => $result->ErrorInfo
                     );
+                    // @codeCoverageIgnoreEnd
                 }
             }
         } else {
@@ -91,6 +96,7 @@ class SendQueue
                 $mailer = $this->createNotificationer($message);
             }
         } catch (phpmailerException $exception) {
+            // @codeCoverageIgnoreStart
             \App::$log->debug('Zmsmessaging PHPMailer', [$exception]);
             return $exception->getMessage();
         } catch (Exception $exception) {
@@ -105,6 +111,7 @@ class SendQueue
             }
             $this->deleteFromQueue($message);
         }
+        // @codeCoverageIgnoreEnd
         return $mailer;
     }
 
@@ -132,8 +139,8 @@ class SendQueue
         $mailer->addCustomHeader('Content-Transfer-Encoding', $encoding);
         $mailer->IsHTML(true);
         $mailer->Subject = $message['subject'];
-        $mailer->AltBody = $textPart;
-        $mailer->Body = $htmlPart;
+        $mailer->AltBody = (isset($textPart)) ? $textPart : '';
+        $mailer->Body = (isset($htmlPart)) ? $htmlPart : '';
         $mailer->AddAddress($message->client['email'], $message->client['familyName']);
         $mailer->SetFrom($message['department']['email']);
         $mailer->FromName = $message['department']['name'];
@@ -169,14 +176,16 @@ class SendQueue
     }
 
 
-    protected function deleteFromQueue($message)
+    public function deleteFromQueue($message)
     {
         $type = ($message instanceof \BO\Zmsentities\Mail) ? 'mails' : 'notification';
         try {
-            return \App::$http->readDeleteResult('/'. $type .'/'. $message->id .'/');
+            \App::$http->readDeleteResult('/'. $type .'/'. $message->id .'/')->getEntity();
         } catch (Exception $exception) {
+            // @codeCoverageIgnoreStart
             \App::$log->debug('Zmsmessaging Delete From Queue', [$exception]);
-            return $exception->getMessage();
+            throw $exception;
+            // @codeCoverageIgnoreEnd
         }
     }
 }
