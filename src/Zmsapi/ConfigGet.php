@@ -29,9 +29,7 @@ class ConfigGet extends BaseController
                 $message->data->id = 1;
             }
         } else {
-            $message->statuscode = 401;
-            $message->meta->error = true;
-            $message->meta->message = "Ihnen wurde der Zugriff auf diese Daten verwehrt.";
+            throw new Exception\Config\SecureTokenMissed();
         }
 
         Render::lastModified(time(), '0');
