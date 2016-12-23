@@ -30,12 +30,13 @@ class Mail extends Base
     {
         $mailList = new Collection();
         $query = new Query\MailQueue(Query\Base::SELECT);
-        $query->addEntityMapping()
+        $query
+            ->addEntityMapping()
             ->addResolvedReferences($resolveReferences);
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
             foreach ($result as $item) {
-                $entity = $this->readEntity($item['id'], $resolveReferences);
+                $entity = $this->readEntity($item['id'], $resolveReferences - 1);
                 if ($entity instanceof Entity) {
                     $mailList->addEntity($entity);
                 }

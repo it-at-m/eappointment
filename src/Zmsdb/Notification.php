@@ -31,10 +31,9 @@ class Notification extends Base
             ->addResolvedReferences($resolveReferences);
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
-            foreach ($result as $notification) {
-                $scope = (new Scope())->readEntity($notification->getScopeId(), $resolveReferences);
-                $notification->addScope($scope);
-                $notificationList->addEntity($notification);
+            foreach ($result as $item) {
+                $entity = $this->readEntity($item['id'], $resolveReferences - 1);
+                $notificationList->addEntity($entity);
             }
             $notificationList = new Collection($result);
         }

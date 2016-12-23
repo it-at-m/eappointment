@@ -18,7 +18,7 @@ class MailTest extends Base
         $this->assertEquals('Das ist ein Plaintext Test', $entity->getPlainPart());
         $this->assertEquals("Max Mustermann", $entity->getFirstClient()['familyName']);
 
-        $collection = $query->readList(1);
+        $collection = $query->readList(2);
         $collection->addEntity($input);
         $this->assertEntityList("\\BO\\Zmsentities\\Mail", $collection);
         $this->assertEquals(true, $collection->hasEntity('1234')); //Test Entity exists
@@ -83,16 +83,19 @@ class MailTest extends Base
             ],
             "multipart" => array(
                 [
+                    "queueId" => "1234",
                     "mime" => "text/html",
                     "content" =>  "<h1>Title</h1><p>Message</p>",
                     "base64" => false
                 ],
                 [
+                    "queueId" => "1234",
                     "mime" => "text/plain",
                     "content" =>  "Das ist ein Plaintext Test",
                     "base64" => false
                 ],
                 [
+                    "queueId" => "1234",
                     "mime" => "text/calendar",
                     "content" =>  "QkVHSU46VkNBTEVOREFSDQpWRVJTSU9OOjIuMA0KUFJPRElEOmh0dHA6Ly93d3cuZXhhbXBsZS5jb20vY2FsZW5kYXJhcHBsaWNhdGlvbi8NCk1FVEhPRDpQVUJMSVNIDQpCRUdJTjpWRVZFTlQNClVJRDptYXhAc2VydmljZS5iZXJsaW4uZGUNCk9SR0FOSVpFUjtDTj0iTWF4eCBNdXN0ZXJtYW5uLCBFeGFtcGxlIEluYy4iOk1BSUxUTzptYXgubXVzdGVybWFubkBtdXN0ZXJtYWlsLmRlDQpMT0NBVElPTjpTb21ld2hlcmUNClNVTU1BUlk6RWluZSBLdXJ6aW5mbw0KREVTQ1JJUFRJT046QmVzY2hyZWlidW5nIGRlcyBUZXJtaW5lcw0KQ0xBU1M6UFVCTElDDQpEVFNUQVJUOjIwMTYwOTEwVDIyMDAwMFoNCkRURU5EOjIwMTYwOTE5VDIxNTkwMFoNCkRUU1RBTVA6MjAxNjA4MTJUMTI1OTAwWg0KRU5EOlZFVkVOVA0KRU5EOlZDQUxFTkRBUg==",
                     "base64" => true
