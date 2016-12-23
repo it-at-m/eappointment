@@ -10,9 +10,6 @@ abstract class Base extends \PHPUnit_Framework_TestCase
      */
     public static $http_baseurl = null;
 
-    protected $sessionName = 'Zmsappointment';
-    protected $sessionAttribute = 'session';
-
     /**
      * @param \BO\Zmsclient\Psr7\ClientInterface $mockup Add a mockup if necessary
      *
