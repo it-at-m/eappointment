@@ -29,4 +29,9 @@ abstract class Base extends \PHPUnit_Framework_TestCase
         $http = $this->createHttpClient();
         return new \BO\Zmsclient\SessionHandler($http);
     }
+
+    protected function createTwigMockup()
+    {
+        return new \Twig_Environment($this->getMockBuilder('Twig_LoaderInterface')->getMock());
+    }
 }
