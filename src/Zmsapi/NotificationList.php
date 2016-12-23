@@ -21,7 +21,7 @@ class NotificationList extends BaseController
     public static function render()
     {
         $message = Response\Message::create(Render::$request);
-        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         $notificationList = (new Query())->readList($resolveReferences);
 
         if (0 < count($notificationList)) {

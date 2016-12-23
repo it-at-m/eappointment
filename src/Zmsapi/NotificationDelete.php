@@ -22,6 +22,11 @@ class NotificationDelete extends BaseController
         $query = new Query();
         $message = Response\Message::create(Render::$request);
         $notification = $query->readEntity($itemId);
+
+        if ($notification && ! $notification->hasId()) {
+            throw new Exception\Notificiation\NotificationNotFound();
+        }
+
         if ($query->deleteEntity($itemId)) {
             $message->data = $notification;
         } else {

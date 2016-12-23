@@ -22,6 +22,11 @@ class MailDelete extends BaseController
         $query = new Query();
         $message = Response\Message::create(Render::$request);
         $mail = $query->readEntity($itemId);
+
+        if ($mail && ! $mail->hasId()) {
+            throw new Exception\Mail\MailNotFound();
+        }
+
         if ($query->deleteEntity($itemId)) {
             $message->data = $mail;
         } else {
