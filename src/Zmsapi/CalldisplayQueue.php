@@ -34,7 +34,11 @@ class CalldisplayQueue extends BaseController
                 if (! $scope) {
                     throw new Exception\Scope\ScopeNotFound();
                 }
-                $queueList->addList($scopeQuery->readWithWaitingTime($scope->id, \App::$now));
+                $queueList->addList(
+                    $scopeQuery
+                        ->readWithWaitingTime($scope->id, \App::$now)
+                        ->withPickupDestination($scope)
+                );
             }
         }
         if ($calldisplay->hasClusterList()) {
@@ -44,7 +48,9 @@ class CalldisplayQueue extends BaseController
                 if (! $cluster) {
                     throw new Exception\Cluster\ClusterNotFound();
                 }
-                $queueList->addList($clusterQuery->readQueueList($cluster->id, \App::$now));
+                $queueList->addList(
+                    $clusterQuery->readQueueList($cluster->id, \App::$now)
+                );
             }
         }
         $message = Response\Message::create(Render::$request);
