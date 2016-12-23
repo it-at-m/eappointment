@@ -12,13 +12,7 @@ class SessionGetTest extends Base
 
     public function testRendering()
     {
-        $response = $this->render(['name' => self::SESSION_NAME, 'id' => self::SESSION_ID], [], []);
-        $this->assertContains('session.json', (string)$response->getBody());
-    }
-
-    public function testFailed()
-    {
-        $this->setExpectedException('BO\Zmsentities\Exception\SchemaValidation');
-        $this->render(['name' => 'Zmsappointment', 'id' => 1234], [], []);
+        $this->setExpectedException('BO\Zmsapi\Exception\Session\SessionNotFound');
+        $this->render(['name' => self::SESSION_NAME, 'id' => self::SESSION_ID], [], []);
     }
 }
