@@ -23,7 +23,6 @@ class SendTest extends Base
                 echo "ERROR OCCURED: ". $mail['errorInfo'] ."\n";
             } else {
                 $this->assertContains('text/html', trim($mail['mime']));
-                $this->assertContains('test@example.com', json_encode($mail['recipients']));
                 $this->assertContains('calendar', json_encode($mail['attachments'][0]));
             }
         }
