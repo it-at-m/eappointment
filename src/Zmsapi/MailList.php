@@ -21,7 +21,7 @@ class MailList extends BaseController
     public static function render()
     {
         $message = Response\Message::create(Render::$request);
-        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         $mailList = (new Query())->readList($resolveReferences);
 
         if (0 < count($mailList)) {
