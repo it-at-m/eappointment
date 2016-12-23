@@ -6,7 +6,7 @@
         "createIP": "145.15.3.10",
         "createTimestamp": 1447931596000,
         "department": {
-            "id": 123,
+            "id": 74,
             "preferences": {
                 "notifications": {
                     "enabled": true,
@@ -14,7 +14,8 @@
                     "sendConfirmationEnabled": true,
                     "sendReminderEnabled": true
                 }
-            }
+            },
+            "email": "terminvereinbarung@mitte.berlin.de"
         },
         "message": "Denken Sie an ihren Termin mit der Nummer 123456",
         "process": {
