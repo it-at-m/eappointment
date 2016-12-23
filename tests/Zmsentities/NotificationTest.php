@@ -13,7 +13,7 @@ class NotificationTest extends EntityCommonTests
         $entity->addScope((new \BO\Zmsentities\Scope())->getExample());
         $this->assertTrue(123 == $entity->getScopeId(), 'Getting scope id failed');
         $this->assertTrue(123456 == $entity->getProcessId(), 'Getting process id failed');
-        $this->assertTrue(123 == $entity->getDepartmentId(), 'Getting department id failed');
+        $this->assertTrue(74 == $entity->getDepartmentId(), 'Getting department id failed');
         $this->assertTrue('abcd' == $entity->getProcessAuthKey(), 'Getting authKey failed');
         $this->assertContains('Denken Sie an ihren Termin', $entity->getMessage(), 'Getting message failed');
         $this->assertContains('terminvereinbarung@', $entity->getIdentification(), 'Getting message failed');
