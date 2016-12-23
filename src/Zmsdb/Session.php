@@ -18,7 +18,11 @@ class Session extends Base
             ->addEntityMapping()
             ->addConditionSessionId($sessionId)
             ->addConditionSessionName($sessionName);
-        return $this->fetchOne($query, new Entity());
+        $session = $this->fetchOne($query, new Entity());
+        if ($session && ! $session->hasId()) {
+            return null;
+        }
+        return $session;
     }
 
     public function updateEntity($session)
