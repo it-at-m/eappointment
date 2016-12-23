@@ -23,6 +23,9 @@ class SessionGet extends BaseController
     {
         $message = Response\Message::create(Render::$request);
         $session = (new Query())->readEntity($sessionName, $sessionId);
+        if (! $session) {
+            throw new Exception\Session\SessionNotFound();
+        }
         $session->id = $sessionId;
         $session->name = $sessionName;
         $session->getUnSerializedContent();
