@@ -12,8 +12,7 @@ class SessionTest extends Base
 
     public function testBasic()
     {
-        $http = $this->createHttpClient();
-        $sessionHandler = $this->createSession($http);
+        $sessionHandler = $this->createSession();
 
         $sessionHandler->open('/', self::SESSION_NAME);
         $this->assertEquals(self::SESSION_NAME, $sessionHandler->sessionName);
@@ -29,5 +28,19 @@ class SessionTest extends Base
 
         $sessionDelete = $sessionHandler->destroy(self::SESSION_ID);
         $this->assertTrue($sessionDelete);
+
+        $this->assertTrue($sessionHandler->close());
+
+        $this->assertEquals(null, $sessionHandler->read(self::SESSION_ID));
+    }
+
+    public function testWriteFailed()
+    {
+        $this->setExpectedException('BO\Zmsclient\Exception');
+        $sessionHandler = $this->createSession();
+        $sessionHandler->open('/', self::SESSION_NAME);
+        $entity = (new \BO\Zmsentities\Session())->getExample();
+        $entity->content['basket']['providers'] = 123456;
+        $writeSession = $sessionHandler->write(self::SESSION_ID, $entity->getContent());
     }
 }
