@@ -1,0 +1,33 @@
+<?php
+
+namespace BO\Zmsmessaging\Tests;
+
+use \BO\Mellon\Validator;
+
+class SendNotificationTest extends Base
+{
+    protected function getApiCalls()
+    {
+        return [
+            [
+                'function' => 'readGetResult',
+                'url' => '/notification/',
+                'response' => $this->readFixture("GET_notifications_queue.json")
+            ]
+        ];
+    }
+
+    public function testSendNotificationQueue()
+    {
+        \App::$messaging = new \BO\Zmsmessaging\SendQueue('notification');
+        $resultList = \App::$messaging->startNotificationTransmission();
+        foreach ($resultList as $notification) {
+            if (isset($notification['errorInfo'])) {
+                echo "ERROR OCCURED: ". $notification['errorInfo'] ."\n";
+            } else {
+                $this->assertContains('Content-Transfer-Encoding: base64', trim($notification['mime']));
+                $this->assertContains('sms=0123456789@example.com', json_encode($notification['recipients']));
+            }
+        }
+    }
+}
