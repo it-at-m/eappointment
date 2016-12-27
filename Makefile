@@ -16,6 +16,7 @@ live: # init live system, delete unnecessary libs
 
 fix: # run code fixing
 	php vendor/bin/phpcbf --standard=psr2 src/
+	php vendor/bin/phpcbf --standard=psr2 tests/
 
 coverage:
 	php -dzend_extension=xdebug.so vendor/bin/phpunit --coverage-html public/_tests/coverage/
