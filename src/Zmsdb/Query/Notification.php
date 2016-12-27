@@ -16,38 +16,6 @@ class Notification extends Base
             nq.processID=?
     ';
 
-    public function addJoin()
-    {
-        return [
-            $this->addJoinProcess(),
-            $this->addJoinDepartment(),
-        ];
-    }
-
-    protected function addJoinProcess()
-    {
-        $this->query->leftJoin(
-            new Alias(Process::TABLE, 'process'),
-            'notification.processID',
-            '=',
-            'process.BuergerID'
-        );
-        $processQuery = new Process($this->query, 'process__');
-        return $processQuery;
-    }
-
-    protected function addJoinDepartment()
-    {
-        $this->query->leftJoin(
-            new Alias(Department::TABLE, 'department'),
-            'notification.departmentID',
-            '=',
-            'department.BehoerdenID'
-        );
-        $departmentQuery = new Department($this->query, 'department__');
-        return $departmentQuery;
-    }
-
     public function getEntityMapping()
     {
         return [
@@ -57,7 +25,8 @@ class Notification extends Base
             'message' => 'notification.message',
             'client__telephone' => 'notification.clientTelephone',
             'client__familyName' => 'notification.clientFamilyName',
-
+            'process__id' => 'notification.processID',
+            'department__id' => 'notification.departmentID'
         ];
     }
 
