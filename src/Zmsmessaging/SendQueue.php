@@ -182,11 +182,8 @@ class SendQueue
         try {
             $mail = \App::$http->readDeleteResult('/'. $type .'/'. $message->id .'/')->getEntity();
         } catch (\BO\Zmsclient\Exception $exception) {
-            // @codeCoverageIgnoreStart
-            \App::$log->debug('Zmsmessaging Delete From Queue', [$exception]);
             throw $exception;
-            // @codeCoverageIgnoreEnd
         }
-        return $mail;
+        return ($mail) ? true : false;
     }
 }
