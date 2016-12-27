@@ -30,9 +30,7 @@ class NotificationDelete extends BaseController
         if ($query->deleteEntity($itemId)) {
             $message->data = $notification;
         } else {
-            $message->meta->statuscode = 500;
-            $message->meta->error = true;
-            $message->meta->message = "Could not delete notification";
+            throw new Exception\Mail\NotificationDeleteFailed();
         }
         Render::lastModified(time(), '0');
         Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
