@@ -26,7 +26,6 @@ class DeleteFromQueueTest extends Base
     {
         $entity = (new \BO\Zmsentities\Mail())->getExample();
         \App::$messaging = new \BO\Zmsmessaging\SendQueue();
-        $mail = \App::$messaging->deleteFromQueue($entity);
-        $this->assertEquals(1234, $mail['id']);
+        $this->assertTrue(\App::$messaging->deleteFromQueue($entity));
     }
 }
