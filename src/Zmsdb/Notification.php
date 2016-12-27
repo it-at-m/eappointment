@@ -19,7 +19,11 @@ class Notification extends Base
             ->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
             ->addConditionItemId($itemId);
-        return $this->fetchOne($query, new Entity());
+        $notification = $this->fetchOne($query, new Entity());
+        if ($notification && $notification->hasId()) {
+            $notification = $this->readResolvedReferences($notification, $resolveReferences);
+        }
+        return $notification;
     }
 
     public function readList($resolveReferences = 1)
@@ -32,13 +36,32 @@ class Notification extends Base
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
             foreach ($result as $item) {
-                $entity = $this->readEntity($item['id'], $resolveReferences - 1);
-                $notificationList->addEntity($entity);
+                $entity = new Entity($item);
+                $entity = $this->readResolvedReferences($entity, $resolveReferences);
+                if ($entity instanceof Entity) {
+                    $notificationList->addEntity($entity);
+                }
             }
-            $notificationList = new Collection($result);
         }
         return $notificationList;
     }
+
+    protected function readResolvedReferences(Entity $notification, $resolveReferences)
+    {
+        if (1 <= $resolveReferences) {
+            $processQuery = new \BO\Zmsdb\Process();
+            $notification->process = $processQuery
+                ->readEntity(
+                    $notification->process['id'],
+                    $processQuery->readAuthKeyByProcessId($notification->process['id'])['authKey'],
+                    $resolveReferences - 1
+                );
+            $notification->department = (new \BO\Zmsdb\Department())
+                ->readEntity($notification->department['id'], $resolveReferences - 1);
+        }
+        return $notification;
+    }
+
 
     public function writeInQueue(Entity $notification)
     {

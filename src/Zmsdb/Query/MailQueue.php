@@ -23,38 +23,6 @@ class MailQueue extends Base
         WHERE mq.processID=?
     ';
 
-    public function addJoin()
-    {
-        return [
-            $this->addJoinProcess(),
-            $this->addJoinDepartment(),
-        ];
-    }
-
-    protected function addJoinProcess()
-    {
-        $this->query->leftJoin(
-            new Alias(Process::TABLE, 'process'),
-            'mailQueue.processID',
-            '=',
-            'process.BuergerID'
-        );
-        $processQuery = new Process($this->query, 'process__');
-        return $processQuery;
-    }
-
-    protected function addJoinDepartment()
-    {
-        $this->query->leftJoin(
-            new Alias(Department::TABLE, 'department'),
-            'mailQueue.departmentID',
-            '=',
-            'department.BehoerdenID'
-        );
-        $departmentQuery = new Department($this->query, 'department__');
-        return $departmentQuery;
-    }
-
     public function getEntityMapping()
     {
         return [
@@ -64,7 +32,8 @@ class MailQueue extends Base
             'subject' => 'mailQueue.subject',
             'client__email' => 'mailQueue.clientEmail',
             'client__familyName' => 'mailQueue.clientFamilyName',
-
+            'process__id' => 'mailQueue.processID',
+            'department__id' => 'mailQueue.departmentID'
         ];
     }
 

@@ -21,8 +21,11 @@ class Mail extends Base
             ->addResolvedReferences($resolveReferences)
             ->addConditionItemId($itemId);
         $mail = $this->fetchOne($query, new Entity());
-        $multiPart = $this->readMultiPartByQueueId($itemId);
-        $mail->addMultiPart($multiPart);
+        if ($mail && $mail->hasId()) {
+            $multiPart = $this->readMultiPartByQueueId($itemId);
+            $mail->addMultiPart($multiPart);
+            $mail = $this->readResolvedReferences($mail, $resolveReferences);
+        }
         return $mail;
     }
 
@@ -36,13 +39,32 @@ class Mail extends Base
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
             foreach ($result as $item) {
-                $entity = $this->readEntity($item['id'], $resolveReferences - 1);
+                $entity = new Entity($item);
+                $entity = $this->readResolvedReferences($entity, $resolveReferences);
+                $multiPart = $this->readMultiPartByQueueId($entity->id);
+                $entity->addMultiPart($multiPart);
                 if ($entity instanceof Entity) {
                     $mailList->addEntity($entity);
                 }
             }
         }
         return $mailList;
+    }
+
+    protected function readResolvedReferences($mail, $resolveReferences)
+    {
+        if (1 <= $resolveReferences) {
+            $processQuery = new \BO\Zmsdb\Process();
+            $mail->process = $processQuery
+                ->readEntity(
+                    $mail->process['id'],
+                    $processQuery->readAuthKeyByProcessId($mail->process['id'])['authKey'],
+                    $resolveReferences - 1
+                );
+            $mail->department = (new \BO\Zmsdb\Department())
+                ->readEntity($mail->department['id'], $resolveReferences - 1);
+        }
+        return $mail;
     }
 
     public function writeInQueue(Entity $mail)
