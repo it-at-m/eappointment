@@ -46,9 +46,11 @@ class Ticketprinter extends Schema\Entity
     public function getScopeList()
     {
         $scopeList = new Collection\ScopeList();
-        foreach ($this->buttons as $button) {
-            if ('scope' == $button['type']) {
-                $scopeList->addEntity(new Scope($button['scope']));
+        if ($this->toProperty()->buttons->isAvailable()) {
+            foreach ($this->buttons as $button) {
+                if ('scope' == $button['type']) {
+                    $scopeList->addEntity(new Scope($button['scope']));
+                }
             }
         }
         return $scopeList;
@@ -57,9 +59,11 @@ class Ticketprinter extends Schema\Entity
     public function getClusterList()
     {
         $clusterList = new Collection\ClusterList();
-        foreach ($this->buttons as $button) {
-            if ('cluster' == $button['type']) {
-                $clusterList->addEntity(new Cluster($button['cluster']));
+        if ($this->toProperty()->buttons->isAvailable()) {
+            foreach ($this->buttons as $button) {
+                if ('cluster' == $button['type']) {
+                    $clusterList->addEntity(new Cluster($button['cluster']));
+                }
             }
         }
         return $clusterList;
