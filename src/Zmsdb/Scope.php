@@ -17,25 +17,22 @@ class Scope extends Base
 
     public function readEntity($scopeId, $resolveReferences = 0, $disableCache = false)
     {
-        if (! $disableCache && array_key_exists($scopeId, self::$cache)) {
-            return self::$cache[$scopeId];
+        if (! $disableCache && ! array_key_exists($scopeId, self::$cache)) {
+            $query = new Query\Scope(Query\Base::SELECT);
+            $query->addEntityMapping()
+                ->addResolvedReferences($resolveReferences)
+                ->addConditionScopeId($scopeId);
+            $scope = $this->fetchOne($query, new Entity());
+            if (! $scope->hasId()) {
+                return null;
+            }
+            $scope = $this->addDldbData($scope, $resolveReferences);
+            if (0 < $resolveReferences) {
+                $scope['dayoff'] = (new DayOff())->readByScopeId($scopeId);
+            }
+            self::$cache[$scopeId] = $scope;
         }
-        $query = new Query\Scope(Query\Base::SELECT);
-        $query->addEntityMapping()
-            ->addResolvedReferences($resolveReferences)
-            ->addConditionScopeId($scopeId);
-        $scope = $this->fetchOne($query, new Entity());
-        if (! $scope->hasId()) {
-            return null;
-        }
-        $scope = $this->addDldbData($scope, $resolveReferences);
-        if (0 < $resolveReferences) {
-            $scope['dayoff'] = (new DayOff())->readByScopeId($scopeId);
-        }
-        if ($scope && $scope->hasId()) {
-            return $scope;
-        }
-        return null;
+        return self::$cache[$scopeId];
     }
 
     public function readByClusterId($clusterId, $resolveReferences = 0)
