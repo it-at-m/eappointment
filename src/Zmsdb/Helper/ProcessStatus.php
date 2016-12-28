@@ -87,8 +87,8 @@ class ProcessStatus extends \BO\Zmsdb\Process
             '
         );
         $statusList = [
-            'confirmed' => $this->isConfirmedProcess($processData),
             'queued' => $this->isQueuedProcess($processData),
+            'confirmed' => $this->isConfirmedProcess($processData),
             'called' => $this->isCalledProcess($processData),
             'processing' => $this->isProcessingProcess($processData),
             'pending' => $this->isPendingProcess($processData),
@@ -116,6 +116,22 @@ class ProcessStatus extends \BO\Zmsdb\Process
     protected function isBlockedProcess($process)
     {
         return ($process['Name'] == 'dereferenced');
+    }
+
+    /**
+     * check if it is a queued appointment
+     *
+     * @return Bool
+     */
+    protected function isQueuedProcess($process)
+    {
+        return ($process['Name'] != 'dereferenced'
+            && $process['vorlaeufigeBuchung'] == 0
+            && $process['StandortID'] != 0
+            && $process['wsm_aufnahmezeit'] != '00:00:00'
+            && $process['aufrufzeit'] != '00:00:00'
+            && empty($process['istFolgeterminvon'])
+            );
     }
 
     /**
@@ -158,21 +174,6 @@ class ProcessStatus extends \BO\Zmsdb\Process
             && $process['StandortID'] != 0
             && $process['aufrufzeit'] != '00:00:00'
             && $process['aufruferfolgreich'] == 0
-            && empty($process['istFolgeterminvon'])
-        );
-    }
-
-    /**
-     * check if it is a queued appointment
-     *
-     * @return Bool
-     */
-    protected function isQueuedProcess($process)
-    {
-        return ($process['Name'] != 'dereferenced'
-            && $process['vorlaeufigeBuchung'] == 0
-            && $process['StandortID'] != 0
-            && $process['wsm_aufnahmezeit'] != '00:00:00'
             && empty($process['istFolgeterminvon'])
         );
     }
