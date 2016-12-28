@@ -67,14 +67,12 @@ class Scope extends Schema\Entity
 
     public function getScopeInfo()
     {
-        $hint = explode('|', $this->hint);
-        return (1 <= count($hint)) ? trim(current($hint)) : null;
+        return $this->toProperty()->preferences->ticketprinter->buttonName->get();
     }
 
     public function getScopeHint()
     {
-        $hint = explode('|', $this->hint);
-        return (1 < count($hint)) ? trim(end($hint)) : null;
+        return $this->toProperty()->hint->get();
     }
 
     public function getAlternateRedirectUrl()

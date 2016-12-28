@@ -20,8 +20,8 @@ class ScopeTest extends EntityCommonTests
         $this->assertTrue('23' == $entity->getStatus('queue','givenNumberCount'), 'Status is not accessible');
         $this->assertTrue(null === $entity->getContactEmail(), 'Contact eMail should not be available');
         $this->assertContains('Flughafen', $entity->getName(), 'Contact name not available');
-        $this->assertEquals('dritte Tür rechts', $entity->getScopeInfo(), 'Scope info (from hint) is not available');
-        $this->assertEquals(null, $entity->getScopeHint(), 'Scope hint (from hint) is not available');
+        $this->assertEquals('Bürgeramt', $entity->getScopeInfo(), 'Scope Info is not available');
+        $this->assertEquals('dritte Tür rechts', $entity->getScopeHint(), 'Scope hint (from hint) is not available');
         $this->assertContains('Flughafen', (string)$entity, 'Contact name not available');
     }
 
