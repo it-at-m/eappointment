@@ -28,6 +28,11 @@ class TicketprinterTest extends Base
         $input['buttonlist'] = 's141';
         $entity = $query->readByButtonList($input->toStructuredButtonList(), $now);
         $this->assertEquals('Bürgeramt', $entity->contact['name']);
+
+        $input = $this->getTestEntity();
+        $input['buttonlist'] = 'c109';
+        $entity = $query->readByButtonList($input->toStructuredButtonList(), $now);
+        $this->assertEquals('Bürgeramt Heerstraße', $entity->contact['name']);
     }
 
     public function testReadByHash()
