@@ -26,6 +26,7 @@ class Ticketprinter extends Base
             ->addEntityMapping()
             ->addConditionTicketprinterId($itemId);
         $ticketprinter = $this->fetchOne($query, new Entity());
+        $ticketprinter = $this->getAdditionalData($ticketprinter);
         return $ticketprinter;
     }
 
@@ -43,6 +44,7 @@ class Ticketprinter extends Base
         if (count($result)) {
             foreach ($result as $ticketprinter) {
                 if ($ticketprinter instanceof Entity) {
+                    $ticketprinter = $this->getAdditionalData($ticketprinter);
                     $ticketprinterList->addEntity($ticketprinter);
                 }
             }
@@ -66,6 +68,7 @@ class Ticketprinter extends Base
             ->addConditionHash($hash);
         $ticketprinter = $this->fetchOne($query, new Entity());
         $ticketprinter->enabled = (1 == $ticketprinter->enabled);
+        $ticketprinter = $this->getAdditionalData($ticketprinter);
         return $ticketprinter;
     }
 
@@ -106,7 +109,27 @@ class Ticketprinter extends Base
             }
         }
         $this->readDisabledByScope($ticketprinter);
+        $ticketprinter = $this->getAdditionalData($ticketprinter);
         return $ticketprinter;
+    }
+
+    protected function getAdditionalData($ticketprinter)
+    {
+        $ticketprinter = $this->readWithContactData($ticketprinter);
+        return $ticketprinter;
+    }
+
+    protected function readWithContactData(Entity $entity)
+    {
+        $contact = new \BO\Zmsentities\Contact();
+        if (1 == $entity->getClusterList()->count() && 0 == $entity->getScopeList()->count()) {
+            $contact->name = $entity->getClusterList()->getFirst()->name;
+        } elseif (0 == $entity->getClusterList()->count() && 1 == $entity->getScopeList()->count()) {
+            $department = (new Department())->readByScopeId($entity->getScopeList()->getFirst()->id);
+            $contact->name = $department->name;
+        }
+        $entity->contact = $contact;
+        return $entity;
     }
 
     protected function readDisabledByScope($ticketprinter)
@@ -205,6 +228,7 @@ class Ticketprinter extends Base
         if (count($result)) {
             foreach ($result as $ticketprinter) {
                 if ($ticketprinter instanceof Entity) {
+                    $ticketprinter = $this->getAdditionalData($ticketprinter);
                     $ticketprinterList->addEntity($ticketprinter);
                 }
             }
