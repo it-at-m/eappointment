@@ -174,6 +174,7 @@ class Process extends Base implements MappingInterface
             $datetime = $appointment->toDateTime();
             $data['Datum'] = $datetime->format('Y-m-d');
             $data['Uhrzeit'] = $datetime->format('H:i');
+            $data['wsm_aufnahmezeit'] = $datetime->format('H:i:s');
         }
         $client = $process->getFirstClient();
         if (null !== $client) {
@@ -190,6 +191,10 @@ class Process extends Base implements MappingInterface
         $data['Erinnerungszeitpunkt'] = $process->getReminderTimestamp();
         if ($process->queue['callTime']) {
             $data['aufrufzeit'] = (new \DateTime())->setTimestamp($process->queue['callTime'])->format('H:i:s');
+        }
+        if ($process->queue['arrivalTime']) {
+            $data['wsm_aufnahmezeit'] = (new \DateTime())
+                ->setTimestamp($process->queue['arrivalTime'])->format('H:i:s');
         }
         $data = array_filter(
             $data,

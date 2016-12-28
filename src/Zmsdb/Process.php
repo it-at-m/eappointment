@@ -96,7 +96,7 @@ class Process extends Base
         $appointment->addDate($dateTime->modify('00:00:00')->getTimestamp());
         $process = new Entity();
         $process->scope = $scope;
-        $process->setStatus('reserved');
+        $process->setStatus('queued');
         $process->addAppointment($appointment);
         $newQueueNumber = (new Scope())->readWaitingNumberUpdated($scope->id, $dateTime);
         $process->addQueue($newQueueNumber, $dateTime);
