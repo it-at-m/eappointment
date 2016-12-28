@@ -107,7 +107,7 @@ class Scope extends Base implements MappingInterface
             'preferences__survey__enabled' => 'scope.kundenbefragung',
             'preferences__survey__label' => 'scope.kundenbef_label',
             'preferences__ticketprinter__buttonName' => self::expression(
-                'IF(`scope`.`standortinfozeile`, `scope`.`standortinfozeile`, `scope`.`Bezeichnung`)'
+                'IF(`scope`.`standortinfozeile`="", `scope`.`Bezeichnung`, `scope`.`standortinfozeile`)'
             ),
             'preferences__ticketprinter__confirmationEnabled' => 'scope.smswmsbestaetigung',
             'preferences__ticketprinter__deactivatedText' => 'scope.wartenrhinweis',
