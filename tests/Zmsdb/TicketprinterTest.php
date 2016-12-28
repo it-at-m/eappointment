@@ -20,6 +20,16 @@ class TicketprinterTest extends Base
         $this->assertTrue($deleteTest, "Failed to delete Ticketprinter from Database.");
     }
 
+    public function testWithContact()
+    {
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $query = new Query();
+        $input = $this->getTestEntity();
+        $input['buttonlist'] = 's141';
+        $entity = $query->readByButtonList($input->toStructuredButtonList(), $now);
+        $this->assertEquals('Bürgeramt', $entity->contact['name']);
+    }
+
     public function testReadByHash()
     {
         $query = new Query();
@@ -35,9 +45,9 @@ class TicketprinterTest extends Base
         $query = new Query();
         $input = $this->getTestEntity()->toStructuredButtonList();
         $entity = $query->readByButtonList($input, $now);
-        $this->assertTrue('Bürgeramt Heerstraße' == $entity->buttons[0]['name']);
-        $this->assertTrue('cluster' == $entity->buttons[1]['type']);
-        $this->assertTrue('https://service.berlin.de' == $entity->buttons[2]['url']);
+        $this->assertEquals('Bürgeramt', $entity->buttons[0]['name']);
+        $this->assertEquals('cluster', $entity->buttons[1]['type']);
+        $this->assertEquals('https://service.berlin.de', $entity->buttons[2]['url']);
     }
 
     public function testUnvalidButtonListNoCluster()
