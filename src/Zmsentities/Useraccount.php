@@ -2,7 +2,7 @@
 
 namespace BO\Zmsentities;
 
-class UserAccount extends Schema\Entity
+class Useraccount extends Schema\Entity
 {
     const PRIMARY = 'id';
 
