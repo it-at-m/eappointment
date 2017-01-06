@@ -4,7 +4,7 @@ namespace BO\Zmsdb\Tests;
 
 use \BO\Zmsdb\UserAccount as Query;
 use \BO\Zmsdb\Workstation;
-use \BO\Zmsentities\UserAccount as Entity;
+use \BO\Zmsentities\Useraccount as Entity;
 use \BO\Zmsentities\Workstation as WorkstationEntity;
 
 class UserAccountTest extends Base
@@ -13,7 +13,7 @@ class UserAccountTest extends Base
     {
         $query = new Query();
         $entity = $query->readEntity('berlinonline', 1);
-        $this->assertEntity("\\BO\\Zmsentities\\UserAccount", $entity);
+        $this->assertEntity("\\BO\\Zmsentities\\Useraccount", $entity);
     }
 
     public function testReadByAuthKey()
@@ -22,7 +22,7 @@ class UserAccountTest extends Base
         $query = new Query();
         $input = $this->getTestEntity();
         $userAccount = $query->writeEntity($input);
-        $this->assertEntity("\\BO\\Zmsentities\\UserAccount", $userAccount);
+        $this->assertEntity("\\BO\\Zmsentities\\Useraccount", $userAccount);
 
         $userAccount->setRights('organisation');
         $userAccount = $query->updateEntity($userAccount->id, $userAccount);
@@ -31,14 +31,14 @@ class UserAccountTest extends Base
         $this->assertEquals(true, $workstation->hasAuthKey());
 
         $userAccount = $query->readEntityByAuthKey($workstation->authKey, 1);
-        $this->assertEntity("\\BO\\Zmsentities\\UserAccount", $userAccount);
+        $this->assertEntity("\\BO\\Zmsentities\\Useraccount", $userAccount);
     }
 
     public function testReadList()
     {
         $query = new Query();
         $entityList = $query->readList();
-        $this->assertEntityList("\\BO\\Zmsentities\\UserAccount", $entityList);
+        $this->assertEntityList("\\BO\\Zmsentities\\Useraccount", $entityList);
         $this->assertEquals(true, $entityList->hasEntity('berlinonline')); //superuser bo
     }
 

@@ -2,8 +2,8 @@
 
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\UserAccount as Entity;
-use \BO\Zmsentities\Collection\UserAccountList as Collection;
+use \BO\Zmsentities\Useraccount as Entity;
+use \BO\Zmsentities\Collection\UseraccountList as Collection;
 
 class UserAccount extends Base
 {
@@ -104,7 +104,7 @@ class UserAccount extends Base
      *
      * @return Entity
      */
-    public function writeEntity(\BO\Zmsentities\UserAccount $entity)
+    public function writeEntity(\BO\Zmsentities\Useraccount $entity)
     {
         $query = new Query\UserAccount(Query\Base::INSERT);
         if ($this->readIsUserExisting($entity->id)) {
@@ -127,7 +127,7 @@ class UserAccount extends Base
      *
      * @return Entity
      */
-    public function updateEntity($loginName, \BO\Zmsentities\UserAccount $entity)
+    public function updateEntity($loginName, \BO\Zmsentities\Useraccount $entity)
     {
         $query = new Query\UserAccount(Query\Base::UPDATE);
         $query->addConditionLoginName($loginName);

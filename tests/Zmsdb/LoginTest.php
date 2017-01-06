@@ -4,7 +4,7 @@ namespace BO\Zmsdb\Tests;
 
 use \BO\Zmsdb\Workstation as Query;
 use \BO\Zmsentities\Workstation as Entity;
-use \BO\Zmsentities\UserAccount as UserAccountEntity;
+use \BO\Zmsentities\Useraccount as UserAccountEntity;
 
 class LoginTest extends Base
 {
