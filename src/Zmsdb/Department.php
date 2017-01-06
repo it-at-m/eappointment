@@ -10,7 +10,7 @@ class Department extends Base
 
     /**
      *
-     * @var String TABLE mysql table reference
+     * @var Array \BO\Zmsentities\Department
      */
     public static $departmentCache = array ();
 
@@ -26,8 +26,9 @@ class Department extends Base
         $department = $this->fetchOne($query, new Entity());
         if (isset($department['id'])) {
             $department = $this->readEntityReferences($department, $resolveReferences);
+            $department = $department->withOutClusterDuplicates();
             self::$departmentCache[$departmentId] = $department;
-            return $department->withOutClusterDuplicates();
+            return self::$departmentCache[$departmentId];
         }
         return null;
     }
