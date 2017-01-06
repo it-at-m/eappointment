@@ -24,7 +24,7 @@ class UseraccountUpdate extends BaseController
 
         $query = new Query();
         $input = Validator::input()->isJson()->getValue();
-        $entity = new \BO\Zmsentities\UserAccount($input);
+        $entity = new \BO\Zmsentities\Useraccount($input);
         $userAccount = $query->updateEntity($itemId, $entity);
 
         $message = Response\Message::create(Render::$request);
