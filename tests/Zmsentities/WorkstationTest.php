@@ -46,7 +46,7 @@ class WorkstationTest extends EntityCommonTests
         $rights = $entity->getUseraccountRights();
         $this->assertTrue(count($rights) > 0, 'Useraccount rights missed');
 
-        $userAccount = (new \BO\Zmsentities\UserAccount())->getExample();
+        $userAccount = (new \BO\Zmsentities\Useraccount())->getExample();
 
         $userAccount->rights['superuser'] = false;
         $userAccount->setRights('superuser');
