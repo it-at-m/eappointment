@@ -1,6 +1,6 @@
 <?php
 namespace BO\Zmsentities\Collection;
 
-class UserAccountList extends Base
+class UseraccountList extends Base
 {
 }
