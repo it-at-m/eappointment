@@ -27,7 +27,8 @@ class ScopeQueue extends BaseController
         if (! $scope) {
             throw new Exception\Scope\ScopeNotFound();
         }
-        $message->data = $query->readWithWaitingTime($itemId, \App::$now)->withPickupDestination($scope);
+        $scope = $query->readWithWorkstationCount($itemId, \App::$now);
+        $message->data = $query->readQueueListWithWaitingTime($scope, \App::$now)->withPickupDestination($scope);
 
         Render::lastModified(time(), '0');
         Render::json($message, $message->getStatuscode());
