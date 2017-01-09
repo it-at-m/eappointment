@@ -92,7 +92,14 @@ class Scope extends Schema\Entity
 
     public function getCalculatedWorkstationCount()
     {
-        return $this->getStatus('queue', 'workstationCount');
+        $workstationCount = null;
+        if ($this->getStatus('queue', 'workstationCount') > 0) {
+            $workstationCount = $this->getStatus('queue', 'workstationCount');
+        }
+        if (! $workstationCount && $this->getStatus('queue', 'ghostWorkstationCount') > 0) {
+            $workstationCount = $this->getStatus('queue', 'ghostWorkstationCount');
+        }
+        return $workstationCount;
     }
 
     public function updateStatusQueue(\DateTimeInterface $dateTime)
