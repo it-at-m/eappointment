@@ -90,7 +90,8 @@
             },
             "queue": {
                 "givenNumberCount": 23,
-                "ghostWorkstationCount": 0,
+                "ghostWorkstationCount": "-1",
+                "workstationCount": 1,
                 "lastGivenNumber": 322,
                 "lastGivenNumberTimestamp": 1447925159
             },
@@ -395,7 +396,12 @@
                         },
                         "ghostWorkstationCount": {
                             "type": "number",
-                            "description": "a fictive number of workstations to calculate waiting times, if zero, the real number of workingstations is used",
+                            "description": "a fictive number of workstations",
+                            "default": 0
+                        },
+                        "workstationCount": {
+                            "type": "number",
+                            "description": "a calculated number of workstations to calculate waiting times, if ghostWorkstationCount < 1, real logged in workstations are used",
                             "default": 0
                         },
                         "lastGivenNumber": {

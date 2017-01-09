@@ -15,7 +15,7 @@ class QueueList extends Base
         $currentTime = $dateTime->getTimestamp();
 
         $waitingTime = 0;
-        $timeSlot = $processTimeAverage * 60 / $workstationCount;
+        $timeSlot = ($workstationCount) ? $processTimeAverage * 60 / $workstationCount : $processTimeAverage * 60;
         while ($nextWithAppointment || $nextNoAppointment) {
             if ($nextWithAppointment && $currentTime >= $nextWithAppointment->arrivalTime) {
                 $nextWithAppointment->waitingTimeEstimate = $waitingTime;
@@ -61,7 +61,6 @@ class QueueList extends Base
 
     public function getEstimatedWaitingTime($processTimeAverage, $workstationCount, \DateTimeInterface $dateTime)
     {
-        $workstationCount = (0 == $workstationCount) ? 1 : $workstationCount;
         $queueList = clone $this;
         $entity = new \BO\Zmsentities\Queue();
         $entity->number = self::FAKE_WAITINGNUMBER;
