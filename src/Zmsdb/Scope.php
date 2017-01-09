@@ -239,9 +239,11 @@ class Scope extends Base
         $scope = $this->fetchOne($query, new Entity());
         //get processing time average
         $timeAverage = $scope->getPreference('queue', 'processingTimeAverage');
-        //get workstation count
-        $workstationCount = $scope->getCalculatedWorkstationCount();
-        return $queueList->withEstimatedWaitingTime($timeAverage, $workstationCount, $dateTime);
+        if ($scope->getCalculatedWorkstationCount() > 0) {
+            $queueList = $queueList
+                ->withEstimatedWaitingTime($timeAverage, $scope->getCalculatedWorkstationCount(), $dateTime);
+        }
+        return $queueList;
     }
 
     /**
