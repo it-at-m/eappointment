@@ -144,11 +144,14 @@ class Cluster extends Base
         while ($nextScope) {
             $queueList = (new Scope())->readWithWaitingTime($nextScope->id, $dateTime);
             $data = $nextScope->getWaitingTimeFromQueueList($queueList, $dateTime);
-            if ($data['waitingTimeEstimate'] <= $preferedWaitingTime || 0 == $preferedWaitingTime) {
+            if ($data && ($data['waitingTimeEstimate'] <= $preferedWaitingTime || 0 == $preferedWaitingTime)) {
                 $preferedWaitingTime = $data['waitingTimeEstimate'];
                 $preferedScope = $nextScope;
-                $nextScope = array_shift($scopeList);
             }
+            $nextScope = array_shift($scopeList);
+        }
+        if (! $preferedScope) {
+            throw new Exception\Cluster\ScopesWithoutWorkstationCount();
         }
         return $preferedScope;
     }
