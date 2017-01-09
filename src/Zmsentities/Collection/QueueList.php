@@ -61,29 +61,26 @@ class QueueList extends Base
 
     public function getEstimatedWaitingTime($processTimeAverage, $workstationCount, \DateTimeInterface $dateTime)
     {
-        if ($workstationCount) {
-            $queueList = clone $this;
-            $entity = new \BO\Zmsentities\Queue();
-            $entity->number = self::FAKE_WAITINGNUMBER;
-            $entity->withAppointment = false;
-            $entity->arrivalTime = $dateTime->getTimestamp();
-            $queueList->addEntity($entity);
-            $queueList = $queueList
-            ->withEstimatedWaitingTime($processTimeAverage, $workstationCount, $dateTime);
-            $newEntity = $queueList->getQueueByNumber(self::FAKE_WAITINGNUMBER);
-            $lastEntity = end($queueList);
+        $queueList = clone $this;
+        $entity = new \BO\Zmsentities\Queue();
+        $entity->number = self::FAKE_WAITINGNUMBER;
+        $entity->withAppointment = false;
+        $entity->arrivalTime = $dateTime->getTimestamp();
+        $queueList->addEntity($entity);
+        $queueList = $queueList
+        ->withEstimatedWaitingTime($processTimeAverage, $workstationCount, $dateTime);
+        $newEntity = $queueList->getQueueByNumber(self::FAKE_WAITINGNUMBER);
+        $lastEntity = end($queueList);
 
-            $dataOfLastEntity = array(
-                'amountBefore' =>$queueList->count(),
-                'waitingTimeEstimate' => $lastEntity->waitingTimeEstimate
-            );
-            $dataOfFackedEntity = array(
-                'amountBefore' => $queueList->getQueuePositionByNumber($newEntity->number),
-                'waitingTimeEstimate' => $newEntity->waitingTimeEstimate
-            );
-            return ($newEntity) ? $dataOfFackedEntity : $dataOfLastEntity;
-        }
-        return null;
+        $dataOfLastEntity = array(
+            'amountBefore' =>$queueList->count(),
+            'waitingTimeEstimate' => $lastEntity->waitingTimeEstimate
+        );
+        $dataOfFackedEntity = array(
+            'amountBefore' => $queueList->getQueuePositionByNumber($newEntity->number),
+            'waitingTimeEstimate' => $newEntity->waitingTimeEstimate
+        );
+        return ($newEntity) ? $dataOfFackedEntity : $dataOfLastEntity;
     }
 
     public function getQueueByNumber($number)

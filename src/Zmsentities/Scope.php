@@ -95,8 +95,7 @@ class Scope extends Schema\Entity
         $workstationCount = null;
         if ($this->getStatus('queue', 'workstationCount') > 0) {
             $workstationCount = $this->getStatus('queue', 'workstationCount');
-        }
-        if (! $workstationCount && $this->getStatus('queue', 'ghostWorkstationCount') > 0) {
+        } elseif (! $workstationCount && $this->getStatus('queue', 'ghostWorkstationCount') > 0) {
             $workstationCount = $this->getStatus('queue', 'ghostWorkstationCount');
         }
         return $workstationCount;
