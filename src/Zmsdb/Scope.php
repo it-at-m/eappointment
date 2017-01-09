@@ -227,23 +227,23 @@ class Scope extends Base
      *
      * @return number
      */
-    public function readWithWaitingTime($scopeId, $dateTime)
+    public function readWithWorkstationCount($scopeId, $dateTime)
     {
-        $queueList = $this->readQueueList($scopeId, $dateTime);
         //get scope
         $query = new Query\Scope(Query\Base::SELECT);
         $query
             ->addEntityMapping()
             ->addConditionScopeId($scopeId)
             ->addSelectWorkstationCount($dateTime);
-        $scope = $this->fetchOne($query, new Entity());
-        //get processing time average
+        return $this->fetchOne($query, new Entity());
+    }
+
+    public function readQueueListWithWaitingTime($scope, $dateTime)
+    {
+        $queueList = $this->readQueueList($scope->id, $dateTime);
         $timeAverage = $scope->getPreference('queue', 'processingTimeAverage');
-        if ($scope->getCalculatedWorkstationCount() > 0) {
-            $queueList = $queueList
-                ->withEstimatedWaitingTime($timeAverage, $scope->getCalculatedWorkstationCount(), $dateTime);
-        }
-        return $queueList;
+        $workstationCount = $scope->getCalculatedWorkstationCount();
+        return $queueList->withEstimatedWaitingTime($timeAverage, $workstationCount, $dateTime);
     }
 
     /**
