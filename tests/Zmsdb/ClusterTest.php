@@ -61,7 +61,7 @@ class ClusterTest extends Base
         $now = new \DateTimeImmutable("2016-04-01 11:55");
         //by Schöneberg with test ghostWorkstationCount of 3
         $scope = $query->readScopeWithShortestWaitingTime(4, $now);
-        $queueList = (new \BO\Zmsdb\Scope())->readWithWaitingTime($scope->id, $now);
+        $queueList = (new \BO\Zmsdb\Scope())->readQueueListWithWaitingTime($scope, $now);
         $estimatedData = $scope->getWaitingTimeFromQueueList($queueList, $now);
         $this->assertEquals(146, $scope->id);
         $this->assertEquals(267, $estimatedData['waitingTimeEstimate']);

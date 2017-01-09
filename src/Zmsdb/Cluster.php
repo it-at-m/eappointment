@@ -93,7 +93,8 @@ class Cluster extends Base
         $scopeList = $this->readOpenedScopeList($clusterId, $dateTime);
         $queueList = new \BO\Zmsentities\Collection\QueueList();
         foreach ($scopeList as $scope) {
-            $scopeQueueList = (new Scope())->readWithWaitingTime($scope['id'], $dateTime);
+            $scope = (new Scope())->readWithWorkstationCount($scope['id'], $dateTime);
+            $scopeQueueList = (new Scope())->readQueueListWithWaitingTime($scope, $dateTime);
             $scopeQueueList = $scopeQueueList->withShortNameDestinationHint($cluster, $scope);
             if (0 < $scopeQueueList->count()) {
                 $queueList->addList($scopeQueueList);
@@ -142,11 +143,15 @@ class Cluster extends Base
         $preferedScope = null;
         $preferedWaitingTime = 0;
         while ($nextScope) {
-            $queueList = (new Scope())->readWithWaitingTime($nextScope->id, $dateTime);
-            $data = $nextScope->getWaitingTimeFromQueueList($queueList, $dateTime);
-            if ($data && ($data['waitingTimeEstimate'] <= $preferedWaitingTime || 0 == $preferedWaitingTime)) {
+            $scope = (new Scope())->readWithWorkstationCount($nextScope->id, $dateTime);
+            $queueList = (new Scope())->readQueueListWithWaitingTime($scope, $dateTime);
+            $data = $scope->getWaitingTimeFromQueueList($queueList, $dateTime);
+            if ($scope->getCalculatedWorkstationCount() > 0 &&
+                $data &&
+                ($data['waitingTimeEstimate'] <= $preferedWaitingTime || 0 == $preferedWaitingTime)
+            ) {
                 $preferedWaitingTime = $data['waitingTimeEstimate'];
-                $preferedScope = $nextScope;
+                $preferedScope = $scope;
             }
             $nextScope = array_shift($scopeList);
         }
