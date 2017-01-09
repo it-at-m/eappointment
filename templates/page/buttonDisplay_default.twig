@@ -9,13 +9,15 @@
 {% block content %}
 
 	{% if buttonDisplay == "button_single" %}
-	<div class="werbeblock_oben">
-		{{ block("estimatedWaitingClients") }}
-		{{ block("estimatedWaitingTime") }}
-	</div>
-	{% set buttonLabelPrefix = "Wartenummer für " %}
+    	{% if estimatedData  %}
+    	<div class="werbeblock_oben">
+    		{{ block("estimatedWaitingClients") }}
+    		{{ block("estimatedWaitingTime") }}
+    	</div>
+    	{% endif %}
+	    {% set buttonLabelPrefix = "Wartenummer für " %}
 	{% else %}
-	{{ block("IntroMultiButtonText") }}
+	    {{ block("IntroMultiButtonText") }}
 	{% endif %}
 
 	{{ block(buttonDisplay) }}
