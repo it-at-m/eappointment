@@ -10,7 +10,8 @@ class Availability extends Base
 
     public function readEntity($availabilityId, $resolveReferences = 0, $disableCache = false)
     {
-        if (!$disableCache && !array_key_exists($availabilityId, self::$cache)) {
+        $cacheKey = "$availabilityId-$resolveReferences";
+        if (!$disableCache && !array_key_exists($cacheKey, self::$cache)) {
             $query = new Query\Availability(Query\Base::SELECT);
             $query
                 ->addEntityMapping()
@@ -18,9 +19,9 @@ class Availability extends Base
                 ->addConditionAvailabilityId($availabilityId);
             $availability = $this->fetchOne($query, new Entity());
             $availability['scope'] = (new Scope())->readEntity($availability['scope']['id'], $resolveReferences);
-            self::$cache[$availabilityId] = $availability;
+            self::$cache[$cacheKey] = $availability;
         }
-        return self::$cache[$availabilityId];
+        return self::$cache[$cacheKey];
     }
 
     public function readList($scopeId, $resolveReferences = 0)
@@ -120,6 +121,9 @@ class Availability extends Base
         $query->addValues($values);
         $this->writeItem($query);
         $entity->id = $this->getWriter()->lastInsertId();
+        if (!$entity->id) {
+            throw new \Exception("Could not insert $entity");
+        }
         return $entity;
     }
 

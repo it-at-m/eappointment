@@ -16,8 +16,9 @@ class Department extends Base
 
     public function readEntity($departmentId, $resolveReferences = 0, $disableCache = false)
     {
-        if (! $disableCache && array_key_exists($departmentId, self::$departmentCache)) {
-            return self::$departmentCache[$departmentId];
+        $cacheKey = "$departmentId-$resolveReferences";
+        if (! $disableCache && array_key_exists($cacheKey, self::$departmentCache)) {
+            return self::$departmentCache[$cacheKey];
         }
         $query = new Query\Department(Query\Base::SELECT);
         $query->addEntityMapping()
@@ -27,8 +28,8 @@ class Department extends Base
         if (isset($department['id'])) {
             $department = $this->readEntityReferences($department, $resolveReferences);
             $department = $department->withOutClusterDuplicates();
-            self::$departmentCache[$departmentId] = $department;
-            return self::$departmentCache[$departmentId];
+            self::$departmentCache[$cacheKey] = $department;
+            return self::$departmentCache[$cacheKey];
         }
         return null;
     }
