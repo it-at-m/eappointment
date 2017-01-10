@@ -244,7 +244,7 @@
 			],
 			"responses": {
 				"200": {
-					"description": "get an updated calendar objects with updated days list",
+					"description": "get an updated calldislay object with updated scope and cluster list",
 					"schema": {
 						"type": "object",
 						"properties": {
@@ -2149,11 +2149,8 @@
 						}
 					}
 				},
-				"403": {
-					"description": "Scope not found for given number"
-				},
 				"404": {
-					"description": "Could not find a process"
+					"description": "Could not find a process or scope not found"
 				}
 			}
 		}
@@ -2637,13 +2634,64 @@
 								"$ref": "schema/metaresult.json"
 							},
 							"data": {
-								"$ref": "schema/scope.json"
+								"type": "array",
+								"items": {
+									"$ref": "schema/scope.json"
+								}
 							}
 						}
 					}
 				},
 				"404": {
-					"description": "scope id does not exists"
+					"description": "provider id does not exists"
+				}
+			}
+		}
+	},
+	"/scope/department/{id}/": {
+		"get": {
+			"description": "Get a list of scope by department ID",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "department number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/scope.json"
+								}
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "department id does not exists"
 				}
 			}
 		}
@@ -2682,13 +2730,16 @@
 								"$ref": "schema/metaresult.json"
 							},
 							"data": {
-								"$ref": "schema/scope.json"
+								"type": "array",
+								"items": {
+									"$ref": "schema/scope.json"
+								}
 							}
 						}
 					}
 				},
 				"404": {
-					"description": "scope id does not exists"
+					"description": "cluster id does not exists"
 				}
 			}
 		}

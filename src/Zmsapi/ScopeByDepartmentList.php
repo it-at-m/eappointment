@@ -8,26 +8,27 @@ namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
-use \BO\Zmsdb\Workstation as Query;
+use \BO\Zmsdb\Scope as Query;
 
 /**
   * Handle requests concerning services
   */
-class WorkstationGet extends BaseController
+class ScopeByDepartmentList extends BaseController
 {
     /**
      * @return String
      */
-    public static function render()
+    public static function render($itemId)
     {
-        $userAccount = Helper\User::checkRights('organisation', 'department', 'cluster', 'useraccount');
-
-        $query = new Query();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
-        $workstation = $query->readEntity($userAccount->id, $resolveReferences);
+        $department = (new \BO\Zmsdb\Department())->readEntity($itemId);
+        if (! $department) {
+            throw new Exception\Department\DepartmentNotFound();
+        }
 
+        $scopeList = (new Query())->readByDepartmentId($itemId, $resolveReferences);
         $message = Response\Message::create(Render::$request);
-        $message->data = $workstation;
+        $message->data = $scopeList;
         Render::lastModified(time(), '0');
         Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }
