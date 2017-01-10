@@ -79,7 +79,7 @@ class UserAccount extends Base implements MappingInterface
     }
 
 
-    public function reverseEntityMapping(\BO\Zmsentities\UserAccount $entity)
+    public function reverseEntityMapping(\BO\Zmsentities\Useraccount $entity)
     {
         $data = array();
         $data['Name'] = $entity->id;

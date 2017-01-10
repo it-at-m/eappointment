@@ -35,7 +35,7 @@ class LoginTest extends Base
         $workstation = $query->readEntity($userAccount->id, 1);
         $this->assertEquals('Bürgeramt Heerstraße', $workstation->scope['contact']['name']);
 
-        $this->assertEntity("\\BO\\Zmsentities\\UserAccount", $userAccount);
+        $this->assertEntity("\\BO\\Zmsentities\\Useraccount", $userAccount);
         $this->assertEntity("\\BO\\Zmsentities\\Workstation", $workstation);
         $this->assertEquals(true, $userAccount->hasId());
     }
