@@ -8,7 +8,7 @@
  */
 namespace BO\Zmsadmin;
 
-use BO\Zmsentities\UserAccount as Entity;
+use BO\Zmsentities\Useraccount as Entity;
 use BO\Mellon\Validator;
 
 class UseraccountEdit extends BaseController
