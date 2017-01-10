@@ -54,8 +54,7 @@ class IndexAdvancedLogin extends BaseController
                 'title' => 'Anmeldung - Standort und Platzauswahl',
                 'loginAdvanced' => 1,
                 'advancedData' => $advancedData,
-                'scopeList' =>  \App::$http->readGetResult('/scope/department/'. $departmentId .'/')
-                    ->getCollection()->sortByName()
+                'scopeList' =>  \App::$http->readGetResult('/scope/department/'. $departmentId .'/')->getCollection()
             )
         );
     }
