@@ -9,7 +9,7 @@
          processIsolation="false"
          stopOnFailure="true"
          syntaxCheck="false"
-         bootstrap="tests/bootstrap.php"
+         bootstrap="tests/Zmsclient/bootstrap.php"
 >
     <testsuites>
         <testsuite name="Zmsclient Test Suite">
