@@ -90,7 +90,7 @@ class HttpTest extends Base
     protected function writeTestLogin()
     {
         $http = $this->createHttpClient();
-        $userAccount = new \BO\Zmsentities\UserAccount(array(
+        $userAccount = new \BO\Zmsentities\Useraccount(array(
             'id' => 'berlinonline',
             'password' => '1palme1'
         ));
