@@ -16,7 +16,7 @@ class LoginForm
     /**
      * form data for reuse in multiple controllers
      */
-    public static function fromParameters()
+    public static function fromLoginParameters()
     {
         $collection = array();
 
@@ -31,10 +31,24 @@ class LoginForm
             ->isSmallerThan(250, "Das Passwort sollte 250 Zeichen nicht überschreiten");
 
         // department
-        $collection['department'] = Validator::param('department')->isNumber('Bitte wählen Sie eine Behörde aus');
+        $collection['department'] = Validator::param('department')
+            ->isNumber('Bitte wählen Sie eine Behörde aus');
+
+        // return validated collection
+        $collection = Validator::collection($collection);
+        return $collection;
+    }
+
+    /**
+     * form data for reuse in multiple controllers
+     */
+    public static function fromAdditionalParameters()
+    {
+        $collection = array();
 
         // scope
-        $collection['scope'] = Validator::param('scope')->isNumber('Bitte wählen Sie einen Standort aus');
+        $collection['scope'] = Validator::param('scope')
+            ->isNumber('Bitte wählen Sie einen Standort aus');
 
         // workstation
         if (Validator::param('workstationCounter')->isDeclared()->hasFailed()) {
@@ -50,12 +64,12 @@ class LoginForm
         return $collection;
     }
 
-    public static function setLoginRedirect($form)
+    public static function setLoginAuthKey($data)
     {
-        $formData = $form->getValues();
+        $loginData = $data->getValues();
         $userAccount = new \BO\Zmsentities\Useraccount(array(
-            'id' => $formData['loginName']->getValue(),
-            'password' => $formData['password']->getValue()
+            'id' => $loginData['loginName']->getValue(),
+            'password' => $loginData['password']->getValue()
         ));
         $workstation = \App::$http->readPostResult(
             '/workstation/'. $userAccount->id .'/',
@@ -64,9 +78,17 @@ class LoginForm
 
         if (isset($workstation->authKey)) {
             Auth::setKey($workstation->authKey);
+            return true;
+        }
+        return false;
+    }
+
+    public static function setLoginRedirect($data, $workstation)
+    {
+        $formData = $data->getValues();
+        if (isset($workstation->useraccount)) {
             $workstation->name = $formData['workstation']->getValue();
             $workstation->scope['id'] = $formData['scope']->getValue();
-            $workstation->useraccount = $userAccount;
             $workstation = \App::$http->readPostResult('/workstation/', $workstation)->getEntity();
             return (0 == $workstation->name) ? 'counter' : 'workstation';
         }

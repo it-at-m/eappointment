@@ -24,15 +24,14 @@ class Index extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $form = LoginForm::fromParameters();
-        $validate = Validator::param('form_validate')->isBool()->getValue();
+        $form = LoginForm::fromLoginParameters();
+        $validate = Validator::param('login_form_validate')->isBool()->getValue();
+        $departmentId = Validator::param('department')->isNumber()->getValue();
         $loginData = ($validate) ? $form->getStatus() : null;
-
-        if ($loginData && !$form->hasFailed()) {
-            $loginRedirect = LoginForm::setLoginRedirect($form);
+        if ($loginData && !$form->hasFailed() && LoginForm::setLoginAuthKey($form)) {
             return \BO\Slim\Render::redirect(
-                $loginRedirect,
-                array(),
+                'indexAdvancedLogin',
+                array('departmentId' => $departmentId),
                 array()
             );
         }

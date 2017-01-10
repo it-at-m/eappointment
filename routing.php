@@ -20,6 +20,9 @@ use \Psr\Http\Message\ResponseInterface;
 ], '/', '\BO\Zmsadmin\Index')
     ->setName("index");
 
+\App::$slim->map(['GET','POST'], '/login/{departmentId}/', '\BO\Zmsadmin\IndexAdvancedLogin')
+    ->setName("indexAdvancedLogin");
+
 \App::$slim->get('/logout/', '\BO\Zmsadmin\Logout')
     ->setName("logout");
 

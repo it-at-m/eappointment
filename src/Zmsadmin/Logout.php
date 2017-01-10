@@ -23,20 +23,11 @@ class Logout extends BaseController
         array $args
     ) {
 
-        session_destroy();
-        setcookie(
-            session_name(),
-            null,
-            time() - 42000,
-            "/"
-        );
-        session_regenerate_id(true);
-
         $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
         \App::$http->readDeleteResult('/workstation/'. $workstation->useraccount['id'] .'/')->getEntity();
 
         return \BO\Slim\Render::redirect(
-            
+
             'index',
             array(
                 'title' => 'Anmeldung'
