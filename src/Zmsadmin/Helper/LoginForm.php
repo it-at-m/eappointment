@@ -53,7 +53,7 @@ class LoginForm
     public static function setLoginRedirect($form)
     {
         $formData = $form->getValues();
-        $userAccount = new \BO\Zmsentities\UserAccount(array(
+        $userAccount = new \BO\Zmsentities\Useraccount(array(
             'id' => $formData['loginName']->getValue(),
             'password' => $formData['password']->getValue()
         ));
