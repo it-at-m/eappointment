@@ -17,7 +17,8 @@ class Scope extends Base
 
     public function readEntity($scopeId, $resolveReferences = 0, $disableCache = false)
     {
-        if (! $disableCache && ! array_key_exists($scopeId, self::$cache)) {
+        $cacheKey = "$scopeId-$resolveReferences";
+        if (! $disableCache && ! array_key_exists($cacheKey, self::$cache)) {
             $query = new Query\Scope(Query\Base::SELECT);
             $query->addEntityMapping()
                 ->addResolvedReferences($resolveReferences)
@@ -30,9 +31,9 @@ class Scope extends Base
             if (0 < $resolveReferences) {
                 $scope['dayoff'] = (new DayOff())->readByScopeId($scopeId);
             }
-            self::$cache[$scopeId] = $scope;
+            self::$cache[$cacheKey] = $scope;
         }
-        return self::$cache[$scopeId];
+        return self::$cache[$cacheKey];
     }
 
     public function readByClusterId($clusterId, $resolveReferences = 0)

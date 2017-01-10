@@ -29,6 +29,7 @@ class BAllTest extends Base
         }
         $entity = (new Query())->readResolvedEntity($input, $now);
         $this->assertEquals(0, count($entity['freeProcesses']));
+        //$this->dumpProfiler();
     }
 
     protected function getTestEntity()
