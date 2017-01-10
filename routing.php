@@ -2119,13 +2119,53 @@ use \Psr\Http\Message\ResponseInterface;
  *                          meta:
  *                              $ref: "schema/metaresult.json"
  *                          data:
- *                              $ref: "schema/scope.json"
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/scope.json"
  *              404:
- *                  description: "scope id does not exists"
+ *                  description: "provider id does not exists"
  */
 \App::$slim->get('/scope/provider/{id:\d{1,11}}/',
     '\BO\Zmsapi\ScopeByProviderList')
     ->setName("ScopeByProviderList");
+
+/**
+ *  @swagger
+ *  "/scope/department/{id}/":
+ *      get:
+ *          description: Get a list of scope by department ID
+ *          parameters:
+ *              -   name: id
+ *                  description: department number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/scope.json"
+ *              404:
+ *                  description: "department id does not exists"
+ */
+\App::$slim->get('/scope/department/{id:\d{1,11}}/',
+    '\BO\Zmsapi\ScopeByDepartmentList')
+    ->setName("ScopeByDepartmentList");
 
 /**
  *  @swagger
@@ -2155,9 +2195,11 @@ use \Psr\Http\Message\ResponseInterface;
  *                          meta:
  *                              $ref: "schema/metaresult.json"
  *                          data:
- *                              $ref: "schema/scope.json"
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/scope.json"
  *              404:
- *                  description: "scope id does not exists"
+ *                  description: "cluster id does not exists"
  */
 \App::$slim->get('/scope/cluster/{id:\d{1,11}}/',
     '\BO\Zmsapi\ScopeByClusterList')
