@@ -34,9 +34,10 @@ class CalldisplayQueue extends BaseController
                 if (! $scope) {
                     throw new Exception\Scope\ScopeNotFound();
                 }
+                $scope = $scopeQuery->readWithWorkstationCount($scope->id, \App::$now);
                 $queueList->addList(
                     $scopeQuery
-                        ->readWithWaitingTime($scope->id, \App::$now)
+                        ->readQueueListWithWaitingTime($scope, \App::$now)
                         ->withPickupDestination($scope)
                 );
             }
