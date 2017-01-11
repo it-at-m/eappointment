@@ -1,3 +1,4 @@
+/* global CoolClock */
 CoolClock.config.skins = {
 
 	swissRail: {

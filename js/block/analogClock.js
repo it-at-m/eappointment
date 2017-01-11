@@ -1,20 +1,16 @@
-
+/* global window */
 import BaseView from '../lib/baseview';
-import $ from "jquery";
-import settings from '../settings';
-import CoolClock from '../lib/coolclock';
 
 class View extends BaseView {
-
-    constructor (element) {	
-        super(element);  
+    constructor (element) {
+        super(element);
         this.bindPublicMethods('initClock');
         console.log("Found analog clock");
         this.$.ready(this.initClock);
-    }    
-    
-    initClock () {	
-	window.CoolClock.config.skins = {
+    }
+
+    initClock () {
+        window.CoolClock.config.skins = {
             themed: {
                 outerBorder: { lineWidth: 1, radius:95, color: "black", alpha: 0 },
                 smallIndicator: { lineWidth: 1, startAt: 89, endAt: 93, color: "#4C4C4C", alpha: 1 },
@@ -25,7 +21,7 @@ class View extends BaseView {
                 secondDecoration: { lineWidth: 1, startAt: 70, radius: 4, fillColor: "red", color: "red", alpha: 0 }
             }
         };
-	window.CoolClock.findAndCreateClocks();
+        window.CoolClock.findAndCreateClocks();
     }
 }
 
