@@ -1,38 +1,37 @@
+/* global setTimeout */
 import BaseView from '../lib/baseview';
-import settings from '../settings';
 import window from "window";
-import $ from "jquery";
 
 class View extends BaseView {
 
-    constructor (element) {	
-        super(element);        
+    constructor (element) {
+        super(element);
         this.bindPublicMethods('printDialog', 'reload');
         console.log('Print data and redirect to home url after presetted time');
         this.$.ready(this.printDialog);
     }
-    
-    reload () {		
-    	window.location.href = this.getUrl('/home/');	
+
+    reload () {
+        window.location.href = this.getUrl('/home/');
     }
-    
+
     getUrl (relativePath) {
         let includepath = window.bo.zmsticketprinter.includepath;
         return includepath + relativePath;
     }
-    
+
     printDialog () {
-    	document.title = "Anmeldung an Warteschlange";
-    	window.print();
-    	
-    	var beforePrint = () => {
+        document.title = "Anmeldung an Warteschlange";
+        window.print();
+
+        var beforePrint = () => {
             console.log('start printing');
         };
-        var afterPrint = () => {           
+        var afterPrint = () => {
             let reloadTime = window.bo.zmsticketprinter.reloadInterval;
-    	    setTimeout(() => {        	   
-        	this.reload();
-    	    }, reloadTime * 1000); // default is 30
+            setTimeout(() => {
+                this.reload();
+            }, reloadTime * 1000); // default is 30
         };
 
         if (window.matchMedia) {
