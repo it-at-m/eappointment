@@ -58,7 +58,7 @@ div.aufrufanzeige_anzeigebereich_zweizeilig
     text-align:center;
     padding:8px 0px;
 }
-.aufrufanzeige table.aufrufanzeige_aufruf .wartenummer div
+.aufrufanzeige table.aufrufanzeige_aufruf .wartenummer div.aufrufanzeigenummer
 {
 /*    width: 330px;*/
 }
@@ -81,14 +81,19 @@ span.terminkundenanzeige
 	font-size: 30px;
    line-height: 35px;
 }
+span.wartenummer
+{
+	font-size: 60px;
+   	line-height: 60px;
+}
 span.terminkundennummer
 {
 	font-size: 60px;
-   line-height: 60px;
+   	line-height: 60px;
 }
 span.abholeranzeige
 {
-	font-size: 40px;
+	font-size: 50px;
    line-height: 60px;
 }
 
