@@ -21,13 +21,13 @@ class UserAccountTest extends Base
         $now = new \DateTimeImmutable("2016-04-01 11:55");
         $query = new Query();
         $input = $this->getTestEntity();
-        $userAccount = $query->writeEntity($input);
+        $userAccount = $query->writeEntity($input, 2);
         $this->assertEntity("\\BO\\Zmsentities\\Useraccount", $userAccount);
 
         $userAccount->setRights('organisation');
-        $userAccount = $query->updateEntity($userAccount->id, $userAccount);
+        $userAccount = $query->updateEntity($userAccount->id, $userAccount, 2);
 
-        $workstation = (new Workstation())->writeEntityLoginByName($userAccount->id, $input->password, $now);
+        $workstation = (new Workstation())->writeEntityLoginByName($userAccount->id, $input->password, $now, 2);
         $this->assertEquals(true, $workstation->hasAuthKey());
 
         $userAccount = $query->readEntityByAuthKey($workstation->authKey, 1);
@@ -37,7 +37,7 @@ class UserAccountTest extends Base
     public function testReadList()
     {
         $query = new Query();
-        $entityList = $query->readList();
+        $entityList = $query->readList(2);
         $this->assertEntityList("\\BO\\Zmsentities\\Useraccount", $entityList);
         $this->assertEquals(true, $entityList->hasEntity('berlinonline')); //superuser bo
     }

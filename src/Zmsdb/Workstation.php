@@ -41,7 +41,7 @@ class Workstation extends Base
         return $workstationList;
     }
 
-    public function writeEntityLoginByName($loginName, $password, \DateTimeInterface $dateTime)
+    public function writeEntityLoginByName($loginName, $password, \DateTimeInterface $dateTime, $resolveReferences = 0)
     {
         $userAccount = new UserAccount();
         $workstation = new Entity();
@@ -58,14 +58,14 @@ class Workstation extends Base
                 )
             );
             if ($result) {
-                $workstation = $this->readEntity($loginName, 1);
+                $workstation = $this->readEntity($loginName, $resolveReferences);
                 $workstation->authKey = $authKey;
             }
         }
         return $workstation;
     }
 
-    public function writeEntityLogoutByName($loginName)
+    public function writeEntityLogoutByName($loginName, $resolveReferences = 0)
     {
         $query = Query\Workstation::QUERY_LOGOUT;
         $statement = $this->getWriter()->prepare($query);
@@ -74,7 +74,7 @@ class Workstation extends Base
                 $loginName
             )
         );
-        $workstation = $this->readEntity($loginName);
+        $workstation = $this->readEntity($loginName, $resolveReferences);
         return ($result) ? $workstation : null;
     }
 
@@ -86,13 +86,13 @@ class Workstation extends Base
      *
      * @return Entity
      */
-    public function updateEntity(\BO\Zmsentities\Workstation $entity)
+    public function updateEntity(\BO\Zmsentities\Workstation $entity, $resolveReferences = 0)
     {
         $query = new Query\Workstation(Query\Base::UPDATE);
         $query->addConditionWorkstationId($entity->id);
         $values = $query->reverseEntityMapping($entity);
         $query->addValues($values);
         $this->writeItem($query);
-        return $this->readEntity($entity->useraccount['id']);
+        return $this->readEntity($entity->useraccount['id'], $resolveReferences);
     }
 }
