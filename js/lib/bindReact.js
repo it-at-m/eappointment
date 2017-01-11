@@ -28,11 +28,13 @@ const getDataAttributes = (element) => {
 }
 
 export default (selector, Component) => {
-    const elements = document.querySelectorAll(selector)
+    const elements = Array.prototype.slice.call(document.querySelectorAll(selector), 0)
 
-    elements.forEach(element => {
-        const props = getDataAttributes(element)
+    if (elements) {
+        elements.forEach(element => {
+            const props = getDataAttributes(element)
 
-        render(<Component {...props} />, element)
-    })
+            render(<Component {...props} />, element)
+        })
+    }
 }

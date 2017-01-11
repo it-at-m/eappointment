@@ -100,7 +100,7 @@ class AvailabilityPage extends Component {
 
         console.log('Saving updates', sendData)
 
-        $.ajax(`${this.props.links.includeurl}/availability/', {
+        $.ajax(`${this.props.links.includeurl}/availability/`, {
             method: 'POST',
             data: JSON.stringify(sendData)
         }).done((success) => {
