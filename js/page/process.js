@@ -7,9 +7,8 @@ class View extends BaseView {
 
     constructor (element) {	
         super(element);        
-        this.bindPublicMethods('printDialog', 'preventRefresh', 'reload');
+        this.bindPublicMethods('printDialog', 'reload');
         console.log('Print data and redirect to home url after presetted time');
-        this.preventRefresh();
         this.$.ready(this.printDialog);
     }
     
@@ -25,16 +24,30 @@ class View extends BaseView {
     printDialog () {
     	document.title = "Anmeldung an Warteschlange";
     	window.print();
-    	let reloadTime = window.bo.zmsticketprinter.reload;
-    	setTimeout(this.reload, reloadTime * 1000); // default is 30
-    }
-    
-    preventRefresh() {
-    	document.onkeydown = function(event) {
-    		 if(window.event){
-    		       event.preventDefault();
-    		 }
-    	};
+    	
+    	var beforePrint = () => {
+            console.log('start printing');
+        };
+        var afterPrint = () => {           
+            let reloadTime = window.bo.zmsticketprinter.reloadInterval;
+    	    setTimeout(() => {        	   
+        	this.reload();
+    	    }, reloadTime * 1000); // default is 30
+        };
+
+        if (window.matchMedia) {
+            var mediaQueryList = window.matchMedia('print');
+            mediaQueryList.addListener(function(mql) {
+                if (mql.matches) {
+                    beforePrint();
+                } else {
+                    afterPrint();
+                }
+            });
+        }
+
+        window.onbeforeprint = beforePrint;
+        window.onafterprint = afterPrint;
     }
 }
 
