@@ -21,11 +21,11 @@ class WorkstationUpdate extends BaseController
     public static function render()
     {
         Helper\User::checkRights('organisation', 'department', 'cluster', 'useraccount');
-
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         $query = new Query();
         $input = Validator::input()->isJson()->getValue();
         $entity = new \BO\Zmsentities\Workstation($input);
-        $workstation = $query->updateEntity($entity);
+        $workstation = $query->updateEntity($entity, $resolveReferences);
 
         $message = Response\Message::create(Render::$request);
         $message->data = ($workstation->hasId()) ? $workstation : null;

@@ -23,7 +23,7 @@ class UseraccountGet extends BaseController
         $userAccount = Helper\User::checkRights('useraccount');
 
         $query = new Query();
-        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         $userAccount = $query->readEntity($loginName, $resolveReferences);
 
         $message = Response\Message::create(Render::$request);

@@ -23,9 +23,10 @@ class UseraccountUpdate extends BaseController
         $userAccount = Helper\User::checkRights('useraccount');
 
         $query = new Query();
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         $input = Validator::input()->isJson()->getValue();
         $entity = new \BO\Zmsentities\Useraccount($input);
-        $userAccount = $query->updateEntity($itemId, $entity);
+        $userAccount = $query->updateEntity($itemId, $entity, $resolveReferences);
 
         $message = Response\Message::create(Render::$request);
         $message->data = ($userAccount->hasId()) ? $userAccount : null;
