@@ -1,5 +1,5 @@
 
 export default {
-	'reloadInterval': 30,
+    'reloadInterval': 30,
     'animationEnd': 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend'
 };

@@ -18,7 +18,7 @@ import DigitalTime from "./block/digital-clock";
 import NotificationKeyboardHandheldView from "./block/notification-keyboard-handheld"; 
 
 // Init Views
-$('#index, #notification, #process, #message, #exception').each(function() { new Reload(this);});
+$('#index, #notification, #message, #exception').each(function() { new Reload(this);});
 $('#process').each(function() { new PrintDialog(this);});
 $('.digitaluhr').each(function() { new DigitalTime(this);});
 $('.smsbox').each(function() { new NotificationKeyboardHandheldView(this);});
