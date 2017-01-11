@@ -29,6 +29,7 @@
         font-weight:        normal;
         line-height:        1.2em;
         vertical-align:     middle;
+        margin-left:		-1.4em;
     }
     .right {
         @extend 
@@ -53,8 +54,7 @@
                 }
             }
         }
-    }
-    
+    }     
 }
 
 

@@ -28,7 +28,6 @@ class Workstation extends BaseController
 
         if (!$workstation->hasId()) {
             return \BO\Slim\Render::redirect(
-
                 'index',
                 array(
                     'error' => 'login_failed'
