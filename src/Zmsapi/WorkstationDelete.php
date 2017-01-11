@@ -21,9 +21,9 @@ class WorkstationDelete extends BaseController
     public static function render($loginname)
     {
         Helper\User::checkRights();
-
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         $query = new Query();
-        $workstation = $query->writeEntityLogoutByName($loginname);
+        $workstation = $query->writeEntityLogoutByName($loginname, $resolveReferences);
 
         $message = Response\Message::create(Render::$request);
         $message->data = $workstation;

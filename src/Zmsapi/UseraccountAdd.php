@@ -21,11 +21,11 @@ class UseraccountAdd extends BaseController
     public static function render()
     {
         $userAccount = Helper\User::checkRights('useraccount');
-
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         $query = new Query();
         $input = Validator::input()->isJson()->getValue();
         $entity = new \BO\Zmsentities\Useraccount($input);
-        $userAccount = $query->writeEntity($entity);
+        $userAccount = $query->writeEntity($entity, $resolveReferences);
 
         $message = Response\Message::create(Render::$request);
         $message->data = $userAccount;
