@@ -27,7 +27,6 @@ class Logout extends BaseController
         \App::$http->readDeleteResult('/workstation/'. $workstation->useraccount['id'] .'/')->getEntity();
 
         return \BO\Slim\Render::redirect(
-
             'index',
             array(
                 'title' => 'Anmeldung'

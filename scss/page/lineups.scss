@@ -36,6 +36,10 @@
                     .lap--one-third, 
                     .palm--one-whole;
             }
+            &--full {
+                @extend 
+                    .grid__item
+            }
         }
     }
     &--counter {

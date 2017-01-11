@@ -26,26 +26,17 @@ class Index extends BaseController
     ) {
         $form = LoginForm::fromLoginParameters();
         $validate = Validator::param('login_form_validate')->isBool()->getValue();
-        $departmentId = Validator::param('department')->isNumber()->getValue();
         $loginData = ($validate) ? $form->getStatus() : null;
         if ($loginData && !$form->hasFailed() && LoginForm::setLoginAuthKey($form)) {
-            return \BO\Slim\Render::redirect(
-                'indexAdvancedLogin',
-                array('departmentId' => $departmentId),
-                array()
-            );
+            return \BO\Slim\Render::redirect('workstationSelect', array(), array());
         }
-
-        $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences'=>3))->getCollection();
-        $organisationList = $ownerList->getOrganisationsByOwnerId(23);
 
         return \BO\Slim\Render::withHtml(
             $response,
             'page/index.twig',
             array(
                 'title' => 'Anmeldung',
-                'loginData' => $loginData,
-                'organisationList' => $organisationList->sortByName()
+                'loginData' => $loginData
             )
         );
     }

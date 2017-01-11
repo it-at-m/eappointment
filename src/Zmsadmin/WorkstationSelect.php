@@ -13,7 +13,7 @@ use \BO\Mellon\Validator;
   * Handle requests concerning services
   *
   */
-class IndexAdvancedLogin extends BaseController
+class WorkstationSelect extends BaseController
 {
     /**
      * @return String
@@ -24,7 +24,6 @@ class IndexAdvancedLogin extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $departmentId = Validator::value($args['departmentId'])->isNumber()->getValue();
         $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
         if (!$workstation->hasId()) {
             return \BO\Slim\Render::redirect(
@@ -34,8 +33,9 @@ class IndexAdvancedLogin extends BaseController
                 )
             );
         }
+        $workstation->hasDepartmentList();
         $form = LoginForm::fromAdditionalParameters();
-        $validate = Validator::param('login_advanced_form_validate')->isBool()->getValue();
+        $validate = Validator::param('workstation_select_form_validate')->isBool()->getValue();
         $advancedData = ($validate) ? $form->getStatus() : null;
 
         if ($advancedData && !$form->hasFailed()) {
@@ -49,12 +49,11 @@ class IndexAdvancedLogin extends BaseController
 
         return \BO\Slim\Render::withHtml(
             $response,
-            'page/index.twig',
+            'page/workstationSelect.twig',
             array(
-                'title' => 'Anmeldung - Standort und Platzauswahl',
-                'loginAdvanced' => 1,
+                'title' => 'Standort und Arbeitsplatz auswählen',
                 'advancedData' => $advancedData,
-                'scopeList' =>  \App::$http->readGetResult('/scope/department/'. $departmentId .'/')->getCollection()
+                'workstation' => $workstation
             )
         );
     }
