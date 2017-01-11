@@ -9,7 +9,7 @@ const noOp = () => {}
 
 export const Text = ({name, value, onChange = noOp, attributes = {}}) => {
     const widthClassName = attributes.width ? `input--size-${attributes.width}` : ''
-    const className = `${attributes.className || ''} ${widthClassName}`
+    const className = `form-input ${attributes.className || ''} ${widthClassName}`
 
     const onInput = (ev) => onChange(name, ev.target.value)
 
