@@ -54,4 +54,28 @@ class Department extends Schema\Entity
         }
         return $department;
     }
+
+    public function getScopeList()
+    {
+        $scopeList = new Collection\ScopeList();
+        if ($this->toProperty()->clusters->isAvailable()) {
+            foreach ($this->clusters as $cluster) {
+                if (array_key_exists('scopes', $cluster)) {
+                    foreach ($cluster['scopes'] as $clusterScope) {
+                        $scope = new Scope($clusterScope);
+                        $scopeList->addEntity($scope);
+                    }
+                }
+            }
+        }
+        if ($this->toProperty()->scopes->isAvailable()) {
+            foreach ($this->scopes as $scope) {
+                if (! $scopeList->hasEntity($scope['id'])) {
+                    $scope = new Scope($scope);
+                    $scopeList->addEntity($scope);
+                }
+            }
+        }
+        return $scopeList;
+    }
 }

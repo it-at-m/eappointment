@@ -70,4 +70,9 @@ class Useraccount extends Schema\Entity
         }
         return $this;
     }
+
+    public function isSuperUser()
+    {
+        return $this->toProperty()->rights->superuser->get();
+    }
 }
