@@ -22,7 +22,7 @@ class View extends BaseView {
         this.$numberInput = this.$.find('.nummerneingabe');
     }
 
-    appendNumber () {
+    appendNumber (event) {
 	let $content = $(event.target).closest('button');
         let number = $content.text();
         this.$numberInput.val(this.$numberInput.val() + '' + number);
