@@ -1,6 +1,6 @@
 <td class="rechterRand wartenummer" data-callTime="{{ queue.callTime }}">
 	{% if queue.status == "missed" %}
-		<div class="aufrufanzeigenummer missedAppointment">	
+		<div class="aufrufanzeigenummer missedAppointment">
 	{% else %}
 		<div class="aufrufanzeigenummer">
 	{% endif %}
@@ -13,7 +13,7 @@
 			{% endif %}
 			<span class="terminkundennummer{{ addClass }}" data-appointment="{{ queue.number }}">{{ queue.number }}</span>
 		{% else %}
-		    <span data-appointment="{{ queue.number }}">{{ queue.number }}</span>
+		    <span class="wartenummer" data-appointment="{{ queue.number }}">{{ queue.number }}</span>
 		{% endif %}
 	</div>
 </td>
