@@ -69,20 +69,22 @@ class UserAccount extends Base
      */
     public function readAssignedDepartmentList($userAccount, $resolveReferences = 0)
     {
-        $query = Query\UserAccount::QUERY_READ_ASSIGNED_DEPARTMENTS;
-        $departmentIds = $this->getReader()
-            ->fetchAll($query, [
-            'userAccountName' => $userAccount->id
-            ]);
-        $checkFirstDepartment = reset($departmentIds);
-        $departmentList = (0 == $checkFirstDepartment['id']) ? (new \BO\Zmsdb\Department())->readList() : null;
-
-        if (count($departmentIds) && !$departmentList && 0 < $resolveReferences) {
+        if ($userAccount->isSuperUser()) {
+            $departmentList = (new Department())->readList($resolveReferences);
+        } else {
+            $query = Query\UserAccount::QUERY_READ_ASSIGNED_DEPARTMENTS;
+            $departmentIds = $this->getReader()->fetchAll($query, ['userAccountName' => $userAccount->id]);
             $departmentList = new \BO\Zmsentities\Collection\DepartmentList();
             foreach ($departmentIds as $item) {
                 $department = (new \BO\Zmsdb\Department())->readEntity($item['id'], $resolveReferences);
-                $departmentList->addEntity($department);
+                if ($department instanceof \BO\Zmsentities\Department && 0 < $department->getScopeList()->count()) {
+                    $departmentList->addEntity($department);
+                }
             }
+        }
+        foreach ($departmentList as $department) {
+            $organisation = (new \BO\Zmsdb\Organisation())->readByDepartmentId($department->id, $resolveReferences - 1);
+            $department->name = $organisation->name .' -> '. $department->name;
         }
         return $departmentList;
     }
@@ -104,7 +106,7 @@ class UserAccount extends Base
      *
      * @return Entity
      */
-    public function writeEntity(\BO\Zmsentities\Useraccount $entity)
+    public function writeEntity(\BO\Zmsentities\Useraccount $entity, $resolveReferences = 0)
     {
         $query = new Query\UserAccount(Query\Base::INSERT);
         if ($this->readIsUserExisting($entity->id)) {
@@ -114,7 +116,7 @@ class UserAccount extends Base
             $query->addValues($values);
             $this->writeItem($query);
             $this->updateAssignedDepartments($entity);
-            $userAccount = $this->readEntity($entity->id, 1);
+            $userAccount = $this->readEntity($entity->id, $resolveReferences);
         }
         return $userAccount;
     }
@@ -127,7 +129,7 @@ class UserAccount extends Base
      *
      * @return Entity
      */
-    public function updateEntity($loginName, \BO\Zmsentities\Useraccount $entity)
+    public function updateEntity($loginName, \BO\Zmsentities\Useraccount $entity, $resolveReferences = 0)
     {
         $query = new Query\UserAccount(Query\Base::UPDATE);
         $query->addConditionLoginName($loginName);
@@ -135,7 +137,7 @@ class UserAccount extends Base
         $query->addValues($values);
         $this->writeItem($query);
         $this->updateAssignedDepartments($entity);
-        return $this->readEntity($loginName, 1);
+        return $this->readEntity($loginName, $resolveReferences);
     }
 
     /**

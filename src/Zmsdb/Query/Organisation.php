@@ -65,6 +65,18 @@ class Organisation extends Base implements MappingInterface
         return $this;
     }
 
+    public function addConditionDepartmentId($departmentId)
+    {
+        $this->query->leftJoin(
+            new Alias('behoerde', 'department'),
+            'department.OrganisationsID',
+            '=',
+            'organisation.OrganisationsID'
+        );
+        $this->query->where('department.BehoerdenID', '=', $departmentId);
+        return $this;
+    }
+
     public function reverseEntityMapping(\BO\Zmsentities\Organisation $entity, $parentId = null)
     {
         $data = array();

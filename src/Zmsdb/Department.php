@@ -38,7 +38,9 @@ class Department extends Base
     {
         if (0 < $resolveReferences) {
             $entity['clusters'] = (new Cluster())->readByDepartmentId($entity->id, $resolveReferences - 1);
-            $entity['scopes'] = (new Scope())->readByDepartmentId($entity->id, $resolveReferences - 1);
+            $entity['scopes'] = (new Scope())
+                ->readByDepartmentId($entity->id, $resolveReferences)
+                ->sortByContactName();
         }
         if (1 < $resolveReferences) {
             $entity['dayoff'] = (new DayOff())->readByDepartmentId($entity->id);
@@ -54,9 +56,9 @@ class Department extends Base
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
             foreach ($result as $department) {
-                $department = $this->readEntity($department['id'], $resolveReferences);
+                $department = $this->readEntityReferences($department, $resolveReferences);
                 if ($department instanceof Entity) {
-                    $departmentList->addEntity($department);
+                    $departmentList->addEntity($department->withOutClusterDuplicates());
                 }
             }
         }

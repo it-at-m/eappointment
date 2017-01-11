@@ -60,7 +60,7 @@ class Workstation extends Base implements MappingInterface
     public function getReferenceMapping()
     {
         return [
-            'scope__$ref' => self::expression('CONCAT("/scope/", `workstation`.`StandortID`, "/")'),
+            'scope__$ref' => self::expression('CONCAT("/scope/", `workstation`.`StandortID`, "/")')
         ];
     }
 
@@ -88,14 +88,13 @@ class Workstation extends Base implements MappingInterface
         return $this;
     }
 
-    public function reverseEntityMapping(\BO\Zmsentities\Workstation $entity, $selectedDepartmentId = null)
+    public function reverseEntityMapping(\BO\Zmsentities\Workstation $entity)
     {
         $data = array();
         $data['aufrufzusatz'] = ('' == $entity->hint) ? $entity->name : $entity->hint;
         $data['Kalenderansicht'] = $entity->getQueuePreference('appointmentsOnly', true);
         $data['clusteransicht'] = $entity->getQueuePreference('clusterEnabled', true);
         $data['StandortID'] = $entity->scope['id'];
-        $data['BehoerdenID'] = ($selectedDepartmentId) ? $entity->getDepartmentById($selectedDepartmentId) : 0;
         $data['Arbeitsplatznr'] = $entity->name;
 
         $data = array_filter($data, function ($value) {

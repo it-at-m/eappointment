@@ -32,7 +32,21 @@ class Organisation extends Base
         $organisation = $this->fetchOne($query, new Entity());
         if (isset($organisation['id'])) {
             $organisation['departments'] = (new Department())
-                ->readByOrganisationId($organisation['id'], $resolveReferences);
+                ->readByOrganisationId($organisation['id'], $resolveReferences - 1);
+        }
+        return $organisation;
+    }
+
+    public function readByDepartmentId($departmentId, $resolveReferences = 0)
+    {
+        $query = new Query\Organisation(Query\Base::SELECT);
+        $query->addEntityMapping()
+            ->addResolvedReferences($resolveReferences)
+            ->addConditionDepartmentId($departmentId);
+        $organisation = $this->fetchOne($query, new Entity());
+        if (isset($organisation['id']) && 1 < $resolveReferences) {
+            $organisation['departments'] = (new Department())
+                ->readByOrganisationId($organisation['id'], $resolveReferences - 1);
         }
         return $organisation;
     }
