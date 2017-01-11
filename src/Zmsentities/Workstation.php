@@ -32,6 +32,24 @@ class Workstation extends Schema\Entity
         return new Department();
     }
 
+    public function getDepartmentList()
+    {
+        $departmentList = new Collection\DepartmentList();
+        $userAccount = new Useraccount($this->useraccount);
+        foreach ($userAccount->departments as $department) {
+            $departmentList->addEntity(new Department($department));
+        }
+        return $departmentList;
+    }
+
+    public function hasDepartmentList()
+    {
+        if (0 == $this->getDepartmentList()->count()) {
+            throw new Exception\WorkstationMissingAssignedDepartments();
+        }
+        return true;
+    }
+
     public function getProviderOfGivenScope()
     {
         return $this->scope['provider']['id'];
