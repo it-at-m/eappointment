@@ -36,6 +36,9 @@ class Config extends Schema\Entity
             ],
             'calldisplay' => [
                 'baseUrl' => '/terminvereinbarung/calldisplay/'
+            ],
+            'emergency' => [
+                'refreshInterval' => 10
             ]
         ];
     }
