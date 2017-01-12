@@ -23,7 +23,7 @@ class WorkstationGet extends BaseController
         $userAccount = Helper\User::checkRights('organisation', 'department', 'cluster', 'useraccount');
 
         $query = new Query();
-        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(3)->getValue();
         $workstation = $query->readEntity($userAccount->id, $resolveReferences);
 
         $message = Response\Message::create(Render::$request);
