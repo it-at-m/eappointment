@@ -45,25 +45,6 @@ class Workstation extends Base implements MappingInterface
         ];
     }
 
-    public function addJoin()
-    {
-        $this->query->leftJoin(
-            new Alias(Scope::TABLE, 'scope'),
-            'workstation.StandortID',
-            '=',
-            'scope.StandortID'
-        );
-        $scopeQuery = new Scope($this->query, 'scope__');
-        return [$scopeQuery];
-    }
-
-    public function getReferenceMapping()
-    {
-        return [
-            'scope__$ref' => self::expression('CONCAT("/scope/", `workstation`.`StandortID`, "/")')
-        ];
-    }
-
     public function addConditionLoginName($loginName)
     {
         $this->query->where('workstation.Name', '=', $loginName);
