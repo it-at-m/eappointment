@@ -6,6 +6,6 @@ set -a
 [ -e /etc/sysconfig/zms ] && source /etc/sysconfig/zms
 set +a
 
-if [ "$ZMS_CRONMASTER" ]; then
+if [ "$ZMS_CRONROOT" ]; then
     $BIN/deleteSessionData Zmsappointment 30 --commit
 fi
