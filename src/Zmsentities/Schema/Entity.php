@@ -124,7 +124,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
         if (!$validator->isValid()) {
             $exception = new \BO\Zmsentities\Exception\SchemaValidation();
             $exception->setSchemaName($this->getEntityName() . '.json');
-            $exception->setValidationError($validator->errors());
+            $exception->setValidationError($validator->getErrors());
             throw $exception;
         }
         return true;

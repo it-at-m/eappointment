@@ -8,4 +8,19 @@ class Validator extends \League\JsonGuard\Validator
     {
         return $this->passes();
     }
+
+    public function getErrors()
+    {
+        $errorsReducedList = array();
+        $errors = $this->errors();
+        foreach ($errors as $error) {
+            $errorsReducedList[] = new \League\JsonGuard\ValidationError(
+                $error->getMessage(),
+                $error->getCode(),
+                '',
+                $error->getPointer()
+            );
+        }
+        return $errorsReducedList;
+    }
 }
