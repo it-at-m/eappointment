@@ -51,13 +51,9 @@ class LoginForm
             ->isNumber('Bitte wählen Sie einen Standort aus');
 
         // workstation
-        if (Validator::param('workstationCounter')->isDeclared()->hasFailed()) {
-            $collection['workstation'] = Validator::param('workstation')
-                ->isString('Bitte wählen Sie einen Arbeitsplatz oder den Tresen aus');
-        } else {
-            $collection['workstation'] = Validator::param('workstationCounter')
-                ->isNumber('Bitte wählen Sie einen Arbeitsplatz oder den Tresen aus');
-        }
+        $collection['workstation'] = Validator::param('workstation')
+             ->isString('Bitte wählen Sie einen Arbeitsplatz oder den Tresen aus')
+             ->isSmallerThan(5, "Die Arbeitsplatz-Bezeichnung sollte 5 Zeichen nicht überschreiten");
 
         // return validated collection
         $collection = Validator::collection($collection);
