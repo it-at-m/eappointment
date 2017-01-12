@@ -12,7 +12,7 @@ class WorkstationTest extends EntityCommonTests
         $entity = (new $this->entityclass())->getExample();
         $this->assertFalse($entity->hasAuthKey(), 'AuthKey should be empty');
 
-        $entity->authKey = $entity->getAuthKey();
+        $entity->authkey = $entity->getAuthKey();
         $this->assertTrue($entity->hasAuthKey(), 'Missed AuthKey');
     }
 
