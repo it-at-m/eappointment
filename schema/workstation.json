@@ -45,28 +45,7 @@
         "id": {
             "type": "number",
             "description": "id of the workstation"
-        },
-        "emergency": {
-            "type": "object",
-            "description": "Depending on scope settings, a workstation might have an emergency-button to call for help",
-            "properties": {
-                "acceptedByWorkstation": {
-                    "type": ["string"],
-                    "description": "name of workstation which accepted the emergency call",
-                    "default": ""
-                },
-                "activated": {
-                    "type": ["boolean", "number"],
-                    "description": "true in case of emergency",
-                    "default": false
-                },
-                "calledByWorkstation": {
-                    "type": ["string"],
-                    "description": "name of workstation where the emergency occured",
-                    "default": ""
-                }
-            }
-        },
+        },        
         "name": {
             "type": "string",
   			"maxLength": 5,
