@@ -34,7 +34,7 @@
             "type" : "object",
             "properties" : {
                 "absage" : {
-                    "type" : "boolean",
+                    "type" : ["boolean","number"],
                     "description" : ""
                 },
                 "benachrichtigungsfrist" : {
@@ -50,7 +50,7 @@
                     "description" : "calculated cost of one notification"
                 },
                 "eMailkonfigurierbar" : {
-                    "type" : "boolean",
+                    "type" : ["boolean","number"],
                     "description" : ""
                 },
                 "erinnerungsvorlauf" : {
