@@ -52,7 +52,7 @@ class Workstation extends Schema\Entity
 
     public function getProviderOfGivenScope()
     {
-        return $this->scope['provider']['id'];
+        return $this->toProperty()->scope->provider->id->get();
     }
 
     public function getUseraccountRights()
