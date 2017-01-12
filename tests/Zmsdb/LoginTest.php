@@ -27,7 +27,6 @@ class LoginTest extends Base
         $userAccount->addDepartment((new \BO\Zmsdb\Department())->readEntity('72')); //Bürgeramt Egon-Erwin-Kisch-Str.
 
         $workstation->useraccount = $userAccount;
-        $workstation->authKey;
 
         $workstation = $query->updateEntity($workstation);
         $this->assertEquals(true, !isset($workstation->authKey));
