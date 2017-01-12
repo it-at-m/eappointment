@@ -81,6 +81,6 @@ class Workstation extends Schema\Entity
 
     public function hasAuthKey()
     {
-        return (isset($this->authKey)) ? true : false;
+        return (isset($this->authkey)) ? true : false;
     }
 }
