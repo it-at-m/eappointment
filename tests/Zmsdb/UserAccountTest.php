@@ -30,7 +30,7 @@ class UserAccountTest extends Base
         $workstation = (new Workstation())->writeEntityLoginByName($userAccount->id, $input->password, $now, 2);
         $this->assertEquals(true, $workstation->hasAuthKey());
 
-        $userAccount = $query->readEntityByAuthKey($workstation->authKey, 1);
+        $userAccount = $query->readEntityByAuthKey($workstation->authkey, 1);
         $this->assertEntity("\\BO\\Zmsentities\\Useraccount", $userAccount);
     }
 
