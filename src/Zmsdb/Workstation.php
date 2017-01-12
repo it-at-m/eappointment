@@ -63,7 +63,7 @@ class Workstation extends Base
             );
             if ($result) {
                 $workstation = $this->readEntity($loginName, $resolveReferences);
-                $workstation->authKey = $authKey;
+                $workstation->authkey = $authKey;
             }
         }
         return $workstation;
