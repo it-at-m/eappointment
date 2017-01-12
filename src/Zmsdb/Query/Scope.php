@@ -115,6 +115,9 @@ class Scope extends Base implements MappingInterface
             'preferences__ticketprinter__notificationsEnabled' => 'scope.smswarteschlange',
             'preferences__ticketprinter__notificationsDelay' => 'scope.smskioskangebotsfrist',
             'preferences__workstation__emergencyEnabled' => 'scope.notruffunktion',
+            'preferences__workstation__emergencyRefreshInterval' => self::expression(
+                '(SELECT `value` FROM config WHERE `name`="emergency__refreshInterval")'
+            ),
             'shortName' => 'scope.standortkuerzel',
             'status__emergency__acceptedByWorkstation' => 'scope.notrufantwort',
             'status__emergency__activated' => 'scope.notrufausgeloest',
