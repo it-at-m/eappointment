@@ -348,6 +348,11 @@
                             "type": ["boolean", "number"],
                             "description": "true if an emergency button should be displayed on workstation screens",
                             "default": false
+                        },
+                        "emergencyRefrehInterval": {
+                        	"type": "number",
+                            "description": "number of seconds until next emergency testing",
+                            "default": 30
                         }
                     }
                 }
