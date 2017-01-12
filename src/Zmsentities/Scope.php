@@ -121,6 +121,21 @@ class Scope extends Schema\Entity
         return $this;
     }
 
+    /**
+     * Reduce data of dereferenced entities to a required minimum
+     *
+     */
+    public function withLessData()
+    {
+        $entity = clone $this;
+        if ($entity->toProperty()->dayoff->isAvailable()) {
+            unset($entity['dayoff']);
+        }
+        unset($entity['status']);
+        unset($entity['preferences']);
+        return $entity;
+    }
+
     public function setStatusQueue($key, $value)
     {
         $this->status['queue'][$key] = $value;
