@@ -45,10 +45,21 @@
         "id": {
             "type": "number",
             "description": "id of the workstation"
-        },        
+        },
+        "emergency": {
+            "type": "object",
+            "description": "Depending on scope settings, a workstation might have an emergency-button to call for help",
+            "properties": {
+                "refreshInterval": {
+                    "type": "number",
+                    "description": "time in seconds for next check if an emergency occurred",
+                    "default": 5
+                }
+            }
+        },
         "name": {
             "type": "string",
-  			"maxLength": 5,
+            "maxLength": 5,
             "description": "usually number of place or room where the workstation is located"
         },
         "process": {
