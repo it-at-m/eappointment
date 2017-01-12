@@ -21,11 +21,12 @@ class WorkstationLogin extends BaseController
     public static function render($loginName)
     {
         $query = new Query();
-        $input = Validator::input()->isJson()->getValue();
+        $input = Validator::input()->isJson()->assertValid()->getValue();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         $workstation = $query
             ->writeEntityLoginByName($loginName, $input['password'], \App::getNow(), $resolveReferences);
 
+        $workstation->testValid();
         $message = Response\Message::create(Render::$request);
         $message->data = $workstation;
         Render::lastModified(time(), '0');

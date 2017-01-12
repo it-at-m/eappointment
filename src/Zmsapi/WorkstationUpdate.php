@@ -23,8 +23,9 @@ class WorkstationUpdate extends BaseController
         Helper\User::checkRights('organisation', 'department', 'cluster', 'useraccount');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         $query = new Query();
-        $input = Validator::input()->isJson()->getValue();
+        $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Workstation($input);
+        $entity->testValid();
         $workstation = $query->updateEntity($entity, $resolveReferences);
 
         $message = Response\Message::create(Render::$request);
