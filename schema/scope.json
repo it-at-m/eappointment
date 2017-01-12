@@ -64,7 +64,8 @@
                 "notificationsDelay": 30
             },
             "workstation": {
-                "emergencyEnabled": false
+                "emergencyEnabled": false,
+                "emergencyRefreshInterval": 10
             }
         },
         "provider": {
@@ -349,7 +350,7 @@
                             "description": "true if an emergency button should be displayed on workstation screens",
                             "default": false
                         },
-                        "emergencyRefrehInterval": {
+                        "emergencyRefreshInterval": {
                         	"type": "number",
                             "description": "number of seconds until next emergency testing",
                             "default": 30
