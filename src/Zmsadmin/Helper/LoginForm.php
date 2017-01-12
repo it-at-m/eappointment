@@ -72,8 +72,8 @@ class LoginForm
             $userAccount
         )->getEntity();
 
-        if (isset($workstation->authKey)) {
-            Auth::setKey($workstation->authKey);
+        if (isset($workstation->authkey)) {
+            Auth::setKey($workstation->authkey);
             return true;
         }
         return false;
