@@ -353,7 +353,7 @@
                         "emergencyRefreshInterval": {
                         	"type": "number",
                             "description": "number of seconds until next emergency testing",
-                            "default": 30
+                            "default": 5
                         }
                     }
                 }
