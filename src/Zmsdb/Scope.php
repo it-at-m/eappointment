@@ -284,6 +284,25 @@ class Scope extends Base
     }
 
     /**
+     * update a scope
+     *
+     * @param
+     *            scopeId
+     *
+     * @return Entity
+     */
+    public function updateEmergency($scopeId, \BO\Zmsentities\Scope $entity)
+    {
+        self::$cache = [];
+        $query = new Query\Scope(Query\Base::UPDATE);
+        $query->addConditionScopeId($scopeId);
+        $values = $query->setEmergencyEntityMapping($entity);
+        $query->addValues($values);
+        $this->writeItem($query);
+        return $this->readEntity($scopeId);
+    }
+
+    /**
      * remove a scope
      *
      * @param
