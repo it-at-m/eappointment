@@ -2288,6 +2288,40 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/scope/{id}/emergency/":
+ *      post:
+ *          description: Trigger an emergency
+ *          parameters:
+ *              -   name: id
+ *                  description: scope number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: scope
+ *                  description: scope with emergency status
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/scope.json"
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/scope.json"
+ *              404:
+ *                  description: "scope id does not exists"
+ */
+\App::$slim->post('/scope/{id}/emergency/',
+    '\BO\Zmsapi\ScopeEmergency')
+    ->setName("ScopeEmergency");
+
+/**
+ *  @swagger
  *  "/scope/{id}/queue/":
  *      get:
  *          description: Get a waiting queue for a scope

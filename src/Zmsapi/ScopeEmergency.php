@@ -13,18 +13,21 @@ use \BO\Zmsdb\Scope as Query;
 /**
   * Handle requests concerning services
   */
-class ScopeUpdate extends BaseController
+class ScopeEmergency extends BaseController
 {
     /**
      * @return String
      */
     public static function render($itemId)
     {
-        Helper\User::checkRights('scope');
+        $useraccount = Helper\User::checkRights();
+        if ($useraccount->scope->id != $itemId) {
+            throw new Exception\Scope\ScopeNoAccess();
+        }
         $message = Response\Message::create(Render::$request);
         $input = Validator::input()->isJson()->getValue();
         $entity = new \BO\Zmsentities\Scope($input);
-        $message->data = (new Query)->updateEntity($itemId, $entity);
+        $message->data = (new Query)->updateEmergency($itemId, $entity);
         Render::lastModified(time(), '0');
         Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }
