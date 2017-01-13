@@ -22,7 +22,7 @@ class WorkstationLogin extends BaseController
     {
         $query = new Query();
         $input = Validator::input()->isJson()->assertValid()->getValue();
-        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $workstation = $query
             ->writeEntityLoginByName($loginName, $input['password'], \App::getNow(), $resolveReferences);
 
