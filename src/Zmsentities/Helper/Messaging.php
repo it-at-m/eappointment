@@ -108,7 +108,7 @@ class Messaging
         $ics = new \BO\Zmsentities\Ics();
         $template = self::getTemplateByProcessStatus('ics', $process);
         $message = self::getMailContent($process, $config);
-        $plainContent = self::getPlainText($message);
+        $plainContent = self::getPlainText($message, "\\n");
         $appointment = $process->getFirstAppointment();
         $icsString = self::twigView()->render(
             'messaging/' . $template,
@@ -126,14 +126,14 @@ class Messaging
         return $ics;
     }
 
-    public static function getPlainText($content)
+    public static function getPlainText($content, $lineBreak = "\n")
     {
         $replaceThis = array(
-            "<br />" => "\\n",
-            "<li>" => "\\n- ",
+            "<br />" => "$lineBreak",
+            "<li>" => "$lineBreak- ",
             "</li>" => "",
-            "<h2>" => "\\n",
-            "</h2>" => "\\n",
+            "<h2>" => "$lineBreak",
+            "</h2>" => "$lineBreak",
         );
 
         $content = \preg_replace('!\s+!m', ' ', $content);
