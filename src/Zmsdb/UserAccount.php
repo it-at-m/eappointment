@@ -77,7 +77,7 @@ class UserAccount extends Base
             $departmentList = new \BO\Zmsentities\Collection\DepartmentList();
             foreach ($departmentIds as $item) {
                 $department = (new \BO\Zmsdb\Department())->readEntity($item['id'], $resolveReferences);
-                if ($department instanceOf \BO\Zmsentities\Department && 0 < $department->getScopeList()->count()) {
+                if ($department instanceof \BO\Zmsentities\Department && 0 < $department->getScopeList()->count()) {
                     $departmentList->addEntity($department);
                 }
             }
