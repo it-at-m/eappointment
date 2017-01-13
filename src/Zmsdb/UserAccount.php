@@ -77,7 +77,7 @@ class UserAccount extends Base
             $departmentList = new \BO\Zmsentities\Collection\DepartmentList();
             foreach ($departmentIds as $item) {
                 $department = (new \BO\Zmsdb\Department())->readEntity($item['id'], $resolveReferences);
-                if ($department instanceof \BO\Zmsentities\Department && 0 < $department->getScopeList()->count()) {
+                if ($department instanceOf \BO\Zmsentities\Department && 0 < $department->getScopeList()->count()) {
                     $departmentList->addEntity($department);
                 }
             }
@@ -86,7 +86,7 @@ class UserAccount extends Base
             $organisation = (new \BO\Zmsdb\Organisation())->readByDepartmentId($department->id, $resolveReferences - 1);
             $department->name = $organisation->name .' -> '. $department->name;
         }
-        return $departmentList;
+        return $departmentList->sortByName();
     }
 
     public function readEntityByAuthKey($xAuthKey, $resolveReferences = 0)
