@@ -1,7 +1,7 @@
 <?php
 namespace BO\Zmsentities\Collection;
 
-class DepartmentList extends Base
+class DepartmentList extends Base implements JsonUnindexed
 {
     public function withOutClusterDuplicates()
     {
