@@ -5,6 +5,10 @@ namespace BO\Zmsdb\Tests;
 use \BO\Zmsdb\Scope as Query;
 use \BO\Zmsentities\Scope as Entity;
 
+/**
+ * @SuppressWarnings(Public)
+ *
+ */
 class ScopeTest extends Base
 {
     public function testBasic()
@@ -90,6 +94,16 @@ class ScopeTest extends Base
 
         $deleteTest = $query->deleteEntity($entity->id);
         $this->assertTrue($deleteTest, "Failed to delete Scope from Database.");
+    }
+
+    public function testEmergency()
+    {
+        $query = new Query();
+        $entity = $query->readEntity(141, 1);
+        $entity->status['emergency']['acceptedByWorkstation'] = '123';
+        $entity = $query->updateEmergency(141, $entity);
+        $entity = $query->readEntity(141, 1);
+        $this->assertEquals($entity->status['emergency']['acceptedByWorkstation'], '123');
     }
 
     public function testReadUpdatedWaitingNumber()
