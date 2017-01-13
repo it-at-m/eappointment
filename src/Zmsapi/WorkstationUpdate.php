@@ -20,8 +20,8 @@ class WorkstationUpdate extends BaseController
      */
     public static function render()
     {
-        Helper\User::checkRights('organisation', 'department', 'cluster', 'useraccount');
-        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
+        Helper\User::checkRights();
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $query = new Query();
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Workstation($input);
