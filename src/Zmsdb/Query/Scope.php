@@ -253,9 +253,9 @@ class Scope extends Base implements MappingInterface
 
     public function setEmergencyEntityMapping(\BO\Zmsentities\Scope $entity)
     {
-        $data['notrufantwort'] = $entity->toProperty()->status->emergency->acceptedByWorkstation->get(null);
+        $data['notrufantwort'] = $entity->toProperty()->status->emergency->acceptedByWorkstation->get(-1);
         $data['notrufausgeloest'] = $entity->toProperty()->status->emergency->activated->get(0);
-        $data['notrufinitiierung'] = $entity->toProperty()->status->emergency->calledByWorkstation->get(null);
+        $data['notrufinitiierung'] = $entity->toProperty()->status->emergency->calledByWorkstation->get(-1);
         return $data;
     }
 
