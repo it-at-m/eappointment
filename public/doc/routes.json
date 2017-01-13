@@ -2859,13 +2859,86 @@
 					"type": "integer"
 				},
 				{
-					"name": "scope",
-					"description": "scope with emergency status",
-					"required": true,
-					"in": "body",
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
 					"schema": {
-						"$ref": "schema/scope.json"
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/scope.json"
+							}
+						}
 					}
+				},
+				"404": {
+					"description": "scope id does not exists"
+				}
+			}
+		},
+		"delete": {
+			"description": "Cancel an emergency",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "scope number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/scope.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "scope id does not exists"
+				}
+			}
+		}
+	},
+	"/scope/{id}/emergency/respond/": {
+		"post": {
+			"description": "Respond to an emergency",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "scope number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
 				}
 			],
 			"responses": {
