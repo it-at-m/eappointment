@@ -29,7 +29,20 @@
         font-weight:        normal;
         line-height:        1.2em;
         vertical-align:     middle;
-        margin-left:		-1.4em;
+        margin-left:		-1em;
+        
+        .header-scope {
+        	div {
+        		float:left;
+        		margin-right:20px;
+        		white-space:nowrap;
+        		vertical-align:middle;
+        	};
+        	.icon {
+        		font-size:1em;
+        		margin-left:20px;
+        	}
+        }
     }
     .right {
         @extend 
