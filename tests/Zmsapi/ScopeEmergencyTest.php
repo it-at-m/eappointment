@@ -4,6 +4,7 @@ namespace BO\Zmsapi\Tests;
 
 use BO\Zmsapi\Helper\User;
 use BO\Zmsentities\Useraccount;
+use BO\Zmsentities\Workstation;
 use BO\Zmsentities\Scope;
 
 class ScopeEmergencyTest extends Base
@@ -22,11 +23,14 @@ class ScopeEmergencyTest extends Base
 
     public function testRendering()
     {
-        User::$current = new Useraccount([
-            'id' => 'unittest',
+        User::$workstation = new Workstation([
+            'id' => '123a',
+            'useraccount' => new Useraccount([
+                'id' => 'testuser',
+            ]),
             'scope' => new Scope([
                 'id' => self::SCOPE_ID,
-                ])
+            ])
         ]);
         $this->render([self::SCOPE_ID], [
             '__body' => '{
@@ -36,11 +40,14 @@ class ScopeEmergencyTest extends Base
 
     public function testNoAccess()
     {
-        User::$current = new Useraccount([
-            'id' => 'unittest',
+        User::$workstation = new Workstation([
+            'id' => '123a',
+            'useraccount' => new Useraccount([
+                'id' => 'testuser',
+            ]),
             'scope' => new Scope([
                 'id' => self::SCOPE_ID + 1,
-                ])
+            ])
         ]);
         $this->setExpectedException('\BO\Zmsapi\Exception\Scope\ScopeNoAccess');
         $this->render([self::SCOPE_ID], [

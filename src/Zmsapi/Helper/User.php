@@ -10,32 +10,38 @@ use \BO\Zmsdb\UserAccount;
  */
 class User
 {
-    public static $current = null;
+    public static $workstation = null;
 
-    public static function readUseraccount()
+    public static function readWorkstation()
     {
-        if (!static::$current) {
+        if (!static::$workstation) {
             $xAuthKey = static::getXAuthKey();
-            static::$current = (new UserAccount())->readEntityByAuthKey($xAuthKey);
+            $useraccount = (new UserAccount())->readEntityByAuthKey($xAuthKey);
+            if ($useraccount->hasId()) {
+                static::$workstation = (new \BO\Zmsdb\Workstation())->readEntity($useraccount->id, 1);
+            } else {
+                static::$workstation = new \BO\Zmsentities\Workstation();
+            }
         }
-        return static::$current;
+        return static::$workstation;
     }
 
     public static function checkRights()
     {
-        $userAccount = static::readUseraccount();
+        $workstation = static::readWorkstation();
+        $userAccount = $workstation->useraccount;
         if (!$userAccount->hasId()) {
             throw new \BO\Zmsentities\Exception\UserAccountMissingLogin();
         }
         if (\App::RIGHTSCHECK_ENABLED) {
             $userAccount->testRights(func_get_args());
         }
-        return $userAccount;
+        return $workstation;
     }
 
     public static function hasRights()
     {
-        $userAccount = static::readUseraccount();
+        $userAccount = static::readWorkstation()->useraccount;
         return $userAccount->hasId();
     }
 

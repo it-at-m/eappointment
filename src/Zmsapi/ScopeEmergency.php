@@ -9,6 +9,8 @@ namespace BO\Zmsapi;
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\Scope as Query;
+use \BO\Zmsdb\Workstation as WorkstationQuery;
+use \BO\Zmsentities\Scope;
 
 /**
   * Handle requests concerning services
@@ -20,14 +22,15 @@ class ScopeEmergency extends BaseController
      */
     public static function render($itemId)
     {
-        $useraccount = Helper\User::checkRights();
-        if ($useraccount->scope->id != $itemId) {
+        $workstation = Helper\User::checkRights();
+        if (!$workstation->scope instanceof Scope || $workstation->scope->id != $itemId) {
             throw new Exception\Scope\ScopeNoAccess();
         }
         $message = Response\Message::create(Render::$request);
-        $input = Validator::input()->isJson()->getValue();
-        $entity = new \BO\Zmsentities\Scope($input);
-        $message->data = (new Query)->updateEmergency($itemId, $entity);
+        $workstation->scope->status['emergency']['activated'] = 1;
+        $workstation->scope->status['emergency']['calledByWorkstation'] = $workstation->id;
+        $workstation->scope->status['emergency']['acceptedByWorkstation'] = -1;
+        $message->data = (new Query)->updateEmergency($itemId, $workstation->scope);
         Render::lastModified(time(), '0');
         Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }

@@ -2297,12 +2297,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                  in: path
  *                  required: true
  *                  type: integer
- *              -   name: scope
- *                  description: scope with emergency status
- *                  required: true
- *                  in: body
- *                  schema:
- *                      $ref: "schema/scope.json"
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
  *          responses:
  *              200:
  *                  description: "success"
@@ -2319,6 +2317,70 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->post('/scope/{id}/emergency/',
     '\BO\Zmsapi\ScopeEmergency')
     ->setName("ScopeEmergency");
+
+/**
+ *  @swagger
+ *  "/scope/{id}/emergency/":
+ *      delete:
+ *          description: Cancel an emergency
+ *          parameters:
+ *              -   name: id
+ *                  description: scope number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/scope.json"
+ *              404:
+ *                  description: "scope id does not exists"
+ */
+\App::$slim->delete('/scope/{id}/emergency/',
+    '\BO\Zmsapi\ScopeEmergencyStop')
+    ->setName("ScopeEmergencyStop");
+
+/**
+ *  @swagger
+ *  "/scope/{id}/emergency/respond/":
+ *      post:
+ *          description: Respond to an emergency
+ *          parameters:
+ *              -   name: id
+ *                  description: scope number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/scope.json"
+ *              404:
+ *                  description: "scope id does not exists"
+ */
+\App::$slim->post('/scope/{id}/emergency/',
+    '\BO\Zmsapi\ScopeEmergencyRespond')
+    ->setName("ScopeEmergencyRespond");
 
 /**
  *  @swagger

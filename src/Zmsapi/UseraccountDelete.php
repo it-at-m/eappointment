@@ -20,7 +20,7 @@ class UseraccountDelete extends BaseController
      */
     public static function render($loginName)
     {
-        $userAccount = Helper\User::checkRights('useraccount');
+        Helper\User::checkRights('useraccount');
 
         $query = new Query();
         $userAccount = $query->readEntity($loginName);

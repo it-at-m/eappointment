@@ -20,7 +20,7 @@ class UseraccountGet extends BaseController
      */
     public static function render($loginName)
     {
-        $userAccount = Helper\User::checkRights('useraccount');
+        Helper\User::checkRights('useraccount');
 
         $query = new Query();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();

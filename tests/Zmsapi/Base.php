@@ -16,6 +16,7 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
 
     public function tearDown()
     {
+        \BO\Zmsapi\Helper\User::$workstation = null;
         \BO\Zmsdb\Connection\Select::writeRollback();
         \BO\Zmsdb\Connection\Select::closeWriteConnection();
         \BO\Zmsdb\Connection\Select::closeReadConnection();

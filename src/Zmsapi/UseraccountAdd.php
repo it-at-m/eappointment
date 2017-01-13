@@ -20,7 +20,7 @@ class UseraccountAdd extends BaseController
      */
     public static function render()
     {
-        $userAccount = Helper\User::checkRights('useraccount');
+        Helper\User::checkRights('useraccount');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         $query = new Query();
         $input = Validator::input()->isJson()->getValue();
