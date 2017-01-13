@@ -20,11 +20,13 @@ class WorkstationGet extends BaseController
      */
     public static function render()
     {
-        $userAccount = Helper\User::checkRights('organisation', 'department', 'cluster', 'useraccount');
-
-        $query = new Query();
+        $workstation = Helper\User::checkRights();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
-        $workstation = $query->readEntity($userAccount->id, $resolveReferences);
+
+        if ($resolveReferences > 1) {
+            $query = new Query();
+            $workstation = $query->readEntity($workstation->useraccount->id, $resolveReferences);
+        }
 
         $message = Response\Message::create(Render::$request);
         $message->data = $workstation;

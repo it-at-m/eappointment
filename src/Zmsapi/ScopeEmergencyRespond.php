@@ -15,7 +15,7 @@ use \BO\Zmsentities\Scope;
 /**
   * Handle requests concerning services
   */
-class ScopeEmergency extends BaseController
+class ScopeEmergencyRespond extends BaseController
 {
     /**
      * @return String
@@ -27,9 +27,7 @@ class ScopeEmergency extends BaseController
             throw new Exception\Scope\ScopeNoAccess();
         }
         $message = Response\Message::create(Render::$request);
-        $workstation->scope->status['emergency']['activated'] = 1;
-        $workstation->scope->status['emergency']['calledByWorkstation'] = $workstation->id;
-        $workstation->scope->status['emergency']['acceptedByWorkstation'] = -1;
+        $workstation->scope->status['emergency']['acceptedByWorkstation'] = $workstation->id;
         $message->data = (new Query)->updateEmergency($itemId, $workstation->scope);
         Render::lastModified(time(), '0');
         Render::json($message->setUpdatedMetaData(), $message->getStatuscode());

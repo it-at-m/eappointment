@@ -7,9 +7,9 @@ use BO\Zmsentities\Useraccount;
 use BO\Zmsentities\Workstation;
 use BO\Zmsentities\Scope;
 
-class ScopeEmergencyTest extends Base
+class ScopeEmergencyRespondTest extends Base
 {
-    protected $classname = "ScopeEmergency";
+    protected $classname = "ScopeEmergencyRespond";
 
     const SCOPE_ID = 143;
 
