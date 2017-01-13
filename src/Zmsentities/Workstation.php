@@ -8,6 +8,13 @@ class Workstation extends Schema\Entity
 
     public static $schema = "workstation.json";
 
+    public function getDefaults()
+    {
+        return [
+            'useraccount' => new Useraccount(),
+        ];
+    }
+
     public function getQueuePreference($key, $isBoolean = false)
     {
         $result = null;
