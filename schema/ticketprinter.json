@@ -9,9 +9,6 @@
         "lastUpdate": 1447925326000,
         "name": "Eingangsbereich links",
         "reload": 30,
-        "organisation": {
-        	"id": 123
-        },
         "contact": {
         	"name": "Bürgeramt"
         }
@@ -83,9 +80,6 @@
         "reload": {
             "type": "number",
             "description": "time to redirect to homepage in seconds"
-        },
-        "organisation": {
-            "$ref": "organisation.json"
         },
         "contact": {
             "$ref": "contact.json"
