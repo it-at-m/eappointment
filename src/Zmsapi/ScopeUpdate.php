@@ -20,6 +20,7 @@ class ScopeUpdate extends BaseController
      */
     public static function render($itemId)
     {
+        Helper\User::checkRights('scope');
         $message = Response\Message::create(Render::$request);
         $input = Validator::input()->isJson()->getValue();
         $entity = new \BO\Zmsentities\Scope($input);

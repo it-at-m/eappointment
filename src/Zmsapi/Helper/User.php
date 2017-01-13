@@ -10,10 +10,20 @@ use \BO\Zmsdb\UserAccount;
  */
 class User
 {
+    public static $current = null;
+
+    public static function readUseraccount()
+    {
+        if (!static::$current) {
+            $xAuthKey = static::getXAuthKey();
+            static::$current = (new UserAccount())->readEntityByAuthKey($xAuthKey);
+        }
+        return static::$current;
+    }
+
     public static function checkRights()
     {
-        $xAuthKey = static::getXAuthKey();
-        $userAccount = (new UserAccount())->readEntityByAuthKey($xAuthKey);
+        $userAccount = static::readUseraccount();
         if (!$userAccount->hasId()) {
             throw new \BO\Zmsentities\Exception\UserAccountMissingLogin();
         }
@@ -25,8 +35,7 @@ class User
 
     public static function hasRights()
     {
-        $xAuthKey = static::getXAuthKey();
-        $userAccount = (new UserAccount())->readEntityByAuthKey($xAuthKey);
+        $userAccount = static::readUseraccount();
         return $userAccount->hasId();
     }
 
