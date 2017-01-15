@@ -2378,7 +2378,7 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "scope id does not exists"
  */
-\App::$slim->post('/scope/{id}/emergency/',
+\App::$slim->post('/scope/{id}/emergency/respond/',
     '\BO\Zmsapi\ScopeEmergencyRespond')
     ->setName("ScopeEmergencyRespond");
 
