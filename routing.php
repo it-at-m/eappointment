@@ -26,6 +26,9 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/logout/', '\BO\Zmsadmin\Logout')
     ->setName("logout");
 
+\App::$slim->get('/workstation/status/', '\BO\Zmsadmin\WorkstationStatus')
+    ->setName("workstationStatus");
+
 \App::$slim->get('/workstation/{loginName}/', '\BO\Zmsadmin\WorkstationLogin')
     ->setName("workstationLogin");
 
@@ -81,6 +84,14 @@ use \Psr\Http\Message\ResponseInterface;
 
 \App::$slim->get('/scope/{id:\d+}/availability/month/[{date:\d\d\d\d-\d\d}/]', '\BO\Zmsadmin\ScopeAvailabilityMonth')
     ->setName("scopeAvailabilityMonth");
+
+\App::$slim->map([
+    'DELETE','POST'
+], '/scope/{id:\d+}/emergency/', '\BO\Zmsadmin\ScopeEmergency')
+    ->setName("scope_emergency");
+
+\App::$slim->get('/scope/{id:\d+}/emergency/respond/', '\BO\Zmsadmin\ScopeEmergencyResponse')
+    ->setName('scope_emergency_response');
 
 \App::$slim->map([
     'GET','POST'
