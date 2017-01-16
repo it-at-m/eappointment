@@ -27,12 +27,12 @@ class ScopeEmergency extends BaseController
         $url = sprintf('/scope/%d/emergency/', $entityId);
 
         switch ($request->getMethod()) {
-        case 'POST':
-            $result = \App::$http->readPostResult($url);
-            return $result->getResponse();
-        case 'DELETE':
-            $result = \App::$http->readDeleteResult($url);
-            return $result->getResponse();
+            case 'POST':
+                $result = \App::$http->readPostResult($url);
+                return $result->getResponse();
+            case 'DELETE':
+                $result = \App::$http->readDeleteResult($url);
+                return $result->getResponse();
         }
     }
 }
