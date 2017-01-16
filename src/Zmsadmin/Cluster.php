@@ -12,6 +12,7 @@ use BO\Mellon\Validator;
 class Cluster extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
     public function __invoke(
@@ -21,15 +22,16 @@ class Cluster extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
         $entityId = Validator::value($args['id'])->isNumber()->getValue();
-        $entity = \App::$http->readGetResult('/cluster/' . $entityId . '/')->getEntity();
+        $entity = \App::$http->readGetResult('/cluster/' . $entityId . '/', ['resolveReferences' => 2])->getEntity();
 
         if (!$entity->hasId()) {
             return Helper\Render::withHtml($response, 'page/404.twig', array());
         }
 
-        $scopeList = \App::$http->readGetResult(
-            '/scope/provider/' . $entity->scopes[0]['provider']['id'] . '/'
-        )->getCollection();
+        $department = \App::$http->readGetResult(
+            '/scope/' . $entity->scopes[0]['id'] . '/department/',
+            ['resolveReferences' => 2]
+        )->getEntity();
 
         return \BO\Slim\Render::withHtml(
 
@@ -40,7 +42,7 @@ class Cluster extends BaseController
                 'menuActive' => 'owner',
                 'workstation' => $workstation,
                 'cluster' => $entity->getArrayCopy(),
-                'scopeList' => $scopeList
+                'scopeList' => $department->getScopeList(),
             )
         );
     }
