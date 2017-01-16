@@ -12,6 +12,7 @@ class Workstation extends Schema\Entity
     {
         return [
             'useraccount' => new Useraccount(),
+            'name' => '',
         ];
     }
 
