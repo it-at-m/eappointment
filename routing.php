@@ -90,7 +90,7 @@ use \Psr\Http\Message\ResponseInterface;
 ], '/scope/{id:\d+}/emergency/', '\BO\Zmsadmin\ScopeEmergency')
     ->setName("scope_emergency");
 
-\App::$slim->get('/scope/{id:\d+}/emergency/respond/', '\BO\Zmsadmin\ScopeEmergencyResponse')
+\App::$slim->post('/scope/{id:\d+}/emergency/respond/', '\BO\Zmsadmin\ScopeEmergencyResponse')
     ->setName('scope_emergency_response');
 
 \App::$slim->map([
