@@ -9,7 +9,7 @@ class View extends BaseView {
     constructor (element, options) {
         super(element)
         this.includeUrl = options.includeurl
-        this.workstationId = ""+options.workstationid
+        this.workstationName = ""+options.workstationname
         this.scope = options.scope
         this.data = Object.assign({}, deepGet(this, ['scope', 'status', 'emergency']))
         this.minimized = false
@@ -33,7 +33,7 @@ class View extends BaseView {
 
         this.render()
         this.refresh()
-        console.log('Compontent: Emergency', this)
+        console.log('Component: Emergency', this)
     }
 
 
@@ -43,10 +43,26 @@ class View extends BaseView {
                                                'workstation',
                                                'emergencyRefreshInterval']) || DEFAULT_REFRESH_INTERVAL
         clearTimeout(this.refreshTimer)
-        this.loadData().then(() => {
-            this.render()
+        this.loadData().then(data => {
+            this.update(data)
         }, noOp).then(() => {
             this.refreshTimer = setTimeout(this.refresh, refreshInterval * 1000)
+        })
+    }
+
+    loadData () {
+        const url = `${this.includeUrl}/workstation/status/`
+
+        return new Promise((resolve, reject) => {
+            $.ajax(url, {
+                method: 'GET'
+            }).done(data => {
+                const emergencyData = deepGet(tryJson(data), ['workstation', 'scope', 'status', 'emergency'])
+                resolve(emergencyData)
+            }).fail(err => {
+                console.log('XHR error', url, err)
+                reject(err)
+            })
         })
     }
 
@@ -95,24 +111,6 @@ class View extends BaseView {
         })
     }
 
-    loadData () {
-        const url = `${this.includeUrl}/workstation/status/`
-
-        return new Promise((resolve, reject) => {
-            $.ajax(url, {
-                method: 'GET'
-            }).done(data => {
-                const { workstation = {} } = tryJson(data)
-                const { scope } = workstation
-                this.scope = Object.assign({}, scope)
-                resolve(scope)
-            }).fail(err => {
-                console.log('XHR error', url, err)
-                reject(err)
-            })
-        })
-    }
-
     update (newData) {
         this.data = Object.assign({}, this.data, newData)
         this.render()
@@ -139,7 +137,7 @@ class View extends BaseView {
             this.$.removeAttr('data-minimized')
         }
 
-        this.$.attr('data-source', data.calledByWorkstation === this.workstationId ? 'self' : 'other')
+        this.$.attr('data-source', data.calledByWorkstation === this.workstationName ? 'self' : 'other')
         this.$.attr('data-state', state)
         this.$.find('.emergency__source').text(data.calledByWorkstation)
         this.$.find('.emergency__help-from').text(data.acceptedByWorkstation)
@@ -156,12 +154,12 @@ class View extends BaseView {
     }
 
     triggerEmergency () {
-        this.update({activated: "1", calledByWorkstation: this.workstationId })
+        this.update({activated: "1", calledByWorkstation: this.workstationName })
         this.sendEmergencyCall().then(this.refresh)
     }
 
     comeForHelp () {
-        this.update({acceptedByWorkstation: this.workstationId})
+        this.update({acceptedByWorkstation: this.workstationName})
         this.sendEmergencyResponse().then(this.refresh)
     }
 
