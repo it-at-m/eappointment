@@ -692,6 +692,7 @@ use \Psr\Http\Message\ResponseInterface;
     '\BO\Zmsapi\DepartmentDelete')
     ->setName("DepartmentDelete");
 
+
 /**
  *  @swagger
  *  "/mails/":
@@ -1834,6 +1835,49 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/provider/{source}/{id}/scopes/":
+ *      get:
+ *          description: Get a list of scope by provider ID
+ *          parameters:
+ *              -   name: source
+ *                  description: provider source like 'dldb'
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: id
+ *                  description: provider number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/scope.json"
+ *              404:
+ *                  description: "provider id does not exists"
+ */
+\App::$slim->get('/provider/{source}/{id:\d{1,11}}/scopes/',
+    '\BO\Zmsapi\ScopeByProviderList')
+    ->setName("ScopeByProviderList");
+
+/**
+ *  @swagger
  *  "/provider/{source}/":
  *      get:
  *          description: Get a list of provider by source
@@ -2093,12 +2137,12 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
- *  "/scope/provider/{id}/":
+ *  "/scope/{id}/department/":
  *      get:
- *          description: Get a list of scope by provider ID
+ *          description: Get a department for a scope
  *          parameters:
  *              -   name: id
- *                  description: provider number
+ *                  description: scope id
  *                  in: path
  *                  required: true
  *                  type: integer
@@ -2119,53 +2163,13 @@ use \Psr\Http\Message\ResponseInterface;
  *                          meta:
  *                              $ref: "schema/metaresult.json"
  *                          data:
- *                              type: array
- *                              items:
- *                                  $ref: "schema/scope.json"
+ *                              $ref: "schema/department.json"
  *              404:
- *                  description: "provider id does not exists"
+ *                  description: "could not find a department"
  */
-\App::$slim->get('/scope/provider/{id:\d{1,11}}/',
-    '\BO\Zmsapi\ScopeByProviderList')
-    ->setName("ScopeByProviderList");
-
-/**
- *  @swagger
- *  "/scope/department/{id}/":
- *      get:
- *          description: Get a list of scope by department ID
- *          parameters:
- *              -   name: id
- *                  description: department number
- *                  in: path
- *                  required: true
- *                  type: integer
- *              -   name: X-Authkey
- *                  description: authentication key to identify user for testing access rights
- *                  in: header
- *                  type: string
- *              -   name: resolveReferences
- *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
- *                  in: query
- *                  type: integer
- *          responses:
- *              200:
- *                  description: "success"
- *                  schema:
- *                      type: object
- *                      properties:
- *                          meta:
- *                              $ref: "schema/metaresult.json"
- *                          data:
- *                              type: array
- *                              items:
- *                                  $ref: "schema/scope.json"
- *              404:
- *                  description: "department id does not exists"
- */
-\App::$slim->get('/scope/department/{id:\d{1,11}}/',
-    '\BO\Zmsapi\ScopeByDepartmentList')
-    ->setName("ScopeByDepartmentList");
+\App::$slim->get('/scope/{id:\d{1,11}}/department/',
+    '\BO\Zmsapi\DepartmentByScopeId')
+    ->setName("DepartmentByScopeId");
 
 /**
  *  @swagger
