@@ -27,7 +27,8 @@ class ScopeEmergencyRespond extends BaseController
             throw new Exception\Scope\ScopeNoAccess();
         }
         $message = Response\Message::create(Render::$request);
-        $workstation->scope->status['emergency']['acceptedByWorkstation'] = $workstation->id;
+        $workstation->scope->status['emergency']['acceptedByWorkstation'] =
+            $workstation->name ? $workstation->name : "Tresen";
         $message->data = (new Query)->updateEmergency($itemId, $workstation->scope);
         Render::lastModified(time(), '0');
         Render::json($message->setUpdatedMetaData(), $message->getStatuscode());

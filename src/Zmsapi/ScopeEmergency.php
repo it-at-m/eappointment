@@ -28,7 +28,8 @@ class ScopeEmergency extends BaseController
         }
         $message = Response\Message::create(Render::$request);
         $workstation->scope->status['emergency']['activated'] = 1;
-        $workstation->scope->status['emergency']['calledByWorkstation'] = $workstation->id;
+        $workstation->scope->status['emergency']['calledByWorkstation'] =
+            $workstation->name ? $workstation->name : "Tresen";
         $workstation->scope->status['emergency']['acceptedByWorkstation'] = -1;
         $message->data = (new Query)->updateEmergency($itemId, $workstation->scope);
         Render::lastModified(time(), '0');
