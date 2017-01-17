@@ -1,6 +1,7 @@
 import BaseView from '../lib/baseview'
 import $ from 'jquery'
 import { deepGet, tryJson, noOp } from '../lib/utils'
+import { playSound } from '../lib/audio'
 
 const DEFAULT_REFRESH_INTERVAL = 5
 
@@ -14,17 +15,14 @@ class View extends BaseView {
         this.data = Object.assign({}, deepGet(this, ['scope', 'status', 'emergency']))
         this.minimized = false
         this.refreshTimer = null
+        this.refreshId = 0
 
         this.bindPublicMethods('triggerEmergency',
                                'endEmergency',
                                'comeForHelp',
-                               'update',
                                'refresh',
                                'minimize',
-                               'show',
-                               'sendEmergencyCall',
-                               'sendEmergencyResponse',
-                               'sendEmergencyCancel')
+                               'show')
         this.$.find('.emergency__button-trigger').on('click', this.triggerEmergency)
         this.$.find('.emergency__button-end').on('click', this.endEmergency)
         this.$.find('.emergency__button-help').on('click', this.comeForHelp)
@@ -36,18 +34,35 @@ class View extends BaseView {
         console.log('Component: Emergency', this)
     }
 
+    invalidateRefreshId() {
+        this.refreshId = this.refreshId + 1
+    }
 
     refresh() {
         const refreshInterval = deepGet(this, ['scope',
                                                'preferences',
                                                'workstation',
                                                'emergencyRefreshInterval']) || DEFAULT_REFRESH_INTERVAL
+        this.invalidateRefreshId()
+        const refreshId = this.refreshId
         clearTimeout(this.refreshTimer)
-        this.loadData().then(data => {
-            this.update(data)
-        }, noOp).then(() => {
-            this.refreshTimer = setTimeout(this.refresh, refreshInterval * 1000)
-        })
+
+        this.loadData()
+            .then(data => {
+                // if there is a more recent refresh request going on, ignore this one.
+                // this is to prevent race condition when updating the UI after a user input
+                if (refreshId === this.refreshId) {
+                    return data
+                } else {
+                    throw { message: 'outdated refresh request' }
+                }
+            })
+            .then(data => {
+                this.playSound(data)
+                this.update(data)
+            }, noOp).then(() => {
+                this.refreshTimer = setTimeout(this.refresh, refreshInterval * 1000)
+            })
     }
 
     loadData () {
@@ -67,6 +82,7 @@ class View extends BaseView {
     }
 
     sendEmergencyCall() {
+        this.invalidateRefreshId()
         const url = `${this.includeUrl}/scope/${this.scope.id}/emergency/`
 
         return new Promise((resolve, reject) => {
@@ -82,6 +98,7 @@ class View extends BaseView {
     }
 
     sendEmergencyResponse() {
+        this.invalidateRefreshId()
         const url = `${this.includeUrl}/scope/${this.scope.id}/emergency/respond/`
 
         return new Promise((resolve, reject) => {
@@ -97,6 +114,7 @@ class View extends BaseView {
     }
 
     sendEmergencyCancel() {
+        this.invalidateRefreshId()
         const url = `${this.includeUrl}/scope/${this.scope.id}/emergency/`
 
         return new Promise((resolve, reject) => {
@@ -116,11 +134,38 @@ class View extends BaseView {
         this.render()
     }
 
+    playSound(data) {
+        console.log('playSound', data.activated, this.data.activated, data.calledByWorkstation, this.workstationName)
+        let play = false
+
+        if (data.activated === "1") {
+            if (this.data.activated === "0") {
+                //emergency changed from 'off' to 'on', play the sound!
+                play = true
+            } else {
+                if (data.calledByWorkstation !== this.data.calledByWorkstation) {
+                    //the source of the emergency changed, it must be a new one. play sound!
+                    play = true
+                }
+            }
+
+            if ( data.calledByWorkstation === this.workstationName) {
+                //never play the sound when the source is the same workstation
+                play = false
+            }
+        }
+
+        if (play) {
+            playSound(`${this.includeUrl}/_audio/emergency.ogg`)
+        }
+    }
+
     render () {
         const data = this.data
 
         const activated = parseInt(data.activated, 10)
         const acceptedByWorkstation = parseInt(data.acceptedByWorkstation, 10)
+        const source = data.calledByWorkstation === this.workstationName ? 'self' : 'other'
 
         let state = 'clear'
         if (activated > 0) {
@@ -137,7 +182,9 @@ class View extends BaseView {
             this.$.removeAttr('data-minimized')
         }
 
-        this.$.attr('data-source', data.calledByWorkstation === this.workstationName ? 'self' : 'other')
+
+
+        this.$.attr('data-source', source)
         this.$.attr('data-state', state)
         this.$.find('.emergency__source').text(data.calledByWorkstation)
         this.$.find('.emergency__help-from').text(data.acceptedByWorkstation)
