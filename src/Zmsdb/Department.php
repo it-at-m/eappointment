@@ -169,7 +169,9 @@ class Department extends Base
         $values = $query->reverseEntityMapping($entity);
         $query->addValues($values);
         $this->writeItem($query);
-        $this->writeDepartmentLinks($departmentId, $entity->links);
+        if ($entity->toProperty()->links->isAvailable()) {
+            $this->writeDepartmentLinks($departmentId, $entity->links);
+        }
         $this->updateDepartmentMail($departmentId, $entity->email);
         $this->updateDepartmentNotifications($departmentId, $entity->getNotificationPreferences());
         return $this->readEntity($departmentId);
