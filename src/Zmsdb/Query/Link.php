@@ -28,7 +28,7 @@ class Link extends Base
     public function reverseEntityMapping(\BO\Zmsentities\Cluster $entity)
     {
         $data = array();
-        $data['name'] = $entity->name;
+        $data['beschreibung'] = $entity->name;
         $data['link'] = $entity->link;
         $data['neuerFrame'] = ($entity->target)  ? 1 : 0;
 
