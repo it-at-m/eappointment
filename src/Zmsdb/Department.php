@@ -145,6 +145,9 @@ class Department extends Base
         $this->writeItem($query);
         $lastInsertId = $this->getWriter()
             ->lastInsertId();
+        if ($entity->toProperty()->links->isAvailable()) {
+            $this->writeDepartmentLinks($lastInsertId, $entity->links);
+        }
         $this->writeDepartmentMail($lastInsertId, $entity->email);
         $this->writeDepartmentNotifications($lastInsertId, $entity->getNotificationPreferences());
         return $this->readEntity($lastInsertId);
@@ -166,9 +169,38 @@ class Department extends Base
         $values = $query->reverseEntityMapping($entity);
         $query->addValues($values);
         $this->writeItem($query);
+        $this->writeDepartmentLinks($departmentId, $entity->links);
         $this->updateDepartmentMail($departmentId, $entity->email);
         $this->updateDepartmentNotifications($departmentId, $entity->getNotificationPreferences());
         return $this->readEntity($departmentId);
+    }
+
+    /**
+     * create links preferences of a department
+     *
+     * @param
+     *            departmentId,
+     *            links
+     *
+     * @return Boolean
+     */
+    protected function writeDepartmentLinks($departmentId, $links)
+    {
+        $deleteQuery = new Query\Link(Query\Base::DELETE);
+        $deleteQuery->addConditionDepartmentId($departmentId);
+        $this->deleteItem($deleteQuery);
+        $query = new Query\Link(Query\Base::INSERT);
+        foreach ($links as $link) {
+            $query->addValues(
+                [
+                    'behoerdenid' => $departmentId,
+                    'beschreibung' => $link['name'],
+                    'link' => $link['link'],
+                    'neuerFrame' => $link['target']
+                ]
+            );
+            $this->writeItem($query);
+        }
     }
 
     /**
