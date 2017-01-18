@@ -198,7 +198,7 @@ class Department extends Base
                     'behoerdenid' => $departmentId,
                     'beschreibung' => $link['name'],
                     'link' => $link['link'],
-                    'neuerFrame' => $link['target']
+                    'neuerFrame' => isset($link['target']) ? 1 : 0
                 ]
             );
             $this->writeItem($query);
