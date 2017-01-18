@@ -130,7 +130,7 @@ class Department extends Base implements MappingInterface
 
     public function reverseEntityMapping(\BO\Zmsentities\Department $entity, $parentId = null)
     {
-        $data = array ();
+        $data = array();
         if (null !== $parentId) {
             $data['OrganisationsID'] = $parentId;
         }

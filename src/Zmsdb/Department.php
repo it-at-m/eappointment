@@ -12,7 +12,7 @@ class Department extends Base
      *
      * @var Array \BO\Zmsentities\Department
      */
-    public static $departmentCache = array ();
+    public static $departmentCache = array();
 
     public function readEntity($departmentId, $resolveReferences = 0, $disableCache = false)
     {
@@ -36,6 +36,7 @@ class Department extends Base
 
     protected function readEntityReferences($entity, $resolveReferences = 0)
     {
+        $entity['links'] = (new Link())->readByDepartmentId($entity->id);
         if (0 < $resolveReferences) {
             $entity['clusters'] = (new Cluster())->readByDepartmentId($entity->id, $resolveReferences - 1);
             $entity['scopes'] = (new Scope())
@@ -113,13 +114,13 @@ class Department extends Base
         $query = Query\Department::QUERY_MAIL_DELETE;
         $statement = $this->getWriter()
             ->prepare($query);
-        $emailDelete = $statement->execute(array (
+        $emailDelete = $statement->execute(array(
             $departmentId
         ));
         $query = Query\Department::QUERY_NOTIFICATIONS_DELETE;
         $statement = $this->getWriter()
             ->prepare($query);
-        $notificationsDelete = $statement->execute(array (
+        $notificationsDelete = $statement->execute(array(
             $departmentId
         ));
         return ($entityDelete && $emailDelete && $notificationsDelete) ? true : false;
@@ -185,7 +186,7 @@ class Department extends Base
         $query = Query\Department::QUERY_MAIL_INSERT;
         $statement = $this->getWriter()
             ->prepare($query);
-        $result = $statement->execute(array (
+        $result = $statement->execute(array(
             $departmentId,
             $email
         ));
@@ -208,7 +209,7 @@ class Department extends Base
         $statement = $this->getWriter()
             ->prepare($query);
         $result = $statement->execute(
-            array (
+            array(
                 $departmentId,
                 (isset($preferences['enabled'])) ? 1 : 0,
                 $preferences['identification'],
@@ -233,7 +234,7 @@ class Department extends Base
         self::$departmentCache = [];
         $query = Query\Department::QUERY_MAIL_UPDATE;
         return $this->getWriter()
-            ->fetchAffected($query, array (
+            ->fetchAffected($query, array(
             $email,
             $departmentId
             ));
@@ -255,7 +256,7 @@ class Department extends Base
         return $this->getWriter()
             ->fetchAffected(
                 $query,
-                array (
+                array(
                 (isset($preferences['enabled'])) ? 1 : 0,
                 $preferences['identification'],
                 (isset($preferences['sendConfirmationEnabled'])) ? 1 : 0,
