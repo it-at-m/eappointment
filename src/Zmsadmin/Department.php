@@ -32,7 +32,7 @@ class Department extends BaseController
             return \BO\Slim\Render::withHtml($response, 'page/404.twig', array());
         }
 
-        $input = $request->getParsedBody(); 
+        $input = $request->getParsedBody();
         if (array_key_exists('save', (array) $input)) {
             $input = $this->cleanupLinks($input);
             try {
@@ -62,10 +62,11 @@ class Department extends BaseController
         );
     }
 
-    protected function cleanupLinks(array $input) {
+    protected function cleanupLinks(array $input)
+    {
         $links = $input['links'];
 
-        $input['links'] = array_filter($links, function($link) {
+        $input['links'] = array_filter($links, function ($link) {
             return !($link['name'] === '' && $link['link'] == '');
         });
 
