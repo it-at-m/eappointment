@@ -32,8 +32,9 @@ class Department extends BaseController
             return \BO\Slim\Render::withHtml($response, 'page/404.twig', array());
         }
 
-        $input = $request->getParsedBody();
+        $input = $request->getParsedBody(); 
         if (array_key_exists('save', (array) $input)) {
+            $input = $this->cleanupLinks($input);
             try {
                 $entity = new Entity($input);
                 $entity->id = $entityId;
@@ -41,6 +42,7 @@ class Department extends BaseController
                     '/department/'. $entity->id .'/',
                     $entity
                 )->getEntity();
+                //var_dump($entity);die;
                 //self::$errorHandler->success = 'department_saved';
             } catch (\Exception $exception) {
                 return Helper\Render::error($exception);
@@ -58,5 +60,15 @@ class Department extends BaseController
                 'menuActive' => 'owner'
             )
         );
+    }
+
+    protected function cleanupLinks(array $input) {
+        $links = $input['links'];
+
+        $input['links'] = array_filter($links, function($link) {
+            return !($link['name'] === '' && $link['link'] == '');
+        });
+
+        return $input;
     }
 }
