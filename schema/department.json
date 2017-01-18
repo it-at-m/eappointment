@@ -4,7 +4,7 @@
     "example": {
         "id": 123,
         "contact": {
-            "country": "Germany",            
+            "country": "Germany",
             "name": "Flughafen Schönefeld, Landebahn",
             "postalCode": "15831",
             "region": "Brandenburg",
@@ -75,19 +75,7 @@
         "links": {
             "type": "array",
             "items": {
-                "type": "object",
-                "properties": {
-                    "name": {
-                        "type": "string"
-                    },
-                    "url": {
-                        "type": "string"
-                    },
-                    "target": {
-                        "type": ["boolean", "number"],
-                        "description": "true if url should open in a new window"
-                    }
-                }
+                "$ref": "link.json"
             }
         },
         "name": {
