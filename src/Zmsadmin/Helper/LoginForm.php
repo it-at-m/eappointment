@@ -84,7 +84,10 @@ class LoginForm
         $formData = $data->getValues();
         if (isset($workstation->useraccount)) {
             $workstation->name = $formData['workstation']->getValue();
-            $workstation->scope['id'] = $formData['scope']->getValue();
+            $workstation->scope = new \BO\Zmsentities\Scope([
+                'id' => $formData['scope']->getValue(),
+            ]);
+            unset($workstation->useraccount['departments']);
             $workstation = \App::$http->readPostResult('/workstation/', $workstation)->getEntity();
             return (0 == $workstation->name) ? 'counter' : 'workstation';
         }
