@@ -14,6 +14,7 @@ import 'moment/locale/de';
 import FormView from "./element/form";
 import PickupKeyboardHandheldView from "./block/pickup-keyboard-handheld";
 import EmergencyView from './block/emergency'
+import DepartmentLinksView from './block/department/links'
 
 import AvailabilityDayPage from './page/availabilityDay'
 import bindReact from './lib/bindReact.js'
@@ -29,6 +30,10 @@ $('form').each(function() { new FormView(this);});
 $('.pickup-keyboard-handheld').each(function() { new PickupKeyboardHandheldView(this);});
 $('.emergency').each(function() {
     new EmergencyView(this, getDataAttributes(this));
+})
+
+$('.department-links').each(function() {
+    new DepartmentLinksView(this, getDataAttributes(this));
 })
 
 // Say hello
