@@ -20,11 +20,10 @@ fix: # run code fixing
 
 watch:
 	node_modules/.bin/gulp watch
-	
+
 live: # init live system
 	$(COMPOSER) install --no-dev
 
 dev: # init development system
 	$(COMPOSER) update
 	npm install
-	node_modules/.bin/bower install
