@@ -12,7 +12,7 @@ const newIndex = (() => {
 
 const cloneEmptyLink = (link) => {
     const newLink = link.clone()
-    newLink.find('input').val('').attr('checked', false)
+    newLink.find('input[name=target]').val('').attr('checked', false)
 
     return newLink
 }
@@ -21,7 +21,7 @@ const cloneToNewLink = (link) => {
     const newLink = link.clone()
     const index = newIndex()
     newLink.attr('data-index', index)
-    newLink.find('[data-delete-button]').attr('data-index', index)
+    newLink.find('[data-delete-button]').attr('data-index', index).find('input').attr('checked', true)
     return newLink
 }
 
