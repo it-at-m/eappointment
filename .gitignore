@@ -2,6 +2,7 @@ vendor
 node_modules
 config.php
 **.swp
+.DS_Store
 .sass-cache
 bower_components
 tests/*.html
