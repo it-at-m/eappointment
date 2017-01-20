@@ -57,11 +57,11 @@ class IndexerTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayHasKey(LOCATION_SINGLE, $locationList);
         $results = $access->searchLocation('Spandau', SERVICE_CSV);
         $this->assertTrue(count($results) > 0, "No locations found");
-        $results = $access->searchService('Pass', LOCATION_CSV);
+        $results = $access->fromService()->searchAll('Pass', LOCATION_CSV);
         $this->assertTrue(count($results) > 0, "No services found");
         $results = $access->searchLocation('Spandau');
         $this->assertTrue(count($results) > 0, "No locations found");
-        $results = $access->searchService('Pass');
+        $results = $access->fromService()->searchAll('Pass');
         $this->assertTrue(count($results) > 0, "No services found");
 
         $translatedLocation = $access->fromLocation('en')->fetchId(121885);
@@ -116,28 +116,28 @@ class IndexerTest extends \PHPUnit_Framework_TestCase
     {
         $access = new \BO\Dldb\ElasticAccess(ES_ALIAS, ES_HOST, ES_PORT, ES_TRANSPORT);
         $access->loadFromPath(FIXTURES);
-        $serviceList = $access->searchService('');
+        $serviceList = $access->fromService()->searchAll('');
         $this->assertTrue(
             $this->listContains($serviceList, 'Personalausweis'),
             'Did not find "Personalausweis" in * search'
         );
-        $serviceList = $access->searchService('', SERVICE_SINGLE);
+        $serviceList = $access->fromService()->searchAll('', SERVICE_SINGLE);
         $this->assertTrue(
             $this->listContains($serviceList, 'Reisepass'),
             'Did not find "Reisepass" filtered * search'
         );
-        $serviceList = $access->searchService('', SERVICE_SINGLE, LOCATION_CSV);
+        $serviceList = $access->fromService()->searchAll('', SERVICE_SINGLE, LOCATION_CSV);
         $this->assertTrue(
             $this->listContains($serviceList, 'Reisepass'),
             'Did not find "Reisepass" in filtered search by location'
         );
-        $serviceList = $access->searchService('Personalausweis');
+        $serviceList = $access->fromService()->searchAll('Personalausweis');
         $this->assertArrayHasKey(
             SERVICE_SINGLE,
             $serviceList,
             'Did not find ID for "Personalausweis" in full keyword search'
         );
-        $serviceList = $access->searchService('Perso');
+        $serviceList = $access->fromService()->searchAll('Perso');
         $this->assertArrayHasKey(
             SERVICE_SINGLE,
             $serviceList,
