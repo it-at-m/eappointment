@@ -27,7 +27,9 @@ class Cluster extends Base
         if (! $cluster->hasId()) {
             return null;
         }
-        $cluster['scopes'] = (new Scope())->readByClusterId($cluster->id, $resolveReferences);
+        if ($resolveReferences > 0) {
+            $cluster['scopes'] = (new Scope())->readByClusterId($cluster->id, $resolveReferences - 1);
+        }
         return $cluster;
     }
 

@@ -84,28 +84,29 @@ class Ticketprinter extends Base
     public function readByButtonList(Entity $ticketprinter, \DateTimeImmutable $now)
     {
         //$ticketprinter->toStructuredButtonList();
+        if (count($ticketprinter->buttons) > 6) {
+            throw new Exception\TicketprinterTooManyButtons();
+        }
         foreach ($ticketprinter->buttons as $key => $button) {
-            if ($key < 6) {
-                if ('scope' == $button['type']) {
-                    $query = new Scope();
-                    $scope = $query->readEntity($button['scope']['id']);
-                    if (! $scope) {
-                        throw new Exception\TicketprinterUnvalidButtonList();
-                    }
-                    $ticketprinter->buttons[$key]['scope'] = $scope;
-                    $ticketprinter->buttons[$key]['enabled'] = $query->readIsOpened($scope->id, $now);
-                    $ticketprinter->buttons[$key]['name'] = $scope->getPreference('ticketprinter', 'buttonName');
-                } elseif ('cluster' == $button['type']) {
-                    $query = new Cluster();
-                    $cluster = $query->readEntity($button['cluster']['id']);
-                    if (! $cluster) {
-                        throw new Exception\TicketprinterUnvalidButtonList();
-                    }
-                    $scopeList = $query->readOpenedScopeList($cluster->id, $now);
-                    $ticketprinter->buttons[$key]['cluster'] = $cluster;
-                    $ticketprinter->buttons[$key]['enabled'] = (1 <= $scopeList->count()) ? true : false;
-                    $ticketprinter->buttons[$key]['name'] = $cluster->getName();
+            if ('scope' == $button['type']) {
+                $query = new Scope();
+                $scope = $query->readEntity($button['scope']['id']);
+                if (! $scope) {
+                    throw new Exception\TicketprinterUnvalidButtonList();
                 }
+                $ticketprinter->buttons[$key]['scope'] = $scope;
+                $ticketprinter->buttons[$key]['enabled'] = $query->readIsOpened($scope->id, $now);
+                $ticketprinter->buttons[$key]['name'] = $scope->getPreference('ticketprinter', 'buttonName');
+            } elseif ('cluster' == $button['type']) {
+                $query = new Cluster();
+                $cluster = $query->readEntity($button['cluster']['id'], 1);
+                if (! $cluster) {
+                    throw new Exception\TicketprinterUnvalidButtonList();
+                }
+                $scopeList = $query->readOpenedScopeList($cluster->id, $now);
+                $ticketprinter->buttons[$key]['cluster'] = $cluster;
+                $ticketprinter->buttons[$key]['enabled'] = (1 <= $scopeList->count()) ? true : false;
+                $ticketprinter->buttons[$key]['name'] = $cluster->getName();
             }
         }
         $this->readDisabledByScope($ticketprinter);
