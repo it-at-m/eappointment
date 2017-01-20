@@ -33,14 +33,15 @@ class Ticketprinter extends Schema\Entity
 
     public function toStructuredButtonList()
     {
-        $this->buttons = array();
-        $buttonList = explode(',', $this->buttonlist);
+        $ticketprinter = clone $this;
+        $ticketprinter->buttons = array();
+        $buttonList = explode(',', $ticketprinter->buttonlist);
         foreach ($buttonList as $string) {
             $button = array();
-            $button = $this->getValidButtonWithType($string);
-            $this->buttons[] = $this->getButtonData($string, $button);
+            $button = $ticketprinter->getValidButtonWithType($string);
+            $ticketprinter->buttons[] = $ticketprinter->getButtonData($string, $button);
         }
-        return $this;
+        return $ticketprinter;
     }
 
     public function getScopeList()
