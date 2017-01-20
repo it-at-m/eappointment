@@ -30,7 +30,7 @@ class Authority extends Base
      */
     public function fetchList($servicelist = false)
     {
-        $service_csv = implode(',', $servicelist);
+        $service_csv = implode(',', (array)$servicelist);
         $authoritylist = $this->getItemList()->removeLocations();
         $locationlist = $this->access()->fromLocation($this->locale)->fetchList($service_csv);
         if ($service_csv) {
