@@ -13,15 +13,18 @@ class TrailingSlash
     public function __invoke(Request $request, Response $response, callable $next)
     {
         $uri = $request->getUri();
-        if ($request->getHeader('X-Ssl') && 'no' != $request->getHeader('X-Ssl')) {
-            $uri = $uri->withScheme('https');
-        }
         $path = $uri->getPath();
         if (substr($path, -1) !== '/' && !pathinfo($path, PATHINFO_EXTENSION)) {
             // permanently redirect paths without a trailing slash
             // to their trailing counterpart
             $uri = $uri->withPath($path. '/');
-            return $response->withRedirect((string)$uri, 301);
+            if ($request->getHeader('X-Ssl') && 'no' != $request->getHeader('X-Ssl')) {
+                $uri = $uri->withScheme('https');
+                $uriString = (string)$uri;
+            } else {
+                $uriString = preg_replace('#^https?:#', '', (string)$uri); //Do not force protocoll
+            }
+            return $response->withRedirect($uriString, 301);
         }
         return $next($request, $response);
     }
