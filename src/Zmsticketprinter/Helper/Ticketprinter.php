@@ -34,7 +34,9 @@ class Ticketprinter
             $ticketprinterHash = $cookies['Ticketprinter'];
         }
         if (!$ticketprinterHash) {
-            $entity = \App::$http->readGetResult('/organisation/'. self::$organisation->id . '/hash/')->getEntity();
+            $entity = \App::$http->readGetResult(
+                '/organisation/'. self::$organisation->id . '/hash/'
+            )->getEntity();
             \BO\Zmsclient\Ticketprinter::setHash($entity->hash);
         } else {
             $entity = \App::$http->readGetResult('/ticketprinter/'. $ticketprinterHash . '/')->getEntity();
@@ -51,8 +53,8 @@ class Ticketprinter
     {
         $entity = new Entity();
         $entity->buttonlist = 's'. $scopeId;
-        $entity->toStructuredButtonList();
-        self::readOrganisation($entity, $scopeId);
+        $entity = $entity->toStructuredButtonList();
+        self::$organisation = self::readOrganisation($entity, $scopeId);
         $ticketprinter = static::readWithHash($request);
         $entity->hash = $ticketprinter->hash;
         return $entity;
@@ -62,8 +64,8 @@ class Ticketprinter
     {
         $validator = $request->getAttribute('validator');
         $entity = new Entity($validator->getParameter('ticketprinter')->isArray()->getValue());
-        $entity->toStructuredButtonList();
-        self::readOrganisation($entity);
+        $entity = $entity->toStructuredButtonList();
+        self::$organisation = self::readOrganisation($entity);
         if (self::$organisation->hasClusterScopesFromButtonList($entity->buttons)) {
             $ticketprinter = static::readWithHash($request);
             $entity->hash = $ticketprinter->hash;
@@ -73,23 +75,29 @@ class Ticketprinter
 
     protected static function readOrganisation($entity, $scopeId = false)
     {
-        self::$organisation = null;
+        $organisation = null;
         $ticketprinter = clone $entity;
         if ($scopeId) {
-            self::$organisation = \App::$http->readGetResult('/organisation/scope/'. $scopeId . '/')->getEntity();
+            $organisation = \App::$http->readGetResult(
+                '/organisation/scope/'. $scopeId . '/',
+                ['resolveReferences' => 2]
+            )->getEntity();
         }
         $nextButton = array_shift($ticketprinter->buttons);
-        while (! self::$organisation && $nextButton) {
+        while (! $organisation && $nextButton) {
             if ('scope' == $nextButton['type']) {
-                self::$organisation = \App::$http->readGetResult(
-                    '/organisation/scope/'. $nextButton['scope']['id'] . '/'
+                $organisation = \App::$http->readGetResult(
+                    '/organisation/scope/'. $nextButton['scope']['id'] . '/',
+                    ['resolveReferences' => 2]
                 )->getEntity();
             } elseif ('cluster' == $nextButton['type']) {
-                self::$organisation = \App::$http->readGetResult(
-                    '/organisation/cluster/'. $nextButton['cluster']['id'] . '/'
+                $organisation = \App::$http->readGetResult(
+                    '/organisation/cluster/'. $nextButton['cluster']['id'] . '/',
+                    ['resolveReferences' => 2]
                 )->getEntity();
             }
             $nextButton = array_shift($ticketprinter->buttons);
         }
+        return $organisation;
     }
 }

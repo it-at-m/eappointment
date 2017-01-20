@@ -17,6 +17,7 @@ class IndexRedirectSingleScopeTest extends Base
             [
                 'function' => 'readGetResult',
                 'url' => '/organisation/scope/312/',
+                'parameters' => ['resolveReferences' => 2],
                 'response' => $this->readFixture("GET_organisation_78.json"),
             ],
             [

@@ -38,7 +38,10 @@ class NotificationAmendment extends BaseController
                 'ticketprinter' => $ticketprinter,
                 'scope' => $scope,
                 'cluster' => $cluster,
-                'organisation' => \App::$http->readGetResult('/organisation/scope/'. $scopeId . '/')->getEntity()
+                'organisation' => \App::$http->readGetResult(
+                    '/organisation/scope/'. $scopeId . '/',
+                    ['resolveReferences' => 2]
+                )->getEntity(),
             )
         );
     }

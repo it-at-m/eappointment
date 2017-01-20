@@ -62,7 +62,10 @@ class Notification extends BaseController
                 'homeUrl' => \BO\Zmsclient\Ticketprinter::getHomeUrl(),
                 'title' => 'Anmeldung an der Warteschlange',
                 'ticketprinter' => $ticketprinter,
-                'organisation' => \App::$http->readGetResult('/organisation/scope/'. $scopeId . '/')->getEntity(),
+                'organisation' => \App::$http->readGetResult(
+                    '/organisation/scope/'. $scopeId . '/',
+                    ['resolveReferences' => 2]
+                )->getEntity(),
                 'process' => $process
             )
         );
