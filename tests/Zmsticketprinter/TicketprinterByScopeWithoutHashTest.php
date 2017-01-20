@@ -17,6 +17,7 @@ class TicketprinterByScopeWithoutHashTest extends Base
             [
                 'function' => 'readGetResult',
                 'url' => '/organisation/scope/141/',
+                'parameters' => ['resolveReferences' => 2],
                 'response' => $this->readFixture("GET_organisation_71.json"),
             ],
             [
@@ -39,7 +40,7 @@ class TicketprinterByScopeWithoutHashTest extends Base
 
     public function testRendering()
     {
-        $response = $this->render([
+        $this->render([
             'scopeId' => 141
         ], [ ], [ ]);
         $this->assertTrue('71ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2' == $_COOKIE['Ticketprinter']);

@@ -47,7 +47,10 @@ class Process extends BaseController
                 'debug' => \App::DEBUG,
                 'title' => 'Anmeldung an der Warteschlange',
                 'ticketprinter' => $ticketprinter,
-                'organisation' => \App::$http->readGetResult('/organisation/scope/'. $scope->id . '/')->getEntity(),
+                'organisation' => \App::$http->readGetResult(
+                    '/organisation/scope/'. $scope->id . '/',
+                    ['resolveReferences' => 2]
+                )->getEntity(),
                 'process' => $process,
                 'queueList' => $queueList,
                 'estimatedData' => $scope->getWaitingTimeFromQueueList($queueList, \App::$now),

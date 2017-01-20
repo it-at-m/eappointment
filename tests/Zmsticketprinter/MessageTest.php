@@ -17,6 +17,7 @@ class MessageTest extends Base
             [
                 'function' => 'readGetResult',
                 'url' => '/organisation/scope/141/',
+                'parameters' => ['resolveReferences' => 2],
                 'response' => $this->readFixture("GET_organisation_71.json"),
             ],
             [

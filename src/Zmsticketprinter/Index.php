@@ -20,14 +20,9 @@ class Index extends BaseController
         array $args
     ) {
         Helper\HomeUrl::create($request);
-        $validator = $request->getAttribute('validator');
-        $paramter = $validator->getParameter('ticketprinter')->isArray()->getValue();
-        if (! $paramter) {
-            return \BO\Slim\Render::redirect('Home', array (), array ());
-        }
-
         $ticketprinterHelper = (new Helper\Ticketprinter($args, $request));
         $ticketprinter = $ticketprinterHelper->getEntity();
+        $ticketprinter->testValid();
 
         $organisation = $ticketprinterHelper::$organisation;
         if (1 == count($ticketprinter->buttons) && 'scope' == $ticketprinter->buttons[0]['type']) {

@@ -17,6 +17,7 @@ class IndexCustomizedByClusterTest extends Base
             [
                 'function' => 'readGetResult',
                 'url' => '/organisation/cluster/290/',
+                'parameters' => ['resolveReferences' => 2],
                 'response' => $this->readFixture("GET_organisation_71.json"),
             ],
             [
