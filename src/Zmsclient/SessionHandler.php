@@ -46,10 +46,11 @@ class SessionHandler implements \SessionHandlerInterface
         } catch (Exception $exception) {
             if ($exception->getCode() == 404) {
                 $session = null;
+            } else {
+                // @codeCoverageIgnoreStart
+                throw $exception;
+                // @codeCoverageIgnoreEnd
             }
-            // @codeCoverageIgnoreStart
-            throw $exception;
-            // @codeCoverageIgnoreEnd
         }
         return (isset($session) && array_key_exists('content', $session)) ? $session['content'] : null;
     }
