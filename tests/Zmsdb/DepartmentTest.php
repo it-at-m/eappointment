@@ -12,13 +12,14 @@ class DepartmentTest extends Base
         $query = new Query();
         $input = $this->getTestEntity();
         $entity = $query->writeEntity($input, 75);
-        $entity = $query->readEntity($entity->id);
+        $entity = $query->readEntity($entity->id, 2);
 
         $this->assertNotEmpty($entity);
         $this->assertEntity("\\BO\\Zmsentities\\Department", $entity);
         $this->assertEquals('service@berlinonline.de', $entity->email);
 
         $this->assertEquals(1, count($entity->links));
+        $this->assertFalse(null === $entity->dayoff->getEntityByName('Test Feiertag'));
 
         $entity->email = "max@berlinonline.de";
         $entity = $query->updateEntity($entity->id, $entity);
@@ -37,7 +38,7 @@ class DepartmentTest extends Base
         $input = $this->getTestEntity();
         $entity = $query->writeEntity($input, 75);
         $entity = $query->readEntity($entity->id, 2, true);
-        $this->assertTrue(53 == count($entity->dayoff));
+        $this->assertEquals(54, count($entity->dayoff));
     }
 
     public function testReadList()
@@ -78,6 +79,12 @@ class DepartmentTest extends Base
                     'name' => 'Test Link',
                     'url' => 'https://service.berlin.de',
                     'target' => 1
+                ]
+            ],
+            'dayoff' => [
+                0 => [
+                  "date" => 1459511700,
+                  "name" => "Test Feiertag"
                 ]
             ]
         ));
