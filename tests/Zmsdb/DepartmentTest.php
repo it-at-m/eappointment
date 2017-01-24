@@ -18,6 +18,8 @@ class DepartmentTest extends Base
         $this->assertEntity("\\BO\\Zmsentities\\Department", $entity);
         $this->assertEquals('service@berlinonline.de', $entity->email);
 
+        $this->assertEquals(1, count($entity->links));
+
         $entity->email = "max@berlinonline.de";
         $entity = $query->updateEntity($entity->id, $entity);
         $this->assertEquals('max@berlinonline.de', $entity->email);
@@ -70,6 +72,13 @@ class DepartmentTest extends Base
                 'region' => '',
                 'street' => 'Musterallee 1, 10178 Berlin',
                 'streetNumber' => ''
+            ],
+            'links' => [
+                0 => [
+                    'name' => 'Test Link',
+                    'url' => 'https://service.berlin.de',
+                    'target' => 1
+                ]
             ]
         ));
     }
