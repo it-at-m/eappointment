@@ -12,7 +12,7 @@ class Link extends Schema\Entity
     {
         return [
             'name' => '',
-            'link' => '',
+            'url' => '',
             'target' => true
         ];
     }
