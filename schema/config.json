@@ -3,8 +3,8 @@
     "description": "main config data",
     "example": {
         "appointments": {
-            "urlChange": "http://service-berlin/terminvereinbarung/termin/manage/",
-            "urlAppointments": "http://service-berlin/terminvereinbarung/"
+            "urlChange": "http://service.berlin.de/terminvereinbarung/termin/manage/",
+            "urlAppointments": "http://service.berlin.de/terminvereinbarung/"
         }
     },
     "properties": {
