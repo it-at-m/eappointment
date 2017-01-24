@@ -148,6 +148,9 @@ class Department extends Base
         if ($entity->toProperty()->links->isAvailable()) {
             $this->writeDepartmentLinks($lastInsertId, $entity->links);
         }
+        if ($entity->toProperty()->dayoff->isAvailable()) {
+            $this->writeDepartmentDayoffs($lastInsertId, $entity->dayoff);
+        }
         $this->writeDepartmentMail($lastInsertId, $entity->email);
         $this->writeDepartmentNotifications($lastInsertId, $entity->getNotificationPreferences());
         return $this->readEntity($lastInsertId);
@@ -172,9 +175,39 @@ class Department extends Base
         if ($entity->toProperty()->links->isAvailable()) {
             $this->writeDepartmentLinks($departmentId, $entity->links);
         }
+        if ($entity->toProperty()->dayoff->isAvailable()) {
+            $this->writeDepartmentDayoffs($departmentId, $entity->dayoff);
+        }
         $this->updateDepartmentMail($departmentId, $entity->email);
         $this->updateDepartmentNotifications($departmentId, $entity->getNotificationPreferences());
         return $this->readEntity($departmentId);
+    }
+
+    /**
+     * create dayoff preferences of a department
+     *
+     * @param
+     *            departmentId,
+     *            dayoffs
+     *
+     * @return Boolean
+     */
+    protected function writeDepartmentDayoffs($departmentId, $dayoffList)
+    {
+        $deleteQuery = new Query\DayOff(Query\Base::DELETE);
+        $deleteQuery->addConditionDepartmentId($departmentId);
+        $this->deleteItem($deleteQuery);
+        $query = new Query\DayOff(Query\Base::INSERT);
+        foreach ($dayoffList as $dayoff) {
+            $query->addValues(
+                [
+                    'behoerdenid' => $departmentId,
+                    'Feiertag' => $dayoff['name'],
+                    'Datum' => (new \DateTimeImmutable('@'. $dayoff['date']))->format('Y-m-d')
+                ]
+            );
+            $this->writeItem($query);
+        }
     }
 
     /**
