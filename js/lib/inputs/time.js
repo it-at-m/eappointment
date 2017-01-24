@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import React from 'react'
 // import TimePicker from 'rc-time-picker'
-import TimePicker from '../../../../lib/timePicker.js'
+import TimePicker from '../timePicker.js'
 
 const TIME_FORMAT = 'HH:mm:ss'
 

@@ -1,6 +1,6 @@
 import React from 'react'
 
-import * as Inputs from './inputs'
+import * as Inputs from '../../../lib/inputs'
 import Errors from './errors'
 const { Label, FormGroup, Controls, Description } = Inputs
 import {range} from '../../../lib/utils'
