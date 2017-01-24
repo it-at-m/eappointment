@@ -1,13 +1,16 @@
-/* global window, CoolClock, jQuery, setTimeout, clearTimeout */
+/* global jQuery, setTimeout, clearTimeout */
 //modified with pull request https://github.com/simonbaird/CoolClock/pull/16/files
 //by Torsten Kunst
 //14.12.2016
 
+import window from "window";
 
 // Constructor for CoolClock objects
-window.CoolClock = function(options) {
+let CoolClock = function(options) {
     return this.init(options);
 };
+
+window.CoolClock = CoolClock;
 
 // Config contains some defaults, and clock skins
 CoolClock.config = {
@@ -386,3 +389,5 @@ CoolClock.findAndCreateClocks = function() {
 // If you don't have jQuery then you need a body onload like this: <body onload="CoolClock.findAndCreateClocks()">
 // If you do have jQuery and it's loaded already then we can do it right now
 if (window.jQuery) jQuery(document).ready(CoolClock.findAndCreateClocks);
+
+export default CoolClock;
