@@ -10,8 +10,8 @@ class Config extends Schema\Entity
     {
         return [
             'appointments' => [
-                'urlChange' => 'https://service-berlin/terminvereinbarung/termin/manage/',
-                'urlAppointments' => 'https://service-berlin/terminvereinbarung/',
+                'urlChange' => 'https://service.berlin.de/terminvereinbarung/termin/manage/',
+                'urlAppointments' => 'https://service.berlin.de/terminvereinbarung/',
             ],
             'notifications' => [
                 'kommandoAbsage' => 'Storno',
