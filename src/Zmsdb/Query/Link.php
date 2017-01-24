@@ -14,7 +14,7 @@ class Link extends Base
         return [
             'id' => 'link.linkid',
             'name' => 'link.beschreibung',
-            'link' => 'link.link',
+            'url' => 'link.link',
             'target' => 'link.neuerFrame'
         ];
     }
@@ -29,7 +29,7 @@ class Link extends Base
     {
         $data = array();
         $data['beschreibung'] = $entity->name;
-        $data['link'] = $entity->link;
+        $data['link'] = $entity->url;
         $data['neuerFrame'] = ($entity->target)  ? 1 : 0;
 
         $data = array_filter($data, function ($value) {

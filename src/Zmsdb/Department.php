@@ -197,7 +197,7 @@ class Department extends Base
                 [
                     'behoerdenid' => $departmentId,
                     'beschreibung' => $link['name'],
-                    'link' => $link['link'],
+                    'link' => $link['url'],
                     'neuerFrame' => isset($link['target']) ? 1 : 0
                 ]
             );
