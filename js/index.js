@@ -20,4 +20,4 @@ $('#Uhr').each(function() { new AnalogClock(this);});
 $('#queueImport').each(function() { new QueueList(this);});
 
 // Say hello
-console.log("Welcome to the ZMS Calldisplay interface..."); 
+console.log("Welcome to the ZMS Calldisplay interface...");
