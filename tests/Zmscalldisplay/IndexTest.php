@@ -4,7 +4,6 @@ namespace BO\Zmscalldisplay\Tests;
 
 class IndexTest extends Base
 {
-
     protected $classname = "Index";
 
     protected $arguments = [ ];
@@ -26,7 +25,7 @@ class IndexTest extends Base
     {
         $response = $this->render([ ], [
             'collections' => [
-                'scopelist' => '141',#
+                'scopelist' => '141',
                 'clusterlist' => '110'
             ]
         ], [ ]);

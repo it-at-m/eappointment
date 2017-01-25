@@ -2,7 +2,7 @@
 
 namespace BO\Zmscalldisplay\Tests;
 
-class QueueTest extends Base
+class QueueDestinationTest extends Base
 {
     protected $classname = "Queue";
 
@@ -16,12 +16,12 @@ class QueueTest extends Base
             [
                 'function' => 'readPostResult',
                 'url' => '/calldisplay/',
-                'response' => $this->readFixture("GET_calldisplay.json")
+                'response' => $this->readFixture("GET_calldisplay_twoScopes.json")
             ],
             [
                 'function' => 'readPostResult',
                 'url' => '/calldisplay/queue/',
-                'response' => $this->readFixture("GET_queue.json")
+                'response' => $this->readFixture("GET_queue_multipleDestination.json")
             ]
         ];
     }
@@ -30,19 +30,20 @@ class QueueTest extends Base
     {
         $response = $this->render([ ], [
             'collections' => [
-                'scopelist' => '141',
-                'clusterlist' => '110'
+                'scopelist' => '141,140'
             ],
             'tableLayout' => [
-                "multiColumns"  => 1,
-                "maxResults"    => 5,
+                "multiColumns"  => 2,
+                "maxResults"    => 8,
                 "head" => [
                     "left"  =>  "Nummer",
                     "right" =>  "Platz"
                 ]
             ]
         ], [ ]);
-        $this->assertContains('Terminkunde', (string) $response->getBody());
         $this->assertContains('31316', (string) $response->getBody());
+        $this->assertContains('52230', (string) $response->getBody());
+        $this->assertContains('data="10"', (string) $response->getBody());
+        $this->assertContains('data="12"', (string) $response->getBody());
     }
 }
