@@ -34,7 +34,6 @@ class DayoffByYear extends BaseController
         if (array_key_exists('save', (array) $input)) {
             try {
                 $entity = new Collection($input);
-                $entity->id = $entityId;
                 $entity = \App::$http->readPostResult(
                     '/dayoff/'. $year .'/',
                     $entity
