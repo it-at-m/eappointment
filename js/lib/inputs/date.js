@@ -10,7 +10,7 @@ export const Date = ({name, value, onChange}) => {
 
     return (
         <div className="add-date-picker">
-            <DatePicker className="form-input" selected={moment(value, 'X')} onChange={onPick} />
+            <DatePicker className="form-input" selected={moment(value, 'X')} onChange={onPick} {...{ name }} />
         </div>
     )
 }
