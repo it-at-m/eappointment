@@ -4,4 +4,8 @@
   .add-date-picker input {
     width: 100%;
   }
+
+  .add-date-picker input {
+    padding: $formItemBasePadding;
+  }
 }
