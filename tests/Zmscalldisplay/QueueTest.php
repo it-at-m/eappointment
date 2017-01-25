@@ -4,7 +4,6 @@ namespace BO\Zmscalldisplay\Tests;
 
 class QueueTest extends Base
 {
-
     protected $classname = "Queue";
 
     protected $arguments = [ ];
@@ -31,7 +30,7 @@ class QueueTest extends Base
     {
         $response = $this->render([ ], [
             'collections' => [
-                'scopelist' => '141',#
+                'scopelist' => '141',
                 'clusterlist' => '110'
             ],
             'tableLayout' => [
