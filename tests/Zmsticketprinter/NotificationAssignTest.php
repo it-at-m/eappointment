@@ -4,7 +4,6 @@ namespace BO\Zmsticketprinter\Tests;
 
 class NotificationAssignTest extends Base
 {
-
     protected $classname = "NotificationAssign";
 
     protected $arguments = [ ];
@@ -42,6 +41,6 @@ class NotificationAssignTest extends Base
             'authKey' => '57c2',
             'telephone' => '017123456789'
         ], [ ]);
-        $this->assertRedirect($response, '/message/?status=process_notification_success&scopeId=141');
+        $this->assertRedirect($response, '/message/process_notification_success/?scopeId=141');
     }
 }

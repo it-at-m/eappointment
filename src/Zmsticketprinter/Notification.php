@@ -31,9 +31,10 @@ class Notification extends BaseController
         if (! $waitingNumber) {
             return \BO\Slim\Render::redirect(
                 'Message',
-                [],
                 [
-                    'status' => 'process_notification_amendment_waitingnumber_unvalid',
+                  'status' => 'process_notification_amendment_waitingnumber_unvalid'
+                ],
+                [
                     'scopeId' => $scopeId,
                     'notHome' => 1
                 ]

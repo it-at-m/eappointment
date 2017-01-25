@@ -1,7 +1,7 @@
 <?php
 // @codingStandardsIgnoreFile
 
-define('ZMS_API_URL', getenv('ZMS_API_URL') ? getenv('ZMS_API_URL') : 'https://localhost/terminvereinbarung/api/2');
+define('ZMS_API_URL', getenv('ZMS_API_URL') ? getenv('ZMS_API_URL') : 'https://service.berlin.de/terminvereinbarung/api/2');
 
 class App extends \BO\Zmsticketprinter\Application
 {
@@ -21,4 +21,3 @@ class App extends \BO\Zmsticketprinter\Application
 
 // uncomment for testing
 // App::$now = new DateTimeImmutable('2016-04-01 11:55:00', new DateTimeZone('Europe/Berlin'));
-

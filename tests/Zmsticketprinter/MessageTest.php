@@ -4,7 +4,6 @@ namespace BO\Zmsticketprinter\Tests;
 
 class MessageTest extends Base
 {
-
     protected $classname = "Message";
 
     protected $arguments = [ ];
@@ -30,11 +29,12 @@ class MessageTest extends Base
 
     public function testRendering()
     {
-        $response = $this->render([], [
+        $response = $this->render([
+          'status' => 'process_success',
+        ], [
             '__cookie' => [
                 'Ticketprinter' => '71ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2',
             ],
-            'status' => 'process_success',
             'scopeId' => 141
         ], [ ]);
         $this->assertContains('Wartenummernausdruck erfolgt!', (string) $response->getBody());

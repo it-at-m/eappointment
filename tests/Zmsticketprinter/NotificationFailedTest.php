@@ -4,7 +4,6 @@ namespace BO\Zmsticketprinter\Tests;
 
 class NotificationFailedTest extends Base
 {
-
     protected $classname = "Notification";
 
     protected $arguments = [ ];
@@ -24,15 +23,19 @@ class NotificationFailedTest extends Base
 
     public function testRendering()
     {
-        $response = $this->render([], [
+        $response = $this->render(
+            [],
+            [
             '__cookie' => [
                 'Ticketprinter' => '71ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2',
             ],
             'scopeId' => 141
-        ], [ ]);
+            ],
+            [ ]
+        );
         $this->assertRedirect(
             $response,
-            '/message/?status=process_notification_amendment_waitingnumber_unvalid&scopeId=141&notHome=1'
+            '/message/process_notification_amendment_waitingnumber_unvalid/?scopeId=141&notHome=1'
         );
     }
 
