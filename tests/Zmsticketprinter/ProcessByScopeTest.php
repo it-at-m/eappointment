@@ -4,7 +4,6 @@ namespace BO\Zmsticketprinter\Tests;
 
 class ProcessByScopeTest extends Base
 {
-
     protected $classname = "Process";
 
     protected $arguments = [ ];
@@ -46,7 +45,7 @@ class ProcessByScopeTest extends Base
             ],
             'scopeId' => 141,
         ], [ ]);
-        $this->assertContains('Es warten 104 Kunden vor Ihnen', (string) $response->getBody());
+        $this->assertContains('Es warten', (string) $response->getBody());
         $this->assertContains('Ihre Wartenummer wird gedruckt', (string) $response->getBody());
     }
 }

@@ -40,15 +40,14 @@
                 </div>
             </form>
 
-            <form action="{{ urlGet('Message', {}, {}) }}" method="post" class="smseintragen" id="postCancel">
+						{% if hasProcess %}
+							{% set message = "process_notification_amendment_canceled" %}
+						{% else %}
+							{% set message = "notification_amendment_canceled" %}
+						{% endif %}
+            <form action="{{ urlGet('Message', {'status': message}, {}) }}" method="post" class="smseintragen" id="postCancel">
             	{{ hiddenfield({ "name": "scopeId", "value": process.scope.id }) }}
-            	{% if hasProcess %}
-            	{{ hiddenfield({ "name": "status", "value": "process_notification_amendment_canceled" }) }}
-            	{% else %}
-            	{{ hiddenfield({ "name": "status", "value": "notification_amendment_canceled" }) }}
-            	{% endif %}
             </form>
-
             <div class="smsbuttons">
                 {% set label = "Handynummer übermitteln" %}
                 {{ formbutton({ "type":"submit", "disabled": "1", "name": "Telefonnachtragen", "formTarget":"postNotification", "id":"Telefonnachtragen", "class": "button nachtrag disabled", "label":label|trans, "value": label|trans }) }}

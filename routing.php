@@ -8,6 +8,7 @@
 use BO\Slim\Helper;
 use \Psr\Http\Message\RequestInterface;
 use \Psr\Http\Message\ResponseInterface;
+
 /*
  * ---------------------------------------------------------------------------
  * html, basic routes
@@ -25,7 +26,7 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->post('/process/', '\BO\Zmsticketprinter\Process')
     ->setName("Process");
 
-\App::$slim->map(['GET','POST'], '/message/', '\BO\Zmsticketprinter\Message')
+\App::$slim->map(['GET', 'POST'], '/message/{status}/', '\BO\Zmsticketprinter\Message')
     ->setName("Message");
 
 //input queue number to get process for notification
@@ -69,4 +70,3 @@ use \Psr\Http\Message\ResponseInterface;
             return \BO\Slim\TwigExceptionHandler::withHtml($request, $response, $exception);
         };
     });
-

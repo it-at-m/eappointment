@@ -31,9 +31,10 @@ class NotificationAssign extends BaseController
         if ($telephone->hasFailed()) {
             return \BO\Slim\Render::redirect(
                 'Message',
-                [],
                 [
-                    'status' => 'process_notification_number_unvalid',
+                    'status' => 'process_notification_number_unvalid'
+                ],
+                [
                     'scopeId' => $process->getScopeId(),
                     'notHome' => 1
                 ]
@@ -58,9 +59,10 @@ class NotificationAssign extends BaseController
 
         return \BO\Slim\Render::redirect(
             'Message',
-            [],
             [
-                'status' => 'process_notification_success',
+                'status' => 'process_notification_success'
+            ],
+            [
                 'scopeId' => $process->getScopeId()
             ]
         );

@@ -31,11 +31,10 @@
                 Mit der Taste "&lt;" können Sie die letzte Eingabe löschen, mit der "C"-Taste löschen Sie Ihre komplette Eingabe.
             </div>
 
-            <form action="{{ urlGet('Message', {}, {}) }}" method="post" class="smseintragen" id="postCancel">
-            	{% if scope %}
-                	{{ hiddenfield({ "name": "scopeId", "value": scope.id }) }}
-    			{% endif %}
-            	{{ hiddenfield({ "name": "status", "value": "notification_amendment_canceled" }) }}
+            <form action="{{ urlGet('Message', {'status': 'notification_amendment_canceled'}, {}) }}" method="post" class="smseintragen" id="postCancel">
+	            	{% if scope %}
+	                	{{ hiddenfield({ "name": "scopeId", "value": scope.id }) }}
+	    					{% endif %}
             </form>
 
             <div class="smsbuttons">

@@ -4,7 +4,6 @@ namespace BO\Zmsticketprinter\Tests;
 
 class NotificationAssignFailedTest extends Base
 {
-
     protected $classname = "NotificationAssign";
 
     protected $arguments = [ ];
@@ -32,6 +31,6 @@ class NotificationAssignFailedTest extends Base
             'authKey' => '57c2',
             'telephone' => '017123456'
         ], [ ]);
-        $this->assertRedirect($response, '/message/?status=process_notification_number_unvalid&scopeId=141&notHome=1');
+        $this->assertRedirect($response, '/message/process_notification_number_unvalid/?scopeId=141&notHome=1');
     }
 }

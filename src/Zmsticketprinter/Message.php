@@ -24,11 +24,10 @@ class Message extends BaseController
         $ticketprinter = Helper\Ticketprinter::readWithHash($request);
 
         $validator = $request->getAttribute('validator');
-        $validateStatus = $validator->getParameter('status')->isString()->getValue();
         $scopeId = $validator->getParameter('scopeId')->isNumber()->getValue();
         $notHome = $validator->getParameter('notHome')->isNumber()->getValue();
 
-        $messages = explode(',', $validateStatus);
+        $messages = explode(',', $args['status']);
 
         return \BO\Slim\Render::withHtml(
             $response,
