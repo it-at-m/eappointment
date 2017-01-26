@@ -30,15 +30,16 @@ class DayoffByYear extends BaseController
         $entity = \App::$http->readGetResult('/dayoff/'. $year .'/')->getCollection();
 
         $input = $request->getParsedBody();
-        $input = $input['daysOff'];
         if (array_key_exists('save', (array) $input)) {
+            $data = $input['daysOff'];
             try {
-                $entity = new Collection($input);
+                $entity = new Collection($data);
                 $entity = \App::$http->readPostResult(
                     '/dayoff/'. $year .'/',
                     $entity
                 )->getCollection();
             } catch (\Exception $exception) {
+                var_dump($exception->getMessage());die;
                 return Helper\Render::error($request, $exception);
             }
         }
