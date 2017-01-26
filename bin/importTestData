@@ -19,7 +19,8 @@ if (isset($argv[1]) && $argv[1] == '--commit') {
     \BO\Zmsdb\Cli\Db::startMigrations($migrations);
     \BO\Zmsdb\Cli\Db::startConfigDataImport();
 } else {
-    echo "Usage: {$argv[0]} --commit\n\tATTENTION! Drops Database and writes Testdata. USE WITH CAUTION!\n\n"
+    $dbname = \BO\Zmsdb\Connection\Select::$writeSourceName;
+    echo "Usage: {$argv[0]} --commit\n\tATTENTION! Drops Database $dbname and writes Testdata. USE WITH CAUTION!\n\n"
         . "\t!!!!!!!!!!!!!!!!!!!!!!!\n"
         . "\t!! DATA LOSS WARNING !!\n"
         . "\t!!!!!!!!!!!!!!!!!!!!!!!\n\n";
