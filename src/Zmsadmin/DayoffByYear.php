@@ -39,7 +39,6 @@ class DayoffByYear extends BaseController
                     $entity
                 )->getCollection();
             } catch (\Exception $exception) {
-                var_dump($exception->getMessage());die;
                 return Helper\Render::error($request, $exception);
             }
         }
