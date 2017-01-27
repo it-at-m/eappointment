@@ -26,7 +26,7 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->post('/process/', '\BO\Zmsticketprinter\Process')
     ->setName("Process");
 
-\App::$slim->map(['GET', 'POST'], '/message/{status}/', '\BO\Zmsticketprinter\Message')
+\App::$slim->map(['GET', 'POST'], '/message/{status:[a-z_]+}/', '\BO\Zmsticketprinter\Message')
     ->setName("Message");
 
 //input queue number to get process for notification

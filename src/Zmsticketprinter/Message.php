@@ -8,6 +8,7 @@
 namespace BO\Zmsticketprinter;
 
 use \BO\Zmsentities\Ticketprinter as Entity;
+use \BO\Mellon\Validator;
 
 class Message extends BaseController
 {
@@ -26,8 +27,7 @@ class Message extends BaseController
         $validator = $request->getAttribute('validator');
         $scopeId = $validator->getParameter('scopeId')->isNumber()->getValue();
         $notHome = $validator->getParameter('notHome')->isNumber()->getValue();
-
-        $messages = explode(',', $args['status']);
+        $messages = Validator::value($args['status'])->isString()->getValue();
 
         return \BO\Slim\Render::withHtml(
             $response,
@@ -42,7 +42,7 @@ class Message extends BaseController
                     '/organisation/scope/'. $scopeId . '/',
                     ['resolveReferences' => 2]
                 )->getEntity(),
-                'messages' => $messages
+                'messages' => array($messages)
             )
         );
     }
