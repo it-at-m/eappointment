@@ -68,7 +68,7 @@ class QueueList extends Base
         $entity->arrivalTime = $dateTime->getTimestamp();
         $queueList->addEntity($entity);
         $queueList = $queueList
-        ->withEstimatedWaitingTime($processTimeAverage, $workstationCount, $dateTime);
+          ->withEstimatedWaitingTime($processTimeAverage, $workstationCount, $dateTime);
         $newEntity = $queueList->getQueueByNumber(self::FAKE_WAITINGNUMBER);
         $lastEntity = end($queueList);
 
