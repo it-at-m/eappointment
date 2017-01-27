@@ -89,10 +89,15 @@ class Cluster extends Base
      *
      * @return Bool
      */
-    public function readQueueList($clusterId, \DateTimeInterface $dateTime)
-    {
+    public function readQueueList(
+        $clusterId,
+        \BO\Zmsentities\Collection\ScopeList $scopeList,
+        \DateTimeInterface $dateTime
+    ) {
         $cluster = $this->readEntity($clusterId, 1);
-        $scopeList = $this->readOpenedScopeList($clusterId, $dateTime);
+        $scopeList = $this
+            ->readOpenedScopeList($clusterId, $dateTime)
+            ->withoutDublicates($scopeList);
         $queueList = new \BO\Zmsentities\Collection\QueueList();
         foreach ($scopeList as $scope) {
             $scope = (new Scope())->readWithWorkstationCount($scope['id'], $dateTime);
