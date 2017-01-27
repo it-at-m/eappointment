@@ -24,7 +24,7 @@ class CalldisplayQueue extends BaseController
     {
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $input = Validator::input()->isJson()->assertValid()->getValue();
-        $calldisplay = new \BO\Zmsentities\Calldisplay($input);
+        $calldisplay = (new \BO\Zmsentities\Calldisplay($input))->withOutClusterDuplicates();
         $queueList = new Collection();
 
         if ($calldisplay->hasScopeList()) {
@@ -50,12 +50,13 @@ class CalldisplayQueue extends BaseController
                     throw new Exception\Cluster\ClusterNotFound();
                 }
                 $queueList->addList(
-                    $clusterQuery->readQueueList($cluster->id, \App::$now)
+                    $clusterQuery
+                      ->readQueueList($cluster->id, $calldisplay->getScopeList(), \App::$now)
                 );
             }
         }
         $message = Response\Message::create(Render::$request);
-        $message->data = $queueList->withSortedArrival();
+        $message->data = $queueList;
         Render::lastModified(time(), '0');
         Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }
