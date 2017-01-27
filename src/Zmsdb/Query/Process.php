@@ -154,7 +154,7 @@ class Process extends Base implements MappingInterface
 
     public function addConditionIsReserved()
     {
-        $this->query->where('process.name', 'NOT IN', array (
+        $this->query->where('process.name', 'NOT IN', array(
             'dereferenced',
             '(abgesagt)'
         ))
@@ -166,7 +166,7 @@ class Process extends Base implements MappingInterface
 
     public function addValuesUpdateProcess(\BO\Zmsentities\Process $process)
     {
-        $data = array ();
+        $data = array();
         $data['Anmerkung'] = $process->getAmendment();
         $data['StandortID'] = $process->getScopeId();
         $appointment = $process->getFirstAppointment();
@@ -237,9 +237,9 @@ class Process extends Base implements MappingInterface
     {
         $this->query->leftJoin(
             new Alias(UserAccount::TABLE, 'processuser'),
-            'process.StandortID',
+            'process.NutzerID',
             '=',
-            'processuser.StandortID'
+            'processuser.NutzerID'
         );
         $this->query->leftJoin(
             new Alias(Scope::TABLE, 'processscope'),

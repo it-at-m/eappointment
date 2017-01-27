@@ -40,7 +40,8 @@ class ClusterTest extends Base
         $now = new \DateTimeImmutable("2016-04-01 11:55");
         $query = new Query();
         $input = $this->getTestEntity();
-        $queueList = $query->readQueueList(110, $now);
+        $scopeList = $query->readOpenedScopeList(60, $now); //by Egon-Erwin-Kisch-Str. Cluster
+        $queueList = $query->readQueueList(110, $scopeList, $now);
         $this->assertEntityList("\\BO\\Zmsentities\\Queue", $queueList);
         $this->assertEquals(105, $queueList->count());
     }
