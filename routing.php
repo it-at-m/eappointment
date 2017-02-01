@@ -1762,7 +1762,7 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
- *  "/process/queue/{number}/scope/{id}/":
+ *  "/scope/{id}/queue/{number}/":
  *      get:
  *          description: Get a process by queue number and scope id
  *          parameters:
@@ -1791,10 +1791,9 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "Could not find a process or scope not found"
  */
-\App::$slim->get('/process/queue/{number:\d{1,4}}/scope/{id:\d{1,4}}/',
+\App::$slim->get('/scope/{id:\d{1,4}}/queue/{number:\d{1,4}}/',
     '\BO\Zmsapi\ProcessByQueueNumber')
     ->setName("ProcessByQueueNumber");
-
 
 /**
  *  @swagger
@@ -3037,7 +3036,7 @@ use \Psr\Http\Message\ResponseInterface;
     '\BO\Zmsapi\Healthcheck')
     ->setName("healthcheck");
 
-\App::$slim->getContainer()->offsetSet('notFoundHandler', function($container) {
+\App::$slim->getContainer()->offsetSet('notFoundHandler', function ($container) {
     return function (RequestInterface $request, ResponseInterface $response) {
         $message = \BO\Zmsapi\Response\Message::create($request);
         $message->meta->error = true;
@@ -3047,7 +3046,7 @@ use \Psr\Http\Message\ResponseInterface;
     };
 });
 
-\App::$slim->getContainer()->offsetSet('errorHandler', function($container) {
+\App::$slim->getContainer()->offsetSet('errorHandler', function ($container) {
     return function (RequestInterface $request, ResponseInterface $response, \Exception $exception) {
         $message = \BO\Zmsapi\Response\Message::create($request);
         $message->meta->error = true;
