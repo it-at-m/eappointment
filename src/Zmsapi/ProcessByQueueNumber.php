@@ -19,7 +19,7 @@ class ProcessByQueueNumber extends BaseController
     /**
      * @return String
      */
-    public static function render($queueNumber, $scopeId)
+    public static function render($scopeId, $queueNumber)
     {
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         $message = Response\Message::create(Render::$request);
