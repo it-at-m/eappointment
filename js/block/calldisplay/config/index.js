@@ -1,13 +1,13 @@
 import React, { Component, PropTypes } from 'react'
 
 import * as Inputs from '../../../lib/inputs'
-const { Description, FormGroup, Label, Controls } = Inputs
+const { FormGroup, Label, Controls } = Inputs
 
 const readPropsCluster = cluster => {
     const { name, id } = cluster
 
     return {
-        type: 'c',
+        type: 'cluster',
         id,
         name
     }
@@ -17,17 +17,17 @@ const readPropsScope = scope => {
     const { name, id } = scope
 
     return {
-        type: 's',
+        type: 'scope',
         id,
         name
     }
 }
 
-class TicketPrinterConfigView extends Component {
+class CallDisplayConfigView extends Component {
     constructor(props) {
         super(props)
 
-        console.log('TicketPrinterConfigView::constructor', props)
+        console.log('CallDisplayConfigView::constructor', props)
 
         const { departments } = props.organisation
 
@@ -42,28 +42,34 @@ class TicketPrinterConfigView extends Component {
                     scopes: scopes.map(readPropsScope)
                 }
             }),
-            generatedUrl: "",
-            homeUrl: "",
-            ticketPrinterName: ""
+            generatedUrl: ""
         }
     }
 
     buildUrl() {
-        const itemList = this.state.selectedItems.map(item => `${item.type}{${item.id}}`).join(',')
-        const baseUrl = this.props.config.ticketprinter.baseUrl
+        const baseUrl = this.props.config.calldisplay.baseUrl
+
+        const collections = this.state.selectedItems.reduce((carry, current) => {
+            if (current.type === "cluster") {
+                carry.scopelist.push(current.id)
+            } else if (current.type === "scope") {
+                carry.clusterlist.push(current.id)
+            }
+
+            return carry
+        }, {
+            scopelist: [],
+            clusterlist: []
+        })
 
         let parameters = []
 
-        if (itemList) {
-            parameters.push(`ticketprinter[buttonlist]=${itemList}`)
+        if (collections.scopelist.length > 0) {
+            parameters.push(`calldisplay[scopelist]=${collections.scopelist.join(",")}`)
         }
 
-        if (this.state.ticketPrinterName) {
-            parameters.push(`ticketprinter[name]=${this.state.ticketPrinterName}`)
-        }
-
-        if (this.state.homeUrl) {
-            parameters.push(`ticketprinter[home]=${this.state.homeUrl}`)
+        if (collections.clusterlist.length > 0) {
+            parameters.push(`calldisplay[clusterlist]=${collections.clusterlist.join(",")}`)
         }
 
         return `${baseUrl}?${parameters.join('&')}`
@@ -163,33 +169,12 @@ class TicketPrinterConfigView extends Component {
     }
 
     render() {
-        const onNameChange = (name, value) => {
-            this.setState({ticketPrinterName: value})
-        }
-
-        const onHomeChange = (name, value) => {
-            this.setState({homeUrl: value})
-        }
-
         const generatedUrl = this.buildUrl()
 
         return (
-            <form className="form-group ticketprinter-config">
+            <form className="form-group calldisplay-config">
                 {this.state.departments.map(this.renderDepartment.bind(this))}
                 <fieldset>
-                    <FormGroup>
-                        <Label>Name zur internen Identifikation (optional)</Label>
-                        <Controls>
-                            <Inputs.Text onChange={onNameChange}/>
-                        </Controls>
-                    </FormGroup>
-                    <FormGroup>
-                        <Label>StartUrl (optional)</Label>
-                        <Controls>
-                            <Inputs.Text onChange={onHomeChange}/>
-                            <Description>Tragen Sie eine alternative URL ein, wenn nach der Ausgabe einer Wartenummer eine alternative Startseite aufgerufen werden soll</Description>
-                        </Controls>
-                    </FormGroup>
                     <FormGroup>
                         <Label>URL</Label>
                         <Controls>
@@ -203,7 +188,7 @@ class TicketPrinterConfigView extends Component {
     }
 }
 
-TicketPrinterConfigView.propTypes = {
+CallDisplayConfigView.propTypes = {
     organisation: PropTypes.shape({
         departments: PropTypes.shape({
             clusters: PropTypes.array,
@@ -211,8 +196,8 @@ TicketPrinterConfigView.propTypes = {
         })
     }),
     config: PropTypes.shape({
-        ticketprinter: PropTypes.object
+        calldisplay: PropTypes.object
     })
 }
 
-export default TicketPrinterConfigView
+export default CallDisplayConfigView
