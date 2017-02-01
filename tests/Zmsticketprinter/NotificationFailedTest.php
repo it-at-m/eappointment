@@ -41,7 +41,7 @@ class NotificationFailedTest extends Base
 
     public function testFailedWithException()
     {
-        $this->setExpectedException('\BO\Zmsticketprinter\Exception\ScopeAndClusterNotFound');
+        $this->setExpectedException('\BO\Zmsticketprinter\Exception\ScopeNotFound');
         $response = $this->render([], [
             '__cookie' => [
                 'Ticketprinter' => '71ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2',

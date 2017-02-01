@@ -25,7 +25,6 @@ class Notification extends BaseController
         $waitingNumber = $validator->getParameter('waitingNumber')->isNumber()->getValue();
         $hasProcess = $validator->getParameter('processWithNotifiation')->isNumber()->getValue();
         $scopeId = $validator->getParameter('scopeId')->isNumber()->getValue();
-        $clusterId = $validator->getParameter('clusterId')->isNumber()->getValue();
         $ticketprinter = Helper\Ticketprinter::readWithHash($request);
 
         if (! $waitingNumber) {
@@ -43,15 +42,10 @@ class Notification extends BaseController
 
         if ($scopeId) {
             $process = \App::$http
-                ->readGetResult('/process/queue/'. $waitingNumber .'/scope/'. $scopeId .'/')
+                ->readGetResult('/scope/'. $scopeId .'/queue/'. $waitingNumber .'/')
                 ->getEntity();
-        } elseif ($clusterId) {
-            $process = \App::$http
-                ->readGetResult('/process/queue/'. $waitingNumber .'/cluster/'. $clusterId .'/')
-                ->getEntity();
-            $scopeId = $process->getScopeId();
         } else {
-            throw new Exception\ScopeAndClusterNotFound();
+            throw new Exception\ScopeNotFound();
         }
 
         return \BO\Slim\Render::withHtml(

@@ -4,7 +4,6 @@ namespace BO\Zmsticketprinter\Tests;
 
 class NotificationByScopeTest extends Base
 {
-
     protected $classname = "Notification";
 
     protected $arguments = [ ];
@@ -21,7 +20,7 @@ class NotificationByScopeTest extends Base
             ],
             [
                 'function' => 'readGetResult',
-                'url' => '/process/queue/2/scope/141/',
+                'url' => '/scope/141/queue/2/',
                 'response' => $this->readFixture("GET_process_with_waitingnumber.json"),
             ],
             [
