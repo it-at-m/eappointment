@@ -25,17 +25,20 @@ class TicketprinterConfig extends BaseController
 
         $config = \App::$http->readGetResult('/config/', [], static::SECURE_TOKEN)->getEntity();
 
-        $entity = \App::$http->readGetResult('/organisation/scope/'. $entityId .'/', [resolveReferences => 2])->getEntity();
+        $entity = \App::$http->readGetResult(
+            '/organisation/scope/'. $entityId .'/',
+            [resolveReferences => 2]
+        )->getEntity();
 
         return \BO\Slim\Render::withHtml(
-                $response,
-                'page/ticketprinterConfig.twig',
-                array(
-                    'title' => 'Anmeldung an Warteschlange',
-                    'config' => $config,
-                    'organisation' => $entity->getArrayCopy(),
-                    'menuActive' => 'ticketprinter'
-                )
+            $response,
+            'page/ticketprinterConfig.twig',
+            array(
+                'title' => 'Anmeldung an Warteschlange',
+                'config' => $config,
+                'organisation' => $entity->getArrayCopy(),
+                'menuActive' => 'ticketprinter'
+            )
         );
     }
 }
