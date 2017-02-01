@@ -16,6 +16,7 @@ import PickupKeyboardHandheldView from "./block/pickup-keyboard-handheld";
 import EmergencyView from './block/emergency'
 import DepartmentLinksView from './block/department/links'
 import DepartmentDaysOffView from './block/department/daysOff'
+import TicketPrinterConfigView from './block/ticketprinter/config'
 
 import AvailabilityDayPage from './page/availabilityDay'
 import bindReact from './lib/bindReact.js'
@@ -44,4 +45,5 @@ console.log("Welcome to the ZMS admin interface...");
 // hook up react components
 bindReact('.availabilityDayRoot', AvailabilityDayPage)
 bindReact('[data-department-daysoff]', DepartmentDaysOffView)
+bindReact('[data-ticketprinter-config]', TicketPrinterConfigView)
 
