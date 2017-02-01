@@ -213,6 +213,10 @@ body.noInfoColumn .aufrufanzeige table.aufrufanzeige_aufruf {
         font-size:80px;
         line-height:80px;
     }
+    span.terminkundennummer.smallerFont8Chars {
+      font-size: 65px;
+      line-height:65px;
+    }
     span.abholeranzeige
 	{
 		font-size: 70px;
@@ -254,9 +258,6 @@ body.noInfoColumn .aufrufanzeige table.aufrufanzeige_aufruf {
     .aufrufanzeige table.zweispaltig th,
     .aufrufanzeige table.zweispaltig td {
         border-right:6px solid #C8D5E6;
-    }
-    .aufrufanzeige table.zweispaltig td {
-        font-size: 80px;
     }
     .zweispaltig span.terminkundennummer {
         font-size:60px;
