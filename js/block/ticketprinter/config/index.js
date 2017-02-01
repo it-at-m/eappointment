@@ -143,7 +143,7 @@ class TicketPrinterConfigView extends Component {
         if (clusters.length > 0) {
             return (
                 <div className="form-group">
-                    <Label>Standortgruppe</Label>
+                    <Label>Standort­gruppe</Label>
                     <Controls>
                         {clusters.map(this.renderItem.bind(this))}
                     </Controls>

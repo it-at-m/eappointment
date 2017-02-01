@@ -17,6 +17,7 @@ import EmergencyView from './block/emergency'
 import DepartmentLinksView from './block/department/links'
 import DepartmentDaysOffView from './block/department/daysOff'
 import TicketPrinterConfigView from './block/ticketprinter/config'
+import CallDisplayConfigView from './block/calldisplay/config'
 
 import AvailabilityDayPage from './page/availabilityDay'
 import bindReact from './lib/bindReact.js'
@@ -46,4 +47,5 @@ console.log("Welcome to the ZMS admin interface...");
 bindReact('.availabilityDayRoot', AvailabilityDayPage)
 bindReact('[data-department-daysoff]', DepartmentDaysOffView)
 bindReact('[data-ticketprinter-config]', TicketPrinterConfigView)
+bindReact('[data-calldisplay-config]', CallDisplayConfigView)
 
