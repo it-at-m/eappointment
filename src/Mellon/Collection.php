@@ -60,7 +60,7 @@ class Collection
     /**
      * @return Array
      */
-    public function getStatus($sub = null)
+    public function getStatus($sub = null, $getUnvalidated = false)
     {
         $messages = array();
         if (null === $sub) {
@@ -68,7 +68,7 @@ class Collection
         }
         foreach ($sub as $key => $value) {
             if ($value instanceof Valid) {
-                $messages[$key] = $value->getStatus();
+                $messages[$key] = $value->getStatus($getUnvalidated);
             } else {
                 $messages[$key] = $this->getStatus($value);
             }
