@@ -4,7 +4,7 @@ namespace BO\Slim\Middleware\Session;
 
 interface SessionInterface extends \JsonSerializable
 {
-    public function setGroup(array $group);
+    public function setGroup(array $group, $clear);
 
     public function set($key, $value, $groupIndex);
 
