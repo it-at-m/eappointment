@@ -15,13 +15,9 @@ class SessionContainer implements SessionInterface
         return $instance;
     }
 
-    public function setGroup(array $group)
+    public function setGroup(array $group, $clear = false)
     {
-        foreach ($group as $index => $items) {
-            foreach ($items as $key => $value) {
-                $this->set($key, $value, $index);
-            }
-        }
+        $this->getSession()->setGroup($group, $clear);
     }
 
     public function writeData()

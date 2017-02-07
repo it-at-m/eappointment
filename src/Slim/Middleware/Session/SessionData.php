@@ -57,9 +57,12 @@ class SessionData implements SessionInterface
         $this->isLocked = true;
     }
 
-    public function setGroup(array $group)
+    public function setGroup(array $group, $clear)
     {
         foreach ($group as $index => $items) {
+            if ($clear) {
+                $this->clearGroup($index);
+            }
             foreach ($items as $key => $value) {
                 $this->set($key, $value, $index);
             }
