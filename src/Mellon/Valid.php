@@ -133,8 +133,8 @@ class Valid extends \BO\Mellon\Parameter
      */
     public function setDefault($value)
     {
-            $this->default = $value;
-            return $this;
+        $this->default = $value;
+        return $this;
     }
 
     /**
