@@ -5,6 +5,11 @@
 
 namespace BO\Zmsapi\Tests;
 
+use BO\Zmsapi\Helper\User;
+use BO\Zmsentities\Useraccount;
+use BO\Zmsentities\Workstation;
+use BO\Zmsentities\Scope;
+
 abstract class Base extends \BO\Slim\PhpUnit\Base
 {
     protected $namespace = '\\BO\\Zmsapi\\';
@@ -29,5 +34,19 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
             throw new \Exception("Fixture $path is not readable");
         }
         return file_get_contents($path);
+    }
+
+    protected function setWorkstation($workstationId = 123, $loginname = "testuser", $scopeId = 143)
+    {
+        User::$workstation = new Workstation([
+            'id' => $workstationId,
+            'useraccount' => new Useraccount([
+                'id' => $loginname,
+            ]),
+            'scope' => new Scope([
+                'id' => $scopeId,
+            ])
+        ]);
+        return User::$workstation;
     }
 }

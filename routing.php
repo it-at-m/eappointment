@@ -692,6 +692,36 @@ use \Psr\Http\Message\ResponseInterface;
     '\BO\Zmsapi\DepartmentDelete')
     ->setName("DepartmentDelete");
 
+/**
+ *  @swagger
+ *  "/department/{id}/useraccount/":
+ *      get:
+ *          description: Get a list of useraccounts for a department
+ *          parameters:
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/useraccount.json"
+ */
+\App::$slim->get('/department/{id:\d{1,11}}/useraccount/',
+    '\BO\Zmsapi\DepartmentUseraccountList')
+    ->setName("DepartmentUseraccountList");
 
 /**
  *  @swagger
