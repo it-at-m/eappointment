@@ -27,6 +27,9 @@ class WorkstationGet extends BaseController
             $query = new Query();
             $workstation = $query->readEntity($workstation->useraccount->id, $resolveReferences);
         }
+        if (! $workstation) {
+            throw new Exception\Workstation\WorkstationNotFound();
+        }
 
         $message = Response\Message::create(Render::$request);
         $message->data = $workstation;
