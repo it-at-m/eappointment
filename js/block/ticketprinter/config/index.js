@@ -14,12 +14,13 @@ const readPropsCluster = cluster => {
 }
 
 const readPropsScope = scope => {
-    const { name, id } = scope
+    const { shortName, contact, id } = scope
 
     return {
         type: 's',
         id,
-        name
+        shortName,
+        contact
     }
 }
 
@@ -29,11 +30,9 @@ class TicketPrinterConfigView extends Component {
 
         console.log('TicketPrinterConfigView::constructor', props)
 
-        const { departments } = props.organisation
-
         this.state = {
             selectedItems: [],
-            departments: departments.map(department => {
+            departments: props.departments.map(department => {
                 const { name, id, scopes = [], clusters = [] } = department
                 return {
                     id,
@@ -49,7 +48,7 @@ class TicketPrinterConfigView extends Component {
     }
 
     buildUrl() {
-        const itemList = this.state.selectedItems.map(item => `${item.type}{${item.id}}`).join(',')
+        const itemList = this.state.selectedItems.map(item => `${item.type}${item.id}`).join(',')
         const baseUrl = this.props.config.ticketprinter.baseUrl
 
         let parameters = []
@@ -114,11 +113,13 @@ class TicketPrinterConfigView extends Component {
             }
         }
 
+        const text = `${item.contact ? item.contact.name : item.name} ${item.shortName ? item.shortName : ""}`
+        const prefix = item.type === 'c' ? 'Cluster: ' : ''
         const position = (this.state.selectedItems.filter(i => i.id === item.id)[0] || {}).position
 
         return (
             <div className="ticketprinter-config__item">
-                <label>{`${item.name} (${item.id})`}</label>
+                <label>{prefix}{text}</label>
                 <span>
                     {this.renderNumberSelect(position, onChange)}
                 </span>
@@ -204,12 +205,8 @@ class TicketPrinterConfigView extends Component {
 }
 
 TicketPrinterConfigView.propTypes = {
-    organisation: PropTypes.shape({
-        departments: PropTypes.shape({
-            clusters: PropTypes.array,
-            scopes: PropTypes.array
-        })
-    }),
+    departments: PropTypes.array,
+    organisation: PropTypes.object,
     config: PropTypes.shape({
         ticketprinter: PropTypes.object
     })
