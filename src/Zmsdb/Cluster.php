@@ -134,6 +134,17 @@ class Cluster extends Base
         return $scopeList;
     }
 
+    public function readEnabledScopeList($clusterId, \DateTimeInterface $dateTime)
+    {
+        $scopeList = new \BO\Zmsentities\Collection\ScopeList();
+        foreach ($this->readOpenedScopeList($clusterId, $dateTime) as $scope) {
+            if ((new Scope())->readIsGivenNumberInContingent($scope['id'])) {
+                $scopeList->addEntity($scope);
+            }
+        }
+        return $scopeList;
+    }
+
     /**
      * get the scope with shortest estimated waitingtime
      *
