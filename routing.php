@@ -1168,7 +1168,7 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
- *  "/organisation/scope/{id}/":
+ *  "/scope/{id}/organisation/":
  *      get:
  *          description: Get an organisation by scopeId.
  *          parameters:
@@ -1190,13 +1190,13 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "organisation id does not exists"
  */
-\App::$slim->get('/organisation/scope/{id:\d{1,4}}/',
+\App::$slim->get('/scope/{id:\d{1,4}}/organisation/',
     '\BO\Zmsapi\OrganisationByScope')
     ->setName("OrganisationByScope");
 
 /**
  *  @swagger
- *  "/organisation/cluster/{id}/":
+ *  "/cluster/{id}/organisation/":
  *      get:
  *          description: Get an organisation by clusterId.
  *          parameters:
@@ -1218,7 +1218,7 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "organisation id does not exists"
  */
-\App::$slim->get('/organisation/cluster/{id:\d{1,4}}/',
+\App::$slim->get('/cluster/{id:\d{1,4}}/organisation/',
     '\BO\Zmsapi\OrganisationByCluster')
     ->setName("OrganisationByCluster");
 
