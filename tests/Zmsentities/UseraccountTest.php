@@ -23,4 +23,15 @@ class UseraccountTest extends EntityCommonTests
             $this->assertEquals(500, $exception->getCode());
         }
     }
+
+    public function testCollection()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $superuser = (new $this->entityclass())->getExample();
+        $superuser->rights['superuser'] = true;
+        $collection = new \BO\Zmsentities\Collection\UseraccountList();
+        $collection[] = $entity;
+        $collection[] = $superuser;
+        $this->assertTrue($collection->withRights(['superuser'])->count() == 1, 'Only one superuser given');
+    }
 }
