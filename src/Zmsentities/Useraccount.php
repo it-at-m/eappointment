@@ -66,13 +66,23 @@ class Useraccount extends Schema\Entity
         return $this;
     }
 
+    public function hasRights(array $requiredRights)
+    {
+        foreach ($requiredRights as $required) {
+            if (!$this->toProperty()->rights->$required->get()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public function testRights(array $requiredRights)
     {
         if ($this->hasId()) {
-            foreach ($requiredRights as $required) {
-                if (!$this->toProperty()->rights->$required->get()) {
-                    throw new Exception\UserAccountMissingRights("Missing right " . htmlspecialchars($required));
-                }
+            if (!$this->hasRights($requiredRights)) {
+                throw new Exception\UserAccountMissingRights(
+                    "Missing rights " . htmlspecialchars(implode(',', $requiredRights))
+                );
             }
         } else {
             throw new Exception\UserAccountMissingLogin();
