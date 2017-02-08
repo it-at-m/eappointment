@@ -824,6 +824,51 @@
 			}
 		}
 	},
+	"/department/{id}/useraccount/": {
+		"get": {
+			"description": "Get a list of useraccounts for a department",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "department number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/useraccount.json"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	},
 	"/mails/": {
 		"get": {
 			"description": "get a list of mails in the send queue",
@@ -2112,7 +2157,7 @@
 			}
 		}
 	},
-	"/process/queue/{number}/scope/{id}/": {
+	"/scope/{id}/queue/{number}/": {
 		"get": {
 			"description": "Get a process by queue number and scope id",
 			"parameters": [

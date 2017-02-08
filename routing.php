@@ -698,6 +698,11 @@ use \Psr\Http\Message\ResponseInterface;
  *      get:
  *          description: Get a list of useraccounts for a department
  *          parameters:
+ *              -   name: id
+ *                  description: department number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
  *              -   name: X-Authkey
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
