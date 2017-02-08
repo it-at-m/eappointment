@@ -12,7 +12,16 @@ class Useraccount extends Schema\Entity
     {
         return [
             'rights' => [
-                'superuser' => false,
+                "availability" => false,
+                "basic" => true,
+                "cluster" => false,
+                "department" => false,
+                "organisation" => false,
+                "scope" => false,
+                "sms" => false,
+                "superuser" => false,
+                "ticketprinter" => false,
+                "useraccount" => false,
             ],
         ];
     }
