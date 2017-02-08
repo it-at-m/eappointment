@@ -83,7 +83,6 @@ class Ticketprinter extends Base
      */
     public function readByButtonList(Entity $ticketprinter, \DateTimeImmutable $now)
     {
-        //$ticketprinter->toStructuredButtonList();
         if (count($ticketprinter->buttons) > 6) {
             throw new Exception\TicketprinterTooManyButtons();
         }
@@ -95,7 +94,7 @@ class Ticketprinter extends Base
                     throw new Exception\TicketprinterUnvalidButtonList();
                 }
                 $ticketprinter->buttons[$key]['scope'] = $scope;
-                $ticketprinter->buttons[$key]['enabled'] = $query->readIsOpened($scope->id, $now);
+                $ticketprinter->buttons[$key]['enabled'] = $query->readIsEnabled($scope->id, $now);
                 $ticketprinter->buttons[$key]['name'] = $scope->getPreference('ticketprinter', 'buttonName');
             } elseif ('cluster' == $button['type']) {
                 $query = new Cluster();
@@ -103,15 +102,29 @@ class Ticketprinter extends Base
                 if (! $cluster) {
                     throw new Exception\TicketprinterUnvalidButtonList();
                 }
-                $scopeList = $query->readOpenedScopeList($cluster->id, $now);
+                $scopeList = $query->readEnabledScopeList($cluster->id, $now);
                 $ticketprinter->buttons[$key]['cluster'] = $cluster;
                 $ticketprinter->buttons[$key]['enabled'] = (1 <= $scopeList->count()) ? true : false;
                 $ticketprinter->buttons[$key]['name'] = $cluster->getName();
             }
         }
-        $this->readDisabledByScope($ticketprinter);
+        $this->readExceptions($ticketprinter);
         $ticketprinter = $this->getAdditionalData($ticketprinter);
         return $ticketprinter;
+    }
+
+    protected function readExceptions(Entity $ticketprinter)
+    {
+        $query = new Scope();
+        $scope = $this->readSingleScopeFromButtonList($ticketprinter);
+        if ($scope && ! $query->readIsGivenNumberInContingent($scope['id'])) {
+            throw new Exception\Scope\GivenNumberCountExceeded();
+        }
+        if ($scope && $scope->getStatus('ticketprinter', 'deactivated')) {
+            throw new Exception\TicketprinterDisabledByScope(
+                $scope->getPreference('ticketprinter', 'deactivatedText')
+            );
+        }
     }
 
     protected function getAdditionalData($ticketprinter)
@@ -133,24 +146,13 @@ class Ticketprinter extends Base
         return $entity;
     }
 
-    protected function readDisabledByScope($ticketprinter)
-    {
-        $scope = $this->readSingleScopeFromButtonList($ticketprinter);
-        if ($scope && $scope->getStatus('ticketprinter', 'deactivated')) {
-            throw new Exception\TicketprinterDisabledByScope(
-                $scope->getPreference('ticketprinter', 'deactivatedText')
-            );
-        }
-    }
-
     public function readSingleScopeFromButtonList(Entity $ticketprinter)
     {
         $scope = null;
-        $isOneDisabledButton = (1 == count($ticketprinter->buttons) && ! $ticketprinter->buttons[0]['enabled']);
-        if ($isOneDisabledButton && 1 == $ticketprinter->getScopeList()->count()) {
+        if (1 == $ticketprinter->getScopeList()->count()) {
             $scope = $ticketprinter->getScopeList()->getFirst();
             $scope = (new Scope())->readEntity($scope['id']);
-        } elseif ($isOneDisabledButton && 1 == $ticketprinter->getClusterList()->count()) {
+        } elseif (1 == $ticketprinter->getClusterList()->count()) {
             $scopeList = $ticketprinter->getClusterList()->getFirst()->scopes;
             $scopeList = new \BO\Zmsentities\Collection\ScopeList($scopeList);
             if (1 == $scopeList->count()) {

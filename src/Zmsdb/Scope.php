@@ -12,7 +12,6 @@ use \BO\Zmsentities\Collection\ScopeList as Collection;
  */
 class Scope extends Base
 {
-
     public static $cache = [ ];
 
     public function readEntity($scopeId, $resolveReferences = 0, $disableCache = false)
@@ -48,7 +47,7 @@ class Scope extends Base
             foreach ($result as $entity) {
                 if (0 == $resolveReferences) {
                     $entity = new Entity(
-                        array (
+                        array(
                             'id' => $entity->id,
                             '$ref' => '/scope/' . $entity->id . '/'
                         )
@@ -77,7 +76,7 @@ class Scope extends Base
             foreach ($result as $entity) {
                 if (0 == $resolveReferences) {
                     $entity = new Entity(
-                        array (
+                        array(
                             'id' => $entity->id,
                             '$ref' => '/scope/' . $entity->id . '/'
                         )
@@ -106,7 +105,7 @@ class Scope extends Base
             foreach ($result as $entity) {
                 if (0 == $resolveReferences) {
                     $entity = new Entity(
-                        array (
+                        array(
                             'id' => $entity->id,
                             '$ref' => '/scope/' . $entity->id . '/'
                         )
@@ -152,15 +151,24 @@ class Scope extends Base
     public function readIsOpened($scopeId, $now)
     {
         $isOpened = false;
-        $query = new Query\Scope(Query\Base::SELECT);
-        $query->addEntityMapping()
-            ->addConditionScopeId($scopeId);
         $availabilityList = (new Availability())->readOpeningHoursListByDate($scopeId, $now);
-        $scope = $this->fetchOne($query, new Entity());
-        if ($availabilityList->isOpened($now) && ! $scope->getStatus('ticketprinter', 'deactivated')) {
+        if ($availabilityList->isOpened($now)) {
             $isOpened = true;
         }
         return $isOpened;
+    }
+
+    public function readIsEnabled($scopeId, $now)
+    {
+        $query = new Query\Scope(Query\Base::SELECT);
+        $query->addEntityMapping()
+            ->addConditionScopeId($scopeId);
+        $scope = $this->fetchOne($query, new Entity());
+        return (
+            $this->readIsOpened($scopeId, $now) &&
+            $this->readIsGivenNumberInContingent($scopeId) &&
+            ! $scope->getStatus('ticketprinter', 'deactivated')
+        );
     }
 
     /**
@@ -194,7 +202,7 @@ class Scope extends Base
      *
      * @return Bool
      */
-    protected function readIsGivenNumberInContingent($scopeId)
+    public function readIsGivenNumberInContingent($scopeId)
     {
         $isInContingent = $this->getReader()
             ->fetchValue((new Query\Scope(Query\Base::SELECT))
