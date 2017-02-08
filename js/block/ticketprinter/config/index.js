@@ -131,7 +131,7 @@ class TicketPrinterConfigView extends Component {
         if (scopes.length > 0) {
             return (
                 <div className="form-group">
-                    <Label>Standort</Label>
+                    <Label>Standorte</Label>
                     <Controls>
                         {scopes.map(this.renderItem.bind(this))}
                     </Controls>
@@ -157,8 +157,8 @@ class TicketPrinterConfigView extends Component {
         return (
             <div>
                 <h2>{department.name}</h2>
-                {this.renderClusters(department.clusters)}
                 {this.renderScopes(department.scopes)}
+                {this.renderClusters(department.clusters)}
             </div>
         )
     }
