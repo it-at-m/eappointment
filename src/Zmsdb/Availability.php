@@ -38,8 +38,7 @@ class Availability extends Base
                 if ($entity instanceof Entity) {
                     if (1 <= $resolveReferences) {
                         $entity['scope'] = (new Scope())
-                            ->readEntity($entity['scope']['id'], $resolveReferences - 1)
-                            ->withLessData();
+                            ->readEntity($entity['scope']['id'], $resolveReferences - 1);
                     }
                     $collection->addEntity($entity);
                 }
