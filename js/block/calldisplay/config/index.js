@@ -14,12 +14,13 @@ const readPropsCluster = cluster => {
 }
 
 const readPropsScope = scope => {
-    const { name, id } = scope
+    const { shortName, contact, id } = scope
 
     return {
         type: 'scope',
         id,
-        name
+        shortName,
+        contact
     }
 }
 
@@ -29,11 +30,9 @@ class CallDisplayConfigView extends Component {
 
         console.log('CallDisplayConfigView::constructor', props)
 
-        const { departments } = props.organisation
-
         this.state = {
             selectedItems: [],
-            departments: departments.map(department => {
+            departments: props.departments.map(department => {
                 const { name, id, scopes = [], clusters = [] } = department
                 return {
                     id,
@@ -51,9 +50,9 @@ class CallDisplayConfigView extends Component {
 
         const collections = this.state.selectedItems.reduce((carry, current) => {
             if (current.type === "cluster") {
-                carry.scopelist.push(current.id)
-            } else if (current.type === "scope") {
                 carry.clusterlist.push(current.id)
+            } else if (current.type === "scope") {
+                carry.scopelist.push(current.id)
             }
 
             return carry
@@ -65,42 +64,28 @@ class CallDisplayConfigView extends Component {
         let parameters = []
 
         if (collections.scopelist.length > 0) {
-            parameters.push(`calldisplay[scopelist]=${collections.scopelist.join(",")}`)
+            parameters.push(`collections[scopelist]=${collections.scopelist.join(",")}`)
         }
 
         if (collections.clusterlist.length > 0) {
-            parameters.push(`calldisplay[clusterlist]=${collections.clusterlist.join(",")}`)
+            parameters.push(`collections[clusterlist]=${collections.clusterlist.join(",")}`)
         }
 
         return `${baseUrl}?${parameters.join('&')}`
     }
 
-    renderNumberSelect(value, onNumberChange) {
-        const onChange = ev => onNumberChange(ev.target.value)
-
-        const usedSlots = this.state.selectedItems.map(item => item.position)
-        const availableSlots = [null, 1, 2, 3, 4, 5, 6].filter(slot => usedSlots.indexOf(slot) < 0 || slot === value)
+    renderCheckbox(enabled, onShowChange) {
+        const onChange = () => onShowChange(!enabled)
 
         return (
-            <select {... { onChange, value }} >
-                {availableSlots.map(n => <option value={n}>{n || 'nicht anzeigen'}</option>)}
-            </select>
+            <Inputs.Checkbox checked={enabled} {...{ onChange}} />
         )
     }
 
-    showItem(item, position) {
+    showItem(item) {
         const items = this.state.selectedItems.filter(i => i.id !== item.id)
-        const newItem = Object.assign({}, item, { position })
+        const newItem = Object.assign({}, item)
         items.push(newItem)
-        items.sort((a,b) => {
-            const aPos = a.position
-            const bPos = b.position
-
-            if (aPos < bPos) { return -1 }
-            if (aPos > bPos) { return 1 }
-            return 0
-        })
-
         this.setState({ selectedItems: items })
     }
 
@@ -110,23 +95,26 @@ class CallDisplayConfigView extends Component {
     }
 
     renderItem(item) {
-        const onChange = n => {
-            const position = parseInt(n, 10)
-
-            if (position) {
-                this.showItem(item, position)
+        const onChange = show => {
+            if (show) {
+                this.showItem(item)
             } else {
                 this.hideItem(item)
             }
         }
 
-        const position = (this.state.selectedItems.filter(i => i.id === item.id)[0] || {}).position
+        const text = `${item.contact ? item.contact.name : item.name} ${item.shortName ? item.shortName : ""}`
+        const prefix = item.type === 'cluster' ? 'Cluster: ' : ''
+
+        const itemEnabled = this.state.selectedItems.reduce((carry, current) => {
+            return carry || current.id === item.id
+        }, false)
 
         return (
             <div className="ticketprinter-config__item">
-                <label>{`${item.name} (${item.id})`}</label>
+                <label>{prefix}{text}</label>
                 <span>
-                    {this.renderNumberSelect(position, onChange)}
+                    {this.renderCheckbox(itemEnabled, onChange)}
                 </span>
             </div>
         )
@@ -136,7 +124,7 @@ class CallDisplayConfigView extends Component {
         if (scopes.length > 0) {
             return (
                 <div className="form-group">
-                    <Label>Standort</Label>
+                    <Label>Standorte</Label>
                     <Controls>
                         {scopes.map(this.renderItem.bind(this))}
                     </Controls>
@@ -162,8 +150,8 @@ class CallDisplayConfigView extends Component {
         return (
             <div>
                 <h2>{department.name}</h2>
-                {this.renderClusters(department.clusters)}
                 {this.renderScopes(department.scopes)}
+                {this.renderClusters(department.clusters)}
             </div>
         )
     }
@@ -189,12 +177,8 @@ class CallDisplayConfigView extends Component {
 }
 
 CallDisplayConfigView.propTypes = {
-    organisation: PropTypes.shape({
-        departments: PropTypes.shape({
-            clusters: PropTypes.array,
-            scopes: PropTypes.array
-        })
-    }),
+    departments: PropTypes.array,
+    organisation: PropTypes.object,
     config: PropTypes.shape({
         calldisplay: PropTypes.object
     })
