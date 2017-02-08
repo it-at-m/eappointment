@@ -51,8 +51,8 @@ class WorkstationTest extends EntityCommonTests
         $userAccount->rights['superuser'] = false;
         $userAccount->setRights('superuser');
         $entity->useraccount = $userAccount;
-        $userAccount->testRights(array_keys($userAccount->rights));
-        $this->assertTrue($entity->hasSuperUseraccount(), 'Useraccount should not have a superuser right');
+        $userAccount->testRights(['superuser']);
+        $this->assertTrue($entity->hasSuperUseraccount(), 'Useraccount should have a superuser right');
 
         unset($userAccount->rights['superuser']);
         $userAccount->setRights('superuser');
