@@ -78,6 +78,17 @@ class UserAccount extends Base implements MappingInterface
         return $this;
     }
 
+    public function addConditionDepartmentId($departmentId)
+    {
+        $this->query->leftJoin(
+            new Alias(static::TABLE_ASSIGNMENT, 'useraccount_department'),
+            'userAccount.NutzerID',
+            '=',
+            'useraccount_department.nutzerid'
+        );
+        $this->query->where('useraccount_department.behoerdenid', '=', $departmentId);
+        return $this;
+    }
 
     public function reverseEntityMapping(\BO\Zmsentities\Useraccount $entity)
     {

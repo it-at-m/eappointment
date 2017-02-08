@@ -98,6 +98,25 @@ class UserAccount extends Base
         return ($xAuthKey) ? $this->fetchOne($query, new Entity()) : new Entity();
     }
 
+    public function readCollectionByDepartmentId($departmentId, $resolveReferences = 0)
+    {
+        $collection = new Collection();
+        $query = new Query\UserAccount(Query\Base::SELECT);
+        $query->addResolvedReferences($resolveReferences)
+            ->addConditionDepartmentId($departmentId)
+            ->addEntityMapping();
+        $result = $this->fetchList($query, new Entity());
+        if (count($result)) {
+            foreach ($result as $entity) {
+                if ($entity instanceof Entity) {
+                    $entity->departments = $this->readAssignedDepartmentList($entity, $resolveReferences - 1);
+                    $collection->addEntity($entity);
+                }
+            }
+        }
+        return $collection;
+    }
+
     /**
      * write an userAccount
      *
