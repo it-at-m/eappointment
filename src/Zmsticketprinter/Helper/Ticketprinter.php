@@ -79,7 +79,7 @@ class Ticketprinter
         $ticketprinter = clone $entity;
         if ($scopeId) {
             $organisation = \App::$http->readGetResult(
-                '/organisation/scope/'. $scopeId . '/',
+                '/scope/'. $scopeId . '/organisation/',
                 ['resolveReferences' => 2]
             )->getEntity();
         }
@@ -87,12 +87,12 @@ class Ticketprinter
         while (! $organisation && $nextButton) {
             if ('scope' == $nextButton['type']) {
                 $organisation = \App::$http->readGetResult(
-                    '/organisation/scope/'. $nextButton['scope']['id'] . '/',
+                    '/scope/'. $nextButton['scope']['id'] . '/organisation/',
                     ['resolveReferences' => 2]
                 )->getEntity();
             } elseif ('cluster' == $nextButton['type']) {
                 $organisation = \App::$http->readGetResult(
-                    '/organisation/cluster/'. $nextButton['cluster']['id'] . '/',
+                    '/cluster/'. $nextButton['cluster']['id'] . '/organisation/',
                     ['resolveReferences' => 2]
                 )->getEntity();
             }

@@ -4,7 +4,6 @@ namespace BO\Zmsticketprinter\Tests;
 
 class IndexTest extends Base
 {
-
     protected $classname = "Index";
 
     protected $arguments = [ ];
@@ -16,7 +15,7 @@ class IndexTest extends Base
         return [
             [
                 'function' => 'readGetResult',
-                'url' => '/organisation/scope/141/',
+                'url' => '/scope/141/organisation/',
                 'parameters' => ['resolveReferences' => 2],
                 'response' => $this->readFixture("GET_organisation_71.json"),
             ],
