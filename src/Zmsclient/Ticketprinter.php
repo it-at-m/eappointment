@@ -19,7 +19,7 @@ class Ticketprinter
         $_COOKIE[self::HASH_COOKIE_NAME] = $hash;
         // @codeCoverageIgnoreStart
         if (!headers_sent()) {
-            setcookie(self::HASH_COOKIE_NAME, $hash, 0, '/', null, true, true);
+            setcookie(self::HASH_COOKIE_NAME, $hash, 0, '/', null, true);
         }
         // @codeCoverageIgnoreEnd
     }
