@@ -58,7 +58,7 @@ class Notification extends BaseController
                 'title' => 'Anmeldung an der Warteschlange',
                 'ticketprinter' => $ticketprinter,
                 'organisation' => \App::$http->readGetResult(
-                    '/organisation/scope/'. $scopeId . '/',
+                    '/scope/'. $scopeId . '/organisation/',
                     ['resolveReferences' => 2]
                 )->getEntity(),
                 'process' => $process

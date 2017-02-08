@@ -39,7 +39,7 @@ class NotificationAmendment extends BaseController
                 'scope' => $scope,
                 'cluster' => $cluster,
                 'organisation' => \App::$http->readGetResult(
-                    '/organisation/scope/'. $scopeId . '/',
+                    '/scope/'. $scopeId . '/organisation/',
                     ['resolveReferences' => 2]
                 )->getEntity(),
             )

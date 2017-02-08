@@ -4,7 +4,6 @@ namespace BO\Zmsticketprinter\Tests;
 
 class IndexRedirectSingleScopeTest extends Base
 {
-
     protected $classname = "Index";
 
     protected $arguments = [ ];
@@ -16,7 +15,7 @@ class IndexRedirectSingleScopeTest extends Base
         return [
             [
                 'function' => 'readGetResult',
-                'url' => '/organisation/scope/312/',
+                'url' => '/scope/312/organisation/',
                 'parameters' => ['resolveReferences' => 2],
                 'response' => $this->readFixture("GET_organisation_78.json"),
             ],

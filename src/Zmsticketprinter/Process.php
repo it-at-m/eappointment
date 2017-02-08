@@ -48,7 +48,7 @@ class Process extends BaseController
                 'title' => 'Anmeldung an der Warteschlange',
                 'ticketprinter' => $ticketprinter,
                 'organisation' => \App::$http->readGetResult(
-                    '/organisation/scope/'. $scope->id . '/',
+                    '/scope/'. $scope->id . '/organisation/',
                     ['resolveReferences' => 2]
                 )->getEntity(),
                 'process' => $process,

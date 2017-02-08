@@ -39,7 +39,7 @@ class Message extends BaseController
                 'ticketprinter' => $ticketprinter,
                 'scopeId' => $scopeId,
                 'organisation' => \App::$http->readGetResult(
-                    '/organisation/scope/'. $scopeId . '/',
+                    '/scope/'. $scopeId . '/organisation/',
                     ['resolveReferences' => 2]
                 )->getEntity(),
                 'messages' => array($messages)

@@ -4,7 +4,6 @@ namespace BO\Zmsticketprinter\Tests;
 
 class IndexByClusterFirstButtonTest extends Base
 {
-
     protected $classname = "Index";
 
     protected $arguments = [ ];
@@ -16,7 +15,7 @@ class IndexByClusterFirstButtonTest extends Base
         return [
             [
                 'function' => 'readGetResult',
-                'url' => '/organisation/cluster/110/',
+                'url' => '/cluster/110/organisation/',
                 'parameters' => ['resolveReferences' => 2],
                 'response' => $this->readFixture("GET_organisation_71.json"),
             ],

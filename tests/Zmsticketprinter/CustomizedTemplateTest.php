@@ -4,7 +4,6 @@ namespace BO\Zmsticketprinter\Tests;
 
 class CustomizedTemplateTest extends Base
 {
-
     protected $classname = "TicketprinterByScope";
 
     protected $arguments = [ ];
@@ -16,7 +15,7 @@ class CustomizedTemplateTest extends Base
         return [
             [
                 'function' => 'readGetResult',
-                'url' => '/organisation/scope/615/',
+                'url' => '/scope/615/organisation/',
                 'parameters' => ['resolveReferences' => 2],
                 'response' => $this->readFixture("GET_organisation_71.json"),
             ],

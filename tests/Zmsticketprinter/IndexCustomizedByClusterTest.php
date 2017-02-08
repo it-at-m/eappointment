@@ -4,7 +4,6 @@ namespace BO\Zmsticketprinter\Tests;
 
 class IndexCustomizedByClusterTest extends Base
 {
-
     protected $classname = "Index";
 
     protected $arguments = [ ];
@@ -16,7 +15,7 @@ class IndexCustomizedByClusterTest extends Base
         return [
             [
                 'function' => 'readGetResult',
-                'url' => '/organisation/cluster/290/',
+                'url' => '/cluster/290/organisation/',
                 'parameters' => ['resolveReferences' => 2],
                 'response' => $this->readFixture("GET_organisation_71.json"),
             ],
