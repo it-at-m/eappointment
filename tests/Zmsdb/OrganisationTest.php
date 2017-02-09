@@ -75,11 +75,17 @@ class OrganisationTest extends Base
         $this->assertEquals('Flughafen BER', $entity->name);
     }
 
-    public function testDeleteWithDepartments()
+    public function testDeleteWithChildren()
     {
         $this->setExpectedException('\BO\Zmsdb\Exception\Organisation\DepartmentListNotEmpty');
         $query = new Query();
         $this->assertFalse($query->deleteEntity(54)); //Pankow
+    }
+
+    public function testDeleteWithoutChildren()
+    {
+        $query = new Query();
+        $this->assertContains('Test Organisation', $query->deleteEntity(80)); //Test Organisation
     }
 
     protected function getTestEntity()
