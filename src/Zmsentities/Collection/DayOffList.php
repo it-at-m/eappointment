@@ -28,4 +28,16 @@ class DayOffList extends Base
         }
         return $result;
     }
+
+    public function toDateWithTimestamp()
+    {
+        $collection = new self();
+        foreach ($this as $data) {
+            $entity = new \BO\Zmsentities\DayOff($data);
+            $dateTime = \DateTimeImmutable::createFromFormat('d.m.Y', $entity->date);
+            $entity->date = $dateTime->modify('00:00:00')->getTimestamp();
+            $collection->addEntity($entity);
+        }
+        return $collection;
+    }
 }
