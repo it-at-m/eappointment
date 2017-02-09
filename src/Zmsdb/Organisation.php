@@ -113,7 +113,7 @@ class Organisation extends Base
     public function deleteEntity($itemId)
     {
         $entity = $this->readEntity($itemId);
-        if ($entity->toProperty()->departments->isAvailable()) {
+        if (0 < $entity->toProperty()->departments->get()->count()) {
             throw new Exception\Organisation\DepartmentListNotEmpty();
         }
         $query = new Query\Organisation(Query\Base::DELETE);
