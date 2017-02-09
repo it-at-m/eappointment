@@ -21,7 +21,7 @@ class Cluster extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
-        $entityId = Validator::value($args['id'])->isNumber()->getValue();
+        $entityId = Validator::value($args['clusterId'])->isNumber()->getValue();
         $entity = \App::$http->readGetResult('/cluster/' . $entityId . '/', ['resolveReferences' => 2])->getEntity();
 
         if (!$entity->hasId()) {
@@ -33,8 +33,20 @@ class Cluster extends BaseController
             ['resolveReferences' => 2]
         )->getEntity();
 
-        return \BO\Slim\Render::withHtml(
+        $input = $request->getParsedBody();
+        if (is_array($input) && array_key_exists('save', $input)) {
+            //var_dump($input);
+            try {
+                $entity = new Entity($input);
+                $entity->id = $entityId;
+                $entity = \App::$http->readPostResult('/cluster/' . $entity->id . '/', $entity)
+                        ->getEntity();
+            } catch (\Exception $exception) {
+                return Helper\Render::error($exception);
+            }
+        }
 
+        return \BO\Slim\Render::withHtml(
             $response,
             'page/cluster.twig',
             array(
@@ -42,6 +54,7 @@ class Cluster extends BaseController
                 'menuActive' => 'owner',
                 'workstation' => $workstation,
                 'cluster' => $entity->getArrayCopy(),
+                'departent' => $department,
                 'scopeList' => $department->getScopeList(),
             )
         );
