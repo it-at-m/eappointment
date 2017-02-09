@@ -112,27 +112,31 @@ class Department extends Base
     public function deleteEntity($departmentId)
     {
         $entity = $this->readEntity($departmentId, 1);
-        if (0 < $entity->toProperty()->scopes->get()->count() || 0 < $entity->toProperty()->clusters->get()->count()) {
-            throw new Exception\Department\ScopeListNotEmpty();
-        }
+        if ($entity) {
+            if (0 < $entity->toProperty()->scopes->get()->count()
+                || 0 < $entity->toProperty()->clusters->get()->count()
+            ) {
+                throw new Exception\Department\ScopeListNotEmpty();
+            }
 
-        self::$departmentCache = [];
-        $query = new Query\Department(Query\Base::DELETE);
-        $query->addConditionDepartmentId($departmentId);
-        $entityDelete = $this->deleteItem($query);
-        $query = Query\Department::QUERY_MAIL_DELETE;
-        $statement = $this->getWriter()
-            ->prepare($query);
-        $emailDelete = $statement->execute(array(
-            $departmentId
-        ));
-        $query = Query\Department::QUERY_NOTIFICATIONS_DELETE;
-        $statement = $this->getWriter()
-            ->prepare($query);
-        $notificationsDelete = $statement->execute(array(
-            $departmentId
-        ));
-        return ($entityDelete && $emailDelete && $notificationsDelete) ? $entity : null;
+            self::$departmentCache = [];
+            $query = new Query\Department(Query\Base::DELETE);
+            $query->addConditionDepartmentId($departmentId);
+            $entityDelete = $this->deleteItem($query);
+            $query = Query\Department::QUERY_MAIL_DELETE;
+            $statement = $this->getWriter()
+                ->prepare($query);
+            $emailDelete = $statement->execute(array(
+                $departmentId
+            ));
+            $query = Query\Department::QUERY_NOTIFICATIONS_DELETE;
+            $statement = $this->getWriter()
+                ->prepare($query);
+            $notificationsDelete = $statement->execute(array(
+                $departmentId
+            ));
+        }
+        return ($entity && $entityDelete && $emailDelete && $notificationsDelete) ? $entity : null;
     }
 
     /**
