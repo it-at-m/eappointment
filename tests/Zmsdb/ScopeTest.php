@@ -96,6 +96,13 @@ class ScopeTest extends Base
         $this->assertTrue($deleteTest, "Failed to delete Scope from Database.");
     }
 
+    public function testDeleteWithProcesses()
+    {
+        $this->setExpectedException('\BO\Zmsdb\Exception\Scope\ScopeHasProcesses');
+        $query = new Query();
+        $this->assertFalse($query->deleteEntity(141)); //Herrstraße
+    }
+
     public function testEmergency()
     {
         $query = new Query();
