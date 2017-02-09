@@ -20,7 +20,7 @@ class DayoffList extends BaseController
     public static function render($year)
     {
         $message = Response\Message::create(Render::$request);
-        $dayOffList = (new Query())->readByYear($year);
+        $dayOffList = (new Query())->readCommonByYear($year);
         $message->data = $dayOffList;
         Render::lastModified(time(), '0');
         Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
