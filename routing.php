@@ -2111,12 +2111,12 @@ use \Psr\Http\Message\ResponseInterface;
  *                  in: path
  *                  required: true
  *                  type: integer
- *              -   name: scope
- *                  description: scope data to add
+ *              -   name: cluster
+ *                  description: cluster data to add
  *                  required: true
  *                  in: body
  *                  schema:
- *                      $ref: "schema/scope.json"
+ *                      $ref: "schema/cluster.json"
  *              -   name: X-Authkey
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
@@ -2130,7 +2130,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                          meta:
  *                              $ref: "schema/metaresult.json"
  *                          data:
- *                              $ref: "schema/scope.json"
+ *                              $ref: "schema/cluster.json"
  *              404:
  *                  description: "Missing required properties in the cluster"
  */
