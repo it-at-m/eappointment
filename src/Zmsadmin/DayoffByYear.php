@@ -27,22 +27,19 @@ class DayoffByYear extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
         $year = Validator::value($args['year'])->isNumber()->getValue();
-        $entity = \App::$http->readGetResult('/dayoff/'. $year .'/')->getCollection();
+        $collection = \App::$http->readGetResult('/dayoff/'. $year .'/')->getCollection();
 
         $input = $request->getParsedBody();
         if (array_key_exists('save', (array) $input)) {
             $data = $input['daysOff'];
-            try {
-                $entity = new Collection($data);
-                $entity = \App::$http->readPostResult(
-                    '/dayoff/'. $year .'/',
-                    $entity
-                )->getCollection();
-            } catch (\Exception $exception) {
-                return Helper\Render::error($request, $exception);
-            }
+            $collection = new Collection($data);
+            $collection = \App::$http->readPostResult(
+                '/dayoff/'. $year .'/',
+                $collection->toDateWithTimestamp()
+            )->getCollection();
         }
 
+        $response = \BO\Slim\Render::withLastModified($response, time(), '0');
         return \BO\Slim\Render::withHtml(
             $response,
             'page/dayoffByYear.twig',
@@ -51,7 +48,7 @@ class DayoffByYear extends BaseController
                 'year' => '2016',
                 'menuActive' => 'dayoff',
                 'workstation' => $workstation,
-                'dayoffList' => $entity->getArrayCopy()
+                'dayoffList' => array_values($collection->sortByCustomKey('date')->getArrayCopy())
             )
         );
     }
