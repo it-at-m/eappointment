@@ -24,12 +24,19 @@ class DepartmentTest extends Base
         $entity->email = "max@berlinonline.de";
         $entity = $query->updateEntity($entity->id, $entity);
         $this->assertEquals('max@berlinonline.de', $entity->email);
+    }
 
-        $deleteTest = $query->deleteEntity($entity->id);
-        $this->assertTrue($deleteTest, "Failed to delete Department from Database.");
+    public function testDeleteWithChildren()
+    {
+        $this->setExpectedException('\BO\Zmsdb\Exception\Department\ScopeListNotEmpty');
+        $query = new Query();
+        $this->assertFalse($query->deleteEntity(72)); //Bürgeramt Egon-Erwin-Kirsch-Straße
+    }
 
-        $entity = $query->readEntity(0); //check empty array return
-        $this->assertEquals(0, count($entity));
+    public function testDeleteWithoutChildren()
+    {
+        $query = new Query();
+        $this->assertContains('Test Department', $query->deleteEntity(999)); //Test Department
     }
 
     public function testReadWithDayOff()

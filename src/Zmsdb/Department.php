@@ -5,6 +5,10 @@ namespace BO\Zmsdb;
 use \BO\Zmsentities\Department as Entity;
 use \BO\Zmsentities\Collection\DepartmentList as Collection;
 
+/**
+ * @SuppressWarnings(Coupling)
+ *
+ */
 class Department extends Base
 {
 
@@ -107,6 +111,11 @@ class Department extends Base
      */
     public function deleteEntity($departmentId)
     {
+        $entity = $this->readEntity($departmentId, 1);
+        if (0 < $entity->toProperty()->scopes->get()->count() || 0 < $entity->toProperty()->clusters->get()->count()) {
+            throw new Exception\Department\ScopeListNotEmpty();
+        }
+
         self::$departmentCache = [];
         $query = new Query\Department(Query\Base::DELETE);
         $query->addConditionDepartmentId($departmentId);
@@ -123,7 +132,7 @@ class Department extends Base
         $notificationsDelete = $statement->execute(array(
             $departmentId
         ));
-        return ($entityDelete && $emailDelete && $notificationsDelete) ? true : false;
+        return ($entityDelete && $emailDelete && $notificationsDelete) ? $entity : null;
     }
 
     /**
