@@ -40,7 +40,6 @@ class DepartmentAddCluster extends BaseController
                 )
             );
         } catch (\Exception $exception) {
-            var_dump($exception->getMessage());die;
             return Helper\Render::error($request, $exception);
         }
     }
