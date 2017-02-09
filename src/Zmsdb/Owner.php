@@ -77,9 +77,13 @@ class Owner extends Base
     */
     public function deleteEntity($itemId)
     {
+        $entity = $this->readEntity($itemId, 1);
+        if (0 < $entity->toProperty()->organisations->get()->count()) {
+            throw new Exception\Owner\OrganisationListNotEmpty();
+        }
         $query =  new Query\Owner(Query\Base::DELETE);
         $query->addConditionOwnerId($itemId);
-        return $this->deleteItem($query);
+        return ($this->deleteItem($query)) ? $entity : null;
     }
 
     /**

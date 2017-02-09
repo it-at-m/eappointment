@@ -46,9 +46,20 @@ class OwnerTest extends Base
         $entity->contact['street'] = 'Zaunstraße 2, 15831 Schönefeld';
         $entity = $query->updateEntity($entity->id, $entity);
         $this->assertEquals('Zaunstraße 2, 15831 Schönefeld', $entity->contact['street']);
+    }
 
-        $deleteTest = $query->deleteEntity($entity->id);
-        $this->assertTrue($deleteTest, "Failed to delete Owner from Database.");
+    public function testDeleteWithChildren()
+    {
+        $this->setExpectedException('\BO\Zmsdb\Exception\Owner\OrganisationListNotEmpty');
+        $query = new Query();
+        $query->deleteEntity(23); //Berlin
+    }
+
+    public function testDeleteWithoutChildren()
+    {
+        $query = new Query();
+        $entity = $query->deleteEntity(99);
+        $this->assertEquals(99, $entity->id); //Test Kunde
     }
 
     protected function getTestEntity()
