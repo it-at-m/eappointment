@@ -36,10 +36,11 @@ class DepartmentAddCluster extends BaseController
                     'departmentId' => $parentId,
                 ),
                 array(
-                    'success' => 'scope_created'
+                    'success' => 'cluster_created'
                 )
             );
         } catch (\Exception $exception) {
+            var_dump($exception->getMessage());die;
             return Helper\Render::error($request, $exception);
         }
     }
