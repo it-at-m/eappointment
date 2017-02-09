@@ -2102,6 +2102,44 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/department/{id}/cluster/":
+ *      post:
+ *          description: Add a new cluster
+ *          parameters:
+ *              -   name: id
+ *                  description: department number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: scope
+ *                  description: scope data to add
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/scope.json"
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/scope.json"
+ *              404:
+ *                  description: "Missing required properties in the cluster"
+ */
+\App::$slim->post('/department/{id:\d{1,11}}/cluster/',
+                  '\BO\Zmsapi\DepartmentAddCluster')
+    ->setName("DepartmentAddCluster");
+
+/**
+ *  @swagger
  *  "/scope/":
  *      get:
  *          description: Get a list of scopes
