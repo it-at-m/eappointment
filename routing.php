@@ -95,13 +95,19 @@ use \Psr\Http\Message\ResponseInterface;
 
 \App::$slim->map([
     'GET','POST'
-], '/cluster/{id:\d+}/', '\BO\Zmsadmin\Cluster')
-    ->setName("cluster");
+], '/department/{id:\d+}/', '\BO\Zmsadmin\Department')
+    ->setName("department");
 
 \App::$slim->map([
     'GET','POST'
-], '/department/{id:\d+}/', '\BO\Zmsadmin\Department')
-    ->setName("department");
+], '/department/{departmentId:\d+}/cluster/{clusterId:\d+}/', '\BO\Zmsadmin\Cluster')
+    ->setName("cluster");
+
+\App::$slim->get('/department/{departmentId:\d+}/cluster/{clusterId:\d+}/delete', '\BO\Zmsadmin\ClusterDelete')
+    ->setName("clusterDelete");
+
+\App::$slim->get('/department/{departmentId:\d+}/cluster/', '\BO\Zmsadmin\DepartmentAddCluster')
+    ->setName("departmentAddCluster");
 
 \App::$slim->map([
     'GET','POST'
