@@ -22,16 +22,20 @@ class Cluster extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
         $entityId = Validator::value($args['clusterId'])->isNumber()->getValue();
+        $departmentId = Validator::value($args['departmentId'])->isNumber()->getValue();
         $entity = \App::$http->readGetResult('/cluster/' . $entityId . '/', ['resolveReferences' => 2])->getEntity();
+
 
         if (!$entity->hasId()) {
             return Helper\Render::withHtml($response, 'page/404.twig', array());
         }
 
+
         $department = \App::$http->readGetResult(
-            '/scope/' . $entity->scopes[0]['id'] . '/department/',
+            '/department/' . $departmentId . '/',
             ['resolveReferences' => 2]
         )->getEntity();
+
 
         $input = $request->getParsedBody();
         if (is_array($input) && array_key_exists('save', $input)) {
