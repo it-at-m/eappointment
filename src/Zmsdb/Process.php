@@ -12,7 +12,6 @@ use BO\Zmsdb\Helper\ProcessStatus as Status;
  */
 class Process extends Base
 {
-
     public function readEntity($processId = null, $authKey = null, $resolveReferences = 2)
     {
         if (null === $processId || null === $authKey) {
@@ -194,12 +193,13 @@ class Process extends Base
 
 
     /**
-     * Read processList by scopeId
+     * Read processList by scopeId and DateTime
      *
      * @param
      * scopeId
+     * dateTime
      *
-     * @return String authKey
+     * @return Collection processList
      */
     public function readProcessListByScopeAndTime($scopeId, \DateTimeInterface $dateTime)
     {
@@ -209,6 +209,32 @@ class Process extends Base
             ->addEntityMapping()
             ->addConditionScopeId($scopeId)
             ->addConditionTime($dateTime);
+        $statement = $this->fetchStatement($query);
+        while ($processData = $statement->fetch(\PDO::FETCH_ASSOC)) {
+            $entity = new Entity($query->postProcess($processData));
+            if ($entity instanceof Entity) {
+                $entity['queue']['status'] = (new Status())->readQueueStatus($entity->id, $entity->authKey);
+                $processList->addEntity($entity);
+            }
+        }
+        return $processList;
+    }
+
+    /**
+     * Read processList by scopeId to get all processes of a scope
+     *
+     * @param
+     * scopeId
+     *
+     * @return Collection processList
+     */
+    public function readProcessListByScope($scopeId)
+    {
+        $processList = new Collection();
+        $query = new Query\Process(Query\Base::SELECT);
+        $query
+            ->addEntityMapping()
+            ->addConditionScopeId($scopeId);
         $statement = $this->fetchStatement($query);
         while ($processData = $statement->fetch(\PDO::FETCH_ASSOC)) {
             $entity = new Entity($query->postProcess($processData));

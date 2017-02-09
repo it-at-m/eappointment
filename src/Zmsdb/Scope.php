@@ -323,6 +323,10 @@ class Scope extends Base
         self::$cache = [];
         $query = new Query\Scope(Query\Base::DELETE);
         $query->addConditionScopeId($scopeId);
+        $processList = (new Process())->readProcessListByScope($scopeId);
+        if (0 < $processList->count()) {
+            throw new Exception\Scope\ScopeHasProcesses();
+        }
         return $this->deleteItem($query);
     }
 
