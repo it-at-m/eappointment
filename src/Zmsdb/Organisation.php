@@ -7,7 +7,6 @@ use \BO\Zmsentities\Collection\OrganisationList as Collection;
 
 class Organisation extends Base
 {
-
     public function readEntity($itemId, $resolveReferences = 0)
     {
         $query = new Query\Organisation(Query\Base::SELECT);
@@ -20,7 +19,7 @@ class Organisation extends Base
             $organisation['ticketprinters'] = (new Ticketprinter())->readByOrganisationId($itemId, $resolveReferences);
             return $organisation;
         }
-        return array ();
+        return array();
     }
 
     public function readByScopeId($scopeId, $resolveReferences = 0)
@@ -113,9 +112,13 @@ class Organisation extends Base
      */
     public function deleteEntity($itemId)
     {
+        $entity = $this->readEntity($itemId);
+        if ($entity->toProperty()->departments->isAvailable()) {
+            throw new Exception\Organisation\DepartmentListNotEmpty();
+        }
         $query = new Query\Organisation(Query\Base::DELETE);
         $query->addConditionOrganisationId($itemId);
-        return $this->deleteItem($query);
+        return ($this->deleteItem($query)) ? $entity : null;
     }
 
     /**
