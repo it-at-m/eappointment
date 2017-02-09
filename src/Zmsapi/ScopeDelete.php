@@ -25,8 +25,7 @@ class ScopeDelete extends BaseController
     {
         $query = new Query();
         $message = Response\Message::create(Render::$request);
-        $entity = $query->readEntity($itemId);
-        $query->deleteEntity($itemId);
+        $entity = $query->deleteEntity($itemId);
         $message->data = $entity;
         Render::lastModified(time(), '0');
         Render::json($message->setUpdatedMetaData(), $message->getStatuscode());

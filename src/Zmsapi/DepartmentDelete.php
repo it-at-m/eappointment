@@ -25,15 +25,7 @@ class DepartmentDelete extends BaseController
     {
         $query = new Query();
         $message = Response\Message::create(Render::$request);
-        $entity = $query->readEntity($itemId);
-        if ($entity->toProperty()
-            ->offsetExists('scopes') || $entity->toProperty()
-            ->offsetExists('clusters')) {
-            throw new Exception\Department\ScopeListNotEmpty();
-        } else {
-            $query->deleteEntity($itemId);
-        }
-        $message->data = $entity;
+        $message->data = $query->deleteEntity($itemId);
         Render::lastModified(time(), '0');
         Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }
