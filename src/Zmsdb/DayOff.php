@@ -83,4 +83,55 @@ class DayOff extends Base
         }
         return $dayOffList;
     }
+
+    public function readCommonByYear($year)
+    {
+        $dayOffList = new Collection();
+        $query = new Query\DayOff(Query\Base::SELECT);
+        $query
+            ->addEntityMapping()
+            ->addConditionCommon()
+            ->addConditionYear($year);
+        $result = $this->fetchList($query, new Entity());
+        if (count($result)) {
+            foreach ($result as $entity) {
+                if ($entity instanceof Entity) {
+                    $dayOffList->addEntity($entity);
+                }
+            }
+        }
+        return $dayOffList;
+    }
+
+    /**
+     * create dayoff preferences of a department
+     *
+     * @param
+     *            dayoffList,
+     *            year
+     *
+     * @return Collection dayoffList
+     */
+    public function writeCommonDayoffsByYear($dayoffList, $year)
+    {
+        static::$commonList = null;
+        $deleteQuery = new Query\DayOff(Query\Base::DELETE);
+        $deleteQuery
+            ->addConditionYear($year)
+            ->addConditionCommon();
+        $this->deleteItem($deleteQuery);
+
+        $query = new Query\DayOff(Query\Base::INSERT);
+        foreach ($dayoffList as $dayoff) {
+            $query->addValues(
+                [
+                    'behoerdenid' => 0, //all departments
+                    'Feiertag' => $dayoff['name'],
+                    'Datum' => (new \DateTimeImmutable())->setTimestamp($dayoff['date'])->format('Y-m-d')
+                ]
+            );
+            $this->writeItem($query);
+        }
+        return $this->readCommonByYear($year);
+    }
 }
