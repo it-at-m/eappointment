@@ -25,13 +25,7 @@ class OrganisationDelete extends BaseController
     {
         $query = new Query();
         $message = Response\Message::create(Render::$request);
-        $entity = $query->readEntity($itemId);
-        if ($entity->toProperty()
-            ->offsetExists('departments')) {
-            throw new Exception\Organisation\DepartmentListNotEmpty();
-        } else {
-            $query->deleteEntity($itemId);
-        }
+        $entity = $query->deleteEntity($itemId);
         $message->data = $entity;
         Render::lastModified(time(), '0');
         Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
