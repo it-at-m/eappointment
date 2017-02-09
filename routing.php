@@ -3071,6 +3071,36 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/workstation/password/":
+ *      post:
+ *          operationId: WorkstationDelete
+ *          description: Change the password and/or username of a useraccount
+ *          parameters:
+ *              -   name: useraccount
+ *                  description: useraccount data to update
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/useraccount.json"
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/useraccount.json"
+ *              404:
+ *                  description: "useraccount loginname does not exists"
+ */
+\App::$slim->post('/workstation/password/',
+                  '\BO\Zmsapi\WorkstationPassword')
+    ->setName('WorkstationPassword');
+
+/**
+ *  @swagger
  *  "/workstation/{loginname}/":
  *      post:
  *          description: Create a workstation for an username, used to login
@@ -3142,7 +3172,7 @@ use \Psr\Http\Message\ResponseInterface;
  * -------------------------------------------------------------------------*/
 
 \App::$slim->get('/healthcheck/',
-    '\BO\Zmsapi\Healthcheck')
+                 '\BO\Zmsapi\Healthcheck')
     ->setName("healthcheck");
 
 \App::$slim->getContainer()->offsetSet('notFoundHandler', function ($container) {
