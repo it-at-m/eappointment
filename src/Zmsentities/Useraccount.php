@@ -94,4 +94,25 @@ class Useraccount extends Schema\Entity
     {
         return $this->toProperty()->rights->superuser->get();
     }
+
+    public function getDepartmentById($departmentId)
+    {
+        foreach ($this->departments as $department) {
+            if ($departmentId == $department['id']) {
+                return new Department($department);
+            }
+        }
+        return new Department();
+    }
+
+    public function testDepartmentById($departmentId)
+    {
+        $department = $this->getDepartmentById($departmentId);
+        if (!$department->hasId()) {
+            throw new Exception\UserAccountMissingDepartment(
+                "Missing department " . htmlspecialchars($departmentId)
+            );
+        }
+        return $department;
+    }
 }

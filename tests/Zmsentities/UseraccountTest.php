@@ -10,6 +10,7 @@ class UseraccountTest extends EntityCommonTests
     {
         $entity = (new $this->entityclass())->getExample();
         $this->assertTrue($entity->hasDepartment('72'), 'add department id failed');
+        $entity->testDepartmentById(72);
         $entity->addDepartment((new \BO\Zmsentities\Department())->getExample());
         $this->assertTrue($entity->hasDepartment('123'), 'add department failed');
         $this->assertFalse($entity->hasDepartment('55'), 'department 55 should not exists');
@@ -33,5 +34,12 @@ class UseraccountTest extends EntityCommonTests
         $collection[] = $entity;
         $collection[] = $superuser;
         $this->assertTrue($collection->withRights(['superuser'])->count() == 1, 'Only one superuser given');
+    }
+
+    public function testDepartment()
+    {
+        $this->setExpectedException('\BO\Zmsentities\Exception\UserAccountMissingDepartment');
+        $entity = (new $this->entityclass())->getExample();
+        $entity->testDepartmentById(55);
     }
 }
