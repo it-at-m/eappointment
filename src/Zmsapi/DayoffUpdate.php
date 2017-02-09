@@ -8,6 +8,7 @@ namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
+use \BO\Zmsdb\DayOff as Query;
 
 /**
   * Handle requests concerning services
@@ -19,14 +20,13 @@ class DayoffUpdate extends BaseController
      */
     public static function render($year)
     {
-        $message = Response\Message::create(Render::$request);
+        Helper\User::checkRights('superuser');
+
+        $query = new Query();
         $input = Validator::input()->isJson()->getValue();
-        $list = array();
-        foreach ($input as $dayoff) {
-            $list[] = new \BO\Zmsentities\DayOff($dayoff);
-        }
-        $message->data = $list;
-        $year = $year; // @todo update data
+        $collection = $query->writeCommonDayoffsByYear($input, $year);
+        $message = Response\Message::create(Render::$request);
+        $message->data = $collection;
         Render::lastModified(time(), '0');
         Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }
