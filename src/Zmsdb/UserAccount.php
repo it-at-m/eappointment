@@ -156,7 +156,8 @@ class UserAccount extends Base
         $query->addValues($values);
         $this->writeItem($query);
         $this->updateAssignedDepartments($entity);
-        return $this->readEntity($loginName, $resolveReferences);
+        $newLoginName = $loginName !== $entity->id ? $entity->id : $loginName;
+        return $this->readEntity($newLoginName, $resolveReferences);
     }
 
     /**
