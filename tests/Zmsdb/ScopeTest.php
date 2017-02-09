@@ -91,16 +91,20 @@ class ScopeTest extends Base
         $entity->contact['name'] = 'Flughafen Schönefeld, Nachsicht';
         $entity = $query->updateEntity($entity->id, $entity, 74); //with parent Bürgeramt Otto-Suhr-Allee
         $this->assertEquals('Flughafen Schönefeld, Nachsicht', $entity->getName());
-
-        $deleteTest = $query->deleteEntity($entity->id);
-        $this->assertTrue($deleteTest, "Failed to delete Scope from Database.");
     }
 
-    public function testDeleteWithProcesses()
+    public function testDeleteWithChildren()
     {
         $this->setExpectedException('\BO\Zmsdb\Exception\Scope\ScopeHasProcesses');
         $query = new Query();
-        $this->assertFalse($query->deleteEntity(141)); //Herrstraße
+        $query->deleteEntity(141); //Herrstraße
+    }
+
+    public function testDeleteWithoutChildren()
+    {
+        $query = new Query();
+        $entity = $query->deleteEntity(615);
+        $this->assertEquals(615, $entity->id); //Ordnungsamt Charlottenburg
     }
 
     public function testEmergency()

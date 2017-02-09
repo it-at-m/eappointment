@@ -320,14 +320,15 @@ class Scope extends Base
      */
     public function deleteEntity($scopeId)
     {
-        self::$cache = [];
-        $query = new Query\Scope(Query\Base::DELETE);
-        $query->addConditionScopeId($scopeId);
         $processList = (new Process())->readProcessListByScope($scopeId);
         if (0 < $processList->count()) {
             throw new Exception\Scope\ScopeHasProcesses();
         }
-        return $this->deleteItem($query);
+        self::$cache = [];
+        $entity = $this->readEntity($scopeId);
+        $query = new Query\Scope(Query\Base::DELETE);
+        $query->addConditionScopeId($scopeId);
+        return ($this->deleteItem($query)) ? $entity : null;
     }
 
     protected function addDldbData($scope, $resolveReferences)
