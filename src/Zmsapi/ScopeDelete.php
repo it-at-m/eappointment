@@ -26,12 +26,7 @@ class ScopeDelete extends BaseController
         $query = new Query();
         $message = Response\Message::create(Render::$request);
         $entity = $query->readEntity($itemId);
-        $processList = (new \BO\Zmsdb\Process())->readProcessListByScopeId($itemId);
-        if (count($processList)) {
-            throw new Exception\Scope\ScopeHasProcesses();
-        } else {
-            $query->deleteEntity($itemId);
-        }
+        $query->deleteEntity($itemId);
         $message->data = $entity;
         Render::lastModified(time(), '0');
         Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
