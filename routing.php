@@ -694,6 +694,42 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/department/{id}/organisation/":
+ *      get:
+ *          description: Get the parent organisation for a department
+ *          parameters:
+ *              -   name: id
+ *                  description: department number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/organisation.json"
+ */
+\App::$slim->get('/department/{id:\d{1,11}}/organisation/',
+    '\BO\Zmsapi\DepartmentOrganisation')
+    ->setName("DepartmentOrganisation");
+
+/**
+ *  @swagger
  *  "/department/{id}/useraccount/":
  *      get:
  *          description: Get a list of useraccounts for a department
