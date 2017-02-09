@@ -29,22 +29,23 @@ class Workstation extends Schema\Entity
         return $result;
     }
 
+    public function getUseraccount()
+    {
+        if (!$this->useraccount instanceof Useraccount) {
+            $this->useraccount = new Useraccount($this->useraccount);
+        }
+        return $this->useraccount;
+    }
+
     public function getDepartmentById($departmentId)
     {
-        $userAccount = new Useraccount($this->useraccount);
-        foreach ($userAccount->departments as $department) {
-            if ($departmentId == $department['id']) {
-                return new Department($department);
-            }
-        }
-        return new Department();
+        return $this->getUseraccount()->getDepartmentById($departmentId);
     }
 
     public function getDepartmentList()
     {
         $departmentList = new Collection\DepartmentList();
-        $userAccount = new Useraccount($this->useraccount);
-        foreach ($userAccount->departments as $department) {
+        foreach ($this->getUseraccount()->departments as $department) {
             $departmentList->addEntity(new Department($department));
         }
         return $departmentList;
