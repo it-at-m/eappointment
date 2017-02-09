@@ -33,6 +33,10 @@
             "type": "string",
             "description": "this field is only used on changing the password and login"
         },
+        "changePassword": {
+            "type": "string",
+            "description": "this field is only used on changing the password and login"
+        },
         "rights": {
             "type": "object",
             "properties": {
