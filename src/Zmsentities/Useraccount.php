@@ -23,6 +23,7 @@ class Useraccount extends Schema\Entity
                 "ticketprinter" => false,
                 "useraccount" => false,
             ],
+            'departments' => new Collection\DepartmentList(),
         ];
     }
 
