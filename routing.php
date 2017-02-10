@@ -245,6 +245,9 @@ use \Psr\Http\Message\ResponseInterface;
  * -------------------------------------------------------------------------
  */
 
+\App::$slim->get('/status/', '\BO\Zmsadmin\Status')
+    ->setName("status");
+
 \App::$slim->get('/healthcheck/', '\BO\Zmsadmin\Healthcheck')
     ->setName("healthcheck");
 
