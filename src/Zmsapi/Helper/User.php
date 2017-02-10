@@ -18,7 +18,7 @@ class User
             $xAuthKey = static::getXAuthKey();
             $useraccount = (new UserAccount())->readEntityByAuthKey($xAuthKey);
             if ($useraccount->hasId()) {
-                static::$workstation = (new \BO\Zmsdb\Workstation())->readEntity($useraccount->id, 1);
+                static::$workstation = (new \BO\Zmsdb\Workstation())->readEntity($useraccount->id, 2);
             } else {
                 static::$workstation = new \BO\Zmsentities\Workstation();
             }
