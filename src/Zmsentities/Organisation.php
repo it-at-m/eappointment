@@ -8,15 +8,27 @@ class Organisation extends Schema\Entity
 
     public static $schema = "organisation.json";
 
+    public function getDefaults()
+    {
+        return [
+            'departments' => new Collection\DepartmentList(),
+        ];
+    }
+
     public function hasDepartment($departmentId)
     {
-        $hasDepartment = false;
-        foreach ($this->departments as $department) {
-            if ($departmentId == $department['id']) {
-                $hasDepartment = true;
+        return $this->getDepartmentList()->hasEntity($departmentId);
+    }
+
+    public function getDepartmentList()
+    {
+        if (!$this->departments instanceof Collection\DepartmentList) {
+            $this->departments = new Collection\DepartmentList($this->departments);
+            foreach ($this->departments as $key => $department) {
+                $this->departments[$key] = new Department($department);
             }
         }
-        return $hasDepartment;
+        return $this->departments;
     }
 
     public function getPreference($index)
@@ -37,5 +49,11 @@ class Organisation extends Schema\Entity
             }
         }
         return true;
+    }
+
+    public function hasAccess(Useraccount $useraccount)
+    {
+        return $useraccount->hasRights(['superuser'])
+            || 0 < $this->getDepartmentList()->withAccess($useraccount)->count();
     }
 }

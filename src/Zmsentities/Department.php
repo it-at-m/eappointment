@@ -11,6 +11,7 @@ class Department extends Schema\Entity
     public function getDefaults()
     {
         return [
+            'id' => false,
             'scopes' => new Collection\ScopeList(),
         ];
     }
@@ -99,5 +100,10 @@ class Department extends Schema\Entity
             }
         }
         return $scopeList;
+    }
+
+    public function hasAccess(Useraccount $useraccount)
+    {
+        return $useraccount->hasRights(['superuser']) || $useraccount->hasDepartment($this->id);
     }
 }

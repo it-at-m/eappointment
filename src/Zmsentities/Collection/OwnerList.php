@@ -28,4 +28,17 @@ class OwnerList extends Base
         }
         return $list;
     }
+
+    public function withAccess(\BO\Zmsentities\Useraccount $useraccount)
+    {
+        $list = new static();
+        foreach ($this as $owner) {
+            $owner = clone $owner;
+            $owner->organisations = $owner->getOrganisationList()->withAccess($useraccount);
+            if ($owner->hasAccess($useraccount)) {
+                $list[] = $owner;
+            }
+        }
+        return $list;
+    }
 }
