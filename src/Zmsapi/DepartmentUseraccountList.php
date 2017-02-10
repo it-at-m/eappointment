@@ -21,6 +21,7 @@ class DepartmentUseraccountList extends BaseController
     public static function render($departmentId)
     {
         Helper\User::checkRights('useraccount');
+        Helper\User::checkDepartment($departmentId);
 
         $query = new Query();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
