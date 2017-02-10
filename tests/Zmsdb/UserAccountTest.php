@@ -48,7 +48,7 @@ class UserAccountTest extends Base
         $entityList = $query->readCollectionByDepartmentId(74);
         $this->assertEntityList("\\BO\\Zmsentities\\Useraccount", $entityList);
         $this->assertEquals(true, $entityList->hasEntity('testuser')); //superuser bo
-        $this->assertTrue($entityList->count() == 1, "Too much results for Department 74");
+        $this->assertTrue($entityList->count() == 2, "Too much results for Department 74");
     }
 
     public function testReadAssignedDepartmentList()
