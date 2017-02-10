@@ -20,6 +20,8 @@ class DepartmentOrganisation extends BaseController
      */
     public static function render($itemId)
     {
+        Helper\User::checkRights();
+        Helper\User::checkDepartment($itemId);
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $organisation = (new Query())->readByDepartmentId($itemId, $resolveReferences);
         $message = Response\Message::create(Render::$request);

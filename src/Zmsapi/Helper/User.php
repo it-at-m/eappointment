@@ -26,22 +26,37 @@ class User
         return static::$workstation;
     }
 
+    /**
+     * @return \BO\Zmsentities\Workstation
+     *
+     */
     public static function checkRights()
     {
         $workstation = static::readWorkstation();
-        $userAccount = $workstation->useraccount;
-        if (!$userAccount->hasId()) {
-            throw new \BO\Zmsentities\Exception\UserAccountMissingLogin();
-        }
         if (\App::RIGHTSCHECK_ENABLED) {
-            $userAccount->testRights(func_get_args());
+            $workstation->getUseraccount()->testRights(func_get_args());
         }
         return $workstation;
     }
 
+    /**
+     * @return \BO\Zmsentities\Department
+     *
+     */
+    public static function checkDepartment($departmentId)
+    {
+        $workstation = static::readWorkstation();
+        $userAccount = $workstation->getUseraccount();
+        if (!$userAccount->hasId()) {
+            throw new \BO\Zmsentities\Exception\UserAccountMissingLogin();
+        }
+        $department = $userAccount->testDepartmentById($departmentId);
+        return $department;
+    }
+
     public static function hasRights()
     {
-        $userAccount = static::readWorkstation()->useraccount;
+        $userAccount = static::readWorkstation()->getUseraccount();
         return $userAccount->hasId();
     }
 

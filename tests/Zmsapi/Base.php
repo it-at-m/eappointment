@@ -49,4 +49,14 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
         ]);
         return User::$workstation;
     }
+
+    protected function setDepartment($departmentId)
+    {
+        $department = new \BO\Zmsentities\Department([
+            'id' => $departmentId,
+            'name' => "TestDepartment $departmentId",
+            ]);
+        User::$workstation->getUseraccount()->addDepartment($department);
+        return $department;
+    }
 }
