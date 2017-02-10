@@ -15,6 +15,7 @@ use \BO\Zmsclient\Auth;
 class Logout extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
     public function __invoke(
@@ -22,9 +23,14 @@ class Logout extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-
-        $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
-        \App::$http->readDeleteResult('/workstation/'. $workstation->useraccount['id'] .'/')->getEntity();
+        try {
+            $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
+            \App::$http->readDeleteResult('/workstation/'. $workstation->useraccount['id'] .'/')->getEntity();
+        } catch (\BO\Zmsclient\Exception $exception) {
+            if ("BO\Zmsentities\Exception\UserAccountMissingLogin" !== $exception->template) {
+                throw $exception;
+            }
+        }
 
         return \BO\Slim\Render::redirect(
             'index',
