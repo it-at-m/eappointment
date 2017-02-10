@@ -38,6 +38,17 @@ class Useraccount extends Schema\Entity
         return true;
     }
 
+    public function getDepartmentList()
+    {
+        if (!$this->departments instanceof Collection\DepartmentList) {
+            $this->departments = new Collection\DepartmentList($this->departments);
+            foreach ($this->departments as $key => $department) {
+                $this->departments[$key] = new Department($department);
+            }
+        }
+        return $this->departments;
+    }
+
     public function addDepartment($department)
     {
         $this->departments[] = $department;
