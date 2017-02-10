@@ -55,16 +55,21 @@ class Useraccount extends Schema\Entity
         return $this;
     }
 
-    public function hasDepartment($departmentId)
+    public function getDepartment($departmentId)
     {
         if (count($this->departments)) {
-            foreach ($this->departments as $department) {
+            foreach ($this->getDepartmentList() as $department) {
                 if ($department['id'] == $departmentId) {
-                    return true;
+                    return $department;
                 }
             }
         }
-        return false;
+        return new Department(['name' => 'Not existing']);
+    }
+
+    public function hasDepartment($departmentId)
+    {
+        return $this->getDepartment($departmentId)->hasId();
     }
 
     public function setRights()
