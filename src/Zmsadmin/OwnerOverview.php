@@ -20,10 +20,6 @@ class OwnerOverview extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
         $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences'=>4))->getCollection();
         $organisationList = $ownerList->getOrganisationsByOwnerId(23);
-        if (!$workstation->hasSuperUseraccount()) {
-            $department = $workstation->getSelectedDepartment();
-            $organisationList = $organisationList->getByDepartmentId($department->id);
-        }
 
         if (!count($ownerList)) {
             return \BO\Slim\Render::withHtml($response, 'page/404.twig', array());
