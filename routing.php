@@ -188,7 +188,9 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/scope/ticketprinter/', '\BO\Zmsadmin\TicketprinterConfig')
     ->setName("ticketprinter");
 
-\App::$slim->get('/scope/{id:\d+}/ticketprinter/', '\BO\Zmsadmin\TicketprinterStatusByScope')
+\App::$slim->map(
+    ['GET', 'POST'],
+    '/scope/{id:\d+}/ticketprinter/', '\BO\Zmsadmin\TicketprinterStatusByScope')
     ->setName("ticketprinterStatusByScope");
 
 \App::$slim->get('/notification/', '\BO\Zmsadmin\Notification')
