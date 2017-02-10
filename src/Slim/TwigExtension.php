@@ -42,6 +42,7 @@ class TwigExtension extends \Twig_Extension
             new \Twig_SimpleFunction('baseUrl', array($this, 'baseUrl')),
             new \Twig_SimpleFunction('currentLang', array($this, 'currentLang')),
             new \Twig_SimpleFunction('currentRoute', array($this, 'currentRoute')),
+            new \Twig_SimpleFunction('currentVersion', array($this, 'currentVersion')),
             new \Twig_SimpleFunction('formatDateTime', array($this, 'formatDateTime')),
             new \Twig_SimpleFunction('toGermanDateFromTs', array($this, 'toGermanDateFromTs')),
             new \Twig_SimpleFunction('toTextFormat', array($this, 'toTextFormat')),
@@ -127,6 +128,11 @@ class TwigExtension extends \Twig_Extension
     public function currentLang()
     {
         return \App::$language->getCurrent();
+    }
+
+    public function currentVersion()
+    {
+        return Git::readCurrentVersion();
     }
 
     public function urlGet($routeName, $params = array(), $getparams = array())

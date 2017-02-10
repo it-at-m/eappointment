@@ -116,7 +116,7 @@ class Bootstrap
         $path = false;
         if (\App::TWIG_CACHE) {
             $path = \App::APP_PATH . \App::TWIG_CACHE;
-            $githead = self::readGitHead();
+            $githead = Git::readCurrentHash();
             if ($githead) {
                 $path .= '/' . $githead . '/';
             } else {
@@ -127,21 +127,6 @@ class Bootstrap
             }
         }
         return $path;
-    }
-
-    public static function readGitHead()
-    {
-        $githash = false;
-        $githead = \App::APP_PATH . '/.git/HEAD';
-        if (is_readable($githead)) {
-            $gitbranch = trim(fgets(fopen($githead, 'r')));
-            $gitbranch = preg_replace('#^.* ([^\s]+)$#', '$1', $gitbranch);
-            $githashFile = \App::APP_PATH . '/.git/' . $gitbranch;
-            if (is_readable($githashFile)) {
-                $githash = trim(fgets(fopen($githashFile, 'r')));
-            }
-        }
-        return $githash;
     }
 
     public static function addTwigExtension($extension)
