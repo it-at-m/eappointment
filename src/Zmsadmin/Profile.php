@@ -29,19 +29,16 @@ class Profile extends BaseController
 
         $input = $request->getParsedBody();
         if (is_array($input) && array_key_exists('save', $input)) {
-
-            if ( $input['newPassword'] && $input['newPassword'] !== $input['repeatPassword']) {
+            if ($input['newPassword'] && $input['newPassword'] !== $input['repeatPassword']) {
                 throw new \Exception('Passwörter stimmen nicht überein.');
             }
 
             $newEntity = new Entity($input);
-
-            //var_dump($newEntity);die;
             $entity = \App::$http->readPostResult('/workstation/password/', $newEntity)
                     ->getEntity();
         }
 
-            return \BO\Slim\Render::withHtml(
+        return \BO\Slim\Render::withHtml(
             $response,
             'page/profile.twig',
             array(
