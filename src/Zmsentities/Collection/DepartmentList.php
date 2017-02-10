@@ -46,4 +46,15 @@ class DepartmentList extends Base implements JsonUnindexed
         }
         return $clusterList->withUniqueClusters();
     }
+
+    public function withAccess(\BO\Zmsentities\Useraccount $useraccount)
+    {
+        $list = new static();
+        foreach ($this as $department) {
+            if ($department->hasAccess($useraccount)) {
+                $list[] = clone $department;
+            }
+        }
+        return $list;
+    }
 }

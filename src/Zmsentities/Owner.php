@@ -9,12 +9,33 @@ class Owner extends Schema\Entity
 
     public static $schema = "owner.json";
 
+    public function getDefaults()
+    {
+        return [
+            'organisations' => new Collection\OrganisationList(),
+            ];
+    }
+
     public function hasOrganisation($organisationId)
     {
-        $organisationList = new Collection\OrganisationList();
-        foreach ($this->toProperty()->organisations->get() as $organisation) {
-            $organisationList->addEntity(new Organisation($organisation));
+        return $this->getOrganisationList()->hasEntity($organisationId);
+    }
+
+    public function getOrganisationList()
+    {
+        if (!$this->organisations instanceof Collection\OrganisationList) {
+            $this->organisations = new Collection\DepartmentList($this->organisations);
+            foreach ($this->organisations as $key => $organisation) {
+                $this->organisations[$key] = new Organisation($organisation);
+            }
         }
-        return ($organisationList->hasEntity($organisationId)) ? true : false;
+        return $this->organisations;
+    }
+
+
+    public function hasAccess(Useraccount $useraccount)
+    {
+        return $useraccount->hasRights(['superuser'])
+            || 0 < $this->getOrganisationList()->withAccess($useraccount)->count();
     }
 }

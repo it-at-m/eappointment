@@ -14,4 +14,17 @@ class OrganisationList extends Base
         }
         return $organisationList;
     }
+
+    public function withAccess(\BO\Zmsentities\Useraccount $useraccount)
+    {
+        $list = new static();
+        foreach ($this as $organisation) {
+            $organisation = clone $organisation;
+            $organisation->departments = $organisation->getDepartmentList()->withAccess($useraccount);
+            if ($organisation->hasAccess($useraccount)) {
+                $list[] = $organisation;
+            }
+        }
+        return $list;
+    }
 }
