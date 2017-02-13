@@ -76,7 +76,7 @@ class TicketPrinterConfigView extends Component {
 
         return (
             <select {... { onChange, value }} >
-                {availableSlots.map(n => <option value={n}>{n || 'nicht anzeigen'}</option>)}
+                {availableSlots.map(n => <option value={n}>{n ? `Position ${n}` : 'nicht anzeigen'}</option>)}
             </select>
         )
     }
