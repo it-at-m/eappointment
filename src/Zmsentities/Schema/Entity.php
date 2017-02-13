@@ -222,4 +222,15 @@ class Entity extends \ArrayObject implements \JsonSerializable
     {
         return clone $this;
     }
+
+    /**
+     * Reduce data of dereferenced entities to a required minimum
+     *
+     */
+    public function withCleanedUpFormData()
+    {
+        $entity = clone $this;
+        unset($entity['save']);
+        return $entity;
+    }
 }
