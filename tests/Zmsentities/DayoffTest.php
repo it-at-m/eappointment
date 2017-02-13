@@ -31,12 +31,24 @@ class DayoffTest extends EntityCommonTests
         $this->assertFalse(
             $collection->hasEntityByDate('2015-11-20'),
             'Dayoff list should not have entity with date 2015-11-20'
-            );
+        );
 
         $collection->sortByName();
         $this->assertTrue('Christi Himmelfahrt' == reset($collection)->name, 'Dayoff list sort by name failed');
         $collection->sortByCustomKey('date');
         $this->assertTrue('Karfreitag' == reset($collection)->name, 'Dayoff list sort by time failed');
+    }
+
+    public function testDateFormat()
+    {
+        $list = new $this->collectionclass([
+            new $this->entityclass([
+                "date" => "16.5.2016",
+                "name" => "Pfingsmontag"
+            ])
+        ]);
+        $list = $list->withTimestampFromDateformat();
+        $this->assertEquals(1463349600, $list->getFirst()->date);
     }
 
     protected function getDayOffExampleList()

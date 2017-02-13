@@ -31,6 +31,19 @@ class Department extends Schema\Entity
         return new Contact($this->toProperty()->contact->get());
     }
 
+    public function getDayoffList()
+    {
+        if (!$this->daysOff instanceof Collection\DayOffList) {
+            $this->daysOff = new Collection\DayOffList((array)$this->daysOff);
+            foreach ($this->daysOff as $key => $dayOff) {
+                if (!$dayOff instanceof DayOff) {
+                    $this->daysOff[$key] = new DayOff($dayOff);
+                }
+            }
+        }
+        return $this->daysOff;
+    }
+
     public function withOutClusterDuplicates()
     {
         $department = clone $this;
