@@ -20,10 +20,11 @@ class OwnerList extends BaseController
      */
     public static function render()
     {
+        $workstation = Helper\User::checkRights();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $ownerList = (new Query())->readList($resolveReferences);
         $message = Response\Message::create(Render::$request);
-        $message->data = $ownerList;
+        $message->data = $ownerList->withAccess($workstation->getUseraccount());
         Render::lastModified(time(), '0');
         Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }
