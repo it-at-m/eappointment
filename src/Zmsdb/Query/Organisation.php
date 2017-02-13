@@ -89,6 +89,6 @@ class Organisation extends Base implements MappingInterface
         $data = array_filter($data, function ($value) {
             return ($value !== null && $value !== false);
         });
-            return $data;
+        return $data;
     }
 }
