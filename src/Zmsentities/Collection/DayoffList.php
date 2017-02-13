@@ -1,7 +1,7 @@
 <?php
 namespace BO\Zmsentities\Collection;
 
-class DayOffList extends Base
+class DayoffList extends Base
 {
     public function hasEntityByDate($date)
     {

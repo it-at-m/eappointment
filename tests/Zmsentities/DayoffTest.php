@@ -6,7 +6,7 @@ class DayoffTest extends EntityCommonTests
 {
     public $entityclass = '\BO\Zmsentities\Dayoff';
 
-    public $collectionclass = '\BO\Zmsentities\Collection\DayOffList';
+    public $collectionclass = '\BO\Zmsentities\Collection\DayoffList';
 
     public function testCollection()
     {

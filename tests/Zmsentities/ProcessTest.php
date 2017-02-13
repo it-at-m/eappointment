@@ -22,7 +22,6 @@ class ProcessTest extends EntityCommonTests
 
     public function testBasic()
     {
-        $now = new \DateTimeImmutable(self::DEFAULT_TIME);
         $entity = (new $this->entityclass())->getExample();
 
         $entity->addRequests('dldb', '122305');
@@ -139,7 +138,7 @@ class ProcessTest extends EntityCommonTests
         $entity->appointments = (new \BO\Zmsentities\Collection\AppointmentList())->addEntity($appointment);
         $entity->scope = (new \BO\Zmsentities\Scope())->getExample();
         $dayoff = (new \BO\Zmsentities\Dayoff())->getExample();
-        $entity->scope->dayoff = (new \BO\Zmsentities\Collection\DayOffList())->addEntity($dayoff);
+        $entity->scope->dayoff = (new \BO\Zmsentities\Collection\DayoffList())->addEntity($dayoff);
         $collection->addEntity($entity);
         $collection = $collection->withLessData();
         $this->assertEntityList($this->entityclass, $collection);
