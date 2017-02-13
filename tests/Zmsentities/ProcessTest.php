@@ -138,7 +138,7 @@ class ProcessTest extends EntityCommonTests
         $appointment->availability = (new \BO\Zmsentities\Availability())->getExample();
         $entity->appointments = (new \BO\Zmsentities\Collection\AppointmentList())->addEntity($appointment);
         $entity->scope = (new \BO\Zmsentities\Scope())->getExample();
-        $dayoff = (new \BO\Zmsentities\DayOff())->getExample();
+        $dayoff = (new \BO\Zmsentities\Dayoff())->getExample();
         $entity->scope->dayoff = (new \BO\Zmsentities\Collection\DayOffList())->addEntity($dayoff);
         $collection->addEntity($entity);
         $collection = $collection->withLessData();

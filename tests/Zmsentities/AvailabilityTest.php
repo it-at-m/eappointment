@@ -95,7 +95,7 @@ class AvailabilityTest extends EntityCommonTests
         $entity = new $this->entityclass();
         $entity['startDate'] = $time->getTimestamp();
         $entity['endDate'] = $time->modify("+2month")->getTimestamp();
-        $dayOff[] = new \BO\Zmsentities\DayOff(array (
+        $dayOff[] = new \BO\Zmsentities\Dayoff(array (
             'date' => 1451649000,
             'name' => 'Neujahr'
         ));
@@ -370,13 +370,16 @@ class AvailabilityTest extends EntityCommonTests
     public function testUnopenedNoWeek()
     {
         $time = new \DateTimeImmutable(self::DEFAULT_TIME);
-        $entity = $this->getExample();
         $entityOH = $this->getExampleWithTypeOpeningHours($time);
         $entityOH->offsetSet('endTime', '13:00:00');
         $entityOH->offsetSet('repeat', array('afterWeeks' => 0, 'weekOfMonth' => 0));
         $this->assertFalse($entityOH->isOpened($time));
     }
 
+    /**
+     * @SuppressWarnings(Length)
+     *
+     */
     public function testConflicts()
     {
         $availability = new Availability([
