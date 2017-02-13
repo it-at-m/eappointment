@@ -2,7 +2,7 @@
 namespace BO\Zmsdb;
 
 use \BO\Zmsentities\Dayoff as Entity;
-use \BO\Zmsentities\Collection\DayOffList as Collection;
+use \BO\Zmsentities\Collection\DayoffList as Collection;
 
 class DayOff extends Base
 {
