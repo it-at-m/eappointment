@@ -54,8 +54,9 @@ class DaysOffView extends Component {
     }
 
     addNewItem() {
+        const newDate = (new Date()).setFullYear(this.props.year)
         this.setState({
-            days: this.state.days.concat([{ name: '', date: Date.now() / 1000 }])
+            days: this.state.days.concat([{ name: '', date: newDate / 1000 }])
         })
     }
 
@@ -98,7 +99,8 @@ class DaysOffView extends Component {
 }
 
 DaysOffView.propTypes = {
-    days: PropTypes.array
+    days: PropTypes.array,
+    year: PropTypes.number
 }
 
 export default DaysOffView

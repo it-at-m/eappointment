@@ -45,7 +45,7 @@ class DayoffByYear extends BaseController
             'page/dayoffByYear.twig',
             array(
                 'title' => 'Allgemein gültige Feiertage',
-                'year' => '2016',
+                'year' => $year,
                 'menuActive' => 'dayoff',
                 'workstation' => $workstation,
                 'dayoffList' => array_values($collection->sortByCustomKey('date')->getArrayCopy())
