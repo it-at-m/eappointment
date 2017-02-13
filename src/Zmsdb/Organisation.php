@@ -138,6 +138,9 @@ class Organisation extends Base
         $this->writeItem($query);
         $lastInsertId = $this->getWriter()
             ->lastInsertId();
+        if ($entity->toProperty()->ticketprinters->isAvailable()) {
+            $this->writeOrganisationTicketprinters($lastInsertId, $entity->ticketprinters);
+        }
         return $this->readEntity($lastInsertId);
     }
 
@@ -149,13 +152,38 @@ class Organisation extends Base
      *
      * @return Entity
      */
-    public function updateEntity($organisationId, \BO\Zmsentities\Organisation $entity, $parentId)
+    public function updateEntity($organisationId, \BO\Zmsentities\Organisation $entity)
     {
         $query = new Query\Organisation(Query\Base::UPDATE);
         $query->addConditionOrganisationId($organisationId);
-        $values = $query->reverseEntityMapping($entity, $parentId);
+        $values = $query->reverseEntityMapping($entity);
         $query->addValues($values);
         $this->writeItem($query);
+        if ($entity->toProperty()->ticketprinters->isAvailable()) {
+            $this->writeOrganisationTicketprinters($organisationId, $entity->ticketprinters);
+        }
         return $this->readEntity($organisationId);
+    }
+
+    /**
+     * create ticketprinters of an organisation
+     *
+     * @param
+     *            organisationID,
+     *            ticketprinterList
+     *
+     * @return Boolean
+     */
+    protected function writeOrganisationTicketprinters($organisationId, $ticketprinterList)
+    {
+        $deleteQuery = new Query\Ticketprinter(Query\Base::DELETE);
+        $deleteQuery->addConditionOrganisationId($organisationId);
+        $this->deleteItem($deleteQuery);
+        foreach ($ticketprinterList as $ticketprinter) {
+            $ticketprinter['enabled'] = (isset($ticketprinter['enabled'])) ? 1 : 0;
+            $ticketprinter = new \BO\Zmsentities\Ticketprinter($ticketprinter);
+            $query = new Ticketprinter();
+            $query->writeEntity($ticketprinter, $organisationId);
+        }
     }
 }
