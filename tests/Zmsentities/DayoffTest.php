@@ -4,7 +4,7 @@ namespace BO\Zmsentities\Tests;
 
 class DayoffTest extends EntityCommonTests
 {
-    public $entityclass = '\BO\Zmsentities\DayOff';
+    public $entityclass = '\BO\Zmsentities\Dayoff';
 
     public $collectionclass = '\BO\Zmsentities\Collection\DayOffList';
 
@@ -82,7 +82,7 @@ class DayoffTest extends EntityCommonTests
 
         $collection = new $this->collectionclass();
         foreach ($list as $dayOffData) {
-            $collection->addEntity(new \BO\Zmsentities\DayOff($dayOffData));
+            $collection->addEntity(new \BO\Zmsentities\Dayoff($dayOffData));
         }
         return $collection->sortByTimeKey();
     }

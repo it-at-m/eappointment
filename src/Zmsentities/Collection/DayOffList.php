@@ -33,7 +33,7 @@ class DayOffList extends Base
     {
         $collection = new self();
         foreach ($this as $data) {
-            $entity = new \BO\Zmsentities\DayOff($data); // if source is an array
+            $entity = new \BO\Zmsentities\Dayoff($data); // if source is an array
             $entity = clone $entity;
             $entity->setTimestampFromDateformat($fromFormat);
             $collection->addEntity($entity);

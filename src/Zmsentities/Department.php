@@ -36,8 +36,8 @@ class Department extends Schema\Entity
         if (!$this->daysOff instanceof Collection\DayOffList) {
             $this->daysOff = new Collection\DayOffList((array)$this->daysOff);
             foreach ($this->daysOff as $key => $dayOff) {
-                if (!$dayOff instanceof DayOff) {
-                    $this->daysOff[$key] = new DayOff($dayOff);
+                if (!$dayOff instanceof Dayoff) {
+                    $this->daysOff[$key] = new Dayoff($dayOff);
                 }
             }
         }

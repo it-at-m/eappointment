@@ -2,7 +2,7 @@
 
 namespace BO\Zmsentities;
 
-class DayOff extends Schema\Entity
+class Dayoff extends Schema\Entity
 {
     const PRIMARY = 'id';
 
