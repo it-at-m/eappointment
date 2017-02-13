@@ -20,7 +20,7 @@ class UserAccount extends Base
         return ($userAccount->hasId()) ? true : false;
     }
 
-    public function readEntity($loginname, $resolveReferences = 0)
+    public function readEntity($loginname, $resolveReferences = 1)
     {
         $query = new Query\UserAccount(Query\Base::SELECT);
         $query->addEntityMapping()
