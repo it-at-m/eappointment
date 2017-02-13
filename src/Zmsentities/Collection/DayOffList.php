@@ -29,13 +29,13 @@ class DayOffList extends Base
         return $result;
     }
 
-    public function toDateWithTimestamp()
+    public function withTimestampFromDateformat($fromFormat = 'd.m.Y')
     {
         $collection = new self();
         foreach ($this as $data) {
-            $entity = new \BO\Zmsentities\DayOff($data);
-            $dateTime = \DateTimeImmutable::createFromFormat('d.m.Y', $entity->date);
-            $entity->date = $dateTime->modify('00:00:00')->getTimestamp();
+            $entity = new \BO\Zmsentities\DayOff($data); // if source is an array
+            $entity = clone $entity;
+            $entity->setTimestampFromDateformat($fromFormat);
             $collection->addEntity($entity);
         }
         return $collection;
