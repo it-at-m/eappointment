@@ -31,7 +31,7 @@ class WorkstationPassword extends BaseController
         $query = new UserAccountQuery();
 
         if ($query->readIsUserExisting($oldLoginName, $oldPassword)) {
-            $entity = $query->readEntity($oldLoginName);
+            $entity = $query->readEntity($oldLoginName, 1);
 
             if (!empty($input['newPassword'])) {
                 $entity->password = $input['newPassword'];
