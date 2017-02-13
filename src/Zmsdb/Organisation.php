@@ -43,6 +43,7 @@ class Organisation extends Base
             ->addResolvedReferences($resolveReferences)
             ->addConditionDepartmentId($departmentId);
         $organisation = $this->fetchOne($query, new Entity());
+        $organisation['departments'] = null;
         if (isset($organisation['id']) && 0 < $resolveReferences) {
             $organisation['departments'] = (new Department())
                 ->readByOrganisationId($organisation['id'], $resolveReferences - 1);
