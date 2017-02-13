@@ -28,8 +28,8 @@ class DayoffByYear extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
         $year = Validator::value($args['year'])->isNumber()->getValue();
         $collection = \App::$http->readGetResult('/dayoff/'. $year .'/')->getCollection();
-
-        $input = $request->getParsedBody();
+        $updated = false;
+        $input = $request->getParsedBody(); 
         if (array_key_exists('save', (array) $input)) {
             $data = $input['daysOff'];
             $collection = new Collection($data);
@@ -37,6 +37,7 @@ class DayoffByYear extends BaseController
                 '/dayoff/'. $year .'/',
                 $collection->withTimestampFromDateformat()
             )->getCollection();
+            $updated = true;
         }
 
         $response = \BO\Slim\Render::withLastModified($response, time(), '0');
@@ -46,6 +47,7 @@ class DayoffByYear extends BaseController
             array(
                 'title' => 'Allgemein gültige Feiertage',
                 'year' => $year,
+                'updated' => $updated,
                 'menuActive' => 'dayoff',
                 'workstation' => $workstation,
                 'dayoffList' => array_values($collection->sortByCustomKey('date')->getArrayCopy())
