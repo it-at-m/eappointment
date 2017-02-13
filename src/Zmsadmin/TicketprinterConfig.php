@@ -29,7 +29,7 @@ class TicketprinterConfig extends BaseController
         $config = \App::$http->readGetResult('/config/', [], static::SECURE_TOKEN)->getEntity();
 
         $entity = \App::$http->readGetResult(
-            '/organisation/scope/'. $entityId .'/',
+            '/scope/'. $entityId .'/organisation/',
             [resolveReferences => 3]
         )->getEntity();
 
