@@ -29,7 +29,7 @@ class DayoffByYear extends BaseController
         $year = Validator::value($args['year'])->isNumber()->getValue();
         $collection = \App::$http->readGetResult('/dayoff/'. $year .'/')->getCollection();
         $updated = false;
-        $input = $request->getParsedBody(); 
+        $input = $request->getParsedBody();
         if (array_key_exists('save', (array) $input)) {
             $data = $input['daysOff'];
             $collection = new Collection($data);
