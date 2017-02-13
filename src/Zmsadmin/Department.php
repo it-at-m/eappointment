@@ -35,18 +35,13 @@ class Department extends BaseController
         $input = $request->getParsedBody();
         if (array_key_exists('save', (array) $input)) {
             $input = $this->cleanupLinks($input);
-            try {
-                $entity = new Entity($input);
-                $entity->id = $entityId;
-                $entity = \App::$http->readPostResult(
-                    '/department/'. $entity->id .'/',
-                    $entity
-                )->getEntity();
-                //var_dump($entity);die;
-                //self::$errorHandler->success = 'department_saved';
-            } catch (\Exception $exception) {
-                return Helper\Render::error($exception);
-            }
+            $entity = new Entity($input);
+            $entity->id = $entityId;
+            $entity->daysOff = $entity->getDayoffList()->withTimestampFromDateformat();
+            $entity = \App::$http->readPostResult(
+                '/department/'. $entity->id .'/',
+                $entity
+            )->getEntity();
         }
 
         return \BO\Slim\Render::withHtml(

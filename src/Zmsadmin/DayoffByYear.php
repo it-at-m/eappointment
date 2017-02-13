@@ -35,7 +35,7 @@ class DayoffByYear extends BaseController
             $collection = new Collection($data);
             $collection = \App::$http->readPostResult(
                 '/dayoff/'. $year .'/',
-                $collection->toDateWithTimestamp()
+                $collection->withTimestampFromDateformat()
             )->getCollection();
         }
 
