@@ -23,7 +23,7 @@ class Organisation extends Schema\Entity
     public function getDepartmentList()
     {
         if (!$this->departments instanceof Collection\DepartmentList) {
-            $this->departments = new Collection\DepartmentList($this->departments);
+            $this->departments = new Collection\DepartmentList((array)$this->departments);
             foreach ($this->departments as $key => $department) {
                 $this->departments[$key] = new Department($department);
             }
