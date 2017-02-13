@@ -37,7 +37,7 @@ class DayoffUpdateTest extends Base
                 'id' => self::SCOPE_ID,
             ])
         ]);
-        $dayoffList = new \BO\Zmsentities\Collection\DayOffList(
+        $dayoffList = new \BO\Zmsentities\Collection\DayoffList(
             json_decode($this->readFixture("GetDayoffList.json"))
         );
         $response = $this->render([self::YEAR], [
