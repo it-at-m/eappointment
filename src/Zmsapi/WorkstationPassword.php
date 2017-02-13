@@ -34,30 +34,15 @@ class WorkstationPassword extends BaseController
             $entity = $query->readEntity($oldLoginName);
 
             if (!empty($input['newPassword'])) {
-                $entity->password = $input['password'];
+                $entity->password = $input['newPassword'];
             }
 
             $entity->id = $input['id'];
-
-            error_log($entity->id);
-            error_log('updating');
             $updatedEntity = $query->updateEntity($oldLoginName, $entity);
-
-            error_log($updatedEntity);
         } else {
-            error_log('nope');
-            // @TODO Error response
+            throw new Exception\Useraccount\InvalidCredentials();
         }
 
-        /*
-          $oldLoginName = $useraccountloginName;
-
-          $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
-          $query = new Query();
-          $entity = new \BO\Zmsentities\Useraccount($input);
-          $entity->testValid();
-          $workstation = $query->updateEntity($entity, $resolveReferences);
-        */
         $message = Response\Message::create(Render::$request);
         $message->data = $updatedEntity;
         Render::lastModified(time(), '0');
