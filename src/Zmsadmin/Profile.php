@@ -27,6 +27,8 @@ class Profile extends BaseController
             return Helper\Render::withHtml($response, 'page/404.twig', array());
         }
 
+        $updated = false;
+
         $input = $request->getParsedBody();
         if (is_array($input) && array_key_exists('save', $input)) {
             if ($input['newPassword'] && $input['newPassword'] !== $input['repeatPassword']) {
@@ -36,6 +38,7 @@ class Profile extends BaseController
             $newEntity = new Entity($input);
             $entity = \App::$http->readPostResult('/workstation/password/', $newEntity)
                     ->getEntity();
+            $updated = true;
         }
 
         return \BO\Slim\Render::withHtml(
@@ -44,6 +47,7 @@ class Profile extends BaseController
             array(
                 'title' => 'Nutzerprofil',
                 'menuActive' => 'profile',
+                'updated' => $updated,
                 'useraccount' => $entity->getArrayCopy(),
             )
         );
