@@ -22,8 +22,19 @@ class OrganisationUpdate extends BaseController
     {
         $message = Response\Message::create(Render::$request);
         $input = Validator::input()->isJson()->getValue();
-        $entity = new \BO\Zmsentities\Organisation($input);
-        $message->data = (new Query())->updateEntity($itemId, $entity);
+        $organisation = new \BO\Zmsentities\Organisation($input);
+        if (! $organisation) {
+            throw new Exception\Organisation\OrganisationNotFound();
+        }
+        if (Helper\User::hasRights()) {
+            Helper\User::checkRights('organisation');
+            $organisation = (new Query())->updateEntity($itemId, $organisation);
+        } else {
+            $organisation = $organisation->withLessData();
+            $message->meta->reducedData = true;
+        }
+
+        $message->data = $organisation;
         Render::lastModified(time(), '0');
         Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }
