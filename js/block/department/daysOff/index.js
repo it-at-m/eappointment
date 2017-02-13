@@ -9,22 +9,28 @@ const renderDay = (day, index, onChange, onDeleteClick) => {
     const onChangeDate = (_, value) => onChange(index, 'date', value)
 
     return (
-        <div className="daysoff__item">
-            <Inputs.Text
-                name={`${formName}[name]`}
-                placeholder="Name"
-                value={day.name}
-                onChange={onChangeName}
-            />
-            <Inputs.Date
-                name={`${formName}[date]`}
-                placeholder="Datum"
-                value={day.date}
-                onChange={onChangeDate}
-            />
-        <label className="checkboxdeselect daysoff__delete-button">
-            <input type="checkbox" checked={true} onClick={() => onDeleteClick(index)} /><span>Löschen</span>
-        </label>
+        <div className="daysoff-item">
+            <div className="daysoff-item__name">
+                <Inputs.Text
+                    name={`${formName}[name]`}
+                    placeholder="Name"
+                    value={day.name}
+                    onChange={onChangeName}
+                />
+            </div>
+            <div className="daysoff-item__date">
+                <Inputs.Date
+                    name={`${formName}[date]`}
+                    placeholder="Datum"
+                    value={day.date}
+                    onChange={onChangeDate}
+                />
+            </div>
+            <div className="daysoff-item__delete">
+                <label className="checkboxdeselect daysoff__delete-button">
+                    <input type="checkbox" checked={true} onClick={() => onDeleteClick(index)} /><span>Löschen</span>
+                </label>
+            </div>
         </div>
     )
 }
