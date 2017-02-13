@@ -71,8 +71,11 @@ class OrganisationTest extends Base
         $this->assertEquals('Zaunstraße', $entity->contact['street']);
 
         $entity->name = 'Flughafen BER';
-        $entity = $query->updateEntity($entity->id, $entity, 23); //with parent Berlin
+        $entity = $query->updateEntity($entity->id, $entity);
         $this->assertEquals('Flughafen BER', $entity->name);
+
+        $ticketprinterList = new \BO\Zmsentities\Collection\TicketprinterList($entity->ticketprinters);
+        $this->assertEquals('e744a234c1', $ticketprinterList->getEntityByHash('e744a234c1')->hash);
     }
 
     public function testDeleteWithChildren()
