@@ -20,11 +20,12 @@ class DepartmentOrganisation extends BaseController
      */
     public static function render($departmentId)
     {
-        Helper\User::checkRights();
+        $workstation = Helper\User::checkRights();
         Helper\User::checkDepartment($departmentId);
 
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $organisation = (new Query())->readByDepartmentId($departmentId, $resolveReferences);
+        $organisation->departments = $organisation->getDepartmentList()->withAccess($workstation->getUseraccount());
         $message = Response\Message::create(Render::$request);
         $message->data = $organisation;
         Render::lastModified(time(), '0');
