@@ -103,7 +103,7 @@ use \Psr\Http\Message\ResponseInterface;
 ], '/department/{departmentId:\d+}/cluster/{clusterId:\d+}/', '\BO\Zmsadmin\Cluster')
     ->setName("cluster");
 
-\App::$slim->get('/department/{departmentId:\d+}/cluster/{clusterId:\d+}/delete', '\BO\Zmsadmin\ClusterDelete')
+\App::$slim->get('/department/{departmentId:\d+}/cluster/{clusterId:\d+}/delete/', '\BO\Zmsadmin\ClusterDelete')
     ->setName("clusterDelete");
 
 \App::$slim->get('/department/{departmentId:\d+}/cluster/', '\BO\Zmsadmin\DepartmentAddCluster')
