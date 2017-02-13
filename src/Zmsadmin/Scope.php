@@ -43,21 +43,18 @@ class Scope extends BaseController
         $entityId = Validator::value($args['id'])->isNumber()->getValue();
         $entity = \App::$http->readGetResult('/scope/' . $entityId . '/')->getEntity();
 
-        if (!$entity->hasId()) {
-            return Helper\Render::withHtml($response, 'page/404.twig', array());
-        }
-
         $input = $request->getParsedBody();
         if (is_array($input) && array_key_exists('save', $input)) {
-            try {
-                $entity = new Entity($input);
-                $entity->hint = implode(' | ', $input['hint']);
-                $entity->id = $entityId;
-                $entity = \App::$http->readPostResult('/scope/' . $entity->id . '/', $entity)
-                    ->getEntity();
-                //self::$errorHandler->success = 'scope_saved';
-            } catch (\Exception $exception) {
-                return Helper\Render::error($exception);
+            $entity = (new Entity($input))->withCleanedUpFormData();
+            $entity->hint = implode(' | ', $input['hint']);
+            $entity->id = $entityId;
+            $entity = \App::$http->readPostResult('/scope/' . $entity->id . '/', $entity)->getEntity();
+            $callDisplayImage = new Helper\FileUploader($request);
+            if ($callDisplayImage) {
+                \App::$http->readPostResult(
+                    '/scope/'. $entity->id .'/imagedata/calldisplay/',
+                    $callDisplayImage
+                )->getEntity();
             }
         }
 
