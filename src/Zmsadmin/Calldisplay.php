@@ -30,8 +30,8 @@ class Calldisplay extends BaseController
         $config = \App::$http->readGetResult('/config/', [], static::SECURE_TOKEN)->getEntity();
 
         $entity = \App::$http->readGetResult(
-            '/organisation/scope/'. $entityId .'/',
-            [resolveReferences => 3]
+            '/scope/'. $entityId .'/organisation/',
+            ['resolveReferences' => 3]
         )->getEntity();
 
         $departments = new DepartmentList();
