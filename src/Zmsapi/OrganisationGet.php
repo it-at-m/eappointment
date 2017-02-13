@@ -20,9 +20,19 @@ class OrganisationGet extends BaseController
      */
     public static function render($itemId)
     {
+        $message = Response\Message::create(Render::$request);
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $organisation = (new Query())->readEntity($itemId, $resolveReferences);
-        $message = Response\Message::create(Render::$request);
+        if (! $organisation) {
+            throw new Exception\Organisation\OrganisationNotFound();
+        }
+        if (Helper\User::hasRights()) {
+            Helper\User::checkRights('organisation');
+        } else {
+            $organisation = $organisation->withLessData();
+            $message->meta->reducedData = true;
+        }
+
         $message->data = $organisation;
         Render::lastModified(time(), '0');
         Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
