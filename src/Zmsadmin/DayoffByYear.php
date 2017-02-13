@@ -6,7 +6,7 @@
 
 namespace BO\Zmsadmin;
 
-use BO\Zmsentities\Collection\DayOffList as Collection;
+use BO\Zmsentities\Collection\DayoffList as Collection;
 use BO\Mellon\Validator;
 
 /**
