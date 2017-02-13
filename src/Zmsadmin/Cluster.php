@@ -58,7 +58,7 @@ class Cluster extends BaseController
                 'menuActive' => 'owner',
                 'workstation' => $workstation,
                 'cluster' => $entity->getArrayCopy(),
-                'departent' => $department,
+                'department' => $department,
                 'scopeList' => $department->getScopeList(),
             )
         );

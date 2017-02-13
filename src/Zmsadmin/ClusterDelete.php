@@ -18,7 +18,7 @@ class ClusterDelete extends BaseController
 {
 
     /**
-     *
+     * @SuppressWarnings(Param)
      * @return String
      */
     public function __invoke(
@@ -27,7 +27,7 @@ class ClusterDelete extends BaseController
         array $args
     ) {
 
-        $entityId = Validator::value($args['id'])->isNumber()
+        $entityId = Validator::value($args['clusterId'])->isNumber()
                   ->getValue();
         \App::$http->readDeleteResult('/cluster/' . $entityId . '/')
                                                   ->getEntity();
