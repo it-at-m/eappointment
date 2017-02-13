@@ -85,7 +85,7 @@ class HelperTest extends EntityCommonTests
             ]
         ];
 
-        $collection = new \BO\Zmsentities\Collection\DayOffList();
+        $collection = new \BO\Zmsentities\Collection\DayoffList();
         foreach ($list as $dayOffData) {
             $collection->addEntity(new \BO\Zmsentities\Dayoff($dayOffData));
         }
