@@ -31,7 +31,7 @@ class DayoffByYear extends BaseController
         $updated = false;
         $input = $request->getParsedBody();
         if (array_key_exists('save', (array) $input)) {
-            $data = $input['daysOff'];
+            $data = $input['dayoff'];
             $collection = new Collection($data);
             $collection = \App::$http->readPostResult(
                 '/dayoff/'. $year .'/',

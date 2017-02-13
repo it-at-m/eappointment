@@ -3,7 +3,7 @@ import React, { Component, PropTypes } from 'react'
 import * as Inputs from '../../../lib/inputs'
 
 const renderDay = (day, index, onChange, onDeleteClick) => {
-    const formName = `daysOff[${index}]`
+    const formName = `dayoff[${index}]`
 
     const onChangeName = (_, value) => onChange(index, 'name', value)
     const onChangeDate = (_, value) => onChange(index, 'date', value)
