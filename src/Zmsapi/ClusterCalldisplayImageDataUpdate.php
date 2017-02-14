@@ -30,7 +30,7 @@ class ClusterCalldisplayImageDataUpdate extends BaseController
         }
 
         $input = Validator::input()->isJson()->getValue();
-        $entity = new \BO\Zmsentities\MailPart($input);
+        $entity = new \BO\Zmsentities\Mimepart($input);
 
         $message->data = $query->writeImageData($itemId, $entity);
         Render::lastModified(time(), '0');
