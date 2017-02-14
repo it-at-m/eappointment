@@ -44,3 +44,17 @@ table {
         }
     }
 }
+
+table.clean {
+    background-color:               transparent;
+    border-collapse:                collapse;
+    thead {
+        background-color:           transparent;
+    }
+    td {
+        border-top:                 1px solid $greyBorder;
+    }
+    td, th {
+        padding:                    0.75em;
+    }
+}
