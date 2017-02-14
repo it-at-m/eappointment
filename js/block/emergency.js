@@ -139,15 +139,7 @@ class View extends BaseView {
         let play = false
 
         if (data.activated === "1") {
-            if (this.data.activated === "0") {
-                //emergency changed from 'off' to 'on', play the sound!
-                play = true
-            } else {
-                if (data.calledByWorkstation !== this.data.calledByWorkstation) {
-                    //the source of the emergency changed, it must be a new one. play sound!
-                    play = true
-                }
-            }
+            play = true
 
             if ( data.calledByWorkstation === this.workstationName) {
                 //never play the sound when the source is the same workstation
@@ -186,8 +178,8 @@ class View extends BaseView {
 
         this.$.attr('data-source', source)
         this.$.attr('data-state', state)
-        this.$.find('.emergency__source').text(data.calledByWorkstation)
-        this.$.find('.emergency__help-from').text(data.acceptedByWorkstation)
+        this.$.find('.emergency__source').text((data.calledByWorkstation === '0') ? 'Tresen' : `Platz ${data.calledByWorkstation}`)
+        this.$.find('.emergency__help-from').text((data.acceptedByWorkstation === '0' ? 'Tresen' : `Platz ${data.acceptedByWorkstation}`))
     }
 
     minimize() {
