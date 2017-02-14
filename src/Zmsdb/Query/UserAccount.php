@@ -51,11 +51,11 @@ class UserAccount extends Base implements MappingInterface
             'rights__organisation' => self::expression('`userAccount`.`Berechtigung` >= 70'),
             'rights__department' => self::expression('`userAccount`.`Berechtigung` >= 50'),
             'rights__cluster' => self::expression('`userAccount`.`Berechtigung` >= 40'),
-            'rights__useraccount' => self::expression('`userAccount`.`Berechtigung` >= 30'),
-            'rights__scope' => self::expression('`userAccount`.`Berechtigung` >= 20'),
-            'rights__availability' => self::expression('`userAccount`.`Berechtigung` >= 15'),
-            'rights__ticketprinter' => self::expression('`userAccount`.`Berechtigung` >= 10'),
-            'rights__sms' => self::expression('`userAccount`.`Berechtigung` >= 0'),
+            'rights__useraccount' => self::expression('`userAccount`.`Berechtigung` >= 40'),
+            'rights__scope' => self::expression('`userAccount`.`Berechtigung` >= 30'),
+            'rights__availability' => self::expression('`userAccount`.`Berechtigung` >= 20'),
+            'rights__ticketprinter' => self::expression('`userAccount`.`Berechtigung` >= 15'),
+            'rights__sms' => self::expression('`userAccount`.`Berechtigung` >= 10'),
             'rights__basic' => self::expression('`userAccount`.`Berechtigung` >= 0'),
         ];
     }

@@ -13,11 +13,12 @@ class RightsLevelManager
         70 => 'organisation',
         50 => 'department',
         40 => 'cluster',
-        30 => 'useraccount',
-        20 => 'scope',
-        15 => 'availability',
-        10 => 'ticketprinter',
-        0 => 'sms'
+        40 => 'useraccount',
+        30 => 'scope',
+        20 => 'availability',
+        15 => 'ticketprinter',
+        10 => 'sms',
+        0 => 'basic'
     );
 
     public static function getLevel($userRights)
