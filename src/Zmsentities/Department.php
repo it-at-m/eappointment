@@ -33,15 +33,15 @@ class Department extends Schema\Entity
 
     public function getDayoffList()
     {
-        if (!$this->daysOff instanceof Collection\DayoffList) {
-            $this->daysOff = new Collection\DayoffList((array)$this->daysOff);
-            foreach ($this->daysOff as $key => $dayOff) {
+        if (!$this->dayoff instanceof Collection\DayoffList) {
+            $this->dayoff = new Collection\DayoffList((array)$this->dayoff);
+            foreach ($this->dayoff as $key => $dayOff) {
                 if (!$dayOff instanceof Dayoff) {
-                    $this->daysOff[$key] = new Dayoff($dayOff);
+                    $this->dayoff[$key] = new Dayoff($dayOff);
                 }
             }
         }
-        return $this->daysOff;
+        return $this->dayoff;
     }
 
     public function withOutClusterDuplicates()
