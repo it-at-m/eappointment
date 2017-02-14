@@ -471,7 +471,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                          meta:
  *                              $ref: "schema/metaresult.json"
  *                          data:
- *                              $ref: "schema/mailpart.json"
+ *                              $ref: "schema/mimepart.json"
  *              404:
  *                  description: "Could not find given cluster"
  */
@@ -490,22 +490,22 @@ use \Psr\Http\Message\ResponseInterface;
  *                  in: path
  *                  required: true
  *                  type: integer
- *              -   name: mailpart
- *                  description: mailpart image data to update
+ *              -   name: mimepart
+ *                  description: mimepart image data to update
  *                  required: true
  *                  in: body
  *                  schema:
- *                      $ref: "schema/mailpart.json"
+ *                      $ref: "schema/mimepart.json"
  *          responses:
  *              200:
- *                  description: get an updated mailpart entity
+ *                  description: get an updated mimepart entity
  *                  schema:
  *                      type: object
  *                      properties:
  *                          meta:
  *                              $ref: "schema/metaresult.json"
  *                          data:
- *                              $ref: "schema/mailpart.json"
+ *                              $ref: "schema/mimepart.json"
  *              404:
  *                  description: "Could not find given cluster"
  */
@@ -1949,7 +1949,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                          meta:
  *                              $ref: "schema/metaresult.json"
  *                          data:
- *                              $ref: "schema/mailpart.json"
+ *                              $ref: "schema/mimepart.json"
  *              404:
  *                  description: "Could not find given scope"
  */
@@ -1968,22 +1968,22 @@ use \Psr\Http\Message\ResponseInterface;
  *                  in: path
  *                  required: true
  *                  type: integer
- *              -   name: mailpart
- *                  description: mailpart image data to update
+ *              -   name: mimepart
+ *                  description: mimepart image data to update
  *                  required: true
  *                  in: body
  *                  schema:
- *                      $ref: "schema/mailpart.json"
+ *                      $ref: "schema/mimepart.json"
  *          responses:
  *              200:
- *                  description: get an updated mailpart entity
+ *                  description: get an updated mimepart entity
  *                  schema:
  *                      type: object
  *                      properties:
  *                          meta:
  *                              $ref: "schema/metaresult.json"
  *                          data:
- *                              $ref: "schema/mailpart.json"
+ *                              $ref: "schema/mimepart.json"
  *              404:
  *                  description: "Could not find given scope"
  */
