@@ -98,9 +98,13 @@ class DaysOffView extends Component {
     }
 }
 
+DaysOffView.defaultProps = {
+    year: (new Date()).getFullYear()
+}
+
 DaysOffView.propTypes = {
     days: PropTypes.array,
-    year: PropTypes.number
+    year: PropTypes.number.isRequired
 }
 
 export default DaysOffView

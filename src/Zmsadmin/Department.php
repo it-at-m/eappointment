@@ -26,7 +26,7 @@ class Department extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
         $entityId = Validator::value($args['id'])->isNumber()->getValue();
-        $entity = \App::$http->readGetResult('/department/'. $entityId .'/')->getEntity();
+        $entity = \App::$http->readGetResult('/department/'. $entityId .'/', ['resolveReferences' => 1])->getEntity();
 
         if (!$entity->hasId()) {
             return \BO\Slim\Render::withHtml($response, 'page/404.twig', array());
@@ -37,7 +37,7 @@ class Department extends BaseController
             $input = $this->cleanupLinks($input);
             $entity = new Entity($input);
             $entity->id = $entityId;
-            $entity->daysOff = $entity->getDayoffList()->withTimestampFromDateformat();
+            $entity->dayoff = $entity->getDayoffList()->withTimestampFromDateformat();
             $entity = \App::$http->readPostResult(
                 '/department/'. $entity->id .'/',
                 $entity
