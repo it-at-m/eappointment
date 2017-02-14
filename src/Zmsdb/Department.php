@@ -47,8 +47,8 @@ class Department extends Base
                 ->readByDepartmentId($entity->id, $resolveReferences)
                 ->sortByContactName();
         }
-        if (1 < $resolveReferences) {
-            $entity['dayoff'] = (new DayOff())->readByDepartmentId($entity->id);
+        if (0 < $resolveReferences) {
+            $entity['dayoff'] = (new DayOff())->readOnlyByDepartmentId($entity->id);
         }
         return $entity;
     }
@@ -210,8 +210,9 @@ class Department extends Base
         $deleteQuery = new Query\DayOff(Query\Base::DELETE);
         $deleteQuery->addConditionDepartmentId($departmentId);
         $this->deleteItem($deleteQuery);
-        $query = new Query\DayOff(Query\Base::INSERT);
+
         foreach ($dayoffList as $dayoff) {
+            $query = new Query\DayOff(Query\Base::INSERT);
             $query->addValues(
                 [
                     'behoerdenid' => $departmentId,

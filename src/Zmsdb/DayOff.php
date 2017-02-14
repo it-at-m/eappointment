@@ -15,6 +15,20 @@ class DayOff extends Base
     public function readByDepartmentId($departmentId = 0)
     {
         $dayOffList = $this->readCommon();
+        $departmentDayoffList = $this->readOnlyByDepartmentId($departmentId);
+        if (count($departmentDayoffList)) {
+            foreach ($departmentDayoffList as $entity) {
+                if ($entity instanceof Entity) {
+                    $dayOffList->addEntity($entity);
+                }
+            }
+        }
+        return $dayOffList;
+    }
+
+    public function readOnlyByDepartmentId($departmentId = 0)
+    {
+        $dayOffList = new Collection();
         $query = new Query\DayOff(Query\Base::SELECT);
         $query->addEntityMapping()
             ->addConditionDepartmentId($departmentId);
