@@ -42,8 +42,10 @@ class Department extends BaseController
                 '/department/'. $entity->id .'/',
                 $entity
             )->getEntity();
+            return \BO\Slim\Render::redirect('department', ['id' => $entityId]);
         }
 
+        $response = \BO\Slim\Render::withLastModified($response, time(), '0');
         return \BO\Slim\Render::withHtml(
 
             $response,
