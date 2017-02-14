@@ -531,6 +531,79 @@
 			}
 		}
 	},
+	"/cluster/{id}/imagedata/calldisplay/": {
+		"get": {
+			"description": "get image data by cluster id for calldisplay image",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "number of cluster",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "get existing imagedata by cluster id",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/mimepart.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "Could not find given cluster"
+				}
+			}
+		},
+		"post": {
+			"description": "upload and get image data by cluster id for calldisplay image",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "number of cluster",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "mimepart",
+					"description": "mimepart image data to update",
+					"required": true,
+					"in": "body",
+					"schema": {
+						"$ref": "schema/mimepart.json"
+					}
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "get an updated mimepart entity",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/mimepart.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "Could not find given cluster"
+				}
+			}
+		}
+	},
 	"/config/": {
 		"get": {
 			"description": "Get config",
@@ -2245,6 +2318,79 @@
 			}
 		}
 	},
+	"/scope/{id}/imagedata/calldisplay/": {
+		"get": {
+			"description": "get image data by scope id for calldisplay image",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "number of scope",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "get existing imagedata by scope id",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/mimepart.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "Could not find given scope"
+				}
+			}
+		},
+		"post": {
+			"description": "upload and get image data by scope id for calldisplay image",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "number of scope",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "mimepart",
+					"description": "mimepart image data to update",
+					"required": true,
+					"in": "body",
+					"schema": {
+						"$ref": "schema/mimepart.json"
+					}
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "get an updated mimepart entity",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/mimepart.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "Could not find given scope"
+				}
+			}
+		}
+	},
 	"/provider/{source}/{id}/": {
 		"get": {
 			"description": "Get an provider by id",
@@ -3723,6 +3869,42 @@
 				},
 				"401": {
 					"description": "login required"
+				}
+			}
+		}
+	},
+	"/workstation/password/": {
+		"post": {
+			"operationId": "WorkstationDelete",
+			"description": "Change the password and/or username of a useraccount",
+			"parameters": [
+				{
+					"name": "useraccount",
+					"description": "useraccount data to update",
+					"required": true,
+					"in": "body",
+					"schema": {
+						"$ref": "schema/useraccount.json"
+					}
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/useraccount.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "useraccount loginname does not exists"
 				}
 			}
 		}

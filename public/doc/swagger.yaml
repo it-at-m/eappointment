@@ -51,8 +51,8 @@ definitions:
     $ref: "schema/dayoff.json"
   mail:
     $ref: "schema/mail.json"
-  mailpart:
-    $ref: "schema/mailpart.json"
+  mimemart:
+    $ref: "schema/mimepart.json"
   metaresult:
     $ref: "schema/metaresult.json"
   notification:
