@@ -84,6 +84,12 @@
         },
         "useraccount": {
             "$ref": "useraccount.json"
+        },
+        "linkList": {
+            "type": "array",
+            "items": {
+                "$ref": "link.json"
+            }
         }
     }
 }
