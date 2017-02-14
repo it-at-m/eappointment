@@ -8,7 +8,7 @@
 namespace BO\Zmsmessaging;
 
 use \BO\Zmsentities\Ics;
-use \BO\Zmsentities\MailPart;
+use \BO\Zmsentities\Mimepart;
 use \PHPMailer as PHPMailer;
 use \phpmailerException as phpmailerException;
 
@@ -119,7 +119,7 @@ class SendQueue
     {
         $encoding = 'base64';
         foreach ($message->multipart as $part) {
-            $entity = new MailPart($part);
+            $entity = new Mimepart($part);
             if ($entity->isText()) {
                 $textPart = $entity->getContent();
             }
