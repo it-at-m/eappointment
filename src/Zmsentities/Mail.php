@@ -28,9 +28,9 @@ class Mail extends Schema\Entity
     {
         $multiPart = $this->toProperty()->multipart->get();
         foreach ($multiPart as $part) {
-            $mailpart = new MailPart($part);
-            if ($mailpart->isHtml()) {
-                return $mailpart->getContent();
+            $mimepart = new Mimepart($part);
+            if ($mimepart->isHtml()) {
+                return $mimepart->getContent();
             }
         }
         return null;
@@ -39,9 +39,9 @@ class Mail extends Schema\Entity
     public function getPlainPart()
     {
         foreach ($this->multipart as $part) {
-            $mailpart = new MailPart($part);
-            if ($mailpart->isText()) {
-                return $mailpart->getContent();
+            $mimepart = new Mimepart($part);
+            if ($mimepart->isText()) {
+                return $mimepart->getContent();
             }
         }
         return null;
@@ -50,9 +50,9 @@ class Mail extends Schema\Entity
     public function getIcsPart()
     {
         foreach ($this->multipart as $part) {
-            $mailpart = new MailPart($part);
-            if ($mailpart->isIcs()) {
-                return $mailpart->getContent();
+            $mimepart = new Mimepart($part);
+            if ($mimepart->isIcs()) {
+                return $mimepart->getContent();
             }
         }
         return null;
