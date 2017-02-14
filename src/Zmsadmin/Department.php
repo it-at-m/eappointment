@@ -62,7 +62,7 @@ class Department extends BaseController
         $links = $input['links'];
 
         $input['links'] = array_filter($links, function ($link) {
-            return !($link['name'] === '' && $link['link'] == '');
+            return !($link['name'] === '' && $link['url'] == '');
         });
 
         return $input;
