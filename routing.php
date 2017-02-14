@@ -412,44 +412,107 @@ use \Psr\Http\Message\ResponseInterface;
     '\BO\Zmsapi\ClusterQueue')
     ->setName("ClusterQueue");
 
-    /**
-     *  @swagger
-     *  "/cluster/{id}/waitingnumber/{hash}/":
-     *      get:
-     *          description: Get a waitingNumber according to scope preferences in cluster
-     *          parameters:
-     *              -   name: id
-     *                  description: cluster number
-     *                  required: true
-     *                  in: path
-     *                  type: integer
-     *              -   name: hash
-     *                  description: valid ticketprinter hash
-     *                  required: true
-     *                  in: path
-     *                  type: string
-     *              -   name: resolveReferences
-     *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
-     *                  in: query
-     *                  type: integer
-     *          responses:
-     *              200:
-     *                  description: "success"
-     *                  schema:
-     *                      type: object
-     *                      properties:
-     *                          meta:
-     *                              $ref: "schema/metaresult.json"
-     *                          data:
-     *                              $ref: "schema/process.json"
-     *              403:
-     *                  description: "hash is not valid"
-     *              404:
-     *                  description: "cluster id does not exists"
-     */
-    \App::$slim->get('/cluster/{id:\d{1,11}}/waitingnumber/{hash}/',
-        '\BO\Zmsapi\TicketprinterWaitingnumberByCluster')
-        ->setName("TicketprinterWaitingnumberByCluster:");
+/**
+ *  @swagger
+ *  "/cluster/{id}/waitingnumber/{hash}/":
+ *      get:
+ *          description: Get a waitingNumber according to scope preferences in cluster
+ *          parameters:
+ *              -   name: id
+ *                  description: cluster number
+ *                  required: true
+ *                  in: path
+ *                  type: integer
+ *              -   name: hash
+ *                  description: valid ticketprinter hash
+ *                  required: true
+ *                  in: path
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/process.json"
+ *              403:
+ *                  description: "hash is not valid"
+ *              404:
+ *                  description: "cluster id does not exists"
+ */
+\App::$slim->get('/cluster/{id:\d{1,11}}/waitingnumber/{hash}/',
+    '\BO\Zmsapi\TicketprinterWaitingnumberByCluster')
+    ->setName("TicketprinterWaitingnumberByCluster:");
+
+/**
+ *  @swagger
+ *  "/cluster/{id}/imagedata/calldisplay/":
+ *      get:
+ *          description: get image data by cluster id for calldisplay image
+ *          parameters:
+ *              -   name: id
+ *                  description: number of cluster
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: get existing imagedata by cluster id
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/mailpart.json"
+ *              404:
+ *                  description: "Could not find given cluster"
+ */
+\App::$slim->get('/cluster/{id:\d{1,4}}/imagedata/calldisplay/',
+    '\BO\Zmsapi\ClusterCalldisplayImageDataGet')
+    ->setName("ClusterCalldisplayImageDataGet");
+
+/**
+ *  @swagger
+ *  "/cluster/{id}/imagedata/calldisplay/":
+ *      post:
+ *          description: upload and get image data by cluster id for calldisplay image
+ *          parameters:
+ *              -   name: id
+ *                  description: number of cluster
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: mailpart
+ *                  description: mailpart image data to update
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/mailpart.json"
+ *          responses:
+ *              200:
+ *                  description: get an updated mailpart entity
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/mailpart.json"
+ *              404:
+ *                  description: "Could not find given cluster"
+ */
+\App::$slim->post('/cluster/{id:\d{1,4}}/imagedata/calldisplay/',
+    '\BO\Zmsapi\ClusterCalldisplayImageDataUpdate')
+    ->setName("ClusterCalldisplayImageDataUpdate");
+
 
 /**
  *  @swagger
@@ -1865,6 +1928,68 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/scope/{id:\d{1,4}}/queue/{number:\d{1,4}}/',
     '\BO\Zmsapi\ProcessByQueueNumber')
     ->setName("ProcessByQueueNumber");
+
+/**
+ *  @swagger
+ *  "/scope/{id}/imagedata/calldisplay/":
+ *      get:
+ *          description: get image data by scope id for calldisplay image
+ *          parameters:
+ *              -   name: id
+ *                  description: number of scope
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: get existing imagedata by scope id
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/mailpart.json"
+ *              404:
+ *                  description: "Could not find given scope"
+ */
+\App::$slim->get('/scope/{id:\d{1,4}}/imagedata/calldisplay/',
+    '\BO\Zmsapi\ScopeCalldisplayImageDataGet')
+    ->setName("ScopeCalldisplayImageDataGet");
+
+/**
+ *  @swagger
+ *  "/scope/{id}/imagedata/calldisplay/":
+ *      post:
+ *          description: upload and get image data by scope id for calldisplay image
+ *          parameters:
+ *              -   name: id
+ *                  description: number of scope
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: mailpart
+ *                  description: mailpart image data to update
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/mailpart.json"
+ *          responses:
+ *              200:
+ *                  description: get an updated mailpart entity
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/mailpart.json"
+ *              404:
+ *                  description: "Could not find given scope"
+ */
+\App::$slim->post('/scope/{id:\d{1,4}}/imagedata/calldisplay/',
+    '\BO\Zmsapi\ScopeCalldisplayImageDataUpdate')
+    ->setName("ScopeCalldisplayImageDataUpdate");
 
 /**
  *  @swagger
