@@ -18,13 +18,17 @@ class Scope extends Base implements MappingInterface
 
     public function getQueryLastWaitingNumber()
     {
-        return 'SELECT letztewartenr FROM `standort` scope
+        return '
+            SELECT letztewartenr
+            FROM `standort` scope
             WHERE scope.`StandortID` = :scope_id LIMIT 1 FOR UPDATE';
     }
 
     public function getQueryGivenNumbersInContingent()
     {
-        return 'SELECT * FROM `standort` scope
+        return '
+            SELECT *
+            FROM `standort` scope
             WHERE
                 scope.`StandortID` = :scope_id AND
                 IF(
@@ -32,6 +36,26 @@ class Scope extends Base implements MappingInterface
                     scope.`vergebenewartenummern` < scope.`wartenummernkontingent`,
                     scope.`StandortID`
                 )
+        ';
+    }
+
+    public function getQueryReadImageData()
+    {
+        return '
+            SELECT `imagecontent`
+            FROM `imagedata`
+            WHERE
+                `imagename` LIKE :imagename
+        ';
+    }
+
+    public function getQueryWriteImageData()
+    {
+        return '
+            REPLACE INTO `imagedata`
+            SET
+                imagename=:imagename,
+                imagecontent=:imagedata
         ';
     }
 

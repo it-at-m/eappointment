@@ -8,6 +8,7 @@ use \BO\Zmsentities\Collection\ScopeList as Collection;
 /**
  *
  * @SuppressWarnings(Public)
+ * @SuppressWarnings(Coupling)
  *
  */
 class Scope extends Base
@@ -292,10 +293,11 @@ class Scope extends Base
     }
 
     /**
-     * update a scope
+     * update emergency
      *
      * @param
-     *            scopeId
+     *         scopeId
+     *         entity
      *
      * @return Entity
      */
@@ -308,6 +310,46 @@ class Scope extends Base
         $query->addValues($values);
         $this->writeItem($query);
         return $this->readEntity($scopeId);
+    }
+
+    /**
+     * update image data for call display image
+     *
+     * @param
+     *         scopeId
+     *         Mimepart entity
+     *
+     * @return Mimepart entity
+     */
+    public function writeImageData($scopeId, \BO\Zmsentities\MailPart $entity)
+    {
+        $imageName = 's_'. $scopeId .'_bild.'. $entity->mime;
+        $statement = $this->getWriter()->prepare((new Query\Scope(Query\Base::REPLACE))->getQueryWriteImageData());
+        $statement->execute(array(
+            'imagename' => $imageName,
+            'imagedata' => $entity->content
+        ));
+        $entity->id = $scopeId;
+        return $entity;
+    }
+
+    /**
+     * read image data
+     *
+     * @param
+     *         scopeId
+     *
+     * @return Mimepart entity
+     */
+    public function readImageData($scopeId)
+    {
+        $imageName = 's_'. $scopeId .'_bild';
+        $imageData = new \BO\Zmsentities\MailPart();
+        $imageData->content = $this->getReader()->fetchValue(
+            (new Query\Scope(Query\Base::SELECT))->getQueryReadImageData(),
+            ['imagename' => "%$imageName%"]
+        );
+        return $imageData;
     }
 
     /**

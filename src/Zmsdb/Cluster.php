@@ -5,6 +5,12 @@ namespace BO\Zmsdb;
 use \BO\Zmsentities\Cluster as Entity;
 use \BO\Zmsentities\Collection\ClusterList as Collection;
 
+/**
+ *
+ * @SuppressWarnings(Public)
+ * @SuppressWarnings(Coupling)
+ *
+ */
 class Cluster extends Base
 {
     /**
@@ -177,6 +183,46 @@ class Cluster extends Base
             throw new Exception\Cluster\ScopesWithoutWorkstationCount();
         }
         return $preferedScope;
+    }
+
+    /**
+     * update image data for call display image
+     *
+     * @param
+     *         clusterId
+     *         Mimepart entity
+     *
+     * @return Mimepart entity
+     */
+    public function writeImageData($clusterId, \BO\Zmsentities\MailPart $entity)
+    {
+        $imageName = 'c_'. $clusterId .'_bild.'. $entity->mime;
+        $statement = $this->getWriter()->prepare((new Query\Scope(Query\Base::REPLACE))->getQueryWriteImageData());
+        $statement->execute(array(
+            'imagename' => $imageName,
+            'imagedata' => $entity->content
+        ));
+        $entity->id = $clusterId;
+        return $entity;
+    }
+
+    /**
+     * read image data
+     *
+     * @param
+     *         clusterId
+     *
+     * @return Mimepart entity
+     */
+    public function readImageData($clusterId)
+    {
+        $imageName = 'c_'. $clusterId .'_bild';
+        $imageData = new \BO\Zmsentities\MailPart();
+        $imageData->content = $this->getReader()->fetchValue(
+            (new Query\Scope(Query\Base::SELECT))->getQueryReadImageData(),
+            ['imagename' => "%$imageName%"]
+        );
+        return $imageData;
     }
 
     /**
