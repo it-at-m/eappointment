@@ -7,7 +7,7 @@
  */
 namespace BO\Zmsadmin\Helper;
 
-use \BO\Zmsentities\MailPart as Image;
+use \BO\Zmsentities\Mimepart as Image;
 
 class FileUploader
 {
