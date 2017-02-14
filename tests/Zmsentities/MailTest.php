@@ -32,20 +32,20 @@ class MailTest extends EntityCommonTests
         $process = (new \BO\Zmsentities\Process())->getExample();
         $config = (new \BO\Zmsentities\Config())->getExample();
         $entity->addMultiPart(array ());
-        $this->assertTrue(null === $entity->getHtmlPart(), 'MailPart with mime text/html should not exist');
-        $this->assertTrue(null === $entity->getPlainPart(), 'MailPart with mime text/plain should not exist');
-        $this->assertTrue(null === $entity->getIcsPart(), 'MailPart with mime text/calendar should not exist');
+        $this->assertTrue(null === $entity->getHtmlPart(), 'Mimepart with mime text/html should not exist');
+        $this->assertTrue(null === $entity->getPlainPart(), 'Mimepart with mime text/plain should not exist');
+        $this->assertTrue(null === $entity->getIcsPart(), 'Mimepart with mime text/calendar should not exist');
         $resolvedEntity = $entity->toResolvedEntity($process, $config);
         $this->assertContains(
             '<strong>Sehr geehrte/r Frau',
             $resolvedEntity->getHtmlPart(),
-            'MailPart content is not html'
+            'Mimepart content is not html'
         );
         $this->assertContains(
             'Ihre Vorgangsnummer ist die "123456"',
             $resolvedEntity->getPlainPart(),
-            'MailPart content is not plain text'
+            'Mimepart content is not plain text'
         );
-        $this->assertContains('BEGIN:VCALENDAR', $resolvedEntity->getIcsPart(), 'MailPart content is not plain text');
+        $this->assertContains('BEGIN:VCALENDAR', $resolvedEntity->getIcsPart(), 'Mimepart content is not plain text');
     }
 }

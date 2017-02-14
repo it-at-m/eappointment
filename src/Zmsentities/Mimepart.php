@@ -2,11 +2,11 @@
 
 namespace BO\Zmsentities;
 
-class MailPart extends Schema\Entity
+class Mimepart extends Schema\Entity
 {
     const PRIMARY = 'id';
 
-    public static $schema = "mailpart.json";
+    public static $schema = "mimepart.json";
 
     public function isBase64Encoded()
     {
