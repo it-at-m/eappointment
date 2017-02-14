@@ -321,7 +321,7 @@ class Scope extends Base
      *
      * @return Mimepart entity
      */
-    public function writeImageData($scopeId, \BO\Zmsentities\MailPart $entity)
+    public function writeImageData($scopeId, \BO\Zmsentities\Mimepart $entity)
     {
         $imageName = 's_'. $scopeId .'_bild.'. $entity->mime;
         $statement = $this->getWriter()->prepare((new Query\Scope(Query\Base::REPLACE))->getQueryWriteImageData());
@@ -344,7 +344,7 @@ class Scope extends Base
     public function readImageData($scopeId)
     {
         $imageName = 's_'. $scopeId .'_bild';
-        $imageData = new \BO\Zmsentities\MailPart();
+        $imageData = new \BO\Zmsentities\Mimepart();
         $imageData->content = $this->getReader()->fetchValue(
             (new Query\Scope(Query\Base::SELECT))->getQueryReadImageData(),
             ['imagename' => "%$imageName%"]

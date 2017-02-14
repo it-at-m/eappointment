@@ -2,7 +2,7 @@
 
 namespace BO\Zmsdb\Query;
 
-class MailPart extends Base
+class Mimepart extends Base
 {
     /**
      * @var String TABLE mysql table reference
@@ -12,15 +12,15 @@ class MailPart extends Base
     public function getEntityMapping()
     {
         return [
-            'mime' => 'mailPart.mime',
-            'content' => 'mailPart.content',
-            'base64' => 'mailPart.base64',
+            'mime' => 'mimepart.mime',
+            'content' => 'mimepart.content',
+            'base64' => 'mimepart.base64',
         ];
     }
 
     public function addConditionQueueId($queueId)
     {
-        $this->query->where('mailPart.queueId', '=', $queueId);
+        $this->query->where('mimepart.queueId', '=', $queueId);
         return $this;
     }
 }

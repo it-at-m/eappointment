@@ -3,7 +3,7 @@
 namespace BO\Zmsdb;
 
 use \BO\Zmsentities\Mail as Entity;
-use \BO\Zmsentities\MailPart;
+use \BO\Zmsentities\Mimepart;
 use \BO\Zmsentities\Collection\MailList as Collection;
 
 class Mail extends Base
@@ -92,7 +92,7 @@ class Mail extends Base
             throw new Exception\MailWriteInQueueFailed("Failed to write mail in queue (maybe email not given)");
         }
         $queueId = $this->getWriter()->lastInsertId();
-        $this->writeMailParts($queueId, $mail->multipart);
+        $this->writeMimeparts($queueId, $mail->multipart);
         if ('deleted' != $process->status) {
             $client->emailSendCount += 1;
             (new Process())->updateEntity($process);
@@ -100,11 +100,11 @@ class Mail extends Base
         return $this->readEntity($queueId);
     }
 
-    protected function writeMailParts($queueId, $multipart)
+    protected function writeMimeparts($queueId, $multipart)
     {
         $success = true;
         foreach ($multipart as $part) {
-            $query = new Query\MailPart(Query\Base::INSERT);
+            $query = new Query\Mimepart(Query\Base::INSERT);
             $query->addValues(
                 array (
                     'queueId' => $queueId,
@@ -144,9 +144,9 @@ class Mail extends Base
 
     protected function readMultiPartByQueueId($queueId)
     {
-        $query = new Query\MailPart(Query\Base::SELECT);
+        $query = new Query\Mimepart(Query\Base::SELECT);
         $query->addEntityMapping()
             ->addConditionQueueId($queueId);
-        return $this->fetchList($query, new MailPart());
+        return $this->fetchList($query, new Mimepart());
     }
 }

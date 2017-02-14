@@ -41,7 +41,7 @@ class MailTest extends Base
         $query->deleteEntity($entity->id);
     }
 
-    public function testWriteMailPartFailed()
+    public function testWriteMimepartFailed()
     {
         $this->setExpectedException('BO\Zmsdb\Exception\MailWritePartFailed');
         $query = new Query();
