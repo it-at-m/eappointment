@@ -25,28 +25,20 @@ class Cluster extends BaseController
         $departmentId = Validator::value($args['departmentId'])->isNumber()->getValue();
         $entity = \App::$http->readGetResult('/cluster/' . $entityId . '/', ['resolveReferences' => 2])->getEntity();
 
-
-        if (!$entity->hasId()) {
-            return Helper\Render::withHtml($response, 'page/404.twig', array());
-        }
-
-
         $department = \App::$http->readGetResult(
             '/department/' . $departmentId . '/',
             ['resolveReferences' => 2]
         )->getEntity();
 
-
+        $callDisplayImage = \App::$http->readGetResult('/cluster/'. $entityId .'/imagedata/calldisplay/')->getEntity();
         $input = $request->getParsedBody();
         if (is_array($input) && array_key_exists('save', $input)) {
-            //var_dump($input);
-            try {
-                $entity = new Entity($input);
-                $entity->id = $entityId;
-                $entity = \App::$http->readPostResult('/cluster/' . $entity->id . '/', $entity)
-                        ->getEntity();
-            } catch (\Exception $exception) {
-                return Helper\Render::error($exception);
+            $entity = (new Entity($input))->withCleanedUpFormData();
+            $entity->id = $entityId;
+            $entity = \App::$http->readPostResult('/cluster/' . $entity->id . '/', $entity)->getEntity();
+            $uploadedImage = (new Helper\FileUploader($request, $entityId, 'cluster'))->getEntity();
+            if ($uploadedImage) {
+                $callDisplayImage = $uploadedImage;
             }
         }
 
@@ -60,6 +52,7 @@ class Cluster extends BaseController
                 'cluster' => $entity->getArrayCopy(),
                 'department' => $department,
                 'scopeList' => $department->getScopeList(),
+                'callDisplayImage' => $callDisplayImage
             )
         );
     }

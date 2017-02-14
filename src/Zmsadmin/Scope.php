@@ -43,23 +43,20 @@ class Scope extends BaseController
         $entityId = Validator::value($args['id'])->isNumber()->getValue();
         $entity = \App::$http->readGetResult('/scope/' . $entityId . '/')->getEntity();
 
+        $callDisplayImage = \App::$http->readGetResult('/scope/'. $entityId .'/imagedata/calldisplay/')->getEntity();
         $input = $request->getParsedBody();
         if (is_array($input) && array_key_exists('save', $input)) {
             $entity = (new Entity($input))->withCleanedUpFormData();
             $entity->hint = implode(' | ', $input['hint']);
             $entity->id = $entityId;
             $entity = \App::$http->readPostResult('/scope/' . $entity->id . '/', $entity)->getEntity();
-            $callDisplayImage = new Helper\FileUploader($request);
-            if ($callDisplayImage) {
-                \App::$http->readPostResult(
-                    '/scope/'. $entity->id .'/imagedata/calldisplay/',
-                    $callDisplayImage
-                )->getEntity();
+            $uploadedImage = (new Helper\FileUploader($request, $entityId))->getEntity();
+            if ($uploadedImage) {
+                $callDisplayImage = $uploadedImage;
             }
         }
 
         return \BO\Slim\Render::withHtml(
-
             $response,
             'page/scope.twig',
             array(
@@ -70,7 +67,8 @@ class Scope extends BaseController
                 'providerList' => array(
                     'notAssigned' => $providerNotAssigned,
                     'assigned' => $providerAssigned
-                )
+                ),
+                'callDisplayImage' => $callDisplayImage
             )
         );
     }
