@@ -44,12 +44,12 @@ class Cluster extends Base
         $data['name'] = $entity->name;
         $data['clusterinfozeile1'] = $entity->hint;
         $data['standortkuerzelanzeigen'] = ($entity->shortNameEnabled)  ? 1 : 0;
-        $data['aufrufanzeigetext'] = ($entity->callDisplayText) ? 1 : 0;
+        $data['aufrufanzeigetext'] = $entity->callDisplayText;
 
         $data = array_filter($data, function ($value) {
             return ($value !== null && $value !== false);
         });
-            return $data;
+        return $data;
     }
 
     public function addRequiredJoins()
