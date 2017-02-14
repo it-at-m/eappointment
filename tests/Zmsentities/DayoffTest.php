@@ -48,7 +48,7 @@ class DayoffTest extends EntityCommonTests
             ])
         ]);
         $list = $list->withTimestampFromDateformat();
-        $this->assertEquals(1463349600, $list->getFirst()->date);
+        $this->assertEquals(1463356800, $list->getFirst()->date);
     }
 
     protected function getDayOffExampleList()
