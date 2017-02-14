@@ -194,7 +194,7 @@ class Cluster extends Base
      *
      * @return Mimepart entity
      */
-    public function writeImageData($clusterId, \BO\Zmsentities\MailPart $entity)
+    public function writeImageData($clusterId, \BO\Zmsentities\Mimepart $entity)
     {
         $imageName = 'c_'. $clusterId .'_bild.'. $entity->mime;
         $statement = $this->getWriter()->prepare((new Query\Scope(Query\Base::REPLACE))->getQueryWriteImageData());
@@ -217,7 +217,7 @@ class Cluster extends Base
     public function readImageData($clusterId)
     {
         $imageName = 'c_'. $clusterId .'_bild';
-        $imageData = new \BO\Zmsentities\MailPart();
+        $imageData = new \BO\Zmsentities\Mimepart();
         $imageData->content = $this->getReader()->fetchValue(
             (new Query\Scope(Query\Base::SELECT))->getQueryReadImageData(),
             ['imagename' => "%$imageName%"]
