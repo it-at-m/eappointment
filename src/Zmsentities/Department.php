@@ -13,6 +13,8 @@ class Department extends Schema\Entity
         return [
             'id' => false,
             'scopes' => new Collection\ScopeList(),
+            'links' => new Collection\LinkList(),
+            'dayoff' => new Collection\DayoffList(),
         ];
     }
 
