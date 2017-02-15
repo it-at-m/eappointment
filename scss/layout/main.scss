@@ -11,7 +11,7 @@ html {
     font-family:        $base-font-family;
     font-size:			$base-font-size;
     font-weight:		bold;
-    display:			block;    
+    display:			block;
     color:				$baseTextColor;
     margin:				0;
     padding:			0;
@@ -20,7 +20,7 @@ html {
 body {
 	width: 				$pageMaxWidth;
     height: 			$pageMaxHeight;
-    /*overflow: 		hidden;*/
+    overflow: 		    hidden;
     margin:				0;
     padding:			0;
     background: 		url(img/background_anzeige1.png) top left no-repeat #C8D5E6;

@@ -7,14 +7,14 @@
     {% block head %}
     	{{ parent() }}
     {% endblock %}
-    <body class="locale_{{ currentLang() }}{% block customizedClass %}{% endblock %}" id="{% block pageid %}{% endblock %}" type="{% block pagetype %}{% endblock %}">
+    <body class="hiddencursor locale_{{ currentLang() }}{% block customizedClass %}{% endblock %}" id="{% block pageid %}{% endblock %}" type="{% block pagetype %}{% endblock %}">
             {% block devhint %}
             	{{ parent() }}
             {% endblock %}
             {% block pageheader %}
             	{{ parent() }}
             {% endblock %}
-            <div id="aufrufanzeige" class="aufrufanzeige hiddencursor">
+            <div id="aufrufanzeige" class="aufrufanzeige">
             	<div class="content">
                 {% block content %}{% endblock %}
                 </div>
