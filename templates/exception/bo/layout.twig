@@ -5,13 +5,17 @@
 	<div id="main-header">
 		<span class="noprint">
 			<div class="adressangabe">
+				{% if header %}
+				{% trans header %}
+				{% else %}
                 Ein Fehler ist aufgetreten
+				{% endif %}
             </div>
         </span>
     </div>
 {% endblock %}
 {% block content %}
-  	<div class="alert alert-error noprint textile">
+	<div class="alert alert-error noprint textile">
         <h1>{% trans title %}</h1>
 
         {% if message %}
@@ -19,7 +23,6 @@
         	{% trans message %}
         	</p>
         {% endif %}
-
         {% if showlinks %}
         <ul>
         	{% for link, name in showlinks %}
@@ -27,5 +30,5 @@
         	{% endfor %}
         </ul>
         {% endif %}
-    </div>
+	</div>	
 {% endblock %}

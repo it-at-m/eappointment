@@ -1,5 +1,7 @@
 {%
     include "exception/bo/layout.twig" with {
-        "title" : "Wartenummernausgabe geschlossen!"
+        "header": " ",
+        "title" : "Wartenummernausgabe geschlossen!",
+        "message": "Diese Wartenummernausgabe muss noch freigegeben werden. <br />Identifikationsnummer: " ~ exception.templatedata.hash
     }
 %}
