@@ -68,9 +68,9 @@ class Calldisplay extends Schema\Entity
     {
         $name = '';
         if (1 == $this->getScopeList()->count()) {
-            $name = "s_" . $this->getScopeList()->getFirst()->id . "_bild.jpg";
+            $name = "s_" . $this->getScopeList()->getFirst()->id . "_bild";
         } elseif (1 == $this->getClusterList()->count()) {
-            $name = "c_" . $this->getClusterList()->getFirst()->id . "_bild.jpg";
+            $name = "c_" . $this->getClusterList()->getFirst()->id . "_bild";
         }
         return $name;
     }
