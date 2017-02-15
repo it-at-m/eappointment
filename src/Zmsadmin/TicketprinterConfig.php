@@ -17,7 +17,7 @@ class TicketprinterConfig extends BaseController
     /**
      * @return String
      */
-    public function invokeHook(
+    public function readResponse(
         \psr\http\message\requestinterface $request,
         \psr\http\message\responseinterface $response,
         array $args

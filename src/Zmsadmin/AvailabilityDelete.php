@@ -19,7 +19,7 @@ class AvailabilityDelete extends BaseController
      * @SuppressWarnings(UnusedFormalParameter)
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function invokeHook(
+    public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args

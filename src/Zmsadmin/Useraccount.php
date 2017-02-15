@@ -15,7 +15,7 @@ class Useraccount extends BaseController
      * @SuppressWarnings(Param)
      * @return String
      */
-    public function invokeHook(
+    public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
