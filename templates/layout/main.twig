@@ -7,14 +7,14 @@
     {% block head %}
     	{{ parent() }}
     {% endblock %}
-    <body class="locale_{{ currentLang() }}" id="{% block pageid %}{% endblock %}" type="{% block pagetype %}{% endblock %}">
+    <body class="hiddencursor locale_{{ currentLang() }}" id="{% block pageid %}{% endblock %}" type="{% block pagetype %}{% endblock %}">
             {% block devhint %}
             	{{ parent() }}
             {% endblock %}
             {% block pageheader %}
             	{{ parent() }}
             {% endblock %}
-            <div class="wartenummern hiddencursor">
+            <div class="wartenummern">
     			<div class="content">
                     {% block content %}
                     {% endblock %}

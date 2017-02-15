@@ -26,15 +26,16 @@ class Index extends BaseController
 
         $organisation = $ticketprinterHelper::$organisation;
         if (1 == count($ticketprinter->buttons) && 'scope' == $ticketprinter->buttons[0]['type']) {
-             return \BO\Slim\Render::redirect(
-                 'TicketprinterByScope',
-                 array (
+            return \BO\Slim\Render::redirect(
+                'TicketprinterByScope',
+                array(
                      'scopeId' => $ticketprinter->buttons[0]['scope']['id']
                  ),
-                 array ()
-             );
+                array()
+            );
         }
         $template = Helper\TemplateFinder::getCustomizedTemplate($ticketprinter, $organisation);
+        
         return \BO\Slim\Render::withHtml(
             $response,
             $template,

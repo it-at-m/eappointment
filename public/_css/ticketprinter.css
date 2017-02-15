@@ -77,7 +77,7 @@
   body {
     width: 1024px;
     height: 768px;
-    /*overflow: 		hidden;*/
+    overflow: hidden;
     margin: 0;
     padding: 0; }
   #main-header {
@@ -182,7 +182,6 @@
     margin: 0px;
     text-decoration: none; }
   div.variablerwarteschlangebutton button.disabled {
-    cursor: none;
     color: #999;
     background: url(img/multibutton_disabled.png) 0 24px no-repeat; }
   button.buttonTelefonnummernachtragen {
@@ -197,15 +196,13 @@
     left: 96px;
     top: 665px;
     padding: 38px 121px;
-    position: absolute;
-    cursor: pointer; }
+    position: absolute; }
   a.button {
     display: table-cell;
     text-align: center;
     vertical-align: middle;
     line-height: auto;
-    text-decoration: none;
-    cursor: pointer; }
+    text-decoration: none; }
   a.button.ja_nein, .ja_nein {
     background: url(img/ja_nein.png) 0 5px no-repeat;
     border: 0;
@@ -299,6 +296,8 @@
   .wartenummern {
     height: 758px;
     width: 1014px; }
+  .hiddencursor, button, input, select {
+    cursor: url(img/invisible_Mauszeiger.cur), crosshair !important; }
   .wartenummern .werbeblock_oben {
     position: absolute;
     top: 150px; }
