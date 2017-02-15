@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react'
 
 import * as Inputs from '../../../lib/inputs'
-const { FormGroup, Label, Controls } = Inputs
+const { FormGroup, Label, Controls, Select } = Inputs
 
 const readPropsCluster = cluster => {
     const { name, id } = cluster
@@ -41,6 +41,7 @@ class CallDisplayConfigView extends Component {
                     scopes: scopes.map(readPropsScope)
                 }
             }),
+            queueStatus: 'called',
             generatedUrl: ""
         }
     }
@@ -69,6 +70,10 @@ class CallDisplayConfigView extends Component {
 
         if (collections.clusterlist.length > 0) {
             parameters.push(`collections[clusterlist]=${collections.clusterlist.join(",")}`)
+        }
+
+        if (this.state.queueStatus !== 'called') {
+            parameters.push(`queue[status]=${this.state.queueStatus}`)
         }
 
         return `${baseUrl}?${parameters.join('&')}`
@@ -159,10 +164,25 @@ class CallDisplayConfigView extends Component {
     render() {
         const generatedUrl = this.buildUrl()
 
+        const onQueueStatusChange = (_, value) => {
+            this.setState({
+                queueStatus: value
+            })
+        }
+
         return (
             <form className="form-group calldisplay-config">
                 {this.state.departments.map(this.renderDepartment.bind(this))}
                 <fieldset>
+                    <FormGroup>
+                        <Label>Angezeigte Aufrufe</Label>
+                        <Controls>
+                            <Select
+                                options={[{name: 'Alle', value: 'called'}, {name: "Abholer", value: 'pending'}]}
+                                value={this.state.queueStatus}
+                                onChange={onQueueStatusChange} />
+                        </Controls>
+                    </FormGroup>
                     <FormGroup>
                         <Label>URL</Label>
                         <Controls>
