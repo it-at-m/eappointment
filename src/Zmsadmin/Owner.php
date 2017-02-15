@@ -23,7 +23,7 @@ class Owner extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-
+        $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
         $entityId = Validator::value($args['id'])->isNumber()
             ->getValue();
         $entity = \App::$http->readGetResult('/owner/' . $entityId . '/')
