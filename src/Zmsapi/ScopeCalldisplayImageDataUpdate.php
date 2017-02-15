@@ -21,14 +21,13 @@ class ScopeCalldisplayImageDataUpdate extends BaseController
     public static function render($itemId)
     {
         $message = Response\Message::create(Render::$request);
-
-        Helper\User::checkRights('scope');
         $query = new Query();
-        $scope = $query->readEntity($itemId)->withLessData();
+        $scope = $query->readEntity($itemId);
         if (! $scope) {
             throw new Exception\Scope\ScopeNotFound();
         }
 
+        Helper\User::checkRights('scope');
         $input = Validator::input()->isJson()->getValue();
         $entity = new \BO\Zmsentities\Mimepart($input);
 
