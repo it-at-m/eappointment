@@ -51,7 +51,7 @@ class Cluster extends BaseController
                 'workstation' => $workstation,
                 'cluster' => $entity->getArrayCopy(),
                 'department' => $department,
-                'scopeList' => $department->getScopeList(),
+                'scopeList' => $department->getScopeList()->sortByContactName(),
                 'callDisplayImage' => $callDisplayImage
             )
         );
