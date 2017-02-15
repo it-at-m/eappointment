@@ -29,4 +29,21 @@ class Link extends Base
         }
         return $linkList;
     }
+
+    /**
+     * write a link
+     *
+     * @param
+     * entity,
+     * organisationId
+     *
+     * @return Entity
+     */
+    public function writeEntity(Entity $entity, $departmentId)
+    {
+        $query = new Query\Link(Query\Base::INSERT);
+        $values = $query->reverseEntityMapping($entity, $departmentId);
+        $query->addValues($values);
+        return $this->writeItem($query);
+    }
 }
