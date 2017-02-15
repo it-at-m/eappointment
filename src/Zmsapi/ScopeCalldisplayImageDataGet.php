@@ -20,12 +20,14 @@ class ScopeCalldisplayImageDataGet extends BaseController
      */
     public static function render($itemId)
     {
-        Helper\User::checkRights('scope');
         $query = new Query();
-        $scope = $query->readEntity($itemId)->withLessData();
+        $scope = $query->readEntity($itemId);
         if (! $scope) {
             throw new Exception\Scope\ScopeNotFound();
         }
+
+        Helper\User::checkRights('scope');
+        
         $message = Response\Message::create(Render::$request);
         $message->data = $query->readImageData($itemId);
 
