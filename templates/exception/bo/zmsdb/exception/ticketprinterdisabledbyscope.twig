@@ -1,6 +1,9 @@
-{%
-    include "exception/bo/layout.twig" with {
-        "title" : "Wartenummernausgabe geschlossen!",
-		"message": exception.originalMessage
-    }
-%}
+{% extends "exception/bo/layout.twig" %}
+{% block content %}
+    <div class="alert alert-error noprint textile">
+	    <h1>Wartenummernausgabe geschlossen!</h1>
+	</div>
+    <br />
+    <br />
+    {{ exception.originalMessage }}
+{% endblock %}

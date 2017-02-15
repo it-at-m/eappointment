@@ -67,6 +67,6 @@ use \Psr\Http\Message\ResponseInterface;
     ->offsetSet('errorHandler',
     function ($container) {
         return function (RequestInterface $request, ResponseInterface $response, \Exception $exception) {
-            return \BO\Slim\TwigExceptionHandler::withHtml($request, $response, $exception);
+            return \BO\Zmsticketprinter\Helper\TwigExceptionHandler::withHtml($request, $response, $exception);
         };
     });
