@@ -23,6 +23,8 @@ import AvailabilityDayPage from './page/availabilityDay'
 import bindReact from './lib/bindReact.js'
 import { getDataAttributes } from './lib/utils'
 
+import preventFormResubmit from './element/form/preventFormResubmit'
+
 // Bind jQuery on $ for testing
 window.$ = $;
 
@@ -37,6 +39,10 @@ $('.emergency').each(function() {
 
 $('.department-links').each(function() {
     new DepartmentLinksView(this, getDataAttributes(this));
+})
+
+$('form').each(function() {
+    preventFormResubmit(this);
 })
 
 // Say hello
