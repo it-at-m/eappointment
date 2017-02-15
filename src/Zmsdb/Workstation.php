@@ -69,6 +69,8 @@ class Workstation extends Base
                 $workstation = $this->readEntity($loginName, $resolveReferences);
                 $workstation->authkey = $authKey;
             }
+        } else {
+            throw new Exception\Useraccount\InvalidCredentials();
         }
         return $workstation;
     }
