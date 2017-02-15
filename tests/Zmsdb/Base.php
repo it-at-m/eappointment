@@ -18,6 +18,15 @@ abstract class Base extends \PHPUnit_Framework_TestCase
         \BO\Zmsdb\Connection\Select::closeReadConnection();
     }
 
+    public function readFixture($filename)
+    {
+        $path = dirname(__FILE__) . '/fixtures/' . $filename;
+        if (!is_readable($path) || !is_file($path)) {
+            throw new \Exception("Fixture $path is not readable");
+        }
+        return file_get_contents($path);
+    }
+
     public function assertEntity($entityClass, $entity)
     {
         $this->assertInstanceOf($entityClass, $entity);

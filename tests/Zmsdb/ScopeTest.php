@@ -146,8 +146,29 @@ class ScopeTest extends Base
         $this->assertTrue(array_key_exists('data', $entity2->provider));
     }
 
+    public function testImageData()
+    {
+        $query = new Query();
+        $scope = $this->getTestEntity();
+        $mimepart = $this->getTestImageMimepart();
+        $writeImage = $query->writeImageData($scope->id, $mimepart);
+        $readImage = $query->readImageData($scope->id);
+        $this->assertEquals($writeImage->content, $readImage->content);
+        $this->assertContains('data:image/image/jpeg;base64', $readImage->content);
+    }
+
     protected function getTestEntity()
     {
         return (new Entity())->getExample();
+    }
+
+    protected function getTestImageMimepart()
+    {
+        $image = json_decode($this->readFixture("GetBase64Image.json"));
+        $mimepart = new \BO\Zmsentities\Mimepart();
+        $mimepart->mime = 'jpg';
+        $mimepart->base64 = true;
+        $mimepart->content = $image->data;
+        return $mimepart;
     }
 }
