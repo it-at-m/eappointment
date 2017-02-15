@@ -70,23 +70,21 @@ class UserAccount extends Base
     public function readAssignedDepartmentList($userAccount, $resolveReferences = 0)
     {
         if ($userAccount->isSuperUser()) {
-            $departmentList = (new Department())->readList($resolveReferences);
+            $query = Query\UserAccount::QUERY_READ_SUPERUSER_DEPARTMENTS;
+            $departmentIds = $this->getReader()->fetchAll($query);
         } else {
             $query = Query\UserAccount::QUERY_READ_ASSIGNED_DEPARTMENTS;
             $departmentIds = $this->getReader()->fetchAll($query, ['userAccountName' => $userAccount->id]);
-            $departmentList = new \BO\Zmsentities\Collection\DepartmentList();
-            foreach ($departmentIds as $item) {
-                $department = (new \BO\Zmsdb\Department())->readEntity($item['id'], $resolveReferences);
-                if ($department instanceof \BO\Zmsentities\Department && 0 < $department->getScopeList()->count()) {
-                    $departmentList->addEntity($department);
-                }
+        }
+        $departmentList = new \BO\Zmsentities\Collection\DepartmentList();
+        foreach ($departmentIds as $item) {
+            $department = (new \BO\Zmsdb\Department())->readEntity($item['id'], $resolveReferences);
+            if ($department instanceof \BO\Zmsentities\Department && 0 < $department->getScopeList()->count()) {
+                $department->name = $item['organisation__name'] .' -> '. $department->name;
+                $departmentList->addEntity($department);
             }
         }
-        foreach ($departmentList as $department) {
-            $organisation = (new \BO\Zmsdb\Organisation())->readByDepartmentId($department->id, $resolveReferences - 1);
-            $department->name = $organisation->name .' -> '. $department->name;
-        }
-        return $departmentList->sortByName();
+        return $departmentList;
     }
 
     public function readEntityByAuthKey($xAuthKey, $resolveReferences = 0)

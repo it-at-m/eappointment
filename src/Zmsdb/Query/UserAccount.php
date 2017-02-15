@@ -34,12 +34,24 @@ class UserAccount extends Base implements MappingInterface
             nutzerid=?
     ';
 
+    const QUERY_READ_SUPERUSER_DEPARTMENTS = '
+        SELECT behoerde.`BehoerdenID` AS id,
+            organisation.Organisationsname as organisation__name
+        FROM behoerde
+        LEFT JOIN organisation USING(OrganisationsID)
+        ORDER BY organisation.Organisationsname, behoerde.Name
+    ';
+
     const QUERY_READ_ASSIGNED_DEPARTMENTS = '
-        SELECT userAssignment.`behoerdenid` AS id
+        SELECT userAssignment.`behoerdenid` AS id,
+            organisation.Organisationsname as organisation__name
         FROM '. self::TABLE_ASSIGNMENT .' userAssignment
         LEFT JOIN '. self::TABLE .' userAccount ON userAccount.Name = :userAccountName
+        LEFT JOIN behoerde ON userAssignment.behoerdenid = behoerde.BehoerdenID
+        LEFT JOIN organisation USING(OrganisationsID)
         WHERE
             userAccount.`NutzerID` = userAssignment.`nutzerid`
+        ORDER BY organisation.Organisationsname, behoerde.Name
     ';
 
     public function getEntityMapping()

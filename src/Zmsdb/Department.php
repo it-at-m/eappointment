@@ -22,7 +22,7 @@ class Department extends Base
     {
         $cacheKey = "$departmentId-$resolveReferences";
         if (! $disableCache && array_key_exists($cacheKey, self::$departmentCache)) {
-            return self::$departmentCache[$cacheKey];
+            return clone self::$departmentCache[$cacheKey];
         }
         $query = new Query\Department(Query\Base::SELECT);
         $query->addEntityMapping()
@@ -33,7 +33,7 @@ class Department extends Base
             $department = $this->readEntityReferences($department, $resolveReferences);
             $department = $department->withOutClusterDuplicates();
             self::$departmentCache[$cacheKey] = $department;
-            return self::$departmentCache[$cacheKey];
+            return clone self::$departmentCache[$cacheKey];
         }
         return null;
     }
