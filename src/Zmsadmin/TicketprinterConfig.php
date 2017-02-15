@@ -15,6 +15,7 @@ class TicketprinterConfig extends BaseController
 {
     const SECURE_TOKEN = 'a9b215f1-e460-490c-8a0b-6d42c274d5e4';
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
     public function readResponse(
@@ -48,6 +49,7 @@ class TicketprinterConfig extends BaseController
                 'config' => $config,
                 'organisation' => $entity->getArrayCopy(),
                 'departments' => $departments->getArrayCopy(),
+                'workstation' => $workstation,
                 'menuActive' => 'ticketprinter'
             )
         );
