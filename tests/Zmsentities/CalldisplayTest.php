@@ -36,13 +36,13 @@ class CalldisplayTest extends EntityCommonTests
     {
         $entity = (new $this->entityclass())->getExample();
         $resolvedEntity = $entity->withResolvedCollections($this->getTestInput());
-        $this->assertEquals('c_110_bild.jpg', $resolvedEntity->getImageName());
+        $this->assertEquals('c_110_bild', $resolvedEntity->getImageName());
 
         $entity2 = (new $this->entityclass())->getExample();
         $resolvedEntity = $entity->withResolvedCollections(array(
             'scopelist' => '141',
         ));
-        $this->assertEquals('s_141_bild.jpg', $resolvedEntity->getImageName());
+        $this->assertEquals('s_141_bild', $resolvedEntity->getImageName());
     }
 
     protected function getTestInput()
