@@ -9,6 +9,35 @@ class Cluster extends Base
      */
     const TABLE = 'standortcluster';
 
+    public function getQueryWriteAssignedScopes()
+    {
+        return '
+            REPLACE INTO `clusterzuordnung`
+            SET
+                clusterID=:clusterId,
+                standortID=:scopeId
+        ';
+    }
+
+    public function getQueryDeleteAssignedScopes()
+    {
+        return '
+            DELETE FROM `clusterzuordnung`
+            WHERE
+                `clusterID` = :clusterId
+        ';
+    }
+
+    public function getQueryWriteImageData()
+    {
+        return '
+            REPLACE INTO `imagedata`
+            SET
+                imagename=:imagename,
+                imagecontent=:imagedata
+        ';
+    }
+
     public function getEntityMapping()
     {
         return [

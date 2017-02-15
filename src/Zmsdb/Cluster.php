@@ -255,7 +255,10 @@ class Cluster extends Base
         $query->addValues($values);
         $this->writeItem($query);
         $lastInsertId = $this->getWriter()->lastInsertId();
-        return $this->readEntity($lastInsertId);
+        if ($entity->toProperty()->scopes->isAvailable()) {
+            $this->writeAssignedScopes($entity->id, $entity->scopes);
+        }
+        return $this->readEntity($lastInsertId, 1);
     }
 
     /**
@@ -273,6 +276,37 @@ class Cluster extends Base
         $values = $query->reverseEntityMapping($entity);
         $query->addValues($values);
         $this->writeItem($query);
-        return $this->readEntity($clusterId);
+        if ($entity->toProperty()->scopes->isAvailable()) {
+            $this->writeAssignedScopes($clusterId, $entity->scopes);
+        }
+        return $this->readEntity($clusterId, 1);
+    }
+
+    /**
+     * create links preferences of a department
+     *
+     * @param
+     *            departmentId,
+     *            links
+     *
+     * @return Boolean
+     */
+    protected function writeAssignedScopes($clusterId, $scopeList)
+    {
+        $deleteStatement = $this->getWriter()->prepare(
+            (new Query\Cluster(Query\Base::DELETE))->getQueryDeleteAssignedScopes()
+        );
+        $deleteStatement->execute(array(
+            'clusterId' => $clusterId
+        ));
+        $writeStatement = $this->getWriter()->prepare(
+            (new Query\Cluster(Query\Base::REPLACE))->getQueryWriteAssignedScopes()
+        );
+        foreach ($scopeList as $scope) {
+            $writeStatement->execute(array(
+                'clusterId' => $clusterId,
+                'scopeId' => $scope['id']
+            ));
+        }
     }
 }
