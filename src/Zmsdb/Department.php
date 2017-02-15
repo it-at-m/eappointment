@@ -238,17 +238,10 @@ class Department extends Base
         $deleteQuery = new Query\Link(Query\Base::DELETE);
         $deleteQuery->addConditionDepartmentId($departmentId);
         $this->deleteItem($deleteQuery);
-        $query = new Query\Link(Query\Base::INSERT);
         foreach ($links as $link) {
-            $query->addValues(
-                [
-                    'behoerdenid' => $departmentId,
-                    'beschreibung' => $link['name'],
-                    'link' => $link['url'],
-                    'neuerFrame' => isset($link['target']) ? 1 : 0
-                ]
-            );
-            $this->writeItem($query);
+            $link = new \BO\Zmsentities\Link($link);
+            $query = new Link();
+            $query->writeEntity($link, $departmentId);
         }
     }
 
