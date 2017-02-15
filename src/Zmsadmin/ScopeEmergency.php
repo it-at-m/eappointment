@@ -17,7 +17,7 @@ class ScopeEmergency extends BaseController
     /**
      * @return String
      */
-    public function __invoke(
+    public function invokeHook(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
