@@ -19,7 +19,7 @@ class Organisation extends BaseController
      * @return String
      */
 
-    public function invokeHook(
+    public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
