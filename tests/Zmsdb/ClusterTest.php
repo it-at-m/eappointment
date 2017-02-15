@@ -86,8 +86,29 @@ class ClusterTest extends Base
         $this->assertTrue($deleteTest, "Failed to delete Cluster from Database.");
     }
 
+    public function testImageData()
+    {
+        $query = new Query();
+        $cluster = $this->getTestEntity();
+        $mimepart = $this->getTestImageMimepart();
+        $writeImage = $query->writeImageData($cluster->id, $mimepart);
+        $readImage = $query->readImageData($cluster->id);
+        $this->assertEquals($writeImage->content, $readImage->content);
+        $this->assertContains('data:image/image/jpeg;base64', $readImage->content);
+    }
+
     protected function getTestEntity()
     {
         return $input = (new Entity())->getExample();
+    }
+
+    protected function getTestImageMimepart()
+    {
+        $image = json_decode($this->readFixture("GetBase64Image.json"));
+        $mimepart = new \BO\Zmsentities\Mimepart();
+        $mimepart->mime = 'jpg';
+        $mimepart->base64 = true;
+        $mimepart->content = $image->data;
+        return $mimepart;
     }
 }
