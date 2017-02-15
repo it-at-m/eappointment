@@ -26,7 +26,7 @@ div.warteschlangebutton_gross a.eintragen {
     border: 0;
     color: #fff;
     font-size: 42px;
-    font-family: Arial, sans-serif; 
+    font-family: Arial, sans-serif;
     font-weight: bold;
     height: 195px;
     width: 660px;
@@ -68,13 +68,12 @@ div.warteschlangebutton_gross a.eintragen {
 }
 
 div.variablerwarteschlangebutton button.disabled {
-	cursor: none;
 	color:#999;
 	background: url(img/multibutton_disabled.png) 0 24px no-repeat;
 }
 
 button.buttonTelefonnummernachtragen
-{ 
+{
     background: url(img/handynummer_nachtragen.png) 0 24px no-repeat;
     border:0;
     color:#fff;
@@ -87,7 +86,6 @@ button.buttonTelefonnummernachtragen
     top: 665px;
     padding: 38px 121px;
     position:absolute;
-    cursor:pointer;
 }
 
 a.button {
@@ -96,7 +94,6 @@ a.button {
     vertical-align: middle;
     line-height: auto;
     text-decoration:none;
-    cursor:pointer;
 }
 
 a.button.ja_nein, .ja_nein {

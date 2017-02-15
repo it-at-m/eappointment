@@ -23,7 +23,7 @@ class Home extends BaseController
         if (! $homeUrl) {
             throw new Exception\HomeNotFound();
         }
-
+        $response = \BO\Slim\Render::withLastModified($response, time(), '0');
         return $response->withRedirect($homeUrl);
     }
 }
