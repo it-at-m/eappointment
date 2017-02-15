@@ -241,3 +241,7 @@ button.link  {
         cursor:             pointer;
     }
 }
+
+form[data-submitting] button[type=submit] {
+  @extend .btn--inactive;
+}
