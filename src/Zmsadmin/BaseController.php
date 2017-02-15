@@ -25,6 +25,12 @@ abstract class BaseController extends \BO\Slim\Controller
 
     public function __invoke(RequestInterface $request, ResponseInterface $response, array $args)
     {
-        return parent::__invoke($request, $response, $args);
+        $noCacheResponse = \BO\Slim\Render::withLastModified($response, time(), '0');
+        return $this->invokeHook($request, $response, $args);
+    }
+
+    public function invokeHook(RequestInterface $request, ResponseInterface $response, array $args)
+    {
+        return parent::__invoke($request, $noCacheResponse, $args);
     }
 }

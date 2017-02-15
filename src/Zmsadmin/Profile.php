@@ -15,7 +15,7 @@ class Profile extends BaseController
      * @SuppressWarnings(Param)
      * @return String
      */
-    public function __invoke(
+    public function invokeHook(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args

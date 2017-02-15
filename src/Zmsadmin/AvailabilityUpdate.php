@@ -19,7 +19,7 @@ class AvailabilityUpdate extends BaseController
      * @SuppressWarnings(UnusedFormalParameter)
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function __invoke(
+    public function invokeHook(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
