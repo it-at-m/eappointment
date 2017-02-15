@@ -17,6 +17,7 @@ use BO\Zmsentities\Department as Entity;
 class DepartmentDelete extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
     public function invokeHook(
@@ -25,19 +26,15 @@ class DepartmentDelete extends BaseController
         array $args
     ) {
         $entityId = Validator::value($args['id'])->isNumber()->getValue();
-        try {
-            \App::$http->readDeleteResult(
-                '/department/'. $entityId .'/'
-            )->getEntity();
-            return Helper\Render::redirect(
-                'owner_overview',
-                array(),
-                array(
-                    'success' => 'department_deleted'
-                )
-            );
-        } catch (\Exception $exception) {
-            return Helper\Render::error($exception);
-        }
+        \App::$http->readDeleteResult(
+            '/department/'. $entityId .'/'
+        )->getEntity();
+        return Helper\Render::redirect(
+            'owner_overview',
+            array(),
+            array(
+                'success' => 'department_deleted'
+            )
+        );
     }
 }
