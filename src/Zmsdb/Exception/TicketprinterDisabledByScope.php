@@ -7,7 +7,7 @@ namespace BO\Zmsdb\Exception;
  */
 class TicketprinterDisabledByScope extends \Exception
 {
-    protected $code = 500;
+    protected $code = 200;
 
     protected $message = "Ticketprinter disabled by scope";
 }
