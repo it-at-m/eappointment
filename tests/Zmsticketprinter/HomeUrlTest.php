@@ -40,9 +40,9 @@ class HomeUrlTest extends Base
                 'Ticketprinter' => '71ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2',
             ],
             'ticketprinter' => [
-                'buttonlist' => 's141,c110,l[http://www.berlin.de/|Portal berlin.de]'
-            ],
-            'home' => 'http://service.berlin.de/terminvereinbarung/ticketprinter/scope/141/'
+                'buttonlist' => 's141,c110,l[http://www.berlin.de/|Portal berlin.de]',
+                'home' => 'http://service.berlin.de/terminvereinbarung/ticketprinter/scope/141/'
+            ]
         ], [ ]);
         $homeUrl = \BO\Zmsclient\Ticketprinter::getHomeUrl();
         $this->assertEquals($homeUrl, 'http://service.berlin.de/terminvereinbarung/ticketprinter/scope/141/');
