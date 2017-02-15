@@ -20,12 +20,12 @@ class ClusterCalldisplayImageDataGet extends BaseController
      */
     public static function render($itemId)
     {
-        Helper\User::checkRights('cluster');
         $query = new Query();
-        $cluster = $query->readEntity($itemId)->withLessData();
+        $cluster = $query->readEntity($itemId);
         if (! $cluster) {
             throw new Exception\Cluster\ClusterNotFound();
         }
+        Helper\User::checkRights('cluster');
         $message = Response\Message::create(Render::$request);
         $message->data = $query->readImageData($itemId);
 
