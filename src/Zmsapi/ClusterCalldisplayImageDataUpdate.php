@@ -21,14 +21,13 @@ class ClusterCalldisplayImageDataUpdate extends BaseController
     public static function render($itemId)
     {
         $message = Response\Message::create(Render::$request);
-
-        Helper\User::checkRights('cluster');
         $query = new Query();
-        $cluster = $query->readEntity($itemId)->withLessData();
+        $cluster = $query->readEntity($itemId);
         if (! $cluster) {
             throw new Exception\Cluster\ClusterNotFound();
         }
 
+        Helper\User::checkRights('cluster');
         $input = Validator::input()->isJson()->getValue();
         $entity = new \BO\Zmsentities\Mimepart($input);
 
