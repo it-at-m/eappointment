@@ -12,6 +12,6 @@ class Calldisplay extends Base
     public function getQueryImage()
     {
         return 'SELECT imagename as name, imagecontent as data FROM `imagedata`
-            WHERE `imagename` = :name LIMIT 1';
+            WHERE `imagename` LIKE :name LIMIT 1';
     }
 }
