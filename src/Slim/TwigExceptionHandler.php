@@ -96,7 +96,11 @@ class TwigExceptionHandler
         if (isset($exception->data)) {
             $data = $exception->data;
         }
-        return array(
+        $templatedata = [];
+        if (isset($exception->templatedata)) {
+            $templatedata = $exception->templatedata;
+        }
+        return array_merge(array(
             "debug" => \App::DEBUG,
             "data" => $data,
             "failed" => $exception->getMessage(),
@@ -113,6 +117,6 @@ class TwigExceptionHandler
             "requestmethod" => $request->getMethod(),
             "response" => $response,
             "responsedata" => $responsedata,
-        );
+        ), $templatedata);
     }
 }
