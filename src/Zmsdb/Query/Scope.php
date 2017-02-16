@@ -122,6 +122,7 @@ class Scope extends Base implements MappingInterface
             'preferences__queue__callDisplayText' => 'scope.aufrufanzeigetext',
             'preferences__queue__firstNumber' => 'scope.startwartenr',
             'preferences__queue__lastNumber' => 'scope.endwartenr',
+            'preferences__queue__maxNumberContingent' => 'scope.wartenummernkontingent',
             'preferences__queue__processingTimeAverage' => self::expression(
                 'FLOOR(TIME_TO_SEC(`scope`.`Bearbeitungszeit`) / 60)'
             ),
@@ -247,6 +248,7 @@ class Scope extends Base implements MappingInterface
         $data['aufrufanzeigetext'] = $entity->getPreference('queue', 'callDisplayText');
         $data['startwartenr'] = $entity->getPreference('queue', 'firstNumber');
         $data['endwartenr'] = $entity->getPreference('queue', 'lastNumber');
+        $data['wartenummernkontingent'] = $entity->getPreference('queue', 'maxNumberContingent');
         $data['Bearbeitungszeit'] = gmdate("H:i", $entity->getPreference('queue', 'processingTimeAverage') * 60);
         $data['wartezeitveroeffentlichen'] = $entity->getPreference('queue', 'publishWaitingTimeEnabled', true);
         $data['ohnestatistik'] = (0 == $entity->getPreference('queue', 'statisticsEnabled')) ? 1 : 0;
