@@ -53,7 +53,8 @@ class WorkstationSelect extends BaseController
             array(
                 'title' => 'Standort und Arbeitsplatz auswählen',
                 'advancedData' => $advancedData,
-                'workstation' => $workstation
+                'workstation' => $workstation,
+                'menuActive' => 'select'
             )
         );
     }

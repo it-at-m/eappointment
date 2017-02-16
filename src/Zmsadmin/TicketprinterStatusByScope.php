@@ -39,6 +39,7 @@ class TicketprinterStatusByScope extends BaseController
         $input = $request->getParsedBody();
         if (is_array($input) && array_key_exists('save', $input)) {
             $entity->status['ticketprinter']['deactivated'] = $input['kioskausgabe'];
+            $workstation->scope['status']['ticketprinter']['deactivated'] = $input['kioskausgabe'];
             if ($input['hinweis']) {
                 if (!$entity->preferences['ticketprinter']) {
                     $entity->preferences['ticketprinter'] = [];
