@@ -48,6 +48,7 @@ class Profile extends BaseController
                 'title' => 'Nutzerprofil',
                 'menuActive' => 'profile',
                 'updated' => $updated,
+                'workstation' => $workstation,
                 'useraccount' => $entity->getArrayCopy(),
             )
         );
