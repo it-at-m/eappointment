@@ -93,9 +93,9 @@ class Useraccount extends Schema\Entity
         return true;
     }
 
-    public function testRights(array $requiredRights)
+    public function testRights(array $requiredRights, \DateTimeInterface $dateTime)
     {
-        if ($this->hasId()) {
+        if ($this->hasId() && false === $this->isOveraged($dateTime)) {
             if (!$this->hasRights($requiredRights)) {
                 throw new Exception\UserAccountMissingRights(
                     "Missing rights " . htmlspecialchars(implode(',', $requiredRights))
@@ -105,6 +105,12 @@ class Useraccount extends Schema\Entity
             throw new Exception\UserAccountMissingLogin();
         }
         return $this;
+    }
+
+    public function isOveraged(\DateTimeInterface $dateTime)
+    {
+        $lastLogin = (new \DateTimeImmutable())->setTimestamp($this['lastLogin'])->modify('23:59:59');
+        return ($lastLogin < $dateTime);
     }
 
     public function isSuperUser()
