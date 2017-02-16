@@ -26,10 +26,13 @@ class WorkstationUpdate extends BaseController
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Workstation($input);
         $entity->testValid();
+
+        Helper\User::testWorkstationAssigend($entity, $resolveReferences);
+
         $workstation = $query->updateEntity($entity, $resolveReferences);
 
         $message = Response\Message::create(Render::$request);
-        $message->data = ($workstation->hasId()) ? $workstation : null;
+        $message->data = ($workstation) ? $workstation : null;
         Render::lastModified(time(), '0');
         Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }
