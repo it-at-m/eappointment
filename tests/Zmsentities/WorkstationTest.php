@@ -4,8 +4,9 @@ namespace BO\Zmsentities\Tests;
 
 class WorkstationTest extends EntityCommonTests
 {
-
     public $entityclass = '\BO\Zmsentities\Workstation';
+
+    const DEFAULT_TIME = '2016-04-01 11:55:00';
 
     public function testBasic()
     {
@@ -42,6 +43,8 @@ class WorkstationTest extends EntityCommonTests
 
     public function testUseraccountRights()
     {
+        $now = new \DateTimeImmutable(self::DEFAULT_TIME);
+
         $entity = (new $this->entityclass())->getExample();
         $rights = $entity->getUseraccountRights();
         $this->assertTrue(count($rights) > 0, 'Useraccount rights missed');
@@ -51,7 +54,7 @@ class WorkstationTest extends EntityCommonTests
         $userAccount->rights['superuser'] = false;
         $userAccount->setRights('superuser');
         $entity->useraccount = $userAccount;
-        $userAccount->testRights(['superuser']);
+        $userAccount->testRights(['superuser'], $now);
         $this->assertTrue($entity->hasSuperUseraccount(), 'Useraccount should have a superuser right');
 
         unset($userAccount->rights['superuser']);
