@@ -6,7 +6,7 @@ class WorkstationTest extends EntityCommonTests
 {
     public $entityclass = '\BO\Zmsentities\Workstation';
 
-    const DEFAULT_TIME = '2016-04-01 11:55:00';
+    const DEFAULT_TIME = '2015-11-19 11:55:00';
 
     public function testBasic()
     {
@@ -62,7 +62,7 @@ class WorkstationTest extends EntityCommonTests
         $entity->useraccount = $userAccount;
 
         try {
-            $userAccount->testRights(array_keys(array('superuser')));
+            $userAccount->testRights(array_keys(array('superuser')), $now);
             $this->fail("Expected exception UserAccountMissingRights not thrown");
         } catch (\BO\Zmsentities\Exception\UserAccountMissingRights $exception) {
             $this->assertEquals(403, $exception->getCode());
@@ -70,7 +70,7 @@ class WorkstationTest extends EntityCommonTests
 
         unset($userAccount['id']);
         try {
-            $userAccount->testRights(array_keys(array('superuser')));
+            $userAccount->testRights(array_keys(array('superuser')), $now);
             $this->fail("Expected exception UserAccountMissingRights not thrown");
         } catch (\BO\Zmsentities\Exception\UserAccountMissingLogin $exception) {
             $this->assertEquals(403, $exception->getCode());
