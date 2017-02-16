@@ -109,8 +109,11 @@ class Useraccount extends Schema\Entity
 
     public function isOveraged(\DateTimeInterface $dateTime)
     {
-        $lastLogin = (new \DateTimeImmutable())->setTimestamp($this['lastLogin'])->modify('23:59:59');
-        return ($lastLogin < $dateTime);
+        if (array_key_exists('lastLogin', $this)) {
+            $lastLogin = (new \DateTimeImmutable())->setTimestamp($this['lastLogin'])->modify('23:59:59');
+            return ($lastLogin < $dateTime);
+        }
+        return false;
     }
 
     public function isSuperUser()
