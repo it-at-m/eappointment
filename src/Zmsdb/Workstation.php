@@ -49,6 +49,22 @@ class Workstation extends Base
         return $workstationList;
     }
 
+    public function readWorkstationByScopeAndName($scopeId, $workstationName, $resolveReferences = 0)
+    {
+        $query = new Query\Workstation(Query\Base::SELECT);
+        $query
+            ->addEntityMapping()
+            ->addConditionScopeId($scopeId)
+            ->addConditionWorkstationName($workstationName)
+            ->addResolvedReferences($resolveReferences);
+        $workstation = $this->fetchOne($query, new Entity());
+        if (! $workstation->hasId()) {
+            return null;
+        }
+        $workstation->useraccount = (new UserAccount)->readEntityByUserId($workstation->id, $resolveReferences - 1);
+        return $workstation;
+    }
+
     public function writeEntityLoginByName($loginName, $password, \DateTimeInterface $dateTime, $resolveReferences = 0)
     {
         $userAccount = new UserAccount();
