@@ -51,6 +51,12 @@ class Workstation extends Base implements MappingInterface
         return $this;
     }
 
+    public function addConditionWorkstationName($workstationName)
+    {
+        $this->query->where('workstation.Arbeitsplatznr', '=', $workstationName);
+        return $this;
+    }
+
     public function addConditionWorkstationId($workstationId)
     {
         $this->query->where('workstation.NutzerID', '=', $workstationId);
@@ -81,6 +87,6 @@ class Workstation extends Base implements MappingInterface
         $data = array_filter($data, function ($value) {
             return ($value !== null && $value !== false);
         });
-            return $data;
+        return $data;
     }
 }

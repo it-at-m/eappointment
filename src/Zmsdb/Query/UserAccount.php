@@ -78,6 +78,14 @@ class UserAccount extends Base implements MappingInterface
         return $this;
     }
 
+    public function addConditionUserId($userId)
+    {
+        $this->query->where('userAccount.NutzerID', '=', $userId);
+        return $this;
+    }
+
+
+
     public function addConditionPassword($password)
     {
         $this->query->where('userAccount.Passworthash', '=', md5($password));
@@ -115,7 +123,7 @@ class UserAccount extends Base implements MappingInterface
         $data = array_filter($data, function ($value) {
             return ($value !== null && $value !== false);
         });
-            return $data;
+        return $data;
     }
 
     public function postProcess($data)

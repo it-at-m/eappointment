@@ -7,7 +7,6 @@ use \BO\Zmsentities\Collection\UseraccountList as Collection;
 
 class UserAccount extends Base
 {
-
     public function readIsUserExisting($loginName, $password = false)
     {
         $query = new Query\UserAccount(Query\Base::SELECT);
@@ -94,6 +93,15 @@ class UserAccount extends Base
             ->addResolvedReferences($resolveReferences)
             ->addConditionXauthKey($xAuthKey);
         return ($xAuthKey) ? $this->fetchOne($query, new Entity()) : new Entity();
+    }
+
+    public function readEntityByUserId($userId, $resolveReferences = 0)
+    {
+        $query = new Query\UserAccount(Query\Base::SELECT);
+        $query->addEntityMapping()
+            ->addResolvedReferences($resolveReferences)
+            ->addConditionUserId($userId);
+        return ($userId) ? $this->fetchOne($query, new Entity()) : new Entity();
     }
 
     public function readCollectionByDepartmentId($departmentId, $resolveReferences = 0)
@@ -183,7 +191,7 @@ class UserAccount extends Base
         $userId = $this->readEntityIdByLoginName($loginName);
         foreach ($entity->departments as $department) {
             $statement->execute(
-                array (
+                array(
                     $userId,
                     $department['id']
                 )
