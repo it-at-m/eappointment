@@ -27,14 +27,18 @@ class ScopeAvailabilityMonth extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
         if (isset($args['date'])) {
             $dateTime = new \BO\Zmsentities\Helper\DateTime($args['date']);
         } else {
             $dateTime = \App::$now;
         }
         $scopeId = Validator::value($args['id'])->isNumber()->getValue();
-        $scope = \App::$http->readGetResult('/scope/'. $scopeId .'/')->getEntity();
-        $availabilityList = \App::$http->readGetResult('/scope/'. $scopeId .'/availability/')->getCollection();
+        $scope = \App::$http->readGetResult('/scope/'. $scopeId .'/', ['resolveReferences' => 1])->getEntity();
+        $availabilityList = \App::$http->readGetResult(
+            '/scope/'. $scopeId .'/availability/',
+            ['resolveReferences' => 2]
+        )->getCollection();
         $calendar = new Calendar();
         $calendar->firstDay->setDateTime($dateTime->modify('first day of this month'));
         $calendar->lastDay->setDateTime($dateTime->modify('last day of this month'));
@@ -54,16 +58,18 @@ class ScopeAvailabilityMonth extends BaseController
             'page/availabilityMonth.twig',
             array(
                 'availabilityList' => $availabilityList,
-                'availabilityListSlices' => $availabilityList->withCalculatedSlots(),
+                //'availabilityListSlices' => $availabilityList->withCalculatedSlots(),
                 //'conflicts' => $conflicts,
                 'calendar' => $calendar,
+                'dayoffList' => $scope->getDayoffList(),
                 'dateTime' => $dateTime,
                 'timestamp' => $dateTime->getTimeStamp(),
                 'month' => $month,
                 'scope' => $scope,
                 'menuActive' => 'availability',
-                'maxWorkstationCount' => $availabilityList->getMaxWorkstationCount(),
+                //'maxWorkstationCount' => $availabilityList->getMaxWorkstationCount(),
                 'today' => $dateTime->format('Y-m-d'),
+                'workstation' => $workstation,
                 'baseMonthString' => $dateTime->modify('first day of this month')->format('m'),
                 'baseYearString' => $dateTime->modify('first day of this month')->format('Y'),
                 'baseMonth_timestamp' => $dateTime->modify('first day of this month')->getTimeStamp()
