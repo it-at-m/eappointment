@@ -83,6 +83,11 @@ class SlotList extends Base
         return $slotList;
     }
 
+    /**
+     * Reduce free appointments on slot matching appointment
+     *
+     * @return bool true on success and false if no matching slot is found or no appointments are free
+     */
     public function removeAppointment(\BO\Zmsentities\Appointment $appointment)
     {
         $slot = $this->getByDateTime($appointment->toDateTime());
