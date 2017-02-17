@@ -77,7 +77,7 @@ class ProcessList extends Base
     public function withOutAvailability(\BO\Zmsentities\Collection\AvailabilityList $availabilityList)
     {
         $processList = new static();
-        $slotList = $availabilityList->getSlotList();
+        $slotList = $availabilityList->withType('appointment')->getSlotList();
         foreach ($this as $process) {
             if (!$slotList->removeAppointment($process->getFirstAppointment())) {
                 $processList[] = clone $process;
