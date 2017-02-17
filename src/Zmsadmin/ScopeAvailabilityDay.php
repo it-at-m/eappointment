@@ -39,6 +39,9 @@ class ScopeAvailabilityDay extends BaseController
             ->readGetResult('/scope/' . intval($scope_id) . '/day/' . $dateTime->format('Y-m-d') . '/')
             ->getCollection()
             ;
+        if (!$processList) {
+            $processList = new \BO\Zmsentities\Collection\ProcessList();
+        }
         $conflicts = $availabilityList->getConflicts();
         if ($processList) {
             $conflicts->addList($processList->withOutAvailability($availabilityList));
