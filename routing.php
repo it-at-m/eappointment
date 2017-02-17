@@ -213,12 +213,6 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/dayoff/{year:\d+}/{id:\d+}/', '\BO\Zmsadmin\DayoffEdit')
     ->setName("dayoffEdit");
 
-\App::$slim->get('/department/{id:\d+}/dayoff/', '\BO\Zmsadmin\DayoffByDepartment')
-    ->setName("dayoffByDepartment");
-
-\App::$slim->get('/department/{id:\d+}/dayoff/{year:\d+}/', '\BO\Zmsadmin\DayoffByDepartmentAndYear')
-    ->setName("dayoffByDepartmentAndYear");
-
 \App::$slim->get('/testpage/', '\BO\Zmsadmin\Testpage')
     ->setName("testpage");
 
