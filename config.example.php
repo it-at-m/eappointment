@@ -7,8 +7,8 @@ class App extends \BO\Zmsticketprinter\Application
 {
     const IDENTIFIER = 'Zmsticketprinter-ENV';
     const APP_PATH = APP_PATH;
-    const DEBUG = true;
-    const SLIM_DEBUG = true;
+    const DEBUG = false;
+    const SLIM_DEBUG = false;
     //const TWIG_CACHE = '/cache/';
     const MONOLOG_LOGLEVEL = 'debug';
     const HTTP_BASE_URL = ZMS_API_URL;
