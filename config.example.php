@@ -6,6 +6,8 @@ define('ZMS_API_URL', getenv('ZMS_API_URL') ? getenv('ZMS_API_URL') : 'https://l
 class App extends \BO\Zmsadmin\Application
 {
     const IDENTIFIER = 'Zmsadmin-ENV';
+    const DEBUG = false;
+
     /**
      * HTTP url for api
      */
