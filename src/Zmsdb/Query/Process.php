@@ -89,6 +89,30 @@ class Process extends Base implements MappingInterface
             ),
             'createIP' => 'process.IPAdresse',
             'createTimestamp' => 'process.IPTimeStamp',
+            'status' => self::expression(
+                '@status := CASE
+                    WHEN process.Name = "(abgesagt)"
+                        THEN "deleted"
+                    WHEN process.StandortID = 0
+                        THEN "blocked"
+                    WHEN process.nicht_erschienen != 0
+                        THEN "missed"
+                    WHEN process.Abholer != 0 AND process.AbholortID != 0
+                        THEN "pending"
+                    WHEN process.aufruferfolgreich != 0
+                        THEN "processing"
+                    WHEN process.aufrufzeit != "00:00:00"
+                        THEN "called"
+                    WHEN process.wsm_aufnahmezeit != "00:00:00"
+                        THEN "queued"
+                    WHEN process.vorlaeufigeBuchung = 0
+                        THEN "confirmed"
+                    WHEN process.vorlaeufigeBuchung = 1
+                        THEN "reserved"
+                    ELSE "free"
+                END'
+            ),
+            'queue__status' => self::expression('@status'),
             'queue__arrivalTime' => self::expression(
                 'IF(`process`.`Uhrzeit`,
                     CONCAT(`process`.`Datum`, " ", `process`.`Uhrzeit`),
@@ -101,7 +125,7 @@ class Process extends Base implements MappingInterface
                 'IF(`process`.`wartenummer`,
                     `process`.`wartenummer`,
                     `process`.`BuergerID`
-                )'
+)'
             ),
             'queue__destination' => 'processuser.Arbeitsplatznr',
             'queue__destinationHint' => 'processuser.aufrufzusatz',
@@ -119,6 +143,9 @@ class Process extends Base implements MappingInterface
     public function addConditionProcessId($processId)
     {
         $this->query->where('process.BuergerID', '=', $processId);
+        $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) {
+            $query->andWith(self::expression('process.istFolgeterminvon IS NULL OR process.istFolgeterminvon'), '=', 0);
+        });
         return $this;
     }
 
