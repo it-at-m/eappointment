@@ -2484,7 +2484,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/scope/{id}/day/{day}/":
  *      get:
- *          description: Get a list of availability entries
+ *          description: Get a list of processes by scope and day
  *          parameters:
  *              -   name: id
  *                  description: scope number
@@ -2515,7 +2515,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                          data:
  *                              type: array
  *                              items:
- *                                  $ref: "schema/availability.json"
+ *                                  $ref: "schema/process.json"
  *              404:
  *                  description: "scope id does not exists"
  */
