@@ -71,7 +71,7 @@ class Slot extends Schema\Entity
     public function removeAppointment()
     {
         if ($this->intern <= 0) {
-            throw new Exception\SlotFull("Could not add another appointment to slot $this");
+            throw new Exception\SlotFull("Could not remove another appointment from $this");
         }
         $this->intern = $this->intern - 1;
         if ($this->callcenter > 0) {
