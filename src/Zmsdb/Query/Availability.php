@@ -98,6 +98,10 @@ class Availability extends Base implements MappingInterface
         return $this;
     }
 
+    /**
+     * Used to identify old availabilities as appointment and openinghours
+     *
+     */
     public function addConditionDoubleTypes()
     {
         $this->query
@@ -161,8 +165,8 @@ class Availability extends Base implements MappingInterface
         $data['Offen_ab'] = $entity->bookable['startInDays'];
         $data['Offen_bis'] = $entity->bookable['endInDays'];
         $data['kommentar'] = $entity->description;
-        $data['Startdatum'] = (new \DateTimeImmutable('@'. $entity->startDate))->format('Y-m-d');
-        $data['Endedatum'] = (new \DateTimeImmutable('@'. $entity->endDate))->format('Y-m-d');
+        $data['Startdatum'] = $entity->getStartDateTime()->format('Y-m-d');
+        $data['Endedatum'] = $entity->getEndDateTime()->format('Y-m-d');
         if ('openinghours' == $entity->type) {
             $data['Anfangszeit'] = $entity->startTime;
             $data['Endzeit'] = $entity->endTime;

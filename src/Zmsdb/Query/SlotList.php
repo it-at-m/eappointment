@@ -126,6 +126,10 @@ class SlotList
             AND o.Endedatum >= :start_availability
             AND o.Startdatum <= :end_availability
 
+            -- ignore availability on midnight
+            AND o.Terminanfangszeit != "00:00:00"
+            AND o.Terminendzeit != "00:00:00"
+
             -- ignore availability without appointment slots
             AND o.Anzahlterminarbeitsplaetze != 0
         GROUP BY o.OeffnungszeitID, b.Datum, `slotnr`
