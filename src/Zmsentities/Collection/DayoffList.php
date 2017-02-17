@@ -5,14 +5,15 @@ class DayoffList extends Base
 {
     public function hasEntityByDate($date)
     {
-        $date = new \BO\Zmsentities\Helper\DateTime($date);
-        $date->modify('00:00:00');
+        return $this->getByDate($date) ? true : false;
+    }
+
+    public function getByDate($date)
+    {
+        $date = (new \BO\Zmsentities\Helper\DateTime($date))->format('Y-m-d');
         foreach ($this as $entity) {
-            $entityDate = new \BO\Zmsentities\Helper\DateTime('@'. $entity->date);
-            $entityDate = $entityDate->setTimezone($date->getTimezone());
-            $entityDate = $entityDate->modify('00:00:00');
-            if ($entityDate->format('U') == $date->format('U')) {
-                return true;
+            if ($entity->getDateTime()->format('Y-m-d') == $date) {
+                return $entity;
             }
         }
         return false;

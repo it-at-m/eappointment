@@ -14,4 +14,9 @@ class Dayoff extends Schema\Entity
         $this->date = $dateTime->modify('00:00:00')->getTimestamp();
         return $this;
     }
+
+    public function getDateTime()
+    {
+        return (new \BO\Zmsentities\Helper\DateTime())->setTimestamp($this->date);
+    }
 }

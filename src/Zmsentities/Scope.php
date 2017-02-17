@@ -26,6 +26,19 @@ class Scope extends Schema\Entity
         throw new Exception\ScopeMissingProvider("No reference to a provider found");
     }
 
+    public function getDayoffList()
+    {
+        if (!$this->dayoff instanceof Collection\DayoffList) {
+            $this->dayoff = new Collection\DayoffList($this->dayoff);
+            foreach ($this->dayoff as $key => $dayoff) {
+                if (!$dayoff instanceof Dayoff) {
+                    $this->dayoff[$key] = new Dayoff($dayoff);
+                }
+            }
+        }
+        return $this->dayoff;
+    }
+
     public function getNotificationPreferences()
     {
         return $this->toProperty()->preferences->notifications->get();
