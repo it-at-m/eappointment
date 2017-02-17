@@ -135,7 +135,7 @@ class View extends BaseView {
     }
 
     playSound(data) {
-        console.log('playSound', data.activated, this.data.activated, data.calledByWorkstation, this.workstationName)
+        //console.log('playSound', data.activated, this.data.activated, data.calledByWorkstation, this.workstationName)
         let play = false
 
         if (data.activated === "1") {
