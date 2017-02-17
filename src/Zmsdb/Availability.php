@@ -18,14 +18,21 @@ class Availability extends Base
                 ->addResolvedReferences($resolveReferences)
                 ->addConditionAvailabilityId($availabilityId);
             $availability = $this->fetchOne($query, new Entity());
-            $availability['scope'] = (new Scope())->readEntity($availability['scope']['id'], $resolveReferences);
+            if ($availability->hasId() && $resolveReferences > 0) {
+                $availability['scope'] = (new Scope())->readEntity($availability->scope['id'], $resolveReferences - 1);
+            }
             self::$cache[$cacheKey] = $availability;
         }
-        return self::$cache[$cacheKey];
+        return clone self::$cache[$cacheKey];
     }
 
     public function readList($scopeId, $resolveReferences = 0)
     {
+        if (1 <= $resolveReferences) {
+            $scope = (new Scope())->readEntity($scopeId, $resolveReferences - 1);
+        } else {
+            $scope = new \BO\Zmsentities\Scope(['id' => $scopeId]);
+        }
         $collection = new Collection();
         $query = new Query\Availability(Query\Base::SELECT);
         $query
@@ -36,10 +43,7 @@ class Availability extends Base
         if (count($result)) {
             foreach ($result as $entity) {
                 if ($entity instanceof Entity) {
-                    if (1 <= $resolveReferences) {
-                        $entity['scope'] = (new Scope())
-                            ->readEntity($entity['scope']['id'], $resolveReferences - 1);
-                    }
+                    $entity['scope'] = clone $scope;
                     $collection->addEntity($entity);
                 }
             }
@@ -63,6 +67,7 @@ class Availability extends Base
                             ]),
                     ]));
                     $entity->id = $tempAvailability->id;
+                    $entity['scope'] = clone $scope;
                     $collection->addEntity($entity);
                 }
             }
