@@ -21,7 +21,7 @@ class Application extends \BO\Slim\Application
     /**
      * @var String VERSION_MINOR
      */
-    const VERSION_MINOR = '9';
+    const VERSION_MINOR = '10';
 
     /**
      * @var String VERSION_PATCH
