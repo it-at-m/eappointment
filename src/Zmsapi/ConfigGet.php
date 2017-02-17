@@ -9,6 +9,7 @@ namespace BO\Zmsapi;
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\Config as Query;
+use \BO\Zmsapi\Helper\User;
 
 class ConfigGet extends BaseController
 {
@@ -17,20 +18,23 @@ class ConfigGet extends BaseController
      */
     public static function render()
     {
-        $message = Response\Message::create(Render::$request);
-        $token = Render::$request->getHeader('X-Token');
-        if (\App::SECURE_TOKEN == current($token)) {
-            $config = (new Query())->readEntity();
-            if (!$config) {
-                $message->meta->error = true;
-                $message->statuscode = 404;
-            } else {
-                $message->data = $config;
-                $message->data->id = 1;
+        try {
+            Helper\User::checkRights('basic');
+        } catch (\Exception $exception) {
+            $token = Render::$request->getHeader('X-Token');
+            if (\App::SECURE_TOKEN != current($token)) {
+                throw new Exception\Config\ConfigAuthentificationFailed();
             }
-        } else {
-            throw new Exception\Config\SecureTokenMissed();
         }
+
+        $config = (new Query())->readEntity();
+        if (!$config) {
+            throw new Exception\Config\ConfigNotFound();
+        }
+
+        $message = Response\Message::create(Render::$request);
+        $message->data = $config;
+        $message->data->id = 1;
 
         Render::lastModified(time(), '0');
         Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
