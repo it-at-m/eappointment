@@ -34,7 +34,7 @@ class App extends \BO\Zmsapi\Application
 {
     const APP_PATH = APP_PATH;
     const IDENTIFIER = 'Zmsapi-ENV';
-    const DEBUG = true;
+    const DEBUG = false;
 
     /**
      * @var String DB_DSN_READONLY
