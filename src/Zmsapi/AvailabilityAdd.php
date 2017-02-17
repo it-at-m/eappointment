@@ -26,7 +26,13 @@ class AvailabilityAdd extends BaseController
         foreach ($input as $availability) {
             $entity = new \BO\Zmsentities\Availability($availability);
             if ($entity->id) {
-                $entity = (new Query())->updateEntity($entity->id, $entity);
+                $oldentity = (new Query())->readEntity($entity->id);
+                if ($oldentity->hasId()) {
+                    $entity = (new Query())->updateEntity($entity->id, $entity);
+                } else {
+                    //Workaround for openinghours migration, remove after AP13
+                    $entity = (new Query())->writeEntity($entity);
+                }
             } else {
                 $entity = (new Query())->writeEntity($entity);
             }
