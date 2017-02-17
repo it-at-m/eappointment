@@ -159,6 +159,11 @@ abstract class Base extends \PHPUnit_Framework_TestCase
         if (array_key_exists('__cookie', $parameters)) {
             $request = $request->withCookieParams($parameters['__cookie']);
         }
+        if (array_key_exists('__header', $parameters)) {
+            foreach ($parameters['__header'] as $key => $value) {
+                $request = $request->withAddedHeader($key, $value);
+            }
+        }
         $validator->makeInstance();
         $request = \BO\Slim\Middleware\Validator::withValidator($request);
         $response = $controller->__invoke($request, $this->getResponse(), $arguments);
