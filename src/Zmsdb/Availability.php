@@ -68,6 +68,9 @@ class Availability extends Base
                     ]));
                     $entity->id = $tempAvailability->id;
                     $entity['scope'] = clone $scope;
+                    $entity->workstationCount['intern'] = 0;
+                    $entity->workstationCount['callcenter'] = 0;
+                    $entity->workstationCount['public'] = 0;
                     $collection->addEntity($entity);
                 }
             }
