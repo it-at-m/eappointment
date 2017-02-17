@@ -72,6 +72,15 @@ class AvailabilityList extends Base
         return $list;
     }
 
+    public function getAvailableSecondsOnDateTime(\DateTimeImmutable $dateTime, $type = "intern")
+    {
+        $seconds = 0;
+        foreach ($this->withType('appointment')->withDateTime($dateTime) as $availability) {
+            $seconds += $availability->getAvailableSecondsPerDay($type);
+        }
+        return $seconds;
+    }
+
     /*
      * is opened on a day -> not specified by a time
      */

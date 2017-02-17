@@ -167,6 +167,13 @@ class Availability extends Schema\Entity
         return true;
     }
 
+    public function getAvailableSecondsPerDay($type = "intern")
+    {
+        $start = $this->getStartDateTime()->getSecondsOfDay();
+        $end = $this->getEndDateTime()->getSecondsOfDay();
+        return ($end - $start) * $this->workstationCount[$type];
+    }
+
     /**
      * Check, if the dateTime is a day covered by availability
      *
@@ -195,9 +202,9 @@ class Availability extends Schema\Entity
     public function hasDayOff(\DateTimeInterface $dateTime)
     {
         if (isset($this['scope']['dayoff'])) {
-            $timeStamp = $dateTime->getTimestamp();
+            $timeStamp = $dateTime->format('Y-m-d');
             foreach ($this['scope']['dayoff'] as $dayOff) {
-                if ($dayOff['date'] == $timeStamp) {
+                if (date('Y-m-d', $dayOff['date']) == $timeStamp) {
                     return true;
                 }
             }
