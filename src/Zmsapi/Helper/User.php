@@ -71,7 +71,11 @@ class User
         if (!$userAccount->hasId()) {
             throw new \BO\Zmsentities\Exception\UserAccountMissingLogin();
         }
-        $department = $userAccount->testDepartmentById($departmentId);
+        if (!$userAccount->isSuperUser()) {
+            $department = $userAccount->testDepartmentById($departmentId);
+        } else {
+            $department = (new \BO\Zmsdb\Department())->readEntity($departmentId);
+        }
         return $department;
     }
 
