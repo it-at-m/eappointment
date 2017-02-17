@@ -13,8 +13,6 @@ use BO\Zmsentities\Collection\DepartmentList;
 
 class Calldisplay extends BaseController
 {
-    const SECURE_TOKEN = 'a9b215f1-e460-490c-8a0b-6d42c274d5e4';
-
     /**
      * @SuppressWarnings(Param)
      * @return String
@@ -24,12 +22,11 @@ class Calldisplay extends BaseController
         \psr\http\message\responseinterface $response,
         array $args
     ) {
-
         $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
         $scopeId = $workstation['scope']['id'];
         $entityId = Validator::value($scopeId)->isNumber()->getValue();
 
-        $config = \App::$http->readGetResult('/config/', [], static::SECURE_TOKEN)->getEntity();
+        $config = \App::$http->readGetResult('/config/')->getEntity();
 
         $entity = \App::$http->readGetResult(
             '/scope/'. $entityId .'/organisation/',
@@ -48,7 +45,7 @@ class Calldisplay extends BaseController
             'page/calldisplay.twig',
             array(
                 'title' => 'Anmeldung an Warteschlange',
-                'config' => $config,
+                'config' => $config->getArrayCopy(),
                 'organisation' => $entity->getArrayCopy(),
                 'departments' => $departments->getArrayCopy(),
                 'workstation' => $workstation,
