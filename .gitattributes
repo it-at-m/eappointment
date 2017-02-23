@@ -1,0 +1,3 @@
+*.php diff=php
+tests export-ignore
+composer.lock merge=ours
