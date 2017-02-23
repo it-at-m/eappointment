@@ -114,10 +114,7 @@ class Process extends Base implements MappingInterface
             ),
             'queue__status' => self::expression('@status'),
             'queue__arrivalTime' => self::expression(
-                'IF(`process`.`Uhrzeit`,
-                    CONCAT(`process`.`Datum`, " ", `process`.`Uhrzeit`),
-                    FROM_UNIXTIME(`process`.`IPTimeStamp`)
-                )'
+                'CONCAT(`process`.`Datum`, " ", `process`.`wsm_aufnahmezeit`)'
             ),
             'queue__callCount' => 'process.AnzahlAufrufe',
             'queue__callTime' => 'process.aufrufzeit',
@@ -201,7 +198,6 @@ class Process extends Base implements MappingInterface
             $datetime = $appointment->toDateTime();
             $data['Datum'] = $datetime->format('Y-m-d');
             $data['Uhrzeit'] = $datetime->format('H:i');
-            $data['wsm_aufnahmezeit'] = $datetime->format('H:i:s');
         }
         $client = $process->getFirstClient();
         if (null !== $client) {
