@@ -25,11 +25,11 @@ class HomeUrl
         $ticketprinter = $validator->getParameter('ticketprinter')->isArray()->getValue();
         if ($ticketprinter && array_key_exists('home', $ticketprinter)) {
             $homeUrl = Validator::value($ticketprinter['home'])->isUrl()->getValue();
+        } elseif (!$homeUrl) {
+            $homeUrl = $request->getRequestTarget();
         }
-        if ($homeUrl) {
-            \BO\Zmsclient\Ticketprinter::setHomeUrl($homeUrl);
-        } elseif (! \BO\Zmsclient\Ticketprinter::getHomeUrl()) {
-            \BO\Zmsclient\Ticketprinter::setHomeUrl($request->getUri());
-        }
+        \App::$log->debug("HOMEURL", [$homeUrl, $request->getRequestTarget()]);
+        \BO\Zmsclient\Ticketprinter::setHomeUrl($homeUrl);
+        return $homeUrl;
     }
 }
