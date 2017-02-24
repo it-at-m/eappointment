@@ -1302,34 +1302,6 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
- *  "/scope/{id}/organisation/":
- *      get:
- *          description: Get an organisation by scopeId.
- *          parameters:
- *              -   name: id
- *                  description: scope number
- *                  in: path
- *                  required: true
- *                  type: integer
- *          responses:
- *              200:
- *                  description: "success"
- *                  schema:
- *                      type: object
- *                      properties:
- *                          meta:
- *                              $ref: "schema/metaresult.json"
- *                          data:
- *                              $ref: "schema/organisation.json"
- *              404:
- *                  description: "organisation id does not exists"
- */
-\App::$slim->get('/scope/{id:\d{1,4}}/organisation/',
-    '\BO\Zmsapi\OrganisationByScope')
-    ->setName("OrganisationByScope");
-
-/**
- *  @swagger
  *  "/cluster/{id}/organisation/":
  *      get:
  *          description: Get an organisation by clusterId.
@@ -1990,6 +1962,34 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->post('/scope/{id:\d{1,4}}/imagedata/calldisplay/',
     '\BO\Zmsapi\ScopeCalldisplayImageDataUpdate')
     ->setName("ScopeCalldisplayImageDataUpdate");
+
+/**
+ *  @swagger
+ *  "/scope/{id}/organisation/":
+ *      get:
+ *          description: Get an organisation by scopeId.
+ *          parameters:
+ *              -   name: id
+ *                  description: scope number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/organisation.json"
+ *              404:
+ *                  description: "organisation id does not exists"
+ */
+\App::$slim->get('/scope/{id:\d{1,4}}/organisation/',
+    '\BO\Zmsapi\OrganisationByScope')
+    ->setName("OrganisationByScope");
 
 /**
  *  @swagger
@@ -2656,6 +2656,34 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/scope/{id:\d{1,11}}/queue/',
     '\BO\Zmsapi\ScopeQueue')
     ->setName("ScopeQueue");
+
+/**
+ *  @swagger
+ *  "/scope/{id}/workstationcount/":
+ *      get:
+ *          description: Get a scope with calculated workstation count.
+ *          parameters:
+ *              -   name: id
+ *                  description: scope number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/scope.json"
+ *              404:
+ *                  description: "scope id does not exists"
+ */
+\App::$slim->get('/scope/{id:\d{1,4}}/workstationcount/',
+    '\BO\Zmsapi\ScopeWithWorkstationCount')
+    ->setName("ScopeWithWorkstationCount");
 
 /**
  *  @swagger
