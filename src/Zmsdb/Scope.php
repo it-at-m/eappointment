@@ -237,13 +237,14 @@ class Scope extends Base
      *
      * @return number
      */
-    public function readWithWorkstationCount($scopeId, $dateTime)
+    public function readWithWorkstationCount($scopeId, $dateTime, $resolveReferences = 0)
     {
         //get scope
         $query = new Query\Scope(Query\Base::SELECT);
         $query
             ->addEntityMapping()
             ->addConditionScopeId($scopeId)
+            ->addResolvedReferences($resolveReferences)
             ->addSelectWorkstationCount($dateTime);
         return $this->fetchOne($query, new Entity());
     }
