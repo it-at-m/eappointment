@@ -9,7 +9,7 @@
 {% block content %}
 
 	{% if buttonDisplay == "button_single" %}
-    	{% if estimatedData  %}
+    	{% if waitingClients  %}
     	<div class="werbeblock_oben">
     		{{ block("estimatedWaitingClients") }}
     		{{ block("estimatedWaitingTime") }}
@@ -23,12 +23,10 @@
 	{{ block(buttonDisplay) }}
 
 	{% if
-	    estimatedData.waitingTimeEstimate > (scope.preferences.ticketprinter.notificationsDelay)|round() and
+	    waitingTime > (scope.preferences.ticketprinter.notificationsDelay)|round() and
 	    scope.preferences.ticketprinter.notificationsAmendmentEnabled and
 	    scope.preferences.ticketprinter.notificationsEnabled
 	%}
 	{{ block("button_append_notification") }}
 	{% endif %}
 {% endblock %}
-
-

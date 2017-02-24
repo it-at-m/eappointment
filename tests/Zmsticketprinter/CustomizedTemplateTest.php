@@ -31,6 +31,11 @@ class CustomizedTemplateTest extends Base
             ],
             [
                 'function' => 'readGetResult',
+                'url' => '/scope/615/workstationcount/',
+                'response' => $this->readFixture("GET_scope_615.json"),
+            ],
+            [
+                'function' => 'readGetResult',
                 'url' => '/scope/615/queue/',
                 'response' => $this->readFixture("GET_queuelist_312.json"), //Bürgeramt 1 in Köpenick
             ]
