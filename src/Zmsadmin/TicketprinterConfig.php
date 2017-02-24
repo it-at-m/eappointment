@@ -30,7 +30,7 @@ class TicketprinterConfig extends BaseController
 
         $entity = \App::$http->readGetResult(
             '/scope/'. $entityId .'/organisation/',
-            [resolveReferences => 3]
+            ['resolveReferences' => 3]
         )->getEntity();
 
         $departments = new DepartmentList();
