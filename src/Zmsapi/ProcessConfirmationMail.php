@@ -43,7 +43,7 @@ class ProcessConfirmationMail extends BaseController
             $mail = (new \BO\Zmsentities\Mail())->toResolvedEntity($process, $config);
             $mail = (new Query())->writeInQueue($mail);
             $message->data = $mail;
-            \App::$log->info("Send mail", [$mail]);
+            \App::$log->debug("Send mail", [$mail]);
         } else {
             // Create message for possible ICS attachment used in frontend
             $config = (new Config())->readEntity();
