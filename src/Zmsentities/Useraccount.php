@@ -141,4 +141,11 @@ class Useraccount extends Schema\Entity
         }
         return $department;
     }
+
+    public function withCleanedUpFormData()
+    {
+        unset($this['password_check']);
+        unset($this['save']);
+        return $this;
+    }
 }
