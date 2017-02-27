@@ -163,15 +163,13 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/calendar/{year:\d\d\d\d}/kw{weeknr:\d{1,2}}/', '\BO\Zmsadmin\CalendarWeek')
     ->setName("calendar_week");
 
-\App::$slim->map(
-    ['GET', 'POST'],
-    '/profile/', '\BO\Zmsadmin\Profile')
+\App::$slim->map(['GET', 'POST'], '/profile/', '\BO\Zmsadmin\Profile')
     ->setName("profile");
 
 \App::$slim->get('/useraccount/', '\BO\Zmsadmin\Useraccount')
     ->setName("useraccount");
 
-\App::$slim->get('/useraccount/add/', '\BO\Zmsadmin\UseraccountAdd')
+\App::$slim->map(['GET', 'POST'], '/useraccount/add/', '\BO\Zmsadmin\UseraccountAdd')
     ->setName("useraccountAdd");
 
 \App::$slim->get('/department/{id:\d+}/useraccount/', '\BO\Zmsadmin\UseraccountByDepartment')
