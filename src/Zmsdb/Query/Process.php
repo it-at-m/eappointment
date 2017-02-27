@@ -65,6 +65,29 @@ class Process extends Base implements MappingInterface
 
     public function getEntityMapping()
     {
+        $status_expression = self::expression(
+            '@status := CASE
+                WHEN process.Name = "(abgesagt)"
+                    THEN "deleted"
+                WHEN process.StandortID = 0
+                    THEN "blocked"
+                WHEN process.nicht_erschienen != 0
+                    THEN "missed"
+                WHEN process.Abholer != 0 AND process.AbholortID != 0
+                    THEN "pending"
+                WHEN process.aufruferfolgreich != 0
+                    THEN "processing"
+                WHEN process.aufrufzeit != "00:00:00"
+                    THEN "called"
+                WHEN process.wsm_aufnahmezeit != "00:00:00"
+                    THEN "queued"
+                WHEN process.vorlaeufigeBuchung = 0
+                    THEN "confirmed"
+                WHEN process.vorlaeufigeBuchung = 1
+                    THEN "reserved"
+                ELSE "free"
+            END'
+        );
         return [
             'amendment' => 'process.Anmerkung',
             'id' => 'process.BuergerID',
@@ -89,30 +112,8 @@ class Process extends Base implements MappingInterface
             ),
             'createIP' => 'process.IPAdresse',
             'createTimestamp' => 'process.IPTimeStamp',
-            'status' => self::expression(
-                '@status := CASE
-                    WHEN process.Name = "(abgesagt)"
-                        THEN "deleted"
-                    WHEN process.StandortID = 0
-                        THEN "blocked"
-                    WHEN process.nicht_erschienen != 0
-                        THEN "missed"
-                    WHEN process.Abholer != 0 AND process.AbholortID != 0
-                        THEN "pending"
-                    WHEN process.aufruferfolgreich != 0
-                        THEN "processing"
-                    WHEN process.aufrufzeit != "00:00:00"
-                        THEN "called"
-                    WHEN process.wsm_aufnahmezeit != "00:00:00"
-                        THEN "queued"
-                    WHEN process.vorlaeufigeBuchung = 0
-                        THEN "confirmed"
-                    WHEN process.vorlaeufigeBuchung = 1
-                        THEN "reserved"
-                    ELSE "free"
-                END'
-            ),
-            'queue__status' => self::expression('@status'),
+            'status' => $status_expression,
+            'queue__status' => $status_expression,
             'queue__arrivalTime' => self::expression(
                 'CONCAT(`process`.`Datum`, " ", `process`.`wsm_aufnahmezeit`)'
             ),
