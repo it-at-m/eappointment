@@ -48,10 +48,10 @@ class ValidJson extends Valid
                 );
                 $message = 'Json: ' . $json_error_list[$json_error];
             }
-            $this->failure($message);
+            $this->setFailure($message);
         } elseif (!$jsonString) {
             // Be compatible to javascript JSON.parse()
-            $this->failure('Json: Empty string');
+            $this->setFailure('Json: Empty string');
         } else {
             $this->validated = true;
             $this->value = $array;
