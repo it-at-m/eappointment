@@ -1,6 +1,6 @@
 <?php
 /**
- * @package 115Mandant
+ * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -23,8 +23,12 @@ class UseraccountAdd extends BaseController
         Helper\User::checkRights('useraccount');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         $query = new Query();
-        $input = Validator::input()->isJson()->getValue();
+        $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Useraccount($input);
+        $entity->testValid();
+
+        error_log(var_export($entity, 1));
+
         $userAccount = $query->writeEntity($entity, $resolveReferences);
 
         $message = Response\Message::create(Render::$request);
