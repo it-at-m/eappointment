@@ -20,6 +20,18 @@ abstract class Base
     protected $readDb = null;
 
     /**
+     * Cache prepared statements
+     *
+     */
+    protected static $preparedStatements = [];
+
+    /**
+     * Make sure, we do not cache statements on different connections
+     *
+     */
+    protected static $preparedConnectionId = null;
+
+    /**
      * @param \PDO $writeConnection
      * @param \PDO $readConnection
      */
@@ -52,35 +64,63 @@ abstract class Base
         return $this->readDb;
     }
 
-    public function fetchOne(Query\Base $query, \BO\Zmsentities\Schema\Entity $entity)
+    public function fetchPreparedStatement(Query\Base $query)
     {
-        $query->addLimit(1);
-        $sql = $query->getSql();
-        $parameters = $query->getParameters();
+        $sql = "$query";
+        $reader = $this->getReader();
+        if (spl_object_hash($reader) != static::$preparedConnectionId) {
+            // do not use prepared statements on a different connection
+            static::$preparedStatements = [];
+            static::$preparedConnectionId = spl_object_hash($reader);
+        }
+        if (!isset(static::$preparedStatements[$sql])) {
+            $prepared = $this->getReader()->prepare($sql);
+            static::$preparedStatements[$sql] = $prepared;
+        }
+        return static::$preparedStatements[$sql];
+    }
+
+    public function startExecute($statement, $parameters)
+    {
         try {
-            $data = $this->getReader()->fetchOne($query->getSql(), $query->getParameters());
+            $statement->execute($parameters);
         } catch (\PDOException $pdoException) {
-            $message = "SQL: $sql || Parameters=". var_export($parameters, true);
+            $message = "SQL: "
+                . " Err: "
+                .$pdoException->getMessage()
+                . " || Statement: "
+                .$statement->queryString
+                ." || Parameters=". var_export($parameters, true);
             throw new Exception\PDOFailed($message, 0, $pdoException);
         }
+        return $statement;
+    }
+
+    public function fetchStatement(Query\Base $query)
+    {
+        $parameters = $query->getParameters();
+        $statement = $this->startExecute($this->fetchPreparedStatement($query), $parameters);
+        return $statement;
+    }
+
+    public function fetchOne(Query\Base $query, \BO\Zmsentities\Schema\Entity $entity)
+    {
+        $statement = $this->fetchStatement($query);
+        $data = $statement->fetch(\PDO::FETCH_ASSOC);
         if ($data) {
             $entity->exchangeArray($query->postProcess($data));
-        }
+        }/* else {
+            throw new Exception\PDOFailed("Could not fetch one: ". $query->getName()
+                . " --> " . var_export($query->getParameters(), 1));
+        }*/
         return $entity;
     }
 
     public function fetchList(Query\Base $query, \BO\Zmsentities\Schema\Entity $entity)
     {
         $resultList = [];
-        $sql = $query->getSql();
-        $parameters = $query->getParameters();
-        try {
-            $dataList = $this->getReader()->fetchAll($sql, $parameters);
-        } catch (\PDOException $pdoException) {
-            $message = "SQL: $sql || Parameters=". var_export($parameters, true);
-            throw new Exception\PDOFailed($message, 0, $pdoException);
-        }
-        foreach ($dataList as $data) {
+        $statement = $this->fetchStatement($query);
+        while ($data = $statement->fetch(\PDO::FETCH_ASSOC)) {
             $dataEntity = clone $entity;
             $dataEntity->exchangeArray($query->postProcess($data));
             $resultList[] = $dataEntity;
@@ -88,23 +128,8 @@ abstract class Base
         return $resultList;
     }
 
-    public function fetchStatement(Query\Base $query)
-    {
-        $sql = $query->getSql();
-        $parameters = $query->getParameters();
-        try {
-            $statement = $this->getReader()->prepare($sql);
-            $statement->execute($parameters);
-        } catch (\PDOException $pdoException) {
-            $message = "SQL: $sql || Parameters=". var_export($parameters, true);
-            throw new Exception\PDOFailed($message, 0, $pdoException);
-        }
-        return $statement;
-    }
-
     /**
      * Write an Item to database - Insert, Update
-     * TODO: Check if there is a smarter way to do mapping with entity
      *
      * @return \PDO
      */
