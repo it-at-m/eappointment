@@ -38,7 +38,7 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/workstation/process/{id:\d+}/called/', '\BO\Zmsadmin\WorkstationClientCalled')
     ->setName("workstationClientCalled");
 
-\App::$slim->get('/workstation/process/{id:\d+}/processed', '\BO\Zmsadmin\WorkstationClientProcessed')
+\App::$slim->get('/workstation/process/{id:\d+}/processed/', '\BO\Zmsadmin\WorkstationClientProcessed')
     ->setName("workstationClientProcessed");
 
 \App::$slim->get('/workstation/process/{id:\d+}/', '\BO\Zmsadmin\WorkstationClientActive')
@@ -160,7 +160,7 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/availability/month/', '\BO\Zmsadmin\AvailabilityMonth')
     ->setName("availability_month");
 
-\App::$slim->get('/calendar{year/kw{weeknr/', '\BO\Zmsadmin\CalendarWeek')
+\App::$slim->get('/calendar/{year:\d\d\d\d}/kw{weeknr:\d{1,2}}/', '\BO\Zmsadmin\CalendarWeek')
     ->setName("calendar_week");
 
 \App::$slim->map(
