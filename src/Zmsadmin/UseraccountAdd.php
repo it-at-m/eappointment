@@ -1,6 +1,6 @@
 <?php
 /**
- * @package 115Mandant
+ * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -8,6 +8,7 @@ namespace BO\Zmsadmin;
 
 use BO\Zmsentities\Useraccount as Entity;
 use BO\Mellon\Validator;
+use \BO\Zmsadmin\Helper\UseraccountForm;
 
 /**
   * Handle requests concerning services
@@ -23,28 +24,34 @@ class UseraccountAdd extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $args = null;
         $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
         $input = $request->getParsedBody();
         $ownerList = \App::$http->readGetResult('/owner/')->getCollection();
-
+        $formData = null;
+        
         if (is_array($input) && array_key_exists('save', $input)) {
-            $entity = new Entity($input);
-            $entity = \App::$http->readPostResult('/useraccount/', $entity)->getEntity();
-            return Helper\Render::redirect(
-                'useraccount',
-                array(
-                    'id' => $entity->id
-                ),
-                array(
-                    'success' => 'useraccount_created'
-                )
-            );
+            $form = UseraccountForm::fromAddParameters();
+            $formData = $form->getStatus();
+            if ($formData && !$form->hasFailed()) {
+                $entity = new Entity($input);
+                $entity = $entity->withCleanedUpFormData();
+                $entity = \App::$http->readPostResult('/useraccount/', $entity)->getEntity();
+                return Helper\Render::redirect(
+                    'useraccount',
+                    array(
+                        'id' => $entity->id
+                    ),
+                    array(
+                        'success' => 'useraccount_created'
+                    )
+                );
+            }
         }
 
         return \BO\Slim\Render::withHtml($response, 'page/useraccountEdit.twig', array(
             'ownerList' => $ownerList->toDepartmentListByOrganisationName(),
             'workstation' => $workstation,
+            'formdata' => $formData,
             'action' => 'add',
             'title' => 'Nutzer: Einrichtung und Administration','menuActive' => 'useraccount'
         ));
