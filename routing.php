@@ -171,6 +171,9 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/useraccount/', '\BO\Zmsadmin\Useraccount')
     ->setName("useraccount");
 
+\App::$slim->get('/useraccount/add/', '\BO\Zmsadmin\UseraccountAdd')
+    ->setName("useraccountAdd");
+
 \App::$slim->get('/department/{id:\d+}/useraccount/', '\BO\Zmsadmin\UseraccountByDepartment')
     ->setName("useraccountByDepartment");
 
@@ -179,8 +182,8 @@ use \Psr\Http\Message\ResponseInterface;
 ], '/useraccount/{loginname}/', '\BO\Zmsadmin\UseraccountEdit')
     ->setName("useraccountEdit");
 
-\App::$slim->get('/useraccount/delete/{loginname}/', '\BO\Zmsadmin\UserAccountDelete')
-    ->setName("userAccountDelete");
+\App::$slim->get('/useraccount/delete/{loginname}/', '\BO\Zmsadmin\UseraccountDelete')
+    ->setName("useraccountDelete");
 
 \App::$slim->get('/calldisplay/', '\BO\Zmsadmin\Calldisplay')
     ->setName("calldisplay");

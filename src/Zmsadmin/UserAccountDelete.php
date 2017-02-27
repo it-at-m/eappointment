@@ -14,7 +14,7 @@ use BO\Slim\Render;
 /**
  * Delete an Useraccount
  */
-class UserAccountDelete extends BaseController
+class UseraccountDelete extends BaseController
 {
 
     /**
@@ -26,13 +26,12 @@ class UserAccountDelete extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-
         $loginName = Validator::value($args['loginname'])->isString()->getValue();
         \App::$http->readDeleteResult('/useraccount/' . $loginName . '/')->getEntity();
         return Helper\Render::redirect(
             'useraccount',
-            array (),
-            array (
+            array(),
+            array(
                 'success' => 'useraccount_deleted'
             )
         );
