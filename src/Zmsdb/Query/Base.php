@@ -41,13 +41,31 @@ abstract class Base
     protected $prefix = '';
 
     /**
+     * Name of the query used for caching
+     *
+     */
+    protected $name = false;
+
+    protected $resolveReferences = -1;
+
+    protected static $sqlCache = [];
+
+    protected $currentSqlString = null;
+
+    /**
      * Create query builder if necessary
      *
      * @param Mixed $queryType one of the constants for a query type or of instance \Solution10\SQL\Query
+     * @param String $prefix If used in a subquery, prefix results with this string
+     * @param String $name A named query has a cached SQL as soon as called first
      */
-    public function __construct($queryType, $prefix = '')
+    public function __construct($queryType, $prefix = '', $name = false, $resolveReferences = -1)
     {
         $this->prefix = $prefix;
+        if ($name) {
+            $this->name = $name;
+        }
+        $this->resolveReferences = $resolveReferences;
         $dialect = new MySQL();
         if (self::SELECT === $queryType) {
             $this->query = new Select($dialect);
@@ -72,6 +90,28 @@ abstract class Base
         if ($this->query instanceof Select) {
             $this->addRequiredJoins();
         }
+    }
+
+    public function __toString()
+    {
+        if ($this->name) {
+            $name = $this->name . '_' . $this->prefix . (string) $this->resolveReferences;
+            if (!isset(static::$sqlCache[$name])) {
+                static::$sqlCache[$name] = $this->getSql();
+            }
+            return static::$sqlCache[$name];
+        }
+        if ($this->currentSqlString) {
+            $sql = $this->currentSqlString;
+        } else {
+            $sql = $this->getSql();
+        }
+        return $sql;
+    }
+
+    public function getName()
+    {
+        return $this->name ? $this->name : get_class($this);
     }
 
     /**
@@ -185,12 +225,14 @@ abstract class Base
 
     /**
      * get SQL-String
+     * Implement a simple caching routine to prevent multiple rebuilds
      *
      * @return String
      */
     public function getSql()
     {
-        return (string)$this->query;
+        $this->currentSqlString = (string)$this->query;
+        return $this->currentSqlString;
     }
 
     /**
