@@ -57,7 +57,7 @@ class Valid extends \BO\Mellon\Parameter
             $this->validated = true;
             $filtered = filter_var($this->value, $filter, $options);
             if (($filtered === false && $filter !== FILTER_VALIDATE_BOOLEAN) || $filtered === null) {
-                $this->failure($message);
+                $this->setFailure($message);
             } else {
                 $this->value = $filtered;
             }
@@ -66,7 +66,7 @@ class Valid extends \BO\Mellon\Parameter
     }
 
     /**
-     * Set state to failed and add a message
+     * DEPRECATED - Set state to failed and add a message
      *
      * @param String $message error message in case of failure
      *
@@ -83,6 +83,18 @@ class Valid extends \BO\Mellon\Parameter
     }
 
     /**
+     * Set state to failed and add a message
+     *
+     * @param String $message error message in case of failure
+     *
+     * @return self
+     */
+    public function setFailure($message)
+    {
+        return $this->failure($message);
+    }
+
+    /**
      * Do not allow NULL as value
      *
      * @param String $message error message in case of failure
@@ -92,7 +104,7 @@ class Valid extends \BO\Mellon\Parameter
     public function isDeclared($message = 'value is not declared')
     {
         if (null === $this->value) {
-            $this->failure($message);
+            $this->setFailure($message);
         }
         return $this;
     }

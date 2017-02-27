@@ -31,7 +31,7 @@ class ValidArray extends \BO\Mellon\Valid
             $this->validated = true;
             return $this;
         } else {
-            $this->failure($message);
+            $this->setFailure($message);
         }
         return $this;
     }

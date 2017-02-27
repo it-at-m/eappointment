@@ -37,7 +37,7 @@ class ValidString extends Valid
     {
         $this->validated = true;
         if (preg_match($regex, $this->value)) {
-            $this->failure($message);
+            $this->setFailure($message);
         }
         return $this;
     }
@@ -72,7 +72,7 @@ class ValidString extends Valid
     {
         $this->validated = true;
         if (strlen($this->value) < $size) {
-            $this->failure($message);
+            $this->setFailure($message);
         }
         return $this;
     }
@@ -89,7 +89,7 @@ class ValidString extends Valid
     {
         $this->validated = true;
         if (strlen($this->value) > $size) {
-            $this->failure($message);
+            $this->setFailure($message);
         }
         return $this;
     }

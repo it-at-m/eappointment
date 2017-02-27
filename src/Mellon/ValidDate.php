@@ -27,10 +27,10 @@ class ValidDate extends Valid
             //$selectedDate->setTimezone(new \DateTimeZone(\App::TIMEZONE));
             $isDate = (bool)strtotime($selectedDate->format('Y-m-d'));
             if (false === $isDate) {
-                $this->failure($message);
+                $this->setFailure($message);
             }
         } else {
-            $this->failure($message);
+            $this->setFailure($message);
         }
         return $this->validate($message, FILTER_VALIDATE_INT);
     }
