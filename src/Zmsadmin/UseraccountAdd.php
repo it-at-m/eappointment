@@ -28,18 +28,18 @@ class UseraccountAdd extends BaseController
         $input = $request->getParsedBody();
         $ownerList = \App::$http->readGetResult('/owner/')->getCollection();
         $formData = null;
-        
+
         if (is_array($input) && array_key_exists('save', $input)) {
             $form = UseraccountForm::fromAddParameters();
             $formData = $form->getStatus();
-            if ($formData && !$form->hasFailed()) {
+            if ($formData && ! $form->hasFailed()) {
                 $entity = new Entity($input);
-                $entity = $entity->withCleanedUpFormData();
+                $entity = $entity->withDepartmentList()->withCleanedUpFormData();
                 $entity = \App::$http->readPostResult('/useraccount/', $entity)->getEntity();
                 return Helper\Render::redirect(
                     'useraccount',
                     array(
-                        'id' => $entity->id
+                        'loginname' => $entity->id
                     ),
                     array(
                         'success' => 'useraccount_created'
