@@ -2,6 +2,11 @@
 
 namespace BO\Zmsentities;
 
+/**
+ * @SuppressWarnings(Complexity)
+ * @SuppressWarnings(PublicMethod)
+ *
+ */
 class Useraccount extends Schema\Entity
 {
     const PRIMARY = 'id';
@@ -72,6 +77,11 @@ class Useraccount extends Schema\Entity
         return $this->getDepartment($departmentId)->hasId();
     }
 
+    public function getRightsLevel()
+    {
+        return Helper\RightsLevelManager::getLevel($this->rights);
+    }
+
     public function setRights()
     {
         $givenRights = func_get_args();
@@ -86,9 +96,21 @@ class Useraccount extends Schema\Entity
     public function hasRights(array $requiredRights)
     {
         foreach ($requiredRights as $required) {
-            if (!$this->toProperty()->rights->$required->get()) {
+            if (! $this->toProperty()->rights->$required->get()) {
                 return false;
             }
+        }
+        return true;
+    }
+
+    public function hasEditAccess(Useraccount $userAccount)
+    {
+        //get required matching access rights (like superuser, organisation, department, scope) from given useraccount
+        $compareRights = Helper\RightsLevelManager::$accessRights;
+        $accessRights = array_keys(array_intersect_uassoc($userAccount->rights, $compareRights, 'strcasecmp'));
+        //check if current user has same rights to edit
+        if (! $this->hasRights($accessRights)) {
+            throw new Exception\UserAccountAccessRightsFailed();
         }
         return true;
     }
@@ -140,6 +162,20 @@ class Useraccount extends Schema\Entity
             );
         }
         return $department;
+    }
+
+    public function withDepartmentList()
+    {
+        $departmentList = new Collection\departmentList();
+        $entity = clone $this;
+        foreach ($this->departments as $department) {
+            if (! is_array($department)) {
+                $department = new Department(array('id' => $department));
+            }
+            $departmentList->addEntity($department);
+        }
+        $entity->departments = $departmentList;
+        return $entity;
     }
 
     public function withCleanedUpFormData()
