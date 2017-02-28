@@ -63,6 +63,7 @@ class UseraccountEdit extends BaseController
             $response,
             'page/useraccountEdit.twig',
             array(
+                'debug' => \App::DEBUG,
                 'userAccount' => $userAccount,
                 'formdata' => $formData,
                 'ownerList' => $ownerList->toDepartmentListByOrganisationName(),
