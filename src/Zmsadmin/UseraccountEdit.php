@@ -10,6 +10,7 @@ namespace BO\Zmsadmin;
 
 use BO\Zmsentities\Useraccount as Entity;
 use BO\Mellon\Validator;
+use \BO\Zmsadmin\Helper\UseraccountForm;
 
 class UseraccountEdit extends BaseController
 {
@@ -26,6 +27,8 @@ class UseraccountEdit extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
         $userAccountName = Validator::value($args['loginname'])->isString()->getValue();
         $userAccount = \App::$http->readGetResult('/useraccount/'. $userAccountName .'/')->getEntity();
+        $workstation->getUseraccount()->hasEditAccess($userAccount);
+
         $ownerList = \App::$http->readGetResult('/owner/')->getCollection();
 
         if (null === $userAccount || !$userAccount->hasId()) {
@@ -33,20 +36,35 @@ class UseraccountEdit extends BaseController
         }
 
         $input = $request->getParsedBody();
-        if (array_key_exists('save', (array) $input)) {
-            $userAccount = new Entity($input);
-            $userAccount->id = $userAccountName;
-            $userAccount = \App::$http->readPostResult(
-                '/useraccount/'. $userAccount->id .'/',
-                $userAccount
-            )->getEntity();
+        if (is_array($input) && array_key_exists('save', $input)) {
+            $form = UseraccountForm::fromAddParameters();
+            $formData = $form->getStatus();
+            if ($formData && ! $form->hasFailed()) {
+                $entity = new Entity($input);
+                $entity = $entity->withDepartmentList()->withCleanedUpFormData();
+                $entity->id = $userAccountName;
+                $entity = \App::$http->readPostResult(
+                    '/useraccount/'. $userAccount->id .'/',
+                    $entity
+                )->getEntity();
+                return Helper\Render::redirect(
+                    'useraccountEdit',
+                    array(
+                        'loginname' => $entity->id
+                    ),
+                    array(
+                        'success' => 'useraccount_updated'
+                    )
+                );
+            }
         }
 
         \BO\Slim\Render::withHtml(
             $response,
             'page/useraccountEdit.twig',
-            array (
+            array(
                 'userAccount' => $userAccount,
+                'formdata' => $formData,
                 'ownerList' => $ownerList->toDepartmentListByOrganisationName(),
                 'workstation' => $workstation,
                 'title' => 'Nutzer: Einrichtung und Administration','menuActive' => 'useraccount'
