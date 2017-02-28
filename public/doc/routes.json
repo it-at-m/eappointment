@@ -1538,39 +1538,6 @@
 			}
 		}
 	},
-	"/scope/{id}/organisation/": {
-		"get": {
-			"description": "Get an organisation by scopeId.",
-			"parameters": [
-				{
-					"name": "id",
-					"description": "scope number",
-					"in": "path",
-					"required": true,
-					"type": "integer"
-				}
-			],
-			"responses": {
-				"200": {
-					"description": "success",
-					"schema": {
-						"type": "object",
-						"properties": {
-							"meta": {
-								"$ref": "schema/metaresult.json"
-							},
-							"data": {
-								"$ref": "schema/organisation.json"
-							}
-						}
-					}
-				},
-				"404": {
-					"description": "organisation id does not exists"
-				}
-			}
-		}
-	},
 	"/cluster/{id}/organisation/": {
 		"get": {
 			"description": "Get an organisation by clusterId.",
@@ -2391,6 +2358,39 @@
 			}
 		}
 	},
+	"/scope/{id}/organisation/": {
+		"get": {
+			"description": "Get an organisation by scopeId.",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "scope number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/organisation.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "organisation id does not exists"
+				}
+			}
+		}
+	},
 	"/provider/{source}/{id}/": {
 		"get": {
 			"description": "Get an provider by id",
@@ -3082,7 +3082,7 @@
 	},
 	"/scope/{id}/day/{day}/": {
 		"get": {
-			"description": "Get a list of availability entries",
+			"description": "Get a list of processes by scope and day",
 			"parameters": [
 				{
 					"name": "id",
@@ -3123,7 +3123,7 @@
 							"data": {
 								"type": "array",
 								"items": {
-									"$ref": "schema/availability.json"
+									"$ref": "schema/process.json"
 								}
 							}
 						}
@@ -3288,6 +3288,39 @@
 								"items": {
 									"$ref": "schema/queue.json"
 								}
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "scope id does not exists"
+				}
+			}
+		}
+	},
+	"/scope/{id}/workstationcount/": {
+		"get": {
+			"description": "Get a scope with calculated workstation count.",
+			"parameters": [
+				{
+					"name": "id",
+					"description": "scope number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/scope.json"
 							}
 						}
 					}
