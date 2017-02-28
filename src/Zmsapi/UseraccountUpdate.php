@@ -1,6 +1,6 @@
 <?php
 /**
- * @package 115Mandant
+ * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -24,12 +24,15 @@ class UseraccountUpdate extends BaseController
 
         $query = new Query();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
-        $input = Validator::input()->isJson()->getValue();
+        $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Useraccount($input);
-        $userAccount = $query->updateEntity($itemId, $entity, $resolveReferences);
+        $entity->testValid();
 
+        if (! $query->readIsUserExisting($itemId)) {
+            throw new Exception\UseraccountNotFound();
+        }
         $message = Response\Message::create(Render::$request);
-        $message->data = ($userAccount->hasId()) ? $userAccount : null;
+        $message->data = $query->updateEntity($itemId, $entity, $resolveReferences);
         Render::lastModified(time(), '0');
         Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }
