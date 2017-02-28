@@ -26,9 +26,6 @@ class UseraccountAdd extends BaseController
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Useraccount($input);
         $entity->testValid();
-
-        error_log(var_export($entity, 1));
-
         $userAccount = $query->writeEntity($entity, $resolveReferences);
 
         $message = Response\Message::create(Render::$request);
