@@ -36,7 +36,8 @@ Locations
                 "allowed" : true, // nur wenn true darf eine Terminvereinbarung angezeigt werden
                 "link" : "http://www.berlin.de/labo/service/termine/tag.php?id=297&anliegen=120335&dienstleister=0&amp;termin=1" // Link für die Terminvereinbarung
             },
-            "hint": "" // Zusätzliche Hinweise zur Zuständigkeit
+            "hint": "", // Zusätzliche Hinweise zur Zuständigkeit,
+            "url": "https://service.berlin.de/dienstleistung/120335/standort/122314/" // Merkblatt Url
         },
         {
             "service": "120658",
@@ -47,7 +48,8 @@ Locations
                 "allowed" : true, // nur wenn true darf eine Terminvereinbarung angezeigt werden
                 "link" : "https://example.com/terminvereinbarung/termin/tag.php?termin=1&amp;dienstleister=122314&amp;anliegen[]=120658" // Link für die Terminvereinbarung
             },
-            "hint": ""
+            "hint": "",
+            "url": "https://service.berlin.de/dienstleistung/120335/standort/122314/" // Merkblatt Url
         }
         ],
             "address": { // Adresse des Standortes
@@ -111,6 +113,7 @@ Locations
                 "special": "Vom 1.3.2014 bis 31.5.2014 geänderte Öffnungszeiten Montag 8.00 - 15.00 Uhr mit und ohne Termin Dienstag und Donnerstag 11.00 - 18.00 Uhr von 16.00 - 18.00 nur Termine Mittwoch 8.00 - 13.00 Uhr nur Termine Freitag 8.00 - 13.00 Uhr mit und ohne Termin" // Anmerkungen zu den Öffnungszeiten
             },
             "meta": {
+                "url": "https://service.berlin.de/standort/122314/", // Detail URL
                 "lastupdate": "2014-04-25T13:55:31+02:00", // Letzte Aktualisierung
                 "keywords": "Amt für Bürgerdienste,Bürgeramt,Bürgerberatung,Meldestelle,Bürgerbüro,Info,Information,Informationsmaterial,Informationsstelle,Rathaus,Rathaus-Information,Rathaus-Info,Bürger-Service,Abt. Bürgerdienste,Bürgerservice,Beratungen,Beratungsbüro,Beratungsstelle,BüA,BÜB,Büb,büb,Bürgerbüros,Bürgerämter,Bürgerbüro Reinickendorf,bübs,Bübs,Bürgerdienste,Bürgerdienste und Soziales,Bürgerhaus,Bürgerinformation,Bürger,Lohnsteuerersatzkarte,Lohnsteuerkartenersatz,Lohnsteuerkartenerstausstellung,Lohnsteuerkartenlöschung,Lohnsteuerkartenrückgabe,Lohnsteuerkartenstelle" // Schlüsselwörter, welche für die Suche verwendet werden
             },
@@ -236,6 +239,7 @@ Services
          "locations" : [ // Standorte, an denen die Dienstleistung angeboten wird
             {
                "location" : "326065", // ID des Standortes
+               "url": "https://service.berlin.de/dienstleistung/326423/standort/121649/", // Merkblatt Url
                "appointment" : {
                   "link" : "/terminvereinbarung/termin/tag.php?termin=1&amp;dienstleister=121649&amp;anliegen[]=326423", // Link zur Terminvereinbarung
                   "allowed" : true, // TRUE wenn eine Terminbuchung erlaubt ist
@@ -263,6 +267,7 @@ Services
             "link" : ""
          },
          "meta" : {
+            "url": "https://service.berlin.de/dienstleistung/326069/", // Detail URL
             "lastupdate" : "2013-11-25T11:12:04+02:00", // letzte Aktualisierung der Dienstleistung
             "keywords" : "Unterhaltsvorschuss, Kind, alleinerziehend, Sozialleistung"
          },
