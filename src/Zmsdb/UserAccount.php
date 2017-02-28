@@ -186,16 +186,18 @@ class UserAccount extends Base
     {
         $loginName = $entity->id;
         $this->deleteAssignedDepartments($loginName);
-        $query = Query\UserAccount::QUERY_WRITE_ASSIGNED_DEPARTMENTS;
-        $statement = $this->getWriter()->prepare($query);
-        $userId = $this->readEntityIdByLoginName($loginName);
-        foreach ($entity->departments as $department) {
-            $statement->execute(
-                array(
-                    $userId,
-                    $department['id']
-                )
-            );
+        if (! $entity->isSuperUser()) {
+            $query = Query\UserAccount::QUERY_WRITE_ASSIGNED_DEPARTMENTS;
+            $statement = $this->getWriter()->prepare($query);
+            $userId = $this->readEntityIdByLoginName($loginName);
+            foreach ($entity->departments as $department) {
+                $statement->execute(
+                    array(
+                        $userId,
+                        $department['id']
+                    )
+                );
+            }
         }
     }
 
