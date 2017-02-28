@@ -66,7 +66,7 @@ class Process extends Base implements MappingInterface
     public function getEntityMapping()
     {
         $status_expression = self::expression(
-            '@status := CASE
+            'CASE
                 WHEN process.Name = "(abgesagt)"
                     THEN "deleted"
                 WHEN process.StandortID = 0
