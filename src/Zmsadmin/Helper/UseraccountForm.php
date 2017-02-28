@@ -39,6 +39,16 @@ class UseraccountForm
             }
         }
 
+        // assigend departments
+        $collection['departments'] = Validator::param('departments')
+            ->isArray('Es muss mindestens eine Behörde oder systemübergreifend ausgewählt werden');
+        if (0 == reset($collection['departments']->getValue())) {
+            if (! Validator::param('rights')->isArray()->getValue()['superuser']) {
+                $collection['departments']
+                    ->setFailure('Für "systemübergreifend" muss die Superuser-Berechtigung ausgewählt werden');
+            }
+        }
+
         // return validated collection
         $collection = Validator::collection($collection);
         return $collection;
