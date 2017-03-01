@@ -24,6 +24,8 @@ class DayoffUpdate extends BaseController
 
         $query = new Query();
         $input = Validator::input()->isJson()->getValue();
+        $collection = new \BO\Zmsentities\Collection\DayoffList($input);
+        $collection->hasDatesInYear($year);
         $collection = $query->writeCommonDayoffsByYear($input, $year);
         $message = Response\Message::create(Render::$request);
         $message->data = $collection;
