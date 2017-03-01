@@ -35,7 +35,7 @@ class User
      */
     public static function testWorkstationAssigend(\BO\Zmsentities\Workstation $entity, $resolveReferences = 0)
     {
-        if (! static::$assignedWorkstation) {
+        if (! static::$assignedWorkstation && $entity->name) {
             static::$assignedWorkstation = (new Workstation())->readWorkstationByScopeAndName(
                 $entity->scope['id'],
                 $entity->name,
