@@ -14,7 +14,9 @@ class Workstation extends Base implements MappingInterface
             '. self::TABLE .'
         SET
             SessionID=?,
-            Datum=?
+            Datum=?,
+            Arbeitsplatznr="",
+            StandortID=0
         WHERE
             Name=? AND
             Passworthash = ?
