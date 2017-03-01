@@ -39,6 +39,7 @@ class Process extends BaseController
 
         $scope = new \BO\Zmsentities\Scope($process->scope);
         $queueList = \App::$http->readGetResult('/scope/'. $scope->id . '/queue/')->getCollection();
+        $estimatedData = ($queueList) ? $scope->getWaitingTimeFromQueueList($queueList, \App::$now) : null;
 
         return \BO\Slim\Render::withHtml(
             $response,
@@ -53,7 +54,7 @@ class Process extends BaseController
                 )->getEntity(),
                 'process' => $process,
                 'queueList' => $queueList,
-                'estimatedData' => $scope->getWaitingTimeFromQueueList($queueList, \App::$now),
+                'estimatedData' => $estimatedData
             )
         );
     }

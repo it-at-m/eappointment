@@ -16,13 +16,11 @@
 		    {{ process.queue.number }}
 		</div>
         <span>
-        	{% if queueList|length > 1 %}{% set plural = 1 %}{% endif %}
-        	{% if queueList|length >= 1 %}
-    			{% if plural %}
-        		Es warten {{ estimatedData.amountBefore - 1 }} Kunden vor Ihnen.
-        		{% else %}
-        		Es wartet 1 Kunde vor Ihnen.
-        		{% endif %}
+        	{% if queueList|length > 1 %}
+				{% if queueList|length == 2 %}
+					Es wartet 1 Kunde vor Ihnen.
+				{% endif %}
+    			Es warten {{ estimatedData.amountBefore - 1 }} Kunden vor Ihnen.
         	{% else %}
         	Es wartet niemand vor Ihnen.
         	{% endif %}
