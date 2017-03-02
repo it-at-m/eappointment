@@ -18,7 +18,7 @@ $calendarRed:                   #FFAAA9;
 $calendarGreen:                 #CFE9C9;
 
 $zebraGray:         #f8f8f8;
-$zebraWhite:        #ffffff; 
+$zebraWhite:        #ffffff;
 
 $baseTextColor:                 #000000;
 $fontInactiveColor:             #999999;
@@ -32,11 +32,12 @@ $tableHeadBackground:           $blueLight;
 // Dates
 $backgroundColorDateFree:       $calendarGreen !default;
 $backgroundColorDateBusy:       $calendarRed !default;
+$backgroundColorDateHoliday:    #EFC10F;
 $backgroundColorDateDisabled:   #eee;
 $textColorDateLocked:           #CCCCCC;
 $textColorDateSunday:           $red;
-
-$clientNextIconColor:         #33445E;
+$textColorDateSelected:         $blueDark !important;
+$clientNextIconColor:           #33445E;
 
 // Magic animations
 
@@ -50,12 +51,12 @@ $gridGutter:                    1.429em; // 20px; bei 14px font size;
 $baseBoxElementPadding:         ($gridGutter / 3) ($gridGutter / 2); // board_body inner elements;
 $base-font-family:              Neo, Roboto, Arial, sans-serif;
 
-$fontSizeLabels:                0.95em; // form labels, dl dt, table th 
+$fontSizeLabels:                0.95em; // form labels, dl dt, table th
 
 /**
  * CSSWIZARDRY GRID SETTING
  */
- 
+
 $use-markup-fix:                false;
 $push:                          true;
 $gutter:                        $gridGutter;
@@ -74,7 +75,7 @@ $breakpoints: (
 
 // iniut Base Settings
 $inuit-base-font-size:          14px;
-$inuit-base-line-height:        20px; 
+$inuit-base-line-height:        20px;
 $inuit-base-text-color:         $baseTextColor;
 $inuit-base-background-color:   $white;
 $inuit-responsive-settings:     true;

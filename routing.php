@@ -160,6 +160,9 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/availability/month/', '\BO\Zmsadmin\AvailabilityMonth')
     ->setName("availability_month");
 
+\App::$slim->get('/calendar/[{date:\d}/]', '\BO\Zmsadmin\CalendarPage')
+    ->setName("calendar_page");
+
 \App::$slim->get('/calendar/{year:\d\d\d\d}/kw{weeknr:\d{1,2}}/', '\BO\Zmsadmin\CalendarWeek')
     ->setName("calendar_week");
 

@@ -27,7 +27,7 @@
 /**
  * Import our css
  */
- 
+
 // Main site grid and global layout rules
 @import "layout/main";
 @import "layout/main-header";
@@ -50,6 +50,7 @@
 @import "element/link";
 @import "element/paragraph";
 @import "element/rule";
+@import "element/spinner";
 
 // Block rules
 @import "block/extend/board";
