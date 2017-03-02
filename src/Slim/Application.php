@@ -73,6 +73,12 @@ class Application
      */
     const ESI_ENABLED = true;
 
+    /**
+     * Default parameters for templates
+     *
+     */
+    public static $templatedefaults = array();
+
     /*
      * -----------------------------------------------------------------------
      * Logging PSR3 compatible
