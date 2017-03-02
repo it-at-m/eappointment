@@ -18,6 +18,7 @@ import DepartmentLinksView from './block/department/links'
 import DepartmentDaysOffView from './block/department/daysOff'
 import TicketPrinterConfigView from './block/ticketprinter/config'
 import CallDisplayConfigView from './block/calldisplay/config'
+import CalendarPage from './block/calendar/pageCalendar'
 
 import AvailabilityDayPage from './page/availabilityDay'
 import bindReact from './lib/bindReact.js'
@@ -41,6 +42,10 @@ $('.department-links').each(function() {
     new DepartmentLinksView(this, getDataAttributes(this));
 })
 
+$('#calendarPage').each(function() {
+    new CalendarPage(this, getDataAttributes(this));
+})
+
 $('form').each(function() {
     preventFormResubmit(this);
 })
@@ -54,4 +59,3 @@ bindReact('.availabilityDayRoot', AvailabilityDayPage)
 bindReact('[data-department-daysoff]', DepartmentDaysOffView)
 bindReact('[data-ticketprinter-config]', TicketPrinterConfigView)
 bindReact('[data-calldisplay-config]', CallDisplayConfigView)
-

@@ -1,10 +1,11 @@
 .calendar {
-    @extend 
+    @extend
         .board;
     > .header {
         padding-right:  0;
     }
     > .body {
+        min-height:     362px;
         padding:        0.5em 0.4em;
     }
 }
@@ -17,7 +18,7 @@
 
 .calendar-page {
     background-color:           $white;
-    font-size:                  0.9em; 
+    font-size:                  0.9em;
     margin-bottom:              1em;
     > .header {
         border-bottom:          1px solid $grey;
@@ -33,8 +34,8 @@
     > .body {
         font-size:              0.873em;
         table {
-            @extend 
-                .table; 
+            @extend
+                .table;
             th {
                 padding:            0 0.1em;
                 text-align:         center;
@@ -63,9 +64,24 @@
                 color:              $textColorDateLocked;
                 cursor:             default;
             }
+            .date-selected {
+                background-color:   $white;
+                a {
+                    color:          $textColorDateSelected;
+                    font-weight:    bold;
+                }
+            }
             .sunday {
                 color:              $textColorDateSunday;
                 cursor:             default;
+            }
+            .holiday {
+                background-color:   $backgroundColorDateHoliday;
+            }
+            .today {
+                background-image:       url(images/today.png);
+                background-position:    top right;
+                background-repeat:      no-repeat;
             }
         }
     }
