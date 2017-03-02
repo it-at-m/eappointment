@@ -41,6 +41,8 @@ class Render
     {
         $response  = $response->withStatus($status);
         $response  = $response->withHeader('Content-Type', 'text/html; charset=utf-8');
+        \App::$templatedefaults['debug'] = \App::DEBUG;
+        $parameters = array_merge(\App::$templatedefaults, $parameters);
         $response  = \App::$slim->getContainer()->view->render($response, $template, $parameters);
         return $response ;
     }
