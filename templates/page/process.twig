@@ -19,8 +19,10 @@
         	{% if queueList|length > 1 %}
 				{% if queueList|length == 2 %}
 					Es wartet 1 Kunde vor Ihnen.
+				{% else %}
+					Es warten {{ estimatedData.amountBefore }} Kunden vor Ihnen.
 				{% endif %}
-    			Es warten {{ estimatedData.amountBefore - 1 }} Kunden vor Ihnen.
+
         	{% else %}
         	Es wartet niemand vor Ihnen.
         	{% endif %}
