@@ -19,18 +19,21 @@ class CalendarPage extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
-        $scope = new Scope($workstation->scope);
-        $calendar = new Helper\PageCalendar($args);
         $validator = $request->getAttribute('validator');
         $source = $validator->getParameter('source')->isString()->getValue();
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
+
+        $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
+        $scope = new Scope($workstation->scope);
+        $calendar = new Helper\PageCalendar($selectedDate);
+
         return \BO\Slim\Render::withHtml(
             $response,
-            'page/calendarPage.twig',
+            'block/calendar/calendarMonth.twig',
             array(
+                'title' => 'Kalender',
                 'calendar' => $calendar,
-                'selecteddate' => ($selectedDate) ? $selectedDate : \Appp::$now->format('Y-m-d'),
+                'selectedDate' => ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d'),
                 'source' => ($source) ? $source : 'counter',
                 'dayoffList' => $scope->getDayoffList(),
                 'monthList' => $calendar->readByScope($scope)

@@ -27,7 +27,7 @@ class Counter extends BaseController
         $requestList = \App::$http->readGetResult('/request/dldb/provider/'. $provider->id .'/')->getCollection();
 
         $validator = $request->getAttribute('validator');
-        $date = $validator->getParameter('date')->isString()->getValue();
+        $selectedDate = $validator->getParameter('date')->isString()->getValue();
 
         if (!$workstation->hasId()) {
             return \BO\Slim\Render::redirect(
@@ -44,7 +44,7 @@ class Counter extends BaseController
             array(
                 'title' => 'Tresen',
                 'menuActive' => 'counter',
-                'date' => $date,
+                'selectedDate' => ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d'),
                 'workstation' => $workstation->getArrayCopy(),
                 'requestList' => $requestList->sortByName()
             )

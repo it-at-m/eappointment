@@ -8,8 +8,8 @@ class View extends BaseView {
         this.includeUrl = options.includeurl
         this.source = options.source
         this.selecteddate = options.selecteddate
-        this.bindPublicMethods('loadData');
-        console.log('Found Calendar container');
+        this.bindPublicMethods('loadData','navigateCalendar');
+        console.log('Component: Month Calendar');
         this.$.ready(this.loadData);
         $.ajaxSetup({ cache: false });
     }
@@ -21,11 +21,34 @@ class View extends BaseView {
                 method: 'GET'
             }).done(data => {
                 $( '#calendarPage' ).html( data );
+                this.navigateCalendar();
             }).fail(err => {
                 console.log('XHR error', url, err)
                 reject(err)
             })
         })
+    }
+
+    navigateCalendar () {
+        var dateOptions = $( '#calendarPage .calendarDateData' ).data()
+        $( '.calendar .calendar-navigation a' ).each((index, element) => {
+            $(element).off('click').on('click', (event) => {
+                event.preventDefault();
+                if ($(element).hasClass('prev')) {
+                    console.log(dateOptions.prev);
+                    this.selecteddate = dateOptions.prev;
+                }
+                if ($(element).hasClass('today')) {
+                    this.selecteddate = $(element).data('date');
+                }
+                if ($(element).hasClass('next')) {
+                    console.log(dateOptions.next);
+                    this.selecteddate = dateOptions.next;
+                }
+                $( '#calendarPage' ).html( "<div class='loader'></div>" );
+                this.loadData();
+            });
+        });
     }
 }
 

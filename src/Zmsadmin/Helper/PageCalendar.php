@@ -15,10 +15,9 @@ class PageCalendar
 
     protected $dateTime;
 
-    public function __construct($args)
+    public function __construct($selectedDate = null)
     {
-        $this->dateTime = (array_key_exists('date', $args)) ?
-            new \BO\Zmsentities\Helper\DateTime($args['date']) : \App::$now;
+        $this->dateTime = ($selectedDate) ? new \BO\Zmsentities\Helper\DateTime($selectedDate) : \App::$now;
         $this->calendar = new Calendar();
         $this->calendar->firstDay->setDateTime($this->dateTime->modify('first day of this month'));
         $this->calendar->lastDay->setDateTime($this->dateTime->modify('last day of next month'));
