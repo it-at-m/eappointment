@@ -101,6 +101,7 @@ Locations
                 "name" : "Bezirksamt Mitte", // Name der Behörde
                 "id" : "12671" // ID der Behörde
             },
+            "office": "buergeramt", // Identifier der Kategorie des Standores
             "category": {
                 "name": "Bürgerämter", // Kategorie des Standores
                 "identifier": "buergeramt" // Identifier der Kategorie des Standores
