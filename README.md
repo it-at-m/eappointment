@@ -101,7 +101,10 @@ Locations
                 "name" : "Bezirksamt Mitte", // Name der Behörde
                 "id" : "12671" // ID der Behörde
             },
-            "office": "buergeramt", // Kategorie des Standores
+            "category": {
+                "name": "Bürgerämter", // Kategorie des Standores
+                "identifier": "buergeramt" // Identifier der Kategorie des Standores
+            },
             "opening_times": { // Öffnungszeiten
                 "tuesday": "11.00-18.00 Uhr 09.00-11.00 Uhr nur Termine 16.00-18.00 Uhr nur Termine ",
                 "thursday": "11.00-18.00 Uhr 09.00-11.00 Uhr nur Termine 16.00-18.00 Uhr nur Termine ",
