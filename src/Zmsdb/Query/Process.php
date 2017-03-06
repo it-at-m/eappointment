@@ -73,11 +73,13 @@ class Process extends Base implements MappingInterface
                     THEN "blocked"
                 WHEN process.nicht_erschienen != 0
                     THEN "missed"
-                WHEN process.Abholer != 0 AND process.AbholortID != 0
+                WHEN process.Abholer != 0 AND process.AbholortID != 0 AND process.NutzerID = 0
                     THEN "pending"
                 WHEN process.aufruferfolgreich != 0
                     THEN "processing"
-                WHEN process.aufrufzeit != "00:00:00"
+                WHEN process.AbholortID != 0 AND process.NutzerID != 0
+                    THEN "pickup"
+                WHEN process.aufrufzeit != "00:00:00" AND process.NutzerID != 0 AND process.AbholortID = 0
                     THEN "called"
                 WHEN process.wsm_aufnahmezeit != "00:00:00"
                     THEN "queued"
@@ -125,7 +127,12 @@ class Process extends Base implements MappingInterface
                     `process`.`BuergerID`
 )'
             ),
-            'queue__destination' => 'processuser.Arbeitsplatznr',
+            'queue__destination' => self::expression(
+                'IF(`process`.`AbholortID`,
+                    `processscope`.`ausgabeschaltername`,
+                    `processuser`.`Arbeitsplatznr`
+)'
+            ),
             'queue__destinationHint' => 'processuser.aufrufzusatz',
             'queue__waitingTime' => 'process.wartezeit',
             'queue__withAppointment' => self::expression(
