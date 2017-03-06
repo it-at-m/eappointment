@@ -310,4 +310,42 @@ class Calendar extends Schema\Entity
         unset($entity['freeProcesses']);
         return $entity;
     }
+
+    public function withFilledEmptyDays()
+    {
+        $entity = clone $this;
+
+        $firstDay = $this->getFirstDay()->modify('first day of this month')->modify('00:00:00');
+        $lastDay = $this->getLastDay()->modify('last day of this month')->modify('23:59:59');
+        $currentDate = $firstDay;
+        $dayList = new Collection\DayList($entity->days);
+
+        do {
+            $day = new Day([
+                'year' => $currentDate->format('Y'),
+                'month' => $currentDate->format('m'),
+                'day' => $currentDate->format('d')
+            ]);
+            $dayTimestamp = $day->toDateTime()->getTimestamp();
+            $dayFound = false;
+
+            foreach ($dayList as $checkingDay) {
+                $checkingTimestamp = $checkingDay->toDateTime()->getTimestamp();
+                if ($checkingTimestamp === $dayTimestamp) {
+                    $dayFound = true;
+                }
+            }
+
+            if (!$dayFound) {
+                $dayList->addEntity($day);
+            }
+
+            $currentDate = $currentDate->modify('+1 day');
+        } while ($currentDate->getTimestamp() < $lastDay->getTimestamp());
+
+        $entity->days = $dayList;
+
+        return $entity;
+
+    }
 }
