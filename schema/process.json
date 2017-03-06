@@ -121,6 +121,7 @@
                 "called",
                 "processing",
                 "pending",
+                "pickup",
                 "finished",
                 "missed",
                 "archived",
@@ -129,7 +130,7 @@
                 "blocked",
                 "conflict"
             ],
-            "description": "Status of the process. The following values are possible:\n  * free: open for reservation\n  * reserved: for updating data, no validation yet\n  * confirmed: appointment\n  * queued: confirmed and in waiting queue\n  * called: show on call displays\n  * processing: client appeared and gets service\n  * pending: client has to return for getting papers\n  * finished: successfully processed\n  * missed: no client appeared\n  * archived: only used in statistics\n  * deleted: blocking appointment time\n  * anonymized: for statistically purposes only\n  * blocked: to avoid the reuse of IDs on the same day\n  * conflict: mark process as conflict for check functions\n"
+            "description": "Status of the process. The following values are possible:\n  * free: open for reservation\n  * reserved: for updating data, no validation yet\n  * confirmed: appointment\n  * queued: confirmed and in waiting queue\n  * called: show on call displays\n  * processing: client appeared and gets service\n  * pending: client has to return to fetch papers\n  * pickup: client is called to fetch papers\n  * finished: successfully processed\n  * missed: no client appeared\n  * archived: only used in statistics\n  * deleted: blocking appointment time\n  * anonymized: for statistically purposes only\n  * blocked: to avoid the reuse of IDs on the same day\n  * conflict: mark process as conflict for check functions\n"
         }
     }
 }
