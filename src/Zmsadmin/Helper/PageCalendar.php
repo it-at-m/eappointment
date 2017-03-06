@@ -27,7 +27,11 @@ class PageCalendar
     {
         $this->calendar->scopes[] = $scope;
         try {
-            $calendar = \App::$http->readPostResult('/calendar/', $this->calendar, ['fillWithEmptyDays' => 1])->getEntity();
+            $calendar = \App::$http->readPostResult(
+                '/calendar/',
+                $this->calendar,
+                ['fillWithEmptyDays' => 1]
+            )->getEntity();
             return $calendar->getMonthList();
         } catch (\BO\Zmsclient\Exception $exception) {
             if ($exception->template != 'BO\Zmsapi\Exception\Calendar\AppointmentsMissed') {
