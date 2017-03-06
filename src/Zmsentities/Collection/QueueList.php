@@ -103,10 +103,13 @@ class QueueList extends Base
         return null;
     }
 
-    public function withStatus()
+    /**
+     * @param array $statusList of possible strings in process.status
+     *
+     */
+    public function withStatus(array $statusList)
     {
         $queueList = new self();
-        $statusList = func_get_args();
         foreach ($this as $entity) {
             if ($entity->toProperty()->status->isAvailable() && in_array($entity->status, $statusList)) {
                 $queueList->addEntity(clone $entity);
