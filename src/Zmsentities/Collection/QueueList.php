@@ -34,7 +34,8 @@ class QueueList extends Base
 
     public function withSortedArrival()
     {
-        return $this->sortByCustomKey('arrivalTime');
+        $queueList = clone $this;
+        return $queueList->sortByCustomKey('arrivalTime');
     }
 
     public function withAppointment()
