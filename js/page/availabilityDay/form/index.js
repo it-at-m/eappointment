@@ -17,6 +17,7 @@ const getFirstLevelValues = data => {
         endDate,
         multipleSlotsAllowed,
         id,
+        tempId,
         type,
         slotTimeInMinutes
     } = data
@@ -31,6 +32,7 @@ const getFirstLevelValues = data => {
         endDate,
         multipleSlotsAllowed,
         id,
+        tempId,
         type,
         slotTimeInMinutes
     }
