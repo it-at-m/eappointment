@@ -346,6 +346,5 @@ class Calendar extends Schema\Entity
         $entity->days = $dayList;
 
         return $entity;
-
     }
 }
