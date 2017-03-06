@@ -72,7 +72,7 @@ class CallDisplayConfigView extends Component {
             parameters.push(`collections[clusterlist]=${collections.clusterlist.join(",")}`)
         }
 
-        if (this.state.queueStatus !== 'called') {
+        if (this.state.queueStatus !== 'all') {
             parameters.push(`queue[status]=${this.state.queueStatus}`)
         }
 
@@ -178,7 +178,7 @@ class CallDisplayConfigView extends Component {
                         <Label>Angezeigte Aufrufe</Label>
                         <Controls>
                             <Select
-                                options={[{name: 'Alle', value: 'called'}, {name: "Abholer", value: 'pending'}]}
+                                options={[{name: 'Alle', value: 'all'}, {name: "Nur Abholer", value: 'pickup'}, {name: "Spontan- und Terminkunden", value: 'called'}]}
                                 value={this.state.queueStatus}
                                 onChange={onQueueStatusChange} />
                         </Controls>
