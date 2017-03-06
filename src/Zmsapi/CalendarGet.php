@@ -23,12 +23,16 @@ class CalendarGet extends BaseController
     {
         $query = new Query();
         $message = Response\Message::create($request);
+        $fillWithEmptyDays = Validator::param('fillWithEmptyDays')->isNumber()->setDefault(0)->getValue();
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $calendar = new \BO\Zmsentities\Calendar($input);
         if (!$calendar->hasFirstAndLastDay()) {
             throw new Exception\Calendar\InvalidFirstDay('First and last day are required');
         } else {
             $calendar = $query->readResolvedEntity($calendar, \App::getNow())->withLessData();
+            if ($fillWithEmptyDays) {
+                $calendar = $calendar->withFilledEmptyDays();
+            }
             $message->data = $calendar;
         }
         if (0 == count($message->data['days'])) {
