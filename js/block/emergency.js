@@ -147,6 +147,10 @@ class View extends BaseView {
             }
         }
 
+        if (this.minimized) {
+            play = false
+        }
+
         if (play) {
             playSound(`${this.includeUrl}/_audio/emergency.ogg`)
         }
