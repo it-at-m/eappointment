@@ -4,6 +4,7 @@ var bootprintSwagger = require('bootprint-swagger');
 var SwaggerParser = require('swagger-parser');
 var gutil = require('gulp-util');
 var fs   = require('fs');
+var Handlebars = require("handlebars");
 
 gulp.task('bootprint-swagger', ['validate-swagger'], function () {
     SwaggerParser.bundle('public/doc/swagger.yaml', {
@@ -26,7 +27,35 @@ gulp.task('bootprint-swagger', ['validate-swagger'], function () {
                 })
                 .merge({
                     handlebars: {
-                        partials: 'public/doc/partials'
+                        partials: 'public/doc/partials',
+                        helpers: {
+                            'eachSortKey': function(context, key, options) {
+                                // Sort by property of object
+                                var ret = "";
+                                var data;
+                                if (typeof context !== "object") {
+                                    return ret;
+                                }
+                                var keys = context.slice(0);
+                                keys.sort(function (a,b) {
+                                    a = String(a[key]).toLowerCase();
+                                    b = String(b[key]).toLowerCase();
+                                    return a.localeCompare(b);
+                                }).forEach(function (obj, index) {
+                                    if (options.data) {
+                                        data = Handlebars.createFrame(options.data || {});
+                                        data.index = index;
+                                        data.key = obj[key];
+                                        data.length = keys.length;
+                                        data.first = index === 0;
+                                        data.last = index === keys.length - 1;
+
+                                    }
+                                    ret = ret + options.fn(obj, {data: data})
+                                });
+                                return ret
+                            }
+                        }
                     }
                 })
                 .build('public/doc/swagger.json', 'public/doc/')
