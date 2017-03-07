@@ -7,15 +7,15 @@
 <h2 id="swagger--summary-tags">Summary</h2>
 <ul id="tagnavigation">
 <li><h3>Kategorien</h3></li>
-{{#eachSorted tags}}
+{{#eachSortKey tags 'name'}}
 <li>
   <a href="#tag-{{htmlId name}}">
     {{ name }}
   </a>
 </li>
-{{/eachSorted}}
+{{/eachSortKey}}
 </ul>
-{{#eachSorted tags}}
+{{#eachSortKey tags 'name'}}
     <h3 id="tag-{{htmlId name}}" class="swagger-summary-tag">Kategorie: <a href="#definition-{{name}}">{{name}}</a></h3>
     <p>{{description}}</p>
 
@@ -37,5 +37,5 @@
             {{/each}}
         </tbody>
     </table>
-{{/eachSorted}}
+{{/eachSortKey}}
 
