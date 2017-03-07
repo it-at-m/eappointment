@@ -25,7 +25,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/availability/{id}/":
  *      get:
- *          description: Get an availability by id
+ *          summary: Get an availability by id
+ *          tags:
+ *              - availability
  *          x-since: 2.4.0
  *          parameters:
  *              -   name: id
@@ -62,7 +64,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/availability/":
  *      post:
- *          description: Create or update availabilities. If an entity has an id, an update is performed
+ *          summary: Create or update availabilities. If an entity has an id, an update is performed
+ *          tags:
+ *              - availability
  *          parameters:
  *              -   name: availability
  *                  description: availabilityList data to update
@@ -96,7 +100,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/availability/{id}/":
  *      post:
- *          description: Update an availability
+ *          summary: Update an availability
+ *          tags:
+ *              - availability
  *          parameters:
  *              -   name: id
  *                  description: availability number
@@ -133,7 +139,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/availability/{id}/":
  *      delete:
- *          description: Deletes an availability
+ *          summary: Deletes an availability
+ *          tags:
+ *              - availability
  *          parameters:
  *              -   name: id
  *                  description: availability number
@@ -165,7 +173,9 @@ use \Psr\Http\Message\ResponseInterface;
 *  @swagger
 *  "/calendar/":
 *      post:
-*          description: Get a list of available days for appointments
+*          summary: Get a list of available days for appointments
+*          tags:
+*              - calendar
 *          parameters:
 *              -   name: calendar
 *                  description: data for finding available days
@@ -205,7 +215,9 @@ use \Psr\Http\Message\ResponseInterface;
 *  @swagger
 *  "/calldisplay/":
 *      post:
-*          description: Get preferences for a calldisplay
+*          summary: Get preferences for a calldisplay
+*          tags:
+*              - calldisplay
 *          parameters:
 *              -   name: calldisplay
 *                  description: data containing scopes and clusters
@@ -243,7 +255,10 @@ use \Psr\Http\Message\ResponseInterface;
 *  @swagger
 *  "/calldisplay/queue/":
 *      post:
-*          description: Get queue for a calldisplay
+*          summary: Get queue for a calldisplay
+*          tags:
+*              - calldisplay
+*              - queue
 *          parameters:
 *              -   name: calldisplay
 *                  description: data containing scopes and clusters
@@ -283,7 +298,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/cluster/{id}/":
  *      get:
- *          description: Get an cluster by id
+ *          summary: Get an cluster by id
+ *          tags:
+ *              - cluster
  *          parameters:
  *              -   name: id
  *                  description: cluster number
@@ -319,7 +336,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/cluster/{id}/":
  *      post:
- *          description: Update an cluster
+ *          summary: Update an cluster
+ *          tags:
+ *              - cluster
  *          parameters:
  *              -   name: id
  *                  description: cluster number
@@ -357,7 +376,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/cluster/{id}/":
  *      delete:
- *          description: Deletes an cluster
+ *          summary: Deletes an cluster
+ *          tags:
+ *              - cluster
  *          parameters:
  *              -   name: id
  *                  description: cluster number
@@ -382,7 +403,10 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/cluster/{id}/queue/":
  *      get:
- *          description: Get a waiting queue for a cluster
+ *          summary: Get a waiting queue for a cluster
+ *          tags:
+ *              - cluster
+ *              - queue
  *          parameters:
  *              -   name: id
  *                  description: cluster number
@@ -416,7 +440,10 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/cluster/{id}/waitingnumber/{hash}/":
  *      get:
- *          description: Get a waitingNumber according to scope preferences in cluster
+ *          summary: Get a waitingNumber according to scope preferences in cluster
+ *          tags:
+ *              - cluster
+ *              - process
  *          parameters:
  *              -   name: id
  *                  description: cluster number
@@ -455,7 +482,10 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/cluster/{id}/imagedata/calldisplay/":
  *      get:
- *          description: get image data by cluster id for calldisplay image
+ *          summary: get image data by cluster id for calldisplay image
+ *          tags:
+ *              - cluster
+ *              - mimepart
  *          parameters:
  *              -   name: id
  *                  description: number of cluster
@@ -483,7 +513,10 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/cluster/{id}/imagedata/calldisplay/":
  *      post:
- *          description: upload and get image data by cluster id for calldisplay image
+ *          summary: upload and get image data by cluster id for calldisplay image
+ *          tags:
+ *              - cluster
+ *              - mimepart
  *          parameters:
  *              -   name: id
  *                  description: number of cluster
@@ -516,9 +549,42 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/cluster/{id}/organisation/":
+ *      get:
+ *          summary: Get an organisation by clusterId.
+ *          tags:
+ *              - cluster
+ *              - organisation
+ *          parameters:
+ *              -   name: id
+ *                  description: cluster number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/organisation.json"
+ *              404:
+ *                  description: "organisation id does not exists"
+ */
+\App::$slim->get('/cluster/{id:\d{1,4}}/organisation/',
+    '\BO\Zmsapi\OrganisationByCluster')
+    ->setName("OrganisationByCluster");
+
+/**
+ *  @swagger
  *  "/config/":
  *      get:
- *          description: Get config
+ *          summary: Get config
+ *          tags:
+ *              - config
  *          parameters:
  *              -   name: X-Token
  *                  description: Secure Token
@@ -550,7 +616,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/dayoff/{year}/":
  *      get:
- *          description: Get a list of common free days for a given year
+ *          summary: Get a list of common free days for a given year
+ *          tags:
+ *              - dayoff
  *          parameters:
  *              -   name: year
  *                  description: year for the free days
@@ -588,7 +656,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/dayoff/{year}/":
  *      post:
- *          description: Update list of common free days
+ *          summary: Update list of common free days
+ *          tags:
+ *              - dayoff
  *          parameters:
  *              -   name: year
  *                  description: year for the free days
@@ -629,7 +699,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/department/":
  *      get:
- *          description: Get a list of departments
+ *          summary: Get a list of departments
+ *          tags:
+ *              - department
  *          parameters:
  *              -   name: X-Authkey
  *                  description: authentication key to identify user for testing access rights
@@ -660,7 +732,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/department/{id}/":
  *      get:
- *          description: Get an department by id
+ *          summary: Get an department by id
+ *          tags:
+ *              - department
  *          parameters:
  *              -   name: id
  *                  description: department number
@@ -696,7 +770,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/department/{id}/":
  *      post:
- *          description: Update an department
+ *          summary: Update an department
+ *          tags:
+ *              - department
  *          parameters:
  *              -   name: id
  *                  description: department number
@@ -734,7 +810,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/department/{id}/":
  *      delete:
- *          description: Deletes an department
+ *          summary: Deletes an department
+ *          tags:
+ *              - department
  *          parameters:
  *              -   name: id
  *                  description: department number
@@ -757,9 +835,94 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/department/{id}/scope/":
+ *      post:
+ *          summary: Add a new scope
+ *          tags:
+ *              - department
+ *              - scope
+ *          parameters:
+ *              -   name: id
+ *                  description: department number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: scope
+ *                  description: scope data to add
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/scope.json"
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/scope.json"
+ *              404:
+ *                  description: "Missing required properties in the scope"
+ */
+\App::$slim->post('/department/{id:\d{1,11}}/scope/',
+    '\BO\Zmsapi\DepartmentAddScope')
+    ->setName("DepartmentAddScope");
+
+/**
+ *  @swagger
+ *  "/department/{id}/cluster/":
+ *      post:
+ *          summary: Add a new cluster
+ *          tags:
+ *              - department
+ *              - cluster
+ *          parameters:
+ *              -   name: id
+ *                  description: department number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: cluster
+ *                  description: cluster data to add
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/cluster.json"
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/cluster.json"
+ *              404:
+ *                  description: "Missing required properties in the cluster"
+ */
+\App::$slim->post('/department/{id:\d{1,11}}/cluster/',
+                  '\BO\Zmsapi\DepartmentAddCluster')
+    ->setName("DepartmentAddCluster");
+
+/**
+ *  @swagger
  *  "/department/{id}/organisation/":
  *      get:
- *          description: Get the parent organisation for a department
+ *          summary: Get the parent organisation for a department
+ *          tags:
+ *              - department
+ *              - organisation
  *          parameters:
  *              -   name: id
  *                  description: department number
@@ -795,7 +958,10 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/department/{id}/useraccount/":
  *      get:
- *          description: Get a list of useraccounts for a department
+ *          summary: Get a list of useraccounts for a department
+ *          tags:
+ *              - department
+ *              - useraccount
  *          parameters:
  *              -   name: id
  *                  description: department number
@@ -831,7 +997,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/mails/":
  *      get:
- *          description: get a list of mails in the send queue
+ *          summary: get a list of mails in the send queue
+ *          tags:
+ *              - mail
  *          parameters:
  *              -   name: X-Authkey
  *                  description: authentication key to identify user for testing access rights
@@ -863,7 +1031,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/mails/":
  *      post:
- *          description: Add a mail to the send queue
+ *          summary: Add a mail to the send queue
+ *          tags:
+ *              - mail
  *          parameters:
  *              -   name: notification
  *                  description: mail data to send
@@ -898,7 +1068,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/mails/{id}/":
  *      delete:
- *          description: delete a mail in the send queue
+ *          summary: delete a mail in the send queue
+ *          tags:
+ *              - mail
  *          parameters:
  *              -   name: id
  *                  description: mail number
@@ -924,7 +1096,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/notification/":
  *      get:
- *          description: get a list of notifications in the send queue
+ *          summary: get a list of notifications in the send queue
+ *          tags:
+ *              - notification
  *          parameters:
  *              -   name: X-Authkey
  *                  description: authentication key to identify user for testing access rights
@@ -957,7 +1131,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/notification/":
  *      post:
- *          description: Add a notification to the send queue
+ *          summary: Add a notification to the send queue
+ *          tags:
+ *              - notification
  *          parameters:
  *              -   name: notification
  *                  description: notification data to send
@@ -983,7 +1159,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/notification/{id}/":
  *      delete:
- *          description: delete a notification in the send queue
+ *          summary: delete a notification in the send queue
+ *          tags:
+ *              - notification
  *          parameters:
  *              -   name: id
  *                  description: notification number
@@ -1009,7 +1187,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/owner/":
  *      get:
- *          description: Get a list of owners
+ *          summary: Get a list of owners
+ *          tags:
+ *              - owner
  *          parameters:
  *              -   name: X-Authkey
  *                  description: authentication key to identify user for testing access rights
@@ -1040,7 +1220,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/owner/{id}/":
  *      get:
- *          description: Get an owner by id
+ *          summary: Get an owner by id
+ *          tags:
+ *              - owner
  *          parameters:
  *              -   name: id
  *                  description: owner number
@@ -1076,7 +1258,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/owner/{id}/":
  *      post:
- *          description: Update an owner
+ *          summary: Update an owner
+ *          tags:
+ *              - owner
  *          parameters:
  *              -   name: id
  *                  description: owner number
@@ -1114,7 +1298,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/owner/":
  *      post:
- *          description: Add a new owner
+ *          summary: Add a new owner
+ *          tags:
+ *              - owner
  *          parameters:
  *              -   name: owner
  *                  description: owner data to add
@@ -1148,7 +1334,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/owner/{id}/":
  *      delete:
- *          description: Deletes an owner
+ *          summary: Deletes an owner
+ *          tags:
+ *              - owner
  *          parameters:
  *              -   name: id
  *                  description: owner number
@@ -1169,12 +1357,55 @@ use \Psr\Http\Message\ResponseInterface;
     '\BO\Zmsapi\OwnerDelete')
     ->setName("OwnerDelete");
 
+/**
+ *  @swagger
+ *  "/owner/{id}/organisation/":
+ *      post:
+ *          summary: Add a new organisation
+ *          tags:
+ *              - owner
+ *              - organisation
+ *          parameters:
+ *              -   name: id
+ *                  description: owner number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: organisation
+ *                  description: organisation data to add
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/organisation.json"
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/organisation.json"
+ *              404:
+ *                  description: "Missing required properties in the organisation"
+ */
+\App::$slim->post('/owner/{id:\d{1,11}}/organisation/',
+    '\BO\Zmsapi\OwnerAddOrganisation')
+    ->setName("OwnerAddOrganisation");
+
 
 /**
  *  @swagger
  *  "/organisation/":
  *      get:
- *          description: Get a list of organisations
+ *          summary: Get a list of organisations
+ *          tags:
+ *              - organisation
  *          parameters:
  *              -   name: X-Authkey
  *                  description: authentication key to identify user for testing access rights
@@ -1205,7 +1436,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/organisation/{id}/":
  *      get:
- *          description: Get an organisation by id
+ *          summary: Get an organisation by id
+ *          tags:
+ *              - organisation
  *          parameters:
  *              -   name: id
  *                  description: organisation number
@@ -1241,7 +1474,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/organisation/{id}/":
  *      post:
- *          description: Update an organisation
+ *          summary: Update an organisation
+ *          tags:
+ *              - organisation
  *          parameters:
  *              -   name: id
  *                  description: organisation number
@@ -1279,7 +1514,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/organisation/{id}/":
  *      delete:
- *          description: Deletes an organisation
+ *          summary: Deletes an organisation
+ *          tags:
+ *              - organisation
  *          parameters:
  *              -   name: id
  *                  description: organisation number
@@ -1302,37 +1539,12 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
- *  "/cluster/{id}/organisation/":
- *      get:
- *          description: Get an organisation by clusterId.
- *          parameters:
- *              -   name: id
- *                  description: cluster number
- *                  in: path
- *                  required: true
- *                  type: integer
- *          responses:
- *              200:
- *                  description: "success"
- *                  schema:
- *                      type: object
- *                      properties:
- *                          meta:
- *                              $ref: "schema/metaresult.json"
- *                          data:
- *                              $ref: "schema/organisation.json"
- *              404:
- *                  description: "organisation id does not exists"
- */
-\App::$slim->get('/cluster/{id:\d{1,4}}/organisation/',
-    '\BO\Zmsapi\OrganisationByCluster')
-    ->setName("OrganisationByCluster");
-
-/**
- *  @swagger
  *  "/organisation/{id}/hash/":
  *      get:
- *          description: Get a hash to identify a ticketprinter. Usually a browser requests a hash once and stores it in a cookie.
+ *          summary: Get a hash to identify a ticketprinter. Usually a browser requests a hash once and stores it in a cookie.
+ *          tags:
+ *              - organisation
+ *              - ticketprinter
  *          parameters:
  *              -   name: id
  *                  description: organisation number
@@ -1360,7 +1572,10 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/organisation/{id}/department/":
  *      post:
- *          description: Add a new department
+ *          summary: Add a new department
+ *          tags:
+ *              - organisation
+ *              - department
  *          parameters:
  *              -   name: id
  *                  description: organisation number
@@ -1396,47 +1611,11 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
- *  "/owner/{id}/organisation/":
- *      post:
- *          description: Add a new organisation
- *          parameters:
- *              -   name: id
- *                  description: owner number
- *                  in: path
- *                  required: true
- *                  type: integer
- *              -   name: organisation
- *                  description: organisation data to add
- *                  required: true
- *                  in: body
- *                  schema:
- *                      $ref: "schema/organisation.json"
- *              -   name: X-Authkey
- *                  description: authentication key to identify user for testing access rights
- *                  in: header
- *                  type: string
- *          responses:
- *              200:
- *                  description: "success"
- *                  schema:
- *                      type: object
- *                      properties:
- *                          meta:
- *                              $ref: "schema/metaresult.json"
- *                          data:
- *                              $ref: "schema/organisation.json"
- *              404:
- *                  description: "Missing required properties in the organisation"
- */
-\App::$slim->post('/owner/{id:\d{1,11}}/organisation/',
-    '\BO\Zmsapi\OwnerAddOrganisation')
-    ->setName("OwnerAddOrganisation");
-
-/**
- *  @swagger
  *  "/process/{id}/{authKey}/":
  *      get:
- *          description: Get a process
+ *          summary: Get a process
+ *          tags:
+ *              - process
  *          parameters:
  *              -   name: id
  *                  description: process number
@@ -1476,7 +1655,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/process/{id}/{authKey}/ics/":
  *      get:
- *          description: Get an ICS-File for a process
+ *          summary: Get an ICS-File for a process
+ *          tags:
+ *              - process
  *          parameters:
  *              -   name: id
  *                  description: process number
@@ -1516,7 +1697,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/process/{id}/{authKey}/":
  *      post:
- *          description: Update a process but does not send any mails or notifications on status changes
+ *          summary: Update a process but does not send any mails or notifications on status changes
+ *          tags:
+ *              - process
  *          parameters:
  *              -   name: id
  *                  description: process number
@@ -1559,7 +1742,10 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/process/{id}/{authKey}/confirmation/mail/":
  *      post:
- *          description: send mail on confirmed process. Depending on config, if no mail is send, an empty mail is returned.
+ *          summary: send mail on confirmed process. Depending on config, if no mail is send, an empty mail is returned.
+ *          tags:
+ *              - process
+ *              - mail
  *          parameters:
  *              -   name: id
  *                  description: process number
@@ -1602,7 +1788,10 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/process/{id}/{authKey}/delete/mail/":
  *      post:
- *          description: send mail on delete process. Depending on config, if no mail is send, an empty mail is returned.
+ *          summary: send mail on delete process. Depending on config, if no mail is send, an empty mail is returned.
+ *          tags:
+ *              - process
+ *              - mail
  *          parameters:
  *              -   name: id
  *                  description: process number
@@ -1645,7 +1834,10 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/process/{id}/{authKey}/confirmation/notification/":
  *      post:
- *          description: send notification on confirmed process
+ *          summary: send notification on confirmed process
+ *          tags:
+ *              - process
+ *              - notification
  *          parameters:
  *              -   name: id
  *                  description: process number
@@ -1688,7 +1880,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/process/{id}/{authKey}/":
  *      delete:
- *          description: Deletes a process but does not send any mails or notifications
+ *          summary: Deletes a process but does not send any mails or notifications
+ *          tags:
+ *              - process
  *          parameters:
  *              -   name: id
  *                  description: process number
@@ -1723,7 +1917,10 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/process/status/free/":
  *      post:
- *          description: Get a list of free processes for a given day
+ *          summary: Get a list of free processes for a given day
+ *          tags:
+ *              - calendar
+ *              - process
  *          parameters:
  *              -   name: calendar
  *                  description: data for finding available processes, try to restrict data to one day, if possible
@@ -1762,7 +1959,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/process/status/reserved/":
  *      get:
- *          description: Get a list of reserved processes
+ *          summary: Get a list of reserved processes
+ *          tags:
+ *              - process
  *          parameters:
  *              -   name: X-Authkey
  *                  description: authentication key to identify user for testing access rights
@@ -1804,7 +2003,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/process/status/reserved/":
  *      post:
- *          description: Try to reserve the appointments in a process
+ *          summary: Try to reserve the appointments in a process
+ *          tags:
+ *              - process
  *          parameters:
  *              -   name: process
  *                  description: process data to update
@@ -1835,7 +2036,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/process/status/confirmed/":
  *      post:
- *          description: Try to confirm a process, changes status from reservered to confirmed
+ *          summary: Try to confirm a process, changes status from reservered to confirmed
+ *          tags:
+ *              - process
  *          parameters:
  *              -   name: process
  *                  description: process data to update
@@ -1868,134 +2071,11 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
- *  "/scope/{id}/queue/{number}/":
- *      get:
- *          description: Get a process by queue number and scope id
- *          parameters:
- *              -   name: number
- *                  description: waitingnumber in scope for a process
- *                  in: path
- *                  required: true
- *                  type: integer
- *              -   name: id
- *                  description: number of scope
- *                  in: path
- *                  required: true
- *                  type: integer
- *          responses:
- *              200:
- *                  description: get a process
- *                  schema:
- *                      type: object
- *                      properties:
- *                          meta:
- *                              $ref: "schema/metaresult.json"
- *                          data:
- *                              type: array
- *                              items:
- *                                  $ref: "schema/process.json"
- *              404:
- *                  description: "Could not find a process or scope not found"
- */
-\App::$slim->get('/scope/{id:\d{1,4}}/queue/{number:\d{1,4}}/',
-    '\BO\Zmsapi\ProcessByQueueNumber')
-    ->setName("ProcessByQueueNumber");
-
-/**
- *  @swagger
- *  "/scope/{id}/imagedata/calldisplay/":
- *      get:
- *          description: get image data by scope id for calldisplay image
- *          parameters:
- *              -   name: id
- *                  description: number of scope
- *                  in: path
- *                  required: true
- *                  type: integer
- *          responses:
- *              200:
- *                  description: get existing imagedata by scope id
- *                  schema:
- *                      type: object
- *                      properties:
- *                          meta:
- *                              $ref: "schema/metaresult.json"
- *                          data:
- *                              $ref: "schema/mimepart.json"
- *              404:
- *                  description: "Could not find given scope"
- */
-\App::$slim->get('/scope/{id:\d{1,4}}/imagedata/calldisplay/',
-    '\BO\Zmsapi\ScopeCalldisplayImageDataGet')
-    ->setName("ScopeCalldisplayImageDataGet");
-
-/**
- *  @swagger
- *  "/scope/{id}/imagedata/calldisplay/":
- *      post:
- *          description: upload and get image data by scope id for calldisplay image
- *          parameters:
- *              -   name: id
- *                  description: number of scope
- *                  in: path
- *                  required: true
- *                  type: integer
- *              -   name: mimepart
- *                  description: mimepart image data to update
- *                  required: true
- *                  in: body
- *                  schema:
- *                      $ref: "schema/mimepart.json"
- *          responses:
- *              200:
- *                  description: get an updated mimepart entity
- *                  schema:
- *                      type: object
- *                      properties:
- *                          meta:
- *                              $ref: "schema/metaresult.json"
- *                          data:
- *                              $ref: "schema/mimepart.json"
- *              404:
- *                  description: "Could not find given scope"
- */
-\App::$slim->post('/scope/{id:\d{1,4}}/imagedata/calldisplay/',
-    '\BO\Zmsapi\ScopeCalldisplayImageDataUpdate')
-    ->setName("ScopeCalldisplayImageDataUpdate");
-
-/**
- *  @swagger
- *  "/scope/{id}/organisation/":
- *      get:
- *          description: Get an organisation by scopeId.
- *          parameters:
- *              -   name: id
- *                  description: scope number
- *                  in: path
- *                  required: true
- *                  type: integer
- *          responses:
- *              200:
- *                  description: "success"
- *                  schema:
- *                      type: object
- *                      properties:
- *                          meta:
- *                              $ref: "schema/metaresult.json"
- *                          data:
- *                              $ref: "schema/organisation.json"
- *              404:
- *                  description: "organisation id does not exists"
- */
-\App::$slim->get('/scope/{id:\d{1,4}}/organisation/',
-    '\BO\Zmsapi\OrganisationByScope')
-    ->setName("OrganisationByScope");
-
-/**
- *  @swagger
  *  "/provider/{source}/{id}/":
  *      get:
- *          description: Get an provider by id
+ *          summary: Get an provider by id
+ *          tags:
+ *              - provider
  *          parameters:
  *              -   name: source
  *                  description: provider source like 'dldb'
@@ -2032,7 +2112,10 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/provider/{source}/{id}/scopes/":
  *      get:
- *          description: Get a list of scope by provider ID
+ *          summary: Get a list of scope by provider ID
+ *          tags:
+ *              - provider
+ *              - scope
  *          parameters:
  *              -   name: source
  *                  description: provider source like 'dldb'
@@ -2075,7 +2158,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/provider/{source}/":
  *      get:
- *          description: Get a list of provider by source
+ *          summary: Get a list of provider by source
+ *          tags:
+ *              - provider
  *          parameters:
  *              -   name: source
  *                  description: provider source like 'dldb'
@@ -2111,7 +2196,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/provider/{source}/request/{csv}/":
  *      get:
- *          description: Get a list of provider by request numbers
+ *          summary: Get a list of provider by request numbers
+ *          tags:
+ *              - provider
  *          parameters:
  *              -   name: source
  *                  description: request source like 'dldb'
@@ -2153,7 +2240,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/request/{source}/{id}/":
  *      get:
- *          description: Get an request by id
+ *          summary: Get an request by id
+ *          tags:
+ *              - request
  *          parameters:
  *              -   name: source
  *                  description: request source like 'dldb'
@@ -2190,7 +2279,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/request/{source}/provider/{id}/":
  *      get:
- *          description: Get a list of requests by provider ID
+ *          summary: Get a list of requests by provider ID
+ *          tags:
+ *              - request
  *          parameters:
  *              -   name: source
  *                  description: name of source
@@ -2225,85 +2316,11 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
- *  "/department/{id}/scope/":
- *      post:
- *          description: Add a new scope
- *          parameters:
- *              -   name: id
- *                  description: department number
- *                  in: path
- *                  required: true
- *                  type: integer
- *              -   name: scope
- *                  description: scope data to add
- *                  required: true
- *                  in: body
- *                  schema:
- *                      $ref: "schema/scope.json"
- *              -   name: X-Authkey
- *                  description: authentication key to identify user for testing access rights
- *                  in: header
- *                  type: string
- *          responses:
- *              200:
- *                  description: "success"
- *                  schema:
- *                      type: object
- *                      properties:
- *                          meta:
- *                              $ref: "schema/metaresult.json"
- *                          data:
- *                              $ref: "schema/scope.json"
- *              404:
- *                  description: "Missing required properties in the scope"
- */
-\App::$slim->post('/department/{id:\d{1,11}}/scope/',
-    '\BO\Zmsapi\DepartmentAddScope')
-    ->setName("DepartmentAddScope");
-
-/**
- *  @swagger
- *  "/department/{id}/cluster/":
- *      post:
- *          description: Add a new cluster
- *          parameters:
- *              -   name: id
- *                  description: department number
- *                  in: path
- *                  required: true
- *                  type: integer
- *              -   name: cluster
- *                  description: cluster data to add
- *                  required: true
- *                  in: body
- *                  schema:
- *                      $ref: "schema/cluster.json"
- *              -   name: X-Authkey
- *                  description: authentication key to identify user for testing access rights
- *                  in: header
- *                  type: string
- *          responses:
- *              200:
- *                  description: "success"
- *                  schema:
- *                      type: object
- *                      properties:
- *                          meta:
- *                              $ref: "schema/metaresult.json"
- *                          data:
- *                              $ref: "schema/cluster.json"
- *              404:
- *                  description: "Missing required properties in the cluster"
- */
-\App::$slim->post('/department/{id:\d{1,11}}/cluster/',
-                  '\BO\Zmsapi\DepartmentAddCluster')
-    ->setName("DepartmentAddCluster");
-
-/**
- *  @swagger
  *  "/scope/":
  *      get:
- *          description: Get a list of scopes
+ *          summary: Get a list of scopes
+ *          tags:
+ *              - scope
  *          parameters:
  *              -   name: X-Authkey
  *                  description: authentication key to identify user for testing access rights
@@ -2336,7 +2353,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/scope/{id}/":
  *      get:
- *          description: Get a scope
+ *          summary: Get a scope
+ *          tags:
+ *              - scope
  *          parameters:
  *              -   name: id
  *                  description: scope number
@@ -2372,7 +2391,10 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/scope/{id}/department/":
  *      get:
- *          description: Get a department for a scope
+ *          summary: Get a department for a scope
+ *          tags:
+ *              - scope
+ *              - department
  *          parameters:
  *              -   name: id
  *                  description: scope id
@@ -2408,7 +2430,10 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/scope/cluster/{id}/":
  *      get:
- *          description: Get a list of scope by cluster ID
+ *          summary: Get a list of scope by cluster ID
+ *          tags:
+ *              - scope
+ *              - cluster
  *          parameters:
  *              -   name: id
  *                  description: cluster number
@@ -2446,7 +2471,10 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/scope/{id}/availability/":
  *      get:
- *          description: Get a list of availability entries
+ *          summary: Get a list of availability entries
+ *          tags:
+ *              - scope
+ *              - availability
  *          parameters:
  *              -   name: id
  *                  description: scope number
@@ -2484,7 +2512,10 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/scope/{id}/day/{day}/":
  *      get:
- *          description: Get a list of processes by scope and day
+ *          summary: Get a list of processes by scope and day
+ *          tags:
+ *              - scope
+ *              - process
  *          parameters:
  *              -   name: id
  *                  description: scope number
@@ -2527,7 +2558,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/scope/{id}/emergency/":
  *      post:
- *          description: Trigger an emergency
+ *          summary: Trigger an emergency
+ *          tags:
+ *              - scope
  *          parameters:
  *              -   name: id
  *                  description: scope number
@@ -2559,7 +2592,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/scope/{id}/emergency/":
  *      delete:
- *          description: Cancel an emergency
+ *          summary: Cancel an emergency
+ *          tags:
+ *              - scope
  *          parameters:
  *              -   name: id
  *                  description: scope number
@@ -2591,7 +2626,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/scope/{id}/emergency/respond/":
  *      post:
- *          description: Respond to an emergency
+ *          summary: Respond to an emergency
+ *          tags:
+ *              - scope
  *          parameters:
  *              -   name: id
  *                  description: scope number
@@ -2621,9 +2658,149 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/scope/{id}/queue/{number}/":
+ *      get:
+ *          summary: Get a process by queue number and scope id
+ *          tags:
+ *              - scope
+ *              - process
+ *          parameters:
+ *              -   name: number
+ *                  description: waitingnumber in scope for a process
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: id
+ *                  description: number of scope
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: get a process
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/process.json"
+ *              404:
+ *                  description: "Could not find a process or scope not found"
+ */
+\App::$slim->get('/scope/{id:\d{1,4}}/queue/{number:\d{1,4}}/',
+    '\BO\Zmsapi\ProcessByQueueNumber')
+    ->setName("ProcessByQueueNumber");
+
+/**
+ *  @swagger
+ *  "/scope/{id}/imagedata/calldisplay/":
+ *      get:
+ *          summary: get image data by scope id for calldisplay image
+ *          tags:
+ *              - scope
+ *              - mimepart
+ *          parameters:
+ *              -   name: id
+ *                  description: number of scope
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: get existing imagedata by scope id
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/mimepart.json"
+ *              404:
+ *                  description: "Could not find given scope"
+ */
+\App::$slim->get('/scope/{id:\d{1,4}}/imagedata/calldisplay/',
+    '\BO\Zmsapi\ScopeCalldisplayImageDataGet')
+    ->setName("ScopeCalldisplayImageDataGet");
+
+/**
+ *  @swagger
+ *  "/scope/{id}/imagedata/calldisplay/":
+ *      post:
+ *          summary: upload and get image data by scope id for calldisplay image
+ *          tags:
+ *              - scope
+ *              - mimepart
+ *          parameters:
+ *              -   name: id
+ *                  description: number of scope
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: mimepart
+ *                  description: mimepart image data to update
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/mimepart.json"
+ *          responses:
+ *              200:
+ *                  description: get an updated mimepart entity
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/mimepart.json"
+ *              404:
+ *                  description: "Could not find given scope"
+ */
+\App::$slim->post('/scope/{id:\d{1,4}}/imagedata/calldisplay/',
+    '\BO\Zmsapi\ScopeCalldisplayImageDataUpdate')
+    ->setName("ScopeCalldisplayImageDataUpdate");
+
+/**
+ *  @swagger
+ *  "/scope/{id}/organisation/":
+ *      get:
+ *          summary: Get an organisation by scopeId.
+ *          tags:
+ *              - scope
+ *              - organisation
+ *          parameters:
+ *              -   name: id
+ *                  description: scope number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/organisation.json"
+ *              404:
+ *                  description: "organisation id does not exists"
+ */
+\App::$slim->get('/scope/{id:\d{1,4}}/organisation/',
+    '\BO\Zmsapi\OrganisationByScope')
+    ->setName("OrganisationByScope");
+
+/**
+ *  @swagger
  *  "/scope/{id}/queue/":
  *      get:
- *          description: Get a waiting queue for a scope
+ *          summary: Get a waiting queue for a scope
+ *          tags:
+ *              - scope
+ *              - queue
  *          parameters:
  *              -   name: id
  *                  description: scope number
@@ -2661,7 +2838,10 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/scope/{id}/workstationcount/":
  *      get:
- *          description: Get a scope with calculated workstation count.
+ *          summary: Get a scope with calculated workstation count.
+ *          description: Calculating the workstation count requires performance, thus this is an extra api query
+ *          tags:
+ *              - scope
  *          parameters:
  *              -   name: id
  *                  description: scope number
@@ -2689,7 +2869,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/scope/{id}/":
  *      post:
- *          description: Update a scope
+ *          summary: Update a scope
+ *          tags:
+ *              - scope
  *          parameters:
  *              -   name: id
  *                  description: scope number
@@ -2729,7 +2911,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/scope/{id}/":
  *      delete:
- *          description: Delete a scope
+ *          summary: Delete a scope
+ *          tags:
+ *              - scope
  *          parameters:
  *              -   name: id
  *                  description: scope number
@@ -2754,7 +2938,11 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/scope/{id}/waitingnumber/{hash}/":
  *      get:
- *          description: Get a waitingNumber according to scope preferences
+ *          summary: Get a waitingNumber according to scope preferences
+ *          tags:
+ *              - scope
+ *              - process
+ *              - ticketprinter
  *          parameters:
  *              -   name: id
  *                  description: scope number
@@ -2793,7 +2981,9 @@ use \Psr\Http\Message\ResponseInterface;
 *  @swagger
 *  "/session/{name}/{id}/":
 *      get:
-*          description: Get current Session
+*          summary: Get current Session
+*          tags:
+*              - session
 *          parameters:
 *              -   name: name
 *                  description: name from session (3 - 20 letters)
@@ -2833,7 +3023,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/session/":
  *      post:
- *          description: Update current Session
+ *          summary: Update current Session
+ *          tags:
+ *              - session
  *          parameters:
  *              -   name: session
  *                  description: session content
@@ -2869,7 +3061,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/session/{name}/{id}/":
  *      delete:
- *          description: delete a session
+ *          summary: delete a session
+ *          tags:
+ *              - session
  *          parameters:
  *              -   name: name
  *                  description: name from session (3 - 20 letters)
@@ -2909,7 +3103,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/status/":
  *      get:
- *          description: Get status of api
+ *          summary: Get status of api
+ *          tags:
+ *              - status
  *          responses:
  *              200:
  *                  description: "success"
@@ -2924,7 +3120,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/ticketprinter/{hash}/":
  *      get:
- *          description: Get current Ticketprinter by hash
+ *          summary: Get current Ticketprinter by hash
+ *          tags:
+ *              - ticketprinter
  *          parameters:
  *              -   name: hash
  *                  description: hash from ticketprinter
@@ -2959,7 +3157,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/ticketprinter/":
  *      post:
- *          description: Update ticketprinter with list of scope, cluster or link buttons
+ *          summary: Update ticketprinter with list of scope, cluster or link buttons
+ *          tags:
+ *              - ticketprinter
  *          parameters:
  *              -   name: ticketprinter
  *                  description: ticketprinter data for update
@@ -2999,7 +3199,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/useraccount/":
  *      get:
- *          description: Get a list of useraccounts
+ *          summary: Get a list of useraccounts
+ *          tags:
+ *              - useraccount
  *          parameters:
  *              -   name: X-Authkey
  *                  description: authentication key to identify user for testing access rights
@@ -3030,7 +3232,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/useraccount/{loginname}/":
  *      get:
- *          description: Get an useraccount by loginname
+ *          summary: Get an useraccount by loginname
+ *          tags:
+ *              - useraccount
  *          parameters:
  *              -   name: loginname
  *                  description: useraccount number
@@ -3066,7 +3270,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/useraccount/":
  *      post:
- *          description: add a new useraccount
+ *          summary: add a new useraccount
+ *          tags:
+ *              - useraccount
  *          parameters:
  *              -   name: useraccount
  *                  description: useraccount data to update
@@ -3099,7 +3305,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/useraccount/{loginname}/":
  *      post:
- *          description: Update an useraccount
+ *          summary: Update an useraccount
+ *          tags:
+ *              - useraccount
  *          parameters:
  *              -   name: loginname
  *                  description: useraccount number
@@ -3137,7 +3345,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/useraccount/{loginname}/":
  *      delete:
- *          description: Deletes an useraccount
+ *          summary: Deletes an useraccount
+ *          tags:
+ *              - useraccount
  *          parameters:
  *              -   name: loginname
  *                  description: useraccount number
@@ -3162,7 +3372,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/workstation/":
  *      get:
- *          description: Get the current workstation based on authkey
+ *          summary: Get the current workstation based on authkey
+ *          tags:
+ *              - workstation
  *          parameters:
  *              -   name: X-Authkey
  *                  description: authentication key to identify user for testing access rights
@@ -3193,7 +3405,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/workstation/":
  *      post:
- *          description: Update a workstation, e.g. to change the scope
+ *          summary: Update a workstation, e.g. to change the scope
+ *          tags:
+ *              - workstation
  *          parameters:
  *              -   name: workstation
  *                  description: workstation data to update
@@ -3227,7 +3441,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/workstation/password/":
  *      post:
  *          operationId: WorkstationDelete
- *          description: Change the password and/or username of a useraccount
+ *          summary: Change the password and/or username of a useraccount
+ *          tags:
+ *              - workstation
  *          parameters:
  *              -   name: useraccount
  *                  description: useraccount data to update
@@ -3256,7 +3472,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/workstation/{loginname}/":
  *      post:
- *          description: Create a workstation for an username, used to login
+ *          summary: Create a workstation for an username, used to login
+ *          tags:
+ *              - workstation
  *          parameters:
  *              -   name: loginname
  *                  description: useraccount identifier, usually the unique loginname
@@ -3291,7 +3509,9 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/workstation/{loginname}/":
  *      delete:
  *          operationId: WorkstationDelete
- *          description: Logout a user and delete his workstation entry
+ *          summary: Logout a user and delete his workstation entry
+ *          tags:
+ *              - workstation
  *          parameters:
  *              -   name: loginname
  *                  description: useraccount number
