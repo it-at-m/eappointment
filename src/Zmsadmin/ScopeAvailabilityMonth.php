@@ -44,7 +44,7 @@ class ScopeAvailabilityMonth extends BaseController
         $calendar->lastDay->setDateTime($dateTime->modify('last day of this month'));
         $calendar->scopes[] = $scope;
         try {
-            $calendar = \App::$http->readPostResult('/calendar/', $calendar)->getEntity();
+            $calendar = \App::$http->readPostResult('/calendar/', $calendar, ['fillWithEmptyDays' => 1])->getEntity();
         } catch (\BO\Zmsclient\Exception $exception) {
             if ($exception->template != 'BO\Zmsapi\Exception\Calendar\AppointmentsMissed') {
                 throw $exception;
