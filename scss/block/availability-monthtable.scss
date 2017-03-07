@@ -42,6 +42,8 @@ $calendarCircleConflictColor:                   #BE1522;
     }
     td {
         height:                     7em;
+        width:                      percentage(1 / 7);
+
         &.closed {
             background-color:       $calendarDayClosedBackgroundColor;
         }
@@ -109,6 +111,14 @@ $calendarCircleConflictColor:                   #BE1522;
             position:               absolute;
             top:                    3.8em;
             right:                  0.5em;
+        }
+        .holiday {
+            position:               absolute;
+            bottom:                 0.2em;
+            left:                   0.5em;
+            font-size:              0.8em;
+            line-height:            1.0em;
+            width:                  60%;
         }
     }
 }
