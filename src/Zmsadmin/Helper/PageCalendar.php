@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @package Events\Xmas
+ * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */

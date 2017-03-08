@@ -7,6 +7,7 @@ $white:                         #FFFFFF;
 $black:                         #000000;
 $grey:                          #F0F0F0;
 $greyDark:                      #D2D2D2;
+$greyLight:                     #E2E2E2;
 $greyWhite:                     #F4F4F4;
 $greyBorder:                    #D2D2D2;
 $blue:                          #008CCA;
@@ -30,9 +31,9 @@ $btn-border-color:              $greyBorder;
 $tableHeadBackground:           $blueLight;
 
 // Dates
-$backgroundColorDateFree:       $calendarGreen !default;
+$backgroundColorDateFree:       $green !default;
 $backgroundColorDateBusy:       $calendarRed !default;
-$backgroundColorDateHoliday:    #EFC10F;
+$backgroundColorDateHoliday:    $fontInactiveColor;
 $backgroundColorDateDisabled:   #eee;
 $textColorDateLocked:           #CCCCCC;
 $textColorDateSunday:           $red;
