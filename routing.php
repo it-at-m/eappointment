@@ -2510,9 +2510,9 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
- *  "/scope/{id}/day/{day}/":
+ *  "/scope/{id}/process/{date}/":
  *      get:
- *          summary: Get a list of processes by scope and day
+ *          summary: Get a list of processes by scope and date
  *          tags:
  *              - scope
  *              - process
@@ -2522,7 +2522,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  in: path
  *                  required: true
  *                  type: integer
- *              -   name: day
+ *              -   name: date
  *                  description: day in format YYYY-MM-DD
  *                  in: path
  *                  required: true
@@ -2550,7 +2550,7 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "scope id does not exists"
  */
-\App::$slim->get('/scope/{id:\d{1,11}}/day/{day:\d\d\d\d-\d\d-\d\d}/',
+\App::$slim->get('/scope/{id:\d{1,11}}/process/{date:\d\d\d\d-\d\d-\d\d}/',
     '\BO\Zmsapi\ProcessDay')
     ->setName("ProcessDay");
 
