@@ -36,7 +36,7 @@ $backgroundColorDateBusy:       $calendarRed !default;
 $backgroundColorDateHoliday:    $fontInactiveColor;
 $backgroundColorDateDisabled:   #eee;
 $textColorDateLocked:           #CCCCCC;
-$textColorDateSunday:           $red;
+$textColorDateSunday:           $red !important;
 $textColorDateSelected:         $blueDark !important;
 $clientNextIconColor:           #33445E;
 
