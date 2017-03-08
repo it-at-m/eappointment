@@ -5,7 +5,7 @@
         padding-right:  0;
     }
     > .body {
-        min-height:     362px;
+        min-height:     375px;
         padding:        0.5em 0.4em;
     }
 }
@@ -71,10 +71,12 @@
                 }
             }
             .date-free {
-                border-bottom:      2px solid $backgroundColorDateFree;
+                line-height:        1.8em;
+                border-bottom:      0.2em solid $backgroundColorDateFree;
             }
             .date-busy {
-                border-bottom:      2px solid $backgroundColorDateBusy;
+                line-height:        1.8em;
+                border-bottom:      0.2em solid $backgroundColorDateBusy;
             }
             .date-locked {
                 color:              $textColorDateLocked;
@@ -92,7 +94,8 @@
                 cursor:             default;
             }
             .holiday {
-                border-bottom:      2px solid $backgroundColorDateHoliday;
+                line-height:        1.8em;
+                border-bottom:      0.2em solid $backgroundColorDateHoliday;
                 background:         $greyLight;
                 color:              $fontInactiveColor;
             }
