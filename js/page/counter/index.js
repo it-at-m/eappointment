@@ -41,6 +41,10 @@ class View extends BaseView {
             ev.preventDefault();
             this.selectedDate = $(ev.target).attr('data-date');
             this.loadAllExceptCalendar();
+        }).on('click', '.calendar-navigation .pagelink', (ev) => {
+            ev.preventDefault();
+            this.selectedDate = $(ev.target).attr('data-date');
+            this.loadCalendar();
         })
     }
 
