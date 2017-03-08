@@ -10,7 +10,7 @@ namespace BO\Zmsadmin;
   * Handle requests concerning services
   *
   */
-class WorkstationClientActive extends BaseController
+class WorkstationCallProcess extends BaseController
 {
     /**
      * @return String

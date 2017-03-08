@@ -36,7 +36,7 @@ class ScopeAvailabilityDay extends BaseController
             ->getCollection()
             ->withDateTime($dateTime);
         $processList = \App::$http
-            ->readGetResult('/scope/' . intval($scope_id) . '/day/' . $dateTime->format('Y-m-d') . '/')
+            ->readGetResult('/scope/' . intval($scope_id) . '/process/' . $dateTime->format('Y-m-d') . '/')
             ->getCollection()
             ;
         if (!$processList) {
