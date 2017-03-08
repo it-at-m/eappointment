@@ -67,6 +67,18 @@ class Cluster extends Base
         return $this;
     }
 
+    public function addConditionScopeId($scopeId)
+    {
+        $this->query->leftJoin(
+            new Alias('standort', 'scope'),
+            'scope.StandortID',
+            '=',
+            'cluster_scope.standortID'
+        );
+        $this->query->where('scope.StandortID', '=', $scopeId);
+        return $this;
+    }
+
     public function reverseEntityMapping(\BO\Zmsentities\Cluster $entity)
     {
         $data = array();
