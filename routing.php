@@ -41,8 +41,8 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/workstation/process/{id:\d+}/processed/', '\BO\Zmsadmin\WorkstationClientProcessed')
     ->setName("workstationClientProcessed");
 
-\App::$slim->get('/workstation/process/{id:\d+}/', '\BO\Zmsadmin\WorkstationClientActive')
-    ->setName("workstationClientActive");
+\App::$slim->get('/workstation/call/{waitingnumber:\d+}/', '\BO\Zmsadmin\WorkstationCallProcess')
+    ->setName("workstationCallProcess");
 
 \App::$slim->map([
     'GET','POST'
