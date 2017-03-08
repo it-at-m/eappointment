@@ -66,6 +66,21 @@ class Cluster extends Base
         return $clusterList;
     }
 
+    public function readByScopeId($scopeId, $resolveReferences = 0)
+    {
+        $query = new Query\Cluster(Query\Base::SELECT);
+        $query
+            ->addEntityMapping()
+            ->addResolvedReferences($resolveReferences)
+            ->addConditionScopeId($scopeId);
+        $entity = $this->fetchOne($query, new Entity());
+        if (! $entity->hasId()) {
+            return null;
+        }
+        $entity['scopes'] = (new Scope())->readByClusterId($entity->id, $resolveReferences);
+        return $entity;
+    }
+
     public function readByDepartmentId($departmentId, $resolveReferences = 0)
     {
         $clusterList = new Collection();
