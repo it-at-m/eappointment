@@ -35,14 +35,12 @@ class View extends BaseView {
             $(element).off('click').on('click', (event) => {
                 event.preventDefault();
                 if ($(element).hasClass('prev')) {
-                    console.log(dateOptions.prev);
                     this.selecteddate = dateOptions.prev;
                 }
                 if ($(element).hasClass('today')) {
                     this.selecteddate = $(element).data('date');
                 }
                 if ($(element).hasClass('next')) {
-                    console.log(dateOptions.next);
                     this.selecteddate = dateOptions.next;
                 }
                 $( '#calendarPage' ).html( "<div class='loader'></div>" );
