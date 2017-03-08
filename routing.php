@@ -52,6 +52,18 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/counter/', '\BO\Zmsadmin\Counter')
     ->setName("counter");
 
+\App::$slim->get('/counter/calendar/[{date:\d}/]', '\BO\Zmsadmin\CounterCalendarPage')
+    ->setName("counter_calendar_page");
+
+\App::$slim->get('/counter/appointmentForm/[{date:\d}/]', '\BO\Zmsadmin\CounterAppointmentForm')
+    ->setName("counter_appointment_form");
+
+\App::$slim->get('/counter/queueInfo/[{date:\d}/]', '\BO\Zmsadmin\CounterQueueInfo')
+    ->setName("counter_queue_info");
+
+\App::$slim->get('/counter/queueTable/[{date:\d}/]', '\BO\Zmsadmin\CounterQueueTable')
+    ->setName("counter_queue_table");
+
 \App::$slim->map([
     'GET','POST'
 ], '/scope/{id:\d+}/', '\BO\Zmsadmin\Scope')
@@ -160,8 +172,6 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/availability/month/', '\BO\Zmsadmin\AvailabilityMonth')
     ->setName("availability_month");
 
-\App::$slim->get('/calendar/[{date:\d}/]', '\BO\Zmsadmin\CalendarPage')
-    ->setName("calendar_page");
 
 \App::$slim->get('/calendar/{year:\d\d\d\d}/kw{weeknr:\d{1,2}}/', '\BO\Zmsadmin\CalendarWeek')
     ->setName("calendar_week");

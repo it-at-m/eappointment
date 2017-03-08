@@ -15,18 +15,27 @@ class View extends BaseView {
     }
 
     loadData () {
-        const url = `${this.includeUrl}/calendar/?source=${this.source}&selecteddate=${this.selecteddate}`
+        const url = `${this.includeUrl}/counter/calendar/?source=${this.source}&selecteddate=${this.selecteddate}`
         return new Promise((resolve, reject) => {
             $.ajax(url, {
                 method: 'GET'
             }).done(data => {
                 $( '#calendarPage' ).html( data );
                 this.navigateCalendar();
+                this.registerDayClicks();
             }).fail(err => {
                 console.log('XHR error', url, err)
                 reject(err)
             })
         })
+    }
+
+    registerDayClicks() {
+        $('.calendar-page .body a').off('click').on('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            console.log(event)
+        });
     }
 
     navigateCalendar () {
