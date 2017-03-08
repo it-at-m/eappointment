@@ -2428,6 +2428,45 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/scope/{id}/cluster/":
+ *      get:
+ *          summary: Get a cluster for a scope
+ *          tags:
+ *              - scope
+ *              - cluster
+ *          parameters:
+ *              -   name: id
+ *                  description: scope id
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/cluster.json"
+ *              404:
+ *                  description: "could not find a cluster"
+ */
+\App::$slim->get('/scope/{id:\d{1,11}}/cluster/',
+    '\BO\Zmsapi\ClusterByScopeId')
+    ->setName("ClusterByScopeId");
+
+/**
+ *  @swagger
  *  "/scope/cluster/{id}/":
  *      get:
  *          summary: Get a list of scope by cluster ID
