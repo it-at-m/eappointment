@@ -6,6 +6,11 @@ $queueMissedColor:              $red !default;
     @extend 
         .board,
         .board--noBodyPadding;
+
+    > .body {
+      min-height: 312px;
+    }
+
     > .header {
         .title {
             margin-right:           0.7em;
