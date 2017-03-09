@@ -26,9 +26,17 @@ class Process extends Base
         if ($process->id != $processId) {
             throw new Exception\ProcessAuthFailed("Could not find process $processId identified by '$authKey'");
         }
-        $process['requests'] = (new Request())->readRequestByProcessId($processId, $resolveReferences);
-        $process['scope'] = (new Scope())->readEntity($process->getScopeId(), $resolveReferences);
+        $process = $this->readResolvedReferences($process, $resolveReferences);
         $process = $this->addDldbData($process, $resolveReferences);
+        return $process;
+    }
+
+    protected function readResolvedReferences($process, $resolveReferences)
+    {
+        if (1 <= $resolveReferences) {
+            $process['requests'] = (new Request())->readRequestByProcessId($process->id, $resolveReferences);
+            $process['scope'] = (new Scope())->readEntity($process->getScopeId(), $resolveReferences);
+        }
         return $process;
     }
 
@@ -208,6 +216,7 @@ class Process extends Base
         $statement = $this->fetchStatement($query);
         while ($processData = $statement->fetch(\PDO::FETCH_ASSOC)) {
             $entity = new Entity($query->postProcess($processData));
+            $entity = $this->readResolvedReferences($entity, 1);
             if ($entity instanceof Entity) {
                 $processList->addEntity($entity);
             }
