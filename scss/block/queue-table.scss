@@ -3,7 +3,7 @@ $queueFutureColor:              #74CAF0 !default;
 $queueMissedColor:              $red !default;
 
 .queue-table {
-    @extend 
+    @extend
         .board,
         .board--noBodyPadding;
 
@@ -21,8 +21,8 @@ $queueMissedColor:              $red !default;
         }
     }
     table {
-        @extend 
-            .table, 
+        @extend
+            .table,
             .table--cells;
         margin-bottom:          $gridGutter;
         thead {
@@ -31,7 +31,7 @@ $queueMissedColor:              $red !default;
             }
         }
         td {
-            
+
         }
         tbody {
             tr:first-child {
@@ -55,7 +55,7 @@ $queueMissedColor:              $red !default;
                     border-top:         1px solid $white;
                     position:           relative;
                     /*
-                    &:before {  
+                    &:before {
                         display:            block;
                         width:              10px;
                         height:             10px;
@@ -67,7 +67,7 @@ $queueMissedColor:              $red !default;
                     }
                     */
                 }
-            }     
+            }
         }
         tr.future {
             background-color:       $white;
@@ -83,8 +83,20 @@ $queueMissedColor:              $red !default;
             }
         }
         &.queue-missed {
-            margin-top:                 1em;
-            margin-bottom:              0;
+            margin-top:             1em;
+            margin-bottom:          0;
+        }
+        tr.reserved {
+            background-color:       $disabledColorBackground;
+            color:                  #666666;
+            a {
+                color:              $fontInactiveColor;
+                pointer-events: none;
+                cursor: default;
+            }
+        }
+        tr.hide {
+            display:                none;
         }
     }
     .form-actions {

@@ -8,6 +8,8 @@ namespace BO\Zmsadmin;
 
 use \BO\Zmsentities\Scope;
 
+use \BO\Zmsentities\Collection\ProcessList;
+
 class CounterQueueTable extends BaseController
 {
     /**
@@ -33,10 +35,16 @@ class CounterQueueTable extends BaseController
                 ->readGetResult('/scope/'. $workstation->scope['id'] .'/process/'. $selectedDate .'/')->getCollection();
         }
 
-        $withAppointments = $processList->withAppointment();
-        $withoutAppointments = $processList->withOutAppointment()->withSortedArrival();
-        $completeList = clone $withAppointments;
-        $completeList->addList($withoutAppointments);
+        $selectedDateTime = new \DateTimeImmutable($selectedDate);
+        $queueList = $processList
+            ->toQueueList($selectedDateTime)
+            ->withStatus(array('confirmed', 'queued', 'reserved'))
+            ->withSortedArrival();
+
+        $queueListMissed = $processList
+            ->toQueueList($selectedDateTime)
+            ->withStatus(array('missed'))
+            ->withSortedArrival();
 
         return \BO\Slim\Render::withHtml(
             $response,
@@ -45,8 +53,8 @@ class CounterQueueTable extends BaseController
                 'workstation' => $workstation->getArrayCopy(),
                 'selectedDate' => ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d'),
                 'cluster' => ($cluster) ? $cluster : null,
-                'processListWithAppointments' => $withAppointments,
-                'processListComplete' => $completeList,
+                'processList' => $queueList->toProcessList(),
+                'processListMissed' => $queueListMissed->toProcessList()
             )
         );
     }
