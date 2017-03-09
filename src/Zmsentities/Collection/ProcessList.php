@@ -42,7 +42,6 @@ class ProcessList extends Base
 
     public function toQueueList($now)
     {
-
         $queueList = new QueueList();
         foreach ($this as $process) {
             $queue = $process->toQueue($now);
@@ -84,5 +83,11 @@ class ProcessList extends Base
             }
         }
         return $processList;
+    }
+
+    public function withSortedArrival()
+    {
+        $processList = clone $this;
+        return $processList->sortByArrivalTime();
     }
 }

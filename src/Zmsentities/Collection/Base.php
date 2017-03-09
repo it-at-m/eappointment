@@ -10,6 +10,7 @@ use \BO\Zmsentities\Helper\Sorter;
 
 /**
  * @SuppressWarnings(NumberOfChildren)
+ * @SuppressWarnings(Public)
  *
  */
 class Base extends \ArrayObject
@@ -42,7 +43,18 @@ class Base extends \ArrayObject
                 Sorter::toSortableString(ucfirst($b->contact['name']))
             );
         });
-            return $this;
+        return $this;
+    }
+
+    public function sortByArrivalTime()
+    {
+        $this->uasort(function ($a, $b) {
+            return strcmp(
+                Sorter::toSortableString(ucfirst($a->queue['arrivalTime'])),
+                Sorter::toSortableString(ucfirst($b->queue['arrivalTime']))
+            );
+        });
+        return $this;
     }
 
     public function sortByTimeKey()
