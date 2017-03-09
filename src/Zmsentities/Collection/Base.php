@@ -30,7 +30,10 @@ class Base extends \ArrayObject
     public function sortByName()
     {
         $this->uasort(function ($a, $b) {
-            return strcmp(Sorter::toSortableString(ucfirst($a->name)), Sorter::toSortableString(ucfirst($b->name)));
+            return strcmp(
+                Sorter::toSortableString(ucfirst($a->name)),
+                Sorter::toSortableString(ucfirst($b->name))
+            );
         });
         return $this;
     }
@@ -49,10 +52,7 @@ class Base extends \ArrayObject
     public function sortByArrivalTime()
     {
         $this->uasort(function ($a, $b) {
-            return strcmp(
-                Sorter::toSortableString(ucfirst($a->queue['arrivalTime'])),
-                Sorter::toSortableString(ucfirst($b->queue['arrivalTime']))
-            );
+            return ($a->queue['arrivalTime'] - $b->queue['arrivalTime']);
         });
         return $this;
     }
