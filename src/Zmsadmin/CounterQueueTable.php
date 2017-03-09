@@ -40,7 +40,7 @@ class CounterQueueTable extends BaseController
                 'workstation' => $workstation->getArrayCopy(),
                 'selectedDate' => ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d'),
                 'cluster' => ($cluster) ? $cluster : null,
-                'processList' => $processList,
+                'processList' => $processList->withSortedArrival(),
             )
         );
     }

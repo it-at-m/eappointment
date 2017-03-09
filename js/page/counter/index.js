@@ -52,6 +52,9 @@ class View extends BaseView {
             this.selectedDate = $(ev.target).attr('data-date');
             this.element.attr('data-selected-date', this.selectedDate);
             this.loadAllPartials();
+        }).on('click', '.queue-table .reload', (ev) => {
+            ev.preventDefault();
+            this.loadQueueTable();
         }).on('change', '.queue-table .switchcluster select', (ev) => {
             $(ev.target).closest('form').submit();
         })
