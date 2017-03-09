@@ -8,6 +8,8 @@ class Queue extends Schema\Entity
 
     public static $schema = "queue.json";
 
+    protected $process;
+
     public function getDefaults()
     {
         return [
@@ -17,5 +19,16 @@ class Queue extends Schema\Entity
             "number" => 0,
             "waitingTime" => 0
         ];
+    }
+
+    public function setProcess(Process $parentProcess)
+    {
+        $this->process = $parentProcess;
+        return $this;
+    }
+
+    public function getProcess()
+    {
+        return clone $this->process;
     }
 }

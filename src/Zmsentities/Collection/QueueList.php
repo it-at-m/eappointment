@@ -145,4 +145,14 @@ class QueueList extends Base
         }
         return $list;
     }
+
+    public function toProcessList()
+    {
+        $processList = new ProcessList();
+        foreach ($this as $queue) {
+            $process = $queue->getProcess();
+            $processList->addEntity($process);
+        }
+        return $processList;
+    }
 }
