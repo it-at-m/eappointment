@@ -188,7 +188,6 @@ class Process extends Base
         return $process;
     }
 
-
     /**
      * Read processList by scopeId and DateTime
      *
@@ -211,6 +210,27 @@ class Process extends Base
             $entity = new Entity($query->postProcess($processData));
             if ($entity instanceof Entity) {
                 $processList->addEntity($entity);
+            }
+        }
+        return $processList;
+    }
+
+    /**
+     * Read processList by clusterId and DateTime
+     *
+     * @param
+     * clusterId
+     * dateTime
+     *
+     * @return Collection processList
+     */
+    public function readProcessListByClusterAndTime($clusterId, \DateTimeInterface $dateTime)
+    {
+        $processList = new Collection();
+        $cluster = (new Cluster)->readEntity($clusterId, 1);
+        if ($cluster->scopes->count()) {
+            foreach ($cluster->scopes as $scope) {
+                $processList->addList($this->readProcessListByScopeAndTime($scope->id, $dateTime));
             }
         }
         return $processList;
