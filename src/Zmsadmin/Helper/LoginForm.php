@@ -55,6 +55,12 @@ class LoginForm
                 ->isNumber('Bitte wählen Sie einen Standort aus');
         }
 
+        if (! Validator::param('appointmentsOnly')->isDeclared()->hasFailed()) {
+            $collection['appointmentsOnly'] = Validator::param('appointmentsOnly')
+                ->isNumber();
+        }
+
+
         // workstation
         $collection['workstation'] = Validator::param('workstation')
              ->isString('Bitte wählen Sie einen Arbeitsplatz oder den Tresen aus')
@@ -84,12 +90,12 @@ class LoginForm
         return false;
     }
 
-    public static function writeWorkstationUpdate($data, $workstation, $isClusterSelected)
+    public static function writeWorkstationUpdate($data, $workstation)
     {
         $formData = $data->getValues();
         if (isset($workstation->useraccount)) {
             $workstation->name = $formData['workstation']->getValue();
-            if ($isClusterSelected) {
+            if ('cluster' === $formData['scope']->getValue()) {
                 $workstation->queue['clusterEnabled'] = 1;
             } else {
                 $workstation->queue['clusterEnabled'] = 0;
@@ -97,8 +103,15 @@ class LoginForm
                     'id' => $formData['scope']->getValue(),
                 ]);
             }
+            if ($formData['appointmentsOnly']) {
+                $workstation->queue['appointmentsOnly'] = $formData['appointmentsOnly']->getValue();
+            } else {
+                $workstation->queue['appointmentsOnly'] = 0;
+            }
+
             unset($workstation->useraccount['departments']);
             $result = \App::$http->readPostResult('/workstation/', $workstation)->getEntity();
+            error_log(var_export($result, 1));
         }
         return ($result) ? true : false;
     }
