@@ -57,6 +57,8 @@ class View extends BaseView {
             this.loadQueueTable();
         }).on('change', '.queue-table .switchcluster select', (ev) => {
             $(ev.target).closest('form').submit();
+        }).on('change', '.queue-table .appointmentsOnly input', (ev) => {
+            $(ev.target).closest('form').submit();
         })
     }
 

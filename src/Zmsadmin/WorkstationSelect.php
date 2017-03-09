@@ -31,13 +31,12 @@ class WorkstationSelect extends BaseController
         $workstation->hasDepartmentList();
 
         $input = $request->getParsedBody();
-        if (is_array($input) && array_key_exists('scope', $input)) {
+        if (is_array($input) && (array_key_exists('scope', $input))) {
             $form = LoginForm::fromAdditionalParameters();
             $formData = $form->getStatus();
             $selectedDate = Validator::param('selectedDate')->isString()->getValue();
             $queryParams = ($selectedDate) ? array('date' => $selectedDate) : array();
-            $isClusterSelected = ('cluster' === Validator::param('scope')->isString()->getValue());
-            $isUpdated = LoginForm::writeWorkstationUpdate($form, $workstation, $isClusterSelected);
+            $isUpdated = LoginForm::writeWorkstationUpdate($form, $workstation);
             if (! $form->hasFailed() && $isUpdated) {
                 return \BO\Slim\Render::redirect(
                     LoginForm::getRedirect($workstation),
