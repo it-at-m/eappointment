@@ -88,6 +88,7 @@ $queueMissedColor:              $red !default;
         }
         tr.reserved {
             background-color:       $disabledColorBackground;
+            opacity:                0.45;
             color:                  #666666;
             a {
                 color:              $fontInactiveColor;
