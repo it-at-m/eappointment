@@ -33,7 +33,7 @@ class Queue extends BaseController
             array(
                 'tableSettings' => $validator->getParameter('tableLayout')->isArray()->getValue(),
                 'calldisplay' => $calldisplay->getEntity(),
-                'queueList' => $queueList->withStatus($calldisplay::getRequestedQueueStatus($request)),
+                'queueList' => $queueList->withStatus(array($calldisplay::getRequestedQueueStatus($request))),
                 'waitingClients' => $queueList->count(),
                 'waitingTime' => $queueList->getLast()->waitingTimeEstimate
             )
