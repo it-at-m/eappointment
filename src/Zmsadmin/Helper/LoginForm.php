@@ -47,8 +47,13 @@ class LoginForm
         $collection = array();
 
         // scope
-        $collection['scope'] = Validator::param('scope')
-            ->isNumber('Bitte wählen Sie einen Standort aus');
+        if ('cluster' == Validator::param('scope')->isString()->getValue()) {
+            $collection['scope'] = Validator::param('scope')
+                ->isString('Bitte wählen Sie einen Standort aus');
+        } else {
+            $collection['scope'] = Validator::param('scope')
+                ->isNumber('Bitte wählen Sie einen Standort aus');
+        }
 
         // workstation
         $collection['workstation'] = Validator::param('workstation')
@@ -79,18 +84,27 @@ class LoginForm
         return false;
     }
 
-    public static function setLoginRedirect($data, $workstation)
+    public static function writeWorkstationUpdate($data, $workstation, $isClusterSelected)
     {
         $formData = $data->getValues();
         if (isset($workstation->useraccount)) {
             $workstation->name = $formData['workstation']->getValue();
-            $workstation->scope = new \BO\Zmsentities\Scope([
-                'id' => $formData['scope']->getValue(),
-            ]);
+            if ($isClusterSelected) {
+                $workstation->queue['clusterEnabled'] = 1;
+            } else {
+                $workstation->queue['clusterEnabled'] = 0;
+                $workstation->scope = new \BO\Zmsentities\Scope([
+                    'id' => $formData['scope']->getValue(),
+                ]);
+            }
             unset($workstation->useraccount['departments']);
-            $workstation = \App::$http->readPostResult('/workstation/', $workstation)->getEntity();
-            return (0 == $workstation->name) ? 'counter' : 'workstation';
+            $result = \App::$http->readPostResult('/workstation/', $workstation)->getEntity();
         }
-        return false;
+        return ($result) ? true : false;
+    }
+
+    public static function getRedirect($workstation)
+    {
+        return (0 == $workstation->name) ? 'counter' : 'workstation';
     }
 }

@@ -26,25 +26,25 @@ class WorkstationSelect extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 3])->getEntity();
         if (!$workstation->hasId()) {
-            return \BO\Slim\Render::redirect(
-                'index',
-                array(
-                    'error' => 'login_failed'
-                )
-            );
+            return \BO\Slim\Render::redirect('index', array('error' => 'login_failed'));
         }
         $workstation->hasDepartmentList();
-        $form = LoginForm::fromAdditionalParameters();
-        $validate = Validator::param('workstation_select_form_validate')->isBool()->getValue();
-        $advancedData = ($validate) ? $form->getStatus() : null;
 
-        if ($advancedData && !$form->hasFailed()) {
-            $loginRedirect = LoginForm::setLoginRedirect($form, $workstation);
-            return \BO\Slim\Render::redirect(
-                $loginRedirect,
-                array(),
-                array()
-            );
+        $input = $request->getParsedBody();
+        if (is_array($input) && array_key_exists('scope', $input)) {
+            $form = LoginForm::fromAdditionalParameters();
+            $formData = $form->getStatus();
+            $selectedDate = Validator::param('selectedDate')->isString()->getValue();
+            $queryParams = ($selectedDate) ? array('date' => $selectedDate) : array();
+            $isClusterSelected = ('cluster' === Validator::param('scope')->isString()->getValue());
+            $isUpdated = LoginForm::writeWorkstationUpdate($form, $workstation, $isClusterSelected);
+            if (! $form->hasFailed() && $isUpdated) {
+                return \BO\Slim\Render::redirect(
+                    LoginForm::getRedirect($workstation),
+                    array(),
+                    $queryParams
+                );
+            }
         }
 
         return \BO\Slim\Render::withHtml(
@@ -52,7 +52,7 @@ class WorkstationSelect extends BaseController
             'page/workstationSelect.twig',
             array(
                 'title' => 'Standort und Arbeitsplatz auswählen',
-                'advancedData' => $advancedData,
+                'advancedData' => $formData,
                 'workstation' => $workstation,
                 'menuActive' => 'select'
             )

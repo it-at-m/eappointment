@@ -38,7 +38,7 @@
         table {
             @extend
                 .table;
-            border-spacing:         0;
+            border-spacing:         0.1;
             th {
                 padding:            0 0.25em;
                 text-align:         center;
@@ -83,10 +83,10 @@
                 cursor:             default;
             }
             .date-selected {
-                background-color:   $white;
+                box-shadow:         inset 1px 1px 3px 0px rgba(0, 0, 0, 0.5);
+                background-color:   $blueLight;
                 a {
                     color:          $textColorDateSelected;
-                    font-weight:    bold;
                 }
             }
             .sunday {
@@ -103,8 +103,6 @@
                 background-image:       url(images/today.png);
                 background-position:    top right;
                 background-repeat:      no-repeat;
-                background-color:       $blueLight;
-                color:                  $blueDark;
             }
         }
     }
