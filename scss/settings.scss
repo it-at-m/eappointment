@@ -29,12 +29,13 @@ $btn-background:                $white;
 $btn-font-color:                $baseTextColor;
 $btn-border-color:              $greyBorder;
 $tableHeadBackground:           $blueLight;
+$disabledColorBackground:       #EEEEEE;
 
 // Dates
 $backgroundColorDateFree:       $green !default;
 $backgroundColorDateBusy:       $calendarRed !default;
 $backgroundColorDateHoliday:    $fontInactiveColor;
-$backgroundColorDateDisabled:   #eee;
+$backgroundColorDateDisabled:   $fontInactiveColor;
 $textColorDateLocked:           #CCCCCC;
 $textColorDateSunday:           $red !important;
 $textColorDateSelected:         $blueDark !important;
