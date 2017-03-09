@@ -2362,6 +2362,74 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/scope/{id}/request/":
+ *      get:
+ *          summary: Get a list of requests by scope ID
+ *          tags:
+ *              - request
+ *          parameters:
+ *              -   name: id
+ *                  description: number of scope
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/request.json"
+ *              404:
+ *                  description: "scope id does not exists"
+ */
+\App::$slim->get('/scope/{id:\d{1,11}}/request/',
+    '\BO\Zmsapi\RequestsByScope')
+    ->setName("RequestsByScope");
+
+/**
+ *  @swagger
+ *  "/cluster/{id}/request/":
+ *      get:
+ *          summary: Get a list of requests by cluster ID
+ *          tags:
+ *              - request
+ *          parameters:
+ *              -   name: id
+ *                  description: number of cluster
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/request.json"
+ *              404:
+ *                  description: "cluster id does not exists"
+ */
+\App::$slim->get('/cluster/{id:\d{1,11}}/request/',
+    '\BO\Zmsapi\RequestsByCluster')
+    ->setName("RequestsByCluster");
+
+/**
+ *  @swagger
  *  "/scope/":
  *      get:
  *          summary: Get a list of scopes
