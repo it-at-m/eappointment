@@ -42,13 +42,17 @@ class View extends BaseView {
             this.selectedDate = $(ev.target).attr('data-date');
             this.element.attr('data-selected-date', this.selectedDate);
             this.loadAllExceptCalendar();
-        }).on('click', '.calendar-navigation .pagelink', (ev) => {
+        }).on('click', '.calendar-navigation .pagemonthlink', (ev) => {
             ev.preventDefault();
             this.selectedDate = $(ev.target).attr('data-date');
             this.element.attr('data-selected-date', this.selectedDate);
             this.loadCalendar();
+        }).on('click', '.calendar-navigation .pagedaylink', (ev) => {
+            ev.preventDefault();
+            this.selectedDate = $(ev.target).attr('data-date');
+            this.element.attr('data-selected-date', this.selectedDate);
+            this.loadAllPartials();
         }).on('change', '.queue-table .switchcluster select', (ev) => {
-            console.log('scope cluster switch changed');
             $(ev.target).closest('form').submit();
         })
     }
