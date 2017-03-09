@@ -90,4 +90,26 @@ class ProcessList extends Base
         $processList = clone $this;
         return $processList->sortByArrivalTime();
     }
+
+    public function withAppointment()
+    {
+        $processList = new static();
+        foreach ($this as $entity) {
+            if ($entity->queue['withAppointment']) {
+                $processList->addEntity(clone $entity);
+            }
+        }
+        return $processList;
+    }
+
+    public function withOutAppointment()
+    {
+        $processList = new static();
+        foreach ($this as $entity) {
+            if (! $entity->queue['withAppointment']) {
+                $processList->addEntity(clone $entity);
+            }
+        }
+        return $processList;
+    }
 }
