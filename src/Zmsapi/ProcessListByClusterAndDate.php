@@ -13,18 +13,18 @@ use \BO\Zmsdb\Process as Query;
 /**
   * Handle requests concerning services
   */
-class ProcessDay extends BaseController
+class ProcessListByClusterAndDate extends BaseController
 {
     /**
      * @return String
      */
-    public static function render($scopeId, $dayString)
+    public static function render($clusterId, $dayString)
     {
         Helper\User::checkRights('useraccount');
 
         $query = new Query();
         $dateTime = new \BO\Zmsentities\Helper\DateTime($dayString);
-        $collection = $query->readProcessListByScopeAndTime($scopeId, $dateTime);
+        $collection = $query->readProcessListByClusterAndTime($clusterId, $dateTime);
 
         $message = Response\Message::create(Render::$request);
         $message->data = $collection;

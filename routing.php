@@ -580,6 +580,52 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/cluster/{id}/process/{date}/":
+ *      get:
+ *          summary: Get a list of processes by cluster and date
+ *          tags:
+ *              - cluster
+ *              - process
+ *          parameters:
+ *              -   name: id
+ *                  description: cluster number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: date
+ *                  description: day in format YYYY-MM-DD
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/process.json"
+ *              404:
+ *                  description: "cluster id does not exists"
+ */
+\App::$slim->get('/cluster/{id:\d{1,11}}/process/{date:\d\d\d\d-\d\d-\d\d}/',
+    '\BO\Zmsapi\ProcessListByClusterAndDate')
+    ->setName("ProcessListByClusterAndDate");
+
+/**
+ *  @swagger
  *  "/config/":
  *      get:
  *          summary: Get config
@@ -2590,8 +2636,8 @@ use \Psr\Http\Message\ResponseInterface;
  *                  description: "scope id does not exists"
  */
 \App::$slim->get('/scope/{id:\d{1,11}}/process/{date:\d\d\d\d-\d\d-\d\d}/',
-    '\BO\Zmsapi\ProcessDay')
-    ->setName("ProcessDay");
+    '\BO\Zmsapi\ProcessListByScopeAndDate')
+    ->setName("ProcessListByScopeAndDate");
 
 /**
  *  @swagger
