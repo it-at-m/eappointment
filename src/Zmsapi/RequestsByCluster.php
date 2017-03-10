@@ -21,14 +21,14 @@ class RequestsByCluster extends BaseController
     public static function render($clusterId)
     {
         $query = new Query();
-        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
 
-        $cluster = $query->readEntity($clusterId, $resolveReferences);
+        $cluster = (new \BO\Zmsdb\Cluster)->readEntity($clusterId, $resolveReferences);
         if (! $cluster) {
             throw new Exception\Cluster\ClusterNotFound();
         }
 
-        $requestList = $query->readListByCluster($cluster, $resolveReferences);
+        $requestList = $query->readListByCluster($cluster, $resolveReferences - 1);
 
         $message = Response\Message::create(Render::$request);
         $message->data = $requestList;

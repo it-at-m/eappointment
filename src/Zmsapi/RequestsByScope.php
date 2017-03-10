@@ -23,12 +23,13 @@ class RequestsByScope extends BaseController
         $query = new Query();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
 
-        $scope = $query->readEntity($scopeId, $resolveReferences);
+        $scope = (new \BO\Zmsdb\Scope)->readEntity($scopeId, $resolveReferences);
         if (! $scope) {
             throw new Exception\Scope\ScopeNotFound();
         }
 
-        $requestList = $query->readListByProvider($scope->getProviderId(), $resolveReferences);
+        $requestList = $query
+            ->readListByProvider($scope->provider['source'], $scope->getProviderId(), $resolveReferences - 1);
 
         $message = Response\Message::create(Render::$request);
         $message->data = $requestList;
