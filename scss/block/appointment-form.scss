@@ -1,6 +1,6 @@
 .appointment-form {
-    @extend 
-        .board, 
+    @extend
+        .board,
         .board--minHeight !optional;
 
     > .body {
@@ -19,13 +19,13 @@
     .split {
         @extend .grid;
         .split_left {
-            @extend 
-                .grid__item, 
+            @extend
+                .grid__item,
                 .five-twelfths,
                 .palm--one-whole;
         }
         .split_right {
-            @extend 
+            @extend
                 .grid__item,
                 .seven-twelfths,
                 .palm--one-whole;
@@ -34,5 +34,9 @@
     // Overwrite Base horizontalform label grid width
     .appointment_slots label {
         width:  3.5em !important;
+    }
+
+    .checkboxdeselect label {
+        display:none;
     }
 }

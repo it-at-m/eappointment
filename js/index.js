@@ -26,6 +26,8 @@ import { getDataAttributes } from './lib/utils'
 
 import preventFormResubmit from './element/form/preventFormResubmit'
 
+
+
 // Bind jQuery on $ for testing
 window.$ = $;
 
