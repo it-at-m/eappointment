@@ -21,11 +21,6 @@ class Counter extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
-        $provider = \App::$http->readGetResult(
-            '/provider/dldb/'. $workstation->getProviderOfGivenScope() .'/'
-        )->getEntity();
-        $requestList = \App::$http->readGetResult('/request/dldb/provider/'. $provider->id .'/')->getCollection();
-
         $validator = $request->getAttribute('validator');
         $selectedDate = $validator->getParameter('date')->isString()->getValue();
         $selectedDate = ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d');
@@ -46,9 +41,7 @@ class Counter extends BaseController
                 'title' => 'Tresen',
                 'menuActive' => 'counter',
                 'selectedDate' => $selectedDate,
-                'workstation' => $workstation->getArrayCopy(),
-                'requestList' => $requestList->sortByName(),
-            )
+                'workstation' => $workstation->getArrayCopy()            )
         );
     }
 }
