@@ -1,14 +1,22 @@
 import BaseView from '../../lib/baseview'
 import $ from 'jquery'
+import ApppointmentView from '../../block/appointment'
 
-const loadInto = (url, container) => {
-    container.find('.body').html(loaderHtml);
+const loadInto = (url, container, view) => {
+    const body = document.createElement('div');
+    const old = container.find('.body')
+    $(body).addClass('body').html(loaderHtml);
+    $(body).insertBefore(old);
+    old.remove() // make sure all binded events are removed
 
     return new Promise((resolve, reject) => {
         $.ajax(url, {
             method: 'GET'
         }).done(data => {
             container.html(data);
+            if (view) {
+                new view(container);
+            }
             resolve(container);
         }).fail(err => {
             console.log('XHR error', url, err)
@@ -19,8 +27,6 @@ const loadInto = (url, container) => {
 
 const loaderHtml = '<div class="loader"></div>'
 
-
-
 class View extends BaseView {
 
     constructor (element, options) {
@@ -30,7 +36,6 @@ class View extends BaseView {
         this.selectedDate = options['selected-date'];
         this.bindPublicMethods('loadAllPartials');
         console.log('Component: Counter', this, options);
-        this.$.ready(this.loadData);
         $.ajaxSetup({ cache: false });
         this.loadAllPartials();
         this.bindEvents();
@@ -80,7 +85,7 @@ class View extends BaseView {
 
     loadAppointmentForm() {
         const url = `${this.includeUrl}/counter/appointmentForm/?selecteddate=${this.selectedDate}`
-        loadInto(url, this.element.find('[data-appointment-form]'))
+        loadInto(url, this.element.find('[data-appointment-form]'), ApppointmentView)
     }
 
     loadQueueInfo () {
