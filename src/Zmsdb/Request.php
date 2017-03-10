@@ -6,7 +6,6 @@ use \BO\Zmsentities\Collection\RequestList as Collection;
 
 class Request extends Base
 {
-
     public function readEntity($source, $requestId, $resolveReferences = 0)
     {
         self::testSource($source);
@@ -72,5 +71,24 @@ class Request extends Base
         $query->addEntityMapping();
         $query->addConditionProviderId($providerId);
         return $this->readCollection($query, $source, $resolveReferences);
+    }
+
+    public function readListByCluster(\BO\Zmsentities\Cluster $cluster, $resolveReferences = 0)
+    {
+        $intersectList = array();
+        if ($cluster->scopes->count()) {
+            foreach ($cluster->scopes as $scope) {
+                $requestsByProvider = $this
+                    ->readListByProvider(
+                        $scope->provider['source'],
+                        $scope->getProviderId(),
+                        $resolveReferences - 1
+                    )->getArrayCopy();
+                $intersectList = (count($intersectList)) ?
+                    array_values(array_intersect($intersectList, $requestsByProvider)) : $requestsByProvider;
+            }
+        }
+        $requestList = new Collection($intersectList);
+        return $requestList;
     }
 }
