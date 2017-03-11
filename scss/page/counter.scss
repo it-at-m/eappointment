@@ -1,0 +1,22 @@
+.counter-view {
+  position: relative;
+
+  .calendar-overlay {
+    display: none;
+  }
+
+  &[data-show-calendar-overlay] .calendar-overlay {
+    display: flex;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    padding-top: 100px;
+    justify-content: center;
+
+    background-color: rgba(255, 255, 255, 0.8);
+    z-index: 1;
+  }
+}
