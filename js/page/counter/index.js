@@ -4,16 +4,13 @@ import AppointmentView from '../../block/appointment'
 import QueueView from '../../block/queue'
 
 const loadInto = (url, container, view) => {
-    const body = document.createElement('div');
-    const old = container.find('.body')
-    $(body).addClass('body').html(loaderHtml);
-    $(body).insertBefore(old);
-    old.remove() // make sure all binded events are removed
+    container.find('.body').html(loaderHtml);
 
     return new Promise((resolve, reject) => {
         $.ajax(url, {
             method: 'GET'
         }).done(data => {
+            container.empty();
             container.html(data);
             if (view) {
                 new view(container);
@@ -35,20 +32,20 @@ class View extends BaseView {
         this.element = $(element);
         this.includeUrl = options.includeurl;
         this.selectedDate = options['selected-date'];
-        this.bindPublicMethods('loadAllPartials');
-        console.log('Component: Counter', this, options);
+        this.bindPublicMethods('loadAllPartials', 'selectDateWithOverlay');
+        this.$.ready(this.loadData);
         $.ajaxSetup({ cache: false });
-        this.loadAllPartials();
-        this.bindEvents();
+        this.loadAllPartials().then(() => this.bindEvents());
+        console.log('Component: Counter', this, options);
     }
 
     bindEvents() {
-        this.element.off('click').on('click', '.calendar-page .body a', (ev) => {
+        this.element.off('click').on('click', '[data-calendar].calendar-page .body a', (ev) => {
             ev.preventDefault();
             this.selectedDate = $(ev.target).attr('data-date');
             this.element.attr('data-selected-date', this.selectedDate);
             this.loadAllExceptCalendar();
-        }).on('click', '.calendar-navigation .pagemonthlink', (ev) => {
+        }).on('click', '[data-calendar] .calendar-navigation .pagelink', (ev) => {
             ev.preventDefault();
             this.selectedDate = $(ev.target).attr('data-date');
             this.element.attr('data-selected-date', this.selectedDate);
@@ -66,37 +63,74 @@ class View extends BaseView {
         }).on('change', '.queue-table .appointmentsOnly input', (ev) => {
             $(ev.target).closest('form').submit();
         })
+
+        this.element.on('click', '.appointment-form input[name=date]', (ev) => {
+            console.log('date click')
+            this.selectDateWithOverlay()
+                   .then(date => ev.target.value = date)
+                   .catch(() => console.log('no date selected'));
+        })
+    }
+
+    selectDateWithOverlay() {
+        return this.loadCalendarPromise.then((calendarElement) => {
+            return new Promise((resolve, reject) => {
+                const calendar = calendarElement.clone();
+                const overlay = this.element.find('[data-calendar-overlay]');
+                console.log(calendar);
+                overlay.empty()
+                overlay.append(calendar);
+                this.element.attr('data-show-calendar-overlay', true);
+                overlay.off('click').on('click', '.calendar-page .body a', (ev) => {
+                    ev.stopPropagation();
+                    this.element.removeAttr('data-show-calendar-overlay');
+                    const date = $(ev.target).attr('data-date');
+                    resolve(date);
+                }).on('click', () => {
+                    this.element.removeAttr('data-show-calendar-overlay');
+                    reject();
+                })
+            })
+        })
     }
 
     loadAllPartials() {
-        this.loadCalendar();
-        this.loadAllExceptCalendar();
+        return Promise.all([
+            this.loadCalendar(),
+            this.loadAllExceptCalendar()
+        ])
     }
 
     loadAllExceptCalendar() {
-        this.loadAppointmentForm();
-        this.loadQueueTable();
-        this.loadQueueInfo();
+        return Promise.all([
+            this.loadAppointmentForm(),
+            this.loadQueueTable(),
+            this.loadQueueInfo()
+        ]);
     }
 
     loadCalendar () {
         const url = `${this.includeUrl}/counter/calendar/?source=counter&selecteddate=${this.selectedDate}`
-        loadInto(url, this.element.find('[data-calendar]'))
+        this.loadCalendarPromise = loadInto(url, this.element.find('[data-calendar]'))
+        return this.loadCalendarPromise;
     }
 
     loadAppointmentForm() {
         const url = `${this.includeUrl}/counter/appointmentForm/?selecteddate=${this.selectedDate}`
-        loadInto(url, this.element.find('[data-appointment-form]'), AppointmentView)
+        this.loadAppointmentFormPromise = loadInto(url, this.element.find('[data-appointment-form]'), AppointmentView)
+        return this.loadAppointmentFormPromise;
     }
 
     loadQueueInfo () {
         const url = `${this.includeUrl}/counter/queueInfo/?selecteddate=${this.selectedDate}`
-        loadInto(url, this.element.find('[data-queue-info]'))
+        this.loadQueueInfoPromise = loadInto(url, this.element.find('[data-queue-info]'))
+        return this.loadQueueInfoPromise;
     }
 
     loadQueueTable () {
         const url = `${this.includeUrl}/counter/queueTable/?selecteddate=${this.selectedDate}`
-        loadInto(url, this.element.find('[data-queue-table]'), QueueView)
+        this.loadQueueTablePromise = loadInto(url, this.element.find('[data-queue-table]'), QueueView)
+        return this.loadQueueTablePromise;
     }
 
 }
