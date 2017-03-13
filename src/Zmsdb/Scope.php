@@ -216,10 +216,10 @@ class Scope extends Base
      *
      * @return number
      */
-    public function readQueueList($scopeId, $dateTime)
+    public function readQueueList($scopeId, $dateTime, $resolveReferences = 0)
     {
         $queueList = (new Process())
-            ->readProcessListByScopeAndTime($scopeId, $dateTime)
+            ->readProcessListByScopeAndTime($scopeId, $dateTime, $resolveReferences)
             ->toQueueList($dateTime);
         return $queueList->withSortedArrival();
     }
@@ -245,9 +245,9 @@ class Scope extends Base
         return $this->fetchOne($query, new Entity());
     }
 
-    public function readQueueListWithWaitingTime($scope, $dateTime)
+    public function readQueueListWithWaitingTime($scope, $dateTime, $resolveReferences = 0)
     {
-        $queueList = $this->readQueueList($scope->id, $dateTime);
+        $queueList = $this->readQueueList($scope->id, $dateTime, $resolveReferences);
         $timeAverage = $scope->getPreference('queue', 'processingTimeAverage');
         $workstationCount = $scope->getCalculatedWorkstationCount();
         return $queueList->withEstimatedWaitingTime($timeAverage, $workstationCount, $dateTime);
