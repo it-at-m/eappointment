@@ -359,8 +359,8 @@ class Scope extends Base
      */
     public function deleteEntity($scopeId)
     {
-        $processList = (new Process())->readProcessListByScope($scopeId);
-        if (0 < $processList->count()) {
+        $processListCount = (new Process())->readProcessListCountByScope($scopeId);
+        if (0 < $processListCount) {
             throw new Exception\Scope\ScopeHasProcesses();
         }
         self::$cache = [];
