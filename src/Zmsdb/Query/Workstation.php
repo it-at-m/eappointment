@@ -77,6 +77,18 @@ class Workstation extends Base implements MappingInterface
         return $this;
     }
 
+    public function addConditionDepartmentId($departmentId)
+    {
+        $this->query->leftJoin(
+            new Alias(UserAccount::TABLE_ASSIGNMENT, 'workstation_department'),
+            'workstation.NutzerID',
+            '=',
+            'workstation_department.nutzerid'
+        );
+        $this->query->where('workstation_department.behoerdenid', '=', $departmentId);
+        return $this;
+    }
+
     public function reverseEntityMapping(\BO\Zmsentities\Workstation $entity)
     {
         $data = array();
