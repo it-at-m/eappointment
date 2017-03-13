@@ -14,10 +14,10 @@ class Availability extends Base implements MappingInterface
     public function addRequiredJoins()
     {
          $this->query->leftJoin(
-             new Alias(Scope::TABLE, 'scope'),
+             new Alias(Scope::TABLE, 'availabilityscope'),
              'availability.StandortID',
              '=',
-             'scope.StandortID'
+             'availabilityscope.StandortID'
          );
     }
 
@@ -27,10 +27,12 @@ class Availability extends Base implements MappingInterface
             'id' => 'availability.OeffnungszeitID',
             'scope__id' => 'availability.StandortID',
             'bookable__startInDays' => self::expression(
-                'CAST(IF(`availability`.`Offen_ab`, `availability`.`Offen_ab`, `scope`.`Termine_ab`) AS SIGNED)'
+                'CAST(
+                    IF(`availability`.`Offen_ab`, `availability`.`Offen_ab`, `availabilityscope`.`Termine_ab`)
+                    AS SIGNED)'
             ),
             'bookable__endInDays' => self::expression(
-                'IF(`availability`.`Offen_bis`, `availability`.`Offen_bis`, `scope`.`Termine_bis`)'
+                'IF(`availability`.`Offen_bis`, `availability`.`Offen_bis`, `availabilityscope`.`Termine_bis`)'
             ),
             'description' => 'availability.kommentar',
             'startDate' => 'availability.Startdatum',
@@ -86,7 +88,7 @@ class Availability extends Base implements MappingInterface
 
     public function addConditionScopeId($scopeId)
     {
-        $this->query->where('scope.StandortID', '=', $scopeId);
+        $this->query->where('availabilityscope.StandortID', '=', $scopeId);
         return $this;
     }
 

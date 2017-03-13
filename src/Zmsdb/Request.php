@@ -11,15 +11,13 @@ class Request extends Base
         self::testSource($source);
         $query = new Query\Request(Query\Base::SELECT);
         $query
+            ->setResolveLevel($resolveReferences)
             ->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
             ->addConditionRequestId($requestId);
         $request = $this->fetchOne($query, new Entity());
         if (!$request->hasId()) {
             throw new Exception\RequestNotFound("Could not find request with ID $source/$requestId");
-        }
-        if ($resolveReferences >= 1 && $request['source'] == 'dldb') {
-            $request['data'] = Helper\DldbData::readExtendedRequestData($source, $requestId);
         }
         return ($request->hasId()) ? $request : null;
     }
@@ -41,15 +39,16 @@ class Request extends Base
         }
     }
 
-    protected function readCollection($query, $source, $resolveReferences)
+    /**
+     * @SuppressWarnings(Param)
+     *
+     */
+    protected function readCollection($query, $resolveReferences)
     {
         $requestList = new Collection();
         $statement = $this->fetchStatement($query);
         while ($requestData = $statement->fetch(\PDO::FETCH_ASSOC)) {
             $request = new Entity($query->postProcess($requestData));
-            if ($resolveReferences > 0) {
-                $request['data'] = Helper\DldbData::readExtendedRequestData($source, $request['id']);
-            }
             $requestList->addEntity($request);
         }
         return $requestList;
@@ -57,20 +56,21 @@ class Request extends Base
 
     public function readRequestByProcessId($processId, $resolveReferences = 0)
     {
-        $source = 'dldb';
         $query = new Query\Request(Query\Base::SELECT);
+        $query->setResolveLevel($resolveReferences);
         $query->addEntityMapping();
         $query->addConditionProcessId($processId);
-        return $this->readCollection($query, $source, $resolveReferences);
+        return $this->readCollection($query, $resolveReferences);
     }
 
     public function readListByProvider($source, $providerId, $resolveReferences = 0)
     {
         self::testSource($source);
         $query = new Query\Request(Query\Base::SELECT);
+        $query->setResolveLevel($resolveReferences);
         $query->addEntityMapping();
         $query->addConditionProviderId($providerId);
-        return $this->readCollection($query, $source, $resolveReferences);
+        return $this->readCollection($query, $resolveReferences);
     }
 
     public function readListByCluster(\BO\Zmsentities\Cluster $cluster, $resolveReferences = 0)

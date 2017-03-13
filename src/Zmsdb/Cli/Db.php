@@ -41,12 +41,16 @@ class Db
         if (!self::$baseDSN) {
             self::$baseDSN = \BO\Zmsdb\Connection\Select::$writeSourceName;
         }
+        \BO\Zmsdb\Connection\Select::closeWriteConnection();
         if ($dbname === null) {
             $dbname =& \BO\Zmsdb\Connection\Select::$dbname_zms;
+            \BO\Zmsdb\Connection\Select::$writeSourceName = self::$baseDSN;
+        } else {
+            $dbname_zms =& \BO\Zmsdb\Connection\Select::$dbname_zms;
+            \BO\Zmsdb\Connection\Select::$writeSourceName =
+                preg_replace("#$dbname_zms.*;#", "$dbname;", self::$baseDSN);
         }
-        \BO\Zmsdb\Connection\Select::closeWriteConnection();
-        $dbname_zms =& \BO\Zmsdb\Connection\Select::$dbname_zms;
-        \BO\Zmsdb\Connection\Select::$writeSourceName = str_replace("$dbname_zms", $dbname, self::$baseDSN);
+        error_log("Use Connection ".\BO\Zmsdb\Connection\Select::$writeSourceName);
         $pdo = \BO\Zmsdb\Connection\Select::getWriteConnection();
         return $pdo;
     }

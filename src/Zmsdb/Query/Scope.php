@@ -67,7 +67,7 @@ class Scope extends Base implements MappingInterface
             '=',
             'provider.id'
         );
-        $providerQuery = new Provider($this->query, 'provider__');
+        $providerQuery = new Provider($this->query, $this->getPrefixed('provider__'));
 
         return [$providerQuery];
     }
@@ -289,6 +289,9 @@ class Scope extends Base implements MappingInterface
     {
         $data["status__queue__lastGivenNumberTimestamp"] =
             (new \DateTime($data["status__queue__lastGivenNumberTimestamp"]))->getTimestamp();
+        if (isset($data['provider__data']) && $data['provider__data']) {
+            $data['provider__data'] = json_decode($data['provider__data']);
+        }
         return $data;
     }
 }

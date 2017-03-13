@@ -15,6 +15,9 @@ class Dldb extends \BO\Zmsdb\Base
         if (!static::$importPath) {
             throw new \Exception('No data path given');
         }
+        if ($verbose) {
+            echo "Use source-path for dldb: ". static::$importPath . "\n";
+        }
         self::$repository = new \BO\Dldb\FileAccess();
         self::$repository->loadFromPath(static::$importPath);
         $repo = self::$repository;

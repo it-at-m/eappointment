@@ -4,85 +4,85 @@ namespace BO\Zmsdb\Query;
 
 class Provider extends Base
 {
+    const TABLE = 'provider';
+
     public static function getQuerySlots()
     {
-        $dbname_dldb = \BO\Zmsdb\Connection\Select::$dbname_dldb;
         return 'SELECT
-            x.`dienstleistung` AS request__id,
-            x.`slots`
-        FROM `' . $dbname_dldb . '`.`xdienst` x
-            LEFT JOIN `' . $dbname_dldb . '`.`dienstleister` d ON x.dienstleister = d.id
+            `request__id`,
+            `slots`
+        FROM `request_provider`
         WHERE
-            x.`dienstleister` = :provider_id
-            AND x.`termin_hide` = 0
-            AND d.`zms_termin` = 1
+            `provider__id` = :provider_id
             ';
-    }
-
-    public static function getTablename()
-    {
-        $dbname_dldb = \BO\Zmsdb\Connection\Select::$dbname_dldb;
-        return $dbname_dldb . '.dienstleister';
     }
 
     public function getEntityMapping()
     {
-        return [
-            'contact__email' => 'provider.email',
-            'contact__city' => 'provider.adr_ort',
+        $mapping = [
+            'contact__city' => 'provider.contact__city',
             'contact__country' => self::expression('"Germany"'),
             'contact__name' => 'provider.name',
-            'contact__postalCode' => 'provider.adr_plz',
-            'contact__region' => 'provider.adr_ort',
-            'contact__street' => 'provider.adr_strasse',
-            'contact__streetNumber' => 'provider.adr_hnr',
-            'source' => self::expression('"dldb"'),
+            'contact__postalCode' => 'provider.contact__postalCode',
+            'contact__region' => 'provider.contact__region',
+            'contact__street' => 'provider.contact__street',
+            'contact__streetNumber' => 'provider.contact__streetNumber',
+            'source' => 'provider.source',
             'id' => 'provider.id',
-            'link' => self::expression('CONCAT("https://service.berlin.de/standort/", `provider`.`id`, "/")'),
+            'link' => 'provider.link',
             'name' => 'provider.name',
         ];
+        if ($this->getResolveLevel() > 0) {
+            $mapping['data'] = 'provider.data';
+        }
+        return $mapping;
     }
 
     public function addConditionIsAssigned($isAssigned)
     {
-        $dbname_zmsbo_scope = \BO\Zmsdb\Connection\Select::$dbname_zms .'.'. Scope::TABLE;
-        //error_log(var_export($isNotAssigned,1));
+        $this->query->leftJoin(
+            new Alias(Scope::TABLE, 'assignedscope'),
+            'provider.id',
+            '=',
+            'assignedscope.InfoDienstleisterID'
+        );
         if (true === $isAssigned) {
-            $this->query->leftJoin(
-                new Alias($dbname_zmsbo_scope, 'scope'),
-                'provider.id',
-                '=',
-                'scope.InfoDienstleisterID'
-            );
-            $this->query->where('scope.InfoDienstleisterID', 'IS NOT', null);
+            $this->query->where('assignedscope.InfoDienstleisterID', 'IS NOT', null);
         } elseif (false === $isAssigned) {
-            $this->query->leftJoin(
-                new Alias($dbname_zmsbo_scope, 'scope'),
-                'provider.id',
-                '=',
-                'scope.InfoDienstleisterID'
-            );
-            $this->query->where('scope.InfoDienstleisterID', 'IS', null);
+            $this->query->where('assignedscope.InfoDienstleisterID', 'IS', null);
         }
         return $this;
     }
 
     public function addConditionProviderId($providerId)
     {
-        $this->query->where('id', '=', $providerId);
+        $this->query->where('provider.id', '=', $providerId);
+        return $this;
+    }
+
+    public function addConditionProviderSource($source)
+    {
+        $this->query->where('provider.source', '=', $source);
         return $this;
     }
 
     public function addConditionRequestCsv($requestIdCsv)
     {
         $requestIdList = explode(',', $requestIdCsv);
-        $dbname_dldb = \BO\Zmsdb\Connection\Select::$dbname_dldb;
         $this->query->leftJoin(
-            new Alias("$dbname_dldb.xdienst", 'xdienst'),
+            new Alias("request_provider", 'xprovider'),
             'provider.id',
             '=',
-            'xdienst.dienstleister'
+            'xprovider.provider__id'
         );
-        $this->query->where('xdienst.dienstleistung', 'IN', $requestIdList);
+        $this->query->where('xprovider.request__id', 'IN', $requestIdList);
+    }
+
+    public function postProcess($data)
+    {
+        if (isset($data['data']) && $data['data']) {
+            $data['data'] = json_decode($data['data']);
+        }
+        return $data;
     }
 }
