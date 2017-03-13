@@ -126,7 +126,9 @@ class UserAccount extends Base implements MappingInterface
 
     public function postProcess($data)
     {
-        $data["lastLogin"] = (new \DateTime($data["lastLogin"]))->getTimestamp();
+        $data["lastLogin"] = ('0000-00-00' != $data["lastLogin"]) ?
+            (new \DateTime($data["lastLogin"]))->getTimestamp() :
+            null;
         return $data;
     }
 }
