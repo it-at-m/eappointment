@@ -79,6 +79,7 @@ class Workstation extends Base
             foreach ($result as $entity) {
                 if ($entity instanceof Entity) {
                     $entity->useraccount = (new UserAccount)->readEntityByUserId($entity->id, $resolveReferences - 1);
+                    $entity->scope = (new Scope)->readEntity($entity->scope['id'], $resolveReferences - 1);
                     $collection->addEntity($entity);
                 }
             }
