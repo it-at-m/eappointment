@@ -19,4 +19,9 @@
     background-color: rgba(255, 255, 255, 0.8);
     z-index: 1;
   }
+
+  .calendar-overlay .loader {
+    margin: 0;
+    border-left: 1.1em solid #ddd;
+  }
 }

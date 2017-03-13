@@ -2,28 +2,10 @@ import BaseView from '../../lib/baseview'
 import $ from 'jquery'
 import AppointmentView from '../../block/appointment'
 import QueueView from '../../block/queue'
+import CalendarView from './calendar'
 
-const loadInto = (url, container, view) => {
-    container.find('.body').html(loaderHtml);
+import { loadInto } from './utils'
 
-    return new Promise((resolve, reject) => {
-        $.ajax(url, {
-            method: 'GET'
-        }).done(data => {
-            container.empty();
-            container.html(data);
-            if (view) {
-                new view(container);
-            }
-            resolve(container);
-        }).fail(err => {
-            console.log('XHR error', url, err)
-            reject(err);
-        })
-    })
-}
-
-const loaderHtml = '<div class="loader"></div>'
 
 class View extends BaseView {
 
@@ -32,7 +14,7 @@ class View extends BaseView {
         this.element = $(element);
         this.includeUrl = options.includeurl;
         this.selectedDate = options['selected-date'];
-        this.bindPublicMethods('loadAllPartials', 'selectDateWithOverlay');
+        this.bindPublicMethods('loadAllPartials', 'selectDateWithOverlay', 'onDatePick');
         this.$.ready(this.loadData);
         $.ajaxSetup({ cache: false });
         this.loadAllPartials().then(() => this.bindEvents());
@@ -40,22 +22,7 @@ class View extends BaseView {
     }
 
     bindEvents() {
-        this.element.off('click').on('click', '[data-calendar].calendar-page .body a', (ev) => {
-            ev.preventDefault();
-            this.selectedDate = $(ev.target).attr('data-date');
-            this.element.attr('data-selected-date', this.selectedDate);
-            this.loadAllExceptCalendar();
-        }).on('click', '[data-calendar] .calendar-navigation .pagelink', (ev) => {
-            ev.preventDefault();
-            this.selectedDate = $(ev.target).attr('data-date');
-            this.element.attr('data-selected-date', this.selectedDate);
-            this.loadCalendar();
-        }).on('click', '.calendar-navigation .pagedaylink', (ev) => {
-            ev.preventDefault();
-            this.selectedDate = $(ev.target).attr('data-date');
-            this.element.attr('data-selected-date', this.selectedDate);
-            this.loadAllPartials();
-        }).on('click', '.queue-table .reload', (ev) => {
+        this.element.off('click').on('click', '.queue-table .reload', (ev) => {
             ev.preventDefault();
             this.loadQueueTable();
         }).on('change', '.queue-table .switchcluster select', (ev) => {
@@ -73,25 +40,35 @@ class View extends BaseView {
     }
 
     selectDateWithOverlay() {
-        return this.loadCalendarPromise.then((calendarElement) => {
-            return new Promise((resolve, reject) => {
-                const calendar = calendarElement.clone();
-                const overlay = this.element.find('[data-calendar-overlay]');
-                console.log(calendar);
-                overlay.empty()
-                overlay.append(calendar);
-                this.element.attr('data-show-calendar-overlay', true);
-                overlay.off('click').on('click', '.calendar-page .body a', (ev) => {
-                    ev.stopPropagation();
-                    this.element.removeAttr('data-show-calendar-overlay');
-                    const date = $(ev.target).attr('data-date');
+        return new Promise((resolve, reject) => {
+            const overlay = this.$main.find('[data-calendar-overlay]');
+            overlay.off('click');
+            this.$main.attr('data-show-calendar-overlay', true);
+
+            const close = () => {
+                this.$main.removeAttr('data-show-calendar-overlay');
+                tempCalendar.destroy()
+            }
+
+            const tempCalendar = new CalendarView(overlay, {
+                includeUrl: this.includeUrl,
+                selectedDate: this.selectedDate,
+                onDatePick: (date) => {
+                    close()
                     resolve(date);
-                }).on('click', () => {
-                    this.element.removeAttr('data-show-calendar-overlay');
-                    reject();
-                })
+                }
             })
-        })
+
+            overlay.on('click', () => {
+                close()
+                reject()
+            })
+        });
+    }
+
+    onDatePick(date) {
+        this.selectedDate = date;
+        this.loadAllExceptCalendar();
     }
 
     loadAllPartials() {
@@ -110,9 +87,11 @@ class View extends BaseView {
     }
 
     loadCalendar () {
-        const url = `${this.includeUrl}/counter/calendar/?source=counter&selecteddate=${this.selectedDate}`
-        this.loadCalendarPromise = loadInto(url, this.element.find('[data-calendar]'))
-        return this.loadCalendarPromise;
+        return new CalendarView(this.$main.find('[data-calendar]'), {
+            selectedDate: this.selectedDate,
+            onDatePick: this.onDatePick,
+            includeUrl: this.includeUrl
+        })
     }
 
     loadAppointmentForm() {
