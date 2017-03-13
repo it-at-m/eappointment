@@ -26,14 +26,16 @@ class CounterQueueTable extends BaseController
         $validator = $request->getAttribute('validator');
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
 
+        $processList = new ProcessList();
         $cluster = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/cluster/')->getEntity();
         if (1 == $workstation->queue['clusterEnabled']) {
-            $processList = \App::$http
+            $resultList = \App::$http
                 ->readGetResult('/cluster/'. $cluster->id .'/process/'. $selectedDate .'/')->getCollection();
         } else {
-            $processList = \App::$http
+            $resultList = \App::$http
                 ->readGetResult('/scope/'. $workstation->scope['id'] .'/process/'. $selectedDate .'/')->getCollection();
         }
+        $processList = ($resultList) ? $resultList : $processList;
 
         $selectedDateTime = new \DateTimeImmutable($selectedDate);
         $queueList = $processList
