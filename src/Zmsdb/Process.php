@@ -203,18 +203,19 @@ class Process extends Base
      *
      * @return Collection processList
      */
-    public function readProcessListByScopeAndTime($scopeId, \DateTimeInterface $dateTime)
+    public function readProcessListByScopeAndTime($scopeId, \DateTimeInterface $dateTime, $resolveReferences = 0)
     {
         $processList = new Collection();
         $query = new Query\Process(Query\Base::SELECT);
         $query
+            ->setResolveLevel($resolveReferences)
             ->addEntityMapping()
             ->addConditionScopeId($scopeId)
             ->addConditionTime($dateTime);
         $statement = $this->fetchStatement($query);
         while ($processData = $statement->fetch(\PDO::FETCH_ASSOC)) {
             $entity = new Entity($query->postProcess($processData));
-            $entity = $this->readResolvedReferences($entity, 1);
+            $entity = $this->readResolvedReferences($entity, $resolveReferences);
             if ($entity instanceof Entity) {
                 $processList->addEntity($entity);
             }
