@@ -181,7 +181,7 @@ use \Psr\Http\Message\ResponseInterface;
  * Process
  * -------------------------------------------------------------------------
  */
-\App::$slim->map(['GET'], '/process/{id:\d+}/{authKey}/', '\BO\Zmsadmin\ProcessDelete')
+\App::$slim->map(['GET'], '/process/{id:\d+}/{authKey}/delete/', '\BO\Zmsadmin\ProcessDelete')
     ->setName("processDelete");
 
 
