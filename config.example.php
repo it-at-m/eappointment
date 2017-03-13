@@ -30,3 +30,5 @@ if (getenv('MYSQL_ENV_MYSQL_ROOT_PASSWORD') || getenv('MYSQL_ROOT_PASSWORD')) {
 \BO\Zmsdb\Connection\Select::$pdoOptions = [
     \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
 ];
+
+\BO\Zmsdb\Source\Dldb::$importPath = 'vendor/bo/clientdldb/tests/Dldb/fixtures/';
