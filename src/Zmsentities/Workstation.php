@@ -97,4 +97,25 @@ class Workstation extends Schema\Entity
     {
         return (0 == $this->name) ? 'counter' : 'workstation';
     }
+
+    public function getScopeList($cluster = null)
+    {
+        $scopeList = new Collection\ScopeList();
+        if ($cluster) {
+            $scopeList->addList($cluster->scopes());
+        } else {
+            $scope = new Scope($this->scope);
+            $scopeList->addEntity($scope);
+        }
+        return $scopeList;
+    }
+
+    public function hasMatchingProcessScope(Cluster $cluster, Process $process)
+    {
+        $scopeList = $this->getScopeList($cluster);
+        if (! $scopeList->hasEntity($process->getScopeId())) {
+            throw new Exception\WorkstationFailedToEditProcess();
+        }
+        return true;
+    }
 }
