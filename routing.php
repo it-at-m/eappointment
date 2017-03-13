@@ -1041,6 +1041,45 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/department/{id}/workstation/":
+ *      get:
+ *          summary: Get a list of workstations for a department
+ *          tags:
+ *              - department
+ *              - workstation
+ *          parameters:
+ *              -   name: id
+ *                  description: department number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/workstation.json"
+ */
+\App::$slim->get('/department/{id:\d{1,11}}/workstation/',
+    '\BO\Zmsapi\DepartmentWorkstationList')
+    ->setName("DepartmentWorkstationList");
+
+/**
+ *  @swagger
  *  "/mails/":
  *      get:
  *          summary: get a list of mails in the send queue
