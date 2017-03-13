@@ -31,11 +31,6 @@ class Select
     public static $dbname_zms = 'zmsbo';
 
     /**
-     * @var String $dbname_dldb
-     */
-    public static $dbname_dldb = 'startinfo';
-
-    /**
      * @var String $username Login
      */
     public static $username = null;
@@ -104,6 +99,7 @@ class Select
             //$timezone = date_default_timezone_get();
             //$pdo->prepare('SET time_zone = ?;')->execute([$timezone]);
             $pdo->exec('SET SESSION sql_mode = "STRICT_ALL_TABLES";');
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (\Exception $exception) {
             // Extend exception message with connection information
             $connectInfo = $dataSourceName;

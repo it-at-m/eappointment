@@ -24,7 +24,6 @@ if (getenv('MYSQL_ENV_MYSQL_ROOT_PASSWORD') || getenv('MYSQL_ROOT_PASSWORD')) {
 }
 \BO\Zmsdb\Connection\Select::$enableProfiling = true;
 \BO\Zmsdb\Connection\Select::$dbname_zms = constant("MYSQL_DATABASE");
-\BO\Zmsdb\Connection\Select::$dbname_dldb = 'startinfo';
 \BO\Zmsdb\Connection\Select::$readSourceName = "mysql:dbname=".\BO\Zmsdb\Connection\Select::$dbname_zms.";host=$host";
 \BO\Zmsdb\Connection\Select::$writeSourceName = "mysql:dbname=".\BO\Zmsdb\Connection\Select::$dbname_zms.";host=$host";
 \BO\Zmsdb\Connection\Select::$pdoOptions = [

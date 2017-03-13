@@ -54,13 +54,10 @@ class Db
     public static function startTestDataImport($fixtures)
     {
         $dbname_zms =& \BO\Zmsdb\Connection\Select::$dbname_zms;
-        $dbname_dldb =& \BO\Zmsdb\Connection\Select::$dbname_dldb;
 
         $pdo = self::startUsingDatabase('information_schema');
         $pdo->exec("CREATE DATABASE IF NOT EXISTS `$dbname_zms`;");
-        $pdo->exec("CREATE DATABASE IF NOT EXISTS `$dbname_dldb`;");
 
-        self::startExecuteSqlFile($fixtures . '/mysql_startinfo.sql', $dbname_dldb);
         self::startExecuteSqlFile($fixtures . '/mysql_zmsbo.sql');
     }
 

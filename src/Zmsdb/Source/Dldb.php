@@ -42,9 +42,7 @@ class Dldb extends \BO\Zmsdb\Base
             echo "RequestProvider: Took $time seconds\n";
         }
 
-        if (!\BO\Zmsdb\Connection\Select::writeCommit()) {
-            throw new \Exception("Commiting transaction for updating source 'dldb' failed!");
-        }
+        \BO\Zmsdb\Connection\Select::writeCommit();
     }
 
     public function replaceRequestProvider($providerList)
@@ -52,8 +50,8 @@ class Dldb extends \BO\Zmsdb\Base
         $this->getWriter()->exec('DELETE FROM `request_provider`;');
         $sql = 'REPLACE INTO `request_provider` SET 
             `source`=:source,
-            `request_id`=:request_id,
-            `provider_id`=:provider_id,
+            `request__id`=:request__id,
+            `provider__id`=:provider__id,
             `slots`=:slots;
         ';
         $query = $this->getWriter()->prepare($sql);
@@ -62,8 +60,8 @@ class Dldb extends \BO\Zmsdb\Base
             if ($provider['address']['postal_code']) {
                 foreach ($provider['services'] as $reference) {
                     $query->bindValue('source', 'dldb');
-                    $query->bindValue('provider_id', $provider['id']);
-                    $query->bindValue('request_id', $reference['service']);
+                    $query->bindValue('provider__id', $provider['id']);
+                    $query->bindValue('request__id', $reference['service']);
                     $query->bindValue('slots', $reference['appointment']['slots']);
                     $query->execute();
                 }
