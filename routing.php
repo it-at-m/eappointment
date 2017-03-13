@@ -103,6 +103,9 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/department/delete/{id:\d+}/', '\BO\Zmsadmin\DepartmentDelete')
     ->setName("departmentDelete");
 
+\App::$slim->get('/department/{id:\d+}/useraccount/', '\BO\Zmsadmin\UseraccountByDepartment')
+    ->setName("useraccountByDepartment");
+
 
 /*
  * ---------------------------------------------------------------------------
@@ -129,6 +132,9 @@ use \Psr\Http\Message\ResponseInterface;
  */
 \App::$slim->get('/logout/', '\BO\Zmsadmin\Logout')
     ->setName("logout");
+
+\App::$slim->get('/logout/workstation/{loginname}/', '\BO\Zmsadmin\LogoutBySuperuser')
+    ->setName("logoutBySuperuser");
 
 
 /*
@@ -254,9 +260,6 @@ use \Psr\Http\Message\ResponseInterface;
 
 \App::$slim->map(['GET', 'POST'], '/useraccount/add/', '\BO\Zmsadmin\UseraccountAdd')
     ->setName("useraccountAdd");
-
-\App::$slim->get('/department/{id:\d+}/useraccount/', '\BO\Zmsadmin\UseraccountByDepartment')
-    ->setName("useraccountByDepartment");
 
 \App::$slim->map(['GET','POST'], '/useraccount/{loginname}/', '\BO\Zmsadmin\UseraccountEdit')
     ->setName("useraccountEdit");
