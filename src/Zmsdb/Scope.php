@@ -27,7 +27,6 @@ class Scope extends Base
             if (! $scope->hasId()) {
                 return null;
             }
-            $scope = $this->addDldbData($scope, $resolveReferences);
             if (0 < $resolveReferences) {
                 $scope['dayoff'] = (new DayOff())->readByScopeId($scopeId);
             }
@@ -56,7 +55,6 @@ class Scope extends Base
                     $scopeList->addEntity($entity);
                 } else {
                     if ($entity instanceof Entity) {
-                        $entity = $this->addDldbData($entity, $resolveReferences);
                         $scopeList->addEntity($entity);
                     }
                 }
@@ -85,7 +83,6 @@ class Scope extends Base
                     $scopeList->addEntity($entity);
                 } else {
                     if ($entity instanceof Entity) {
-                        $entity = $this->addDldbData($entity, $resolveReferences);
                         $scopeList->addEntity($entity);
                     }
                 }
@@ -114,7 +111,6 @@ class Scope extends Base
                     $scopeList->addEntity($entity);
                 } else {
                     if ($entity instanceof Entity) {
-                        $entity = $this->addDldbData($entity, $resolveReferences);
                         $scopeList->addEntity($entity);
                     }
                 }
@@ -372,18 +368,5 @@ class Scope extends Base
         $query = new Query\Scope(Query\Base::DELETE);
         $query->addConditionScopeId($scopeId);
         return ($this->deleteItem($query)) ? $entity : null;
-    }
-
-    protected function addDldbData($scope, $resolveReferences)
-    {
-        if (isset($scope['provider'])) {
-            if ($resolveReferences > 1 && $scope['provider']['source'] == 'dldb') {
-                $scope['provider']['data'] = Helper\DldbData::readExtendedProviderData(
-                    $scope['provider']['source'],
-                    $scope['provider']['id']
-                );
-            }
-        }
-        return $scope;
     }
 }

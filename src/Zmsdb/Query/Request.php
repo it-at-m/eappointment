@@ -4,25 +4,16 @@ namespace BO\Zmsdb\Query;
 
 class Request extends Base
 {
-
-    public static function getTablename()
-    {
-        $dbname_dldb = \BO\Zmsdb\Connection\Select::$dbname_dldb;
-        return $dbname_dldb . '.dienstleistungen';
-    }
+    const TABLE = 'request';
 
     public static function getQuerySlots()
     {
-        $dbname_dldb = \BO\Zmsdb\Connection\Select::$dbname_dldb;
         return 'SELECT
-            x.`dienstleister` AS provider__id,
-            x.`slots`
-        FROM `' . $dbname_dldb . '`.`xdienst` x
-            LEFT JOIN `' . $dbname_dldb . '`.`dienstleister` d ON x.dienstleister = d.id
+            `provider__id`,
+            `slots`
+        FROM request_provider
         WHERE
-            x.`dienstleistung` = :request_id
-            AND x.`termin_hide` = 0
-            AND d.`zms_termin` = 1
+            `request__id` = :request_id
             ';
     }
 
@@ -35,12 +26,17 @@ class Request extends Base
 
     public function getEntityMapping()
     {
-        return [
+        $mapping = [
             'id' => 'request.id',
-            'link' => self::expression('CONCAT("https://service.berlin.de/dienstleistung/", `request`.`id`, "/")'),
+            'link' => 'request.link',
             'name' => 'request.name',
-            'source' => self::expression('"dldb"')
+            'group' => 'request.group',
+            'source' => 'request.source',
         ];
+        if ($this->getResolveLevel() > 0) {
+            $mapping['data'] = 'request.data';
+        }
+        return $mapping;
     }
 
     public function addConditionRequestId($requestId)
@@ -63,13 +59,20 @@ class Request extends Base
 
     public function addConditionProviderId($providerId)
     {
-        $dbname_dldb = \BO\Zmsdb\Connection\Select::$dbname_dldb;
         $this->query->leftJoin(
-            new Alias("$dbname_dldb.xdienst", 'xdienst'),
+            new Alias("request_provider", 'xrequest'),
             'request.id',
             '=',
-            'xdienst.dienstleistung'
+            'xrequest.request__id'
         );
-        $this->query->where('xdienst.dienstleister', '=', $providerId);
+        $this->query->where('xrequest.provider__id', '=', $providerId);
+    }
+
+    public function postProcess($data)
+    {
+        if (isset($data['data']) && $data['data']) {
+            $data['data'] = json_decode($data['data']);
+        }
+        return $data;
     }
 }

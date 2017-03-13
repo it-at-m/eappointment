@@ -46,7 +46,11 @@ abstract class Base
      */
     protected $name = false;
 
-    protected $resolveReferences = -1;
+    /**
+     * Level given ususally by parameter resolveReferences
+     *
+     */
+    protected $resolveLevel = null;
 
     protected static $sqlCache = [];
 
@@ -59,13 +63,13 @@ abstract class Base
      * @param String $prefix If used in a subquery, prefix results with this string
      * @param String $name A named query has a cached SQL as soon as called first
      */
-    public function __construct($queryType, $prefix = '', $name = false, $resolveReferences = -1)
+    public function __construct($queryType, $prefix = '', $name = false, $resolveLevel = null)
     {
         $this->prefix = $prefix;
         if ($name) {
             $this->name = $name;
         }
-        $this->resolveReferences = $resolveReferences;
+        $this->resolveLevel = $resolveLevel;
         $dialect = new MySQL();
         if (self::SELECT === $queryType) {
             $this->query = new Select($dialect);
@@ -95,7 +99,7 @@ abstract class Base
     public function __toString()
     {
         if ($this->name) {
-            $name = $this->name . '_' . $this->prefix . (string) $this->resolveReferences;
+            $name = $this->name . '_' . $this->prefix . (string) $this->resolveLevel;
             if (!isset(static::$sqlCache[$name])) {
                 static::$sqlCache[$name] = $this->getSql();
             }
@@ -127,6 +131,20 @@ abstract class Base
         $alias = $this::getAlias();
         $this->query->from($table, $alias);
         return $this;
+    }
+
+    public function setResolveLevel($level)
+    {
+        $this->resolveLevel = $level;
+        return $this;
+    }
+
+    public function getResolveLevel()
+    {
+        if (null === $this->resolveLevel) {
+            throw new \Exception("Required setting for resolveReferenceLevel missing in " . get_class($this));
+        }
+        return $this->resolveLevel;
     }
 
     /**
@@ -204,6 +222,7 @@ abstract class Base
         if ($depth > 0) {
             $queryList = $this->addJoin();
             foreach ($queryList as $query) {
+                $query->setResolveLevel($depth);
                 $query->addResolvedReferences($depth - 1);
                 $query->addEntityMapping();
             }

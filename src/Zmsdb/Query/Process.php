@@ -46,7 +46,8 @@ class Process extends Base implements MappingInterface
     public function addJoin()
     {
         return [
-            $this->addJoinAvailability()
+            $this->addJoinAvailability(),
+            $this->addJoinScope(),
         ];
     }
 
@@ -59,7 +60,22 @@ class Process extends Base implements MappingInterface
             new Alias(Availability::TABLE, 'availability'),
             Availability::getJoinExpression('`process`', '`availability`')
         );
-        $joinQuery = new Availability($this->query, 'appointments__0__availability__');
+        $joinQuery = new Availability($this->query, $this->getPrefixed('appointments__0__availability__'));
+        return $joinQuery;
+    }
+
+    /**
+     * Add Availability to the dataset
+     */
+    protected function addJoinScope()
+    {
+        $this->query->leftJoin(
+            new Alias(Scope::TABLE, 'scope'),
+            'process.StandortID',
+            '=',
+            'scope.StandortID'
+        );
+        $joinQuery = new Scope($this->query, $this->getPrefixed('scope__'));
         return $joinQuery;
     }
 
@@ -268,6 +284,9 @@ class Process extends Base implements MappingInterface
             $data["queue__lastCallTime"] = 0;
         }
         $data["queue__arrivalTime"] = strtotime($data["queue__arrivalTime"]);
+        if (isset($data['scope__provider__data']) && $data['scope__provider__data']) {
+            $data['scope__provider__data'] = json_decode($data['scope__provider__data']);
+        }
         return $data;
     }
 

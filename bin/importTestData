@@ -1,12 +1,12 @@
 #!/usr/bin/env php
 <?php
-$dir = realpath(__DIR__);
-do {
+$dir = is_dir(getcwd() . '/vendor/bo/zmsdb') ? realpath(getcwd()) : realpath(__DIR__);
+while ($dir != '/' && !file_exists("$dir/config.php")) {
     $dir = dirname($dir);
     if (file_exists("$dir/autoload.php")) {
         require_once("$dir/autoload.php");
     }
-} while ($dir != '/' && !file_exists("$dir/config.php"));
+}
 if (file_exists("$dir/bootstrap.php")) {
     require("$dir/bootstrap.php");
 } else {

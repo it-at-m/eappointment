@@ -52,9 +52,9 @@ class ProviderTest extends Base
         $query = new Query();
         $collection = $query->readListByRequest('dldb', '120335');
         $this->assertEntityList("\\BO\\Zmsentities\\Provider", $collection);
-        $this->assertTrue($collection->hasEntity('122210')); // Bürgeramt Halemweg (Außenstelle)
+        $this->assertTrue($collection->hasEntity('122286')); // Bürgeramt Sonnenallee
         $collection = $query->readListByRequest('dldb', '99999999999999999'); // unknown request
         $this->assertEntityList("\\BO\\Zmsentities\\Provider", $collection);
-        $this->assertFalse($collection->hasEntity('122210')); // Bürgeramt Halemweg (Außenstelle)
+        $this->assertFalse($collection->hasEntity('122286')); // Bürgeramt Sonnenallee
     }
 }

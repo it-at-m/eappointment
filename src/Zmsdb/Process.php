@@ -27,7 +27,6 @@ class Process extends Base
             throw new Exception\ProcessAuthFailed("Could not find process $processId identified by '$authKey'");
         }
         $process = $this->readResolvedReferences($process, $resolveReferences);
-        $process = $this->addDldbData($process, $resolveReferences);
         return $process;
     }
 
@@ -35,7 +34,6 @@ class Process extends Base
     {
         if (1 <= $resolveReferences) {
             $process['requests'] = (new Request())->readRequestByProcessId($process->id, $resolveReferences - 1);
-            $process['scope'] = (new Scope())->readEntity($process->getScopeId(), $resolveReferences - 1);
         }
         return $process;
     }
@@ -358,19 +356,5 @@ class Process extends Base
             }
         }
         return $processList;
-    }
-
-    protected function addDldbData($process, $resolveReferences)
-    {
-        if (isset($process['scope']['provider'])) {
-            $provider = $process['scope']['provider'];
-            if ($resolveReferences >= 2 && $provider['source'] == 'dldb') {
-                $process['scope']['provider']['data'] = Helper\DldbData::readExtendedProviderData(
-                    $provider['source'],
-                    $provider['id']
-                );
-            }
-        }
-        return $process;
     }
 }
