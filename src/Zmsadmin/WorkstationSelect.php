@@ -39,7 +39,7 @@ class WorkstationSelect extends BaseController
             $isUpdated = LoginForm::writeWorkstationUpdate($form, $workstation);
             if (! $form->hasFailed() && $isUpdated) {
                 return \BO\Slim\Render::redirect(
-                    LoginForm::getRedirect($workstation),
+                    $workstation->getRedirect(),
                     array(),
                     $queryParams
                 );

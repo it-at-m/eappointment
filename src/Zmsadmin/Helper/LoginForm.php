@@ -115,9 +115,4 @@ class LoginForm
         }
         return ($result) ? true : false;
     }
-
-    public static function getRedirect($workstation)
-    {
-        return (0 == $workstation->name) ? 'counter' : 'workstation';
-    }
 }
