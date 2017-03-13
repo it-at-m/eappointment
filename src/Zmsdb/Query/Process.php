@@ -2,6 +2,10 @@
 
 namespace BO\Zmsdb\Query;
 
+/**
+ * @SuppressWarnings(TooManyPublicMethods)
+ *
+ */
 class Process extends Base implements MappingInterface
 {
 
@@ -160,6 +164,14 @@ class Process extends Base implements MappingInterface
             ),
             'reminderTimestamp' => 'process.Erinnerungszeitpunkt.'
         ];
+    }
+
+    public function addCountValue()
+    {
+        $this->query->select([
+            'processCount' => self::expression('COUNT(*)'),
+            ]);
+        return $this;
     }
 
     public function addConditionProcessId($processId)

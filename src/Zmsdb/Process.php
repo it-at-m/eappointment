@@ -244,28 +244,22 @@ class Process extends Base
     }
 
     /**
-     * Read processList by scopeId to get all processes of a scope
+     * Read processList by scopeId to get a number of all processes of a scope
      *
      * @param
      * scopeId
      *
      * @return Collection processList
      */
-    public function readProcessListByScope($scopeId)
+    public function readProcessListCountByScope($scopeId)
     {
-        $processList = new Collection();
         $query = new Query\Process(Query\Base::SELECT);
         $query
-            ->addEntityMapping()
+            ->addCountValue()
             ->addConditionScopeId($scopeId);
         $statement = $this->fetchStatement($query);
-        while ($processData = $statement->fetch(\PDO::FETCH_ASSOC)) {
-            $entity = new Entity($query->postProcess($processData));
-            if ($entity instanceof Entity) {
-                $processList->addEntity($entity);
-            }
-        }
-        return $processList;
+        $result = $statement->fetch(\PDO::FETCH_ASSOC);
+        return $result['processCount'];
     }
 
     /**
