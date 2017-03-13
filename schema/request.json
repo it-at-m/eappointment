@@ -27,6 +27,10 @@
             "description": "source dependant additional properties",
             "additionalProperties": true
         },
+        "group": {
+            "type": "string",
+            "description": "name of a group for grouping requests"
+        },
         "name": {
             "type": "string",
             "description": "name of the referenced service (explicit redundant)"
