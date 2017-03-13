@@ -1,6 +1,7 @@
 import BaseView from '../../lib/baseview'
 import $ from 'jquery'
-import ApppointmentView from '../../block/appointment'
+import AppointmentView from '../../block/appointment'
+import QueueView from '../../block/queue'
 
 const loadInto = (url, container, view) => {
     const body = document.createElement('div');
@@ -85,7 +86,7 @@ class View extends BaseView {
 
     loadAppointmentForm() {
         const url = `${this.includeUrl}/counter/appointmentForm/?selecteddate=${this.selectedDate}`
-        loadInto(url, this.element.find('[data-appointment-form]'), ApppointmentView)
+        loadInto(url, this.element.find('[data-appointment-form]'), AppointmentView)
     }
 
     loadQueueInfo () {
@@ -95,7 +96,7 @@ class View extends BaseView {
 
     loadQueueTable () {
         const url = `${this.includeUrl}/counter/queueTable/?selecteddate=${this.selectedDate}`
-        loadInto(url, this.element.find('[data-queue-table]'))
+        loadInto(url, this.element.find('[data-queue-table]'), QueueView)
     }
 
 }
