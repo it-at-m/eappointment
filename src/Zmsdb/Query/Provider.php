@@ -81,7 +81,7 @@ class Provider extends Base
     public function postProcess($data)
     {
         if (isset($data['data']) && $data['data']) {
-            $data['data'] = json_decode($data['data']);
+            $data['data'] = json_decode($data['data'], true);
         }
         return $data;
     }

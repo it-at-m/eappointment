@@ -297,7 +297,7 @@ class Process extends Base implements MappingInterface
         }
         $data["queue__arrivalTime"] = strtotime($data["queue__arrivalTime"]);
         if (isset($data['scope__provider__data']) && $data['scope__provider__data']) {
-            $data['scope__provider__data'] = json_decode($data['scope__provider__data']);
+            $data['scope__provider__data'] = json_decode($data['scope__provider__data'], true);
         }
         return $data;
     }
