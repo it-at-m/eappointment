@@ -24,7 +24,7 @@ class DepartmentWorkstationList extends BaseController
         Helper\User::checkDepartment($departmentId);
 
         $query = new Query();
-        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $collection = $query->readCollectionByDepartmentId($departmentId, $resolveReferences);
 
         $message = Response\Message::create(Render::$request);
