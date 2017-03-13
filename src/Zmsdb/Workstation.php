@@ -4,6 +4,8 @@ namespace BO\Zmsdb;
 
 use \BO\Zmsentities\Workstation as Entity;
 
+use \BO\Zmsentities\Collection\WorkstationList as Collection;
+
 class Workstation extends Base
 {
     public function readEntity($loginName, $resolveReferences = 0)
@@ -63,6 +65,25 @@ class Workstation extends Base
         }
         $workstation->useraccount = (new UserAccount)->readEntityByUserId($workstation->id, $resolveReferences - 1);
         return $workstation;
+    }
+
+    public function readCollectionByDepartmentId($departmentId, $resolveReferences = 0)
+    {
+        $collection = new Collection();
+        $query = new Query\Workstation(Query\Base::SELECT);
+        $query->addResolvedReferences($resolveReferences)
+            ->addConditionDepartmentId($departmentId)
+            ->addEntityMapping();
+        $result = $this->fetchList($query, new Entity());
+        if (count($result)) {
+            foreach ($result as $entity) {
+                if ($entity instanceof Entity) {
+                    $entity->useraccount = (new UserAccount)->readEntityByUserId($entity->id, $resolveReferences - 1);
+                    $collection->addEntity($entity);
+                }
+            }
+        }
+        return $collection;
     }
 
     public function writeEntityLoginByName($loginName, $password, \DateTimeInterface $dateTime, $resolveReferences = 0)
