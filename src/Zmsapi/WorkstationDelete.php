@@ -10,9 +10,6 @@ use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\Workstation as Query;
 
-/**
-  * Handle requests concerning services
-  */
 class WorkstationDelete extends BaseController
 {
     /**
