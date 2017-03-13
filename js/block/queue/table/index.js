@@ -2,6 +2,8 @@
 import $ from "jquery";
 import BaseView from '../../../lib/baseview';
 
+const loaderHtml = '<div class="loader-small"></div>'
+
 class View extends BaseView {
 
     constructor (element, options) {
@@ -26,10 +28,14 @@ class View extends BaseView {
         const ok = confirm('Wenn Sie den Kunden Nr. '+ id +' '+ name +' löschen wollen, klicken Sie auf OK. Der Kunde wird darüber per eMail und/oder SMS informiert.)')
 
         if (ok) {
+            $(ev.target).hide();
+            $(ev.target).closest('td').append(loaderHtml);
             $.ajax($(ev.target).attr('href'), {
-                method: 'DELETE'
+                method: 'GET'
             }).done(() => {
-                this.$.hide();
+                $(ev.target).closest('tr').fadeOut('slow', function(){
+                    $(ev.target).remove();
+                });
             }).fail(err => {
                 console.log('ajax error', err)
             })
