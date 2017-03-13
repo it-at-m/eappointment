@@ -21,6 +21,7 @@ class UseraccountByDepartment extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $department = $workstation->getUseraccount()->getDepartment($departmentId);
         $userAccountList = \App::$http->readGetResult("/department/$departmentId/useraccount/")->getCollection();
+        $workstationList = \App::$http->readGetResult("/department/$departmentId/workstation/")->getCollection();
         $organisation = \App::$http->readGetResult(
             "/department/$departmentId/organisation/",
             array('resolveReferences'=>1)
@@ -30,11 +31,12 @@ class UseraccountByDepartment extends BaseController
         \BO\Slim\Render::withHtml(
             $response,
             'page/useraccount.twig',
-            array (
+            array(
                 'title' => 'Nutzer',
                 'menuActive' => 'useraccount',
                 'workstation' => $workstation,
                 'department' => $department,
+                'workstationList' => $workstationList,
                 'userAccountList' => $userAccountList,
                 'organisationList' => $organisationList,
             )
