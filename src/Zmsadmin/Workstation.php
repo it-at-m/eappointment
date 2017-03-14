@@ -26,6 +26,10 @@ class Workstation extends BaseController
         )->getEntity();
         $requestList = \App::$http->readGetResult('/request/dldb/provider/'. $provider->id .'/')->getCollection();
 
+        $validator = $request->getAttribute('validator');
+        $selectedDate = $validator->getParameter('date')->isString()->getValue();
+        $selectedDate = ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d');
+
         if (!$workstation->hasId()) {
             return \BO\Slim\Render::redirect(
                 'index',
@@ -42,6 +46,7 @@ class Workstation extends BaseController
                 'title' => 'Sachbearbeiter',
                 'menuActive' => 'workstation',
                 'workstation' => $workstation,
+                'selectedDate' => $selectedDate,
                 'requestList' => $requestList->sortByName()
             )
         );

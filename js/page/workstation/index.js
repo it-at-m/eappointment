@@ -4,9 +4,6 @@ import AppointmentView from '../../block/appointment'
 import QueueView from '../../block/queue'
 import CalendarView from '../../block/calendar'
 
-import { loadInto } from './utils'
-
-
 class View extends BaseView {
 
     constructor (element, options) {
@@ -18,7 +15,7 @@ class View extends BaseView {
         this.$.ready(this.loadData);
         $.ajaxSetup({ cache: false });
         this.loadAllPartials().then(() => this.bindEvents());
-        console.log('Component: Counter', this, options);
+        console.log('Component: Workstation', this, options);
     }
 
     bindEvents() {
@@ -61,8 +58,7 @@ class View extends BaseView {
         return Promise.all([
             this.loadCalendar(),
             this.loadAppointmentForm(),
-            this.loadQueueTable(),
-            this.loadQueueInfo()
+            this.loadQueueTable()
         ])
     }
 
@@ -80,12 +76,6 @@ class View extends BaseView {
             includeUrl: this.includeUrl,
             selectDateWithOverlay: this.selectDateWithOverlay,
         })
-    }
-
-    loadQueueInfo () {
-        const url = `${this.includeUrl}/counter/queueInfo/?selecteddate=${this.selectedDate}`
-        this.loadQueueInfoPromise = loadInto(url, this.element.find('[data-queue-info]'))
-        return this.loadQueueInfoPromise;
     }
 
     loadQueueTable () {
