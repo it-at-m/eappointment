@@ -22,6 +22,8 @@ class CounterAppointmentForm extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
         $validator = $request->getAttribute('validator');
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
+        $calendar = new Helper\Calendar($selectedDate);
+        $freeProcessList = $calendar->readAvailableSlotsFromDayAndScope(new Scope($workstation->scope));
 
         if (1 == $workstation->queue['clusterEnabled']) {
             $cluster = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/cluster/')->getEntity();
@@ -37,6 +39,9 @@ class CounterAppointmentForm extends BaseController
             'block/appointment/form.twig',
             array(
                 'selectedDate' => ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d'),
+                'freeProcessList' => ($freeProcessList) ?
+                    $freeProcessList->toProcessListByTime()->sortByTimeKey() :
+                    null,
                 'requestList' => $requestList->sortByName()
             )
         );

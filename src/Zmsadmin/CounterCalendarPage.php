@@ -25,7 +25,7 @@ class CounterCalendarPage extends BaseController
 
         $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
         $scope = new Scope($workstation->scope);
-        $calendar = new Helper\PageCalendar($selectedDate);
+        $calendar = new Helper\Calendar($selectedDate);
 
         return \BO\Slim\Render::withHtml(
             $response,
@@ -36,7 +36,7 @@ class CounterCalendarPage extends BaseController
                 'selectedDate' => ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d'),
                 'source' => ($source) ? $source : 'counter',
                 'dayoffList' => $scope->getDayoffList(),
-                'monthList' => $calendar->readByScope($scope)
+                'monthList' => $calendar->readMonthListByScope($scope)
             )
         );
     }
