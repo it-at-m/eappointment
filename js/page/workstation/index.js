@@ -3,6 +3,7 @@ import $ from 'jquery'
 import AppointmentView from '../../block/appointment'
 import QueueView from '../../block/queue'
 import CalendarView from '../../block/calendar'
+import ClientNextView from '../../block/client/next'
 
 class View extends BaseView {
 
@@ -19,7 +20,7 @@ class View extends BaseView {
     }
 
     bindEvents() {
-        
+
     }
 
     selectDateWithOverlay() {
@@ -57,6 +58,7 @@ class View extends BaseView {
     loadAllPartials() {
         return Promise.all([
             this.loadCalendar(),
+            this.loadClientNext(),
             this.loadAppointmentForm(),
             this.loadQueueTable()
         ])
@@ -66,6 +68,12 @@ class View extends BaseView {
         return new CalendarView(this.$main.find('[data-calendar]'), {
             selectedDate: this.selectedDate,
             onDatePick: this.onDatePick,
+            includeUrl: this.includeUrl
+        })
+    }
+
+    loadClientNext () {
+        return new ClientNextView(this.$main.find('[data-client-next]'), {
             includeUrl: this.includeUrl
         })
     }

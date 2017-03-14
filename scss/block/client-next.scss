@@ -7,6 +7,14 @@
     .body {
         @extend
             .align-center;
+        min-height: 182px;
+    }
+
+    .footer {
+      min-height: 20px;
+    }
+    .loader {
+      top: 4em;
     }
 }
 
