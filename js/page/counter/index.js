@@ -60,16 +60,10 @@ class View extends BaseView {
     loadAllPartials() {
         return Promise.all([
             this.loadCalendar(),
-            this.loadAllExceptCalendar()
-        ])
-    }
-
-    loadAllExceptCalendar() {
-        return Promise.all([
             this.loadAppointmentForm(),
             this.loadQueueTable(),
             this.loadQueueInfo()
-        ]);
+        ])
     }
 
     loadCalendar () {
