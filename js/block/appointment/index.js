@@ -8,7 +8,6 @@ class View extends BaseView {
         this.selectedDate = options.selectedDate;
         this.includeUrl = options.includeUrl || "";
         this.selectDateWithOverlay = options.selectDateWithOverlay;
-        this.element = $(element);
         this.serviceList = [];
 
         this.load().then(() => {
@@ -35,10 +34,13 @@ class View extends BaseView {
         }).on('click', '.clear-list', () => {
             this.cleanUpLists();
             this.updateList();
-        }).on('click', 'input[name=date]', (ev) => {
+        }).on('click', 'input[name=date]', () => {
             console.log('date click')
             this.selectDateWithOverlay()
-                   .then(date => ev.target.value = date)
+                   .then(date => {
+                       this.selectedDate = date;
+                       this.load();
+                   })
                    .catch(() => console.log('no date selected'));
         })
     }
