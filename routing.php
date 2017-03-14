@@ -52,17 +52,8 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/counter/', '\BO\Zmsadmin\Counter')
     ->setName("counter");
 
-\App::$slim->get('/counter/calendar/[{date:\d}/]', '\BO\Zmsadmin\CounterCalendarPage')
-    ->setName("counter_calendar_page");
-
-\App::$slim->get('/counter/appointmentForm/[{date:\d}/]', '\BO\Zmsadmin\CounterAppointmentForm')
-    ->setName("counter_appointment_form");
-
 \App::$slim->get('/counter/queueInfo/[{date:\d}/]', '\BO\Zmsadmin\CounterQueueInfo')
     ->setName("counter_queue_info");
-
-\App::$slim->get('/counter/queueTable/[{date:\d}/]', '\BO\Zmsadmin\CounterQueueTable')
-    ->setName("counter_queue_table");
 
 
 /*
@@ -297,12 +288,26 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->map(['GET','POST'], '/workstation/', '\BO\Zmsadmin\Workstation')
     ->setName("workstation");
 
+/*
+ * ---------------------------------------------------------------------------
+ * Ajax Components
+ * -------------------------------------------------------------------------
+ */
+\App::$slim->get('/calendarPage/[{date:\d}/]', '\BO\Zmsadmin\CalendarPage')
+    ->setName("counter_calendar_page");
+
+\App::$slim->get('/appointmentForm/[{date:\d}/]', '\BO\Zmsadmin\AppointmentForm')
+    ->setName("appointment_form");
+
+\App::$slim->get('/queueTable/[{date:\d}/]', '\BO\Zmsadmin\QueueTable')
+    ->setName("queue_table");
+
 
 /*
-* ---------------------------------------------------------------------------
-* externals
-* -------------------------------------------------------------------------
-*/
+ * ---------------------------------------------------------------------------
+ * externals
+ * -------------------------------------------------------------------------
+ */
 
 // external link to stadplan
 \App::$slim->get('http://www.Berlin.de/stadtplan/', function () {

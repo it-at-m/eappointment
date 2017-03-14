@@ -8,7 +8,7 @@ namespace BO\Zmsadmin;
 
 use \BO\Zmsentities\Scope;
 
-class CounterCalendarPage extends BaseController
+class CalendarPage extends BaseController
 {
     /**
      * @SuppressWarnings(Param)

@@ -17,7 +17,7 @@ class View extends BaseView {
     }
 
     load() {
-        const url = `${this.includeUrl}/counter/appointmentForm/?selecteddate=${this.selectedDate}`
+        const url = `${this.includeUrl}/appointmentForm/?selecteddate=${this.selectedDate}`
         this.loadPromise = this.loadContent(url)
         return this.loadPromise;
     }
