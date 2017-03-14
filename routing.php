@@ -106,6 +106,9 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/department/{id:\d+}/useraccount/', '\BO\Zmsadmin\UseraccountByDepartment')
     ->setName("useraccountByDepartment");
 
+\App::$slim->post('/department/{id:\d+}/useraccount/logout/', '\BO\Zmsadmin\LogoutBySuperuser')
+    ->setName("logoutBySuperuser");
+
 
 /*
  * ---------------------------------------------------------------------------
@@ -132,9 +135,6 @@ use \Psr\Http\Message\ResponseInterface;
  */
 \App::$slim->get('/logout/', '\BO\Zmsadmin\Logout')
     ->setName("logout");
-
-\App::$slim->get('/logout/workstation/{loginname}/', '\BO\Zmsadmin\LogoutBySuperuser')
-    ->setName("logoutBySuperuser");
 
 
 /*

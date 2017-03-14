@@ -8,6 +8,8 @@ namespace BO\Zmsadmin;
 
 use \BO\Zmsclient\Auth;
 
+use \BO\Mellon\Validator;
+
 class LogoutBySuperuser extends BaseController
 {
     /**
@@ -19,12 +21,21 @@ class LogoutBySuperuser extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        $validator = $request->getAttribute('validator');
         $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
-        \App::$http->readDeleteResult('/workstation/'. $workstation->useraccount['id'] .'/')->getEntity();
+        $workstationToLogout = $validator->getParameter('workstation')->isArray()->getValue();
 
+        if (array_key_exists('useraccount', $workstationToLogout) && isset($workstationToLogout['useraccount']['id'])) {
+            $userAccount = \App::$http
+                ->readGetResult('/useraccount/'. $workstationToLogout['useraccount']['id'] .'/')->getEntity();
+            $workstation->getUseraccount()->hasEditAccess($userAccount);
+            \App::$http->readDeleteResult('/workstation/'. $workstationToLogout['useraccount']['id'] .'/');
+        }
+
+        $departmentId = Validator::value($args['id'])->isNumber()->getValue();
         return \BO\Slim\Render::redirect(
             'useraccountByDepartment',
-            array(),
+            array('id' => $departmentId),
             array()
         );
     }
