@@ -111,7 +111,6 @@ class LoginForm
 
             unset($workstation->useraccount['departments']);
             $result = \App::$http->readPostResult('/workstation/', $workstation)->getEntity();
-            error_log(var_export($result, 1));
         }
         return ($result) ? true : false;
     }
