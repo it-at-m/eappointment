@@ -302,6 +302,9 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/queueTable/[{date:\d}/]', '\BO\Zmsadmin\QueueTable')
     ->setName("queue_table");
 
+\App::$slim->get('/clientNext/', '\BO\Zmsadmin\ClientNext')
+    ->setName("client_next");
+
 
 /*
  * ---------------------------------------------------------------------------
