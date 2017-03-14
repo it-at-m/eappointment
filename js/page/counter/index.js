@@ -30,13 +30,6 @@ class View extends BaseView {
         }).on('change', '.queue-table .appointmentsOnly input', (ev) => {
             $(ev.target).closest('form').submit();
         })
-
-        this.element.on('click', '.appointment-form input[name=date]', (ev) => {
-            console.log('date click')
-            this.selectDateWithOverlay()
-                   .then(date => ev.target.value = date)
-                   .catch(() => console.log('no date selected'));
-        })
     }
 
     selectDateWithOverlay() {
@@ -95,9 +88,11 @@ class View extends BaseView {
     }
 
     loadAppointmentForm() {
-        const url = `${this.includeUrl}/counter/appointmentForm/?selecteddate=${this.selectedDate}`
-        this.loadAppointmentFormPromise = loadInto(url, this.element.find('[data-appointment-form]'), AppointmentView)
-        return this.loadAppointmentFormPromise;
+        return new AppointmentView(this.$main.find('[data-appointment-form]'), {
+            selectedDate: this.selectedDate,
+            includeUrl: this.includeUrl,
+            selectDateWithOverlay: this.selectDateWithOverlay,
+        })
     }
 
     loadQueueInfo () {
