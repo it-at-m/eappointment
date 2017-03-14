@@ -8,7 +8,7 @@ namespace BO\Zmsadmin;
 
 use \BO\Zmsentities\Scope;
 
-class CounterAppointmentForm extends BaseController
+class AppointmentForm extends BaseController
 {
     /**
      * @SuppressWarnings(Param)

@@ -10,7 +10,7 @@ use \BO\Zmsentities\Scope;
 
 use \BO\Zmsentities\Collection\ProcessList;
 
-class CounterQueueTable extends BaseController
+class QueueTable extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
