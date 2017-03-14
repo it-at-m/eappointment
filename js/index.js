@@ -19,6 +19,7 @@ import DepartmentDaysOffView from './block/department/daysOff'
 import TicketPrinterConfigView from './block/ticketprinter/config'
 import CallDisplayConfigView from './block/calldisplay/config'
 import CounterView from './page/counter'
+import WorkstationView from './page/workstation'
 
 import AvailabilityDayPage from './page/availabilityDay'
 import bindReact from './lib/bindReact.js'
@@ -46,6 +47,10 @@ $('.department-links').each(function() {
 
 $('.counter-view').each(function() {
     new CounterView(this, getDataAttributes(this));
+})
+
+$('.workstation-view').each(function() {
+    new WorkstationView(this, getDataAttributes(this));
 })
 
 $('form').each(function() {

@@ -2,7 +2,7 @@ import BaseView from '../../lib/baseview'
 import $ from 'jquery'
 import AppointmentView from '../../block/appointment'
 import QueueView from '../../block/queue'
-import CalendarView from './calendar'
+import CalendarView from '../../block/calendar'
 
 import { loadInto } from './utils'
 
