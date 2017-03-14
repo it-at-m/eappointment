@@ -22,14 +22,7 @@ class View extends BaseView {
     }
 
     bindEvents() {
-        this.element.off('click').on('click', '.queue-table .reload', (ev) => {
-            ev.preventDefault();
-            this.loadQueueTable();
-        }).on('change', '.queue-table .switchcluster select', (ev) => {
-            $(ev.target).closest('form').submit();
-        }).on('change', '.queue-table .appointmentsOnly input', (ev) => {
-            $(ev.target).closest('form').submit();
-        })
+        
     }
 
     selectDateWithOverlay() {
@@ -61,7 +54,7 @@ class View extends BaseView {
 
     onDatePick(date) {
         this.selectedDate = date;
-        this.loadAllExceptCalendar();
+        this.loadAllPartials();
     }
 
     loadAllPartials() {
@@ -102,9 +95,11 @@ class View extends BaseView {
     }
 
     loadQueueTable () {
-        const url = `${this.includeUrl}/counter/queueTable/?selecteddate=${this.selectedDate}`
-        this.loadQueueTablePromise = loadInto(url, this.element.find('[data-queue-table]'), QueueView)
-        return this.loadQueueTablePromise;
+        return new QueueView(this.$main.find('[data-queue-table]'), {
+            selectedDate: this.selectedDate,
+            includeUrl: this.includeUrl,
+            onDatePick: this.onDatePick
+        })
     }
 
 }

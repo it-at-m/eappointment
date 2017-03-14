@@ -2,9 +2,10 @@ import BaseView from '../../lib/baseview'
 import $ from 'jquery'
 
 class View extends BaseView {
+
     constructor (element, options) {
         super(element, options);
-        this.selectedDate = this.options.selectedDate;
+        this.selectedDate = options.selectedDate;
         this.includeUrl = options.includeUrl || "";
         this.onDatePick = options.onDatePick || (() => {});
         this.bindPublicMethods('load');
@@ -38,4 +39,3 @@ class View extends BaseView {
 }
 
 export default View
-
