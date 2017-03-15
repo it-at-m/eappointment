@@ -273,16 +273,19 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/workstation/{loginName}/', '\BO\Zmsadmin\WorkstationLogin')
     ->setName("workstationLogin");
 
-\App::$slim->get('/workstation/process/{id:\d+}/precall/', '\BO\Zmsadmin\WorkstationClientPreCall')
+\App::$slim->get('/workstation/process/next/', '\BO\Zmsadmin\WorkstationProcessNext')
+    ->setName("process_next");
+
+\App::$slim->get('/workstation/process/{id:\d+}/precall/', '\BO\Zmsadmin\WorkstationProcessPreCall')
     ->setName("workstationClientPreCall");
 
-\App::$slim->get('/workstation/process/{id:\d+}/called/', '\BO\Zmsadmin\WorkstationClientCalled')
+\App::$slim->get('/workstation/process/{id:\d+}/called/', '\BO\Zmsadmin\WorkstationProcessCalled')
     ->setName("workstationClientCalled");
 
-\App::$slim->get('/workstation/process/{id:\d+}/processing/', '\BO\Zmsadmin\WorkstationClientProcessing')
+\App::$slim->get('/workstation/process/{id:\d+}/processing/', '\BO\Zmsadmin\WorkstationProcessProcessing')
     ->setName("workstationClientProcessing");
 
-\App::$slim->get('/workstation/process/{id:\d+}/finished/', '\BO\Zmsadmin\WorkstationClientFinished')
+\App::$slim->get('/workstation/process/{id:\d+}/finished/', '\BO\Zmsadmin\WorkstationProcessFinished')
     ->setName("workstationClientFinished");
 
 \App::$slim->get('/workstation/call/{waitingnumber:\d+}/', '\BO\Zmsadmin\WorkstationCallProcess')
@@ -293,7 +296,7 @@ use \Psr\Http\Message\ResponseInterface;
 
 /*
  * ---------------------------------------------------------------------------
- * Ajax Components
+ * Other Ajax Components
  * -------------------------------------------------------------------------
  */
 \App::$slim->get('/calendarPage/[{date:\d}/]', '\BO\Zmsadmin\CalendarPage')
@@ -304,9 +307,6 @@ use \Psr\Http\Message\ResponseInterface;
 
 \App::$slim->get('/queueTable/[{date:\d}/]', '\BO\Zmsadmin\QueueTable')
     ->setName("queue_table");
-
-\App::$slim->get('/clientNext/', '\BO\Zmsadmin\ClientNext')
-    ->setName("client_next");
 
 
 /*

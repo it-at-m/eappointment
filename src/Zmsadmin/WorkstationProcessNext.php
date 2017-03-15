@@ -8,7 +8,7 @@ namespace BO\Zmsadmin;
 
 use \BO\Zmsentities\Scope;
 
-class ClientNext extends BaseController
+class WorkstationProcessNext extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
@@ -47,7 +47,7 @@ class ClientNext extends BaseController
 
         return \BO\Slim\Render::withHtml(
             $response,
-            'block/client/next.twig',
+            'block/process/next.twig',
             array(
                 'process' => $process
             )

@@ -10,14 +10,14 @@ namespace BO\Zmsadmin;
   * Handle requests concerning services
   *
   */
-class WorkstationClientCalled extends BaseController
+class WorkstationProcessCalled extends BaseController
 {
     /**
      * @return String
      */
     public static function render()
     {
-        \BO\Slim\Render::html('block/client/called.twig', array(
+        \BO\Slim\Render::html('block/process/called.twig', array(
             'title' => 'Sachbearbeiter',
             'menuActive' => 'workstation'
         ));

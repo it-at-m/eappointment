@@ -15,7 +15,7 @@ class View extends BaseView {
     }
 
     loadClientNext() {
-        const url = `${this.includeUrl}/clientNext/?selecteddate=${this.options.selectedDate}`
+        const url = `${this.includeUrl}/workstation/process/next/?selecteddate=${this.options.selectedDate}`
         return this.loadContent(url)
     }
 

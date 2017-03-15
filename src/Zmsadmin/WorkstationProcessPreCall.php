@@ -10,7 +10,7 @@ namespace BO\Zmsadmin;
   * Handle requests concerning services
   *
   */
-class WorkstationClientProcessing extends BaseController
+class WorkstationProcessPreCall extends BaseController
 {
     /**
      * @return String
@@ -25,9 +25,11 @@ class WorkstationClientProcessing extends BaseController
 
         return \BO\Slim\Render::withHtml(
             $response,
-            'block/client/info.twig',
+            'block/process/preCall.twig',
             array(
+                'title' => 'Sachbearbeiter',
                 'workstation' => $workstation,
+                'menuActive' => 'workstation'
             )
         );
     }
