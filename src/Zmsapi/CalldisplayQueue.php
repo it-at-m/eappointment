@@ -28,36 +28,40 @@ class CalldisplayQueue extends BaseController
         $queueList = new Collection();
 
         if ($calldisplay->hasScopeList()) {
-            $scopeQuery = new Scope();
             foreach ($calldisplay->getScopeList() as $scope) {
-                $scope = $scopeQuery->readEntity($scope->id, $resolveReferences - 1);
-                if (! $scope) {
-                    throw new Exception\Scope\ScopeNotFound();
-                }
-                $scope = $scopeQuery->readWithWorkstationCount($scope->id, \App::$now);
-                $queueList->addList(
-                    $scopeQuery
-                        ->readQueueListWithWaitingTime($scope, \App::$now)
-                        ->withPickupDestination($scope)
-                );
+                $queueList->addList(static::getCalculatedQueueListFromScope($scope, $resolveReferences));
             }
         }
         if ($calldisplay->hasClusterList()) {
             $clusterQuery = new Cluster();
             foreach ($calldisplay->getClusterList() as $cluster) {
-                $cluster = $clusterQuery->readEntity($cluster->id, $resolveReferences - 1);
+                $cluster = $clusterQuery->readEntity($cluster->id, $resolveReferences);
                 if (! $cluster) {
                     throw new Exception\Cluster\ClusterNotFound();
                 }
-                $queueList->addList(
-                    $clusterQuery
-                      ->readQueueList($cluster->id, $calldisplay->getScopeList(), \App::$now)
-                );
+                if ($cluster->scopes->count()) {
+                    foreach ($cluster->scopes as $scope) {
+                        $queueList->addList(static::getCalculatedQueueListFromScope($scope, $resolveReferences));
+                    }
+                }
             }
         }
         $message = Response\Message::create(Render::$request);
-        $message->data = $queueList;
+        $message->data = $queueList->withoutDublicates();
         Render::lastModified(time(), '0');
         Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
+    }
+
+    protected static function getCalculatedQueueListFromScope($scope, $resolveReferences)
+    {
+        $scopeQuery = new Scope();
+        $scope = $scopeQuery->readEntity($scope->id, $resolveReferences - 1);
+        if (! $scope) {
+            throw new Exception\Scope\ScopeNotFound();
+        }
+        $scope = $scopeQuery->readWithWorkstationCount($scope->id, \App::$now);
+        return $scopeQuery
+            ->readQueueListWithWaitingTime($scope, \App::$now)
+            ->withPickupDestination($scope);
     }
 }
