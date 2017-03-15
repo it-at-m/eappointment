@@ -26,14 +26,22 @@ class ClientNext extends BaseController
 
         if (1 == $workstation->queue['clusterEnabled']) {
             $cluster = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/cluster/')->getEntity();
+            $queueListCalled = \App::$http->readGetResult(
+                '/cluster/'. $cluster['id'] .'/queue/',
+                ['date' => $date]
+            )->getCollection()->withStatus(['called'])->getWaitingNumberListCsv();
             $process = \App::$http->readGetResult(
                 '/cluster/'. $cluster['id'] .'/queue/next/',
-                ['date' => $date]
+                ['date' => $date, 'exclude' => $queueListCalled]
             )->getEntity();
         } else {
+            $queueListCalled = \App::$http->readGetResult(
+                '/scope/'. $workstation->scope['id'] .'/queue/',
+                ['date' => $date]
+            )->getCollection()->withStatus(['called'])->getWaitingNumberListCsv();
             $process = \App::$http->readGetResult(
                 '/scope/'. $workstation->scope['id'] .'/queue/next/',
-                ['date' => $date]
+                ['date' => $date, 'exclude' => $queueListCalled]
             )->getEntity();
         }
 
