@@ -279,8 +279,11 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/workstation/process/{id:\d+}/called/', '\BO\Zmsadmin\WorkstationClientCalled')
     ->setName("workstationClientCalled");
 
-\App::$slim->get('/workstation/process/{id:\d+}/processed/', '\BO\Zmsadmin\WorkstationClientProcessed')
-    ->setName("workstationClientProcessed");
+\App::$slim->get('/workstation/process/{id:\d+}/processing/', '\BO\Zmsadmin\WorkstationClientProcessing')
+    ->setName("workstationClientProcessing");
+
+\App::$slim->get('/workstation/process/{id:\d+}/finished/', '\BO\Zmsadmin\WorkstationClientFinished')
+    ->setName("workstationClientFinished");
 
 \App::$slim->get('/workstation/call/{waitingnumber:\d+}/', '\BO\Zmsadmin\WorkstationCallProcess')
     ->setName("workstationCallProcess");

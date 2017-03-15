@@ -10,7 +10,7 @@ class View extends BaseView {
         this.bindPublicMethods('loadClientNext');
         $.ajaxSetup({ cache: false });
         this.bindEvents();
-        console.log('Component: ClientNext', this, options);
+        console.log('Component: Client', this, options);
         this.loadClientNext();
     }
 
@@ -29,6 +29,16 @@ class View extends BaseView {
         return this.loadContent(url)
     }
 
+    loadProcessing() {
+        const url = `${this.includeUrl}/workstation/process/0/processing/`
+        return this.loadContent(url)
+    }
+
+    loadProcessed() {
+        const url = `${this.includeUrl}/workstation/process/0/finished/`
+        return this.loadContent(url)
+    }
+
     bindEvents() {
         this.$main.on('click', '.button-callnextclient a', (ev) => {
             ev.preventDefault();
@@ -38,7 +48,15 @@ class View extends BaseView {
             ev.preventDefault();
             ev.stopPropagation();
             this.loadCalled();
-        }).on('click', '.client-called_button-abort', (ev) => {
+        }).on('click', '.client-precall_button-skip, .client-called_button-skip', (ev) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            this.loadClientNext();
+        }).on('click', '.client-called_button-success', (ev) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            this.loadProcessing();
+        }).on('click', '.client-called_button-abort, .client-precall_button-abort, .button-cancel', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
             this.loadClientNext();
