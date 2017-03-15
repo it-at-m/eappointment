@@ -3,7 +3,6 @@ namespace BO\Zmsdb\Helper;
 
 class ProcessStatus extends \BO\Zmsdb\Process
 {
-
     public function readUpdatedStatus(\BO\Zmsentities\Process $process, $status = 'free')
     {
         $query = new \BO\Zmsdb\Query\Process(\BO\Zmsdb\Query\Base::UPDATE);
