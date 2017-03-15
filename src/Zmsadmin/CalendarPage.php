@@ -19,6 +19,7 @@ class CalendarPage extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        $cluster = null;
         $validator = $request->getAttribute('validator');
         $source = $validator->getParameter('source')->isString()->getValue();
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
@@ -26,6 +27,11 @@ class CalendarPage extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
         $scope = new Scope($workstation->scope);
         $calendar = new Helper\Calendar($selectedDate);
+
+        if (1 == $workstation->queue['clusterEnabled']) {
+            $cluster = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/cluster/')->getEntity();
+        }
+        $scopeList = $workstation->getScopeList($cluster);
 
         return \BO\Slim\Render::withHtml(
             $response,
@@ -36,7 +42,7 @@ class CalendarPage extends BaseController
                 'selectedDate' => ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d'),
                 'source' => ($source) ? $source : 'counter',
                 'dayoffList' => $scope->getDayoffList(),
-                'monthList' => $calendar->readMonthListByScope($scope)
+                'monthList' => $calendar->readMonthListByScopeList($scopeList)
             )
         );
     }
