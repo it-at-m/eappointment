@@ -23,13 +23,14 @@ class ProcessNextByScope extends BaseController
     {
         $query = new Query();
         $selectedDate = Validator::param('date')->isString()->getValue();
+        $exclude = Validator::param('exclude')->isString()->getValue();
         $dateTime = ($selectedDate) ? new DateTime($selectedDate) : \App::$now;
         $scope = $query->readEntity($scopeId)->withLessData();
         if (! $scope) {
             throw new Exception\Scope\ScopeNotFound();
         }
         $queueList = $query->readQueueList($scope->id, $dateTime);
-        $process = $queueList->getNextProcess($dateTime);
+        $process = $queueList->getNextProcess($dateTime, $exclude);
         if (! $process) {
             throw new Exception\Process\ProcessNotFound();
         }
