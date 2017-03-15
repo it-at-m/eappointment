@@ -401,6 +401,39 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/cluster/{id}/queue/next/":
+ *      get:
+ *          summary: Get the next process in queue by cluster id
+ *          tags:
+ *              - cluster
+ *              - process
+ *          parameters:
+ *              -   name: id
+ *                  description: number of cluster
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: get a process
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/process.json"
+ *              404:
+ *                  description: "Could not find a process or cluster not found"
+ */
+\App::$slim->get('/cluster/{id:\d{1,4}}/queue/next/',
+    '\BO\Zmsapi\ProcessNextByCluster')
+    ->setName("ProcessNextByCluster");
+
+/**
+ *  @swagger
  *  "/cluster/{id}/queue/":
  *      get:
  *          summary: Get a waiting queue for a cluster
@@ -2847,6 +2880,39 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->post('/scope/{id}/emergency/respond/',
     '\BO\Zmsapi\ScopeEmergencyRespond')
     ->setName("ScopeEmergencyRespond");
+
+/**
+ *  @swagger
+ *  "/scope/{id}/queue/next/":
+ *      get:
+ *          summary: Get the next process in queue by scope id
+ *          tags:
+ *              - scope
+ *              - process
+ *          parameters:
+ *              -   name: id
+ *                  description: number of scope
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: get a process
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/process.json"
+ *              404:
+ *                  description: "Could not find a process or scope not found"
+ */
+\App::$slim->get('/scope/{id:\d{1,4}}/queue/next/',
+    '\BO\Zmsapi\ProcessNextByScope')
+    ->setName("ProcessNextByScope");
 
 /**
  *  @swagger
