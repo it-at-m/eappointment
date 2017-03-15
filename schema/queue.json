@@ -5,6 +5,7 @@
         "arrivalTime": 1447922893,
         "callCount": 1,
         "callTime": 1447922938,
+        "lastCallTime": 0,
         "number": "123",
         "waitingTime": 2,
         "withAppointment": false
@@ -38,6 +39,10 @@
             "type": "string",
             "description": "Small hint to display on calling the queued item."
         },
+        "lastCallTime": {
+            "type": "number",
+            "description": "unix timestamp of last call while client not appeared and process was not stopped"
+        },
         "number": {
             "type": "string",
             "description": "number to display on a call display"
@@ -57,8 +62,8 @@
         },
         "status": {
             "type": "string",
-            "enum": [   
-            	"confirmed",
+            "enum": [
+                "confirmed",
                 "queued",
                 "called",
                 "processing",
