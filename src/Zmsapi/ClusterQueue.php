@@ -22,7 +22,7 @@ class ClusterQueue extends BaseController
     {
         $query = new Query();
         $message = Response\Message::create(Render::$request);
-        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $cluster = $query->readEntity($itemId, $resolveReferences);
         if (! $cluster) {
             throw new Exception\Cluster\ClusterNotFound();
