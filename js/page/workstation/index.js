@@ -3,7 +3,7 @@ import $ from 'jquery'
 import AppointmentView from '../../block/appointment'
 import QueueView from '../../block/queue'
 import CalendarView from '../../block/calendar'
-import ClientNextView from '../../block/client/next'
+import ClientNextView from '../../block/process/next'
 
 class View extends BaseView {
 
