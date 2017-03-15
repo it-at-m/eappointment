@@ -8,7 +8,7 @@ namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
-use \BO\Zmsdb\Process as Query;
+use \BO\Zmsdb\Scope as Query;
 
 /**
   * Handle requests concerning services
@@ -24,10 +24,10 @@ class ProcessListByScopeAndDate extends BaseController
 
         $query = new Query();
         $dateTime = new \BO\Zmsentities\Helper\DateTime($dayString);
-        $collection = $query->readProcessListByScopeAndTime($scopeId, $dateTime);
+        $queueList = $query->readQueueList($scopeId, $dateTime);
 
         $message = Response\Message::create(Render::$request);
-        $message->data = $collection;
+        $message->data = $queueList->toProcessList();
         Render::lastModified(time(), '0');
         Render::json($message, 200);
     }
