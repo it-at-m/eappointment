@@ -1,6 +1,11 @@
 <?php
 namespace BO\Zmsentities\Collection;
 
+/**
+ * @SuppressWarnings(Complexity)
+ * @SuppressWarnings(PublicMethod)
+ *
+ */
 class QueueList extends Base
 {
     const FAKE_WAITINGNUMBER = 1001;
@@ -94,15 +99,18 @@ class QueueList extends Base
         return null;
     }
 
-    public function getNextProcess(\DateTimeInterface $dateTime)
+    public function getNextProcess(\DateTimeInterface $dateTime, $exclude = null)
     {
+        $excludeNumbers = explode(',', $exclude);
         $queueList = clone $this;
         $queueList = $queueList->withSortedArrival()->getArrayCopy();
         $next = array_shift($queueList);
         $currentTime = $dateTime->getTimestamp();
 
         while ($next) {
-            if (0 == $next->lastCallTime || ($next->lastCallTime + (5 * 60)) <= $currentTime) {
+            if (! in_array($next->number, $excludeNumbers) &&
+                (0 == $next->lastCallTime || ($next->lastCallTime + (5 * 60)) <= $currentTime)
+            ) {
                 return $next->getProcess();
             }
             $next = array_shift($queueList);
@@ -190,5 +198,19 @@ class QueueList extends Base
             }
         }
         return $list->withSortedArrival();
+    }
+
+    public function getWaitingNumberList()
+    {
+        $list = [];
+        foreach ($this as $entity) {
+            $list[] = $entity->number;
+        }
+        return $list;
+    }
+
+    public function getWaitingNumberListCsv()
+    {
+        return implode(',', $this->getWaitingNumberList());
     }
 }
