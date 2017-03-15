@@ -121,6 +121,7 @@ class Process extends Base implements MappingInterface
             ),
             'queue__callCount' => 'process.AnzahlAufrufe',
             'queue__callTime' => 'process.aufrufzeit',
+            'queue__lastCallTime' => 'process.Timestamp',
             'queue__number' => self::expression(
                 'IF(`process`.`wartenummer`,
                     `process`.`wartenummer`,
@@ -220,13 +221,7 @@ class Process extends Base implements MappingInterface
         $data['IPAdresse'] = $process['createIP'];
         $data['vorlaeufigeBuchung'] = ($process['status'] == 'reserved') ? 1 : 0;
         $data['Erinnerungszeitpunkt'] = $process->getReminderTimestamp();
-        if ($process->queue['callTime']) {
-            $data['aufrufzeit'] = (new \DateTime())->setTimestamp($process->queue['callTime'])->format('H:i:s');
-        }
-        if ($process->queue['arrivalTime']) {
-            $data['wsm_aufnahmezeit'] = (new \DateTime())
-                ->setTimestamp($process->queue['arrivalTime'])->format('H:i:s');
-        }
+        $data = $this->readProcessTimeValuesData($data, $process);
         $data = array_filter(
             $data,
             function ($value) {
@@ -234,6 +229,21 @@ class Process extends Base implements MappingInterface
             }
         );
         $this->addValues($data);
+    }
+
+    protected function readProcessTimeValuesData($data, $process)
+    {
+        if (isset($process->queue['callTime']) && $process->queue['callTime']) {
+            $data['aufrufzeit'] = (new \DateTime())->setTimestamp($process->queue['callTime'])->format('H:i:s');
+        }
+        if (isset($process->queue['lastCallTime']) && $process->queue['lastCallTime']) {
+            $data['Timestamp'] = (new \DateTime())->setTimestamp($process->queue['lastCallTime'])->format('H:i:s');
+        }
+        if (isset($process->queue['arrivalTime'])) {
+            $data['wsm_aufnahmezeit'] = (new \DateTime())
+                ->setTimestamp($process->queue['arrivalTime'])->format('H:i:s');
+        }
+        return $data;
     }
 
     public function postProcess($data)
@@ -247,6 +257,15 @@ class Process extends Base implements MappingInterface
                 ->getTimestamp();
         } else {
             $data["queue__callTime"] = 0;
+        }
+        if ('00:00:00' != $data["queue__lastCallTime"]) {
+            $time = explode(':', $data["queue__lastCallTime"]);
+            $data["queue__lastCallTime"] = (new \DateTime())
+                ->setTimestamp($data["appointments__0__date"])
+                ->setTime($time[0], $time[1], $time[2])
+                ->getTimestamp();
+        } else {
+            $data["queue__lastCallTime"] = 0;
         }
         $data["queue__arrivalTime"] = strtotime($data["queue__arrivalTime"]);
         return $data;

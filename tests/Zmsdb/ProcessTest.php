@@ -322,6 +322,7 @@ class ProcessTest extends Base
                 "arrivalTime" =>"1464339600",
                 "callCount" =>"0",
                 "callTime" => "0",
+                "lastCallTime" => "0",
                 "number" =>"0",
                 "waitingTime" => 60,
                 "reminderTimestamp" =>"0"
@@ -336,6 +337,6 @@ class ProcessTest extends Base
             ],
             "status"=>"reserved"
         ));
-         return $input;
+        return $input;
     }
 }
