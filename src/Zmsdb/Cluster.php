@@ -102,7 +102,7 @@ class Cluster extends Base
     }
 
     /**
-     * get a queueList from opened scopes by cluster id and dateTime
+     * get a queueList by cluster id and dateTime
      *
      ** @param
      *            clusterId
@@ -112,18 +112,12 @@ class Cluster extends Base
      */
     public function readQueueList(
         $clusterId,
-        \BO\Zmsentities\Collection\ScopeList $scopeList,
         \DateTimeInterface $dateTime
     ) {
         $cluster = $this->readEntity($clusterId, 1);
-        $scopeList = $this
-            ->readOpenedScopeList($clusterId, $dateTime)
-            ->withoutDublicates($scopeList);
         $queueList = new \BO\Zmsentities\Collection\QueueList();
-        foreach ($scopeList as $scope) {
-            $scope = (new Scope())->readWithWorkstationCount($scope['id'], $dateTime);
-            $scopeQueueList = (new Scope())->readQueueListWithWaitingTime($scope, $dateTime);
-            $scopeQueueList = $scopeQueueList->withShortNameDestinationHint($cluster, $scope);
+        foreach ($cluster->scopes as $scope) {
+            $scopeQueueList = (new Scope())->readQueueList($scope->id, $dateTime);
             if (0 < $scopeQueueList->count()) {
                 $queueList->addList($scopeQueueList);
             }

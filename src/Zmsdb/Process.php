@@ -34,8 +34,8 @@ class Process extends Base
     protected function readResolvedReferences($process, $resolveReferences)
     {
         if (1 <= $resolveReferences) {
-            $process['requests'] = (new Request())->readRequestByProcessId($process->id, $resolveReferences);
-            $process['scope'] = (new Scope())->readEntity($process->getScopeId(), $resolveReferences);
+            $process['requests'] = (new Request())->readRequestByProcessId($process->id, $resolveReferences - 1);
+            $process['scope'] = (new Scope())->readEntity($process->getScopeId(), $resolveReferences - 1);
         }
         return $process;
     }
