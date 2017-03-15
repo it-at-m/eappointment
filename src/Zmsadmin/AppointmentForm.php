@@ -23,16 +23,18 @@ class AppointmentForm extends BaseController
         $validator = $request->getAttribute('validator');
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
         $calendar = new Helper\Calendar($selectedDate);
-        $freeProcessList = $calendar->readAvailableSlotsFromDayAndScope(new Scope($workstation->scope));
 
         if (1 == $workstation->queue['clusterEnabled']) {
             $cluster = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/cluster/')->getEntity();
             $requestList = \App::$http
                 ->readGetResult('/cluster/'. $cluster->id .'/request/')->getCollection();
         } else {
+            $cluster = null;
             $requestList = \App::$http
                 ->readGetResult('/scope/'. $workstation->scope['id'] .'/request/')->getCollection();
         }
+        $scopeList = $workstation->getScopeList($cluster);
+        $freeProcessList = $calendar->readAvailableSlotsFromDayAndScopeList($scopeList);
 
         return \BO\Slim\Render::withHtml(
             $response,

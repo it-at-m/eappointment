@@ -21,9 +21,9 @@ class Calendar
         $this->calendar = new Entity();
     }
 
-    public function readMonthListByScope(\BO\Zmsentities\Scope $scope)
+    public function readMonthListByScopeList(\BO\Zmsentities\Collection\ScopeList $scopeList)
     {
-        $this->calendar->addScope($scope->id);
+        $this->calendar->scopes = $scopeList;
         $this->calendar->firstDay->setDateTime($this->dateTime->modify('first day of this month'));
         $this->calendar->lastDay->setDateTime($this->dateTime->modify('last day of next month'));
         try {
@@ -41,9 +41,9 @@ class Calendar
         }
     }
 
-    public function readAvailableSlotsFromDayAndScope(\BO\Zmsentities\Scope $scope)
+    public function readAvailableSlotsFromDayAndScopeList(\BO\Zmsentities\Collection\ScopeList $scopeList)
     {
-        $this->calendar->addScope($scope->id);
+        $this->calendar->scopes = $scopeList;
         $this->calendar->firstDay->setDateTime($this->dateTime);
         $this->calendar->lastDay->setDateTime($this->dateTime);
         try {
@@ -52,7 +52,6 @@ class Calendar
             if ($exception->template != 'BO\Zmsapi\Exception\Process\FreeProcessListEmpty') {
                 throw $exception;
             }
-            // TODO Berechne die Tage im Kalendar
         }
     }
 }
