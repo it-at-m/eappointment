@@ -15,11 +15,22 @@ class WorkstationClientPreCall extends BaseController
     /**
      * @return String
      */
-    public static function render()
-    {
-        \BO\Slim\Render::html('page/workstationClientPreCall.twig', array(
-            'title' => 'Sachbearbeiter',
-            'menuActive' => 'workstation'
-        ));
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 3])->getEntity();
+        $workstation->hasDepartmentList();
+
+        return \BO\Slim\Render::withHtml(
+            $response,
+            'page/workstationClientPreCall.twig',
+            array(
+                'title' => 'Sachbearbeiter',
+                'workstation' => $workstation,
+                'menuActive' => 'workstation'
+            )
+        );
     }
 }

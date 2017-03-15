@@ -15,11 +15,22 @@ class WorkstationClientProcessed extends BaseController
     /**
      * @return String
      */
-    public static function render()
-    {
-        \BO\Slim\Render::html('page/workstationClientProcessed.twig', array(
-            'title' => 'Kundendaten für Statistik',
-            'menuActive' => 'workstation'
-        ));
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 3])->getEntity();
+        $workstation->hasDepartmentList();
+
+        return \BO\Slim\Render::withHtml(
+            $response,
+            'page/workstationClientProcessed.twig',
+            array(
+                'title' => 'Sachbearbeiter',
+                'workstation' => $workstation,
+                'menuActive' => 'workstation'
+            )
+        );
     }
 }
