@@ -17,7 +17,7 @@ class WorkstationClientCalled extends BaseController
      */
     public static function render()
     {
-        \BO\Slim\Render::html('page/workstationClientCalled.twig', array(
+        \BO\Slim\Render::html('block/client/called.twig', array(
             'title' => 'Sachbearbeiter',
             'menuActive' => 'workstation'
         ));

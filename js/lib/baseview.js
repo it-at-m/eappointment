@@ -32,7 +32,7 @@ class BaseView extends ErrorHandler {
             ajaxSettings.data = data;
         }
 
-        return new Promise((resolve, reject) => {
+        this.loadPromise = new Promise((resolve, reject) => {
             $.ajax(url, ajaxSettings).done(responseData => {
                 this.$main.html(responseData);
                 resolve(this.$main);
@@ -42,6 +42,7 @@ class BaseView extends ErrorHandler {
             })
         })
 
+        return this.loadPromise;
     }
 
     destroy() {
