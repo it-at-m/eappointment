@@ -27,7 +27,6 @@ class ClusterTest extends Base
     public function testReadListByDepartment()
     {
         $query = new Query();
-        $input = $this->getTestEntity();
         $entityList = $query->readByDepartmentId(72, 1); //by Egon-Erwin-Kisch-Str.
         $this->assertEntityList("\\BO\\Zmsentities\\Cluster", $entityList);
         //Bürgeramt 1 (Neu- Hohenschönhausen) Egon-Erwin-Kisch-Straße exists
@@ -39,9 +38,7 @@ class ClusterTest extends Base
     {
         $now = new \DateTimeImmutable("2016-04-01 11:55");
         $query = new Query();
-        $input = $this->getTestEntity();
-        $scopeList = $query->readOpenedScopeList(60, $now); //by Egon-Erwin-Kisch-Str. Cluster
-        $queueList = $query->readQueueList(110, $scopeList, $now);
+        $queueList = $query->readQueueList(110, $now);
         $this->assertEntityList("\\BO\\Zmsentities\\Queue", $queueList);
         $this->assertEquals(105, $queueList->count());
     }
@@ -49,7 +46,6 @@ class ClusterTest extends Base
     public function testReadIsOpenedScopeList()
     {
         $query = new Query();
-        $input = $this->getTestEntity();
         $now = new \DateTimeImmutable("2016-04-01 11:55");
         $entityList = $query->readOpenedScopeList(60, $now); //by Egon-Erwin-Kisch-Str. Cluster
         $this->assertEquals(true, 0 <= $entityList->count());
@@ -58,7 +54,6 @@ class ClusterTest extends Base
     public function testReadScopeWithShortestWaitingTime()
     {
         $query = new Query();
-        $input = $this->getTestEntity();
         $now = new \DateTimeImmutable("2016-04-01 11:55");
         //by Schöneberg with test ghostWorkstationCount of 3
         $scope = $query->readScopeWithShortestWaitingTime(4, $now);
@@ -99,7 +94,7 @@ class ClusterTest extends Base
 
     protected function getTestEntity()
     {
-        return $input = (new Entity())->getExample();
+        return (new Entity())->getExample();
     }
 
     protected function getTestImageMimepart()
