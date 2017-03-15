@@ -74,6 +74,7 @@ class View extends BaseView {
 
     loadClientNext () {
         return new ClientNextView(this.$main.find('[data-client-next]'), {
+            selectedDate: this.selectedDate,
             includeUrl: this.includeUrl
         })
     }

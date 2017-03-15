@@ -25,7 +25,7 @@ class WorkstationClientPreCall extends BaseController
 
         return \BO\Slim\Render::withHtml(
             $response,
-            'page/workstationClientPreCall.twig',
+            'block/client/preCall.twig',
             array(
                 'title' => 'Sachbearbeiter',
                 'workstation' => $workstation,
