@@ -94,6 +94,22 @@ class QueueList extends Base
         return null;
     }
 
+    public function getNextProcess(\DateTimeInterface $dateTime)
+    {
+        $queueList = clone $this;
+        $queueList = $queueList->withSortedArrival()->getArrayCopy();
+        $next = array_shift($queueList);
+        $currentTime = $dateTime->getTimestamp();
+
+        while ($next) {
+            if (0 == $next->lastCallTime || ($next->lastCallTime + (5 * 60)) <= $currentTime) {
+                return $next->getProcess();
+            }
+            $next = array_shift($queueList);
+        }
+        return null;
+    }
+
     public function getQueuePositionByNumber($number)
     {
         foreach ($this as $key => $entity) {
@@ -154,5 +170,25 @@ class QueueList extends Base
             $processList->addEntity($process);
         }
         return $processList;
+    }
+
+    public function withoutDublicates()
+    {
+        $list = new self();
+        foreach ($this as $entity) {
+            $hasEntity = false;
+            foreach ($list as $inListEntity) {
+                if ($inListEntity->number == $entity->number &&
+                    $inListEntity->arrivalTime == $entity->arrivalTime &&
+                    $inListEntity->withAppointment == $entity->withAppointment
+                ) {
+                    $hasEntity = true;
+                }
+            }
+            if (! $hasEntity) {
+                $list->addEntity($entity);
+            }
+        }
+        return $list->withSortedArrival();
     }
 }
