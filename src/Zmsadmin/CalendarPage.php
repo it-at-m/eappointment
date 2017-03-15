@@ -21,7 +21,6 @@ class CalendarPage extends BaseController
     ) {
         $cluster = null;
         $validator = $request->getAttribute('validator');
-        $source = $validator->getParameter('source')->isString()->getValue();
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
 
         $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
@@ -40,7 +39,6 @@ class CalendarPage extends BaseController
                 'title' => 'Kalender',
                 'calendar' => $calendar,
                 'selectedDate' => ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d'),
-                'source' => ($source) ? $source : 'counter',
                 'dayoffList' => $scope->getDayoffList(),
                 'monthList' => $calendar->readMonthListByScopeList($scopeList)
             )
