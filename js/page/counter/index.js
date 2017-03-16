@@ -5,6 +5,7 @@ import QueueView from '../../block/queue'
 import CalendarView from '../../block/calendar'
 
 import { loadInto } from './utils'
+import { lightbox } from '../../lib/utils'
 
 
 class View extends BaseView {
@@ -27,27 +28,23 @@ class View extends BaseView {
 
     selectDateWithOverlay() {
         return new Promise((resolve, reject) => {
-            const overlay = this.$main.find('[data-calendar-overlay]');
-            overlay.off('click');
-            this.$main.attr('data-show-calendar-overlay', true);
-
-            const close = () => {
-                this.$main.removeAttr('data-show-calendar-overlay');
+            const destroyCalendar = () => {
                 tempCalendar.destroy()
             }
 
-            const tempCalendar = new CalendarView(overlay, {
+            const { lightboxContentElement, destroyLightbox } = lightbox(this.$main, () => {
+                destroyCalendar()
+                reject()
+            })
+
+            const tempCalendar = new CalendarView(lightboxContentElement, {
                 includeUrl: this.includeUrl,
                 selectedDate: this.selectedDate,
                 onDatePick: (date) => {
-                    close()
+                    destroyCalendar()
+                    destroyLightbox()
                     resolve(date);
                 }
-            })
-
-            overlay.on('click', () => {
-                close()
-                reject()
             })
         });
     }
