@@ -50,10 +50,7 @@ class Scope extends BaseController
             $entity->hint = implode(' | ', $input['hint']);
             $entity->id = $entityId;
             $entity = \App::$http->readPostResult('/scope/' . $entity->id . '/', $entity)->getEntity();
-            $uploadedImage = (new Helper\FileUploader($request, $entityId))->getEntity();
-            if ($uploadedImage) {
-                $callDisplayImage = $uploadedImage;
-            }
+            return \BO\Slim\Render::redirect('scope', ['id' => $entityId]);
         }
 
         return \BO\Slim\Render::withHtml(

@@ -38,7 +38,7 @@ class Profile extends BaseController
             $newEntity = new Entity($input);
             $entity = \App::$http->readPostResult('/workstation/password/', $newEntity)
                     ->getEntity();
-            $updated = true;
+            return \BO\Slim\Render::redirect('profile', []);
         }
 
         return \BO\Slim\Render::withHtml(

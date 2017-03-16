@@ -48,6 +48,7 @@ class TicketprinterStatusByScope extends BaseController
             $entity->preferences['ticketprinter']['deactivatedText'] = $input['hinweis'];
             $entity = \App::$http->readPostResult('/scope/' . $entity->id . '/', $entity)
                     ->getEntity();
+            return \BO\Slim\Render::redirect('ticketprinterStatusByScope', ['id' => $entityId]);
         }
 
         return \BO\Slim\Render::withHtml(

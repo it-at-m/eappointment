@@ -33,6 +33,7 @@ class Organisation extends BaseController
             $entity = (new Entity($input))->withCleanedUpFormData();
             $entity->id = $entityId;
             $entity = \App::$http->readPostResult('/organisation/'. $entity->id .'/', $entity)->getEntity();
+            return \BO\Slim\Render::redirect('organisation', ['id' => $entityId]);
         }
 
         return \BO\Slim\Render::withHtml(
