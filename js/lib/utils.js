@@ -1,3 +1,4 @@
+import $ from 'jQuery'
 import moment from 'moment'
 
 export const timeToFloat = (time) => {
@@ -46,6 +47,37 @@ export const tryJson = (input) => {
         return JSON.parse(input)
     } catch (e) {
         return input
+    }
+}
+
+const lightboxHtml = '<div class="lightbox"><div class="lightbox__content"></div></div>'
+
+export const lightbox = (parentElement, onBackgroundClick) => {
+    const lightboxElement = $(lightboxHtml)
+
+    const destroyLightbox = () => {
+        lightboxElement.off()
+        lightboxElement.remove()
+    }
+
+    const lightboxContentElement = lightboxElement.find('.lightbox__content')
+    lightboxContentElement.on('click', (ev) => {
+        ev.stopPropagation()
+    })
+
+    lightboxElement.on('click', (ev) => {
+        ev.stopPropagation()
+        ev.preventDefault()
+
+        destroyLightbox()
+        onBackgroundClick()
+    })
+
+    $(parentElement).append(lightboxElement)
+
+    return {
+        lightboxContentElement,
+        destroyLightbox
     }
 }
 
