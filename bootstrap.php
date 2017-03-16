@@ -17,7 +17,6 @@ require(APP_PATH . '/config.php');
 \BO\Zmsdb\Connection\Select::$enableProfiling = \App::DEBUG;
 \BO\Zmsdb\Connection\Select::$readSourceName = \App::DB_DSN_READONLY;
 \BO\Zmsdb\Connection\Select::$writeSourceName = \App::DB_DSN_READWRITE;
-\BO\Zmsdb\Connection\Select::$dbname_dldb = \App::DB_STARTINFO;
 \BO\Zmsdb\Connection\Select::$username = \App::DB_USERNAME;
 \BO\Zmsdb\Connection\Select::$password = \App::DB_PASSWORD;
 \BO\Zmsdb\Connection\Select::$pdoOptions = [
@@ -28,7 +27,7 @@ require(APP_PATH . '/config.php');
 \App::$slim->add(new \BO\Zmsapi\Helper\LogOperatorMiddleware());
 
 // DLDB data loader
-\BO\Zmsdb\Helper\DldbData::$dataPath = \App::APP_PATH . \App::$data;
+\BO\Zmsdb\Source\Dldb::$importPath = \App::APP_PATH . \App::$data;
 
 // load routing
 \BO\Slim\Bootstrap::loadRouting(\App::APP_PATH . '/routing.php');

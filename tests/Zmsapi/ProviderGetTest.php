@@ -23,7 +23,7 @@ class ProviderGetTest extends Base
     {
         $this->expectException('\BO\Zmsapi\Exception\Provider\ProviderNotFound');
         $this->expectExceptionCode(404);
-        $response = $this->render(['dldb', 123456], [], []);
+        $response = $this->render(['dldb', 1], [], []);
     }
 
     public function testSourceFailed()
