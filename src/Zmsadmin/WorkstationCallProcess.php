@@ -10,16 +10,21 @@ namespace BO\Zmsadmin;
   * Handle requests concerning services
   *
   */
-class WorkstationCallProcess extends BaseController
+class WorkstationProcess extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render()
-    {
-        \BO\Slim\Render::html('page/workstationClientActive.twig', array(
-            'title' => 'Sachbearbeiter',
-            'menuActive' => 'workstation'
-        ));
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        return \BO\Slim\Render::withHtml(
+            $response,
+            'block/process/next.twig',
+            array()
+        );
     }
 }

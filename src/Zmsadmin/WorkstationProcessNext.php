@@ -21,35 +21,40 @@ class WorkstationProcessNext extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
         $validator = $request->getAttribute('validator');
-        $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
-        $date = ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d');
+        $excludedIds = $validator->getParameter('exclude')->isString()->getValue();
+        $excludedIds = ($excludedIds) ? $excludedIds : '';
 
         if (1 == $workstation->queue['clusterEnabled']) {
             $cluster = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/cluster/')->getEntity();
-            $queueListCalled = \App::$http->readGetResult(
-                '/cluster/'. $cluster['id'] .'/queue/',
-                ['date' => $date]
-            )->getCollection()->withStatus(['called'])->getWaitingNumberListCsv();
-            $process = \App::$http->readGetResult(
-                '/cluster/'. $cluster['id'] .'/queue/next/',
-                ['date' => $date, 'exclude' => $queueListCalled]
-            )->getEntity();
+            $process = \App::$http
+                ->readGetResult('/cluster/'. $cluster['id'] .'/queue/next/', ['exclude' => $excludedIds])
+                ->getEntity();
         } else {
-            $queueListCalled = \App::$http->readGetResult(
-                '/scope/'. $workstation->scope['id'] .'/queue/',
-                ['date' => $date]
-            )->getCollection()->withStatus(['called'])->getWaitingNumberListCsv();
-            $process = \App::$http->readGetResult(
-                '/scope/'. $workstation->scope['id'] .'/queue/next/',
-                ['date' => $date, 'exclude' => $queueListCalled]
-            )->getEntity();
+            $process = \App::$http
+                ->readGetResult('/scope/'. $workstation->scope['id'] .'/queue/next/', ['exclude' => $excludedIds])
+                ->getEntity();
         }
 
-        return \BO\Slim\Render::withHtml(
-            $response,
-            'block/process/next.twig',
+        if ($process->toProperty()->amendment->get()) {
+            return Helper\Render::redirect(
+                'workstationProcessPreCall',
+                array(
+                    'id' => $process->id,
+                    'authkey' => $process->authKey
+                ),
+                array(
+                    'exclude' => $excludedIds
+                )
+            );
+        }
+        return Helper\Render::redirect(
+            'workstationProcessCalled',
             array(
-                'process' => $process
+                'id' => $process->id,
+                'authkey' => $process->authKey
+            ),
+            array(
+                'exclude' => $excludedIds
             )
         );
     }

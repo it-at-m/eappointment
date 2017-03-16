@@ -274,22 +274,25 @@ use \Psr\Http\Message\ResponseInterface;
     ->setName("workstationLogin");
 
 \App::$slim->get('/workstation/process/next/', '\BO\Zmsadmin\WorkstationProcessNext')
-    ->setName("process_next");
+    ->setName("workstationProcessNext");
 
-\App::$slim->get('/workstation/process/{id:\d+}/precall/', '\BO\Zmsadmin\WorkstationProcessPreCall')
-    ->setName("workstationClientPreCall");
+\App::$slim->get('/workstation/process/{id:\d+}/{authkey}/precall/', '\BO\Zmsadmin\WorkstationProcessPreCall')
+    ->setName("workstationProcessPreCall");
 
-\App::$slim->get('/workstation/process/{id:\d+}/called/', '\BO\Zmsadmin\WorkstationProcessCalled')
-    ->setName("workstationClientCalled");
+\App::$slim->get('/workstation/process/{id:\d+}/{authkey}/called/', '\BO\Zmsadmin\WorkstationProcessCalled')
+    ->setName("workstationProcessCalled");
 
 \App::$slim->get('/workstation/process/{id:\d+}/processing/', '\BO\Zmsadmin\WorkstationProcessProcessing')
-    ->setName("workstationClientProcessing");
+    ->setName("workstationProcessProcessing");
 
 \App::$slim->get('/workstation/process/{id:\d+}/finished/', '\BO\Zmsadmin\WorkstationProcessFinished')
-    ->setName("workstationClientFinished");
+    ->setName("workstationProcessFinished");
 
 \App::$slim->get('/workstation/call/{waitingnumber:\d+}/', '\BO\Zmsadmin\WorkstationCallProcess')
     ->setName("workstationCallProcess");
+
+\App::$slim->get('/workstation/process/cancel/', '\BO\Zmsadmin\workstationProcessCancel')
+    ->setName("workstationProcessCancel");
 
 \App::$slim->map(['GET','POST'], '/workstation/', '\BO\Zmsadmin\Workstation')
     ->setName("workstation");
@@ -348,6 +351,7 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->getContainer()
     ->offsetSet('errorHandler',
     function ($container) {
+        error_log('test');
         return function (RequestInterface $request, ResponseInterface $response, \Exception $exception) {
             return \BO\Zmsadmin\Helper\TwigExceptionHandler::withHtml($request, $response, $exception);
         };

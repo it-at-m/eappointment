@@ -1,6 +1,6 @@
 
 .client-next {
-    @extend 
+    @extend
         //.board_body--minHeight,
         .board_body--maxHeight,
         .board;
@@ -13,9 +13,4 @@
     .footer {
       min-height: 20px;
     }
-    .loader {
-      top: 4em;
-    }
 }
-
-
