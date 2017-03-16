@@ -32,6 +32,7 @@ class TicketprinterStatusByScope extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
+        $confirm_success = $request->getAttribute('validator')->getParameter('confirm_success')->isString()->getValue();
 
         $entityId = Validator::value($args['id'])->isNumber()->getValue();
         $entity = \App::$http->readGetResult('/scope/' . $entityId . '/')->getEntity();
@@ -48,7 +49,9 @@ class TicketprinterStatusByScope extends BaseController
             $entity->preferences['ticketprinter']['deactivatedText'] = $input['hinweis'];
             $entity = \App::$http->readPostResult('/scope/' . $entity->id . '/', $entity)
                     ->getEntity();
-            return \BO\Slim\Render::redirect('ticketprinterStatusByScope', ['id' => $entityId]);
+            return \BO\Slim\Render::redirect('ticketprinterStatusByScope', ['id' => $entityId], [
+                'confirm_success' => \App::$now->getTimeStamp()
+            ]);
         }
 
         return \BO\Slim\Render::withHtml(
@@ -60,6 +63,7 @@ class TicketprinterStatusByScope extends BaseController
                 'menuActive' => 'ticketprinterStatus',
                 'workstation' => $workstation,
                 'scope' => $entity->getArrayCopy(),
+                'confirm_success' => $confirm_success,
             )
         );
     }
