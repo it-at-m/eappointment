@@ -37,8 +37,13 @@ class BaseView extends ErrorHandler {
                 this.$main.html(responseData);
                 resolve(this.$main);
             }).fail(err => {
-                console.log('XHR load error', url, err)
-                reject(err);
+                if (err.status > 400) {
+                    this.$main.html($(err.responseText));
+                    resolve(this.$main);
+                } else {
+                    console.log('XHR load error', url, err);
+                    reject(err);
+                }
             })
         })
 

@@ -1,0 +1,18 @@
+.exception {
+    @extend
+        .board_body--maxHeight,
+        .board;
+    .body {
+        min-height: 182px;
+    }
+    .button-cancel {
+        @extend
+            .btn,
+            .btn--alert,
+            .btn--shadow;
+    }
+
+    h2.exception-headline {
+        margin-top:10px !important;
+    }
+}

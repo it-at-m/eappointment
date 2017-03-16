@@ -6,16 +6,21 @@ class View extends BaseView {
     constructor (element, options) {
         super(element, options);
         this.includeUrl = options.includeUrl || "";
-        this.selectedDate = options.selectedDate;
+        this.exclude = "";
         this.bindPublicMethods('loadClientNext');
         $.ajaxSetup({ cache: false });
         this.bindEvents();
         console.log('Component: Client', this, options);
-        this.loadClientNext();
+        this.load();
+    }
+
+    load() {
+        const url = `${this.includeUrl}/workstation/process/cancel/`
+        return this.loadContent(url)
     }
 
     loadClientNext() {
-        const url = `${this.includeUrl}/workstation/process/next/?selecteddate=${this.options.selectedDate}`
+        const url = `${this.includeUrl}/workstation/process/next/?exclude=` + this.exclude
         return this.loadContent(url)
     }
 
@@ -43,7 +48,7 @@ class View extends BaseView {
         this.$main.on('click', '.button-callnextclient a', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
-            this.loadPreCall();
+            this.loadClientNext();
         }).on('click', '.client-precall_button-success', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
@@ -51,6 +56,7 @@ class View extends BaseView {
         }).on('click', '.client-precall_button-skip, .client-called_button-skip', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
+            this.setExcludeIds($(ev.target).data('exclude'));
             this.loadClientNext();
         }).on('click', '.client-called_button-success', (ev) => {
             ev.preventDefault();
@@ -59,8 +65,13 @@ class View extends BaseView {
         }).on('click', '.client-called_button-abort, .client-precall_button-abort, .button-cancel', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
-            this.loadClientNext();
+            this.setExcludeIds('');
+            this.load();
         })
+    }
+
+    setExcludeIds(ids) {
+        this.exclude = ids;
     }
 }
 

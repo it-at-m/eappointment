@@ -7,10 +7,10 @@
 namespace BO\Zmsadmin;
 
 /**
-  * Handle requests concerning services
+  * Init Controller to display next Button Template only
   *
   */
-class WorkstationProcess extends BaseController
+class WorkstationProcessCancel extends BaseController
 {
     /**
      * @SuppressWarnings(Param)

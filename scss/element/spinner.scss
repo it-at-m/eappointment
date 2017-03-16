@@ -5,10 +5,13 @@
   height: 10em;
 }
 .loader {
-  margin: auto;
   font-size: 10px;
-  position: relative;
-  top: 13em;
+  position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto !important;
   -webkit-transform: translateY(-50%);
   -ms-transform: translateY(-50%);
   transform: translateY(-50%);
@@ -33,7 +36,6 @@
     border-right: 0.2em solid rgba(150, 150, 150, 0.2);
     border-bottom: 0.2em solid rgba(150, 150, 150, 0.2);
     border-left: 0.2em solid #ffffff;
-    top:0px;
 }
 
 @-webkit-keyframes load8 {
