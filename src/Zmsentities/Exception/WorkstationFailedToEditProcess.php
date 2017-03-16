@@ -7,7 +7,7 @@ namespace BO\Zmsentities\Exception;
  */
 class WorkstationFailedToEditProcess extends \Exception
 {
-    protected $error = 500;
+    protected $code = 403;
 
     protected $message = "Workstation is not allowed to edit the process,
         process scope does not match with workstation cluster/scope";
