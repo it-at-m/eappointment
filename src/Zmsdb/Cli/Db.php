@@ -48,7 +48,7 @@ class Db
         } else {
             $dbname_zms =& \BO\Zmsdb\Connection\Select::$dbname_zms;
             \BO\Zmsdb\Connection\Select::$writeSourceName =
-                preg_replace("#$dbname_zms.*;#", "$dbname;", self::$baseDSN);
+                preg_replace("#$dbname_zms.*?;#", "$dbname;", self::$baseDSN);
         }
         error_log("Use Connection ".\BO\Zmsdb\Connection\Select::$writeSourceName);
         $pdo = \BO\Zmsdb\Connection\Select::getWriteConnection();
