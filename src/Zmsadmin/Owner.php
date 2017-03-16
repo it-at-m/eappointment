@@ -40,7 +40,7 @@ class Owner extends BaseController
                 $entity->id = $entityId;
                 $entity = \App::$http->readPostResult('/owner/' . $entity->id . '/', $entity)
                     ->getEntity();
-                // self::$errorHandler->success = 'owner_saved';
+                return \BO\Slim\Render::redirect('owner', ['id' => $entityId]);
             } catch (\Exception $exception) {
                 return Helper\Render::error($exception);
             }

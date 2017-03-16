@@ -38,6 +38,7 @@ class DayoffByYear extends BaseController
                 $collection->withTimestampFromDateformat()
             )->getCollection();
             $updated = true;
+            return \BO\Slim\Render::redirect('dayoffByYear', ['year' => $year]);
         }
 
         $response = \BO\Slim\Render::withLastModified($response, time(), '0');

@@ -36,10 +36,10 @@ class Cluster extends BaseController
             $entity = (new Entity($input))->withCleanedUpFormData();
             $entity->id = $entityId;
             $entity = \App::$http->readPostResult('/cluster/' . $entity->id . '/', $entity)->getEntity();
-            $uploadedImage = (new Helper\FileUploader($request, $entityId, 'cluster'))->getEntity();
-            if ($uploadedImage) {
-                $callDisplayImage = $uploadedImage;
-            }
+            return \BO\Slim\Render::redirect('cluster', [
+                'clusterId' => $entityId,
+                'departmentId' => $departmentId
+            ]);
         }
 
         return \BO\Slim\Render::withHtml(
