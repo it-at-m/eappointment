@@ -26,6 +26,7 @@ class DayoffByYear extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
+        $confirm_success = $request->getAttribute('validator')->getParameter('confirm_success')->isString()->getValue();
         $year = Validator::value($args['year'])->isNumber()->getValue();
         $collection = \App::$http->readGetResult('/dayoff/'. $year .'/')->getCollection();
         $updated = false;
@@ -38,7 +39,9 @@ class DayoffByYear extends BaseController
                 $collection->withTimestampFromDateformat()
             )->getCollection();
             $updated = true;
-            return \BO\Slim\Render::redirect('dayoffByYear', ['year' => $year]);
+            return \BO\Slim\Render::redirect('dayoffByYear', ['year' => $year], [
+                'confirm_success' => \App::$now->getTimeStamp()
+            ]);
         }
 
         $response = \BO\Slim\Render::withLastModified($response, time(), '0');
@@ -51,6 +54,7 @@ class DayoffByYear extends BaseController
                 'updated' => $updated,
                 'menuActive' => 'dayoff',
                 'workstation' => $workstation,
+                'confirm_success' => $confirm_success,
                 'dayoffList' => array_values($collection->sortByCustomKey('date')->getArrayCopy())
             )
         );

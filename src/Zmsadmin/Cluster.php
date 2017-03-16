@@ -24,6 +24,7 @@ class Cluster extends BaseController
         $entityId = Validator::value($args['clusterId'])->isNumber()->getValue();
         $departmentId = Validator::value($args['departmentId'])->isNumber()->getValue();
         $entity = \App::$http->readGetResult('/cluster/' . $entityId . '/', ['resolveReferences' => 2])->getEntity();
+        $confirm_success = $request->getAttribute('validator')->getParameter('confirm_success')->isString()->getValue();
 
         $department = \App::$http->readGetResult(
             '/department/' . $departmentId . '/',
@@ -38,7 +39,9 @@ class Cluster extends BaseController
             $entity = \App::$http->readPostResult('/cluster/' . $entity->id . '/', $entity)->getEntity();
             return \BO\Slim\Render::redirect('cluster', [
                 'clusterId' => $entityId,
-                'departmentId' => $departmentId
+                'departmentId' => $departmentId,
+            ], [
+                'confirm_success' => \App::$now->getTimeStamp()
             ]);
         }
 
@@ -52,7 +55,8 @@ class Cluster extends BaseController
                 'cluster' => $entity->getArrayCopy(),
                 'department' => $department,
                 'scopeList' => $department->getScopeList()->sortByContactName(),
-                'callDisplayImage' => $callDisplayImage
+                'callDisplayImage' => $callDisplayImage,
+                'confirm_success' => $confirm_success,
             )
         );
     }

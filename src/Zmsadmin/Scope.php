@@ -26,6 +26,7 @@ class Scope extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
+        $confirm_success = $request->getAttribute('validator')->getParameter('confirm_success')->isString()->getValue();
         $providerAssigned = \App::$http->readGetResult(
             '/provider/dldb/',
             array(
@@ -50,7 +51,9 @@ class Scope extends BaseController
             $entity->hint = implode(' | ', $input['hint']);
             $entity->id = $entityId;
             $entity = \App::$http->readPostResult('/scope/' . $entity->id . '/', $entity)->getEntity();
-            return \BO\Slim\Render::redirect('scope', ['id' => $entityId]);
+            return \BO\Slim\Render::redirect('scope', ['id' => $entityId], [
+                'confirm_success' => \App::$now->getTimeStamp()
+            ]);
         }
 
         return \BO\Slim\Render::withHtml(
@@ -65,7 +68,8 @@ class Scope extends BaseController
                     'notAssigned' => $providerNotAssigned,
                     'assigned' => $providerAssigned
                 ),
-                'callDisplayImage' => $callDisplayImage
+                'callDisplayImage' => $callDisplayImage,
+                'confirm_success' => $confirm_success,
             )
         );
     }
