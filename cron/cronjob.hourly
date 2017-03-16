@@ -7,3 +7,4 @@ set -a
 set +a
 
 $BIN/dldbget -o $EXPORT
+$BIN/updateDldbData --commit
