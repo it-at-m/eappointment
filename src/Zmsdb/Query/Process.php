@@ -60,11 +60,11 @@ class Process extends Base implements MappingInterface
      */
     protected function addJoinAvailability()
     {
-        $this->query->leftJoin(
+        $this->leftJoin(
             new Alias(Availability::TABLE, 'availability'),
             Availability::getJoinExpression('`process`', '`availability`')
         );
-        $joinQuery = new Availability($this->query, $this->getPrefixed('appointments__0__availability__'));
+        $joinQuery = new Availability($this, $this->getPrefixed('appointments__0__availability__'));
         return $joinQuery;
     }
 
@@ -73,13 +73,13 @@ class Process extends Base implements MappingInterface
      */
     protected function addJoinScope()
     {
-        $this->query->leftJoin(
+        $this->leftJoin(
             new Alias(Scope::TABLE, 'scope'),
             'process.StandortID',
             '=',
             'scope.StandortID'
         );
-        $joinQuery = new Scope($this->query, $this->getPrefixed('scope__'));
+        $joinQuery = new Scope($this, $this->getPrefixed('scope__'));
         return $joinQuery;
     }
 
@@ -320,13 +320,13 @@ class Process extends Base implements MappingInterface
 
     protected function addRequiredJoins()
     {
-        $this->query->leftJoin(
+        $this->leftJoin(
             new Alias(UserAccount::TABLE, 'processuser'),
             'process.NutzerID',
             '=',
             'processuser.NutzerID'
         );
-        $this->query->leftJoin(
+        $this->leftJoin(
             new Alias(Scope::TABLE, 'processscope'),
             'process.StandortID',
             '=',

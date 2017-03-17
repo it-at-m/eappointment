@@ -30,7 +30,7 @@ class Process extends Base
         return $process;
     }
 
-    protected function readResolvedReferences($process, $resolveReferences)
+    public function readResolvedReferences($process, $resolveReferences)
     {
         if (1 <= $resolveReferences) {
             $process['requests'] = (new Request())->readRequestByProcessId($process->id, $resolveReferences - 1);

@@ -2,6 +2,10 @@
 
 namespace BO\Zmsdb\Query;
 
+/**
+ * @SuppressWarnings(Public)
+ *
+ */
 class Workstation extends Base implements MappingInterface
 {
     /**
@@ -35,6 +39,10 @@ class Workstation extends Base implements MappingInterface
             Name=?
     ';
 
+    protected function addRequiredJoins()
+    {
+    }
+
     public function getEntityMapping()
     {
         return [
@@ -45,6 +53,52 @@ class Workstation extends Base implements MappingInterface
             'queue__clusterEnabled' => 'workstation.clusteransicht',
             'scope__id' => 'workstation.StandortID'
         ];
+    }
+
+    public function addJoin()
+    {
+        return [
+            $this->addJoinProcess(),
+            $this->addJoinUseraccount(),
+            $this->addJoinScope(),
+        ];
+    }
+
+    public function addJoinScope()
+    {
+        $this->leftJoin(
+            new Alias(Scope::TABLE, 'scope'),
+            'workstation.StandortID',
+            '=',
+            'scope.StandortID'
+        );
+        $joinQuery = new Scope($this, $this->getPrefixed('scope__'));
+        return $joinQuery;
+    }
+
+
+    public function addJoinUseraccount()
+    {
+        $this->leftJoin(
+            new Alias(UserAccount::TABLE, 'userAccount'),
+            'workstation.NutzerID',
+            '=',
+            'userAccount.NutzerID'
+        );
+        $joinQuery = new UserAccount($this, $this->getPrefixed('useraccount__'));
+        return $joinQuery;
+    }
+
+    public function addJoinProcess()
+    {
+        $this->leftJoin(
+            new Alias(Process::TABLE, 'process'),
+            'workstation.NutzerID',
+            '=',
+            'process.NutzerID'
+        );
+        $joinQuery = new Process($this, $this->getPrefixed('process__'));
+        return $joinQuery;
     }
 
     public function addConditionLoginName($loginName)
@@ -79,7 +133,7 @@ class Workstation extends Base implements MappingInterface
 
     public function addConditionDepartmentId($departmentId)
     {
-        $this->query->leftJoin(
+        $this->leftJoin(
             new Alias(UserAccount::TABLE_ASSIGNMENT, 'workstation_department'),
             'workstation.NutzerID',
             '=',
@@ -101,6 +155,15 @@ class Workstation extends Base implements MappingInterface
         $data = array_filter($data, function ($value) {
             return ($value !== null && $value !== false);
         });
+        return $data;
+    }
+
+    public function postProcess($data)
+    {
+        if (isset($data["useraccount__lastLogin"])) {
+            $data["useraccount__lastLogin"] = ('0000-00-00' != $data["useraccount__lastLogin"]) ?
+                strtotime($data["useraccount__lastLogin"]) : null;
+        }
         return $data;
     }
 }

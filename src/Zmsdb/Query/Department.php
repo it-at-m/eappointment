@@ -90,13 +90,13 @@ class Department extends Base implements MappingInterface
 
     public function addRequiredJoins()
     {
-        $this->query->leftJoin(
+        $this->leftJoin(
             new Alias('email', 'department_email'),
             'department.BehoerdenID',
             '=',
             'department_email.BehoerdenID'
         );
-        $this->query->leftJoin(
+        $this->leftJoin(
             new Alias('sms', 'department_sms'),
             'department.BehoerdenID',
             '=',
@@ -106,7 +106,7 @@ class Department extends Base implements MappingInterface
 
     public function addConditionScopeId($scopeId)
     {
-        $this->query->leftJoin(
+        $this->leftJoin(
             new Alias('standort', 'scope_department'),
             'scope_department.BehoerdenID',
             '=',

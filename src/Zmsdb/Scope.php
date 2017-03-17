@@ -27,12 +27,17 @@ class Scope extends Base
             if (! $scope->hasId()) {
                 return null;
             }
-            if (0 < $resolveReferences) {
-                $scope['dayoff'] = (new DayOff())->readByScopeId($scopeId);
-            }
-            self::$cache[$cacheKey] = $scope;
+            self::$cache[$cacheKey] = $this->readResolvedReferences($scope, $resolveReferences);
         }
         return self::$cache[$cacheKey];
+    }
+
+    public function readResolvedReferences(\BO\Zmsentities\Scope $scope, $resolveReferences)
+    {
+        if (0 < $resolveReferences) {
+            $scope['dayoff'] = (new DayOff())->readByScopeId($scope->id);
+        }
+        return $scope;
     }
 
     public function readByClusterId($clusterId, $resolveReferences = 0)

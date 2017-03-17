@@ -57,7 +57,7 @@ class Cluster extends Base
 
     public function addConditionDepartmentId($departementId)
     {
-        $this->query->leftJoin(
+        $this->leftJoin(
             new Alias('standort', 'scope'),
             'scope.StandortID',
             '=',
@@ -69,7 +69,7 @@ class Cluster extends Base
 
     public function addConditionScopeId($scopeId)
     {
-        $this->query->leftJoin(
+        $this->leftJoin(
             new Alias('standort', 'scope'),
             'scope.StandortID',
             '=',
@@ -95,7 +95,7 @@ class Cluster extends Base
 
     public function addRequiredJoins()
     {
-        $this->query->leftJoin(
+        $this->leftJoin(
             new Alias('clusterzuordnung', 'cluster_scope'),
             'cluster.clusterID',
             '=',

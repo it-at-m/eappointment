@@ -61,26 +61,26 @@ class Scope extends Base implements MappingInterface
 
     public function addJoin()
     {
-        $this->query->leftJoin(
+        $this->leftJoin(
             new Alias(Provider::getTablename(), 'provider'),
             'scope.InfoDienstleisterID',
             '=',
             'provider.id'
         );
-        $providerQuery = new Provider($this->query, $this->getPrefixed('provider__'));
+        $providerQuery = new Provider($this, $this->getPrefixed('provider__'));
 
         return [$providerQuery];
     }
 
     protected function addRequiredJoins()
     {
-        $this->query->leftJoin(
+        $this->leftJoin(
             new Alias(Department::TABLE, 'scopedepartment'),
             'scope.BehoerdenID',
             '=',
             'scopedepartment.BehoerdenID'
         );
-        $this->query->leftJoin(
+        $this->leftJoin(
             new Alias('sms', 'scopesms'),
             'scopedepartment.BehoerdenID',
             '=',
@@ -204,7 +204,7 @@ class Scope extends Base implements MappingInterface
 
     public function addConditionClusterId($clusterId)
     {
-        $this->query->leftJoin(
+        $this->leftJoin(
             new Alias('clusterzuordnung', 'cluster_scope'),
             'scope.StandortID',
             '=',

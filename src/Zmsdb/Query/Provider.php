@@ -40,7 +40,7 @@ class Provider extends Base
 
     public function addConditionIsAssigned($isAssigned)
     {
-        $this->query->leftJoin(
+        $this->leftJoin(
             new Alias(Scope::TABLE, 'assignedscope'),
             'provider.id',
             '=',
@@ -69,7 +69,7 @@ class Provider extends Base
     public function addConditionRequestCsv($requestIdCsv)
     {
         $requestIdList = explode(',', $requestIdCsv);
-        $this->query->leftJoin(
+        $this->leftJoin(
             new Alias("request_provider", 'xprovider'),
             'provider.id',
             '=',

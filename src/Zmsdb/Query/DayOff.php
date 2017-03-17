@@ -32,7 +32,7 @@ class DayOff extends Base implements MappingInterface
 
     public function addConditionScopeId($scopeId)
     {
-        $this->query->leftJoin(
+        $this->leftJoin(
             new Alias('standort', 'scope_dayoff'),
             'scope_dayoff.BehoerdenID',
             '=',
