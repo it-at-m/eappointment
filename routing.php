@@ -291,7 +291,7 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/workstation/call/{waitingnumber:\d+}/', '\BO\Zmsadmin\WorkstationCallProcess')
     ->setName("workstationCallProcess");
 
-\App::$slim->get('/workstation/process/cancel/', '\BO\Zmsadmin\workstationProcessCancel')
+\App::$slim->get('/workstation/process/cancel/', '\BO\Zmsadmin\WorkstationProcessCancel')
     ->setName("workstationProcessCancel");
 
 \App::$slim->map(['GET','POST'], '/workstation/', '\BO\Zmsadmin\Workstation')
