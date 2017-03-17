@@ -123,8 +123,12 @@ class Workstation extends Schema\Entity
         return true;
     }
 
-    public function hasProcessCalled()
+    public function setProcess($processId)
     {
-        return $this->toProperty()->process->id->isAvailable();
+        $workstationProcessId = $this->toProperty()->process->id->get();
+        if (null === $workstationProcessId) {
+            $this->process = new Process(array('id' => $processId));
+        }
+        return $this;
     }
 }
