@@ -2,8 +2,12 @@
     @extend
         .board_body--maxHeight,
         .board;
+        max-width: 500px;
+    .header {
+        background-color: $red;
+    }
     .body {
-        min-height: 182px;
+
     }
     .button-cancel {
         @extend
