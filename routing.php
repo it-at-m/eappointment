@@ -202,6 +202,9 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/scope/{id:\d+}/pickup/', '\BO\Zmsadmin\Pickup')
     ->setName("pickup");
 
+\App::$slim->get('/scope/{id:\d+}/appointments/{date:\d\d\d\d-\d\d-\d\d}/', '\BO\Zmsadmin\ScopeAppointmentsByDay')
+    ->setName("scopeAppointmentsByDay");
+
 \App::$slim->get('/scope/delete/{id:\d+}/', '\BO\Zmsadmin\ScopeDelete')
     ->setName("scopeDelete");
 

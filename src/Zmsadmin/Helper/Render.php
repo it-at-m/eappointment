@@ -7,7 +7,7 @@
  */
 namespace BO\Zmsadmin\Helper;
 
-class Render extends \BO\Slim\Render
+class Render
 {
     /**
      *
