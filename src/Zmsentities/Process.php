@@ -167,6 +167,17 @@ class Process extends Schema\Entity
         $this->authKey = substr(md5(rand()), 0, 4);
     }
 
+    public function setCallTime($dateTime)
+    {
+        $this->queue['callTime'] = $dateTime->getTimestamp();
+        return $this;
+    }
+
+    public function getCallTimeString()
+    {
+        return (new \DateTimeImmutable)->setTimestamp($this->queue['callTime'])->format('H:i:s');
+    }
+
     public function getFirstClient()
     {
         $client = $this->getClients()->getFirst();
