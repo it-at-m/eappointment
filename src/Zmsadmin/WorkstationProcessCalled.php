@@ -31,9 +31,8 @@ class WorkstationProcessCalled extends BaseController
         $processId = Validator::value($args['id'])->isNumber()->getValue();
         $authKey = Validator::value($args['authkey'])->isString()->getValue();
         $process = \App::$http->readGetResult('/process/'. $processId .'/'. $authKey . '/')->getEntity();
-
+        $process->scope['id'] = 999;
         $workstation->hasMatchingProcessScope($cluster, $process);
-
 
         $excludedIds = $validator->getParameter('exclude')->isString()->getValue();
         if ($excludedIds) {

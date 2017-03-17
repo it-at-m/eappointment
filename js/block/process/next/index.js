@@ -19,9 +19,18 @@ class View extends BaseView {
         return this.loadContent(url)
     }
 
+    loadErrorCallback(source, url) {
+        if (source == 'button') {
+            return this.loadContent(url)
+        } else {
+            const defaultUrl = `${this.includeUrl}/workstation/process/cancel/`
+            return this.loadContent(defaultUrl)
+        }
+    }
+
     loadClientNext() {
         const url = `${this.includeUrl}/workstation/process/next/?exclude=` + this.exclude
-        return this.loadContent(url)
+        return this.loadContent(url).catch(err => this.loadErrorCallback(err.soure, err.url));
     }
 
     loadPreCall() {

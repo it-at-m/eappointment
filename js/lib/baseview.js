@@ -1,6 +1,7 @@
 import $ from "jquery";
 import ErrorHandler from './errorHandler';
-
+import ExceptionHandler from './exceptionHandler';
+import { lightbox } from './utils';
 import { noOp } from './utils'
 
 const loaderHtml = '<div class="loader"></div>'
@@ -37,9 +38,21 @@ class BaseView extends ErrorHandler {
                 this.$main.html(responseData);
                 resolve(this.$main);
             }).fail(err => {
-                if (err.status > 400) {
-                    this.$main.html($(err.responseText));
-                    resolve(this.$main);
+                let isException = $(err.responseText).filter('.exception');
+                if (err.status >= 400 && isException) {
+                    const { lightboxContentElement, destroyLightbox } = lightbox(null, () => {
+                        reject({'source': 'lightbox'})
+                    })
+
+                    const exceptionHandler = new ExceptionHandler(lightboxContentElement, {
+                        code: err.status,
+                        message: err.responseText,
+                        callback: (exceptionButtonUrl) => {
+                            destroyLightbox()
+                            reject({'source': 'button', 'url': exceptionButtonUrl })
+                        }
+                    })
+
                 } else {
                     console.log('XHR load error', url, err);
                     reject(err);

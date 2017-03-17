@@ -28,7 +28,7 @@ const attributesToArray = attributes => Array.prototype.slice.call(attributes, 0
 
 export const getDataAttributes = (element) => {
     const attributes = attributesToArray(element.attributes)
-    const dataRegex = /^data-/i 
+    const dataRegex = /^data-/i
 
     return attributes
         .filter(attribute => (dataRegex.test(attribute.nodeName)))
@@ -54,6 +54,11 @@ const lightboxHtml = '<div class="lightbox"><div class="lightbox__content"></div
 
 export const lightbox = (parentElement, onBackgroundClick) => {
     const lightboxElement = $(lightboxHtml)
+
+    if (!parentElement) {
+        parentElement = $('body')
+        lightboxElement.addClass('fixed')
+    }
 
     const destroyLightbox = () => {
         lightboxElement.off()

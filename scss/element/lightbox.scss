@@ -6,11 +6,15 @@
   left: 0;
   right: 0;
 
-  padding-top: 100px;
   justify-content: center;
+  align-items: center;
 
   background-color: rgba(255, 255, 255, 0.8);
   z-index: 10;
+}
+
+&.fixed {
+    position: fixed;
 }
 
 .lightbox__content {
