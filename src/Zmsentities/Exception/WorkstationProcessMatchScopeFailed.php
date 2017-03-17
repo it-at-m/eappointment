@@ -5,7 +5,7 @@ namespace BO\Zmsentities\Exception;
 /**
  * example class to generate an exception
  */
-class WorkstationFailedToEditProcess extends \Exception
+class WorkstationProcessMatchScopeFailed extends \Exception
 {
     protected $code = 403;
 
