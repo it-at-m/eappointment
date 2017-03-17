@@ -31,7 +31,7 @@ class OrganisationAddDepartment extends BaseController
                 $entity = new Entity($input);
                 $department = \App::$http->readPostResult('/organisation/'. $parentId .'/department/', $entity)
                     ->getEntity();
-                return Helper\Render::redirect(
+                return \BO\Slim\Render::redirect(
                     'department',
                     array(
                         'id' => $department->id

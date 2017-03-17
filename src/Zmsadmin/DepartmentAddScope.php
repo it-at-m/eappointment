@@ -45,7 +45,7 @@ class DepartmentAddScope extends BaseController
                 $entity = new Entity($input);
                 $entity = \App::$http->readPostResult('/department/'. $parentId .'/scope/', $entity)
                     ->getEntity();
-                return Helper\Render::redirect(
+                return \BO\Slim\Render::redirect(
                     'scope',
                     array(
                         'id' => $entity->id

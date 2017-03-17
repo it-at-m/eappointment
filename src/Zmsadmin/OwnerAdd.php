@@ -30,7 +30,7 @@ class OwnerAdd extends BaseController
                 $entity = new Entity($input);
                 $entity = \App::$http->readPostResult('/owner/add/', $entity)
                     ->getEntity();
-                return Helper\Render::redirect(
+                return \BO\Slim\Render::redirect(
                     'owner',
                     array(
                         'id' => $entity->id

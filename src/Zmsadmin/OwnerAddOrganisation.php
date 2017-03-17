@@ -31,7 +31,7 @@ class OwnerAddOrganisation extends BaseController
                 $entity = new Entity($input);
                 $entity = \App::$http->readPostResult('/owner/'. $parentId .'/organisation/', $entity)
                     ->getEntity();
-                return Helper\Render::redirect(
+                return \BO\Slim\Render::redirect(
                     'organisation',
                     array(
                         'id' => $entity->id

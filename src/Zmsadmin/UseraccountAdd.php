@@ -36,7 +36,7 @@ class UseraccountAdd extends BaseController
                 $entity = new Entity($input);
                 $entity = $entity->withDepartmentList()->withCleanedUpFormData();
                 $entity = \App::$http->readPostResult('/useraccount/', $entity)->getEntity();
-                return Helper\Render::redirect(
+                return \BO\Slim\Render::redirect(
                     'useraccount',
                     array(
                         'loginname' => $entity->id

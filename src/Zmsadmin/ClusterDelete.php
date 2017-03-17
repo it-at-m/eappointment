@@ -26,15 +26,14 @@ class ClusterDelete extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-
         $entityId = Validator::value($args['clusterId'])->isNumber()
                   ->getValue();
         \App::$http->readDeleteResult('/cluster/' . $entityId . '/')
                                                   ->getEntity();
-        return Helper\Render::redirect(
+        return \BO\Slim\Render::redirect(
             'owner_overview',
-            array (),
-            array (
+            array(),
+            array(
                 'success' => 'cluster_deleted'
             )
         );

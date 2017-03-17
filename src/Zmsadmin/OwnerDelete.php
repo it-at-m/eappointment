@@ -25,7 +25,7 @@ class OwnerDelete extends BaseController
     ) {
         $entityId = Validator::value($args['id'])->isNumber()->getValue();
         \App::$http->readDeleteResult('/owner/'. $entityId .'/')->getEntity();
-        return Helper\Render::redirect(
+        return \BO\Slim\Render::redirect(
             'owner_overview',
             array(),
             array(
