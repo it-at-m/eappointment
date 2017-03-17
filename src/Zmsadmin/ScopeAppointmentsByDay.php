@@ -56,28 +56,15 @@ class ScopeAppointmentsByDay extends BaseController
                    ->withStatus(array('confirmed', 'queued', 'reserved'))
                    ->withSortedArrival();
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         return \BO\Slim\Render::withHtml(
             $response,
             'page/scopeAppointmentsByDay.twig',
             array(
-                'title' => 'Termine am Standort',
+                'title' => 'Termine für ' . $scope->contact['name'] . ' am ' . $selectedDateTime->format('d.m.Y'),
                 'menuActive' => 'owner',
                 'workstation' => $workstation,
                 'date' => $selectedDate,
+                'scope' => $scope,
                 'processList' => $queueList->toProcessList(),
             )
         );

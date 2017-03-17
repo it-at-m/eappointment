@@ -3,8 +3,8 @@
  */
 @import "bower_components/inuit-defaults/settings.defaults";
 /*
-    // @import "bower_components/inuit-responsive-settings/_settings.responsive";
-    // we use csswizardry to asign the responsive settings
+// @import "bower_components/inuit-responsive-settings/_settings.responsive";
+// we use csswizardry to asign the responsive settings
 */
 @import "settings";
 @import "bower_components/csswizardry-grids/csswizardry-grids";
@@ -122,8 +122,7 @@
 @import "page/counter";
 @import "page/workstation";
 
-@import "print.scss";
-
-
 @import "node_modules/rc-time-picker/assets/index";
 @import "node_modules/react-datepicker/dist/react-datepicker";
+
+

@@ -12,6 +12,9 @@ build: css js # Build javascript and css
 css: now
 	node_modules/.bin/gulp scss
 
+css-print: now
+	node_modules/.bin/gulp scss-print
+
 js: now
 	node_modules/.bin/gulp js
 
