@@ -279,7 +279,7 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/workstation/process/{id:\d+}/{authkey}/precall/', '\BO\Zmsadmin\WorkstationProcessPreCall')
     ->setName("workstationProcessPreCall");
 
-\App::$slim->get('/workstation/process/{id:\d+}/{authkey}/called/', '\BO\Zmsadmin\WorkstationProcessCalled')
+\App::$slim->get('/workstation/process/{id:\d+}/called/', '\BO\Zmsadmin\WorkstationProcessCalled')
     ->setName("workstationProcessCalled");
 
 \App::$slim->get('/workstation/process/{id:\d+}/processing/', '\BO\Zmsadmin\WorkstationProcessProcessing')

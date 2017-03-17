@@ -7,6 +7,7 @@ class View extends BaseView {
         super(element, options);
         this.includeUrl = options.includeUrl || "";
         this.exclude = "";
+        this.processId = options.processId;
         this.bindPublicMethods('loadClientNext');
         $.ajaxSetup({ cache: false });
         this.bindEvents();
@@ -34,22 +35,22 @@ class View extends BaseView {
     }
 
     loadPreCall() {
-        const url = `${this.includeUrl}/workstation/process/0/precall/`
+        const url = `${this.includeUrl}/workstation/process/${this.processId}/precall/`
         return this.loadContent(url)
     }
 
     loadCalled() {
-        const url = `${this.includeUrl}/workstation/process/0/called/`
+        const url = `${this.includeUrl}/workstation/process/${this.processId}}/called/`
         return this.loadContent(url)
     }
 
     loadProcessing() {
-        const url = `${this.includeUrl}/workstation/process/0/processing/`
+        const url = `${this.includeUrl}/workstation/process/${this.processId}/processing/`
         return this.loadContent(url)
     }
 
     loadProcessed() {
-        const url = `${this.includeUrl}/workstation/process/0/finished/`
+        const url = `${this.includeUrl}/workstation/process/${this.processId}/finished/`
         return this.loadContent(url)
     }
 
