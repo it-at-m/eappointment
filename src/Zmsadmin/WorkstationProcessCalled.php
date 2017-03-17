@@ -26,21 +26,18 @@ class WorkstationProcessCalled extends BaseController
 
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 3])->getEntity();
         $cluster = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/cluster/')->getEntity();
-        $workstation->hasDepartmentList();
-        $hasProcessCalled = $workstation->hasProcessCalled();
+        $processId = Validator::value($args['id'])->isNumber()->getValue();
 
-        $process = new \BO\Zmsentities\Process();
-        $process->id = Validator::value($args['id'])->isNumber()->getValue();
-        $workstation->process = ($hasProcessCalled) ? $workstation->process : $process;
+        $workstation->hasDepartmentList();
+        $workstation->setProcess($processId);
         $workstation = \App::$http->readPostResult('/workstation/process/called/', $workstation)->getEntity();
         $workstation->hasMatchingProcessScope($cluster);
-
 
         $excludedIds = $validator->getParameter('exclude')->isString()->getValue();
         if ($excludedIds) {
             $exclude = explode(',', $excludedIds);
         }
-        $exclude[] = $process->id;
+        $exclude[] = $workstation->process['id'];
 
         return \BO\Slim\Render::withHtml(
             $response,
@@ -48,7 +45,7 @@ class WorkstationProcessCalled extends BaseController
             array(
                 'title' => 'Sachbearbeiter',
                 'workstation' => $workstation,
-                'hasProcessCalled' => $hasProcessCalled,
+                'hasProcessCalled' => ($workstation->process['id'] != $processId),
                 'menuActive' => 'workstation',
                 'exclude' => join(',', $exclude)
             )
