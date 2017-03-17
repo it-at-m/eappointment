@@ -20,7 +20,7 @@ class ProcessListByScopeAndDate extends BaseController
      */
     public static function render($scopeId, $dayString)
     {
-        Helper\User::checkRights('useraccount');
+        Helper\User::checkRights();
 
         $query = new Query();
         $dateTime = new \BO\Zmsentities\Helper\DateTime($dayString);
