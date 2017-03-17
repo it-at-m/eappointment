@@ -27,10 +27,11 @@ class WorkstationProcessCalled extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 3])->getEntity();
         $cluster = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/cluster/')->getEntity();
         $workstation->hasDepartmentList();
+        $hasProcessCalled = $workstation->hasProcessCalled();
 
         $process = new \BO\Zmsentities\Process();
         $process->id = Validator::value($args['id'])->isNumber()->getValue();
-        $workstation->process = ($workstation->hasProcessCalled()) ? $workstation->process : $process;
+        $workstation->process = ($hasProcessCalled) ? $workstation->process : $process;
         $workstation = \App::$http->readPostResult('/workstation/process/called/', $workstation)->getEntity();
         $workstation->hasMatchingProcessScope($cluster);
 
@@ -47,6 +48,7 @@ class WorkstationProcessCalled extends BaseController
             array(
                 'title' => 'Sachbearbeiter',
                 'workstation' => $workstation,
+                'hasProcessCalled' => $hasProcessCalled,
                 'menuActive' => 'workstation',
                 'exclude' => join(',', $exclude)
             )
