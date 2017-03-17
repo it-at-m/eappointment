@@ -137,7 +137,11 @@ class Process extends Base implements MappingInterface
             'status' => $status_expression,
             'queue__status' => $status_expression,
             'queue__arrivalTime' => self::expression(
-                'CONCAT(`process`.`Datum`, " ", `process`.`wsm_aufnahmezeit`)'
+                'CONCAT(
+                    `process`.`Datum`,
+                    " ",
+                    IF(`process`.`wsm_aufnahmezeit`, `process`.`wsm_aufnahmezeit`, `process`.`Uhrzeit`)
+                )'
             ),
             'queue__callCount' => 'process.AnzahlAufrufe',
             'queue__callTime' => 'process.aufrufzeit',

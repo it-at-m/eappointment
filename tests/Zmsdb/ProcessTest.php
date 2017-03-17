@@ -27,6 +27,7 @@ class ProcessTest extends Base
         $process = $query->writeNewFromTicketprinter($scope, $now);
         $process = $query->readByQueueNumberAndScope($process->queue['number'], $scope->id);
         $this->assertEquals(1, $process->queue['number']);
+        $this->assertEquals(1459504500, $process->queue['arrivalTime']);
     }
 
     public function testExceptionAlreadyReserved()
@@ -70,6 +71,7 @@ class ProcessTest extends Base
 
         $process = $query->updateProcessStatus($process, 'confirmed');
         $this->assertEquals('confirmed', $process->getStatus());
+        $this->assertEquals(1464339600, $process->queue['arrivalTime']);
     }
 
     public function testProcessStatusCalled()
