@@ -3,6 +3,8 @@
 namespace BO\Zmsdb;
 
 use \BO\Zmsentities\Workstation as Entity;
+use \BO\Zmsentities\Useraccount as UseraccountEntity;
+use \BO\Zmsentities\Scope as ScopeEntity;
 
 use \BO\Zmsentities\Collection\WorkstationList as Collection;
 
@@ -19,11 +21,22 @@ class Workstation extends Base
         if (! $workstation->hasId()) {
             return null;
         }
-        if (1 <= $resolveReferences) {
-            $workstation->scope = (new Scope)->readEntity($workstation->scope['id'], $resolveReferences - 1);
-            $department = (new Department)->readByScopeId($workstation->scope['id']);
-            $workstation->linkList = $department->links;
-            $workstation->useraccount = (new UserAccount)->readEntity($loginName, $resolveReferences - 1);
+        return $this->readResolvedReferences($workstation, $resolveReferences);
+    }
+
+    public function readResolvedReferences(\BO\Zmsentities\Workstation $workstation, $resolveReferences)
+    {
+        if (0 < $resolveReferences) {
+            $workstation->useraccount = (new UserAccount())
+                ->readResolvedReferences(
+                    new UseraccountEntity($workstation->useraccount),
+                    $resolveReferences - 1
+                );
+            if ($workstation->scope['id']) {
+                $workstation->scope = (new Scope)->readEntity($workstation->scope['id'], $resolveReferences - 1);
+                $department = (new Department)->readByScopeId($workstation->scope['id']);
+                $workstation->linkList = $department->links;
+            }
         }
         return $workstation;
     }

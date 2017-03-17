@@ -18,4 +18,9 @@ class Alias implements \Solution10\SQL\ExpressionInterface
     {
         return $this->name . ' AS ' . $this->alias;
     }
+
+    public function getAliasIdentifier()
+    {
+        return $this->alias;
+    }
 }

@@ -144,4 +144,13 @@ abstract class Base
         $statement = $this->getWriter()->prepare($query->getSql());
         return $statement->execute($query->getParameters());
     }
+
+    /**
+     * @SuppressWarnings(Param)
+     *
+     */
+    public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $entity, $resolveReferences)
+    {
+        return $entity;
+    }
 }

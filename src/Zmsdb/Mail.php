@@ -51,7 +51,7 @@ class Mail extends Base
         return $mailList;
     }
 
-    protected function readResolvedReferences($mail, $resolveReferences)
+    public function readResolvedReferences($mail, $resolveReferences)
     {
         if (1 <= $resolveReferences) {
             $processQuery = new \BO\Zmsdb\Process();

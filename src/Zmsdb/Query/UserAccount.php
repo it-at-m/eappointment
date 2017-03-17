@@ -98,7 +98,7 @@ class UserAccount extends Base implements MappingInterface
 
     public function addConditionDepartmentId($departmentId)
     {
-        $this->query->leftJoin(
+        $this->leftJoin(
             new Alias(static::TABLE_ASSIGNMENT, 'useraccount_department'),
             'userAccount.NutzerID',
             '=',
@@ -127,7 +127,7 @@ class UserAccount extends Base implements MappingInterface
     public function postProcess($data)
     {
         $data["lastLogin"] = ('0000-00-00' != $data["lastLogin"]) ?
-            (new \DateTime($data["lastLogin"]))->getTimestamp() :
+            strtotime($data["lastLogin"]) :
             null;
         return $data;
     }

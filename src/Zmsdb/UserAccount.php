@@ -5,6 +5,10 @@ namespace BO\Zmsdb;
 use \BO\Zmsentities\Useraccount as Entity;
 use \BO\Zmsentities\Collection\UseraccountList as Collection;
 
+/**
+ * @SuppressWarnings(Public)
+ *
+ */
 class UserAccount extends Base
 {
     public function readIsUserExisting($loginName, $password = false)
@@ -26,8 +30,15 @@ class UserAccount extends Base
             ->addResolvedReferences($resolveReferences)
             ->addConditionLoginName($loginname);
         $userAccount = $this->fetchOne($query, new Entity());
-        if ($userAccount->toProperty()->id->get()) {
-            $userAccount->departments = $this->readAssignedDepartmentList($userAccount, $resolveReferences);
+        return $this->readResolvedReferences($userAccount, $resolveReferences);
+    }
+
+    public function readResolvedReferences(\BO\Zmsentities\Useraccount $userAccount, $resolveReferences)
+    {
+        if (0 < $resolveReferences) {
+            if ($userAccount->toProperty()->id->get()) {
+                $userAccount->departments = $this->readAssignedDepartmentList($userAccount, $resolveReferences);
+            }
         }
         return $userAccount;
     }

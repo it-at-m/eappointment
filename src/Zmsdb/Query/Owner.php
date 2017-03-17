@@ -38,13 +38,13 @@ class Owner extends Base implements MappingInterface
     public function addConditionOrganisationId($organisationId)
     {
         //error_log(var_export($isNotAssigned,1));
-        $this->query->leftJoin(
-            new Alias(Organisation::TABLE, 'organisation'),
+        $this->leftJoin(
+            new Alias(Organisation::TABLE, 'ownerorganisation'),
             'owner.KundenID',
             '=',
-            'organisation.KundenID'
+            'ownerorganisation.KundenID'
         );
-        $this->query->where('organisation.OrganisationsID', '=', $organisationId);
+        $this->query->where('ownerorganisation.OrganisationsID', '=', $organisationId);
         return $this;
     }
 

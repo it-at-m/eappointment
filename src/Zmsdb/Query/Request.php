@@ -47,7 +47,7 @@ class Request extends Base
 
     public function addConditionProcessId($processId)
     {
-        $this->query->leftJoin(
+        $this->leftJoin(
             new Alias("buergeranliegen", 'buergeranliegen'),
             'buergeranliegen.AnliegenID',
             '=',
@@ -59,7 +59,7 @@ class Request extends Base
 
     public function addConditionProviderId($providerId)
     {
-        $this->query->leftJoin(
+        $this->leftJoin(
             new Alias("request_provider", 'xrequest'),
             'request.id',
             '=',

@@ -57,6 +57,12 @@ abstract class Base
     protected $currentSqlString = null;
 
     /**
+     * List of joined queries to avoid double joins
+     *
+     */
+    protected $joinedQueries = [];
+
+    /**
      * Create query builder if necessary
      *
      * @param Mixed $queryType one of the constants for a query type or of instance \Solution10\SQL\Query
@@ -66,9 +72,7 @@ abstract class Base
     public function __construct($queryType, $prefix = '', $name = false, $resolveLevel = null)
     {
         $this->prefix = $prefix;
-        if ($name) {
-            $this->name = $name;
-        }
+        $this->name = $name;
         $this->resolveLevel = $resolveLevel;
         $dialect = new MySQL();
         if (self::SELECT === $queryType) {
@@ -88,6 +92,10 @@ abstract class Base
             $this->query = new Delete($dialect);
             $this->query->queryBaseStatement('DELETE '. $this::getAlias() .' FROM');
             $this->addTableAlias();
+        } elseif ($queryType instanceof self) {
+            $this->query = $queryType->query;
+            $this->joinedQueries =& $queryType->joinedQueries;
+            $this->resolveLevel = $queryType->resolveLevel - 1;
         } elseif ($queryType instanceof \Solution10\SQL\Query) {
             $this->query = $queryType;
         }
@@ -240,6 +248,19 @@ abstract class Base
     protected function addJoin()
     {
         return [];
+    }
+
+    protected function leftJoin($alias, $left = null, $operator = null, $right = null)
+    {
+        $aliasId = $alias->getAliasIdentifier();
+        //error_log(get_class($this) . " JOIN $aliasId CHECK " . implode(',', $this->joinedQueries));
+        if (!in_array($aliasId, $this->joinedQueries)) {
+            $this->joinedQueries[] = $aliasId;
+            $this->query->leftJoin($alias, $left, $operator, $right);
+        } else {
+            //throw new \Exception("Tried to add Alias ".$aliasId);
+        }
+        return $this->query;
     }
 
     /**
