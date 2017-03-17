@@ -326,10 +326,8 @@ class Process extends Base
     public function writeAssignedWorkstation(\BO\Zmsentities\Workstation $workstation)
     {
         $authData = $this->readAuthKeyByProcessId($workstation->process['id']);
-        $process = $this->readEntity($workstation->process['id'], $authData['authKey']);
-        $process->status = 'called';
         $query = new Query\Process(Query\Base::UPDATE);
-        $query->addConditionProcessId($process->id);
+        $query->addConditionProcessId($workstation->process['id']);
         $query->addValues(
             [
                 'aufrufzeit' => $workstation->process->getCallTimeString(),
@@ -337,6 +335,7 @@ class Process extends Base
             ]
         );
         $this->writeItem($query);
+        $process = $this->readEntity($workstation->process['id'], $authData['authKey']);
         Log::writeLogEntry("UPDATE (Process::writeAssignedWorkstation $workstation->id) $process ", $process->id);
         return $process;
     }
