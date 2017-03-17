@@ -116,10 +116,13 @@
 @import "block/department-links";
 @import "block/daysoff";
 @import "block/exception";
+@import "block/scope-appointments-by-day";
 
 
 @import "page/counter";
 @import "page/workstation";
+
+@import "print.scss";
 
 
 @import "node_modules/rc-time-picker/assets/index";

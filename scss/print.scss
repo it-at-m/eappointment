@@ -1,0 +1,8 @@
+@media print {
+  #main-header,
+  #main-footer,
+  #main-body #sidebar,
+  #main ~ * {
+    display: none;
+  }
+}
