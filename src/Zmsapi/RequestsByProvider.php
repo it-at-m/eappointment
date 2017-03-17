@@ -21,7 +21,7 @@ class RequestsByProvider extends BaseController
     public static function render($source, $providerId)
     {
         $query = new Query();
-        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $requestList = $query->readListByProvider($source, $providerId, $resolveReferences);
 
         $message = Response\Message::create(Render::$request);
