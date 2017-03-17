@@ -21,10 +21,11 @@ class ProcessListByClusterAndDate extends BaseController
     public static function render($clusterId, $dayString)
     {
         Helper\User::checkRights('useraccount');
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
 
         $query = new Query();
         $dateTime = new \BO\Zmsentities\Helper\DateTime($dayString);
-        $queueList = $query->readQueueList($clusterId, $dateTime);
+        $queueList = $query->readQueueList($clusterId, $dateTime, $resolveReferences);
 
         $message = Response\Message::create(Render::$request);
         $message->data = $queueList->toProcessList();
