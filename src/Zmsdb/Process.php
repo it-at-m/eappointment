@@ -323,6 +323,24 @@ class Process extends Base
         }
     }
 
+    public function writeAssignedWorkstation(\BO\Zmsentities\Workstation $workstation)
+    {
+        $authData = $this->readAuthKeyByProcessId($workstation->process['id']);
+        $process = $this->readEntity($workstation->process['id'], $authData['authKey']);
+        $process->status = 'called';
+        $query = new Query\Process(Query\Base::UPDATE);
+        $query->addConditionProcessId($process->id);
+        $query->addValues(
+            [
+                'aufrufzeit' => $workstation->process->getCallTimeString(),
+                'NutzerID' => $workstation->id
+            ]
+        );
+        $this->writeItem($query);
+        Log::writeLogEntry("UPDATE (Process::writeAssignedWorkstation $workstation->id) $process ", $process->id);
+        return $process;
+    }
+
     public function readFreeProcesses(\BO\Zmsentities\Calendar $calendar, \DateTimeInterface $now)
     {
         $resolvedCalendar = new Calendar();
