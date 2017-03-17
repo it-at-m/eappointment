@@ -3797,6 +3797,37 @@ use \Psr\Http\Message\ResponseInterface;
     '\BO\Zmsapi\WorkstationDelete')
     ->setName("WorkstationDelete");
 
+/**
+ *  @swagger
+ *  "/workstation/process/called/":
+ *      post:
+ *          summary: Set a process to status called and assign to workstation
+ *          tags:
+ *              - workstation
+ *              - process
+ *          parameters:
+ *              -   name: process
+ *                  description: process data to update
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/process.json"
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/workstation.json"
+ *              404:
+ *                  description: "process does not exists"
+ */
+\App::$slim->post('/workstation/process/called/',
+    '\BO\Zmsapi\WorkstationProcess')
+    ->setName("WorkstationProcess");
 
 /* ---------------------------------------------------------------------------
  * maintenance
