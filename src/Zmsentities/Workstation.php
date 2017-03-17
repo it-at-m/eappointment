@@ -115,8 +115,9 @@ class Workstation extends Schema\Entity
 
     public function hasMatchingProcessScope(Cluster $cluster)
     {
+        $process = new Process($this->process);
         $scopeList = $this->getScopeList($cluster);
-        if (! $scopeList->hasEntity($this->process->getScopeId())) {
+        if (! $scopeList->hasEntity($process->getScopeId())) {
             throw new Exception\WorkstationFailedToEditProcess();
         }
         return true;
