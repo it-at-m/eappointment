@@ -112,12 +112,13 @@ class Cluster extends Base
      */
     public function readQueueList(
         $clusterId,
-        \DateTimeInterface $dateTime
+        \DateTimeInterface $dateTime,
+        $resolveReferences = 0
     ) {
         $cluster = $this->readEntity($clusterId, 1);
         $queueList = new \BO\Zmsentities\Collection\QueueList();
         foreach ($cluster->scopes as $scope) {
-            $scopeQueueList = (new Scope())->readQueueList($scope->id, $dateTime);
+            $scopeQueueList = (new Scope())->readQueueList($scope->id, $dateTime, $resolveReferences);
             if (0 < $scopeQueueList->count()) {
                 $queueList->addList($scopeQueueList);
             }
