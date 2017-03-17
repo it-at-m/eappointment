@@ -47,7 +47,7 @@ class UseraccountEdit extends BaseController
                     '/useraccount/'. $userAccount->id .'/',
                     $entity
                 )->getEntity();
-                return Helper\Render::redirect(
+                return \BO\Slim\Render::redirect(
                     'useraccountEdit',
                     array(
                         'loginname' => $entity->id

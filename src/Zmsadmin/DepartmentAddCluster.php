@@ -29,7 +29,7 @@ class DepartmentAddCluster extends BaseController
             $entity = new Entity($input);
             $entity = \App::$http->readPostResult('/department/'. $parentId .'/cluster/', $entity)
                     ->getEntity();
-            return Helper\Render::redirect(
+            return \BO\Slim\Render::redirect(
                 'cluster',
                 array(
                     'clusterId' => $entity->id,

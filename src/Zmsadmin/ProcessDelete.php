@@ -37,7 +37,7 @@ class ProcessDelete extends BaseController
         $process = \App::$http->readDeleteResult('/process/'. $process->id .'/'. $process->authKey . '/');
         \App::$http->readPostResult('/process/'. $process->id .'/'. $process->authKey .'/delete/mail/', $process);
 
-        return Helper\Render::redirect(
+        return \BO\Slim\Render::redirect(
             $workstation->getRedirect(),
             array(),
             array(

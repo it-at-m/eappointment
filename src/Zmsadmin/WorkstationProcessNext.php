@@ -36,7 +36,7 @@ class WorkstationProcessNext extends BaseController
         }
 
         if ($process->toProperty()->amendment->get()) {
-            return Helper\Render::redirect(
+            return \BO\Slim\Render::redirect(
                 'workstationProcessPreCall',
                 array(
                     'id' => $process->id,
@@ -47,7 +47,7 @@ class WorkstationProcessNext extends BaseController
                 )
             );
         }
-        return Helper\Render::redirect(
+        return \BO\Slim\Render::redirect(
             'workstationProcessCalled',
             array(
                 'id' => $process->id,

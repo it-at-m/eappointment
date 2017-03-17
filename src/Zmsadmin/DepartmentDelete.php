@@ -29,7 +29,7 @@ class DepartmentDelete extends BaseController
         \App::$http->readDeleteResult(
             '/department/'. $entityId .'/'
         )->getEntity();
-        return Helper\Render::redirect(
+        return \BO\Slim\Render::redirect(
             'owner_overview',
             array(),
             array(
