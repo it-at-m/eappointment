@@ -33,9 +33,11 @@ class Workstation extends Base
                     $resolveReferences - 1
                 );
             if ($workstation->scope['id']) {
-                $workstation->scope = (new Scope)->readEntity($workstation->scope['id'], $resolveReferences - 1);
-                $department = (new Department)->readByScopeId($workstation->scope['id']);
-                $workstation->linkList = $department->links;
+                $workstation->scope = (new Scope)->readResolvedReferences(
+                    new ScopeEntity($workstation->scope),
+                    $resolveReferences - 1
+                );
+                $workstation->linkList = (new Link)->readByScopeId($workstation->scope['id']);
             }
         }
         return $workstation;
