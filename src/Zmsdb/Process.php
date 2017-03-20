@@ -138,7 +138,7 @@ class Process extends Base
         $query->addValuesNewProcess($process, $parentProcess, $childProcessCount);
         $query->addValuesUpdateProcess($process);
         $this->writeItem($query);
-        Log::writeLogEntry("CREATE (Process::writeNewProcess) process#{$process->id} ", $process->id);
+        Log::writeLogEntry("CREATE (Process::writeNewProcess) $process ", $process->id);
         return $process;
     }
 

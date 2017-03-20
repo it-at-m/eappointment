@@ -238,7 +238,7 @@ class Process extends Base implements MappingInterface
         if (null !== $appointment) {
             $datetime = $appointment->toDateTime();
             $data['Datum'] = $datetime->format('Y-m-d');
-            $data['Uhrzeit'] = $datetime->format('H:i');
+            $data['Uhrzeit'] = $datetime->format('H:i:s');
         }
         $client = $process->getFirstClient();
         if (null !== $client) {
@@ -254,6 +254,10 @@ class Process extends Base implements MappingInterface
         $data['vorlaeufigeBuchung'] = ($process['status'] == 'reserved') ? 1 : 0;
         $data['Erinnerungszeitpunkt'] = $process->getReminderTimestamp();
         $data = $this->readProcessTimeValuesData($data, $process);
+        if (isset($data['wsm_aufnahmezeit']) && $data['wsm_aufnahmezeit'] == $data['Uhrzeit']) {
+            // Do not save arrivalTime if it is an appointment
+            $data['wsm_aufnahmezeit'] = '';
+        }
         $data = array_filter(
             $data,
             function ($value) {
@@ -271,7 +275,7 @@ class Process extends Base implements MappingInterface
         if (isset($process->queue['lastCallTime']) && $process->queue['lastCallTime']) {
             $data['Timestamp'] = (new \DateTime())->setTimestamp($process->queue['lastCallTime'])->format('H:i:s');
         }
-        if (isset($process->queue['arrivalTime'])) {
+        if (isset($process->queue['arrivalTime']) && $process->queue['arrivalTime']) {
             $data['wsm_aufnahmezeit'] = (new \DateTime())
                 ->setTimestamp($process->queue['arrivalTime'])->format('H:i:s');
         }
