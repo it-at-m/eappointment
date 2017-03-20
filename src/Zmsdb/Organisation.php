@@ -23,6 +23,7 @@ class Organisation extends Base
     public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $entity, $resolveReferences)
     {
         if (0 < $resolveReferences) {
+            //error_log("Organisation Level $resolveReferences");
             $entity['departments'] = (new Department())
                 ->readByOrganisationId($entity->id, $resolveReferences - 1);
             $entity['ticketprinters'] = (new Ticketprinter())
@@ -70,7 +71,7 @@ class Organisation extends Base
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
             foreach ($result as $organisation) {
-                $entity = $this->readEntity($organisation->id, $resolveReferences - 1);
+                $entity = $this->readResolvedReferences($organisation, $resolveReferences);
                 if ($entity instanceof Entity) {
                     $organisationList->addEntity($entity);
                 }

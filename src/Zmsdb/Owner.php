@@ -24,10 +24,16 @@ class Owner extends Base
             ->addResolvedReferences($resolveReferences)
             ->addConditionOwnerId($itemId);
         $owner = $this->fetchOne($query, new Entity());
-        if (1 <= $resolveReferences) {
-            $owner['organisations'] = (new Organisation())->readByOwnerId($itemId, $resolveReferences);
+        return $this->readResolvedReferences($owner, $resolveReferences);
+    }
+
+    public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $entity, $resolveReferences)
+    {
+        if (0 < $resolveReferences) {
+            //error_log("Owner Level $resolveReferences");
+            $entity['organisations'] = (new Organisation())->readByOwnerId($entity['id'], $resolveReferences - 1);
         }
-        return $owner;
+        return $entity;
     }
 
      /**
@@ -48,10 +54,8 @@ class Owner extends Base
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
             foreach ($result as $entity) {
-                $entity = $this->readEntity($entity->id, $resolveReferences);
-                if ($entity instanceof Entity) {
-                    $ownerList->addEntity($entity);
-                }
+                $entity = $this->readResolvedReferences($entity, $resolveReferences);
+                $ownerList->addEntity($entity);
             }
         }
         return $ownerList;
