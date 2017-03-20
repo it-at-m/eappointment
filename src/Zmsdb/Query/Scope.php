@@ -39,6 +39,26 @@ class Scope extends Base implements MappingInterface
         ';
     }
 
+    public function getQuerySimpleClusterMatch()
+    {
+        return '
+            SELECT standortID AS id
+            FROM `clusterzuordnung`
+            WHERE
+                clusterID = ?
+        ';
+    }
+
+    public function getQuerySimpleDepartmentMatch()
+    {
+        return '
+            SELECT StandortID AS id, Bezeichnung AS contact__name
+            FROM `standort`
+            WHERE
+                BehoerdenID = ?
+        ';
+    }
+
     public function getQueryReadImageData()
     {
         return '

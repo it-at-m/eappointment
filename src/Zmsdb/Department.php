@@ -30,7 +30,7 @@ class Department extends Base
             ->addConditionDepartmentId($departmentId);
         $department = $this->fetchOne($query, new Entity());
         if (isset($department['id'])) {
-            $department = $this->readEntityReferences($department, $resolveReferences);
+            $department = $this->readResolvedReferences($department, $resolveReferences);
             $department = $department->withOutClusterDuplicates();
             self::$departmentCache[$cacheKey] = $department;
             return clone self::$departmentCache[$cacheKey];
@@ -38,16 +38,14 @@ class Department extends Base
         return null;
     }
 
-    protected function readEntityReferences($entity, $resolveReferences = 0)
+    public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $entity, $resolveReferences)
     {
         $entity['links'] = (new Link())->readByDepartmentId($entity->id);
+        $entity['scopes'] = (new Scope())
+            ->readByDepartmentId($entity->id, $resolveReferences - 1)
+            ->sortByContactName();
         if (0 < $resolveReferences) {
             $entity['clusters'] = (new Cluster())->readByDepartmentId($entity->id, $resolveReferences - 1);
-            $entity['scopes'] = (new Scope())
-                ->readByDepartmentId($entity->id, $resolveReferences)
-                ->sortByContactName();
-        }
-        if (0 < $resolveReferences) {
             $entity['dayoff'] = (new DayOff())->readOnlyByDepartmentId($entity->id);
         }
         return $entity;
@@ -61,7 +59,7 @@ class Department extends Base
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
             foreach ($result as $department) {
-                $department = $this->readEntityReferences($department, $resolveReferences);
+                $department = $this->readResolvedReferences($department, $resolveReferences);
                 if ($department instanceof Entity) {
                     $departmentList->addEntity($department->withOutClusterDuplicates());
                 }
@@ -77,7 +75,7 @@ class Department extends Base
             ->addResolvedReferences($resolveReferences)
             ->addConditionScopeId($scopeId);
         $department = $this->fetchOne($query, new Entity());
-        $department = $this->readEntityReferences($department, $resolveReferences);
+        $department = $this->readResolvedReferences($department, $resolveReferences);
         return (isset($department['id'])) ? $department->withOutClusterDuplicates() : null;
     }
 
@@ -93,7 +91,7 @@ class Department extends Base
         if (count($result)) {
             foreach ($result as $department) {
                 if ($department instanceof Entity) {
-                    $department = $this->readEntityReferences($department, $resolveReferences);
+                    $department = $this->readResolvedReferences($department, $resolveReferences);
                     $departmentList->addEntity($department->withOutClusterDuplicates());
                 }
             }

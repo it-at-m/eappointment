@@ -33,10 +33,16 @@ class Cluster extends Base
         if (! $cluster->hasId()) {
             return null;
         }
-        if ($resolveReferences > 0) {
-            $cluster['scopes'] = (new Scope())->readByClusterId($cluster->id, $resolveReferences - 1);
+        return $this->readResolvedReferences($cluster, $resolveReferences);
+    }
+
+    public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $entity, $resolveReferences)
+    {
+        if (0 < $resolveReferences) {
+            $entity['scopes'] = (new Scope())->readByClusterId($entity->id, $resolveReferences - 1);
+        } elseif (!$resolveReferences) {
         }
-        return $cluster;
+        return $entity;
     }
 
      /**
@@ -58,7 +64,7 @@ class Cluster extends Base
         if (count($result)) {
             foreach ($result as $entity) {
                 if ($entity instanceof Entity) {
-                    $entity['scopes'] = (new Scope())->readByClusterId($entity->id, $resolveReferences);
+                    $entity = $this->readResolvedReferences($entity, $resolveReferences);
                     $clusterList->addEntity($entity);
                 }
             }
@@ -77,7 +83,7 @@ class Cluster extends Base
         if (! $entity->hasId()) {
             return null;
         }
-        $entity['scopes'] = (new Scope())->readByClusterId($entity->id, $resolveReferences);
+        $entity = $this->readResolvedReferences($entity, $resolveReferences);
         return $entity;
     }
 
@@ -93,7 +99,7 @@ class Cluster extends Base
         if (count($result)) {
             foreach ($result as $entity) {
                 if ($entity instanceof Entity && !$clusterList->hasEntity($entity->id)) {
-                    $entity['scopes'] = (new Scope())->readByClusterId($entity->id, $resolveReferences);
+                    $entity = $this->readResolvedReferences($entity, $resolveReferences);
                     $clusterList->addEntity($entity);
                 }
             }
