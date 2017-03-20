@@ -21,9 +21,11 @@ class WorkstationProcessCancel extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        return \BO\Slim\Render::withHtml(
-            $response,
-            'block/process/next.twig',
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        $workstation = \App::$http->readPostResult('/workstation/process/delete/', $workstation)->getEntity();
+        return \BO\Slim\Render::redirect(
+            'workstationProcessCallButton',
+            array(),
             array()
         );
     }

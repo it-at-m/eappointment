@@ -50,8 +50,7 @@ class WorkstationProcessNext extends BaseController
         return \BO\Slim\Render::redirect(
             'workstationProcessCalled',
             array(
-                'id' => $process->id,
-                'authkey' => $process->authKey
+                'id' => $process->id
             ),
             array(
                 'exclude' => $excludedIds
