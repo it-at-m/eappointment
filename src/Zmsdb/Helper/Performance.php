@@ -8,6 +8,7 @@ namespace BO\Zmsdb\Helper;
 class Performance
 {
     public static $times = [];
+    public static $counter = 0;
 
     public static function addMark()
     {
@@ -18,7 +19,7 @@ class Performance
     {
         $lastTime = array_pop(self::$times);
         $timeDiff = microtime(true) - $lastTime;
-        error_log("$message: " . $timeDiff);
+        error_log(sprintf("%03d %f \t%s", static::$counter++, $timeDiff, "$message"));
         return $timeDiff;
     }
 }

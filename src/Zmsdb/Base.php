@@ -83,7 +83,9 @@ abstract class Base
     public function startExecute($statement, $parameters)
     {
         try {
+            //Helper\Performance::addMark();
             $statement->execute($parameters);
+            //Helper\Performance::writeMark($statement->queryString);
         } catch (\PDOException $pdoException) {
             $message = "SQL: "
                 . " Err: "

@@ -25,6 +25,18 @@ class Link extends Base
         return $this;
     }
 
+    public function addConditionScopeId($scopeId)
+    {
+        $this->leftJoin(
+            new Alias('standort', 'link_scope'),
+            'link_scope.BehoerdenID',
+            '=',
+            'link.behoerdenid'
+        );
+        $this->query->where('link_scope.StandortID', '=', $scopeId);
+        return $this;
+    }
+
     public function reverseEntityMapping(\BO\Zmsentities\Link $entity, $departmentId)
     {
         $data = array();
