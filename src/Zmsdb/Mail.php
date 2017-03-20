@@ -51,7 +51,7 @@ class Mail extends Base
         return $mailList;
     }
 
-    public function readResolvedReferences($mail, $resolveReferences)
+    public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $mail, $resolveReferences)
     {
         if (1 <= $resolveReferences) {
             $processQuery = new \BO\Zmsdb\Process();
@@ -75,7 +75,7 @@ class Mail extends Base
         $client = $process->getFirstClient();
         $department = (new Department())->readByScopeId($process->getScopeId(), 0);
         $query->addValues(
-            array (
+            array(
                 'processID' => $mail->process['id'],
                 'departmentID' => $department->toProperty()->id->get(),
                 'createIP' => $mail->createIP,
@@ -106,7 +106,7 @@ class Mail extends Base
         foreach ($multipart as $part) {
             $query = new Query\Mimepart(Query\Base::INSERT);
             $query->addValues(
-                array (
+                array(
                     'queueId' => $queueId,
                     'mime' => $part['mime'],
                     'content' => $part['content'],
@@ -128,7 +128,7 @@ class Mail extends Base
     {
         $query = Query\MailQueue::QUERY_DELETE;
         $statement = $this->getWriter()->prepare($query);
-        return $statement->execute(array (
+        return $statement->execute(array(
             $itemId
         ));
     }
@@ -137,7 +137,7 @@ class Mail extends Base
     {
         $query = Query\MailQueue::QUERY_DELETE_BY_PROCESS;
         $statement = $this->getWriter()->prepare($query);
-        return $statement->execute(array (
+        return $statement->execute(array(
             $processId
         ));
     }

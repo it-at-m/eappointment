@@ -46,7 +46,7 @@ class Notification extends Base
         return $notificationList;
     }
 
-    public function readResolvedReferences(Entity $notification, $resolveReferences)
+    public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $notification, $resolveReferences)
     {
         if (1 <= $resolveReferences) {
             $processQuery = new \BO\Zmsdb\Process();

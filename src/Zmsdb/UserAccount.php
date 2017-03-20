@@ -33,7 +33,7 @@ class UserAccount extends Base
         return $this->readResolvedReferences($userAccount, $resolveReferences);
     }
 
-    public function readResolvedReferences(\BO\Zmsentities\Useraccount $userAccount, $resolveReferences)
+    public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $userAccount, $resolveReferences)
     {
         if (0 < $resolveReferences) {
             if ($userAccount->toProperty()->id->get()) {

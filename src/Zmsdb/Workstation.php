@@ -24,7 +24,7 @@ class Workstation extends Base
         return $this->readResolvedReferences($workstation, $resolveReferences);
     }
 
-    public function readResolvedReferences(\BO\Zmsentities\Workstation $workstation, $resolveReferences)
+    public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $workstation, $resolveReferences)
     {
         if (0 < $resolveReferences) {
             $workstation->useraccount = (new UserAccount())

@@ -32,7 +32,7 @@ class Scope extends Base
         return self::$cache[$cacheKey];
     }
 
-    public function readResolvedReferences(\BO\Zmsentities\Scope $scope, $resolveReferences)
+    public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $scope, $resolveReferences)
     {
         if (0 < $resolveReferences) {
             $scope['dayoff'] = (new DayOff())->readByScopeId($scope->id);
