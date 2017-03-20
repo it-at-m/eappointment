@@ -167,9 +167,9 @@ class Process extends Schema\Entity
         $this->authKey = substr(md5(rand()), 0, 4);
     }
 
-    public function setCallTime($dateTime)
+    public function setCallTime($dateTime = null)
     {
-        $this->queue['callTime'] = $dateTime->getTimestamp();
+        $this->queue['callTime'] = ($dateTime) ? $dateTime->getTimestamp() : 0;
         return $this;
     }
 
@@ -215,6 +215,19 @@ class Process extends Schema\Entity
             return true;
         }
         return false;
+    }
+
+    public function setStatusBySettings()
+    {
+        $scope = new Scope($this->scope);
+        if ('called' == $this->status && $this->queue['callCount'] > $scope->getPreference('queue', 'callCountMax')) {
+            $this->status = 'missed';
+        } elseif ('pickup' == $this->status) {
+            $this->status = 'queued';
+        } else {
+            $this->status = 'confirmed';
+        }
+        return $this;
     }
 
     /**
