@@ -46,27 +46,36 @@ class Department extends Schema\Entity
         return $this->dayoff;
     }
 
+    /**
+     * Remove duplicate scopes from clusters
+     * Move scopes to clusters to keep the same resolveReference Level
+     */
     public function withOutClusterDuplicates()
     {
         $department = clone $this;
-        if ($department->toProperty()->clusters->get()) {
-            $clusterScopeList = new Collection\ScopeList();
-            foreach ($department->clusters as $cluster) {
-                if (array_key_exists('scopes', $cluster)) {
-                    foreach ($cluster['scopes'] as $clusterScope) {
-                        $scope = new Scope($clusterScope);
-                        $clusterScopeList->addEntity($scope);
+        if (array_key_exists('scopes', $this) && $this->scopes) {
+            $scopeList = clone $this->scopes;
+            $department->scopes = new Collection\ScopeList();
+            $removeScopeList = new Collection\ScopeList();
+            if ($department->toProperty()->clusters->get()) {
+                foreach ($department->clusters as $cluster) {
+                    $cluster = new Cluster($cluster);
+                    foreach ($cluster['scopes'] as $key => $clusterScope) {
+                        $scope = $scopeList->getEntity($clusterScope['id']);
+                        if ($scope) {
+                            $scope = new Scope($scope);
+                            $cluster['scopes'][$key] = clone $scope;
+                            $removeScopeList[] = $scope;
+                        }
+                    }
+                }
+                foreach ($scopeList as $scope) {
+                    if (! $removeScopeList->hasEntity($scope['id'])) {
+                        $scope = new Scope($scope);
+                        $department->scopes->addEntity($scope);
                     }
                 }
             }
-            $scopeList = new Collection\ScopeList();
-            foreach ($department->scopes as $scope) {
-                if (! $clusterScopeList->hasEntity($scope['id'])) {
-                    $scope = new Scope($scope);
-                    $scopeList->addEntity($scope);
-                }
-            }
-            $department->scopes = $scopeList;
         }
         return $department;
     }

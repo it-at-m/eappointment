@@ -92,14 +92,12 @@ class Base extends \ArrayObject
 
     public function getEntity($primary)
     {
-        $result = null;
         foreach ($this as $entity) {
             if (isset($entity->{$entity::PRIMARY}) && $primary == $entity->{$entity::PRIMARY}) {
-                $result = $entity;
-                break;
+                return $entity;
             }
         }
-        return $result;
+        return null;
     }
 
     public function addEntity(\BO\Zmsentities\Schema\Entity $entity)
