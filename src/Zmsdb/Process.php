@@ -341,8 +341,27 @@ class Process extends Base
         );
         $this->writeItem($query);
         $process = $this->readEntity($workstation->process['id'], $authData['authKey']);
-        Log::writeLogEntry("UPDATE (Process::writeAssignedWorkstation $workstation->id) $process ", $process->id);
+        //Log::writeLogEntry("UPDATE (Process::writeAssignedWorkstation $workstation->id) $process ", $process->id);
         return $process;
+    }
+
+    public function writeRemovedWorkstation(\BO\Zmsentities\Workstation $workstation)
+    {
+        $process = new \BO\Zmsentities\Process($workstation->process);
+        $process->setStatusBySettings();
+        $query = new Query\Process(Query\Base::UPDATE);
+        $query->addConditionProcessId($process->id);
+        error_log($process->queue['callCount'] + 1);
+        $query->addValues(
+            [
+                'aufrufzeit' => 0,
+                'NutzerID' => 0,
+                'AnzahlAufrufe' => $process->queue['callCount'] + 1,
+                'nicht_erschienen' => ('missed' == $process->status) ? 1 : 0
+            ]
+        );
+        return $this->writeItem($query);
+        //Log::writeLogEntry("UPDATE (Process::writeRemovedWorkstation $workstation->id) $process ", $process->id);
     }
 
     public function readFreeProcesses(\BO\Zmsentities\Calendar $calendar, \DateTimeInterface $now)
