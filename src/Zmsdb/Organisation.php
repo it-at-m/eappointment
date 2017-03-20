@@ -15,11 +15,20 @@ class Organisation extends Base
             ->addConditionOrganisationId($itemId);
         $organisation = $this->fetchOne($query, new Entity());
         if (isset($organisation['id'])) {
-            $organisation['departments'] = (new Department())->readByOrganisationId($itemId, $resolveReferences);
-            $organisation['ticketprinters'] = (new Ticketprinter())->readByOrganisationId($itemId, $resolveReferences);
-            return $organisation;
+            return $this->readResolvedReferences($organisation, $resolveReferences);
         }
         return array();
+    }
+
+    public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $entity, $resolveReferences)
+    {
+        if (0 < $resolveReferences) {
+            $entity['departments'] = (new Department())
+                ->readByOrganisationId($entity->id, $resolveReferences - 1);
+            $entity['ticketprinters'] = (new Ticketprinter())
+                ->readByOrganisationId($entity->id, $resolveReferences - 1);
+        }
+        return $entity;
     }
 
     public function readByScopeId($scopeId, $resolveReferences = 0)
@@ -29,11 +38,7 @@ class Organisation extends Base
             ->addResolvedReferences($resolveReferences)
             ->addConditionScopeId($scopeId);
         $organisation = $this->fetchOne($query, new Entity());
-        if (isset($organisation['id'])) {
-            $organisation['departments'] = (new Department())
-                ->readByOrganisationId($organisation['id'], $resolveReferences - 1);
-        }
-        return $organisation;
+        return $this->readResolvedReferences($organisation, $resolveReferences);
     }
 
     public function readByDepartmentId($departmentId, $resolveReferences = 0)
@@ -43,12 +48,7 @@ class Organisation extends Base
             ->addResolvedReferences($resolveReferences)
             ->addConditionDepartmentId($departmentId);
         $organisation = $this->fetchOne($query, new Entity());
-        $organisation['departments'] = null;
-        if (isset($organisation['id']) && 0 < $resolveReferences) {
-            $organisation['departments'] = (new Department())
-                ->readByOrganisationId($organisation['id'], $resolveReferences - 1);
-        }
-        return $organisation;
+        return $this->readResolvedReferences($organisation, $resolveReferences);
     }
 
     public function readByClusterId($clusterId, $resolveReferences = 0)
@@ -90,12 +90,7 @@ class Organisation extends Base
             foreach ($result as $organisation) {
                 $entity = new Entity($organisation);
                 if ($entity instanceof Entity) {
-                    if (1 <= $resolveReferences) {
-                        $entity['departments'] = (new Department())->readByOrganisationId(
-                            $entity->id,
-                            $resolveReferences
-                        );
-                    }
+                    $entity = $this->readResolvedReferences($entity, $resolveReferences);
                     $organisationList->addEntity($entity);
                 }
             }
@@ -113,7 +108,7 @@ class Organisation extends Base
      */
     public function deleteEntity($itemId)
     {
-        $entity = $this->readEntity($itemId);
+        $entity = $this->readEntity($itemId, 1);
         if (0 < $entity->toProperty()->departments->get()->count()) {
             throw new Exception\Organisation\DepartmentListNotEmpty();
         }
@@ -162,7 +157,7 @@ class Organisation extends Base
         if ($entity->toProperty()->ticketprinters->isAvailable()) {
             $this->writeOrganisationTicketprinters($organisationId, $entity->ticketprinters);
         }
-        return $this->readEntity($organisationId);
+        return $this->readEntity($organisationId, 1);
     }
 
     /**
