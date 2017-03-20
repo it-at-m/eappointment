@@ -59,6 +59,7 @@ class View extends BaseView {
             ev.preventDefault();
             ev.stopPropagation();
             this.loadClientNext();
+            this.setTimeSinceCall()
         }).on('click', '.client-precall_button-success', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
@@ -78,6 +79,21 @@ class View extends BaseView {
             this.setExcludeIds('');
             this.load();
         })
+    }
+
+    setTimeSinceCall() {
+        let second = 0;
+        let minute = 0;
+        setInterval(() => {
+            let temp = '';
+            second++;
+            if (second == 60) {
+                second = 0;
+                minute++;
+            }
+            temp+=((minute < 10)? "0" : "")+minute + ":" + ((second < 10)? "0" : "")+second;
+            $("#clock").text(temp);
+        }, 1000);
     }
 
     setExcludeIds(ids) {
