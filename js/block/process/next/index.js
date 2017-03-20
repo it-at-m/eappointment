@@ -65,6 +65,7 @@ class View extends BaseView {
             ev.stopPropagation();
             this.setExcludeIds($(ev.target).data('exclude'));
             this.loadClientNext();
+            this.setTimeSinceCall()
         }).on('click', '.client-called_button-success', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
