@@ -30,7 +30,7 @@ class Process extends Base
         return $process;
     }
 
-    public function readResolvedReferences($process, $resolveReferences)
+    public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $process, $resolveReferences)
     {
         if (1 <= $resolveReferences) {
             $process['requests'] = (new Request())->readRequestByProcessId($process->id, $resolveReferences - 1);
@@ -334,7 +334,8 @@ class Process extends Base
         $query->addConditionProcessId($workstation->process['id']);
         $query->addValues(
             [
-                'aufrufzeit' => $workstation->process->getCallTimeString(),
+                'aufrufzeit' => $workstation->process->getCallTimeString(), //callTime
+                'Timestamp' => $workstation->process->getCallTimeString(), //lastCallTime
                 'NutzerID' => $workstation->id
             ]
         );
