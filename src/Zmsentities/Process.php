@@ -209,6 +209,14 @@ class Process extends Schema\Entity
         );
     }
 
+    public function isProcessed()
+    {
+        if ('called' == $process->status || 'processing' == $process->status) {
+            return true;
+        }
+        return false;
+    }
+
     /**
      * Reduce data of dereferenced entities to a required minimum
      *
