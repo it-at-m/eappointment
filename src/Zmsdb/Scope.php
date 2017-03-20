@@ -43,18 +43,25 @@ class Scope extends Base
     public function readByClusterId($clusterId, $resolveReferences = 0)
     {
         $scopeList = new Collection();
-        $query = new Query\Scope(Query\Base::SELECT);
-        $query->addEntityMapping()
-            ->addResolvedReferences($resolveReferences)
-            ->addConditionClusterId($clusterId);
-        $result = $this->fetchList($query, new Entity());
+        if ($resolveReferences > 0) {
+            $query = new Query\Scope(Query\Base::SELECT);
+            $query->addEntityMapping()
+                ->addResolvedReferences($resolveReferences)
+                ->addConditionClusterId($clusterId);
+            $result = $this->fetchList($query, new Entity());
+        } else {
+            $result = $this->getReader()->perform(
+                (new Query\Scope(Query\Base::SELECT))->getQuerySimpleClusterMatch(),
+                [$clusterId]
+            );
+        }
         if (count($result)) {
             foreach ($result as $entity) {
                 if (0 == $resolveReferences) {
                     $entity = new Entity(
                         array(
-                            'id' => $entity->id,
-                            '$ref' => '/scope/' . $entity->id . '/'
+                            'id' => $entity['id'],
+                            '$ref' => '/scope/' . $entity['id'] . '/'
                         )
                     );
                     $scopeList->addEntity($entity);
@@ -99,18 +106,26 @@ class Scope extends Base
     public function readByDepartmentId($departmentId, $resolveReferences = 0)
     {
         $scopeList = new Collection();
-        $query = new Query\Scope(Query\Base::SELECT);
-        $query->addEntityMapping()
-            ->addResolvedReferences($resolveReferences)
-            ->addConditionDepartmentId($departmentId);
-        $result = $this->fetchList($query, new Entity());
+        if ($resolveReferences > 0) {
+            $query = new Query\Scope(Query\Base::SELECT);
+            $query->addEntityMapping()
+                ->addResolvedReferences($resolveReferences)
+                ->addConditionDepartmentId($departmentId);
+            $result = $this->fetchList($query, new Entity());
+        } else {
+            $result = $this->getReader()->perform(
+                (new Query\Scope(Query\Base::SELECT))->getQuerySimpleDepartmentMatch(),
+                [$departmentId]
+            );
+        }
         if (count($result)) {
             foreach ($result as $entity) {
                 if (0 == $resolveReferences) {
                     $entity = new Entity(
                         array(
-                            'id' => $entity->id,
-                            '$ref' => '/scope/' . $entity->id . '/'
+                            'id' => $entity['id'],
+                            'contact' => ['name' => $entity['contact__name']],
+                            '$ref' => '/scope/' . $entity['id'] . '/'
                         )
                     );
                     $scopeList->addEntity($entity);
