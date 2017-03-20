@@ -25,14 +25,17 @@ class WorkstationProcessPreCall extends BaseController
         $validator = $request->getAttribute('validator');
 
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 3])->getEntity();
-        $workstation->hasDepartmentList();
-
         $processId = Validator::value($args['id'])->isNumber()->getValue();
         $authKey = Validator::value($args['authkey'])->isString()->getValue();
+        $workstation->hasDepartmentList();
+
         $process = \App::$http->readGetResult('/process/'. $processId .'/'. $authKey . '/')->getEntity();
 
-        $exlude = explode(',', $validator->getParameter('exclude')->isString()->getValue());
-        $exclude = ($exclude) ? array_push($processId, $exclude) : array($processId);
+        $excludedIds = $validator->getParameter('exclude')->isString()->getValue();
+        if ($excludedIds) {
+            $exclude = explode(',', $excludedIds);
+        }
+        $exclude[] = $process['id'];
 
         return \BO\Slim\Render::withHtml(
             $response,
@@ -42,7 +45,7 @@ class WorkstationProcessPreCall extends BaseController
                 'workstation' => $workstation,
                 'menuActive' => 'workstation',
                 'process' => $process,
-                'exclude' => implode(',', $exlude)
+                'exclude' => join(',', $exclude)
             )
         );
     }

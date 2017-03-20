@@ -10,7 +10,7 @@ namespace BO\Zmsadmin;
   * Init Controller to display next Button Template only
   *
   */
-class WorkstationProcessCancel extends BaseController
+class WorkstationProcess extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
@@ -21,11 +21,9 @@ class WorkstationProcessCancel extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-        $workstation = \App::$http->readPostResult('/workstation/process/delete/', $workstation)->getEntity();
-        return \BO\Slim\Render::redirect(
-            'workstationProcessCallButton',
-            array(),
+        return \BO\Slim\Render::withHtml(
+            $response,
+            'block/process/next.twig',
             array()
         );
     }

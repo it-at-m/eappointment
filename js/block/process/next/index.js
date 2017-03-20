@@ -16,17 +16,8 @@ class View extends BaseView {
     }
 
     load() {
-        const url = `${this.includeUrl}/workstation/process/cancel/`
+        const url = `${this.includeUrl}/workstation/process/callbutton/`
         return this.loadContent(url)
-    }
-
-    loadErrorCallback(source, url) {
-        if (source == 'button') {
-            return this.loadContent(url)
-        } else {
-            const defaultUrl = `${this.includeUrl}/workstation/process/cancel/`
-            return this.loadContent(defaultUrl)
-        }
     }
 
     loadClientNext() {
@@ -41,6 +32,11 @@ class View extends BaseView {
 
     loadCalled() {
         const url = `${this.includeUrl}/workstation/process/${this.processId}}/called/`
+        return this.loadContent(url).catch(err => this.loadErrorCallback(err.source, err.url));
+    }
+
+    loadCancel() {
+        const url = `${this.includeUrl}/workstation/process/cancel/`
         return this.loadContent(url).catch(err => this.loadErrorCallback(err.source, err.url));
     }
 
@@ -77,14 +73,24 @@ class View extends BaseView {
             ev.preventDefault();
             ev.stopPropagation();
             this.setExcludeIds('');
-            this.load();
+            this.loadCancel();
         })
     }
 
+    loadErrorCallback(source, url) {
+        if (source == 'button') {
+            return this.loadContent(url)
+        } else {
+            const defaultUrl = `${this.includeUrl}/workstation/process/cancel/`
+            return this.loadContent(defaultUrl)
+        }
+    }
+
     setTimeSinceCall() {
+        clearInterval(counter);
         let second = 0;
         let minute = 0;
-        setInterval(() => {
+        var counter = setInterval(() => {
             let temp = '';
             second++;
             if (second == 60) {

@@ -21,7 +21,6 @@ class View extends BaseView {
     }
 
     bindEvents() {
-
     }
 
     selectDateWithOverlay() {
