@@ -19,7 +19,7 @@ class ExceptionHandler {
     }
 
     bindEvents() {
-        this.$main.off().on('click', '.button-cancel', (ev) => {
+        this.$main.off().on('click', '.btn', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
             this.callback($(ev.target).attr('href'));

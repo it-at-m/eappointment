@@ -31,27 +31,27 @@ class View extends BaseView {
 
     loadClientNext() {
         const url = `${this.includeUrl}/workstation/process/next/?exclude=` + this.exclude
-        return this.loadContent(url).catch(err => this.loadErrorCallback(err.soure, err.url));
+        return this.loadContent(url).catch(err => this.loadErrorCallback(err.source, err.url));
     }
 
     loadPreCall() {
         const url = `${this.includeUrl}/workstation/process/${this.processId}/precall/`
-        return this.loadContent(url)
+        return this.loadContent(url).catch(err => this.loadErrorCallback(err.source, err.url));
     }
 
     loadCalled() {
         const url = `${this.includeUrl}/workstation/process/${this.processId}}/called/`
-        return this.loadContent(url)
+        return this.loadContent(url).catch(err => this.loadErrorCallback(err.source, err.url));
     }
 
     loadProcessing() {
         const url = `${this.includeUrl}/workstation/process/${this.processId}/processing/`
-        return this.loadContent(url)
+        return this.loadContent(url).catch(err => this.loadErrorCallback(err.source, err.url));
     }
 
     loadProcessed() {
         const url = `${this.includeUrl}/workstation/process/${this.processId}/finished/`
-        return this.loadContent(url)
+        return this.loadContent(url).catch(err => this.loadErrorCallback(err.source, err.url));
     }
 
     bindEvents() {
