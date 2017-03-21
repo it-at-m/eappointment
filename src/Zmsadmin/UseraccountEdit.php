@@ -59,7 +59,7 @@ class UseraccountEdit extends BaseController
             }
         }
 
-        \BO\Slim\Render::withHtml(
+        return \BO\Slim\Render::withHtml(
             $response,
             'page/useraccountEdit.twig',
             array(

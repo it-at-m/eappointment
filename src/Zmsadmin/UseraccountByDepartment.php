@@ -29,7 +29,7 @@ class UseraccountByDepartment extends BaseController
         )->getEntity();
         $organisationList = new \BO\Zmsentities\Collection\OrganisationList([$organisation]);
 
-        \BO\Slim\Render::withHtml(
+        return \BO\Slim\Render::withHtml(
             $response,
             'page/useraccount.twig',
             array(
