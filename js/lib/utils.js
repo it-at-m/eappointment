@@ -87,3 +87,17 @@ export const lightbox = (parentElement, onBackgroundClick) => {
 }
 
 export const noOp = () => {}
+
+export const getUrlParameters = () => {
+    return document.location.search.replace(/^\?/, "")
+                   .split("&")
+                   .reduce((carry, current) => {
+                       const [key, value] = current.split('=')
+
+                       if (key) {
+                           return Object.assign({}, carry, {[key]: value})
+                       } else {
+                           return carry
+                       }
+                   }, {})
+}

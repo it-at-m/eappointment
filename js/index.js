@@ -22,6 +22,7 @@ import CounterView from './page/counter'
 import WorkstationView from './page/workstation'
 
 import AvailabilityDayPage from './page/availabilityDay'
+import printScopeAppointmentsByDay from './page/scopeAppointmentsByDay/print'
 import bindReact from './lib/bindReact.js'
 import { getDataAttributes } from './lib/utils'
 
@@ -56,6 +57,8 @@ $('.workstation-view').each(function() {
 $('form').each(function() {
     preventFormResubmit(this);
 })
+
+printScopeAppointmentsByDay()
 
 // Say hello
 console.log("Welcome to the ZMS admin interface...");
