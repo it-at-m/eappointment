@@ -103,7 +103,7 @@ class QueueList extends Base
     {
         $excludeNumbers = explode(',', $exclude);
         $queueList = clone $this;
-        $queueList = $queueList->withSortedArrival()->getArrayCopy();
+        $queueList = $queueList->withStatus(['confirmed, queued'])->withSortedArrival()->getArrayCopy();
         $next = array_shift($queueList);
         $currentTime = $dateTime->getTimestamp();
 
