@@ -252,6 +252,7 @@ class Process extends Base implements MappingInterface
         }
         $data['IPAdresse'] = $process['createIP'];
         $data['vorlaeufigeBuchung'] = ($process['status'] == 'reserved') ? 1 : 0;
+        $data['aufruferfolgreich'] = ($process['status'] == 'processing') ? 1 : 0;
         $data['Erinnerungszeitpunkt'] = $process->getReminderTimestamp();
         $data = $this->readProcessTimeValuesData($data, $process);
         if (isset($data['wsm_aufnahmezeit']) && $data['wsm_aufnahmezeit'] == $data['Uhrzeit']) {
