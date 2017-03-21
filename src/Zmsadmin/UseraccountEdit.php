@@ -26,6 +26,7 @@ class UseraccountEdit extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
         $userAccountName = Validator::value($args['loginname'])->isString()->getValue();
+        $confirm_success = $request->getAttribute('validator')->getParameter('confirm_success')->isString()->getValue();
         $userAccount = \App::$http->readGetResult('/useraccount/'. $userAccountName .'/')->getEntity();
         $workstation->getUseraccount()->hasEditAccess($userAccount);
 
@@ -53,7 +54,7 @@ class UseraccountEdit extends BaseController
                         'loginname' => $entity->id
                     ),
                     array(
-                        'success' => 'useraccount_updated'
+                        'confirm_success' => \App::$now->getTimeStamp()
                     )
                 );
             }
@@ -65,6 +66,7 @@ class UseraccountEdit extends BaseController
             array(
                 'debug' => \App::DEBUG,
                 'userAccount' => $userAccount,
+                'confirm_success' => $confirm_success,
                 'formdata' => $formData,
                 'ownerList' => $ownerList->toDepartmentListByOrganisationName(),
                 'workstation' => $workstation,
