@@ -13,7 +13,7 @@ class View extends BaseView {
         this.element = $(element);
         this.includeUrl = options.includeurl;
         this.selectedDate = options['selected-date'];
-        this.bindPublicMethods('loadAllPartials', 'selectDateWithOverlay', 'onDatePick', 'loadClientNext');
+        this.bindPublicMethods('loadAllPartials', 'selectDateWithOverlay', 'onDatePick', 'onNextProcess');
         this.$.ready(this.loadData);
         $.ajaxSetup({ cache: false });
         this.loadAllPartials().then(() => this.bindEvents());
@@ -51,6 +51,10 @@ class View extends BaseView {
         this.loadAllPartials();
     }
 
+    onNextProcess() {
+        this.loadQueueTable()
+    }
+
     loadAllPartials() {
         return Promise.all([
             this.loadCalendar(),
@@ -71,7 +75,8 @@ class View extends BaseView {
     loadClientNext () {
         return new ClientNextView(this.$main.find('[data-client-next]'), {
             selectedDate: this.selectedDate,
-            includeUrl: this.includeUrl
+            includeUrl: this.includeUrl,
+            onNextProcess: this.onNextProcess
         })
     }
 

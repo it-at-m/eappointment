@@ -8,7 +8,8 @@ class View extends BaseView {
         this.includeUrl = options.includeUrl || "";
         this.exclude = "";
         this.processId = options.processId;
-        this.refreshCounter = null
+        this.refreshCounter = null;
+        this.onNextProcess = options.onNextProcess || (() => {});
         this.bindPublicMethods('loadClientNext','setTimeSinceCall');
         $.ajaxSetup({ cache: false });
         this.bindEvents();
@@ -48,6 +49,14 @@ class View extends BaseView {
         return this.loadContent(url).catch(err => this.loadErrorCallback(err.source, err.url));
     }
 
+    // if process is called and button "nein, nächster Kunde bitte" is clicked, delete process from workstation and call next
+    loadCancelClientNext() {
+        this.cleanInstance();
+        this.setTimeSinceCall();
+        const url = `${this.includeUrl}/workstation/process/cancel/next/`
+        return this.loadContent(url).catch(err => this.loadErrorCallback(err.source, err.url));
+    }
+
     loadProcessing() {
         this.cleanInstance();
         const url = `${this.includeUrl}/workstation/process/${this.processId}/processing/`
@@ -69,11 +78,18 @@ class View extends BaseView {
             ev.preventDefault();
             ev.stopPropagation();
             this.loadCalled();
-        }).on('click', '.client-precall_button-skip, .client-called_button-skip', (ev) => {
+        }).on('click', '.client-precall_button-skip', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
             this.setExcludeIds($(ev.target).data('exclude'));
             this.loadClientNext();
+            this.onNextProcess();
+        }).on('click', '.client-called_button-skip', (ev) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            this.setExcludeIds($(ev.target).data('exclude'));
+            this.loadCancelClientNext();
+            this.onNextProcess();
         }).on('click', '.client-called_button-success', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
@@ -83,6 +99,7 @@ class View extends BaseView {
             ev.stopPropagation();
             this.setExcludeIds('');
             this.loadCancel();
+            this.onNextProcess();
         })
     }
 
