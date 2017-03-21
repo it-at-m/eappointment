@@ -7,10 +7,10 @@ class View extends BaseView {
         super(element, options);
         this.includeUrl = options.includeUrl || "";
         this.exclude = "";
-        this.processId = options.processId;
+        this.processId = 0;
         this.refreshCounter = null;
         this.onNextProcess = options.onNextProcess || (() => {});
-        this.bindPublicMethods('loadClientNext','setTimeSinceCall');
+        this.bindPublicMethods('bindEvents','loadClientNext','setTimeSinceCall', 'loadCalled', 'loadProcessing');
         $.ajaxSetup({ cache: false });
         this.bindEvents();
         console.log('Component: Client', this, options);
@@ -31,15 +31,9 @@ class View extends BaseView {
         return this.loadContent(url).catch(err => this.loadErrorCallback(err.source, err.url));
     }
 
-    loadPreCall() {
-        this.cleanInstance();
-        const url = `${this.includeUrl}/workstation/process/${this.processId}/precall/`
-        return this.loadContent(url).catch(err => this.loadErrorCallback(err.source, err.url));
-    }
-
     loadCalled() {
         this.cleanInstance();
-        const url = `${this.includeUrl}/workstation/process/${this.processId}}/called/`
+        const url = `${this.includeUrl}/workstation/process/${this.processId}/called/`
         return this.loadContent(url).catch(err => this.loadErrorCallback(err.source, err.url));
     }
 
@@ -77,27 +71,29 @@ class View extends BaseView {
         }).on('click', '.client-precall_button-success', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
+            this.processId = $(ev.target).data('processid');
             this.loadCalled();
         }).on('click', '.client-precall_button-skip', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
-            this.setExcludeIds($(ev.target).data('exclude'));
+            this.exclude = $(ev.target).data('exclude');
             this.loadClientNext();
             this.onNextProcess();
         }).on('click', '.client-called_button-skip', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
-            this.setExcludeIds($(ev.target).data('exclude'));
+            this.exclude = $(ev.target).data('exclude');
             this.loadCancelClientNext();
             this.onNextProcess();
         }).on('click', '.client-called_button-success', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
+            this.processId = $(ev.target).data('processid');
             this.loadProcessing();
         }).on('click', '.client-called_button-abort, .client-precall_button-abort, .button-cancel', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
-            this.setExcludeIds('');
+            this.exclude = '';
             this.loadCancel();
             this.onNextProcess();
         })
@@ -131,10 +127,6 @@ class View extends BaseView {
 
     cleanInstance() {
         clearTimeout(this.refreshCounter);
-    }
-
-    setExcludeIds(ids) {
-        this.exclude = ids;
     }
 }
 
