@@ -38,10 +38,7 @@ class Cluster extends Base
 
     public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $entity, $resolveReferences)
     {
-        if (0 < $resolveReferences) {
-            $entity['scopes'] = (new Scope())->readByClusterId($entity->id, $resolveReferences - 1);
-        } elseif (!$resolveReferences) {
-        }
+        $entity['scopes'] = (new Scope())->readByClusterId($entity->id, $resolveReferences);
         return $entity;
     }
 

@@ -46,7 +46,7 @@ class Scope extends Base
         if ($resolveReferences > 0) {
             $query = new Query\Scope(Query\Base::SELECT);
             $query->addEntityMapping()
-                ->addResolvedReferences($resolveReferences)
+                ->addResolvedReferences($resolveReferences - 1)
                 ->addConditionClusterId($clusterId);
             $result = $this->fetchList($query, new Entity());
         } else {
@@ -67,7 +67,7 @@ class Scope extends Base
                     $scopeList->addEntity($entity);
                 } else {
                     if ($entity instanceof Entity) {
-                        $scopeList->addEntity($entity);
+                        $scopeList->addEntity($this->readResolvedReferences($entity, $resolveReferences - 1));
                     }
                 }
             }
