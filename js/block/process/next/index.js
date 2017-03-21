@@ -53,13 +53,13 @@ class View extends BaseView {
 
     loadProcessing() {
         this.cleanInstance();
-        const url = `${this.includeUrl}/workstation/process/${this.processId}/processing/`
+        const url = `${this.includeUrl}/workstation/process/processing/`
         return this.loadContent(url).catch(err => this.loadErrorCallback(err.source, err.url));
     }
 
     loadProcessed() {
         this.cleanInstance();
-        const url = `${this.includeUrl}/workstation/process/${this.processId}/finished/`
+        const url = `${this.includeUrl}/workstation/process/finished/`
         return this.loadContent(url).catch(err => this.loadErrorCallback(err.source, err.url));
     }
 
@@ -88,7 +88,6 @@ class View extends BaseView {
         }).on('click', '.client-called_button-success', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
-            this.processId = $(ev.target).data('processid');
             this.loadProcessing();
         }).on('click', '.client-called_button-abort, .client-precall_button-abort, .button-cancel', (ev) => {
             ev.preventDefault();
