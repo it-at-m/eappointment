@@ -13,7 +13,7 @@ class View extends BaseView {
         this.element = $(element);
         this.includeUrl = options.includeurl;
         this.selectedDate = options['selected-date'];
-        this.bindPublicMethods('loadAllPartials', 'selectDateWithOverlay', 'onDatePick');
+        this.bindPublicMethods('loadAllPartials', 'selectDateWithOverlay', 'onDatePick', 'loadClientNext');
         this.$.ready(this.loadData);
         $.ajaxSetup({ cache: false });
         this.loadAllPartials().then(() => this.bindEvents());
