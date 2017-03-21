@@ -7,19 +7,23 @@
   right: 0;
 
   justify-content: center;
-  align-items: center;
+  padding-top: 100px;
 
   background-color: rgba(255, 255, 255, 0.8);
   z-index: 10;
+
+  &.fixed {
+    position: fixed;
+    align-items: center;
+    padding-top: 0;
+  }
 }
 
-&.fixed {
-    position: fixed;
-}
 
 .lightbox__content {
   .loader {
-    margin: 0;
+    margin: 0 !important;
+    position: relative;
     border-left: 1.1em solid #ddd;
   }
 }
