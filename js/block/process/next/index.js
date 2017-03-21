@@ -8,44 +8,54 @@ class View extends BaseView {
         this.includeUrl = options.includeUrl || "";
         this.exclude = "";
         this.processId = options.processId;
-        this.bindPublicMethods('loadClientNext');
+        this.refreshCounter = null
+        this.bindPublicMethods('loadClientNext','setTimeSinceCall');
         $.ajaxSetup({ cache: false });
         this.bindEvents();
         console.log('Component: Client', this, options);
         this.load();
+        var me = this;
     }
 
     load() {
+        this.cleanInstance();
         const url = `${this.includeUrl}/workstation/process/callbutton/`
         return this.loadContent(url)
     }
 
     loadClientNext() {
+        this.cleanInstance();
+        this.setTimeSinceCall();
         const url = `${this.includeUrl}/workstation/process/next/?exclude=` + this.exclude
         return this.loadContent(url).catch(err => this.loadErrorCallback(err.source, err.url));
     }
 
     loadPreCall() {
+        this.cleanInstance();
         const url = `${this.includeUrl}/workstation/process/${this.processId}/precall/`
         return this.loadContent(url).catch(err => this.loadErrorCallback(err.source, err.url));
     }
 
     loadCalled() {
+        this.cleanInstance();
         const url = `${this.includeUrl}/workstation/process/${this.processId}}/called/`
         return this.loadContent(url).catch(err => this.loadErrorCallback(err.source, err.url));
     }
 
     loadCancel() {
+        this.cleanInstance();
         const url = `${this.includeUrl}/workstation/process/cancel/`
         return this.loadContent(url).catch(err => this.loadErrorCallback(err.source, err.url));
     }
 
     loadProcessing() {
+        this.cleanInstance();
         const url = `${this.includeUrl}/workstation/process/${this.processId}/processing/`
         return this.loadContent(url).catch(err => this.loadErrorCallback(err.source, err.url));
     }
 
     loadProcessed() {
+        this.cleanInstance();
         const url = `${this.includeUrl}/workstation/process/${this.processId}/finished/`
         return this.loadContent(url).catch(err => this.loadErrorCallback(err.source, err.url));
     }
@@ -55,7 +65,6 @@ class View extends BaseView {
             ev.preventDefault();
             ev.stopPropagation();
             this.loadClientNext();
-            this.setTimeSinceCall()
         }).on('click', '.client-precall_button-success', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
@@ -65,7 +74,6 @@ class View extends BaseView {
             ev.stopPropagation();
             this.setExcludeIds($(ev.target).data('exclude'));
             this.loadClientNext();
-            this.setTimeSinceCall()
         }).on('click', '.client-called_button-success', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
@@ -87,20 +95,25 @@ class View extends BaseView {
         }
     }
 
-    setTimeSinceCall() {
-        clearInterval(counter);
-        let second = 0;
-        let minute = 0;
-        var counter = setInterval(() => {
-            let temp = '';
-            second++;
-            if (second == 60) {
-                second = 0;
-                minute++;
-            }
-            temp+=((minute < 10)? "0" : "")+minute + ":" + ((second < 10)? "0" : "")+second;
-            $("#clock").text(temp);
+    setTimeSinceCall(lastsecond, lastminute) {
+        this.cleanInstance();
+        let second = (lastsecond) ? lastsecond : 0;
+        let minute = (lastminute) ? lastminute : 0;
+        let temp = '';
+        second++;
+        if (second == 60) {
+            second = 0;
+            minute++;
+        }
+        temp+=((minute < 10)? "0" : "")+minute + ":" + ((second < 10)? "0" : "")+second;
+        $("#clock").text(temp);
+        this.refreshCounter = setTimeout(() => {
+            this.setTimeSinceCall(second, minute)
         }, 1000);
+    }
+
+    cleanInstance() {
+        clearTimeout(this.refreshCounter);
     }
 
     setExcludeIds(ids) {
