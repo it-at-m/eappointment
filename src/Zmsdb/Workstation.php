@@ -5,9 +5,14 @@ namespace BO\Zmsdb;
 use \BO\Zmsentities\Workstation as Entity;
 use \BO\Zmsentities\Useraccount as UseraccountEntity;
 use \BO\Zmsentities\Scope as ScopeEntity;
+use \BO\Zmsentities\Process as ProcessEntity;
 
 use \BO\Zmsentities\Collection\WorkstationList as Collection;
 
+/**
+ * @SuppressWarnings(Coupling)
+ *
+ */
 class Workstation extends Base
 {
     public function readEntity($loginName, $resolveReferences = 0)
@@ -38,6 +43,13 @@ class Workstation extends Base
                     $resolveReferences - 1
                 );
                 $workstation->linkList = (new Link)->readByScopeId($workstation->scope['id']);
+            }
+            if ($workstation->process['id']) {
+                $workstation->process = (new Process)->readEntity(
+                    $workstation->process['id'],
+                    $workstation->process['authKey'],
+                    $resolveReferences - 1
+                );
             }
         }
         return $workstation;
