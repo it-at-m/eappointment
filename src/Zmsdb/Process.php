@@ -323,6 +323,16 @@ class Process extends Base
         }
     }
 
+    /**
+     * Todo: Refactoring, writeAssigendWorkstation zu writeAssignedProcess in Workstation Klasse
+     *
+     * Weise den Process einer Workstation zu
+     *
+     * @param
+     *            workstation
+     *
+     * @return Resource Process
+     */
     public function writeAssignedWorkstation(\BO\Zmsentities\Workstation $workstation)
     {
         $authData = $this->readAuthKeyByProcessId($workstation->process['id']);
@@ -345,13 +355,21 @@ class Process extends Base
         return $process;
     }
 
+    /**
+     * Todo: Refactoring, writeRemovedWorkstation zu writeRemovedProcess in Workstation Klasse
+     *
+     * entferne den Process aus einer Workstation
+     *
+     * @param
+     *            workstation
+     *
+     * @return Boolean
+     */
     public function writeRemovedWorkstation(\BO\Zmsentities\Workstation $workstation)
     {
         $process = new \BO\Zmsentities\Process($workstation->process);
-        $process->setStatusBySettings();
         $query = new Query\Process(Query\Base::UPDATE);
         $query->addConditionProcessId($process->id);
-        error_log($process->queue['callCount'] + 1);
         $query->addValues(
             [
                 'aufrufzeit' => 0,
