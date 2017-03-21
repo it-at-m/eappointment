@@ -107,7 +107,12 @@ class AvailabilityPage extends Component {
             console.log('save success', success)
             this.refreshData()
         }).fail((err) => {
-            console.log('save error', err)
+            if (err.status === 404) {
+                console.log('404 error, ignored')
+                this.refreshData()
+            } else {
+                console.log('save error', err)
+            }
         })
     }
 
