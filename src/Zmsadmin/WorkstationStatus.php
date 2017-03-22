@@ -6,6 +6,8 @@
 
 namespace BO\Zmsadmin;
 
+use \BO\Slim\Render;
+
 /**
  * Handle requests concerning services
  *
@@ -13,6 +15,7 @@ namespace BO\Zmsadmin;
 class WorkstationStatus extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
     public function readResponse(
@@ -22,13 +25,7 @@ class WorkstationStatus extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
 
-        $response = $response
-                  ->withHeader('Cache-Control', 'no-cache, no-store, must-revalidate')
-                  ->withHeader('Content-Type', 'application/json')
-                  ->write(json_encode([
-                      'workstation' => $workstation
-                  ]));
-
-        return $response;
+        $response = Render::withLastModified($response, time(), '0');
+        return Render::withJson($response, ['workstation' => $workstation]);
     }
 }
