@@ -121,12 +121,14 @@ class Cluster extends Base
         $cluster = $this->readEntity($clusterId, 1);
         $queueList = new \BO\Zmsentities\Collection\QueueList();
         foreach ($cluster->scopes as $scope) {
-            $scopeQueueList = (new Scope())->readQueueList($scope->id, $dateTime, $resolveReferences);
+            $scope = (new Scope())->readWithWorkstationCount($scope->id, $dateTime);
+            $scopeQueueList = (new Scope())
+                ->readQueueListWithWaitingTime($scope, $dateTime, $resolveReferences);
             if (0 < $scopeQueueList->count()) {
                 $queueList->addList($scopeQueueList);
             }
         }
-        return $queueList->withSortedArrival();
+        return $queueList;
     }
 
     /**
@@ -196,6 +198,30 @@ class Cluster extends Base
             throw new Exception\Cluster\ScopesWithoutWorkstationCount();
         }
         return $preferedScope;
+    }
+
+    /**
+     * get cluster with scopes workstation count
+     *
+     * * @param
+     * scopeId
+     * now
+     *
+     * @return number
+     */
+    public function readWithScopeWorkstationCount($clusterId, $dateTime, $resolveReferences = 0)
+    {
+        $scopeQuery = new Scope();
+        $scopeList = new \BO\Zmsentities\Collection\ScopeList();
+        $cluster = $this->readEntity($clusterId, $resolveReferences);
+        if ($cluster->toProperty()->scopes->get()) {
+            foreach ($cluster->scopes as $scope) {
+                $entity = $scopeQuery->readWithWorkstationCount($scope->id, $dateTime, $resolveReferences = 0);
+                $scopeList->addEntity($entity);
+            }
+        }
+        $cluster->scopes = $scopeList;
+        return $cluster;
     }
 
     /**

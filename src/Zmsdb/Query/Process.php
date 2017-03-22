@@ -255,10 +255,8 @@ class Process extends Base implements MappingInterface
         $data['aufruferfolgreich'] = ($process['status'] == 'processing') ? 1 : 0;
         $data['Erinnerungszeitpunkt'] = $process->getReminderTimestamp();
         $data = $this->readProcessTimeValuesData($data, $process);
-        if (isset($data['wsm_aufnahmezeit']) && $data['wsm_aufnahmezeit'] == $data['Uhrzeit']) {
-            // Do not save arrivalTime if it is an appointment
-            $data['wsm_aufnahmezeit'] = '';
-        }
+        $data = $this->readWaitingTime($data, $process);
+
         $data = array_filter(
             $data,
             function ($value) {
@@ -279,6 +277,18 @@ class Process extends Base implements MappingInterface
         if (isset($process->queue['arrivalTime']) && $process->queue['arrivalTime']) {
             $data['wsm_aufnahmezeit'] = (new \DateTime())
                 ->setTimestamp($process->queue['arrivalTime'])->format('H:i:s');
+        }
+        if (isset($data['wsm_aufnahmezeit']) && $data['wsm_aufnahmezeit'] == $data['Uhrzeit']) {
+            // Do not save arrivalTime if it is an appointment
+            $data['wsm_aufnahmezeit'] = '';
+        }
+        return $data;
+    }
+
+    protected function readWaitingTime($data, $process)
+    {
+        if ($process['status'] == 'processing') {
+            $data['wartezeit'] = ($process->queue['callTime'] - $process->queue['arrivalTime']) / 60;
         }
         return $data;
     }
