@@ -28,11 +28,9 @@ class WorkstationProcessCalled extends BaseController
         $workstationInfo = Helper\WorkstationInfo::getInfoBoxData($workstation);
         $cluster = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/cluster/')->getEntity();
         $processId = Validator::value($args['id'])->isNumber()->getValue();
-
-        $workstation->hasDepartmentList();
-        $workstation->setProcess($processId);
-        $workstation = \App::$http->readPostResult('/workstation/process/called/', $workstation)->getEntity();
-        $workstation->hasMatchingProcessScope($cluster);
+        $process = new \BO\Zmsentities\Process(['id' => $processId]);
+        $workstation = \App::$http->readPostResult('/workstation/process/called/', $process)->getEntity();
+        $workstation->testMatchingProcessScope($cluster);
 
         $excludedIds = $validator->getParameter('exclude')->isString()->getValue();
         if ($excludedIds) {

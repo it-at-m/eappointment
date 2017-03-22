@@ -105,6 +105,8 @@ class View extends BaseView {
     loadErrorCallback(source, url) {
         if (source == 'button') {
             return this.loadContent(url)
+        } else if (source == 'lightbox') {
+            console.log('lightbox closed without action call');
         } else {
             const defaultUrl = `${this.includeUrl}/workstation/process/cancel/`
             return this.loadContent(defaultUrl)

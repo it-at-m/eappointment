@@ -1,5 +1,6 @@
 /* UL */
 ul {
+    margin:                 0;
     padding-left:           1.5em;
     li {
         margin:             0.1em 0;
@@ -16,11 +17,11 @@ ol {
 dl {
     @extend .list-dl;
     dt {
-        @extend 
+        @extend
             .list-dl__title;
     }
     dd {
-        @extend 
+        @extend
             .list-dl__description;
     }
 }

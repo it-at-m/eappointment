@@ -28,7 +28,7 @@ class WorkstationProcessPreCall extends BaseController
         $workstationInfo = Helper\WorkstationInfo::getInfoBoxData($workstation);
         $processId = Validator::value($args['id'])->isNumber()->getValue();
         $authKey = Validator::value($args['authkey'])->isString()->getValue();
-        $workstation->hasDepartmentList();
+        $workstation->testDepartmentList();
 
         $process = \App::$http->readGetResult('/process/'. $processId .'/'. $authKey . '/')->getEntity();
 
