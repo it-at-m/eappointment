@@ -42,7 +42,10 @@ class User
                 $resolveReferences
             );
         }
-        if (static::$assignedWorkstation && ! static::$assignedWorkstation->getUseraccount()->isOveraged(\App::$now)) {
+        if (static::$assignedWorkstation &&
+            static::$assignedWorkstation->id != $entity->id &&
+            ! static::$assignedWorkstation->getUseraccount()->isOveraged(\App::$now)
+        ) {
             throw new \BO\Zmsapi\Exception\Workstation\WorkstationAlreadyAssigned();
         }
     }
