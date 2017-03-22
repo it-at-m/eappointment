@@ -28,7 +28,7 @@ class WorkstationSelect extends BaseController
         if (!$workstation->hasId()) {
             return \BO\Slim\Render::redirect('index', array('error' => 'login_failed'));
         }
-        $workstation->hasDepartmentList();
+        $workstation->testDepartmentList();
 
         $input = $request->getParsedBody();
         if (is_array($input) && (array_key_exists('scope', $input))) {
