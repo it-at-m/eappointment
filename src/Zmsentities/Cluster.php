@@ -20,4 +20,16 @@ class Cluster extends Schema\Entity
     {
         return $this->toProperty()->name->get();
     }
+
+    public function getScopesWorkstationCount()
+    {
+        $workstationCount = 0;
+        if ($this->toProperty()->scopes->get()) {
+            foreach ($this->scopes as $scope) {
+                $entity = new Scope($scope);
+                $workstationCount += $entity->status['queue']['workstationCount'];
+            }
+        }
+        return $workstationCount;
+    }
 }
