@@ -10,7 +10,7 @@ class DepartmentOrganisationTest extends Base
     {
         $this->setWorkstation()->getUseraccount()->setRights('useraccount');
         $this->setDepartment(72);
-        $response = $this->render([72], [], []); //BA Egon-Erwin-Kisch-Str.
+        $response = $this->render([72], ['resolveReferences' => 1], []); //BA Egon-Erwin-Kisch-Str.
         $this->assertContains('Lichtenberg', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
@@ -19,7 +19,7 @@ class DepartmentOrganisationTest extends Base
     {
         $this->setWorkstation()->getUseraccount()->setRights('useraccount');
         $this->setExpectedException('BO\Zmsentities\Exception\UserAccountMissingDepartment');
-        $response = $this->render([72], [], []); //BA Egon-Erwin-Kisch-Str.
+        $response = $this->render([72], ['resolveReferences' => 1], []); //BA Egon-Erwin-Kisch-Str.
         $this->assertContains('Lichtenberg', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
@@ -27,7 +27,7 @@ class DepartmentOrganisationTest extends Base
     public function testMissingLogin()
     {
         $this->setExpectedException('BO\Zmsentities\Exception\UserAccountMissingLogin');
-        $response = $this->render([72], [], []); //BA Egon-Erwin-Kisch-Str.
+        $response = $this->render([72], ['resolveReferences' => 1], []); //BA Egon-Erwin-Kisch-Str.
         $this->assertContains('Lichtenberg', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }

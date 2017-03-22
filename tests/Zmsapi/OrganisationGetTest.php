@@ -8,7 +8,7 @@ class OrganisationGetTest extends Base
 
     public function testRendering()
     {
-        $response = $this->render([54], [], []); //Pankow
+        $response = $this->render([54], ['resolveReferences' => 1], []); //Pankow
         $this->assertContains('ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }

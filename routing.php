@@ -513,6 +513,37 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/cluster/{id}/workstationcount/":
+ *      get:
+ *          summary: Get a cluster with calculated workstation count on its scopes.
+ *          description: Calculating the workstation count requires performance, thus this is an extra api query
+ *          tags:
+ *              - cluster
+ *          parameters:
+ *              -   name: id
+ *                  description: cluster number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/cluster.json"
+ *              404:
+ *                  description: "cluster id does not exists"
+ */
+\App::$slim->get('/cluster/{id:\d{1,4}}/workstationcount/',
+    '\BO\Zmsapi\ClusterWithWorkstationCount')
+    ->setName("ClusterWithWorkstationCount");
+
+/**
+ *  @swagger
  *  "/cluster/{id}/imagedata/calldisplay/":
  *      get:
  *          summary: get image data by cluster id for calldisplay image
