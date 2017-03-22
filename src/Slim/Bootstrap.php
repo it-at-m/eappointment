@@ -17,10 +17,12 @@ class Bootstrap
 
     public static function init()
     {
+        Profiler::init();
         $bootstrap = self::getInstance();
         $bootstrap->configureSlim();
         $bootstrap->configureLocale();
         $bootstrap->configureLogger();
+        Profiler::add("Init");
     }
 
     public static function getInstance()
@@ -79,6 +81,7 @@ class Bootstrap
         \App::$slim->add(new \Slim\HttpCache\Cache('public', 300));
         \App::$slim->add(new Middleware\IpAddress());
         \App::$slim->add(new Middleware\Validator());
+        \App::$slim->add(new Middleware\Profiler());
         \App::$slim->add('BO\Slim\Middleware\Route:getInfo');
         // configure slim views with twig
         $container['view'] = function () {
