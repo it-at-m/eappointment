@@ -9,13 +9,14 @@ class View extends BaseView {
         this.exclude = "";
         this.processId = 0;
         this.refreshCounter = null;
+        this.refreshCurrentTime = null;
         this.onNextProcess = options.onNextProcess || (() => {});
         this.bindPublicMethods('bindEvents','loadClientNext','setTimeSinceCall', 'loadCalled', 'loadProcessing');
         $.ajaxSetup({ cache: false });
         this.bindEvents();
         console.log('Component: Client', this, options);
         this.load();
-        var me = this;
+        this.setCurrentTime();
     }
 
     load() {
@@ -57,7 +58,7 @@ class View extends BaseView {
         return this.loadContent(url).catch(err => this.loadErrorCallback(err.source, err.url));
     }
 
-    loadProcessed() {
+    loadFinished() {
         this.cleanInstance();
         const url = `${this.includeUrl}/workstation/process/finished/`
         return this.loadContent(url).catch(err => this.loadErrorCallback(err.source, err.url));
@@ -89,6 +90,10 @@ class View extends BaseView {
             ev.preventDefault();
             ev.stopPropagation();
             this.loadProcessing();
+        }).on('click', '.button-finish', (ev) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            this.loadFinished();
         }).on('click', '.client-called_button-abort, .client-precall_button-abort, .button-cancel', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
@@ -126,6 +131,22 @@ class View extends BaseView {
 
     cleanInstance() {
         clearTimeout(this.refreshCounter);
+        clearTimeout(this.refreshCurrentTime);
+    }
+
+    setCurrentTime () {
+        this.cleanInstance();
+        var time=new Date();
+        var hour=time.getHours();
+        var minute=time.getMinutes();
+        var second=time.getSeconds();
+        var temp=hour;
+        if (second%2) temp+=((minute<10)? ":0" : ":")+minute;
+        else temp+=((minute<10)? ":0" : " ")+minute;
+        $('.currentTime').text(temp);
+        this.refreshCurrentTime = setTimeout(() => {
+            this.setCurrentTime()
+        }, 1000);
     }
 }
 

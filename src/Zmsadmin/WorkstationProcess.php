@@ -21,10 +21,16 @@ class WorkstationProcess extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 3])->getEntity();
+        $workstationInfo = Helper\WorkstationInfo::getInfoBoxData($workstation);
+
         return \BO\Slim\Render::withHtml(
             $response,
             'block/process/next.twig',
-            array()
+            array(
+                'workstation' => $workstation,
+                'workstationInfo' => $workstationInfo
+            )
         );
     }
 }

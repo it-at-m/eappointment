@@ -1,13 +1,9 @@
 .queue-info {
-    @extend 
+    @extend
         .board,
         .board--minHeight !optional;
 
     > .body {
       min-height: 250px;
-    }
-
-    .loader {
-      top: 5em;
     }
 }
