@@ -374,7 +374,7 @@ class Process extends Base
             [
                 'aufrufzeit' => 0,
                 'NutzerID' => 0,
-                'AnzahlAufrufe' => $process->queue['callCount'] + 1,
+                'AnzahlAufrufe' => $process->queue['callCount'],
                 'nicht_erschienen' => ('missed' == $process->status) ? 1 : 0
             ]
         );
