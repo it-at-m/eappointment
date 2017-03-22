@@ -94,7 +94,9 @@ class LoginForm
     {
         $formData = $data->getValues();
         if (isset($workstation->useraccount)) {
-            $workstation->name = $formData['workstation']->getValue();
+            if ($formData['workstation']->getValue()) {
+                $workstation->name = $formData['workstation']->getValue();
+            }
             if ('cluster' === $formData['scope']->getValue()) {
                 $workstation->queue['clusterEnabled'] = 1;
             } else {
