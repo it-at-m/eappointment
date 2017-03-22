@@ -323,37 +323,7 @@ class Process extends Base
         }
     }
 
-    /**
-     * Todo: Refactoring, writeAssigendWorkstation zu writeAssignedProcess in Workstation Klasse
-     *
-     * Weise den Process einer Workstation zu
-     *
-     * @param
-     *            workstation
-     *
-     * @return Resource Process
-     */
-    public function writeAssignedWorkstation(\BO\Zmsentities\Workstation $workstation)
-    {
-        $authData = $this->readAuthKeyByProcessId($workstation->process['id']);
-        $process = $this->readEntity($workstation->process['id'], $authData['authKey']);
-        if ($process->isProcessed()) {
-            throw new Exception\Process\ProcessAlreadyCalled();
-        };
-        $query = new Query\Process(Query\Base::UPDATE);
-        $query->addConditionProcessId($workstation->process['id']);
-        $query->addValues(
-            [
-                'aufrufzeit' => $workstation->process->getCallTimeString(), //callTime
-                'Timestamp' => $workstation->process->getCallTimeString(), //lastCallTime
-                'NutzerID' => $workstation->id
-            ]
-        );
-        $this->writeItem($query);
-        $process = $this->readEntity($workstation->process['id'], $authData['authKey']);
-        //Log::writeLogEntry("UPDATE (Process::writeAssignedWorkstation $workstation->id) $process ", $process->id);
-        return $process;
-    }
+    
 
     /**
      * Todo: Refactoring, writeRemovedWorkstation zu writeRemovedProcess in Workstation Klasse

@@ -154,6 +154,25 @@ class Workstation extends Base
     }
 
     /**
+     *
+     * Weise den Process einer Workstation zu
+     *
+     * @param
+     *            workstation
+     *
+     * @return Resource Process
+     */
+    public function writeAssignedProcess($workstationId, \BO\Zmsentities\Process $process)
+    {
+        $process = (new Process)->updateEntity($process);
+        $query = new Query\Process(Query\Base::UPDATE);
+        $query->addConditionProcessId($process->id);
+        $query->addValues(['NutzerID' => $workstationId]);
+        $this->writeItem($query);
+        return $process;
+    }
+
+    /**
      * update a workstation
      *
      * @param
