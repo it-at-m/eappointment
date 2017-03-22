@@ -53,7 +53,8 @@ class WorkstationSelect extends BaseController
                 'title' => 'Standort und Arbeitsplatz auswählen',
                 'advancedData' => $formData,
                 'workstation' => $workstation,
-                'menuActive' => 'select'
+                'menuActive' => 'select',
+                'today' => \App::$now->format('Y-m-d')
             )
         );
     }
