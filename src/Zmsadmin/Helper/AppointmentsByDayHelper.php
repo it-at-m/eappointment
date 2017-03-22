@@ -31,7 +31,7 @@ class AppointmentsByDayHelper
         }
         $processList = ($resultList) ? $resultList : $processList;
 
-        $selectedDateTime = new \DateTimeImmutable($selectedDate);
+        $selectedDateTime = new \DateTimeImmutable($date);
         $queueList = $processList
                    ->toQueueList($selectedDateTime)
                    ->withStatus(array('confirmed', 'queued', 'reserved'))
@@ -40,4 +40,3 @@ class AppointmentsByDayHelper
         return $queueList;
     }
 }
-
