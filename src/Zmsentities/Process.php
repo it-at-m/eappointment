@@ -209,14 +209,6 @@ class Process extends Schema\Entity
         );
     }
 
-    public function isProcessed()
-    {
-        if ('called' == $process->status || 'processing' == $process->status) {
-            return true;
-        }
-        return false;
-    }
-
     public function setStatusBySettings()
     {
         $scope = new Scope($this->scope);

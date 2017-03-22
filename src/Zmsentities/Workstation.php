@@ -51,12 +51,11 @@ class Workstation extends Schema\Entity
         return $departmentList;
     }
 
-    public function hasDepartmentList()
+    public function testDepartmentList()
     {
         if (0 == $this->getDepartmentList()->count()) {
             throw new Exception\WorkstationMissingAssignedDepartments();
         }
-        return true;
     }
 
     public function getProviderOfGivenScope()
@@ -113,22 +112,12 @@ class Workstation extends Schema\Entity
         return $scopeList;
     }
 
-    public function hasMatchingProcessScope(Cluster $cluster)
+    public function testMatchingProcessScope(Cluster $cluster)
     {
         $process = new Process($this->process);
         $scopeList = $this->getScopeList($cluster);
         if (! $scopeList->hasEntity($process->getScopeId())) {
             throw new Exception\WorkstationProcessMatchScopeFailed();
         }
-        return true;
-    }
-
-    public function setProcess($processId)
-    {
-        $workstationProcessId = $this->toProperty()->process->id->get();
-        if (null === $workstationProcessId) {
-            $this->process = new Process(array('id' => $processId));
-        }
-        return $this;
     }
 }
