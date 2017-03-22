@@ -250,6 +250,7 @@ class Process extends Base implements MappingInterface
             $data['EMailverschickt'] = $client->emailSendCount;
             $data['SMSverschickt'] = $client->notificationsSendCount;
         }
+
         $data['IPAdresse'] = $process['createIP'];
         $data['vorlaeufigeBuchung'] = ($process['status'] == 'reserved') ? 1 : 0;
         $data['aufruferfolgreich'] = ($process['status'] == 'processing') ? 1 : 0;
