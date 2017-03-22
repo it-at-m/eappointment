@@ -35,7 +35,6 @@ class ScopeAppointmentsByDayXlsExport extends BaseController
         $scope = \App::$http->readGetResult('/scope/' . $scopeId . '/')->getEntity();
         $selectedDate = $args['date'];
 
-        $selectedDateTime = new \DateTimeImmutable($selectedDate);
         $queueList = Helper\AppointmentsByDayHelper::getAppointmentsByDayForScope(
             $workstation,
             $scope,
@@ -55,7 +54,7 @@ class ScopeAppointmentsByDayXlsExport extends BaseController
         ];
         $writer = new XLSXWriter();
 
-        $writer->writeSheetHeader($xlsSheetTitle, $xlsHeaders );
+        $writer->writeSheetHeader($xlsSheetTitle, $xlsHeaders);
 
         foreach ($queueList->toProcessList()->getArrayCopy() as $queueItem) {
             $client = count($queueItem->clients) > 0 ? $queueItem->clients[0] : [];
@@ -73,7 +72,7 @@ class ScopeAppointmentsByDayXlsExport extends BaseController
                 $request['name']
             ];
 
-            $writer->writeSheetRow($xlsSheetTitle, $row );
+            $writer->writeSheetRow($xlsSheetTitle, $row);
         }
 
         $response->getBody()->write($writer->writeToString());

@@ -40,16 +40,16 @@ class ScopeAppointmentsByDay extends BaseController
             $selectedDate
         );
         return \BO\Slim\Render::withHtml(
-                $response,
-                'page/scopeAppointmentsByDay.twig',
-                array(
-                    'title' => 'Termine für ' . $scope->contact['name'] . ' am ' . $selectedDateTime->format('d.m.Y'),
-                    'menuActive' => 'owner',
-                    'workstation' => $workstation,
-                    'date' => $selectedDate,
-                    'scope' => $scope,
-                    'processList' => $queueList->toProcessList(),
-                )
+            $response,
+            'page/scopeAppointmentsByDay.twig',
+            array(
+                'title' => 'Termine für ' . $scope->contact['name'] . ' am ' . $selectedDateTime->format('d.m.Y'),
+                'menuActive' => 'owner',
+                'workstation' => $workstation,
+                'date' => $selectedDate,
+                'scope' => $scope,
+                'processList' => $queueList->toProcessList(),
+            )
         );
     }
 }
