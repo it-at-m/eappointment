@@ -23,7 +23,7 @@ class View extends BaseView {
     }
 
     bindEvents() {
-        
+
     }
 
     selectDateWithOverlay() {
@@ -81,7 +81,7 @@ class View extends BaseView {
 
     loadQueueInfo () {
         const url = `${this.includeUrl}/counter/queueInfo/?selecteddate=${this.selectedDate}`
-        this.loadQueueInfoPromise = loadInto(url, this.element.find('[data-queue-info]'))
+        this.loadQueueInfoPromise = loadInto(url, this.$main.find('[data-queue-info]'))
         return this.loadQueueInfoPromise;
     }
 

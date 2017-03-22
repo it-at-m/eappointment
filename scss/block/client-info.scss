@@ -1,23 +1,28 @@
 .client-info {
-    @extend 
+    @extend
         .board_body--maxHeight,
         .board;
+    .body {
+        @extend
+            .align-center;
+            min-height: 182px;
+    }
     .clientinfo_dialog {
         dl {
             @extend
                 .list-dl;
         }
-    }    
-    
+    }
+
     .button-cancel {
-        @extend 
+        @extend
             .btn,
             .btn--alert,
             .btn--shadow;
     }
 
     .button-finish {
-         @extend 
+         @extend
             .btn,
             .btn--success,
             .btn--shadow;

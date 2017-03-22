@@ -13,6 +13,7 @@ namespace BO\Zmsadmin;
 class WorkstationProcessProcessing extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
     public function readResponse(
@@ -21,6 +22,7 @@ class WorkstationProcessProcessing extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        $workstationInfo = Helper\WorkstationInfo::getInfoBoxData($workstation);
         $process = new \BO\Zmsentities\Process($workstation->process);
         $process->status = 'processing';
         $process = \App::$http->readPostResult(
@@ -33,6 +35,8 @@ class WorkstationProcessProcessing extends BaseController
             'block/process/info.twig',
             array(
                 'workstation' => $workstation,
+                'workstationInfo' => $workstationInfo,
+                'process' => $process
             )
         );
     }

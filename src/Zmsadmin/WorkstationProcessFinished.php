@@ -21,7 +21,7 @@ class WorkstationProcessFinished extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 3])->getEntity();
-        $workstation->hasDepartmentList();
+        $workstationInfo = Helper\WorkstationInfo::getInfoBoxData($workstation);
 
         return \BO\Slim\Render::withHtml(
             $response,
@@ -29,6 +29,7 @@ class WorkstationProcessFinished extends BaseController
             array(
                 'title' => 'Sachbearbeiter',
                 'workstation' => $workstation,
+                'workstationInfo' => $workstationInfo,
                 'menuActive' => 'workstation'
             )
         );
