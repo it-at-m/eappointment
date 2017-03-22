@@ -11,7 +11,7 @@ use \BO\Mellon\Validator;
 
 class WorkstationInfo
 {
-    public static function getInfoBoxData(\BO\Zmsentities\Workstation $workstation, $dateString)
+    public static function getInfoBoxData(\BO\Zmsentities\Workstation $workstation, $dateString = '')
     {
         $infoData = array();
         $scope = new \BO\Zmsentities\Scope($workstation->scope);
