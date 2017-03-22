@@ -9,6 +9,7 @@ import AvailabilityForm from './form'
 import Conflicts from './conflicts'
 import TimeTable from './timetable'
 import UpdateBar from './updateBar'
+import SaveBar from './saveBar'
 
 import PageLayout from './layouts/page'
 
@@ -105,6 +106,9 @@ class AvailabilityPage extends Component {
             data: JSON.stringify(sendData)
         }).done((success) => {
             console.log('save success', success)
+            this.setState({
+                lastSave: new Date()
+            })
             this.refreshData()
         }).fail((err) => {
             if (err.status === 404) {
@@ -296,6 +300,12 @@ class AvailabilityPage extends Component {
         }
     }
 
+    renderSaveBar() {
+        if (this.state.lastSave) {
+            return <SaveBar lastSave={this.state.lastSave} />
+        }
+    }
+
     render() {
         console.log('AvailabilityPage Props', this.props)
         console.log('AvailabilityPage State', this.state)
@@ -303,12 +313,13 @@ class AvailabilityPage extends Component {
             <PageLayout
                 timeTable={this.renderTimeTable()}
                 updateBar={this.renderUpdateBar()}
+                saveBar={this.renderSaveBar()}
                 form={this.renderForm()}
                 conflicts={<Conflicts conflicts={this.state.conflicts} onSelect={this.onConflictedIdSelect.bind(this)} />}
             />
         )
     }
-    }
+}
 
 AvailabilityPage.propTypes = {
     conflicts: PropTypes.array,

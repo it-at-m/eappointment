@@ -53,6 +53,7 @@ export const getInitialState = (props) => Object.assign({}, {
     availabilitylist: [],
     selectedAvailability: null,
     formTitle: null,
+    lastSave: null,
     stateChanged: false
 }, getStateFromProps(props))
 
