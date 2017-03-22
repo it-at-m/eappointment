@@ -10,7 +10,7 @@ namespace BO\Zmsadmin;
 use BO\Zmsentities\Scope as Entity;
 use BO\Mellon\Validator;
 
-use \BO\Zmsentities\Collection\ProcessList;
+use Helper\AppointmentsByDayHelper;
 
 /**
  * Handle requests concerning services
@@ -30,43 +30,26 @@ class ScopeAppointmentsByDay extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
 
         $scopeId = $args['id'];
-        $selectedDate = $args['date'];
         $scope = \App::$http->readGetResult('/scope/' . $scopeId . '/')->getEntity();
-        $cluster = \App::$http->readGetResult('/scope/'. $scope->id .'/cluster/')->getEntity();
-        $processList = new ProcessList();
-
-        if (1 == $workstation->queue['clusterEnabled']) {
-            $resultList = \App::$http
-                        ->readGetResult(
-                            '/cluster/'. $cluster->id .'/process/'. $selectedDate .'/',
-                            ['resolveReferences' => 1]
-                        )->getCollection();
-        } else {
-            $resultList = \App::$http
-                        ->readGetResult(
-                            '/scope/'. $scope->id .'/process/'. $selectedDate .'/',
-                            ['resolveReferences' => 1]
-                        )->getCollection();
-        }
-        $processList = ($resultList) ? $resultList : $processList;
+        $selectedDate = $args['date'];
 
         $selectedDateTime = new \DateTimeImmutable($selectedDate);
-        $queueList = $processList
-                   ->toQueueList($selectedDateTime)
-                   ->withStatus(array('confirmed', 'queued', 'reserved'))
-                   ->withSortedArrival();
-
+        $queueList = Helper\AppointmentsByDayHelper::getAppointmentsByDayForScope(
+            $workstation,
+            $scope,
+            $selectedDate
+        );
         return \BO\Slim\Render::withHtml(
-            $response,
-            'page/scopeAppointmentsByDay.twig',
-            array(
-                'title' => 'Termine für ' . $scope->contact['name'] . ' am ' . $selectedDateTime->format('d.m.Y'),
-                'menuActive' => 'owner',
-                'workstation' => $workstation,
-                'date' => $selectedDate,
-                'scope' => $scope,
-                'processList' => $queueList->toProcessList(),
-            )
+                $response,
+                'page/scopeAppointmentsByDay.twig',
+                array(
+                    'title' => 'Termine für ' . $scope->contact['name'] . ' am ' . $selectedDateTime->format('d.m.Y'),
+                    'menuActive' => 'owner',
+                    'workstation' => $workstation,
+                    'date' => $selectedDate,
+                    'scope' => $scope,
+                    'processList' => $queueList->toProcessList(),
+                )
         );
     }
 }
