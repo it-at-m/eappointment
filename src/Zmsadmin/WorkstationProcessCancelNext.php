@@ -22,9 +22,9 @@ class WorkstationProcessCancelNext extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-        $workstation->process['queue']['callCount']++;
-        $workstation->process = (new \BO\Zmsentities\Process($workstation->process))->setStatusBySettings();
-        $workstation = \App::$http->readPostResult('/workstation/process/delete/', $workstation)->getEntity();
+        if ($workstation->process['id']) {
+            \App::$http->readDeleteResult('/workstation/process/delete/')->getEntity();
+        }
         return \BO\Slim\Render::redirect(
             'workstationProcessNext',
             array(),
