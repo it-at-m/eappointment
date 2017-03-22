@@ -21,6 +21,7 @@ import CallDisplayConfigView from './block/calldisplay/config'
 import CounterView from './page/counter'
 import WorkstationView from './page/workstation'
 
+import ScopeSelectView from './block/scopeselectform'
 import AvailabilityDayPage from './page/availabilityDay'
 import printScopeAppointmentsByDay from './page/scopeAppointmentsByDay/print'
 import bindReact from './lib/bindReact.js'
@@ -52,6 +53,10 @@ $('.counter-view').each(function() {
 
 $('.workstation-view').each(function() {
     new WorkstationView(this, getDataAttributes(this));
+})
+
+$('[data-scope-select-form]').each(function() {
+    new ScopeSelectView(this, getDataAttributes(this));
 })
 
 $('form').each(function() {

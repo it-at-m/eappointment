@@ -205,7 +205,7 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/scope/{id:\d+}/process/{date:\d\d\d\d-\d\d-\d\d}/', '\BO\Zmsadmin\ScopeAppointmentsByDay')
     ->setName("scopeAppointmentsByDay");
 
-\App::$slim->get('/scope/{id:\d+}/process/{date:\d\d\d\d-\d\d-\d\d}/xslx/', '\BO\Zmsadmin\ScopeAppointmentsByDayXlsExport')
+\App::$slim->get('/scope/{id:\d+}/process/{date:\d\d\d\d-\d\d-\d\d}/xlsx/', '\BO\Zmsadmin\ScopeAppointmentsByDayXlsExport')
     ->setName("scopeAppointmentsByDayXls");
 
 \App::$slim->get('/scope/delete/{id:\d+}/', '\BO\Zmsadmin\ScopeDelete')
