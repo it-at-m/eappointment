@@ -21,13 +21,21 @@ class WorkstationProcess extends BaseController
      */
     public static function render()
     {
-        Helper\User::checkRights();
-        $input = Validator::input()->isJson()->assertValid()->getValue();
-        $workstation = new \BO\Zmsentities\Workstation($input);
-        $workstation->testValid();
-        $process = new \BO\Zmsentities\Process($workstation->process);
-        $workstation->process = $process->setCallTime(\App::$now);
-        $workstation->process = (new Process)->writeAssignedWorkstation($workstation);
+        $workstation = Helper\User::checkRights();
+        if ($workstation->process['id']) {
+            $process = $workstation->process;
+        } else {
+            $input = Validator::input()->isJson()->assertValid()->getValue();
+            $process = new \BO\Zmsentities\Process($input);
+            $processAuthData = (new Process)->readAuthKeyByProcessId($process['id']);
+            $process = (new Process)->readEntity($process['id'], $processAuthData['authKey']);
+            if ('called' == $process->status || 'processing' == $process->status) {
+                throw new Exception\Process\ProcessAlreadyCalled();
+            }
+        }
+        
+        $process->setCallTime(\App::$now);
+        $workstation->process = (new Workstation)->writeAssignedProcess($workstation->id, $process);
 
         $message = Response\Message::create(Render::$request);
         $message->data = $workstation;
