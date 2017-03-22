@@ -21,10 +21,9 @@ class WorkstationProcessDelete extends BaseController
      */
     public static function render()
     {
-        Helper\User::checkRights();
-        $input = Validator::input()->isJson()->assertValid()->getValue();
-        $workstation = new \BO\Zmsentities\Workstation($input);
-        $workstation->testValid();
+        $workstation = Helper\User::checkRights();
+        $workstation->process['queue']['callCount']++;
+        $workstation->process = (new \BO\Zmsentities\Process($workstation->process))->setStatusBySettings();
         (new Process)->writeRemovedWorkstation($workstation);
         unset($workstation->process);
 

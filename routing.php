@@ -3863,18 +3863,11 @@ use \Psr\Http\Message\ResponseInterface;
 /**
  *  @swagger
  *  "/workstation/process/delete/":
- *      post:
+ *      delete:
  *          summary: Remove a process from workstation
  *          tags:
  *              - workstation
  *              - process
- *          parameters:
- *              -   name: process
- *                  description: workstation data to update
- *                  required: true
- *                  in: body
- *                  schema:
- *                      $ref: "schema/workstation.json"
  *          responses:
  *              200:
  *                  description: "success"
@@ -3888,7 +3881,7 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "process does not exists"
  */
-\App::$slim->post('/workstation/process/delete/',
+\App::$slim->delete('/workstation/process/delete/',
     '\BO\Zmsapi\WorkstationProcessDelete')
     ->setName("WorkstationProcessDelete");
 
