@@ -11,6 +11,7 @@ namespace BO\Slim;
   *
   *  @SuppressWarnings(PublicMethod)
   *  @SuppressWarnings(TooManyMethods)
+  *  @SuppressWarnings(Coupling)
   */
 class TwigExtension extends \Twig_Extension
 {
@@ -48,6 +49,7 @@ class TwigExtension extends \Twig_Extension
             new \Twig_SimpleFunction('toTextFormat', array($this, 'toTextFormat')),
             new \Twig_SimpleFunction('getNow', array($this, 'getNow')),
             new \Twig_SimpleFunction('isNumeric', array($this, 'isNumeric')),
+            new \Twig_SimpleFunction('dumpAppProfiler', array($this, 'dumpAppProfiler'), $safe),
         );
     }
 
@@ -254,5 +256,27 @@ class TwigExtension extends \Twig_Extension
         $firstChar = mb_strtoupper($firstChar);
         $firstChar = strtr($firstChar, array('Ä' => 'A', 'Ö' => 'O', 'Ü' => 'U'));
         return $firstChar;
+    }
+
+    public function dumpAppProfiler()
+    {
+        \D::config([
+            "display.show_call_info" => false,
+            "display.show_version" => false,
+            "sorting.arrays" => false,
+            "display.cascade" => [5,10,10],
+        ]);
+        $output = '<h2>App Profiles</h2>'
+            .' <p>For debugging: This log contains runtime information. 
+            <strong>DISABLE FOR PRODUCTION!</strong></p><ul>';
+        foreach (Profiler::$profileList as $entry) {
+            if ($entry instanceof Profiler) {
+                $output .= "<li>$entry</li>";
+            } else {
+                $settings = new \D\DumpSettings(\D::OB);
+                $output .= \D::UMP($entry, $settings);
+            }
+        }
+        return $output .'</ul>';
     }
 }

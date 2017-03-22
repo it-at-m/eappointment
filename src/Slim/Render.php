@@ -39,11 +39,13 @@ class Render
      */
     public static function withHtml(ResponseInterface $response, $template, $parameters = array(), $status = 200)
     {
+        \BO\Slim\Profiler::add("Controller");
         $response  = $response->withStatus($status);
         $response  = $response->withHeader('Content-Type', 'text/html; charset=utf-8');
         \App::$templatedefaults['debug'] = \App::DEBUG;
         $parameters = array_merge(\App::$templatedefaults, $parameters);
         $response  = \App::$slim->getContainer()->view->render($response, $template, $parameters);
+        \BO\Slim\Profiler::add("Rendering");
         return $response ;
     }
 
@@ -58,9 +60,11 @@ class Render
 
     public static function withJson(ResponseInterface $response, $data, $status = 200)
     {
+        \BO\Slim\Profiler::add("Controller");
         $response = $response->withStatus($status);
         $response = $response->withHeader('Content-Type', 'application/json');
         $response->getBody()->write(json_encode($data));
+        \BO\Slim\Profiler::add("Rendering");
         return $response;
     }
 
@@ -138,6 +142,7 @@ class Render
      */
     public static function redirect($route_name, $arguments, $parameter = null, $statuscode = 302)
     {
+        \BO\Slim\Profiler::add("Controller");
         $response = new Response($statuscode);
         $url = \App::$slim->urlFor($route_name, $arguments);
         $url = Helper::proxySanitizeUri($url);
