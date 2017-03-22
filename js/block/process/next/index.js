@@ -16,7 +16,6 @@ class View extends BaseView {
         this.bindEvents();
         console.log('Component: Client', this, options);
         this.load();
-        this.setCurrentTime();
     }
 
     load() {
@@ -113,7 +112,6 @@ class View extends BaseView {
     }
 
     setTimeSinceCall(lastsecond, lastminute) {
-        this.cleanInstance();
         let second = (lastsecond) ? lastsecond : 0;
         let minute = (lastminute) ? lastminute : 0;
         let temp = '';
@@ -132,17 +130,17 @@ class View extends BaseView {
     cleanInstance() {
         clearTimeout(this.refreshCounter);
         clearTimeout(this.refreshCurrentTime);
+        this.setCurrentTime();
     }
 
     setCurrentTime () {
-        this.cleanInstance();
         var time=new Date();
         var hour=time.getHours();
         var minute=time.getMinutes();
         var second=time.getSeconds();
         var temp=hour;
         if (second%2) temp+=((minute<10)? ":0" : ":")+minute;
-        else temp+=((minute<10)? ":0" : " ")+minute;
+        else temp+=((minute<10)? " 0" : " ")+minute;
         $('.currentTime').text(temp);
         this.refreshCurrentTime = setTimeout(() => {
             this.setCurrentTime()

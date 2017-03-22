@@ -22,6 +22,7 @@ class WorkstationProcessCancel extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        $workstation->process['queue']['callCount']++;
         $workstation->process = (new \BO\Zmsentities\Process($workstation->process))->setStatusBySettings();
         $workstation = \App::$http->readPostResult('/workstation/process/delete/', $workstation)->getEntity();
         return \BO\Slim\Render::redirect(
