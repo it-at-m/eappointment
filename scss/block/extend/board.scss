@@ -15,14 +15,14 @@ $boardHeaderBlue:                       $blue;
     margin:                     0 0 $gridGutter 0;
     padding:                    0;
     > .header {
-        @extend 
+        @extend
             .board_header;
         .aside {
             display:            inline-block;
         }
     }
     > .body {
-        @extend 
+        @extend
             .board_body,
             .board_body--addPadding !optional;
         &.no-padding {
@@ -32,6 +32,9 @@ $boardHeaderBlue:                       $blue;
     }
     > .footer {
         @extend .board_footer;
+        span {
+            white-space:    nowrap;
+        }
     }
 }
 
@@ -40,7 +43,7 @@ $boardHeaderBlue:                       $blue;
 /* set the board layout */
 
 .board_header {
-    @extend 
+    @extend
         .clearfix;
     padding:                $boardElementPadding;
     background-color:       $boardHeaderBlue;
@@ -68,7 +71,7 @@ $boardHeaderBlue:                       $blue;
         padding:            0.45em;
     }
     .title {
-        @extend 
+        @extend
             .board_header__title;
         display:            inline-block;
     }
