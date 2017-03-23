@@ -237,6 +237,7 @@ class Process extends Base
             ->addEntityMapping()
             ->addConditionSearch($queryString)
             ->addConditionAssigned()
+            ->addLimit(100)
             ;
         $statement = $this->fetchStatement($query);
         return $this->readList($statement, $resolveReferences);
