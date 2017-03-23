@@ -49,6 +49,8 @@ definitions:
     $ref: "schema/department.json"
   dayoff:
     $ref: "schema/dayoff.json"
+  log:
+    $ref: "schema/log.json"
   mail:
     $ref: "schema/mail.json"
   mimemart:
