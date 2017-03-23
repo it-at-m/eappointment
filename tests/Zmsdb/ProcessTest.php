@@ -6,6 +6,10 @@ use \BO\Zmsdb\Process as Query;
 use \BO\Zmsentities\Process as Entity;
 use \BO\Zmsentities\Calendar;
 
+/**
+ * @SuppressWarnings(TooManyPublicMethods)
+ *
+ */
 class ProcessTest extends Base
 {
     public function testReadEntityFailed()
@@ -144,14 +148,8 @@ class ProcessTest extends Base
     {
         $now = new \DateTimeImmutable("2016-04-01 11:55");
         $query = new Query();
-        $input = $this->getTestProcessEntity();
         $processList = $query->readProcessListByScopeAndTime(141, $now); //Heerstraße
-        $this->assertTrue(105 == count($processList), "Scope 141 Heerstraße should have 105 assigned processes");
-    }
-
-    public function testPostProcess()
-    {
-        $data = $this->getTestProcessEntity();
+        $this->assertEquals(102, $processList->count(), "Scope 141 Heerstraße should have 105 assigned processes");
     }
 
     public function testStatusFree()
@@ -173,6 +171,14 @@ class ProcessTest extends Base
         $firstProcess = $processList->getFirstProcess();
         $process = $query->readEntity($firstProcess->id, $firstProcess->authKey);
         $this->assertEquals('reserved', $process->getStatus());
+    }
+
+    public function testSearch()
+    {
+        $query = new Query();
+        $processList = $query->readSearch("J51362");
+        $this->assertEntityList("\\BO\\Zmsentities\\Process", $processList);
+        $this->assertEquals(6, $processList->count());
     }
 
     protected function getTestCalendarEntity()

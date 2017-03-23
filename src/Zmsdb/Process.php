@@ -189,9 +189,22 @@ class Process extends Base
         $query
             ->addEntityMapping()
             ->addConditionScopeId($scopeId)
+            ->addConditionAssigned()
             ->addConditionQueueNumber($queueNumber);
         $process = $this->fetchOne($query, new Entity());
         return $process;
+    }
+
+    protected function readList($statement, $resolveReferences)
+    {
+        $query = new Query\Process(Query\Base::SELECT);
+        $processList = new Collection();
+        while ($processData = $statement->fetch(\PDO::FETCH_ASSOC)) {
+            $entity = new Entity($query->postProcess($processData));
+            $entity = $this->readResolvedReferences($entity, $resolveReferences);
+            $processList->addEntity($entity);
+        }
+        return $processList;
     }
 
     /**
@@ -205,22 +218,28 @@ class Process extends Base
      */
     public function readProcessListByScopeAndTime($scopeId, \DateTimeInterface $dateTime, $resolveReferences = 0)
     {
-        $processList = new Collection();
         $query = new Query\Process(Query\Base::SELECT);
         $query
             ->setResolveLevel($resolveReferences)
             ->addEntityMapping()
             ->addConditionScopeId($scopeId)
+            ->addConditionAssigned()
             ->addConditionTime($dateTime);
         $statement = $this->fetchStatement($query);
-        while ($processData = $statement->fetch(\PDO::FETCH_ASSOC)) {
-            $entity = new Entity($query->postProcess($processData));
-            $entity = $this->readResolvedReferences($entity, $resolveReferences);
-            if ($entity instanceof Entity) {
-                $processList->addEntity($entity);
-            }
-        }
-        return $processList;
+        return $this->readList($statement, $resolveReferences);
+    }
+
+    public function readSearch($queryString, $resolveReferences = 0)
+    {
+        $query = new Query\Process(Query\Base::SELECT);
+        $query
+            ->setResolveLevel($resolveReferences)
+            ->addEntityMapping()
+            ->addConditionSearch($queryString)
+            ->addConditionAssigned()
+            ;
+        $statement = $this->fetchStatement($query);
+        return $this->readList($statement, $resolveReferences);
     }
 
     /**
@@ -257,6 +276,7 @@ class Process extends Base
         $query = new Query\Process(Query\Base::SELECT);
         $query
             ->addCountValue()
+            ->addConditionAssigned()
             ->addConditionScopeId($scopeId);
         $statement = $this->fetchStatement($query);
         $result = $statement->fetch(\PDO::FETCH_ASSOC);
@@ -368,6 +388,7 @@ class Process extends Base
         $query
             ->addResolvedReferences($resolveReferences)
             ->addEntityMapping()
+            ->addConditionAssigned()
             ->addConditionIsReserved();
         $resultData = $this->fetchList($query, new Entity());
         foreach ($resultData as $process) {
