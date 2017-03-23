@@ -78,7 +78,7 @@ class ScopeTest extends Base
         $now = new \DateTimeImmutable("2016-04-01 11:55");
         $entity = (new Query())->readEntity(141, 1);
         $queueList = $query->readQueueListWithWaitingTime($entity, $now);
-        $this->assertTrue(105 == count($queueList));
+        $this->assertEquals(102, count($queueList));
     }
 
     public function testWriteEntity()

@@ -217,6 +217,15 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
+    public function addConditionAssigned()
+    {
+        $this->query ->where('process.StandortID', '!=', "0");
+        $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) {
+            $query->andWith(self::expression('process.istFolgeterminvon IS NULL OR process.istFolgeterminvon'), '=', 0);
+        });
+        return $this;
+    }
+
     public function addConditionIsReserved()
     {
         $this->query->where('process.name', 'NOT IN', array(
@@ -226,6 +235,17 @@ class Process extends Base implements MappingInterface
             ->where('process.vorlaeufigeBuchung', '=', 1)
             ->where('process.StandortID', '<>', 1)
             ->where('process.istFolgeterminvon', 'is', null);
+        return $this;
+    }
+
+    public function addConditionSearch($queryString)
+    {
+        $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($queryString) {
+            $query->orWith('process.Name', 'LIKE', "%$queryString%");
+            $query->orWith('process.EMail', 'LIKE', "%$queryString%");
+            $query->orWith('process.Telefonnummer', 'LIKE', "%$queryString%");
+            $query->orWith('process.telefonnummer_fuer_rueckfragen', 'LIKE', "%$queryString%");
+        });
         return $this;
     }
 

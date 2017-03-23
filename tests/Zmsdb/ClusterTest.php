@@ -60,7 +60,7 @@ class ClusterTest extends Base
         $queueList = (new \BO\Zmsdb\Scope())->readQueueListWithWaitingTime($scope, $now);
         $estimatedData = $scope->getWaitingTimeFromQueueList($queueList, $now);
         $this->assertEquals(146, $scope->id);
-        $this->assertEquals(267, $estimatedData['waitingTimeEstimate']);
+        $this->assertEquals(233, $estimatedData['waitingTimeEstimate']);
     }
 
     public function testWriteEntity()
