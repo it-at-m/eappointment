@@ -17,23 +17,41 @@ class WorkstationInfo
         $scope = new \BO\Zmsentities\Scope($workstation->scope);
         if (1 == $workstation->queue['clusterEnabled']) {
             $cluster = \App::$http->readGetResult('/scope/'. $scope->id .'/cluster/')->getEntity();
-            $cluster = \App::$http->readGetResult('/cluster/'. $cluster->id . '/workstationcount/')->getEntity();
             $queueList = \App::$http->readGetResult('/cluster/'. $cluster->id . '/queue/')->getCollection();
-            $infoData['workstationCount'] = $cluster->getScopesWorkstationCount();
+            $infoData['workstationList'] = static::getWorkstationsByCluster($cluster->id);
         } else {
             $dateTime = new \BO\Zmsentities\Helper\DateTime($dateString);
-            $scope = \App::$http->readGetResult('/scope/'. $scope->id . '/workstationcount/')->getEntity();
+            $scope = \App::$http->readGetResult('/scope/'. $scope->id . '/')->getEntity();
             $queueList =  \App::$http->readGetResult('/scope/'. $scope->id . '/queue/')->getCollection();
-            $availabilityList = \App::$http
-                ->readGetResult('/scope/'. $scope->id . '/availability/')
-                ->getCollection()
-                ->withDateTime($dateTime);
-            $infoData['workstationCount'] = $scope->status['queue']['workstationCount'];
             $infoData['workstationGhostCount'] = $scope->status['queue']['ghostWorkstationCount'];
-            $infoData['availabilities'] = $availabilityList->getArrayCopy();
+            $infoData['availabilities'] = static::getAvailabilityByScopeAndDateTime($scope->id, $dateTime);
+            $infoData['workstationList'] = static::getWorkstationsByScope($scope->id);
         }
         $infoData['waitingTime'] = $queueList->getLast()->waitingTimeEstimate;
         $infoData['queueCount'] = $queueList->count();
         return $infoData;
+    }
+
+    public static function getAvailabilityByScopeAndDateTime($scopeId, $dateTime)
+    {
+        return \App::$http
+            ->readGetResult('/scope/'. $scopeId . '/availability/')
+            ->getCollection()
+            ->withDateTime($dateTime)
+            ->getArrayCopy();
+    }
+
+    public static function getWorkstationsByScope($scopeId)
+    {
+        return \App::$http
+            ->readGetResult('/scope/'. $scopeId . '/workstation/', ['resolveReferences' => 1])
+            ->getCollection();
+    }
+
+    public static function getWorkstationsByCluster($clusterId)
+    {
+        return \App::$http
+            ->readGetResult('/cluster/'. $clusterId . '/workstation/', ['resolveReferences' => 1])
+            ->getCollection();
     }
 }

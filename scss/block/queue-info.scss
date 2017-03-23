@@ -4,6 +4,16 @@
         .board--minHeight !optional;
 
     > .body {
-      min-height: 250px;
+      min-height: 150px;
+    }
+}
+
+.queue-info-appointment-times {
+    @extend
+        .board,
+        .board--minHeight !optional;
+
+    > .body {
+      min-height: 35px;
     }
 }
