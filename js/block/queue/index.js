@@ -19,8 +19,18 @@ class View extends BaseView {
 
     load() {
         const url = `${this.includeUrl}/queueTable/?selecteddate=${this.selectedDate}`
-        this.loadPromise = this.loadContent(url)
-        return this.loadPromise;
+        return this.loadContent(url).catch(err => this.loadErrorCallback(err.source, err.url));
+    }
+
+    loadErrorCallback(source, url) {
+        if (source == 'button') {
+            return this.loadContent(url)
+        } else if (source == 'lightbox') {
+            console.log('lightbox closed without action call');
+        } else {
+            const defaultUrl = `${this.includeUrl}/workstation/process/cancel/`
+            return this.loadContent(defaultUrl)
+        }
     }
 
     bindEvents() {
