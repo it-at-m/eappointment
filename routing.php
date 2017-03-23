@@ -1223,6 +1223,11 @@ use \Psr\Http\Message\ResponseInterface;
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
+ *              -   name: id
+ *                  description: id of a process
+ *                  in: path
+ *                  required: true
+ *                  type: number
  *          responses:
  *              200:
  *                  description: get a list of processes
