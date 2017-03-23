@@ -84,4 +84,26 @@ class ProcessList extends Base
         }
         return $processList;
     }
+
+    public function withScopeId($scopeId)
+    {
+        $processList = new static();
+        foreach ($this as $process) {
+            if ($process->scope['id'] == $scopeId) {
+                $processList[] = clone $process;
+            }
+        }
+        return $processList;
+    }
+
+    public function withOutScopeId($scopeId)
+    {
+        $processList = new static();
+        foreach ($this as $process) {
+            if ($process->scope['id'] != $scopeId) {
+                $processList[] = clone $process;
+            }
+        }
+        return $processList;
+    }
 }
