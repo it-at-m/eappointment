@@ -19,7 +19,7 @@ class Profiler
         if (null !== $next) {
             $response = $next($request, $response);
         }
-        \BO\Slim\Profiler::add("Response");
+        //\BO\Slim\Profiler::add("Response");
         if (\App::DEBUG) {
             $response = $response->withAddedHeader('X-Profiling', \BO\Slim\Profiler::getList());
         }
