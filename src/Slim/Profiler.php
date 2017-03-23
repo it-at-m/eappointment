@@ -45,9 +45,14 @@ class Profiler
     {
         return round(($this->instanceMicrotime - static::$startupMicrotime), 3);
     }
+    
+    public function getMilliSeconds()
+    {
+        return $this->getSeconds() * 1000;
+    }
 
     public function __toString()
     {
-        return $this->message . "=" . $this->getSeconds() . "s";
+        return $this->message . "=" . $this->getMilliSeconds() . "ms";
     }
 }
