@@ -471,6 +471,46 @@
 			}
 		}
 	},
+	"/cluster/{id}/queue/next/": {
+		"get": {
+			"summary": "Get the next process in queue by cluster id",
+			"tags": [
+				"cluster",
+				"process"
+			],
+			"parameters": [
+				{
+					"name": "id",
+					"description": "number of cluster",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "get a process",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/process.json"
+								}
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "Could not find a process or cluster not found"
+				}
+			}
+		}
+	},
 	"/cluster/{id}/queue/": {
 		"get": {
 			"summary": "Get a waiting queue for a cluster",
@@ -507,6 +547,90 @@
 								"items": {
 									"$ref": "schema/queue.json"
 								}
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "cluster id does not exists"
+				}
+			}
+		}
+	},
+	"/cluster/{id}/request/": {
+		"get": {
+			"summary": "Get a list of requests by cluster ID",
+			"tags": [
+				"request"
+			],
+			"parameters": [
+				{
+					"name": "id",
+					"description": "number of cluster",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/request.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "cluster id does not exists"
+				}
+			}
+		}
+	},
+	"/cluster/{id}/workstation/": {
+		"get": {
+			"summary": "Get a list of today logged in workstations by cluster ID",
+			"tags": [
+				"request"
+			],
+			"parameters": [
+				{
+					"name": "id",
+					"description": "number of cluster",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/workstation.json"
 							}
 						}
 					}
@@ -563,6 +687,43 @@
 				},
 				"403": {
 					"description": "hash is not valid"
+				},
+				"404": {
+					"description": "cluster id does not exists"
+				}
+			}
+		}
+	},
+	"/cluster/{id}/workstationcount/": {
+		"get": {
+			"summary": "Get a cluster with calculated workstation count on its scopes.",
+			"description": "Calculating the workstation count requires performance, thus this is an extra api query",
+			"tags": [
+				"cluster"
+			],
+			"parameters": [
+				{
+					"name": "id",
+					"description": "cluster number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/cluster.json"
+							}
+						}
+					}
 				},
 				"404": {
 					"description": "cluster id does not exists"
@@ -684,6 +845,65 @@
 				},
 				"404": {
 					"description": "organisation id does not exists"
+				}
+			}
+		}
+	},
+	"/cluster/{id}/process/{date}/": {
+		"get": {
+			"summary": "Get a list of processes by cluster and date",
+			"tags": [
+				"cluster",
+				"process"
+			],
+			"parameters": [
+				{
+					"name": "id",
+					"description": "cluster number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "date",
+					"description": "day in format YYYY-MM-DD",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/process.json"
+								}
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "cluster id does not exists"
 				}
 			}
 		}
@@ -1196,6 +1416,55 @@
 								"type": "array",
 								"items": {
 									"$ref": "schema/useraccount.json"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"/department/{id}/workstation/": {
+		"get": {
+			"summary": "Get a list of workstations for a department",
+			"tags": [
+				"department",
+				"workstation"
+			],
+			"parameters": [
+				{
+					"name": "id",
+					"description": "department number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/workstation.json"
 								}
 							}
 						}
@@ -2322,6 +2591,53 @@
 			}
 		}
 	},
+	"/process/search/": {
+		"get": {
+			"summary": "Get a list of reserved processes",
+			"tags": [
+				"process"
+			],
+			"parameters": [
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				},
+				{
+					"name": "query",
+					"description": "Query string for searching. Searches in process.client.*.familyName|telephone|email and process.id",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "get a list of processes",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/process.json"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	},
 	"/process/status/free/": {
 		"post": {
 			"summary": "Get a list of free processes for a given day",
@@ -2830,6 +3146,90 @@
 			}
 		}
 	},
+	"/scope/{id}/request/": {
+		"get": {
+			"summary": "Get a list of requests by scope ID",
+			"tags": [
+				"request"
+			],
+			"parameters": [
+				{
+					"name": "id",
+					"description": "number of scope",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/request.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "scope id does not exists"
+				}
+			}
+		}
+	},
+	"/scope/{id}/workstation/": {
+		"get": {
+			"summary": "Get a list of today logged in workstations by scope ID",
+			"tags": [
+				"request"
+			],
+			"parameters": [
+				{
+					"name": "id",
+					"description": "number of scope",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/workstation.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "scope id does not exists"
+				}
+			}
+		}
+	},
 	"/scope/": {
 		"get": {
 			"summary": "Get a list of scopes",
@@ -3052,6 +3452,55 @@
 			}
 		}
 	},
+	"/scope/{id}/cluster/": {
+		"get": {
+			"summary": "Get a cluster for a scope",
+			"tags": [
+				"scope",
+				"cluster"
+			],
+			"parameters": [
+				{
+					"name": "id",
+					"description": "scope id",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/cluster.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "could not find a cluster"
+				}
+			}
+		}
+	},
 	"/scope/cluster/{id}/": {
 		"get": {
 			"summary": "Get a list of scope by cluster ID",
@@ -3156,9 +3605,9 @@
 			}
 		}
 	},
-	"/scope/{id}/day/{day}/": {
+	"/scope/{id}/process/{date}/": {
 		"get": {
-			"summary": "Get a list of processes by scope and day",
+			"summary": "Get a list of processes by scope and date",
 			"tags": [
 				"scope",
 				"process"
@@ -3172,7 +3621,7 @@
 					"type": "integer"
 				},
 				{
-					"name": "day",
+					"name": "date",
 					"description": "day in format YYYY-MM-DD",
 					"in": "path",
 					"required": true,
@@ -3335,6 +3784,46 @@
 				},
 				"404": {
 					"description": "scope id does not exists"
+				}
+			}
+		}
+	},
+	"/scope/{id}/queue/next/": {
+		"get": {
+			"summary": "Get the next process in queue by scope id",
+			"tags": [
+				"scope",
+				"process"
+			],
+			"parameters": [
+				{
+					"name": "id",
+					"description": "number of scope",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "get a process",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/process.json"
+								}
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "Could not find a process or scope not found"
 				}
 			}
 		}
@@ -4333,6 +4822,73 @@
 				},
 				"404": {
 					"description": "useraccount loginname does not exists"
+				}
+			}
+		}
+	},
+	"/workstation/process/called/": {
+		"post": {
+			"summary": "Set a process to status called and assign to workstation",
+			"tags": [
+				"workstation",
+				"process"
+			],
+			"parameters": [
+				{
+					"name": "workstation",
+					"description": "workstation with process data to update",
+					"required": true,
+					"in": "body",
+					"schema": {
+						"$ref": "schema/workstation.json"
+					}
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/workstation.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "process does not exists"
+				}
+			}
+		}
+	},
+	"/workstation/process/delete/": {
+		"delete": {
+			"summary": "Remove a process from workstation",
+			"tags": [
+				"workstation",
+				"process"
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/workstation.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "process does not exists"
 				}
 			}
 		}
