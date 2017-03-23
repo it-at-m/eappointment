@@ -25,7 +25,7 @@ fieldset{
         display:            block;
         width:              100%;
         font-weight:        bold;
-        font-size:          1em; 
+        font-size:          1em;
     }
 }
 
@@ -41,7 +41,7 @@ label,
     vertical-align:     top;
     min-height:         1.4em; // for empty label placeholders
 }
-  
+
 // Common form input
 //
 // Shared size and type resets for form inputs. Apply `.form-input` to any
@@ -66,7 +66,7 @@ input[type="color"],
 textarea,
 select,
 .form-input {
-    @extend 
+    @extend
         .form-input--default;
 }
 
@@ -82,7 +82,7 @@ input[type="radio"] {
 }
 
 
-.checkbox label, 
+.checkbox label,
 .checkbox-label,
 .radio label,
 .radio-label {
@@ -93,12 +93,12 @@ input[type="radio"] {
 }
 
 
-input[disabled], 
-select[disabled], 
-input[readonly], 
-input[disabled="disabled"], 
-input[readonly="readonly"], 
-.form-control[disabled], 
+input[disabled],
+select[disabled],
+input[readonly],
+input[disabled="disabled"],
+input[readonly="readonly"],
+.form-control[disabled],
 .form-control[readonly],
 fieldset[disabled] .form-control {
     cursor:                 not-allowed;
@@ -120,7 +120,7 @@ select > option {
     margin-bottom:          $gridGutter;
     max-width:              $elementMaxWidth;
     > .controls {
-        label, 
+        label,
         .label {
             font-weight:    normal;
             display:        table;
@@ -141,7 +141,7 @@ select > option {
 }
 
 .add-date-picker {
-    position:               relative; 
+    position:               relative;
     display:                inline-block;
     &:before {
         display:            inline;
@@ -159,12 +159,12 @@ select > option {
         width:              10em;
     }
 }
-    
+
 // Align the buttons at the end of a form to the right side
 .form-actions {
-    @extend 
+    @extend
         .clearfix;
-    margin:                 $gridGutter 0; 
+    margin:                 $gridGutter 0;
     max-width:              100%;
     .right {
         float:              right;
@@ -182,10 +182,10 @@ select > option {
     font-size:              0.8em;
 }
 
-// Form elements with an error have a red border 
+// Form elements with an error have a red border
 .has-error {
     label,
-    .label { 
+    .label {
         color:              $formErrorColor;
     }
     .form-input,
@@ -203,7 +203,7 @@ select > option {
     }
 }
 
-.checkbox-inline, 
+.checkbox-inline,
 .radio-inline {
     display:                    inline-block !important;
     margin-bottom:              0;
@@ -240,9 +240,9 @@ select > option {
     box-shadow:             none;
     box-sizing:             border-box;
     color:                  $baseTextColor;
-    //width:                  100%; 
+    //width:                  100%;
     font-size:              $inuit-base-font-size;
-    line-height:            $inuit-base-line-height; 
+    line-height:            $inuit-base-line-height;
     padding:                $formItemBasePadding;
     transition:             border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
     max-width:              100%;
@@ -264,25 +264,25 @@ select > option {
         max-width:              none;
         > label,
         > .label {
-            @extend 
-                    .grid__item, 
+            @extend
+                    .grid__item,
                     .#{$labelGrid},
                     .portable--one-whole;
             display:            inline-block;
             margin-left:        0px;
         }
         > .controls {
-            @extend 
-                .grid__item, 
+            @extend
+                .grid__item,
                 .#{$controlGrid},
                 .portable--one-whole;
             max-width:          $elementMaxWidth;
             > * {
-                vertical-align:     middle;
+                vertical-align: middle;
             }
             label,
             .label {
-                @extend 
+                @extend
                     .palm--one-whole;
                 /*display: inline-block;*/
                 font-weight:    normal;
@@ -317,7 +317,7 @@ select > option {
     }
     .form-actions {
         position:   relative;
-        @extend 
+        @extend
             .#{$controlGrid},
             .push--desk--#{$labelGrid};
     }
@@ -327,7 +327,8 @@ select > option {
 }
 
 .form-group--nomaxwidth .controls{
-    max-width:  100%;
+    @extend .form-group;
+    max-width:  100%  !important;
 }
 
 // Input sizes, 12er grid base
@@ -386,22 +387,22 @@ select > option {
     @extend  .five-twelfths;
 }
 .input--size-4 {
-    @extend 
+    @extend
         .four-twelfths,
         .palm--six-twelfths;
 }
 .input--size-3 {
-    @extend 
+    @extend
         .three-twelfths,
         .palm--five-twelfths;
 }
 .input--size-2 {
-    @extend 
+    @extend
         .two-twelfths,
         .palm--four-twelfths;
 }
 .input--size-1 {
-    @extend 
+    @extend
         .one-twelfth,
         .palm--two-twelfths;
 }
