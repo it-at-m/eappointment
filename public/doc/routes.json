@@ -1473,6 +1473,49 @@
 			}
 		}
 	},
+	"/log/process/{id}/": {
+		"get": {
+			"summary": "Get a list of log entries for a process",
+			"tags": [
+				"process",
+				"log"
+			],
+			"parameters": [
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				},
+				{
+					"name": "id",
+					"description": "id of a process",
+					"in": "path",
+					"required": true,
+					"type": "number"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "get a list of processes",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/log.json"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	},
 	"/mails/": {
 		"get": {
 			"summary": "get a list of mails in the send queue",
@@ -2593,7 +2636,7 @@
 	},
 	"/process/search/": {
 		"get": {
-			"summary": "Get a list of reserved processes",
+			"summary": "Get a list of search results for processes",
 			"tags": [
 				"process"
 			],
