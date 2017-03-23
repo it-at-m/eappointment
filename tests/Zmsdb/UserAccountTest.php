@@ -74,7 +74,7 @@ class UserAccountTest extends Base
         $workstationInput->id = $workstation->id;
         //update workstation to read by scope testing
         $workstation = (new Workstation())->updateEntity($workstationInput);
-        $workstationList = (new Workstation())->readByScopeAndDay(123, $now);
+        $workstationList = (new Workstation())->readLoggedInListByScope(123, $now);
         $this->assertEntityList("\\BO\\Zmsentities\\Workstation", $workstationList);
     }
 
