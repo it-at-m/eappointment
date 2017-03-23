@@ -21,7 +21,7 @@
             "type": "string",
             "description": "Usually an ID according to the type field"
         },
-        "reference": {
+        "ts": {
             "type": "number",
             "description": "Unix timestamp marking the time the log entry was written into the database"
         },
