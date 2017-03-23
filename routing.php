@@ -1212,6 +1212,36 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/log/process/{id}/":
+ *      get:
+ *          summary: Get a list of log entries for a process
+ *          tags:
+ *              - process
+ *              - log
+ *          parameters:
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: get a list of processes
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/log.json"
+ */
+\App::$slim->get('/log/process/{id:\d{1,11}}/',
+    '\BO\Zmsapi\ProcessLog')
+    ->setName("ProcessLog");
+
+/**
+ *  @swagger
  *  "/mails/":
  *      get:
  *          summary: get a list of mails in the send queue
@@ -2129,6 +2159,44 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->delete('/process/{id:\d{1,11}}/{authKey}/',
     '\BO\Zmsapi\ProcessDelete')
     ->setName("ProcessDelete");
+
+/**
+ *  @swagger
+ *  "/process/search/":
+ *      get:
+ *          summary: Get a list of search results for processes
+ *          tags:
+ *              - process
+ *          parameters:
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *              -   name: query
+ *                  description: "Query string for searching. Searches in process.client.*.familyName|telephone|email and process.id"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: get a list of processes
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/process.json"
+ */
+\App::$slim->get('/process/search/',
+    '\BO\Zmsapi\ProcessSearch')
+    ->setName("ProcessSearch");
+
 
 /**
  *  @swagger
