@@ -43,6 +43,15 @@ gulp.task('js', ['lint'], function (cb) {
             "message" : "Error: " + message
         });
     });
+    bundler.on('file', function (file) {
+        //gutil.log('[browserify] ' +  gutil.colors.yellow(file));
+    })
+    bundler.on('package', function (pkg) {
+        //gutil.log('[browserify] Require: ' +  gutil.colors.blue(pkg.__dirname));
+    })
+    bundler.on('transform', function (tr, file) {
+        //gutil.log('[browserify] Transform: ' +  gutil.colors.yellow(file));
+    })
     bundler.bundle()
            .on('error', function (message) {
                gutil.log('[browserify] ' +  gutil.colors.red(message));
