@@ -234,11 +234,16 @@ class Process extends Base
         $query = new Query\Process(Query\Base::SELECT);
         $query
             ->setResolveLevel($resolveReferences)
+            ->addResolvedReferences($resolveReferences)
             ->addEntityMapping()
-            ->addConditionSearch($queryString)
             ->addConditionAssigned()
             ->addLimit(100)
             ;
+        if (preg_match('#^\d+$#', $queryString)) {
+            $query->addConditionProcessId($queryString);
+        } else {
+            $query->addConditionSearch($queryString);
+        }
         $statement = $this->fetchStatement($query);
         return $this->readList($statement, $resolveReferences);
     }
