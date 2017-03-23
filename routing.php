@@ -471,6 +471,74 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/cluster/{id}/request/":
+ *      get:
+ *          summary: Get a list of requests by cluster ID
+ *          tags:
+ *              - request
+ *          parameters:
+ *              -   name: id
+ *                  description: number of cluster
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/request.json"
+ *              404:
+ *                  description: "cluster id does not exists"
+ */
+\App::$slim->get('/cluster/{id:\d{1,11}}/request/',
+    '\BO\Zmsapi\RequestsByCluster')
+    ->setName("RequestsByCluster");
+
+/**
+ *  @swagger
+ *  "/cluster/{id}/workstation/":
+ *      get:
+ *          summary: Get a list of today logged in workstations by cluster ID
+ *          tags:
+ *              - request
+ *          parameters:
+ *              -   name: id
+ *                  description: number of cluster
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/workstation.json"
+ *              404:
+ *                  description: "cluster id does not exists"
+ */
+\App::$slim->get('/cluster/{id:\d{1,11}}/workstation/',
+    '\BO\Zmsapi\WorkstationListByCluster')
+    ->setName("WorkstationListByCluster");
+
+/**
+ *  @swagger
  *  "/cluster/{id}/waitingnumber/{hash}/":
  *      get:
  *          summary: Get a waitingNumber according to scope preferences in cluster
@@ -2499,14 +2567,14 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
- *  "/cluster/{id}/request/":
+ *  "/scope/{id}/workstation/":
  *      get:
- *          summary: Get a list of requests by cluster ID
+ *          summary: Get a list of today logged in workstations by scope ID
  *          tags:
  *              - request
  *          parameters:
  *              -   name: id
- *                  description: number of cluster
+ *                  description: number of scope
  *                  in: path
  *                  required: true
  *                  type: integer
@@ -2523,13 +2591,13 @@ use \Psr\Http\Message\ResponseInterface;
  *                          meta:
  *                              $ref: "schema/metaresult.json"
  *                          data:
- *                              $ref: "schema/request.json"
+ *                              $ref: "schema/workstation.json"
  *              404:
- *                  description: "cluster id does not exists"
+ *                  description: "scope id does not exists"
  */
-\App::$slim->get('/cluster/{id:\d{1,11}}/request/',
-    '\BO\Zmsapi\RequestsByCluster')
-    ->setName("RequestsByCluster");
+\App::$slim->get('/scope/{id:\d{1,11}}/workstation/',
+    '\BO\Zmsapi\WorkstationListByScope')
+    ->setName("WorkstationListByScope");
 
 /**
  *  @swagger
