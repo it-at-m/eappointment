@@ -6,13 +6,10 @@
 
 namespace BO\Zmsadmin;
 
-/**
-  * Handle requests concerning services
-  *
-  */
 class WorkstationProcessFinished extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
     public function readResponse(
@@ -20,16 +17,19 @@ class WorkstationProcessFinished extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 3])->getEntity();
-        $workstationInfo = Helper\WorkstationInfo::getInfoBoxData($workstation);
-
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        $department = \App::$http
+            ->readGetResult('/scope/'. $workstation->scope['id'] .'/department/', ['resolveReferences' => 2])
+            ->getEntity();
+        $requestList = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/request/')->getCollection();
         return \BO\Slim\Render::withHtml(
             $response,
-            'page/workstationClientProcessed.twig',
+            'page/workstationProcessFinished.twig',
             array(
                 'title' => 'Sachbearbeiter',
                 'workstation' => $workstation,
-                'workstationInfo' => $workstationInfo,
+                'pickupList' => $department->getScopeList(),
+                'requestList' => $requestList->toSortedByGroup(),
                 'menuActive' => 'workstation'
             )
         );

@@ -57,12 +57,6 @@ class View extends BaseView {
         return this.loadContent(url).catch(err => this.loadErrorCallback(err.source, err.url));
     }
 
-    loadFinished() {
-        this.cleanInstance();
-        const url = `${this.includeUrl}/workstation/process/finished/`
-        return this.loadContent(url).catch(err => this.loadErrorCallback(err.source, err.url));
-    }
-
     bindEvents() {
         this.$main.on('click', '.button-callnextclient a', (ev) => {
             ev.preventDefault();
@@ -89,10 +83,6 @@ class View extends BaseView {
             ev.preventDefault();
             ev.stopPropagation();
             this.loadProcessing();
-        }).on('click', '.button-finish', (ev) => {
-            ev.preventDefault();
-            ev.stopPropagation();
-            this.loadFinished();
         }).on('click', '.client-called_button-abort, .client-precall_button-abort, .button-cancel', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
