@@ -27,4 +27,14 @@ class RequestList extends Base
     {
         return implode(',', $this->getIds());
     }
+
+    public function toSortedByGroup()
+    {
+        $list = array();
+        foreach ($this as $entity) {
+            $list[$entity->group][] = $entity;
+        }
+        ksort($list);
+        return $list;
+    }
 }
