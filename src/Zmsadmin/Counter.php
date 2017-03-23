@@ -13,6 +13,7 @@ namespace BO\Zmsadmin;
 class Counter extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
     public function readResponse(
@@ -24,6 +25,7 @@ class Counter extends BaseController
         $validator = $request->getAttribute('validator');
         $selectedDate = $validator->getParameter('date')->isString()->getValue();
         $selectedDate = ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d');
+        $waitingnumber = $validator->getParameter('waitingnumber')->isNumber()->getValue();
 
         if (!$workstation->hasId()) {
             return \BO\Slim\Render::redirect(
@@ -41,6 +43,7 @@ class Counter extends BaseController
                 'title' => 'Tresen',
                 'menuActive' => 'counter',
                 'selectedDate' => $selectedDate,
+                'waitingnumber' => $waitingnumber,
                 'workstation' => $workstation->getArrayCopy()            )
         );
     }
