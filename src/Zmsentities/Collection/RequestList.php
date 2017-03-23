@@ -32,7 +32,10 @@ class RequestList extends Base
     {
         $list = array();
         foreach ($this as $entity) {
-            $list[$entity->group][] = $entity;
+            if (! array_key_exists($entity->group, $list)) {
+                $list[$entity->group] = new self();
+            }
+            $list[$entity->group]->addEntity($entity)->sortByName();
         }
         ksort($list);
         return $list;
