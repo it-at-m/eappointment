@@ -15,6 +15,7 @@ class View extends BaseView {
         this.element = $(element);
         this.includeUrl = options.includeurl;
         this.selectedDate = options['selected-date'];
+        this.selectedProcess = options['selected-process'];
         this.bindPublicMethods('loadAllPartials', 'selectDateWithOverlay', 'onDatePick');
         this.$.ready(this.loadData);
         $.ajaxSetup({ cache: false });
@@ -74,6 +75,7 @@ class View extends BaseView {
     loadAppointmentForm() {
         return new AppointmentView(this.$main.find('[data-appointment-form]'), {
             selectedDate: this.selectedDate,
+            selectedProcess: this.selectedProcess,
             includeUrl: this.includeUrl,
             selectDateWithOverlay: this.selectDateWithOverlay,
         })

@@ -8,6 +8,7 @@ class View extends BaseView {
         this.selectedDate = options.selectedDate;
         this.includeUrl = options.includeUrl || "";
         this.selectDateWithOverlay = options.selectDateWithOverlay;
+        this.selectedProcess = options.selectedProcess
         this.serviceList = [];
 
         this.load().then(() => {
@@ -17,7 +18,7 @@ class View extends BaseView {
     }
 
     load() {
-        const url = `${this.includeUrl}/appointmentForm/?selecteddate=${this.selectedDate}`
+        const url = `${this.includeUrl}/appointmentForm/?selecteddate=${this.selectedDate}&selectedprocess=${this.selectedProcess}`
         this.loadPromise = this.loadContent(url)
         return this.loadPromise;
     }
