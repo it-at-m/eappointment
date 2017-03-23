@@ -55,7 +55,7 @@ class Workstation extends Base
         return $workstation;
     }
 
-    public function readByScopeAndDay($scopeId, $dateTime, $resolveReferences = 0)
+    public function readLoggedInListByScope($scopeId, \DateTimeInterface $dateTime, $resolveReferences = 0)
     {
         $workstationList = new \BO\Zmsentities\Collection\WorkstationList();
         $query = new Query\Workstation(Query\Base::SELECT);
@@ -64,15 +64,25 @@ class Workstation extends Base
             ->addConditionScopeId($scopeId)
             ->addConditionTime($dateTime)
             ->addResolvedReferences($resolveReferences);
-
         $result = $this->fetchList($query, new Entity());
-
         if ($result) {
             foreach ($result as $entity) {
                 if ($entity->hasId()) {
-                    $entity->useraccount = (new UserAccount)->readEntity($entity->id, $resolveReferences);
+                    $entity = $this->readResolvedReferences($entity, $resolveReferences);
                     $workstationList->addEntity($entity);
                 }
+            }
+        }
+        return $workstationList;
+    }
+
+    public function readLoggedInListByCluster($clusterId, \DateTimeInterface $dateTime, $resolveReferences = 0)
+    {
+        $workstationList = new \BO\Zmsentities\Collection\WorkstationList();
+        $cluster = (new Cluster)->readEntity($clusterId, $resolveReferences);
+        if ($cluster->toProperty()->scopes->get()) {
+            foreach ($cluster->scopes as $scope) {
+                $workstationList->addList($this->readLoggedInListByScope($scope['id'], $dateTime, $resolveReferences));
             }
         }
         return $workstationList;
@@ -90,7 +100,7 @@ class Workstation extends Base
         if (! $workstation->hasId()) {
             return null;
         }
-        $workstation->useraccount = (new UserAccount)->readEntityByUserId($workstation->id, $resolveReferences - 1);
+        $workstation = $this->readResolvedReferences($workstation, $resolveReferences);
         return $workstation;
     }
 
@@ -105,8 +115,7 @@ class Workstation extends Base
         if (count($result)) {
             foreach ($result as $entity) {
                 if ($entity instanceof Entity) {
-                    $entity->useraccount = (new UserAccount)->readEntityByUserId($entity->id, $resolveReferences - 1);
-                    $entity->scope = (new Scope)->readEntity($entity->scope['id'], $resolveReferences - 1);
+                    $entity = $this->readResolvedReferences($entity, $resolveReferences);
                     $collection->addEntity($entity);
                 }
             }
