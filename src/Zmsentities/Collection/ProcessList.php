@@ -26,8 +26,8 @@ class ProcessList extends Base
                         $list[$hour][intval($appointment['date'])] = $timeList;
                     }
                     $list[$hour][intval($appointment['date'])]->addEntity(clone $process);
+                    $list[$hour][intval($appointment['date'])]->sortByTimeKey();
                 }
-                $list[$hour][intval($appointment['date'])]->sortByTimeKey();
             }
         }
         return $list;
@@ -35,7 +35,7 @@ class ProcessList extends Base
 
     public function getWithHoursByDay()
     {
-        $list = new self();
+        $list = array();
         $start = 8;
         $endTime = 18;
         $hour = $start;
