@@ -4,3 +4,4 @@ config.php
 tags
 .DS_Store
 public/doc/bundle.*
+cache

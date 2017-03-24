@@ -56,6 +56,12 @@ class App extends \BO\Zmsapi\Application
      */
     const DB_PASSWORD = MYSQL_PASSWORD;
 
+    /**
+     * Use caching
+     *
+     */
+    const TWIG_CACHE = '/cache/';
+
     // Uncomment the following line for testing with fixtures
     // public static $data = "/vendor/bo/zmsdb/tests/Zmsdb/fixtures";
 }
