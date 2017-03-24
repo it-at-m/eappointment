@@ -41,7 +41,7 @@ class ScopeAppointmentsByDayXlsExport extends BaseController
             $selectedDate
         );
 
-        $xlsSheetTitle = $selectedDate;
+        $xlsSheetTitle = \DateTimeImmutable::createFromFormat('Y-m-d', $selectedDate)->format('d.m.Y');
 
         $xlsHeaders = [
             'Uhrzeit' => 'time',
@@ -78,6 +78,7 @@ class ScopeAppointmentsByDayXlsExport extends BaseController
         $response->getBody()->write($writer->writeToString());
 
         return $response
-            ->withHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            ->withHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            ->withHeader('Content-Disposition', sprintf('download; filename="tagesuebersicht_%s.xlsx"', $xlsSheetTitle));
     }
 }
