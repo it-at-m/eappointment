@@ -137,7 +137,12 @@ class AvailabilityPage extends Component {
                 }))
                 this.refreshData()
             }).fail(err => {
-                console.log('delete error', err)
+                if (err.status === 404) {
+                    console.log('404 error, ignored')
+                    this.refreshData()
+                } else {
+                    console.log('delete error', err)
+                }
             })
         }
     }
