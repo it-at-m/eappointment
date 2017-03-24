@@ -39,6 +39,8 @@ class CalendarPage extends BaseController
                 'title' => 'Kalender',
                 'calendar' => $calendar,
                 'selectedDate' => ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d'),
+                'selectedYear' => $calendar->getDateTime()->format('Y'),
+                'selectedWeek' => $calendar->getDateTime()->format('W'),
                 'dayoffList' => $scope->getDayoffList(),
                 'monthList' => $calendar->readMonthListByScopeList($scopeList)
             )
