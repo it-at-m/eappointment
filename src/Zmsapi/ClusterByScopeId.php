@@ -24,12 +24,9 @@ class ClusterByScopeId extends BaseController
         $message = Response\Message::create(Render::$request);
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $cluster = $query->readByScopeId($itemId, $resolveReferences);
-        if (! $cluster) {
-            throw new Exception\Cluster\ClusterNotFound();
-        }
-        $message->data = $cluster;
+        $message->data = ($cluster) ? $cluster : array();
 
         Render::lastModified(time(), '0');
-        Render::json($message, $message->getStatuscode());
+        Render::json($message, 200);
     }
 }
