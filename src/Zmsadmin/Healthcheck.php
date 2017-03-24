@@ -15,13 +15,15 @@ use BO\Slim\Render;
 class Healthcheck extends BaseController
 {
     /**
-     * @return String
+     * @SuppressWarnings(UnusedFormalParameter)
      */
-    public function render()
-    {
-        $result = \App::$http->readGetResult('/status/');
-        $status = $result->getEntity();
-        Render::lastModified(time(), '0');
-        echo "OK - DB=" . $status['database']['nodeConnections'] . "%";
+    public function __invoke(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        $status = \App::$http->readGetResult('/status/')->getEntity();
+        $response = \BO\Slim\Render::withLastModified($response, time(), '0');
+        return \BO\Zmsclient\Status::testStatus($response, $status);
     }
 }

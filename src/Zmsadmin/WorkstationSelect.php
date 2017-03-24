@@ -31,6 +31,7 @@ class WorkstationSelect extends BaseController
         $workstation->testDepartmentList();
 
         $input = $request->getParsedBody();
+        $formData = [];
         if (is_array($input) && (array_key_exists('scope', $input))) {
             $form = LoginForm::fromAdditionalParameters();
             $formData = $form->getStatus();
