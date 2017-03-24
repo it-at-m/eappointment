@@ -15,12 +15,15 @@ use \BO\Zmsdb\Status as Query;
 class Healthcheck extends BaseController
 {
     /**
-     * @return String
+     * @SuppressWarnings(UnusedFormalParameter)
      */
-    public static function render()
-    {
+    public function __invoke(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
         $status = (new Query())->readEntity();
-        Render::lastModified(time(), '0');
-        echo "OK - DB=" . $status['database']['nodeConnections'] . "%";
+        $response = \BO\Slim\Render::withLastModified($response, time(), '0');
+        return \BO\Zmsclient\Status::testStatus($response, $status);
     }
 }
