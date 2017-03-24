@@ -79,6 +79,9 @@ class ScopeAppointmentsByDayXlsExport extends BaseController
 
         return $response
             ->withHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-            ->withHeader('Content-Disposition', sprintf('download; filename="tagesuebersicht_%s.xlsx"', $xlsSheetTitle));
+            ->withHeader(
+                'Content-Disposition',
+                sprintf('download; filename="tagesuebersicht_%s.xlsx"', $xlsSheetTitle)
+            );
     }
 }
