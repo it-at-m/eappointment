@@ -13,6 +13,40 @@ class ProcessList extends Base
         return $list;
     }
 
+    public function toProcessListByStatusAndTime()
+    {
+        $list = $this->getWithHoursByDay();
+        $oldList = clone $this->sortByArrivalTime();
+        foreach ($oldList as $process) {
+            foreach ($list as $hour => $timeList) {
+                $timeList = new self();
+                $appointment = $process->getFirstAppointment();
+                if ($hour == $appointment->toDateTime()->format('H')) {
+                    if (! $list[$hour][intval($appointment['date'])] instanceof ProcessList) {
+                        $list[$hour][intval($appointment['date'])] = $timeList;
+                    }
+                    $list[$hour][intval($appointment['date'])]->addEntity(clone $process);
+                }
+                $timeList->sortByTimeKey();
+            }
+        }
+        return $list;
+    }
+
+    public function getWithHoursByDay()
+    {
+        $list = new self();
+        $start = 8;
+        $endTime = 18;
+        $hour = $start;
+        while ($hour <= $endTime) {
+            $list[$hour] = array();
+            $hour++;
+        }
+        ksort($list);
+        return $list;
+    }
+
     public function getFirstProcess()
     {
         return reset($this);
