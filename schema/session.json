@@ -6,7 +6,7 @@
         "id": "7b89b1c1fd6c7a52fa748ff663babd0c",
         "content": {
             "basket": {
-                "requests" : "120335",
+                "requests" : "120656",
                 "providers" : "122217",
                 "scope" : "123",
                 "process" : "1234567",
@@ -32,9 +32,9 @@
             "entry" : {
                 "source" : "specific",
                 "providers" : "122217",
-                "requests" : "120335",
+                "requests" : "120656",
                 "scope": 123
-            },            
+            },
             "status" : "start",
             "X-Authkey" : "abc12345678def",
             "error" : ""
@@ -42,16 +42,16 @@
     },
     "required" : [
         "id",
-        "name"
+    "name"
         ],
     "properties": {
         "name": {
             "type": "string",
-             "description": "name of session"
+            "description": "name of session"
         },
         "id": {
             "type": "string",
-             "description": "id of session"
+            "description": "id of session"
         },
         "content": {
             "type": "object",
@@ -90,7 +90,7 @@
                             "type": "string"
                         },
                         "notificationConfirmation" : {
-                        	"type": "boolean"
+                            "type": "boolean"
                         }
                     }
                 },
@@ -156,17 +156,17 @@
                 "status" : {
                     "type": "string",
                     "enum": [
-		                "start",
-		                "reserved",
-		                "confirmed",
-		                "finished",
-		                "inChange",
-		                "changedProcess",
-		                "stalled",
-		                "inProgress"
-		            ],
-            		"description": "Status of the session. The following values are possible:\n* start: new session started\n* reserved: set if a process has been reserved\n* confirmed: set if a process has been confirmed\n* finished: set if a process has been finished\n* inChange: current process is in change mode\n* changedProcess: current process has been changed\n* stalled: set if session has a problem, fore example if second tab is in use \n* inProgress: if session not stalled anymore\n"
-                },                     
+                        "start",
+                    "reserved",
+                    "confirmed",
+                    "finished",
+                    "inChange",
+                    "changedProcess",
+                    "stalled",
+                    "inProgress"
+                        ],
+                    "description": "Status of the session. The following values are possible:\n* start: new session started\n* reserved: set if a process has been reserved\n* confirmed: set if a process has been confirmed\n* finished: set if a process has been finished\n* inChange: current process is in change mode\n* changedProcess: current process has been changed\n* stalled: set if session has a problem, fore example if second tab is in use \n* inProgress: if session not stalled anymore\n"
+                },
                 "X-Authkey" : {
                     "type": "string"
                 },
