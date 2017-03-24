@@ -27,7 +27,7 @@ class ProcessList extends Base
                     }
                     $list[$hour][intval($appointment['date'])]->addEntity(clone $process);
                 }
-                $timeList->sortByTimeKey();
+                $list[$hour][intval($appointment['date'])]->sortByTimeKey();
             }
         }
         return $list;
