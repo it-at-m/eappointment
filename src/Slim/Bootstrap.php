@@ -107,14 +107,14 @@ class Bootstrap
         $view = new \Slim\Views\Twig(
             \App::APP_PATH  . \App::TEMPLATE_PATH,
             [
-                'cache' => self::readTwigCacheDir(),
+                'cache' => self::readCacheDir(),
                 'debug' => \App::SLIM_DEBUG,
             ]
         );
         return $view;
     }
 
-    public static function readTwigCacheDir()
+    public static function readCacheDir()
     {
         $path = false;
         if (\App::TWIG_CACHE) {
@@ -154,6 +154,12 @@ class Bootstrap
     public static function loadRouting($filename)
     {
         $bootstrap = self::getInstance();
+        $container = \App::$slim->getContainer();
+        $cacheFile = static::readCacheDir();
+        if ($cacheFile) {
+            $cacheFile = $cacheFile . '/routing.cache';
+            $container['router']->setCacheFile($cacheFile);
+        }
         $bootstrap->addRoutingToSlim($filename);
     }
 
