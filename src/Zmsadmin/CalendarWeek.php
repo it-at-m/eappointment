@@ -6,6 +6,10 @@
 
 namespace BO\Zmsadmin;
 
+use \BO\Zmsentities\Scope;
+
+use BO\Mellon\Validator;
+
 /**
   * Handle requests concerning services
   *
@@ -21,13 +25,11 @@ class CalendarWeek extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $cluster = null;
-        $validator = $request->getAttribute('validator');
-        $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
-
         $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
-        $scope = new Scope($workstation->scope);
-        $calendar = new Helper\Calendar($selectedDate);
+
+        $selectedYear = Validator::value($args['year'])->isNumber()->getValue();
+        $selectedWeek = Validator::value($args['weeknr'])->isNumber()->getValue();
+        $calendar = new Helper\Calendar(null, $selectedWeek, $selectedYear);
 
         if (1 == $workstation->queue['clusterEnabled']) {
             $cluster = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/cluster/')->getEntity();
@@ -36,13 +38,17 @@ class CalendarWeek extends BaseController
 
         return \BO\Slim\Render::withHtml(
             $response,
-            'page/calenderWeek.twig',
+            'page/calendarWeek.twig',
             array(
                 'title' => 'Kalender',
+                'workstation' => $workstation,
+                'source' => $workstation->getRedirect(),
+                'cluster' => ($cluster) ? $cluster : null,
                 'calendar' => $calendar,
-                'selectedDate' => ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d'),
-                'dayoffList' => $scope->getDayoffList(),
-                'monthList' => $calendar->readMonthListByScopeList($scopeList)
+                'selectedYear' => $selectedYear,
+                'selectedWeek' => $selectedWeek,
+                'selectedDate' => $calendar->getDateTime()->format('Y-m-d'),
+                'dayList' => $calendar->readWeekDayListWithProcessList($scopeList)
             )
         );
     }

@@ -40,7 +40,7 @@ use \Psr\Http\Message\ResponseInterface;
   * Calendar stuff
   * -------------------------------------------------------------------------
   */
- \App::$slim->get('/calendar/{year:\d\d\d\d}/kw{weeknr:\d{1,2}}/', '\BO\Zmsadmin\CalendarWeek')
+ \App::$slim->get('/calendar/{year:\d\d\d\d}/{weeknr:\d{1,2}}/', '\BO\Zmsadmin\CalendarWeek')
      ->setName("calendar_week");
 
 

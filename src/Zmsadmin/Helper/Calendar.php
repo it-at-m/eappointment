@@ -15,9 +15,14 @@ class Calendar
 
     protected $dateTime;
 
-    public function __construct($selectedDate = null)
+    public function __construct($selectedDate = null, $selectedWeek = null, $selectedYear = null)
     {
-        $this->dateTime = ($selectedDate) ? new \BO\Zmsentities\Helper\DateTime($selectedDate) : \App::$now;
+        if ($selectedWeek && $selectedYear) {
+            $this->dateTime = $this->getDateTimeFromWeekAndYear($selectedWeek, $selectedYear);
+        } else {
+            $this->dateTime = ($selectedDate) ? new \BO\Zmsentities\Helper\DateTime($selectedDate) : \App::$now;
+        }
+
         $this->calendar = new Entity();
     }
 
@@ -58,5 +63,40 @@ class Calendar
                 throw $exception;
             }
         }
+    }
+
+    public function readWeekDayListWithProcessList(\BO\Zmsentities\Collection\ScopeList $scopeList)
+    {
+        $dayList = new \BO\Zmsentities\Collection\DayList();
+        $startDate = clone $this->dateTime->modify('this week');
+        $endDate = clone $this->dateTime->modify('+6 days');
+        $currentDate = $startDate;
+        while ($currentDate <= $endDate) {
+            $day = (new \BO\Zmsentities\Day)->setDateTime($currentDate);
+            $processList = new \BO\Zmsentities\Collection\ProcessList();
+            foreach ($scopeList as $scope) {
+                $this->dateTime = $currentDate;
+                $freeProcessList = $this->readAvailableSlotsFromDayAndScopeList($scopeList);
+                $bookedProcessList = \App::$http
+                    ->readGetResult('/scope/'. $scope->id .'/process/'. $currentDate->format('Y-m-d') .'/')
+                    ->getCollection();
+                if ($bookedProcessList) {
+                    $processList->addList($bookedProcessList);
+                }
+                if ($freeProcessList) {
+                    $processList->addList($freeProcessList);
+                }
+            }
+            $day['processList'] = $processList->toProcessListByStatusAndTime();
+            $dayList->addEntity($day);
+            $currentDate = $currentDate->modify('+1 day');
+        }
+        return $dayList;
+    }
+
+    protected function getDateTimeFromWeekAndYear($week, $year)
+    {
+        $dateTime = new \DateTime();
+        return $dateTime->setISODate($year, $week);
     }
 }
