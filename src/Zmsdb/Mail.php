@@ -22,8 +22,6 @@ class Mail extends Base
             ->addConditionItemId($itemId);
         $mail = $this->fetchOne($query, new Entity());
         if ($mail && $mail->hasId()) {
-            $multiPart = $this->readMultiPartByQueueId($itemId);
-            $mail->addMultiPart($multiPart);
             $mail = $this->readResolvedReferences($mail, $resolveReferences);
         }
         return $mail;
@@ -41,8 +39,6 @@ class Mail extends Base
             foreach ($result as $item) {
                 $entity = new Entity($item);
                 $entity = $this->readResolvedReferences($entity, $resolveReferences);
-                $multiPart = $this->readMultiPartByQueueId($entity->id);
-                $entity->addMultiPart($multiPart);
                 if ($entity instanceof Entity) {
                     $mailList->addEntity($entity);
                 }
@@ -53,6 +49,8 @@ class Mail extends Base
 
     public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $mail, $resolveReferences)
     {
+        $multiPart = $this->readMultiPartByQueueId($mail->id);
+        $mail->addMultiPart($multiPart);
         if (1 <= $resolveReferences) {
             $processQuery = new \BO\Zmsdb\Process();
             $mail->process = $processQuery
