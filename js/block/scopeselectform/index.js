@@ -1,4 +1,5 @@
 /* global window */
+/* global alert */
 import BaseView from "../../lib/baseview"
 
 class View extends BaseView {
@@ -34,12 +35,20 @@ class View extends BaseView {
     printAppointments() {
         if (this.scopeId && this.today) {
             window.open(`${this.includeUrl}/scope/${this.scopeId}/process/${this.today}/?print=1`)
+        } else {
+            if (!this.scopeId) {
+                alert('Kein Standort ausgewählt');
+            }
         }
     }
 
     downloadAppointments() {
         if (this.scopeId && this.today)  {
             window.open(`${this.includeUrl}/scope/${this.scopeId}/process/${this.today}/xlsx/`)
+        } else {
+            if (!this.scopeId) {
+                alert('Kein Standort ausgewählt');
+            }
         }
     }
 
