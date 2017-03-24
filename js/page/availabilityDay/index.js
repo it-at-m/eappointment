@@ -134,15 +134,12 @@ class AvailabilityPage extends Component {
             }).done(() => {
                 this.setState(Object.assign({}, deleteAvailabilityInState(this.state, availability), {
                     selectedAvailability: null
-                }))
-                this.refreshData()
+                }), () => {
+                    //after removing the deleted entry, sav the updated list again.
+                    this.onSaveUpdates()
+                })
             }).fail(err => {
-                if (err.status === 404) {
-                    console.log('404 error, ignored')
-                    this.refreshData()
-                } else {
-                    console.log('delete error', err)
-                }
+                console.log('delete error', err)
             })
         }
     }
