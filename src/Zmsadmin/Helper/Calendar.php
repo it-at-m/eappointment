@@ -21,6 +21,11 @@ class Calendar
         $this->calendar = new Entity();
     }
 
+    public function getDateTime()
+    {
+        return $this->dateTime;
+    }
+
     public function readMonthListByScopeList(\BO\Zmsentities\Collection\ScopeList $scopeList)
     {
         $this->calendar->scopes = $scopeList;

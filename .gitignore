@@ -5,3 +5,4 @@ config.php
 .sass-cache
 .DS_Store
 bower_components
+cache
