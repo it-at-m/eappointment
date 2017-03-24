@@ -44,7 +44,7 @@ class ScopeAppointmentsByDayXlsExport extends BaseController
         $xlsSheetTitle = \DateTimeImmutable::createFromFormat('Y-m-d', $selectedDate)->format('d.m.Y');
 
         $xlsHeaders = [
-            'Uhrzeit' => 'time',
+            'Uhrzeit' => 'string',
             'Nr.' => 'integer',
             'Name' => 'string',
             'Absagecode' => 'string',
