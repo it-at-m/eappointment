@@ -22,149 +22,70 @@ class Status extends Base
             array_key_exists('wsrep_ready', $statusVariables) ? $statusVariables['wsrep_ready'] : 'OFF';
         $entity['database']['logbin'] =
             array_key_exists('log_bin', $configVariables) ? $configVariables['log_bin'] : 'OFF';
-        $entity['processes']['blocked'] = $this->readBlockedProcessCount();
-        $entity['processes']['confirmed'] = $this->readConfirmedProcessCount();
-        $entity['processes']['deleted'] = $this->readDeletedProcessCount();
-        $entity['processes']['lastInsert'] = $this->readLastInsertedProcessTime();
-        $entity['processes']['missed'] = $this->readMissedProcessCount();
-        $entity['processes']['reserved'] = $this->readReservedProcessCount();
+        $entity['processes'] = $this->readProcessStats();
+        $entity['mail'] = $this->readMailStats();
+        $entity['notification'] = $this->readNotificationStats();
         return $entity;
     }
 
     /**
-     * Get the numer of blocked appointments
+     * Get the information on processes
      *
-     * @return Int
+     * @return Array
      */
-    protected function readBlockedProcessCount()
+    protected function readMailStats()
     {
-        $processCount = $this->getReader()->fetchValue(
+        $stats = $this->getReader()->fetchOne(
             'SELECT
-                SUM(b.AnzahlPersonen) as cnt
-            FROM buerger AS b
-            WHERE
-                name = "dereferenced"
-                AND (
-                    b.istFolgeterminvon IS NULL
-                    OR b.istFolgeterminvon = 0
-                )
+                SUM(id) as queueCount,
+                UNIX_TIMESTAMP() - MIN(createTimestamp) as oldestSeconds,
+                UNIX_TIMESTAMP() - MAX(createTimestamp) as newestSeconds
+            FROM mailqueue
             '
         );
-        return $processCount;
+        return $stats;
     }
 
     /**
-     * Get the numer of confirmed appointments
+     * Get the information on processes
      *
-     * @return Int
+     * @return Array
      */
-    protected function readConfirmedProcessCount()
+    protected function readNotificationStats()
     {
-        $processCount = $this->getReader()->fetchValue(
+        $stats = $this->getReader()->fetchOne(
             'SELECT
-                SUM(b.AnzahlPersonen) as cnt
-            FROM buerger AS b
-            WHERE
-                b.StandortID != 0
-                AND vorlaeufigeBuchung = 0
-                AND (
-                    b.istFolgeterminvon IS NULL
-                    OR b.istFolgeterminvon = 0
-                )
+                SUM(id) as queueCount,
+                UNIX_TIMESTAMP() - MIN(createTimestamp) as oldestSeconds,
+                UNIX_TIMESTAMP() - MAX(createTimestamp) as newestSeconds
+            FROM notificationqueue
             '
         );
-        return $processCount;
+        return $stats;
     }
 
     /**
-     * Get the numer of last inserted appointments
+     * Get the information on processes
      *
-     * @return Int
+     * @return Array
      */
-    protected function readLastInsertedProcessTime()
+    protected function readProcessStats()
     {
-        $processCount = $this->getReader()->fetchValue(
+        $processStats = $this->getReader()->fetchOne(
             'SELECT
-                FROM_UNIXTIME(MAX(IPTimeStamp)) as ts
+                SUM(CASE name WHEN "dereferenced" THEN 1 ELSE NULL END) as blocked,
+                SUM(CASE WHEN b.StandortID != 0 AND vorlaeufigeBuchung = 0 THEN 1 ELSE NULL END) as confirmed,
+                SUM(CASE WHEN name = "(abgesagt)" THEN 1 ELSE NULL END) as deleted,
+                SUM(CASE WHEN nicht_erschienen > 0 AND b.StandortID != 0 THEN 1 ELSE NULL END) as missed,
+                SUM(CASE WHEN vorlaeufigeBuchung = 1 AND b.StandortID != 0 THEN 1 ELSE NULL END) as reserved,
+                FROM_UNIXTIME(MAX(IPTimeStamp)) as lastInsert
             FROM buerger AS b
             WHERE
-                b.StandortID != 0
-                AND vorlaeufigeBuchung = 0
-                AND (
-                    b.istFolgeterminvon IS NULL
-                    OR b.istFolgeterminvon = 0
-                )
+                b.istFolgeterminvon IS NULL
+                OR b.istFolgeterminvon = 0
             '
         );
-        return $processCount;
-    }
-
-    /**
-     * Get the numer of deleted appointments
-     *
-     * @return Int
-     */
-    protected function readDeletedProcessCount()
-    {
-        $processCount = $this->getReader()->fetchValue(
-            'SELECT
-                SUM(b.AnzahlPersonen) as cnt
-            FROM buerger AS b
-            WHERE
-                name = "(abgesagt)"
-                AND (
-                    b.istFolgeterminvon IS NULL
-                    OR b.istFolgeterminvon = 0
-                )
-            '
-        );
-        return $processCount;
-    }
-
-    /**
-     * Get the numer of missed appointments
-     *
-     * @return Int
-     */
-    protected function readMissedProcessCount()
-    {
-        $processCount = $this->getReader()->fetchValue(
-            'SELECT
-                SUM(b.AnzahlPersonen) as cnt
-            FROM buerger AS b
-            WHERE
-                nicht_erschienen > 0
-                AND b.StandortID != 0
-                AND (
-                    b.istFolgeterminvon IS NULL
-                    OR b.istFolgeterminvon = 0
-                )
-            '
-        );
-        return $processCount;
-    }
-
-    /**
-     * Get the numer of reserved appointments
-     *
-     * @return Int
-     */
-    protected function readReservedProcessCount()
-    {
-        $processCount = $this->getReader()->fetchValue(
-            'SELECT
-                SUM(b.AnzahlPersonen) as cnt
-            FROM buerger AS b
-            WHERE
-                b.StandortID != 0
-                AND vorlaeufigeBuchung = 1
-                AND (
-                    b.istFolgeterminvon IS NULL
-                    OR b.istFolgeterminvon = 0
-                )
-            '
-        );
-        return $processCount;
+        return $processStats;
     }
 
     /**
