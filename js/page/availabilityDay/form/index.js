@@ -61,7 +61,7 @@ const getFormValuesFromData = data => {
 
     const openFrom = data.bookable.startInDays
     const openFromDefault = data.scope.preferences.appointment.startInDaysDefault
-    const openTo = data.bookable.startInDays
+    const openTo = data.bookable.endInDays
     const openToDefault = data.scope.preferences.appointment.endInDaysDefault
 
     return cleanupFormData(Object.assign({}, getFirstLevelValues(data), {
