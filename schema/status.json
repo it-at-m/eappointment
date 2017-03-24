@@ -24,28 +24,62 @@
             "type": "object",
             "properties": {
                 "blocked": {
-                    "type": "string",
+                    "type": "number",
                     "description": "Number of temporary blocked appointment IDs in the database."
                 },
                 "confirmed": {
-                    "type": "string",
+                    "type": "number",
                     "description": "Number of valid appointments in the database. Every process counts for the clients involved."
                 },
                 "deleted": {
-                    "type": "string",
+                    "type": "number",
                     "description": "Number of deleted appointments in the database blocking free appointment times."
                 },
                 "lastInsert": {
-                    "type": "string",
+                    "type": "number",
                     "description": "Timestamp of last inserted process"
                 },
                 "missed": {
-                    "type": "string",
+                    "type": "number",
                     "description": "Number of missed appointments in the database. Zeroed on daily basis in the night."
                 },
                 "reserved": {
-                    "type": "string",
+                    "type": "number",
                     "description": "Number of reserved appointments in the database."
+                }
+            }
+        },
+        "mail": {
+            "type": "object",
+            "properties": {
+                "queueCount": {
+                    "type": "number",
+                    "description": "Number of unsend items in the queue"
+                },
+                "oldestSeconds": {
+                    "type": "number",
+                    "description": "Unix timestamp of oldest unsend item in queue"
+                },
+                "newestSeconds": {
+                    "type": "number",
+                    "description": "Unix timestamp of newest unsend item in queue"
+                }
+            }
+        },
+        "notification": {
+            "type": "object",
+            "properties": {
+                "queueCount": {
+                    "type": "number",
+                    "description": "Number of unsend items in the queue"
+                },
+                "oldestSeconds": {
+                    "type": "number",
+                    "description": "Unix timestamp of oldest unsend item in queue"
+                },
+                "newestSeconds": {
+                    "type": "number",
+                    "description": "Unix timestamp of newest unsend item in queue"
                 }
             }
         },
@@ -57,7 +91,7 @@
                     "description": "Status of database cluster health"
                 },
                 "nodeConnections": {
-                    "type": "string",
+                    "type": "float",
                     "description": "Percentage of used connections on requested node."
                 }
             }
