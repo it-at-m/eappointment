@@ -22,10 +22,8 @@ class HttpTest extends Base
     {
         $http = $this->createHttpClient();
         $result = $http->readGetResult('/scope/');
-        $ids = $result->getIds();
         $collection = $result->getCollection();
         $this->assertTrue($collection instanceof \BO\Zmsentities\Collection\Base);
-        $this->assertContains('140,141,142', $ids);
     }
 
     public function testMails()
