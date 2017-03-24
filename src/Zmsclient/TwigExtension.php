@@ -64,10 +64,10 @@ class TwigExtension extends \Twig_Extension
         return $output;
     }
 
-    protected function parseBody($body)
+    protected function parseBody($body, $allowEmpty = false)
     {
         $content = Validator::value((string)$body)->isJson();
-        if ($content->hasFailed()) {
+        if ($content->hasFailed() && !$allowEmpty) {
             $output =
                 'API-Call failed, JSON parsing with error: ' . $content->getMessages()
                     . ' - Snippet: ' .substr(\strip_tags((string)$body), 0, 2000) . '...'
@@ -91,7 +91,7 @@ class TwigExtension extends \Twig_Extension
     {
         $output = [];
         $output['header'] = $this->parseHeaders($request);
-        $output['body'] = $this->parseBody($request->getBody());
+        $output['body'] = $this->parseBody($request->getBody(), true);
         return $output;
     }
 

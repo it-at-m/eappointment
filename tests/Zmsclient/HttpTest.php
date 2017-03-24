@@ -10,8 +10,9 @@ class HttpTest extends Base
     {
         $http = $this->createHttpClient();
         $result = $http->readGetResult('/status/');
-        $result = \BO\Zmsclient\Status::testStatus($result);
+        $response = new \BO\Zmsclient\Psr7\Response();
         $entity = $result->getEntity();
+        $response = \BO\Zmsclient\Status::testStatus($response, $entity);
         $this->assertTrue($entity instanceof \BO\Zmsentities\Schema\Entity);
         $this->assertInstanceOf('\Psr\Http\Message\ResponseInterface', $result->getResponse());
         $this->assertInstanceOf('\Psr\Http\Message\RequestInterface', $result->getRequest());
@@ -29,7 +30,7 @@ class HttpTest extends Base
 
     public function testMails()
     {
-        $login = $this->writeTestLogin();
+        $this->writeTestLogin();
         $http = $this->createHttpClient();
         $entity = \BO\Zmsentities\Mail::createExample();
         $entity->process = $http->readGetResult('/process/82252/12a2/')->getEntity();
@@ -95,9 +96,9 @@ class HttpTest extends Base
             'password' => '1palme1'
         ));
         $workstation = $http->readPostResult('/workstation/'. $userAccount->id .'/', $userAccount)->getEntity();
-        if (isset($workstation->authKey)) {
-            \BO\Zmsclient\Auth::setKey($workstation->authKey);
-            $this->assertEquals($workstation->authKey, \BO\Zmsclient\Auth::getKey());
+        if (isset($workstation->authkey)) {
+            \BO\Zmsclient\Auth::setKey($workstation->authkey);
+            $this->assertEquals($workstation->authkey, \BO\Zmsclient\Auth::getKey());
         }
         return $workstation;
     }
