@@ -60,7 +60,8 @@ class ScopeAppointmentsByDayXlsExport extends BaseController
             $client = count($queueItem->clients) > 0 ? $queueItem->clients[0] : [];
             $request = count($queueItem->requests) > 0 ? $queueItem->requests[0] : [];
 
-            $date = new \DateTime('@' . $queueItem->queue['arrivalTime'], new \DateTimeZone('UTC'));
+            $date = new \DateTime('@' . $queueItem->queue['arrivalTime']);
+            $date->setTimezone(\App::$now->getTimezone());
 
             $row = [
                 $date->format('H:i:s'),
