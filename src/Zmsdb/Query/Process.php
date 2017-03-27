@@ -91,6 +91,8 @@ class Process extends Base implements MappingInterface
                     THEN "deleted"
                 WHEN process.StandortID = 0
                     THEN "blocked"
+                WHEN process.vorlaeufigeBuchung = 1
+                    THEN "reserved"
                 WHEN process.nicht_erschienen != 0
                     THEN "missed"
                 WHEN process.Abholer != 0 AND process.AbholortID != 0 AND process.NutzerID = 0
@@ -103,10 +105,8 @@ class Process extends Base implements MappingInterface
                     THEN "called"
                 WHEN process.wsm_aufnahmezeit != "00:00:00"
                     THEN "queued"
-                WHEN process.vorlaeufigeBuchung = 0
+                WHEN process.vorlaeufigeBuchung = 0 AND IPTimeStamp
                     THEN "confirmed"
-                WHEN process.vorlaeufigeBuchung = 1
-                    THEN "reserved"
                 ELSE "free"
             END'
         );
