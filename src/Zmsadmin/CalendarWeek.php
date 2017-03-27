@@ -42,6 +42,7 @@ class CalendarWeek extends BaseController
             array(
                 'title' => 'Kalender',
                 'workstation' => $workstation,
+                'scopeList' => $scopeList,
                 'source' => $workstation->getRedirect(),
                 'cluster' => ($cluster) ? $cluster : null,
                 'calendar' => $calendar,
