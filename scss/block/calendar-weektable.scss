@@ -1,8 +1,8 @@
 .calendar-weektable {
-    @extend 
+    @extend
         .board;
     > .body {
-        @extend 
+        @extend
             //.board_body--noBorder,
             //.board_body--white,
             .board_body--noPadding;
@@ -12,7 +12,7 @@
 $border-color:                      $inuit-table-border-color;
 
 .calendar-weektable_calendar {
-    @extend 
+    @extend
         .table--cells,
         .table--compact,
         .table;
@@ -30,14 +30,25 @@ $border-color:                      $inuit-table-border-color;
         width: 14%;
         border-color:               darken($border-color, 25%);
     }
+    .hour {
+        height:                     8;
+        line-height:                1.5em;
+        position:                   relative;
+        .slots__overlay {
+            position:               absolute;
+            top:                    0;
+            left:                   0;
+            width:                  100%;
+        }
+    }
     .timeslot {
         font-size:                  0.8em;
-        line-height:                1.2em;
-        min-height:                 1.5em;
+        line-height:                1em;
+        min-height:                 1em;
         background-color:           transparent;
         border:                     0 none;
         border-bottom:              1px solid $border-color;
-        display:                    block;
+        display:                     block;
         .timeslot__time {
             display:                table-cell;
             padding:                0.1em 0.3em 0.1em 0.2em;
@@ -55,6 +66,15 @@ $border-color:                      $inuit-table-border-color;
                 padding:            0 3px 1px;
             }
         }
+        &.em-12 {
+            height:                 1.2em;
+        }
+        &.em-15 {
+            height:                 1.5em;
+        }
+        &.em-20 {
+            height:                 2em;
+        }
         &.timeslot--disabled {
             background-color:       $backgroundColorDateDisabled;
             color:                  #666666;
@@ -69,6 +89,3 @@ $border-color:                      $inuit-table-border-color;
         }
     }
 }
-
-
-
