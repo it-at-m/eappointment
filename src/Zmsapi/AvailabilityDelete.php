@@ -25,6 +25,6 @@ class AvailabilityDelete extends BaseController
         $query->deleteEntity($itemId);
         $message->data = $entity;
         Render::lastModified(time(), '0');
-        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
+        Render::json($message->setUpdatedMetaData(), 200);
     }
 }

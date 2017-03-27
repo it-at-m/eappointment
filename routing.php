@@ -154,7 +154,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  type: string
  *          responses:
  *              200:
- *                  description: "success, returns deleted object"
+ *                  description: "success, returns deleted object or empty if object did not exists"
  *                  schema:
  *                      type: object
  *                      properties:
@@ -162,8 +162,6 @@ use \Psr\Http\Message\ResponseInterface;
  *                              $ref: "schema/metaresult.json"
  *                          data:
  *                              $ref: "schema/availability.json"
- *              404:
- *                  description: "availability id does not exists"
  */
 \App::$slim->delete('/availability/{id:\d{1,11}}/',
     '\BO\Zmsapi\AvailabilityDelete')
