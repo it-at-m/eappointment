@@ -42,14 +42,13 @@ class CalendarWeek extends BaseController
             array(
                 'title' => 'Kalender',
                 'workstation' => $workstation,
-                'scopeList' => $scopeList,
                 'source' => $workstation->getRedirect(),
                 'cluster' => ($cluster) ? $cluster : null,
                 'calendar' => $calendar,
                 'selectedYear' => $selectedYear,
                 'selectedWeek' => $selectedWeek,
                 'selectedDate' => $calendar->getDateTime()->format('Y-m-d'),
-                'dayList' => $calendar->readWeekDayListWithProcessList($scopeList)
+                'dayList' => $calendar->readWeekDayListWithProcessList($scopeList)->toSortedByHour()
             )
         );
     }

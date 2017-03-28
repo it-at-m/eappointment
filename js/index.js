@@ -23,6 +23,7 @@ import WorkstationView from './page/workstation'
 
 import ScopeSelectView from './block/scopeselectform'
 import AvailabilityDayPage from './page/availabilityDay'
+import WeekCalendarPage from './page/weekCalendar'
 import printScopeAppointmentsByDay from './page/scopeAppointmentsByDay/print'
 import bindReact from './lib/bindReact.js'
 import { getDataAttributes } from './lib/utils'
@@ -53,6 +54,10 @@ $('.counter-view').each(function() {
 
 $('.workstation-view').each(function() {
     new WorkstationView(this, getDataAttributes(this));
+})
+
+$('.calendar-weektable').each(function() {
+    new WeekCalendarPage(this, getDataAttributes(this));
 })
 
 $('[data-scope-select-form]').each(function() {

@@ -317,7 +317,7 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/calendarPage/[{date:\d}/]', '\BO\Zmsadmin\CalendarPage')
     ->setName("counter_calendar_page");
 
-\App::$slim->get('/appointmentForm/[{date:\d}/]', '\BO\Zmsadmin\AppointmentForm')
+\App::$slim->get('/appointmentForm/', '\BO\Zmsadmin\AppointmentForm')
     ->setName("appointment_form");
 
 \App::$slim->get('/queueTable/[{date:\d}/]', '\BO\Zmsadmin\QueueTable')

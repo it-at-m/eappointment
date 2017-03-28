@@ -24,6 +24,7 @@ class AppointmentForm extends BaseController
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
         //TODO fetch process by selectedProcessId if given
         //$selectedProcessId = $validator->getParameter('selectedprocess')->isString()->getValue();
+
         $calendar = new Helper\Calendar($selectedDate);
 
         if (1 == $workstation->queue['clusterEnabled']) {

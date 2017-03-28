@@ -17,38 +17,43 @@ $border-color:                      $inuit-table-border-color;
         .table--compact,
         .table;
     background-color:               $white;
+    border-spacing:                 1px;
     th {
         min-height:                 2em;
         border-width:               1px 0;
         position:                   relative;
-    }
-    td {
-        background-color:           $backgroundColorDateDisabled;
-        border-color:               darken($border-color, 25%);
-    }
-    th {
+        padding:                    0 5px;
         width: 14%;
         border-color:               darken($border-color, 25%);
+        &.legend-hour {
+            width:                  auto;
+        }
     }
-    .hour {
-        height:                     8;
-        line-height:                1.5em;
-        position:                   relative;
-        .slots__overlay {
-            position:               absolute;
-            top:                    0;
-            left:                   0;
-            width:                  100%;
+    td {
+        background:         -moz-linear-gradient(top, rgba(240,240,240,0) 0%, rgba(240,240,240,0.3) 50%, rgba(240,240,240,0.78) 100%); /* FF3.6-15 */
+        background:         -webkit-linear-gradient(top, rgba(240,240,240,0) 0%,rgba(240,240,240,0.3) 50%,rgba(240,240,240,0.78) 100%); /* Chrome10-25,Safari5.1-6 */
+        background:         linear-gradient(to bottom, rgba(240,240,240,0) 0%,rgba(240,240,240,0.3) 50%,rgba(240,240,240,0.78) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+        filter:             progid:DXImageTransform.Microsoft.gradient( startColorstr='#00dddddd', endColorstr='#94dddddd',GradientType=0 ); /* IE6-9 */
+        box-shadow:         inset 1px 1px rgba(245, 245, 245, 0.5);
+        border:                     0px;
+        &.legend-hour {
+            width:auto;
+            background-color:       $grey;
+        }
+    }
+    .calendar-weektable_day {
+        border-spacing:             0 !important;
+        td {
+            border:                 0px !important;
         }
     }
     .timeslot {
         font-size:                  0.8em;
-        line-height:                1em;
+        line-height:                1.2em;
         min-height:                 1em;
         background-color:           transparent;
         border:                     0 none;
-        border-bottom:              1px solid $border-color;
-        display:                     block;
+        display:                    block;
         .timeslot__time {
             display:                table-cell;
             padding:                0.1em 0.3em 0.1em 0.2em;
@@ -58,34 +63,34 @@ $border-color:                      $inuit-table-border-color;
         .timeslot__items {
             display: table-cell;
             .item {
-                background:         rgba(255, 255, 255, 0.9) none repeat scroll 0 0;
+                background:         rgba(215, 215, 215, 0.9) none repeat scroll 0 0;
                 border-radius:      2px;
-                box-shadow:         0 0 2px rgba(90, 90, 90, 0.5);
+                box-shadow:         0 0 2px rgba(45, 45, 45, 0.5);
                 display:            inline-block;
-                margin:             1px;
+                margin:             2px;
                 padding:            0 3px 1px;
             }
-        }
-        &.em-12 {
-            height:                 1.2em;
-        }
-        &.em-15 {
-            height:                 1.5em;
-        }
-        &.em-20 {
-            height:                 2em;
         }
         &.timeslot--disabled {
             background-color:       $backgroundColorDateDisabled;
             color:                  #666666;
         }
         &.timeslot--free {
-            background-color:       $backgroundColorDateFree;
-            border-color:           darken($backgroundColorDateFree, 20%);
+            .timeslot__time {
+                background-color:       $backgroundColorDateFree;
+                border-color:           darken($backgroundColorDateFree, 20%);
+                font-weight:            bold;
+                color:                  $white;
+            }
+
         }
         &.timeslot--busy {
-            background-color:       $backgroundColorDateBusy;
-            border-color:           #D89191;
+            .timeslot__time {
+                background-color:       $backgroundColorDateBusy;
+                border-color:           #D89191;
+                font-weight:            bold;
+                color:                  $white;
+            }
         }
     }
 }
