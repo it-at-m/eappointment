@@ -36,7 +36,7 @@ class ProcessList extends Base
     public function getWithHoursByDay()
     {
         $list = array();
-        $start = 8;
+        $start = 7;
         $endTime = 18;
         $hour = $start;
         while ($hour <= $endTime) {
