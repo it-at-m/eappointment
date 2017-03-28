@@ -10,7 +10,7 @@ namespace BO\Zmsadmin;
   * Handle requests concerning services
   *
   */
-class WorkstationProcess extends BaseController
+class WorkstationCallProcess extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
