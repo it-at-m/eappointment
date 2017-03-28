@@ -1,7 +1,9 @@
 import BaseView from '../../lib/baseview'
 import $ from 'jquery'
 import AppointmentView from '../../block/appointment'
+import AppointmentTimesView from '../../block/appointment/times'
 import QueueView from '../../block/queue'
+import QueueInfoView from '../../block/queue/info'
 import CalendarView from '../../block/calendar'
 
 import { loadInto } from './utils'
@@ -16,7 +18,7 @@ class View extends BaseView {
         this.includeUrl = options.includeurl;
         this.selectedDate = options['selected-date'];
         this.selectedProcess = options['selected-process'];
-        this.bindPublicMethods('loadAllPartials', 'selectDateWithOverlay', 'onDatePick', 'onDateToday');
+        this.bindPublicMethods('loadAllPartials', 'selectDateWithOverlay', 'onDatePick', 'onDateToday', 'onGhostWorkstationChange');
         this.$.ready(this.loadData);
         $.ajaxSetup({ cache: false });
         this.loadAllPartials().then(() => this.bindEvents());
@@ -64,7 +66,12 @@ class View extends BaseView {
         this.selectedDate = date;
         this.loadCalendar(),
         this.loadAppointmentForm(),
-        this.loadQueueTable()
+        this.loadQueueTable(),
+        this.loadAppointmentTimes()
+    }
+
+    onGhostWorkstationChange() {
+        this.loadAllPartials();
     }
 
     loadAllPartials() {
@@ -72,7 +79,8 @@ class View extends BaseView {
             this.loadCalendar(),
             this.loadAppointmentForm(),
             this.loadQueueTable(),
-            this.loadQueueInfo()
+            this.loadQueueInfo(),
+            this.loadAppointmentTimes()
         ])
     }
 
@@ -94,10 +102,19 @@ class View extends BaseView {
         })
     }
 
+    loadAppointmentTimes () {
+        return new AppointmentTimesView(this.$main.find('[data-appointment-times]'), {
+            selectedDate: this.selectedDate,
+            includeUrl: this.includeUrl
+        })
+    }
+
     loadQueueInfo () {
-        const url = `${this.includeUrl}/counter/queueInfo/?selecteddate=${this.selectedDate}`
-        this.loadQueueInfoPromise = loadInto(url, this.$main.find('[data-queue-info]'))
-        return this.loadQueueInfoPromise;
+        return new QueueInfoView(this.$main.find('[data-queue-info]'), {
+            selectedDate: this.selectedDate,
+            includeUrl: this.includeUrl,
+            onGhostWorkstationChange: this.onGhostWorkstationChange
+        })
     }
 
     loadQueueTable () {

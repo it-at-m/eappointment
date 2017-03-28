@@ -6,7 +6,7 @@
 
 namespace BO\Zmsadmin;
 
-class CounterQueueInfo extends BaseController
+class CounterAppointmentTimes extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
@@ -19,22 +19,16 @@ class CounterQueueInfo extends BaseController
     ) {
         $validator = $request->getAttribute('validator');
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
-        $ghostWorkstation = $validator->getParameter('ghostworkstationcount')->isNumber()->getValue();
-
-        if ($ghostWorkstation) {
-            \App::$http->readPostResult('/counter/ghostworkstation/', ['count' => $ghostWorkstation])->getEntity();
-        }
 
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $workstationInfo = Helper\WorkstationInfo::getInfoBoxData($workstation, $selectedDate);
 
         return \BO\Slim\Render::withHtml(
             $response,
-            'block/queue/info.twig',
+            'block/appointment/times.twig',
             array(
                 'workstation' => $workstation,
-                'workstationInfo' => $workstationInfo,
-                'selectedDate' => ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d'),
+                'workstationInfo' => $workstationInfo
             )
         );
     }
