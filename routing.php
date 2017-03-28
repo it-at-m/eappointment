@@ -52,9 +52,11 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/counter/', '\BO\Zmsadmin\Counter')
     ->setName("counter");
 
-\App::$slim->get('/counter/queueInfo/[{date:\d}/]', '\BO\Zmsadmin\CounterQueueInfo')
+\App::$slim->get('/counter/queueInfo/', '\BO\Zmsadmin\CounterQueueInfo')
     ->setName("counter_queue_info");
 
+\App::$slim->get('/counter/appointmentTimes/', '\BO\Zmsadmin\CounterAppointmentTimes')
+    ->setName("counter_appointment_times");
 
 /*
  * ---------------------------------------------------------------------------

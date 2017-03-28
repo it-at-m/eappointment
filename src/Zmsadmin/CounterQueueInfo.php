@@ -6,8 +6,6 @@
 
 namespace BO\Zmsadmin;
 
-use \BO\Zmsentities\Scope;
-
 class CounterQueueInfo extends BaseController
 {
     /**
@@ -21,6 +19,11 @@ class CounterQueueInfo extends BaseController
     ) {
         $validator = $request->getAttribute('validator');
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
+        $ghostWorkstation = $validator->getParameter('ghostworkstationcount')->isNumber()->getValue();
+
+        if ($ghostWorkstation) {
+            \App::$http->readPostResult('/counter/ghostworkstation/', ['count' => $ghostWorkstation])->getEntity();
+        }
 
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $workstationInfo = Helper\WorkstationInfo::getInfoBoxData($workstation, $selectedDate);
