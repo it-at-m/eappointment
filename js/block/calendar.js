@@ -8,6 +8,7 @@ class View extends BaseView {
         this.selectedDate = options.selectedDate;
         this.includeUrl = options.includeUrl || "";
         this.onDatePick = options.onDatePick || (() => {});
+        this.onDateToday = options.onDateToday || (() => {});
         this.bindPublicMethods('load');
         $.ajaxSetup({ cache: false });
         this.bindEvents();
@@ -32,8 +33,14 @@ class View extends BaseView {
             ev.preventDefault();
             ev.stopPropagation();
             this.selectedDate = $(ev.target).attr('data-date');
-            console.log('pagemonthlink', this.selectedDate)
+            console.log('month selected', this.selectedDate)
             this.load();
+        }).on('click', '.calendar-navigation .today', (ev) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            const selectedDate = $(ev.target).attr('data-date');
+            console.log('today selected', selectedDate)
+            this.onDateToday(selectedDate, this)
         })
     }
 }
