@@ -16,7 +16,7 @@ class View extends BaseView {
         this.includeUrl = options.includeurl;
         this.selectedDate = options['selected-date'];
         this.selectedProcess = options['selected-process'];
-        this.bindPublicMethods('loadAllPartials', 'selectDateWithOverlay', 'onDatePick');
+        this.bindPublicMethods('loadAllPartials', 'selectDateWithOverlay', 'onDatePick', 'onDateToday');
         this.$.ready(this.loadData);
         $.ajaxSetup({ cache: false });
         this.loadAllPartials().then(() => this.bindEvents());
@@ -45,6 +45,11 @@ class View extends BaseView {
                     destroyCalendar()
                     destroyLightbox()
                     resolve(date);
+                },
+                onDateToday: (date) => {
+                    destroyCalendar()
+                    destroyLightbox()
+                    resolve(date);
                 }
             })
         });
@@ -53,6 +58,13 @@ class View extends BaseView {
     onDatePick(date) {
         this.selectedDate = date;
         this.loadAllPartials();
+    }
+
+    onDateToday(date) {
+        this.selectedDate = date;
+        this.loadCalendar(),
+        this.loadAppointmentForm(),
+        this.loadQueueTable()
     }
 
     loadAllPartials() {
@@ -68,6 +80,7 @@ class View extends BaseView {
         return new CalendarView(this.$main.find('[data-calendar]'), {
             selectedDate: this.selectedDate,
             onDatePick: this.onDatePick,
+            onDateToday: this.onDateToday,
             includeUrl: this.includeUrl
         })
     }
@@ -91,7 +104,8 @@ class View extends BaseView {
         return new QueueView(this.$main.find('[data-queue-table]'), {
             selectedDate: this.selectedDate,
             includeUrl: this.includeUrl,
-            onDatePick: this.onDatePick
+            onDatePick: this.onDatePick,
+            onDateToday: this.onDateToday,
         })
     }
 

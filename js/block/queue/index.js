@@ -10,6 +10,7 @@ class View extends BaseView {
         this.selectedDate = options.selectedDate;
         this.includeUrl = options.includeUrl || "";
         this.onDatePick = options.onDatePick || (() => {});
+        this.onDateToday = options.onDateToday || (() => {});
         this.bindPublicMethods('load');
         $.ajaxSetup({ cache: false });
         this.bindEvents();
@@ -48,11 +49,18 @@ class View extends BaseView {
             ev.preventDefault();
             ev.stopPropagation();
             this.deleteProcess(ev);
-        }).on('click', '.queue-table .calendar-navigation a', (ev) => {
+        }).on('click', '.queue-table .calendar-navigation .pagedaylink', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
             const selectedDate = $(ev.target).attr('data-date');
+            console.log('next or prev day selected', selectedDate)
             this.onDatePick(selectedDate, this);
+        }).on('click', '.queue-table .calendar-navigation .today', (ev) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            const selectedDate = $(ev.target).attr('data-date');
+            console.log('today selected', selectedDate)
+            this.onDateToday(selectedDate, this)
         })
     }
 
