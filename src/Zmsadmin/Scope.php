@@ -42,7 +42,7 @@ class Scope extends BaseController
         )->getCollection()->sortByName();
 
         $entityId = Validator::value($args['id'])->isNumber()->getValue();
-        $entity = \App::$http->readGetResult('/scope/' . $entityId . '/')->getEntity();
+        $entity = \App::$http->readGetResult('/scope/' . $entityId . '/', ['resolveReferences' => 1])->getEntity();
 
         $callDisplayImage = \App::$http->readGetResult('/scope/'. $entityId .'/imagedata/calldisplay/')->getEntity();
         $input = $request->getParsedBody();
