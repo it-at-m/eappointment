@@ -31,6 +31,19 @@ class Process extends Schema\Entity
         ];
     }
 
+    public static function createFromScope(Scope $scope, \DateTimeInterface $dateTime)
+    {
+        $appointment = new Appointment();
+        $appointment->addScope($scope->id);
+        $appointment->addSlotCount(0);
+        $appointment->addDate($dateTime->modify('00:00:00')->getTimestamp());
+        $process = new static();
+        $process->scope = $scope;
+        $process->setStatus('queued');
+        $process->addAppointment($appointment);
+        return $process;
+    }
+
     /**
      * @return Collection\RequestList
      *
@@ -147,9 +160,22 @@ class Process extends Schema\Entity
         return $this;
     }
 
+    /**
+     * Reminder: A process might have multiple scopes. Each appointment can
+     * have his own scope. The scope in $this->scope is the current/next scope.
+     * This function returns the original scope ID and ignores internal scope
+     * which are used for processing like to pick up documents
+     *
+     */
     public function getScopeId()
     {
-        return $this->toProperty()->scope->id->get();
+        if ($this->status == 'pending' || $this->status == 'pickup') {
+            $scope = $this->getFirstAppointment()->getScope();
+            $scopeId = $scope->id;
+        } else {
+            $scopeId = $this->toProperty()->scope->id->get();
+        }
+        return $scopeId;
     }
 
     public function getAmendment()

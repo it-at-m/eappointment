@@ -10,6 +10,7 @@ use \BO\Zmsentities\Collection\ProcessList;
 
 /**
  * @SuppressWarnings(CouplingBetweenObjects)
+ * @SuppressWarnings(Public)
  *
  */
 class ProcessTest extends EntityCommonTests
@@ -115,18 +116,35 @@ class ProcessTest extends EntityCommonTests
     public function testToQueue()
     {
         $now = new \DateTimeImmutable(self::DEFAULT_TIME);
-        $entityWithAppointment = $this->getExample();
+        $withAppointment = $this->getExample();
 
         $dateWithoutTime = (new \DateTimeImmutable())->setTimestamp(1447801200);
-        $entityWithoutAppointment = $this->getExample();
-        $entityWithoutAppointment->addQueue(123, $dateWithoutTime);
-        $entityWithoutAppointment->getFirstAppointment()->setTime($dateWithoutTime->format('Y-m-d H:i'));
+        $withoutAppointment = $this->getExample();
+        $withoutAppointment->addQueue(123, $dateWithoutTime);
+        $withoutAppointment->getFirstAppointment()->setTime($dateWithoutTime->format('Y-m-d H:i'));
 
-        $queueWithAppointment = $entityWithAppointment->toQueue($now);
-        $queueWithoutAppointment = $entityWithoutAppointment->toQueue($now);
+        $queueWith = $withAppointment->toQueue($now);
+        $queueWithout = $withoutAppointment->toQueue($now);
 
-        $this->assertTrue($queueWithAppointment->withAppointment);
-        $this->assertFalse($queueWithoutAppointment->withAppointment);
+        $this->assertTrue($queueWith->withAppointment);
+        $this->assertFalse($queueWithout->withAppointment);
+    }
+
+    public function testPickup()
+    {
+        $entity = $this->getExample();
+        $entity->scope['id'] = 456;
+        $this->assertEquals(456, $entity->getScopeId());
+        $entity->status = 'pending';
+        $this->assertEquals(123, $entity->getScopeId());
+    }
+
+    public function testCreateFromScope()
+    {
+        $scope = new \BO\Zmsentities\Scope(['id' => '789']);
+        $process = \BO\Zmsentities\Process::createFromScope($scope, new \DateTime('2016-04-01 12:00:00'));
+        $this->assertEquals('queued', $process->status);
+        $this->assertEquals('00:00', $process->getFirstAppointment()->getStartTime()->format('H:i'));
     }
 
     public function testLessData()
