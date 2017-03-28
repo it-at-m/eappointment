@@ -790,6 +790,36 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/counter/ghostworkstation/":
+ *      post:
+ *          summary: set selected amount of ghostworkstations in workstation scope
+ *          tags:
+ *              - counter
+ *              - ghostworkstation
+ *          parameters:
+ *              -   name: count
+ *                  description: count of ghostworkstations
+ *                  required: true
+ *                  in: body
+ *          responses:
+ *              200:
+ *                  description: get updated ghostworkstation count
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/scope.json"
+ *              404:
+ *                  description: "Could not find workstation scope"
+ */
+\App::$slim->post('/counter/ghostworkstation/',
+    '\BO\Zmsapi\CounterGhostWorkstation')
+    ->setName("CounterGhostWorkstation");
+
+/**
+ *  @swagger
  *  "/dayoff/{year}/":
  *      get:
  *          summary: Get a list of common free days for a given year
