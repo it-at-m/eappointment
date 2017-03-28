@@ -106,4 +106,17 @@ class DayList extends Base implements JsonUnindexed
         }
         return false;
     }
+
+    public function toSortedByHour()
+    {
+        $list = array();
+        foreach ($this as $day) {
+            $list['days'][] = $day;
+            $dayKey = $day->year .'-'. $day->month .'-'. $day->day;
+            foreach ($day['processList'] as $hour => $processList) {
+                $list['hours'][$hour][$dayKey] = $processList;
+            }
+        }
+        return $list;
+    }
 }
