@@ -34,6 +34,17 @@ class ProcessTest extends Base
         $this->assertEquals(1459504500, $process->queue['arrivalTime']);
     }
 
+    public function testPending()
+    {
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $query = new Query();
+        $scope = (new \BO\Zmsdb\Scope())->readEntity(141);
+        $process = $query->writeNewPickup($scope, $now);
+        $process = $query->readEntity($process->id, $process->authKey, 0);
+        $this->assertEquals('pending', $process->status);
+        $this->assertEquals($now->getTimestamp(), $process->queue['arrivalTime']);
+    }
+
     public function testExceptionAlreadyReserved()
     {
         $this->setExpectedException('\BO\Zmsdb\Exception\ProcessReserveFailed');

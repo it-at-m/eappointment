@@ -69,7 +69,7 @@ class Process extends Base implements MappingInterface
     }
 
     /**
-     * Add Availability to the dataset
+     * Add Scope to the dataset
      */
     protected function addJoinScope()
     {
@@ -116,7 +116,12 @@ class Process extends Base implements MappingInterface
             'appointments__0__date' => self::expression(
                 'CONCAT(`process`.`Datum`, " ", `process`.`Uhrzeit`)'
             ),
-            'scope__id' => 'process.StandortID',
+            'scope__id' => self::expression(
+                'IF(`process`.`AbholortID`,
+                    `process`.`AbholortID`,
+                    `process`.`StandortID`
+)'
+            ),
             'appointments__0__scope__id' => 'process.StandortID',
             // 'appointments__0__slotCount' => 'process.hatFolgetermine',
             'appointments__0__slotCount' => self::expression('process.hatFolgetermine + 1'),
@@ -249,11 +254,27 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
+    public function addValuesNewProcess(\BO\Zmsentities\Process $process, $parentProcess = 0, $childProcessCount = 0)
+    {
+        $this->addValues([
+            'BuergerID' => $process->id,
+            'IPTimeStamp' => $process->createTimestamp,
+            'absagecode' => $process->authKey,
+            'hatFolgetermine' => $childProcessCount,
+            'istFolgeterminvon' => $parentProcess,
+            'wartenummer' => $process->queue['number']
+        ]);
+    }
+
     public function addValuesUpdateProcess(\BO\Zmsentities\Process $process)
     {
         $data = array();
         $data['Anmerkung'] = $process->getAmendment();
         $data['StandortID'] = $process->getScopeId();
+        if ($process->status == 'pending' || $process->status == 'pickup') {
+            $data['AbholortID'] = $process->scope['id'];
+            $data['Abholer'] = 1;
+        }
         $appointment = $process->getFirstAppointment();
         if (null !== $appointment) {
             $datetime = $appointment->toDateTime();
@@ -340,18 +361,6 @@ class Process extends Base implements MappingInterface
             $data['scope__provider__data'] = json_decode($data['scope__provider__data'], true);
         }
         return $data;
-    }
-
-    public function addValuesNewProcess(\BO\Zmsentities\Process $process, $parentProcess = 0, $childProcessCount = 0)
-    {
-        $this->addValues([
-            'BuergerID' => $process->id,
-            'IPTimeStamp' => $process->createTimestamp,
-            'absagecode' => $process->authKey,
-            'hatFolgetermine' => $childProcessCount,
-            'istFolgeterminvon' => $parentProcess,
-            'wartenummer' => $process->queue['number']
-        ]);
     }
 
     protected function addRequiredJoins()
