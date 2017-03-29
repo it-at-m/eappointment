@@ -38,6 +38,10 @@
         "source": {
             "type": "string",
             "description": "source of the service to resolve reference id"
+        },
+        "timeSlotCount": {
+            "type": "number",
+            "description": "number of time slots assumend for the request"
         }
     }
 }
