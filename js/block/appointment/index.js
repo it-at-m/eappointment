@@ -25,12 +25,12 @@ class View extends BaseView {
 
     bindEvents() {
         this.$main.on('change', '.checkboxselect input:checkbox', (event) => {
-            this.addService($(event.target).val(), this.serviceListSelected);
-            this.removeService($(event.target).val(), this.serviceList);
+            this.addService($(event.target), this.serviceListSelected);
+            this.removeService($(event.target), this.serviceList);
             this.updateList();
         }).on('change', '.checkboxdeselect input:checkbox', (event) => {
-            this.removeService($(event.target).val(), this.serviceListSelected);
-            this.addService($(event.target).val(), this.serviceList);
+            this.removeService($(event.target), this.serviceListSelected);
+            this.addService($(event.target), this.serviceList);
             this.updateList();
         }).on('click', '.clear-list', () => {
             this.cleanUpLists();
@@ -66,16 +66,18 @@ class View extends BaseView {
                 $(element).closest('label').show();
             }
         });
+
+        this.calculateSlotCount();
     }
 
-    addService (value, listElement) {
-        return listElement.push(value);
+    addService (element, list) {
+        return list.push(element.val());
     }
 
-    removeService (value, listElement) {
-        for (var i = 0; i < listElement.length; i++)
-            if (listElement[i] === value) {
-                return listElement.splice(i,1);
+    removeService (element, list) {
+        for (var i = 0; i < list.length; i++)
+            if (list[i] === element.val()) {
+                return list.splice(i,1);
             }
     }
 
@@ -85,6 +87,18 @@ class View extends BaseView {
             return $(this).val();
         }).toArray();
         this.serviceListSelected = [];
+    }
+
+    calculateSlotCount () {
+        var slotCount = 0;
+        var selectedSlots = this.$main.find('.checkboxdeselect label:visible input:checkbox').map(function() {
+            return $(this).data('slots');
+        }).toArray();
+        for (var i = 0; i < selectedSlots.length; i++)
+            if (selectedSlots[i] > 0) {
+                slotCount += selectedSlots[i];
+            }
+        console.log(slotCount);
     }
 }
 
