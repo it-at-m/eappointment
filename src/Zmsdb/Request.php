@@ -32,6 +32,19 @@ class Request extends Base
         return $providerSlots;
     }
 
+    public function readSlotsOnEntityByProvider($requestId, $providerId)
+    {
+        $query = Query\Request::getQueryRequestSlotCount();
+        $requestSlotCount = $this->getReader()->fetchValue(
+            $query,
+            [
+                'request_id' => $requestId,
+                'provider_id' => $providerId
+            ]
+        );
+        return $requestSlotCount;
+    }
+
     protected static function testSource($source)
     {
         if ('dldb' !== $source) {
@@ -58,8 +71,8 @@ class Request extends Base
     {
         $query = new Query\Request(Query\Base::SELECT);
         $query->setResolveLevel($resolveReferences);
-        $query->addEntityMapping();
         $query->addConditionProcessId($processId);
+        $query->addEntityMapping();
         return $this->readCollection($query, $resolveReferences);
     }
 
@@ -68,9 +81,13 @@ class Request extends Base
         self::testSource($source);
         $query = new Query\Request(Query\Base::SELECT);
         $query->setResolveLevel($resolveReferences);
-        $query->addEntityMapping();
         $query->addConditionProviderId($providerId);
-        return $this->readCollection($query, $resolveReferences);
+        $query->addEntityMapping();
+        $requestList = $this->readCollection($query, $resolveReferences);
+        foreach ($requestList as $request) {
+            $request['timeSlotCount'] = $this->readSlotsOnEntityByProvider($request['id'], $providerId);
+        }
+        return $requestList;
     }
 
     public function readListByCluster(\BO\Zmsentities\Cluster $cluster, $resolveReferences = 0)

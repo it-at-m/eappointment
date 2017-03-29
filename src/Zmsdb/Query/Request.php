@@ -17,6 +17,17 @@ class Request extends Base
             ';
     }
 
+    public static function getQueryRequestSlotCount()
+    {
+        return 'SELECT
+            `slots`
+        FROM request_provider
+        WHERE
+            `request__id` = :request_id AND
+            `provider__id` = :provider_id
+        ';
+    }
+
     const QUERY_BY_PROCESSID = 'SELECT
             ba.`AnliegenID` AS id
         FROM `zmsbo`.`buergeranliegen` ba
@@ -31,7 +42,7 @@ class Request extends Base
             'link' => 'request.link',
             'name' => 'request.name',
             'group' => 'request.group',
-            'source' => 'request.source',
+            'source' => 'request.source'
         ];
         if ($this->getResolveLevel() > 0) {
             $mapping['data'] = 'request.data';
