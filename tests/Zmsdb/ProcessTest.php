@@ -190,6 +190,9 @@ class ProcessTest extends Base
         $processList = $query->readSearch("J51362");
         $this->assertEntityList("\\BO\\Zmsentities\\Process", $processList);
         $this->assertEquals(6, $processList->count());
+        $processList = $query->readSearch("10029");
+        $this->assertEquals(1, $processList->count());
+        $this->assertEquals(10029, $processList->getFirst()->id);
     }
 
     protected function getTestCalendarEntity()
