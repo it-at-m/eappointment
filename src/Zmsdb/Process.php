@@ -90,16 +90,19 @@ class Process extends Base
         return $process;
     }
 
-    public function writeNewFromTicketprinter($scope, \DateTimeInterface $dateTime)
+    public function writeNewFromTicketprinter(\BO\Zmsentities\Scope $scope, \DateTimeInterface $dateTime)
     {
-        $appointment = new \BO\Zmsentities\Appointment();
-        $appointment->addScope($scope->id);
-        $appointment->addSlotCount(0);
-        $appointment->addDate($dateTime->modify('00:00:00')->getTimestamp());
-        $process = new Entity();
-        $process->scope = $scope;
+        $process = Entity::createFromScope($scope, $dateTime);
         $process->setStatus('queued');
-        $process->addAppointment($appointment);
+        $newQueueNumber = (new Scope())->readWaitingNumberUpdated($scope->id, $dateTime);
+        $process->addQueue($newQueueNumber, $dateTime);
+        return $this->writeNewProcess($process, $dateTime);
+    }
+
+    public function writeNewPickup(\BO\Zmsentities\Scope $scope, \DateTimeInterface $dateTime)
+    {
+        $process = Entity::createFromScope($scope, $dateTime);
+        $process->setStatus('pending');
         $newQueueNumber = (new Scope())->readWaitingNumberUpdated($scope->id, $dateTime);
         $process->addQueue($newQueueNumber, $dateTime);
         return $this->writeNewProcess($process, $dateTime);
