@@ -96,7 +96,8 @@ class View extends BaseView {
         if (source == 'button') {
             return this.loadContent(url)
         } else if (source == 'lightbox') {
-            console.log('lightbox closed without action call');
+            const defaultUrl = `${this.includeUrl}/workstation/process/cancel/`
+            return this.loadContent(defaultUrl)
         } else {
             const defaultUrl = `${this.includeUrl}/workstation/process/cancel/`
             return this.loadContent(defaultUrl)

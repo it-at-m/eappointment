@@ -36,6 +36,7 @@ class AppointmentForm extends BaseController
             $requestList = \App::$http
                 ->readGetResult('/scope/'. $workstation->scope['id'] .'/request/')->getCollection();
         }
+
         $scopeList = $workstation->getScopeList($cluster);
         $freeProcessList = $calendar->readAvailableSlotsFromDayAndScopeList($scopeList);
 
