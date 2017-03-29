@@ -27,8 +27,10 @@ class WorkstationInfo
             $infoData['availabilities'] = static::getAvailabilityByScopeAndDateTime($scope->id, $dateTime);
             $infoData['workstationList'] = static::getWorkstationsByScope($scope->id);
         }
-        $infoData['waitingTime'] = $queueList->getLast()->waitingTimeEstimate;
-        $infoData['queueCount'] = $queueList->count();
+        if ($queueList) {
+            $infoData['waitingTime'] = $queueList->getLast()->waitingTimeEstimate;
+            $infoData['queueCount'] = $queueList->count();
+        }
         return $infoData;
     }
 
