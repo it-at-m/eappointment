@@ -25,8 +25,6 @@ class AppointmentForm extends BaseController
         //TODO fetch process by selectedProcessId if given
         //$selectedProcessId = $validator->getParameter('selectedprocess')->isString()->getValue();
 
-        $calendar = new Helper\Calendar($selectedDate);
-
         if (1 == $workstation->queue['clusterEnabled']) {
             $cluster = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/cluster/')->getEntity();
             $requestList = \App::$http
@@ -37,17 +35,11 @@ class AppointmentForm extends BaseController
                 ->readGetResult('/scope/'. $workstation->scope['id'] .'/request/')->getCollection();
         }
 
-        $scopeList = $workstation->getScopeList($cluster);
-        $freeProcessList = $calendar->readAvailableSlotsFromDayAndScopeList($scopeList);
-
         return \BO\Slim\Render::withHtml(
             $response,
             'block/appointment/form.twig',
             array(
                 'selectedDate' => ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d'),
-                'freeProcessList' => ($freeProcessList) ?
-                    $freeProcessList->toProcessListByTime()->sortByTimeKey() :
-                    null,
                 'requestList' => $requestList->sortByName()
             )
         );

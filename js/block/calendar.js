@@ -9,6 +9,8 @@ class View extends BaseView {
         this.includeUrl = options.includeUrl || "";
         this.onDatePick = options.onDatePick || (() => {});
         this.onDateToday = options.onDateToday || (() => {});
+        this.slotsRequired = 0;
+        this.slotType = 'intern';
         this.bindPublicMethods('load');
         $.ajaxSetup({ cache: false });
         this.bindEvents();
@@ -17,7 +19,7 @@ class View extends BaseView {
     }
 
     load() {
-        const url = `${this.includeUrl}/calendarPage/?selecteddate=${this.selectedDate}`
+        const url = `${this.includeUrl}/calendarPage/?selecteddate=${this.selectedDate}&slottype=${this.slotType}&slotsrequired=${this.slotsRequired}`
         this.loadPromise = this.loadContent(url)
         return this.loadPromise;
     }

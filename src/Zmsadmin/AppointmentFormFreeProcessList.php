@@ -8,7 +8,7 @@ namespace BO\Zmsadmin;
 
 use \BO\Zmsentities\Scope;
 
-class CalendarPage extends BaseController
+class AppointmentFormFreeProcessList extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
@@ -19,33 +19,29 @@ class CalendarPage extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $cluster = null;
+        $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
         $validator = $request->getAttribute('validator');
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
 
         $slotType = $validator->getParameter('slottype')->isString()->getValue();
         $slotsRequired = $validator->getParameter('slotsrequired')->isNumber()->getValue();
 
-        $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
-        $scope = new Scope($workstation->scope);
         $calendar = new Helper\Calendar($selectedDate);
-
-        if (1 == $workstation->queue['clusterEnabled']) {
-            $cluster = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/cluster/')->getEntity();
-        }
+        $cluster = (1 == $workstation->queue['clusterEnabled']) ?
+            \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/cluster/')->getEntity() :
+            null;
         $scopeList = $workstation->getScopeList($cluster);
+
+        $freeProcessList = $calendar->readAvailableSlotsFromDayAndScopeList($scopeList, $slotType, $slotsRequired);
 
         return \BO\Slim\Render::withHtml(
             $response,
-            'block/calendar/calendarMonth.twig',
+            'block/appointment/freeProcessList.twig',
             array(
-                'title' => 'Kalender',
-                'calendar' => $calendar,
-                'selectedDate' => ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d'),
-                'selectedYear' => $calendar->getDateTime()->format('Y'),
-                'selectedWeek' => $calendar->getDateTime()->format('W'),
-                'dayoffList' => $scope->getDayoffList(),
-                'monthList' => $calendar->readMonthListByScopeList($scopeList, $slotType, $slotsRequired)
+                'selectedDate' => $selectedDate,
+                'freeProcessList' => ($freeProcessList) ?
+                    $freeProcessList->toProcessListByTime()->sortByTimeKey() :
+                    null,
             )
         );
     }

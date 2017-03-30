@@ -46,12 +46,12 @@ class View extends BaseView {
                 onDatePick: (date) => {
                     destroyCalendar()
                     destroyLightbox()
-                    resolve(date);
+                    //resolve(date);
                 },
                 onDateToday: (date) => {
                     destroyCalendar()
                     destroyLightbox()
-                    resolve(date);
+                    //resolve(date);
                 }
             })
         });
