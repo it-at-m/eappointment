@@ -5,6 +5,8 @@ use \BO\Zmsentities\Appointment;
 
 class AppointmentList extends Base
 {
+    const ENTITY_CLASS = '\BO\Zmsentities\Appointment';
+
     public function getByDate($date)
     {
         foreach ($this as $item) {

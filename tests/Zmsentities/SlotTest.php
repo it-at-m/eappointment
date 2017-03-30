@@ -102,7 +102,7 @@ class SlotTest extends EntityCommonTests
         $collection->addEntity($entity);
         $collection->addEntity($entity2);
         $this->assertEquals('12:50', $collection->getByDateTime($now)['time']);
-        $this->assertFalse($collection->getByDateTime($now->setTime('10','00')));
+        $this->assertFalse($collection->getByDateTime($now->setTime('10', '00')));
 
         $entity3 = new $this->entityclass(array (
             'public' => 2,
@@ -140,7 +140,7 @@ class SlotTest extends EntityCommonTests
         $collection->addEntity($entity);
         $scope = (new \BO\Zmsentities\Scope())->getExample();
         $availability = (new \BO\Zmsentities\Availability())->getExample();
-        $freeProcesses = $collection->getFreeProcesses('2016-04-01', $scope, $availability, 'public', '123456', 0);
+        $freeProcesses = $collection->getFreeProcesses('2016-04-01', $scope, $availability, 'public', [], 0);
         $this->assertInstanceOf(
             '\BO\Zmsentities\Appointment',
             $freeProcesses[0]->getFirstAppointment(),
@@ -186,6 +186,5 @@ class SlotTest extends EntityCommonTests
             '123456',
             0
         );
-
     }
 }

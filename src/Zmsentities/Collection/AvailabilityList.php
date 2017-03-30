@@ -9,6 +9,8 @@ use \BO\Zmsentities\Availability;
 
 class AvailabilityList extends Base
 {
+    const ENTITY_CLASS = '\BO\Zmsentities\Availability';
+
     public function getMaxWorkstationCount()
     {
         $max = 0;

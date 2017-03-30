@@ -16,4 +16,12 @@ class ConfigTest extends EntityCommonTests
         $this->assertTrue($entity->hasPreference('notifications', 'absage'), 'config hasPreference failed');
         $this->assertTrue($entity->getPreference('notifications', 'absage'), 'config setPreference failed');
     }
+
+    public function testMerge()
+    {
+        $example = $this->getExample();
+        $example->addData(['emergency' => ['refreshInterval' => 10]]);
+        $this->assertEquals($example['emergency']['refreshInterval'], 10);
+        $this->assertTrue($example->testValid());
+    }
 }

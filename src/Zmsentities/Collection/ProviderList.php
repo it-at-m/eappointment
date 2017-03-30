@@ -3,6 +3,8 @@ namespace BO\Zmsentities\Collection;
 
 class ProviderList extends Base
 {
+    const ENTITY_CLASS = '\BO\Zmsentities\Provider';
+
     public function hasProvider($providerIdCsv)
     {
         $providerIds = explode(',', $providerIdCsv);

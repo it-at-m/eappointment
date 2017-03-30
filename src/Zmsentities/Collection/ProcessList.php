@@ -3,6 +3,8 @@ namespace BO\Zmsentities\Collection;
 
 class ProcessList extends Base
 {
+    const ENTITY_CLASS = '\BO\Zmsentities\Process';
+
     public function toProcessListByTime()
     {
         $list = new self();

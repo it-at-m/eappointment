@@ -3,6 +3,8 @@ namespace BO\Zmsentities\Collection;
 
 class DayoffList extends Base
 {
+    const ENTITY_CLASS = '\BO\Zmsentities\Dayoff';
+
     public function hasEntityByDate($date)
     {
         return $this->getByDate($date) ? true : false;
