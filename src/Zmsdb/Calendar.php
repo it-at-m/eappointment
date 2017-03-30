@@ -10,12 +10,12 @@ use \BO\Zmsdb\Query\SlotList;
  */
 class Calendar extends Base
 {
-
     public function readResolvedEntity(
         Entity $calendar,
         \DateTimeInterface $now,
         $freeProcessesDate = null,
-        $slotType = 'public'
+        $slotType = 'public',
+        $slotsRequired = 0
     ) {
         $calendar['processing'] = [];
         $calendar['freeProcesses'] = new \BO\Zmsentities\Collection\ProcessList();
@@ -29,7 +29,7 @@ class Calendar extends Base
         if (count($calendar->scopes) < 1) {
             throw new Exception\CalendarWithoutScopes("No scopes found");
         }
-        $calendar = $this->readResolvedDays($calendar, $freeProcessesDate, $now, $slotType);
+        $calendar = $this->readResolvedDays($calendar, $freeProcessesDate, $now, $slotType, $slotsRequired);
         unset($calendar['processing']);
         return $calendar;
     }
@@ -115,7 +115,8 @@ class Calendar extends Base
         Entity $calendar,
         $freeProcessesDate,
         \DateTimeInterface $now,
-        $slotType = 'public'
+        $slotType,
+        $slotsRequired
     ) {
         $querySlotList = new SlotList();
         $query = SlotList::getQuery();
@@ -129,8 +130,11 @@ class Calendar extends Base
                 } else {
                     $statement->execute(SlotList::getParameters($scope['id'], $monthDateTime, $now));
                 }
-                $slotsRequired = 0;
-                if (array_key_exists($scope->getProviderId(), $calendar['processing']['slotinfo'])) {
+
+                if (! $slotsRequired && array_key_exists(
+                    $scope->getProviderId(),
+                    $calendar['processing']['slotinfo']
+                )) {
                     $slotsRequired = $calendar['processing']['slotinfo'][$scope->getProviderId()];
                 }
                 while ($slotData = $statement->fetch(\PDO::FETCH_ASSOC)) {
