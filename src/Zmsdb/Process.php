@@ -38,7 +38,7 @@ class Process extends Base
         return $process;
     }
 
-    public function updateEntity(\BO\Zmsentities\Process $process)
+    public function updateEntity(\BO\Zmsentities\Process $process, $resolveReferences = 0)
     {
         $query = new Query\Process(Query\Base::UPDATE);
         $query->addConditionProcessId($process['id']);
@@ -47,7 +47,7 @@ class Process extends Base
         $this->writeItem($query);
         $this->writeRequestsToDb($process);
 
-        $process = $this->readEntity($process->id, $process->authKey);
+        $process = $this->readEntity($process->id, $process->authKey, $resolveReferences);
 
         Log::writeLogEntry("UPDATE (Process::updateEntity) $process ", $process->id);
         return $process;
