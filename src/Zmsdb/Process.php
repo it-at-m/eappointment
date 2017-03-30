@@ -352,7 +352,7 @@ class Process extends Base
         }
     }
 
-    
+
 
     /**
      * Todo: Refactoring, writeRemovedWorkstation zu writeRemovedProcess in Workstation Klasse
@@ -381,12 +381,16 @@ class Process extends Base
         //Log::writeLogEntry("UPDATE (Process::writeRemovedWorkstation $workstation->id) $process ", $process->id);
     }
 
-    public function readFreeProcesses(\BO\Zmsentities\Calendar $calendar, \DateTimeInterface $now)
-    {
+    public function readFreeProcesses(
+        \BO\Zmsentities\Calendar $calendar,
+        \DateTimeInterface $now,
+        $slotType = 'public',
+        $slotsRequired = 0
+    ) {
         $resolvedCalendar = new Calendar();
         $selectedDate = $calendar->getFirstDay();
         $calendar->setLastDayTime($selectedDate);
-        $calendar = $resolvedCalendar->readResolvedEntity($calendar, $now, $selectedDate);
+        $calendar = $resolvedCalendar->readResolvedEntity($calendar, $now, $selectedDate, $slotType, $slotsRequired);
         return (isset($calendar['freeProcesses'])) ? $calendar['freeProcesses'] : new Collection();
     }
 
