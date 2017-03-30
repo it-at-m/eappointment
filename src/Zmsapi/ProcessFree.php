@@ -17,12 +17,21 @@ class ProcessFree extends BaseController
      */
     public static function render()
     {
-        $message = Response\Message::create(Render::$request);
+        $slotsRequired = Validator::param('slotsRequired')->isNumber()->getValue();
+        $slotType = Validator::param('slotType')->isString()->getValue();
+        if ($slotType || $slotsRequired) {
+            Helper\User::checkRights();
+        } else {
+            $slotsRequired = 0;
+            $slotType = 'public';
+        }
+
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $query = new Query();
         $entity = new \BO\Zmsentities\Calendar($input);
-        $processList = $query->readFreeProcesses($entity, \App::getNow());
+        $processList = $query->readFreeProcesses($entity, \App::getNow(), $slotType, $slotsRequired);
 
+        $message = Response\Message::create(Render::$request);
         $message->data = null;
         if (!$processList->getFirstProcess()) {
             throw new Exception\Process\FreeProcessListEmpty();

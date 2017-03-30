@@ -21,15 +21,28 @@ class CalendarGet extends BaseController
      */
     public function __invoke(RequestInterface $request, ResponseInterface $response, array $args)
     {
+        $slotsRequired = Validator::param('slotsRequired')->isNumber()->getValue();
+        $slotType = Validator::param('slotType')->isString()->getValue();
+        if ($slotType || $slotsRequired) {
+            (new Helper\User($request))->checkRights();
+        } else {
+            $slotsRequired = 0;
+            $slotType = 'public';
+        }
+
         $query = new Query();
-        $message = Response\Message::create($request);
         $fillWithEmptyDays = Validator::param('fillWithEmptyDays')->isNumber()->setDefault(0)->getValue();
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $calendar = new \BO\Zmsentities\Calendar($input);
+
+        $message = Response\Message::create($request);
+
         if (!$calendar->hasFirstAndLastDay()) {
             throw new Exception\Calendar\InvalidFirstDay('First and last day are required');
         } else {
-            $calendar = $query->readResolvedEntity($calendar, \App::getNow())->withLessData();
+            $calendar = $query
+                ->readResolvedEntity($calendar, \App::getNow(), null, $slotType, $slotsRequired)
+                ->withLessData();
             if ($fillWithEmptyDays) {
                 $calendar = $calendar->withFilledEmptyDays();
             }

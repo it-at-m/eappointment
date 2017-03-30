@@ -15,6 +15,13 @@ class User
 
     public static $assignedWorkstation = null;
 
+    public static $request = null;
+
+    public function __construct($request)
+    {
+        static::$request = $request;
+    }
+
     public static function readWorkstation()
     {
         if (! static::$workstation) {
@@ -90,7 +97,7 @@ class User
 
     public static function getXAuthKey()
     {
-        $request = Render::$request;
+        $request = (static::$request) ? static::$request : Render::$request;
         $xAuthKey = $request->getHeader('X-AuthKey');
         if (!$xAuthKey) {
             $cookies = $request->getCookieParams();
