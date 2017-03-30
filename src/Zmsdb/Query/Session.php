@@ -58,4 +58,14 @@ class Session extends Base
         );
         return $this;
     }
+
+    /**
+     * postProcess data if necessary
+     *
+     */
+    public function postProcess($data)
+    {
+        $data['content'] = json_decode($data['content'], 1);
+        return $data;
+    }
 }
