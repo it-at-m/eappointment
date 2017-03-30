@@ -23,6 +23,9 @@ class CalendarPage extends BaseController
         $validator = $request->getAttribute('validator');
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
 
+        $slotType = $validator->getParameter('slottype')->isString()->getValue();
+        $slotsRequired = $validator->getParameter('slotsrequired')->isNumber()->getValue();
+
         $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
         $scope = new Scope($workstation->scope);
         $calendar = new Helper\Calendar($selectedDate);
@@ -42,7 +45,7 @@ class CalendarPage extends BaseController
                 'selectedYear' => $calendar->getDateTime()->format('Y'),
                 'selectedWeek' => $calendar->getDateTime()->format('W'),
                 'dayoffList' => $scope->getDayoffList(),
-                'monthList' => $calendar->readMonthListByScopeList($scopeList)
+                'monthList' => $calendar->readMonthListByScopeList($scopeList, $slotType, $slotsRequired)
             )
         );
     }

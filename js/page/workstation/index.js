@@ -4,7 +4,7 @@ import AppointmentView from '../../block/appointment'
 import QueueView from '../../block/queue'
 import CalendarView from '../../block/calendar'
 import ClientNextView from '../../block/process/next'
-import { lightbox } from '../../lib/utils'
+
 
 class View extends BaseView {
 
@@ -13,7 +13,7 @@ class View extends BaseView {
         this.element = $(element);
         this.includeUrl = options.includeurl;
         this.selectedDate = options['selected-date'];
-        this.bindPublicMethods('loadAllPartials', 'selectDateWithOverlay', 'onDatePick', 'onDateToday', 'onNextProcess');
+        this.bindPublicMethods('loadAllPartials', 'onDatePick', 'onDateToday', 'onNextProcess');
         this.$.ready(this.loadData);
         $.ajaxSetup({ cache: false });
         this.loadAllPartials().then(() => this.bindEvents());
@@ -21,34 +21,6 @@ class View extends BaseView {
     }
 
     bindEvents() {
-    }
-
-    selectDateWithOverlay() {
-        return new Promise((resolve, reject) => {
-            const destroyCalendar = () => {
-                tempCalendar.destroy()
-            }
-
-            const { lightboxContentElement, destroyLightbox } = lightbox(this.$main, () => {
-                destroyCalendar()
-                reject()
-            })
-
-            const tempCalendar = new CalendarView(lightboxContentElement, {
-                includeUrl: this.includeUrl,
-                selectedDate: this.selectedDate,
-                onDatePick: (date) => {
-                    destroyCalendar()
-                    destroyLightbox()
-                    resolve(date);
-                },
-                onDateToday: (date) => {
-                    destroyCalendar()
-                    destroyLightbox()
-                    resolve(date);
-                }
-            })
-        });
     }
 
     onDatePick(date) {
@@ -96,8 +68,7 @@ class View extends BaseView {
     loadAppointmentForm() {
         return new AppointmentView(this.$main.find('[data-appointment-form]'), {
             selectedDate: this.selectedDate,
-            includeUrl: this.includeUrl,
-            selectDateWithOverlay: this.selectDateWithOverlay,
+            includeUrl: this.includeUrl
         })
     }
 

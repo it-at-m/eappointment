@@ -322,6 +322,9 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/appointmentForm/', '\BO\Zmsadmin\AppointmentForm')
     ->setName("appointment_form");
 
+\App::$slim->get('/appointmentForm/processlist/free/', '\BO\Zmsadmin\AppointmentFormFreeProcessList')
+    ->setName("appointment_form_free_processes");
+
 \App::$slim->get('/queueTable/[{date:\d}/]', '\BO\Zmsadmin\QueueTable')
     ->setName("queue_table");
 

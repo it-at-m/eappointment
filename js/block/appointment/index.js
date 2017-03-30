@@ -1,5 +1,9 @@
 import BaseView from "../../lib/baseview"
 import $ from "jquery"
+import freeProcessList from './free-process-list'
+import { lightbox } from '../../lib/utils'
+import CalendarView from '../calendar'
+import moment from 'moment'
 
 class View extends BaseView {
 
@@ -7,12 +11,14 @@ class View extends BaseView {
         super(element);
         this.selectedDate = options.selectedDate;
         this.includeUrl = options.includeUrl || "";
-        this.selectDateWithOverlay = options.selectDateWithOverlay;
-        this.selectedProcess = options.selectedProcess
+        this.selectedProcess = options.selectedProcess;
+        this.slotCount = 0;
+        this.slotType = 'intern';
         this.serviceList = [];
 
         this.load().then(() => {
             this.cleanUpLists();
+            this.loadFreeProcessList();
             this.bindEvents();
         });
     }
@@ -40,9 +46,17 @@ class View extends BaseView {
             this.selectDateWithOverlay()
                    .then(date => {
                        this.selectedDate = date;
-                       this.load();
+                       this.setSelectedDate();
+                   })
+                   .then(() => {
+                       this.calculateSlotCount();
+                       this.loadFreeProcessList();
                    })
                    .catch(() => console.log('no date selected'));
+        }).on('change', 'select#appointmentForm_slotCount', (event) => {
+            console.log('slots changed manualy');
+            this.slotCount = this.$main.find('select#appointmentForm_slotCount').val();
+            this.loadFreeProcessList();
         })
     }
 
@@ -66,8 +80,8 @@ class View extends BaseView {
                 $(element).closest('label').show();
             }
         });
-
         this.calculateSlotCount();
+        this.loadFreeProcessList();
     }
 
     addService (element, list) {
@@ -94,11 +108,53 @@ class View extends BaseView {
         var selectedSlots = this.$main.find('.checkboxdeselect label:visible input:checkbox').map(function() {
             return $(this).data('slots');
         }).toArray();
-        for (var i = 0; i < selectedSlots.length; i++)
+        for (var i = 1; i < selectedSlots.length; i++)
             if (selectedSlots[i] > 0) {
                 slotCount += selectedSlots[i];
             }
-        console.log(slotCount);
+        this.slotCount = slotCount;
+        this.$main.find('#appointmentForm_slotCount option:eq(' + this.slotCount +')').prop('selected', true)
+    }
+
+    loadFreeProcessList () {
+        return new freeProcessList(this.$main.find('[data-free-process-list]'), {
+            selectedDate: this.selectedDate,
+            includeUrl: this.includeUrl,
+            slotsRequired: this.slotCount,
+            slotType: this.slotType
+        })
+    }
+
+    selectDateWithOverlay () {
+        return new Promise((resolve, reject) => {
+            const destroyCalendar = () => {
+                tempCalendar.destroy()
+            }
+
+            const { lightboxContentElement, destroyLightbox } = lightbox(this.$main, () => {
+                destroyCalendar()
+                reject()
+            })
+
+            const tempCalendar = new CalendarView(lightboxContentElement, {
+                includeUrl: this.includeUrl,
+                selectedDate: this.selectedDate,
+                onDatePick: (date) => {
+                    destroyCalendar()
+                    destroyLightbox()
+                    resolve(date);
+                },
+                onDateToday: (date) => {
+                    destroyCalendar()
+                    destroyLightbox()
+                    resolve(date);
+                }
+            })
+        });
+    }
+
+    setSelectedDate () {
+        this.$main.find('.add-date-picker input[name="date"]').val(moment(this.selectedDate, 'YYYY-MM-DD').format('L'))
     }
 }
 

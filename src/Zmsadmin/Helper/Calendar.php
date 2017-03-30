@@ -31,7 +31,7 @@ class Calendar
         return $this->dateTime;
     }
 
-    public function readMonthListByScopeList(\BO\Zmsentities\Collection\ScopeList $scopeList)
+    public function readMonthListByScopeList(\BO\Zmsentities\Collection\ScopeList $scopeList, $slotType, $slotsRequired)
     {
         $this->calendar->scopes = $scopeList;
         $this->calendar->firstDay->setDateTime($this->dateTime->modify('first day of this month'));
@@ -40,7 +40,11 @@ class Calendar
             $calendar = \App::$http->readPostResult(
                 '/calendar/',
                 $this->calendar,
-                ['fillWithEmptyDays' => 1]
+                [
+                    'fillWithEmptyDays' => 1,
+                    'slotType' => $slotType,
+                    'slotsRequired' => $slotsRequired
+                ]
             )->getEntity();
             return $calendar->getMonthList();
         } catch (\BO\Zmsclient\Exception $exception) {
@@ -51,13 +55,24 @@ class Calendar
         }
     }
 
-    public function readAvailableSlotsFromDayAndScopeList(\BO\Zmsentities\Collection\ScopeList $scopeList)
-    {
+    public function readAvailableSlotsFromDayAndScopeList(
+        \BO\Zmsentities\Collection\ScopeList $scopeList,
+        $slotType,
+        $slotsRequired
+    ) {
+    
         $this->calendar->scopes = $scopeList;
         $this->calendar->firstDay->setDateTime($this->dateTime);
         $this->calendar->lastDay->setDateTime($this->dateTime);
         try {
-            return \App::$http->readPostResult('/process/status/free/', $this->calendar)->getCollection();
+            return \App::$http->readPostResult(
+                '/process/status/free/',
+                $this->calendar,
+                [
+                    'slotType' => $slotType,
+                    'slotsRequired' => $slotsRequired
+                ]
+            )->getCollection();
         } catch (\BO\Zmsclient\Exception $exception) {
             if ($exception->template != 'BO\Zmsapi\Exception\Process\FreeProcessListEmpty') {
                 throw $exception;
