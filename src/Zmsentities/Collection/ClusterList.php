@@ -3,6 +3,8 @@ namespace BO\Zmsentities\Collection;
 
 class ClusterList extends Base
 {
+    const ENTITY_CLASS = '\BO\Zmsentities\Cluster';
+
     public function hasScope($scopeId)
     {
         foreach ($this as $entity) {

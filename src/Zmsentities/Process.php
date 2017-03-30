@@ -317,7 +317,7 @@ class Process extends Schema\Entity
         $string .= " " . $this->getFirstAppointment()->toDateTime()->format('c');
         $string .= " " . $this->getFirstAppointment()->slotCount."slots";
         $string .= "*" . count($this->appointments);
-        foreach ($this->requests as $request) {
+        foreach ($this->getRequests() as $request) {
             $string .= " " . $request['source'] . "." . $request['id'];
         }
         $string .= " scope." . $this['scope']['id'];

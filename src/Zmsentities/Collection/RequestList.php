@@ -3,6 +3,8 @@ namespace BO\Zmsentities\Collection;
 
 class RequestList extends Base
 {
+    const ENTITY_CLASS = '\BO\Zmsentities\Request';
+
     public function hasRequests($requestIdCsv)
     {
         $requestIdCsv = explode(',', $requestIdCsv);

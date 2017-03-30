@@ -7,6 +7,7 @@
 namespace BO\Zmsentities\Collection;
 
 use \BO\Zmsentities\Helper\Sorter;
+use \BO\Zmsentities\Schema\Entity;
 
 /**
  * @SuppressWarnings(NumberOfChildren)
@@ -15,6 +16,8 @@ use \BO\Zmsentities\Helper\Sorter;
  */
 class Base extends \ArrayObject
 {
+    const ENTITY_CLASS = '';
+
     public function getFirst()
     {
         $item = reset($this);
@@ -103,6 +106,32 @@ class Base extends \ArrayObject
     public function addEntity(\BO\Zmsentities\Schema\Entity $entity)
     {
         $this->offsetSet(null, $entity);
+        return $this;
+    }
+
+    public function offsetSet($index, $value)
+    {
+        $className = $this::ENTITY_CLASS;
+        if (is_a($value, $className)) {
+            return parent::offsetSet($index, $value);
+        } elseif (is_array($value)) {
+            return parent::offsetSet($index, new $className($value));
+        } else {
+            throw new \Exception('Invalid entity ' . get_class($value) . ' for collection '. __CLASS__);
+        }
+    }
+
+    public function addData($mergeData)
+    {
+        foreach ($mergeData as $item) {
+            if ($item instanceof Entity) {
+                $this->addEntity($item);
+            } else {
+                $className = $this::ENTITY_CLASS;
+                $entity = new $className($item);
+                $this->addEntity($entity);
+            }
+        }
         return $this;
     }
 

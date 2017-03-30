@@ -9,11 +9,13 @@ class CalldisplayTest extends EntityCommonTests
     public function testBasic()
     {
         $entity = (new $this->entityclass())->getExample();
+        //var_dump($entity);
         $resolvedEntity = $entity->withResolvedCollections($this->getTestInput());
         $resolvedEntity['scopes'][] = $this->getTestScope();
         $resolvedEntity['clusters'][] = $this->getTestCluster();
+        $cluster = $resolvedEntity->getClusterList()->getFirst();
 
-        $resolvedEntity->getClusterList()[0]['scopes'][] = $resolvedEntity->getScopeList()->getFirst();
+        $cluster['scopes']->addEntity($resolvedEntity->getScopeList()->getFirst());
         $resolvedEntity = $resolvedEntity->withOutClusterDuplicates();
         $this->assertEquals(2, $resolvedEntity->getScopeList()->count());
         $this->assertEquals(2, $resolvedEntity->getClusterList()->count());
@@ -38,7 +40,6 @@ class CalldisplayTest extends EntityCommonTests
         $resolvedEntity = $entity->withResolvedCollections($this->getTestInput());
         $this->assertEquals('c_110_bild', $resolvedEntity->getImageName());
 
-        $entity2 = (new $this->entityclass())->getExample();
         $resolvedEntity = $entity->withResolvedCollections(array(
             'scopelist' => '141',
         ));

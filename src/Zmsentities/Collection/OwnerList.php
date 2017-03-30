@@ -3,6 +3,8 @@ namespace BO\Zmsentities\Collection;
 
 class OwnerList extends Base
 {
+    const ENTITY_CLASS = '\BO\Zmsentities\Owner';
+
     public function getOrganisationsByOwnerId($entityId)
     {
         $organisationList = new OrganisationList();

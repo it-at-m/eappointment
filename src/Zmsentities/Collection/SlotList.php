@@ -5,6 +5,7 @@ use BO\Zmsentities\Slot;
 
 class SlotList extends Base
 {
+    const ENTITY_CLASS = '\BO\Zmsentities\Slot';
 
     /**
      * Compare two slots and return the lower values

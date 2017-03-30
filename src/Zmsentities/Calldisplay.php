@@ -12,6 +12,8 @@ class Calldisplay extends Schema\Entity
     {
         return [
             'serverTime' => (new \DateTime())->getTimestamp(),
+            'clusters' => new Collection\ClusterList(),
+            'scopes' => new Collection\ScopeList(),
         ];
     }
 
@@ -44,24 +46,26 @@ class Calldisplay extends Schema\Entity
 
     public function getScopeList()
     {
-        $scopeList = new Collection\ScopeList();
-        if ($this->hasScopeList()) {
+        if (!$this->scopes instanceof Collection\ScopeList) {
+            $scopeList = new Collection\ScopeList();
             foreach ($this->scopes as $scope) {
                 $scopeList->addEntity(new Scope($scope));
             }
+            $this->scopes = $scopeList;
         }
-        return $scopeList;
+        return $this->scopes;
     }
 
     public function getClusterList()
     {
-        $clusterList = new Collection\ClusterList();
-        if ($this->hasClusterList()) {
+        if (!$this->clusters instanceof Collection\ClusterList) {
+            $clusterList = new Collection\ClusterList();
             foreach ($this->clusters as $cluster) {
                 $clusterList->addEntity(new Cluster($cluster));
             }
+            $this->clusters = $clusterList;
         }
-        return $clusterList;
+        return $this->clusters;
     }
 
     public function getImageName()

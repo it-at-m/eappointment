@@ -12,7 +12,8 @@ class Appointment extends Schema\Entity
     {
         return [
             'date' => 0,
-            'scope' => [],
+            'scope' => new Scope(),
+            'availability' => new Availability(),
             'slotCount' => 0,
         ];
     }

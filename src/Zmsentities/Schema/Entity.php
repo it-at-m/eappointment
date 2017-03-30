@@ -35,22 +35,18 @@ class Entity extends \ArrayObject implements \JsonSerializable
      */
     public function __construct($input = null, $flags = \ArrayObject::ARRAY_AS_PROPS, $iterator_class = "ArrayIterator")
     {
-        //$this->jsonSchema = self::readJsonSchema();
+        parent::__construct($this->getDefaults(), $flags, $iterator_class);
         if ($input) {
             $input = $this->getUnflattenedArray($input);
-            $defaults = $this->getDefaults();
-            if ($defaults) {
-                $input = array_replace_recursive($defaults, $input);
-            }
-        } else {
-            $input = $this->getDefaults();
+            $this->addData($input);
         }
-        parent::__construct($input, $flags, $iterator_class);
     }
 
     public function exchangeArray($input)
     {
-        parent::exchangeArray($this->getUnflattenedArray($input));
+        parent::exchangeArray($this->getDefaults());
+        $input = $this->getUnflattenedArray($input);
+        $this->addData($input);
     }
 
     /**
@@ -196,6 +192,31 @@ class Entity extends \ArrayObject implements \JsonSerializable
                 $this[$key] = clone $property;
             }
         }
+    }
+
+    /**
+     * Performs a merge with an iterable
+     * Sub-entities are preserved
+     */
+    public function addData($mergeData)
+    {
+        foreach ($mergeData as $key => $item) {
+            if (array_key_exists($key, $this) && $this[$key] instanceof Entity) {
+                $this[$key]->addData($item);
+            } elseif (array_key_exists($key, $this) && $this[$key] instanceof \BO\Zmsentities\Collection\Base) {
+                $this[$key]->exchangeArray([]);
+                $this[$key]->addData($item);
+            } elseif (array_key_exists($key, $this) && is_array($this[$key])) {
+                if (!is_array($item)) {
+                    var_dump($key);
+                    var_dump($item);
+                }
+                $this[$key] = array_replace_recursive($this[$key], $item);
+            } else {
+                $this[$key] = $item;
+            }
+        }
+        return $this;
     }
 
     public function hasId()

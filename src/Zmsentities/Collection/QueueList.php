@@ -8,6 +8,8 @@ namespace BO\Zmsentities\Collection;
  */
 class QueueList extends Base
 {
+    const ENTITY_CLASS = '\BO\Zmsentities\Queue';
+
     const FAKE_WAITINGNUMBER = 1001;
 
     public function withEstimatedWaitingTime($processTimeAverage, $workstationCount, \DateTimeInterface $dateTime)

@@ -3,6 +3,8 @@ namespace BO\Zmsentities\Collection;
 
 class ScopeList extends Base
 {
+    const ENTITY_CLASS = '\BO\Zmsentities\Scope';
+
     public function getAlternateRedirectUrl()
     {
         $scope = reset($this);

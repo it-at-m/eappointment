@@ -53,7 +53,7 @@ class ProcessTest extends EntityCommonTests
         $firstClient = $entity->getFirstClient();
         $this->assertFalse($firstClient['surveyAccepted'], 'client update failed');
         $this->assertTrue('Max Mustermann' == $firstClient['familyName'], 'first client not found');
-        $entity->getClients()[0] = null;
+        unset($entity->getClients()[0]);
         $this->assertFalse($entity->getFirstClient()->hasEmail());
     }
 
@@ -137,6 +137,15 @@ class ProcessTest extends EntityCommonTests
         $this->assertEquals(456, $entity->getScopeId());
         $entity->status = 'pending';
         $this->assertEquals(123, $entity->getScopeId());
+    }
+
+    public function testMerge()
+    {
+        $example = $this->getExample();
+        $example->addData(['scope' => ['shortName' => 'Test']]);
+        $this->assertEquals($example['scope']['shortName'], 'Test');
+        $this->assertTrue($example->scope instanceof \BO\Zmsentities\Scope);
+        $this->assertTrue($example->testValid());
     }
 
     public function testCreateFromScope()

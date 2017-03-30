@@ -3,6 +3,8 @@ namespace BO\Zmsentities\Collection;
 
 class DepartmentList extends Base implements JsonUnindexed
 {
+    const ENTITY_CLASS = '\BO\Zmsentities\Department';
+
     public function withOutClusterDuplicates()
     {
         $departmentList = new self();
