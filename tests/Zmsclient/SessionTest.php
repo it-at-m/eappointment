@@ -18,11 +18,10 @@ class SessionTest extends Base
         $this->assertEquals(self::SESSION_NAME, $sessionHandler->sessionName);
 
         $entity = (new \BO\Zmsentities\Session())->getExample();
-        $writeSession = $sessionHandler->write(self::SESSION_ID, $entity->getContent());
+        $writeSession = $sessionHandler->write(self::SESSION_ID, serialize($entity->getContent()));
         $this->assertTrue($writeSession);
 
         $result = $sessionHandler->read(self::SESSION_ID);
-
         $session = new \BO\Zmsentities\Session(array('content' => unserialize($result)));
         $this->assertEquals('123', $session->getScope());
 
@@ -41,6 +40,6 @@ class SessionTest extends Base
         $sessionHandler->open('/', self::SESSION_NAME);
         $entity = (new \BO\Zmsentities\Session())->getExample();
         $entity->content['basket']['providers'] = 123456;
-        $writeSession = $sessionHandler->write(self::SESSION_ID, $entity->getContent());
+        $sessionHandler->write(self::SESSION_ID, serialize($entity->getContent()));
     }
 }
