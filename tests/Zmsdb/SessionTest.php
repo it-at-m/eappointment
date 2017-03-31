@@ -32,7 +32,6 @@ class SessionTest extends Base
     protected function getTestEntity()
     {
         $entity = Entity::createExample();
-        $entity->content = json_encode($entity->content);
         return $entity;
     }
 }

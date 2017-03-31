@@ -33,7 +33,7 @@ class Session extends Base
             array(
             $session['id'],
             $session['name'],
-            $session['content']
+            json_encode($session['content'])
             )
         );
         $entity = $this->readEntity($session['name'], $session['id']);
