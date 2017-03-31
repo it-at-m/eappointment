@@ -48,22 +48,6 @@ class Session extends Schema\Entity
         ];
     }
 
-    public function getUnserializedContent()
-    {
-        if (! is_array($this->content)) {
-            $this->content = unserialize($this->content);
-        }
-        return $this;
-    }
-
-    public function getSerializedContent()
-    {
-        if (is_array($this->content)) {
-            $this->content = serialize($this->content);
-        }
-        return $this;
-    }
-
     public function getContent()
     {
         return $this->toProperty()->content->get();
