@@ -28,4 +28,15 @@ class ProviderList extends Base
         }
         return false;
     }
+
+    public function withUniqueProvider()
+    {
+        $list = new self();
+        foreach ($this as $provider) {
+            if ($provider && ! $list->hasEntity($provider->id)) {
+                $list->addEntity($provider);
+            }
+        }
+        return $list;
+    }
 }
