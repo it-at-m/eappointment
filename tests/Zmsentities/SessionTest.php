@@ -9,9 +9,7 @@ class SessionTest extends EntityCommonTests
     public function testBasic()
     {
         $entity = (new $this->entityclass())->getExample();
-        $entity->getSerializedContent();
-        $unserializedEntity = $entity->getUnserializedContent();
-        $content = $unserializedEntity->getContent();
+        $content = $entity->getContent();
         $basket = $entity->getBasket();
         $human = $entity->getHuman();
 
