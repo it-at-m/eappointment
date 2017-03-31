@@ -16,7 +16,7 @@ class SessionDeleteTest extends Base
         $session = new \BO\Zmsentities\Session(array(
             'id' => self::SESSION_ID,
             'name' => self::SESSION_NAME,
-            'content' => ''
+            'content' => []
         ));
         $query->updateEntity($session);
         $response = $this->render(['name' => self::SESSION_NAME, 'id' => self::SESSION_ID], [], []);
@@ -27,6 +27,6 @@ class SessionDeleteTest extends Base
     {
         $this->expectException('BO\Zmsapi\Exception\Session\SessionDeleteFailed');
         $this->expectExceptionCode(404);
-        $response = $this->render(['name' => self::SESSION_NAME, 'id' => self::SESSION_ID], [], []);
+        $this->render(['name' => self::SESSION_NAME, 'id' => self::SESSION_ID], [], []);
     }
 }
