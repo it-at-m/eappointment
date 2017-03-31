@@ -28,9 +28,7 @@ class SessionGet extends BaseController
         }
         $session->id = $sessionId;
         $session->name = $sessionName;
-        $session->getUnSerializedContent();
         $session->testValid();
-        $session->getSerializedContent();
         $message->data = $session;
         Render::lastModified(time(), '0');
         Render::json($message->setUpdatedMetaData(), $message->getStatuscode());

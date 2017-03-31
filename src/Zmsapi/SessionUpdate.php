@@ -21,7 +21,6 @@ class SessionUpdate extends BaseController
         $message = Response\Message::create(Render::$request);
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $session = new \BO\Zmsentities\Session($input);
-        $session->getUnSerializedContent();
         $session->testValid();
         $message->data = null;
 
@@ -32,7 +31,6 @@ class SessionUpdate extends BaseController
         } elseif (false === Helper\Matching::hasProviderRequest($session)) {
             throw new Exception\Matching\MatchingNotFound();
         } else {
-            $session->getSerializedContent();
             $message->data = (new Query())->updateEntity($session);
         }
 

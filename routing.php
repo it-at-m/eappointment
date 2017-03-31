@@ -2389,6 +2389,46 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/process/status/pickup/":
+ *      post:
+ *          summary: Find or create a process to be used to pickup documents.
+ *          description: Only process.queue.number is a necessary input. But it is possible to create a full process with a given waiting number. If the process already exists, an update is only performed, if process.id and process.authkey matches. Information about the scope are taken from the workstation fetches by X-Authkey
+ *          tags:
+ *              - process
+ *          parameters:
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: process
+ *                  description: process data to create
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/process.json"
+ *          responses:
+ *              200:
+ *                  description: you are able to call this process now
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/process.json"
+ *              400:
+ *                  description: "Invalid input"
+ *              403:
+ *                  description: "authkey does not match"
+ */
+\App::$slim->post('/process/status/pickup/',
+    '\BO\Zmsapi\ProcessPickup')
+    ->setName("ProcessPickup");
+
+/**
+ *  @swagger
  *  "/provider/{source}/{id}/":
  *      get:
  *          summary: Get an provider by id

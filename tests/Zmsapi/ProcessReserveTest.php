@@ -32,7 +32,7 @@ class ProcessReserveTest extends Base
     public function testMultipleSlots()
     {
         $process = new \BO\Zmsentities\Process(
-            json_decode($this->readFixture("GetProcessWithMultipleSlotCount.json"))
+            json_decode($this->readFixture("GetProcessWithMultipleSlotCount.json"), 1)
         );
         $response = $this->render([], [
             '__body' => json_encode($process)
