@@ -32,14 +32,14 @@ class Scope extends BaseController
             array(
                 'isAssigned' => true
             )
-        )->getCollection()->sortByName();
+        )->getCollection()->withUniqueProvider()->sortByName();
 
         $providerNotAssigned = \App::$http->readGetResult(
             '/provider/dldb/',
             array(
                 'isAssigned' => false
             )
-        )->getCollection()->sortByName();
+        )->getCollection()->withUniqueProvider()->sortByName();
 
         $entityId = Validator::value($args['id'])->isNumber()->getValue();
         $entity = \App::$http->readGetResult('/scope/' . $entityId . '/', ['resolveReferences' => 1])->getEntity();
