@@ -32,8 +32,8 @@ class ProcessPickup extends BaseController
             $process = (new Query())->updateEntity($process);
         } elseif (static::hasQueueNumber($input)) {
             $process = (new Query())->readByQueueNumberAndScope($input['queue']['number'], $workstation->scope['id']);
-            if (!$process) {
-                $process = (new Query())->writeNewPickup($workstation->scope, \App::$now);
+            if (!$process->id) {
+                $process = (new Query())->writeNewPickup($workstation->scope, \App::$now, $input['queue']['number']);
             }
         } else {
             throw new Exception\Process\ProcessInvalid();
