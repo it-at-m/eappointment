@@ -10,6 +10,7 @@ class View extends BaseView {
     constructor (element, options) {
         super(element);
         this.selectedDate = options.selectedDate;
+        this.selectedTime = options.selectedTime;
         this.includeUrl = options.includeUrl || "";
         this.selectedProcess = options.selectedProcess;
         this.slotCount = 0;
@@ -119,6 +120,7 @@ class View extends BaseView {
     loadFreeProcessList () {
         return new freeProcessList(this.$main.find('[data-free-process-list]'), {
             selectedDate: this.selectedDate,
+            selectedTime: this.selectedTime,
             includeUrl: this.includeUrl,
             slotsRequired: this.slotCount,
             slotType: this.slotType

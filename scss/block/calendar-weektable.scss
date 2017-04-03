@@ -39,6 +39,9 @@ $border-color:                      $inuit-table-border-color;
         &.legend-hour {
             width:auto;
             background-color:       $grey;
+            .timeslot__time {
+                color:              $black;
+            }
         }
     }
     .calendar-weektable_day {
@@ -59,6 +62,11 @@ $border-color:                      $inuit-table-border-color;
             padding:                0.1em 0.3em 0.1em 0.2em;
             background:             rgba(255, 255, 255, 0.2) none repeat scroll 0 0;
             vertical-align:         top;
+            color:                  $white;
+            a {
+                color:                  $white;
+                text-decoration:        none;
+            }
         }
         .timeslot__items {
             display: table-cell;
@@ -72,24 +80,21 @@ $border-color:                      $inuit-table-border-color;
             }
         }
         &.timeslot--disabled {
-            background-color:       $backgroundColorDateDisabled;
-            color:                  #666666;
+            background-color:           $backgroundColorDateDisabled;
+            color:                      #666666;
         }
         &.timeslot--free {
             .timeslot__time {
                 background-color:       $backgroundColorDateFree;
                 border-color:           darken($backgroundColorDateFree, 20%);
                 font-weight:            bold;
-                color:                  $white;
             }
-
         }
         &.timeslot--busy {
             .timeslot__time {
                 background-color:       $backgroundColorDateBusy;
                 border-color:           #D89191;
                 font-weight:            bold;
-                color:                  $white;
             }
         }
     }

@@ -29,6 +29,8 @@ class Workstation extends BaseController
         $validator = $request->getAttribute('validator');
         $selectedDate = $validator->getParameter('date')->isString()->getValue();
         $selectedDate = ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d');
+        $selectedTime = $validator->getParameter('time')->isString()->getValue();
+        $selectedTime = ($selectedTime) ? $selectedTime : null;
 
         if (!$workstation->hasId()) {
             return \BO\Slim\Render::redirect(
@@ -47,6 +49,7 @@ class Workstation extends BaseController
                 'menuActive' => 'workstation',
                 'workstation' => $workstation,
                 'selectedDate' => $selectedDate,
+                'selectedTime' => $selectedTime,
                 'requestList' => $requestList->sortByName()
             )
         );

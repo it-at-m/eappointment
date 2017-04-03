@@ -25,6 +25,8 @@ class Counter extends BaseController
         $validator = $request->getAttribute('validator');
         $selectedDate = $validator->getParameter('date')->isString()->getValue();
         $selectedDate = ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d');
+        $selectedTime = $validator->getParameter('time')->isString()->getValue();
+        $selectedTime = ($selectedTime) ? $selectedTime : null;
         $waitingnumber = $validator->getParameter('waitingnumber')->isNumber()->getValue();
 
         if (!$workstation->hasId()) {
@@ -43,6 +45,7 @@ class Counter extends BaseController
                 'title' => 'Tresen',
                 'menuActive' => 'counter',
                 'selectedDate' => $selectedDate,
+                'selectedTime' => $selectedTime,
                 'waitingnumber' => $waitingnumber,
                 'workstation' => $workstation->getArrayCopy()            )
         );
