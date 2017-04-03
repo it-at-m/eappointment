@@ -22,6 +22,7 @@ class AppointmentForm extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
         $validator = $request->getAttribute('validator');
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
+        $selectedTime = $validator->getParameter('selectedtime')->isString()->getValue();
         //TODO fetch process by selectedProcessId if given
         //$selectedProcessId = $validator->getParameter('selectedprocess')->isString()->getValue();
 
@@ -40,6 +41,7 @@ class AppointmentForm extends BaseController
             'block/appointment/form.twig',
             array(
                 'selectedDate' => ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d'),
+                'selectedTime' => ($selectedTime) ? $selectedTime : null,
                 'requestList' => $requestList->sortByName()
             )
         );

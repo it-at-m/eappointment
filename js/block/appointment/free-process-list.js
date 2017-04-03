@@ -7,6 +7,7 @@ class View extends BaseView {
     constructor (element, options) {
         super(element, options);
         this.selectedDate = options.selectedDate;
+        this.selectedTime = options.selectedTime;
         this.slotType = options.slotType;
         this.slotsRequired = options.slotsRequired;
         this.includeUrl = options.includeUrl || "";
@@ -16,7 +17,7 @@ class View extends BaseView {
     }
 
     load() {
-        const url = `${this.includeUrl}/appointmentForm/processlist/free/?selecteddate=${this.selectedDate}&slottype=${this.slotType}&slotsrequired=${this.slotsRequired}`
+        const url = `${this.includeUrl}/appointmentForm/processlist/free/?selecteddate=${this.selectedDate}&selectedtime=${this.selectedTime}&slottype=${this.slotType}&slotsrequired=${this.slotsRequired}`
         return this.loadContent(url, 'GET').catch(err => this.loadErrorCallback(err.source, err.url));
     }
 

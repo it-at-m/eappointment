@@ -22,6 +22,7 @@ class AppointmentFormFreeProcessList extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
         $validator = $request->getAttribute('validator');
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
+        $selectedTime = $validator->getParameter('selectedtime')->isString()->getValue();
 
         $slotType = $validator->getParameter('slottype')->isString()->getValue();
         $slotsRequired = $validator->getParameter('slotsrequired')->isNumber()->getValue();
@@ -39,6 +40,7 @@ class AppointmentFormFreeProcessList extends BaseController
             'block/appointment/freeProcessList.twig',
             array(
                 'selectedDate' => $selectedDate,
+                'selectedTime' => $selectedTime,
                 'freeProcessList' => ($freeProcessList) ?
                     $freeProcessList->toProcessListByTime()->sortByTimeKey() :
                     null,
