@@ -5,6 +5,5 @@ DIR=$(dirname $($REALPATH ${BASH_SOURCE[0]}))
 ROOT=$($REALPATH $DIR/..)
 
 EXPORT=$ROOT/data/
-PROXY=proxy:3128
 
-$ROOT/vendor/bo/clientdldb/bin/dldbget -o $EXPORT -p $PROXY
+$ROOT/vendor/bo/clientdldb/bin/dldbget -o $EXPORT
