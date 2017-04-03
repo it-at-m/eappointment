@@ -99,11 +99,13 @@ class Process extends Base
         return $this->writeNewProcess($process, $dateTime);
     }
 
-    public function writeNewPickup(\BO\Zmsentities\Scope $scope, \DateTimeInterface $dateTime)
+    public function writeNewPickup(\BO\Zmsentities\Scope $scope, \DateTimeInterface $dateTime, $newQueueNumber = 0)
     {
         $process = Entity::createFromScope($scope, $dateTime);
         $process->setStatus('pending');
-        $newQueueNumber = (new Scope())->readWaitingNumberUpdated($scope->id, $dateTime);
+        if (!$newQueueNumber) {
+            $newQueueNumber = (new Scope())->readWaitingNumberUpdated($scope->id, $dateTime);
+        }
         $process->addQueue($newQueueNumber, $dateTime);
         return $this->writeNewProcess($process, $dateTime);
     }
