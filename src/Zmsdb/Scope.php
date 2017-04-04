@@ -321,13 +321,11 @@ class Scope extends Base
      */
     public function updateGhostWorkstationCount($scopeId, \BO\Zmsentities\Scope $entity, \DateTimeInterface $dateTime)
     {
-        self::$cache = [];
         $query = new Query\Scope(Query\Base::UPDATE);
-        $query->addConditionScopeId($entity->id);
+        $query->addConditionScopeId($scopeId);
         $values = $query->setGhostWorkstationCountEntityMapping($entity, $dateTime);
         $query->addValues($values);
         $this->writeItem($query);
-        return $this->readEntity($scopeId);
     }
 
     /**
