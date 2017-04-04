@@ -29,10 +29,13 @@ class RequestsByCluster extends BaseController
         }
 
         $requestList = $query->readListByCluster($cluster, $resolveReferences - 1);
+        error_log(var_export($requestList, 1));
 
         $message = Response\Message::create(Render::$request);
         $message->data = $requestList;
         Render::lastModified(time(), '0');
-        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
+
+        //Also return 200 and original message if requestList is empty
+        Render::json($message, 200);
     }
 }
