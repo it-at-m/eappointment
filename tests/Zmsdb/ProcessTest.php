@@ -14,7 +14,7 @@ class ProcessTest extends Base
 {
     public function testReadEntityFailed()
     {
-        $this->setExpectedException('\BO\Zmsdb\Exception\ProcessAuthFailed');
+        $this->setExpectedException('\BO\Zmsdb\Exception\Process\ProcessAuthFailed');
 
         $now = new \DateTimeImmutable("2016-04-01 11:55");
         $query = new Query();
@@ -47,7 +47,7 @@ class ProcessTest extends Base
 
     public function testExceptionAlreadyReserved()
     {
-        $this->setExpectedException('\BO\Zmsdb\Exception\ProcessReserveFailed');
+        $this->setExpectedException('\BO\Zmsdb\Exception\Process\ProcessReserveFailed');
 
         $now = new \DateTimeImmutable("2016-04-01 11:55");
         $query = new Query();
