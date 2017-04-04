@@ -305,6 +305,13 @@ class Scope extends Base implements MappingInterface
         return $data;
     }
 
+    public function setGhostWorkstationCountEntityMapping(\BO\Zmsentities\Scope $entity, \DateTimeInterface $dateTime)
+    {
+        $data['virtuellesachbearbeiterzahl'] = $entity->getStatus('queue', 'ghostWorkstationCount');
+        $data['datumvirtuellesachbearbeiterzahl'] = $dateTime->format('Y-m-d');
+        return $data;
+    }
+
     public function postProcess($data)
     {
         $data["status__queue__lastGivenNumberTimestamp"] =
