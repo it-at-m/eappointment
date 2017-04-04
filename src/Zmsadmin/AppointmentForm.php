@@ -40,6 +40,7 @@ class AppointmentForm extends BaseController
             $response,
             'block/appointment/form.twig',
             array(
+                'workstation' => $workstation,
                 'selectedDate' => ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d'),
                 'selectedTime' => ($selectedTime) ? $selectedTime : null,
                 'requestList' => $requestList->sortByName()

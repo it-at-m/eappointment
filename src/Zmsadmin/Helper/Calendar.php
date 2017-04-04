@@ -57,10 +57,9 @@ class Calendar
 
     public function readAvailableSlotsFromDayAndScopeList(
         \BO\Zmsentities\Collection\ScopeList $scopeList,
-        $slotType,
-        $slotsRequired
+        $slotType = 'intern',
+        $slotsRequired = 0
     ) {
-    
         $this->calendar->scopes = $scopeList;
         $this->calendar->firstDay->setDateTime($this->dateTime);
         $this->calendar->lastDay->setDateTime($this->dateTime);
