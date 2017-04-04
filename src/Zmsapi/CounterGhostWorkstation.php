@@ -27,7 +27,7 @@ class CounterGhostWorkstation extends BaseController
         $scope->setStatusQueue('ghostWorkstationCount', $input['count']);
 
         $message = Response\Message::create(Render::$request);
-        $message->data = (new Query())->updateEntity($scope->id, $scope);
+        $message->data = (new Query())->updateGhostWorkstationCount($scope->id, $scope, \App::$now);
         Render::lastModified(time(), '0');
         Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }
