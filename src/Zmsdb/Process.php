@@ -24,7 +24,7 @@ class Process extends Base
             ->addConditionAuthKey($authKey);
         $process = $this->fetchOne($query, new Entity());
         if ($process->id != $processId) {
-            throw new Exception\ProcessAuthFailed("Could not find process $processId identified by '$authKey'");
+            throw new Exception\Process\ProcessAuthFailed("Could not find process $processId identified by '$authKey'");
         }
         $process = $this->readResolvedReferences($process, $resolveReferences);
         return $process;
@@ -67,12 +67,12 @@ class Process extends Base
         $appointment = $process->getAppointments()->getFirst();
         $freeProcessList = $this->readFreeProcesses($process->toCalendar(), $now);
         if (!$freeProcessList->getAppointmentList()->hasAppointment($appointment)) {
-            throw new Exception\ProcessReserveFailed();
+            throw new Exception\Process\ProcessReserveFailed();
         }
         $slotList = (new Slot)->readByAppointment($appointment);
         /*
         if (!$slotList->isAvailableForAll($slotType)) {
-            throw new Exception\ProcessReserveFailed("Could not reserve multiple slots");
+            throw new Exception\Process\ProcessReserveFailed("Could not reserve multiple slots");
         }
         */
         foreach ($slotList as $slot) {
