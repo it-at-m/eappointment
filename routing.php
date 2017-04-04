@@ -180,7 +180,17 @@ use \Psr\Http\Message\ResponseInterface;
  * Process
  * -------------------------------------------------------------------------
  */
-\App::$slim->map(['GET'], '/process/{id:\d+}/{authkey}/delete/', '\BO\Zmsadmin\ProcessDelete')
+
+ \App::$slim->post('/process/{date:\d\d\d\d-\d\d-\d\d}/{time:\d\d-\d\d}/reserve/', '\BO\Zmsadmin\ProcessReserve')
+     ->setName("processReserve");
+
+ \App::$slim->post('/process/queued/', '\BO\Zmsadmin\ProcessQueued')
+     ->setName("processQueued");
+
+ \App::$slim->post('/process/{id:\d+}/save/', '\BO\Zmsadmin\ProcessSave')
+     ->setName("processSave");
+
+ \App::$slim->map(['GET'], '/process/{id:\d+}/delete/', '\BO\Zmsadmin\ProcessDelete')
     ->setName("processDelete");
 
 

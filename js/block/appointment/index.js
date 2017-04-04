@@ -16,7 +16,7 @@ class View extends BaseView {
         this.slotCount = 0;
         this.slotType = 'intern';
         this.serviceList = [];
-
+        $.ajaxSetup({ cache: false });
         this.load().then(() => {
             this.cleanUpLists();
             this.loadFreeProcessList();
@@ -43,7 +43,6 @@ class View extends BaseView {
             this.cleanUpLists();
             this.updateList();
         }).on('click', 'input[name=date]', () => {
-            console.log('date click')
             this.selectDateWithOverlay()
                    .then(date => {
                        this.selectedDate = date;
@@ -58,6 +57,33 @@ class View extends BaseView {
             console.log('slots changed manualy');
             this.slotCount = this.$main.find('select#appointmentForm_slotCount').val();
             this.loadFreeProcessList();
+        }).on('click', '.form-actions button.process-reserve', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            console.log('reserve button clicked');
+            this.reserveProcess();
+        }).on('click', '.form-actions button.process-queue', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            console.log('queue button clicked')
+        })
+    }
+
+    /**
+     * reserve process
+     */
+    reserveProcess () {
+        this.selectedDate = moment(this.$main.find('.appointment-form form #process_date').val(), 'DD.MM.YYYY').format('YYYY-MM-DD');
+        this.selectedTime = this.$main.find('.appointment-form form #process_time').val();
+        const sendData = this.$main.find('.appointment-form form').serialize();
+        $.ajax(`/process/${this.selectedDate}/${this.selectedTime}/reserve/`, {
+            method: 'POST',
+            data: sendData
+        }).done((processData) => {
+            console.log('RESERVE POST successfully', processData);
+        }).fail(err => {
+            console.log('ajax error', err),
+            this.loadErrorCallback(err.source, err.url)
         })
     }
 
@@ -157,6 +183,18 @@ class View extends BaseView {
 
     setSelectedDate () {
         this.$main.find('.add-date-picker input[name="date"]').val(moment(this.selectedDate, 'YYYY-MM-DD').format('L'))
+    }
+
+    loadErrorCallback(source, url) {
+        if (source == 'button') {
+            return this.loadContent(url)
+        } else if (source == 'lightbox') {
+            const defaultUrl = `${this.includeUrl}/workstation/process/cancel/`
+            return this.loadContent(defaultUrl)
+        } else {
+            const defaultUrl = `${this.includeUrl}/workstation/process/cancel/`
+            return this.loadContent(defaultUrl)
+        }
     }
 }
 
