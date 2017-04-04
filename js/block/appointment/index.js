@@ -73,6 +73,7 @@ class View extends BaseView {
      * reserve process
      */
     reserveProcess () {
+        this.removeErrorMessages();
         this.selectedDate = moment(this.$main.find('.appointment-form form #process_date').val(), 'DD.MM.YYYY').format('YYYY-MM-DD');
         this.selectedTime = this.$main.find('.appointment-form form #process_time').val();
         const sendData = this.$main.find('.appointment-form form').serialize();
@@ -82,9 +83,37 @@ class View extends BaseView {
         }).done((processData) => {
             console.log('RESERVE POST successfully', processData);
         }).fail(err => {
-            console.log('ajax error', err),
-            this.loadErrorCallback(err.source, err.url)
+            this.writeErrorMessages(err.responseJSON);
+            console.log('ajax error', err);
         })
+    }
+
+    removeErrorMessages()
+    {
+        this.$main.find('.appointment-form .controls').removeClass('has-error');
+        this.$main.find('.appointment-form .list-error').remove();
+    }
+
+    writeErrorMessages(responseJson)
+    {
+        $.each(responseJson, (index, item) => {
+            if (item.failed) {
+                this.$main
+                    .find('.appointment-form [name="' + index +'"], .appointment-form [data-form-validate="'+ index +'"]')
+                    .closest('div.controls')
+                    .addClass('has-error')
+                    .after(this.getMessageList(item.messages));
+            }
+        });
+    }
+
+    getMessageList(messages) {
+        let list = document.createElement('ul');
+        $(list).addClass('list-error');
+        $.each(messages, (index, messageItem) => {
+            $(list).append('<li>'+ messageItem.message +'</li>')
+        });
+        return list;
     }
 
     /**
@@ -183,18 +212,6 @@ class View extends BaseView {
 
     setSelectedDate () {
         this.$main.find('.add-date-picker input[name="date"]').val(moment(this.selectedDate, 'YYYY-MM-DD').format('L'))
-    }
-
-    loadErrorCallback(source, url) {
-        if (source == 'button') {
-            return this.loadContent(url)
-        } else if (source == 'lightbox') {
-            const defaultUrl = `${this.includeUrl}/workstation/process/cancel/`
-            return this.loadContent(defaultUrl)
-        } else {
-            const defaultUrl = `${this.includeUrl}/workstation/process/cancel/`
-            return this.loadContent(defaultUrl)
-        }
     }
 }
 

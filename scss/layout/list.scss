@@ -1,3 +1,5 @@
+$formErrorColor:        #a94442 !default;
+
 /* UL */
 ul {
     margin:                 0;
@@ -69,5 +71,11 @@ dl {
     dd {
         margin-left:        0;
         margin-bottom:      0.5em;
+    }
+}
+
+.list-error {
+    li {
+        color:              $formErrorColor;
     }
 }
