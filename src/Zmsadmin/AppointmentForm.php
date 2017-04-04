@@ -35,7 +35,6 @@ class AppointmentForm extends BaseController
             $requestList = \App::$http
                 ->readGetResult('/scope/'. $workstation->scope['id'] .'/request/')->getCollection();
         }
-
         return \BO\Slim\Render::withHtml(
             $response,
             'block/appointment/form.twig',
@@ -43,7 +42,7 @@ class AppointmentForm extends BaseController
                 'workstation' => $workstation,
                 'selectedDate' => ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d'),
                 'selectedTime' => ($selectedTime) ? $selectedTime : null,
-                'requestList' => $requestList->sortByName()
+                'requestList' => (count($requestList)) ? $requestList->sortByName() : null
             )
         );
     }
