@@ -98,6 +98,37 @@ class Process extends Schema\Entity
         return $this;
     }
 
+    public function createFromFormData($dateTime, $scope, $formData, $requestData)
+    {
+        $this->scope = $scope;
+        $this->addRequests('dldb', implode(',', $formData['requests']['value']));
+        $this->addAppointment(
+            (new Appointment())
+                ->addDate($dateTime->getTimestamp())
+                ->addScope($scope['id'])
+                ->addSlotCount($requestData['slotCount'])
+        );
+        $this->addClientFromForm($formData);
+        $this->reminderTimestamp = (array_key_exists('headsUpTime', $requestData)) ?
+            $dateTime->getTimestamp() - $requestData['headsUpTime'] : 0;
+        $this->amendment = (array_key_exists('amendment', $formData)) ?
+            $formData['amendment']['value'] : null;
+        return $this;
+    }
+
+    public function addClientFromForm($formData)
+    {
+        $client = new Client();
+        foreach ($formData as $key => $item) {
+            if (null !== $item['value'] && array_key_exists($key, $client)) {
+                $client[$key] = $item['value'];
+            }
+        }
+        $this->clients = array();
+        $this->clients[] = $client;
+        return $this;
+    }
+
     public function setStatus($status)
     {
         $this->status = $status;
