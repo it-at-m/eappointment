@@ -69,6 +69,40 @@ class BaseView extends ErrorHandler {
         return this.loadPromise;
     }
 
+    loadCall(url, method = 'GET', data = null) {
+        const ajaxSettings = {
+            method
+        };
+        if (method === 'POST' || method === 'PUT') {
+            ajaxSettings.data = data;
+        }
+        return new Promise((resolve, reject) => {
+            $.ajax(url, ajaxSettings).done(responseData => {
+                resolve(responseData);
+            }).fail(err => {
+                let isException = err.responseText.toLowerCase().includes('exception');
+                if (err.status >= 400 && err.status < 500 && isException) {
+                    const { lightboxContentElement, destroyLightbox } = lightbox(null, () => {
+                        reject({'source': 'lightbox', 'message': err.responseText})
+                    })
+
+                    const exceptionHandler = new ExceptionHandler(lightboxContentElement, {
+                        code: err.status,
+                        message: err.responseText,
+                        callback: (exceptionButtonUrl) => {
+                            destroyLightbox()
+                            reject({'source': 'button', 'url': exceptionButtonUrl})
+                        }
+                    })
+
+                } else {
+                    console.log('XHR load error', url, err);
+                    reject(err);
+                }
+            })
+        })
+    }
+
     destroy() {
         this.$main.off().empty();
         this.$main = null;
