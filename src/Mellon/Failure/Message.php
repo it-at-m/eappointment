@@ -14,7 +14,7 @@ use BO\Mellon\Valid;
   */
 class Message
 {
-    protected $message = '';
+    public $message = '';
 
     public function __construct($message)
     {
