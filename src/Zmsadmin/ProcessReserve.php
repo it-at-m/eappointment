@@ -31,7 +31,10 @@ class ProcessReserve extends BaseController
 
         $selectedDate = Validator::value($args['date'])->isString()->getValue();
         $selectedTime = Validator::value($args['time'])->isString()->getValue();
+        $selectedTime = $selectedTime ? str_replace('-', ':', $selectedTime) : '00:00:00';
+        $dateTime = \DateTime::createFromFormat('Y-m-d H:i', $selectedDate .' '. $selectedTime);
         $input = $request->getParsedBody();
+        $process = new \BO\Zmsentities\Process();
 
         if ($selectedDate && $selectedTime && is_array($input)) {
             $validationList = FormValidation::fromAdminParameters($workstation->scope['preferences']);
@@ -42,35 +45,36 @@ class ProcessReserve extends BaseController
                     428
                 );
             }
-            $process->scope = $workstation->scope;
-            $process->addRequests('dldb', implode(',', $input['process_requests']));
-            $process->addAppointment(
-                (new \BO\Zmsentities\Appointment())
-                    ->setDateByString($selectedDate .' '. str_replace('-', ':', $selectedTime), 'Y-m-d H:i')
-                    ->addScope($workstation->scope['id'])
-            );
-            $process->reminderTimestamp = $input['headsUpTime'];
+
+            $process->createFromFormData($dateTime, $workstation->scope, $validationList->getStatus(), $input);
             $reservedProcess = \App::$http->readPostResult('/process/status/reserved/', $process)->getEntity();
+
             if ($reservedProcess) {
                 $process = \App::$http->readGetResult(
                     '/process/'. $reservedProcess->id .'/'. $reservedProcess->authKey .'/'
                 )->getEntity();
-                return $this->writeProcessConfirmation($process, $input);
+                $process = $this->writeProcessConfirmation($process, $validationList->getStatus());
             }
         }
-        return false;
+        return \BO\Slim\Render::withJson(
+            $response,
+            [
+                'id' => $process->id,
+                'status' => $process->status
+            ]
+        );
     }
 
-    private function writeProcessConfirmation(\BO\Zmsentities\Process $process, $input)
+    private function writeProcessConfirmation(\BO\Zmsentities\Process $process, $formData)
     {
         $process = \App::$http->readPostResult('/process/status/confirmed/', $process)->getEntity();
-        if (array_key_exists('sendMailConfirmation', $input)) {
+        if (array_key_exists('sendMailConfirmation', $formData) && 1 == $formData['sendMailConfirmation']['value']) {
             \App::$http->readPostResult(
                 '/process/'. $process->id .'/'. $process->authKey .'/confirmation/mail/',
                 $process
             );
         }
-        if (array_key_exists('sendNotificationConfirmation', $input)) {
+        if (array_key_exists('sendConfirmation', $formData) && 1 == $formData['sendConfirmation']['value']) {
             \App::$http->readPostResult(
                 '/process/'. $process->id .'/'. $process->authKey .'/confirmation/notification/',
                 $process

@@ -4,6 +4,7 @@ import freeProcessList from './free-process-list'
 import { lightbox } from '../../lib/utils'
 import CalendarView from '../calendar'
 import FormValidationView from '../form-validation'
+import ExceptionHandler from '../../lib/exceptionHandler'
 import moment from 'moment'
 
 class View extends BaseView {
@@ -77,17 +78,30 @@ class View extends BaseView {
         this.selectedDate = moment(this.$main.find('.appointment-form form #process_date').val(), 'DD.MM.YYYY').format('YYYY-MM-DD');
         this.selectedTime = this.$main.find('.appointment-form form #process_time').val();
         const sendData = this.$main.find('.appointment-form form').serialize();
-        $.ajax(`/process/${this.selectedDate}/${this.selectedTime}/reserve/`, {
-            method: 'POST',
-            data: sendData
-        }).done((processData) => {
-            console.log('RESERVE POST successfully', processData);
-        }).fail(err => {
+        const url = `/process/${this.selectedDate}/${this.selectedTime}/reserve/`;
+        this.loadCall(url, 'POST', sendData).catch(err => this.loadErrorCallback(err)).then((processData) => {
+            if (processData) {
+                console.log('RESERVE POST successfully', processData);
+                if ('confirmed' == processData.status)
+                    this.selectedProcess = processData.id;
+                    //this.load();
+            }
+        });
+    }
+
+    loadErrorCallback(err) {
+        let isException = err.message.toLowerCase().includes('exception');
+        if (err.status == 428)
             new FormValidationView(this.$main.find('.appointment-form form'), {
                 responseJson: err.responseJSON
             });
-            console.log('ajax error', err);
-        })
+        else if (isException) {
+            let exceptionType = $(err.message).filter('.exception').data('exception');
+            if (exceptionType === 'reservation-failed')
+                this.loadFreeProcessList();
+        }
+        else
+            console.log('Ajax error', err);
     }
 
     /**
