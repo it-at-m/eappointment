@@ -15,7 +15,7 @@ class View extends BaseView {
         this.selectedDate = options['selected-date'];
         this.selectedTime = options['selected-time'];
         this.selectedProcess = options['selected-process'];
-        this.bindPublicMethods('loadAllPartials', 'onDatePick', 'onDateToday', 'onNextProcess');
+        this.bindPublicMethods('loadAllPartials', 'onDatePick', 'onDateToday', 'onNextProcess','onDeleteProcess','onEditProcess','onSaveProcess');
         this.$.ready(this.loadData);
         $.ajaxSetup({ cache: false });
         this.loadAllPartials().then(() => this.bindEvents());
@@ -30,15 +30,32 @@ class View extends BaseView {
         this.loadAllPartials();
     }
 
+    onDeleteProcess () {
+        this.selectedProcess = null;
+        this.loadAppointmentForm();
+        this.loadQueueTable();
+    };
+
+    onEditProcess (processId) {
+        this.selectedProcess = processId;
+        this.loadAppointmentForm();
+    };
+
+    onSaveProcess (processId) {
+        this.selectedProcess = processId;
+        this.loadAppointmentForm();
+        this.loadQueueTable();
+    }
+
     onDateToday(date) {
         this.selectedDate = date;
-        this.loadCalendar(),
-        this.loadAppointmentForm(),
-        this.loadQueueTable()
+        this.loadCalendar();
+        this.loadAppointmentForm();
+        this.loadQueueTable();
     }
 
     onNextProcess() {
-        this.loadQueueTable()
+        this.loadQueueTable();
     }
 
     loadAllPartials() {
@@ -72,7 +89,9 @@ class View extends BaseView {
             selectedDate: this.selectedDate,
             selectedTime: this.selectedTime,
             selectedProcess: this.selectedProcess,
-            includeUrl: this.includeUrl
+            includeUrl: this.includeUrl,
+            onDeleteProcess: this.onDeleteProcess,
+            onSaveProcess: this.onSaveProcess
         })
     }
 
@@ -81,7 +100,9 @@ class View extends BaseView {
             selectedDate: this.selectedDate,
             includeUrl: this.includeUrl,
             onDatePick: this.onDatePick,
-            onDateToday: this.onDateToday
+            onDateToday: this.onDateToday,
+            onDeleteProcess: this.onDeleteProcess,
+            onEditProcess: this.onEditProcess
         })
     }
 

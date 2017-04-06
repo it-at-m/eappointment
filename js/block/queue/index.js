@@ -1,16 +1,18 @@
 import BaseView from "../../lib/baseview"
 import $ from "jquery"
-
-const loaderHtml = '<div class="loader-small"></div>'
+import ProcessActionHandler from "../process/action"
 
 class View extends BaseView {
 
     constructor (element, options) {
         super(element, options);
+        this.ProcessAction = new ProcessActionHandler(element, options);
         this.selectedDate = options.selectedDate;
         this.includeUrl = options.includeUrl || "";
         this.onDatePick = options.onDatePick || (() => {});
         this.onDateToday = options.onDateToday || (() => {});
+        this.onDeleteProcess = options.onDeleteProcess || (() => {});
+        this.onEditProcess = options.onEditProcess || (() => {});
         this.bindPublicMethods('load');
         $.ajaxSetup({ cache: false });
         this.bindEvents();
@@ -43,12 +45,14 @@ class View extends BaseView {
             $(ev.target).closest('form').submit();
         }).on('change', '.queue-table .appointmentsOnly input', (ev) => {
             $(ev.target).closest('form').submit();
-        }).on('click', '.queue-table a.process-edit', (ev) => {
-            this.editProcess(ev);
-        }).on('click', '.queue-table a.process-delete', (ev) => {
+        }).on('click', 'a.process-edit', (ev) => {
+            this.onEditProcess($(ev.target).data('id'))
+        }).on('click', 'a.process-delete', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
-            this.deleteProcess(ev);
+            this.ProcessAction.delete(ev).catch(err => this.loadErrorCallback(err)).then(() => {
+                this.onDeleteProcess()
+            });
         }).on('click', '.queue-table .calendar-navigation .pagedaylink', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
@@ -62,33 +66,6 @@ class View extends BaseView {
             console.log('today selected', selectedDate)
             this.onDateToday(selectedDate, this)
         })
-    }
-
-    editProcess (ev) {
-        console.log("Edit Button pressed", ev);
-        this.$.hide();
-        return false;
-    }
-
-    deleteProcess (ev) {
-        const id  = $(ev.target).data('id')
-        const authkey  = $(ev.target).data('authkey')
-        const name  = $(ev.target).data('name')
-        const ok = confirm('Wenn Sie den Kunden Nr. '+ id +' '+ name +' löschen wollen, klicken Sie auf OK. Der Kunde wird darüber per eMail und/oder SMS informiert.)')
-        const url = `${this.includeUrl}/process/${id}/${authkey}/delete/`;
-        if (ok) {
-            $(ev.target).hide();
-            $(ev.target).closest('td').append(loaderHtml);
-            $.ajax(url, {
-                method: 'GET'
-            }).done(() => {
-                $(ev.target).closest('tr').fadeOut('slow', function(){
-                    $(ev.target).remove();
-                });
-            }).fail(err => {
-                console.log('ajax error', err);
-            })
-        }
     }
 }
 
