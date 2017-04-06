@@ -31,6 +31,8 @@ class Workstation extends BaseController
         $selectedDate = ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d');
         $selectedTime = $validator->getParameter('time')->isString()->getValue();
         $selectedTime = ($selectedTime) ? $selectedTime : null;
+        $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
+
 
         if (!$workstation->hasId()) {
             return \BO\Slim\Render::redirect(
@@ -50,6 +52,7 @@ class Workstation extends BaseController
                 'workstation' => $workstation,
                 'selectedDate' => $selectedDate,
                 'selectedTime' => $selectedTime,
+                'selectedProcess' => $selectedProcessId,
                 'requestList' => $requestList->sortByName()
             )
         );

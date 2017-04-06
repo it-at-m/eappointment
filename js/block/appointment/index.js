@@ -32,6 +32,16 @@ class View extends BaseView {
         return this.loadPromise;
     }
 
+    loadFreeProcessList () {
+        return new freeProcessList(this.$main.find('[data-free-process-list]'), {
+            selectedDate: this.selectedDate,
+            selectedTime: this.selectedTime,
+            includeUrl: this.includeUrl,
+            slotsRequired: this.slotCount,
+            slotType: this.slotType
+        })
+    }
+
     bindEvents() {
         this.$main.on('change', '.checkboxselect input:checkbox', (event) => {
             this.addService($(event.target), this.serviceListSelected);
@@ -84,7 +94,7 @@ class View extends BaseView {
                 console.log('RESERVE POST successfully', processData);
                 if ('confirmed' == processData.status)
                     this.selectedProcess = processData.id;
-                    //this.load();
+                    this.load();
             }
         });
     }
@@ -158,16 +168,6 @@ class View extends BaseView {
             }
         this.slotCount = slotCount;
         this.$main.find('#appointmentForm_slotCount option:eq(' + this.slotCount +')').prop('selected', true)
-    }
-
-    loadFreeProcessList () {
-        return new freeProcessList(this.$main.find('[data-free-process-list]'), {
-            selectedDate: this.selectedDate,
-            selectedTime: this.selectedTime,
-            includeUrl: this.includeUrl,
-            slotsRequired: this.slotCount,
-            slotType: this.slotType
-        })
     }
 
     selectDateWithOverlay () {
