@@ -1,6 +1,6 @@
 <?php
 /**
- * @package 115Mandant
+ * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -11,9 +11,6 @@ use \BO\Mellon\Validator;
 use \BO\Zmsdb\Workstation;
 use \BO\Zmsdb\Process;
 
-/**
-  * Handle requests concerning services
-  */
 class WorkstationProcess extends BaseController
 {
     /**
@@ -33,7 +30,7 @@ class WorkstationProcess extends BaseController
                 throw new Exception\Process\ProcessAlreadyCalled();
             }
         }
-        
+
         $process->setCallTime(\App::$now);
         $workstation->process = (new Workstation)->writeAssignedProcess($workstation->id, $process);
 
