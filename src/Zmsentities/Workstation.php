@@ -112,9 +112,8 @@ class Workstation extends Schema\Entity
         return $scopeList;
     }
 
-    public function testMatchingProcessScope(Cluster $cluster)
+    public function testMatchingProcessScope(Cluster $cluster, Process $process)
     {
-        $process = new Process($this->process);
         $scopeList = $this->getScopeList($cluster);
         if (! $scopeList->hasEntity($process->getScopeId())) {
             throw new Exception\WorkstationProcessMatchScopeFailed();
