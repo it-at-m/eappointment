@@ -18,9 +18,13 @@ class View extends BaseView {
         this.slotCount = 0;
         this.slotType = 'intern';
         this.serviceList = [];
+        this.serviceListSelected = [];
         $.ajaxSetup({ cache: false });
         this.load().then(() => {
-            this.cleanUpLists();
+            if (this.selectedProcess)
+                this.readSelectedList()
+            else
+                this.cleanRequestLists();
             this.loadFreeProcessList();
             this.bindEvents();
         });
@@ -28,7 +32,7 @@ class View extends BaseView {
 
     load() {
         const url = `${this.includeUrl}/appointmentForm/?selecteddate=${this.selectedDate}&selectedprocess=${this.selectedProcess}`
-        this.loadPromise = this.loadContent(url)
+        this.loadPromise = this.loadContent(url).catch(err => this.loadErrorCallback(err));
         return this.loadPromise;
     }
 
@@ -42,18 +46,27 @@ class View extends BaseView {
         })
     }
 
+    cleanReload () {
+        this.selectedProcess = null;
+        this.load().then(() => {
+            this.cleanRequestLists();
+            this.loadFreeProcessList();
+            this.bindEvents();
+        });
+    }
+
     bindEvents() {
         this.$main.on('change', '.checkboxselect input:checkbox', (event) => {
-            this.addService($(event.target), this.serviceListSelected);
-            this.removeService($(event.target), this.serviceList);
-            this.updateList();
+            this.addServiceToList($(event.target), this.serviceListSelected);
+            this.removeServiceFromList($(event.target), this.serviceList);
+            this.updateRequestLists();
         }).on('change', '.checkboxdeselect input:checkbox', (event) => {
-            this.removeService($(event.target), this.serviceListSelected);
-            this.addService($(event.target), this.serviceList);
-            this.updateList();
+            this.removeServiceFromList($(event.target), this.serviceListSelected);
+            this.addServiceToList($(event.target), this.serviceList);
+            this.updateRequestLists();
         }).on('click', '.clear-list', () => {
-            this.cleanUpLists();
-            this.updateList();
+            this.cleanRequestLists();
+            this.updateRequestLists();
         }).on('click', 'input[name=date]', () => {
             this.selectDateWithOverlay()
                    .then(date => {
@@ -109,6 +122,12 @@ class View extends BaseView {
             let exceptionType = $(err.message).filter('.exception').data('exception');
             if (exceptionType === 'reservation-failed')
                 this.loadFreeProcessList();
+            if (exceptionType === 'process-not-found')
+                this.cleanReload()
+            else {
+                this.load();
+                console.log('EXCEPTION thrown: ' + exceptionType);
+            }
         }
         else
             console.log('Ajax error', err);
@@ -117,7 +136,7 @@ class View extends BaseView {
     /**
      * update events after replacing list
      */
-    updateList () {
+    updateRequestLists () {
         this.$main.find('.checkboxdeselect input:checkbox').each((index, element) => {
             $(element).prop("checked", false);
             $(element).closest('label').hide();
@@ -138,18 +157,31 @@ class View extends BaseView {
         this.loadFreeProcessList();
     }
 
-    addService (element, list) {
+    readSelectedList ()
+    {
+        this.$main.find('.checkboxselect input:checked').each((index, element) => {
+            if ($.inArray($(element).val(), this.serviceListSelected) === -1)
+                this.addServiceToList ($(element), this.serviceListSelected)
+        });
+        this.$main.find('.checkboxdeselect input:not(:checked)').each((index, element) => {
+            if ($.inArray($(element).val(), this.serviceList) === -1)
+                this.addServiceToList ($(element), this.serviceList)
+        });
+        this.updateRequestLists();
+    }
+
+    addServiceToList (element, list) {
         return list.push(element.val());
     }
 
-    removeService (element, list) {
+    removeServiceFromList (element, list) {
         for (var i = 0; i < list.length; i++)
             if (list[i] === element.val()) {
                 return list.splice(i,1);
             }
     }
 
-    cleanUpLists ()
+    cleanRequestLists ()
     {
         this.serviceList = this.$main.find('.checkboxselect input:checkbox').map(function() {
             return $(this).val();
