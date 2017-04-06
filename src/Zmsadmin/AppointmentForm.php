@@ -23,8 +23,10 @@ class AppointmentForm extends BaseController
         $validator = $request->getAttribute('validator');
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
         $selectedTime = $validator->getParameter('selectedtime')->isString()->getValue();
-        //TODO fetch process by selectedProcessId if given
-        //$selectedProcessId = $validator->getParameter('selectedprocess')->isString()->getValue();
+
+        $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
+        $selectedProcess = ($selectedProcessId) ?
+            \App::$http->readGetResult('/workstation/process/'. $selectedProcessId .'/get/')->getEntity() : null;
 
         if (1 == $workstation->queue['clusterEnabled']) {
             $cluster = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/cluster/')->getEntity();
@@ -40,6 +42,7 @@ class AppointmentForm extends BaseController
             'block/appointment/form.twig',
             array(
                 'workstation' => $workstation,
+                'selectedProcess' => $selectedProcess,
                 'selectedDate' => ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d'),
                 'selectedTime' => ($selectedTime) ? $selectedTime : null,
                 'requestList' => (count($requestList)) ? $requestList->sortByName() : null
