@@ -16,7 +16,7 @@ class View extends BaseView {
 
     load() {
         const url = `${this.includeUrl}/counter/appointmentTimes/?selecteddate=${this.selectedDate}`
-        return this.loadContent(url, 'GET', null, 'small').catch(err => this.loadErrorCallback(err.source, err.url));
+        return this.loadContent(url, 'GET').catch(err => this.loadErrorCallback(err.source, err.url));
     }
 
     loadErrorCallback(source, url) {

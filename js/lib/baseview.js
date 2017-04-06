@@ -5,7 +5,6 @@ import { lightbox } from './utils';
 import { noOp } from './utils'
 
 const loaderHtml = '<div class="loader"></div>'
-const loaderSmallHtml = '<div class="loader-small"></div>'
 
 class BaseView extends ErrorHandler {
 
@@ -17,19 +16,20 @@ class BaseView extends ErrorHandler {
         this.loadPromise = Promise.reject(null).catch(noOp);
     }
 
-    loadContent(url, method = 'GET', data = null, loader = null) {
-        let loaderContainer = this.$main.find('.body')
+    loadContent(url, method = 'GET', data = null, container = null) {
 
-        if (loaderContainer.length < 1) {
-            loaderContainer = this.$main;
-        }
-
-        if (loader && loader == 'small') {
-            loaderContainer.html(loaderSmallHtml);
+        if (container !== null) {
+            var loaderContainer = container.find('.body');
+            if (loaderContainer.length < 1)
+                loaderContainer = container;
         } else {
-            loaderContainer.html(loaderHtml);
+            var loaderContainer = this.$main.find('.body');
+            if (loaderContainer.length < 1)
+                loaderContainer = this.$main;
         }
 
+
+        loaderContainer.html(loaderHtml);
 
         const ajaxSettings = {
             method

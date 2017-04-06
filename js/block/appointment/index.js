@@ -5,20 +5,25 @@ import { lightbox } from '../../lib/utils'
 import CalendarView from '../calendar'
 import FormValidationView from '../form-validation'
 import ExceptionHandler from '../../lib/exceptionHandler'
-import moment from 'moment'
+import ProcessActionHandler from "../process/action"
 
 class View extends BaseView {
 
     constructor (element, options) {
         super(element);
+        this.ProcessAction = new ProcessActionHandler(element, options);
         this.selectedDate = options.selectedDate;
         this.selectedTime = options.selectedTime;
         this.includeUrl = options.includeUrl || "";
         this.selectedProcess = options.selectedProcess;
+        this.onDeleteProcess = options.onDeleteProcess || (() => {});
+        this.onSaveProcess = options.onSaveProcess || (() => {});
+        this.onEditProcess = options.onEditProcess || (() => {});
         this.slotCount = 0;
         this.slotType = 'intern';
         this.serviceList = [];
         this.serviceListSelected = [];
+
         $.ajaxSetup({ cache: false });
         this.load().then(() => {
             if (this.selectedProcess)
@@ -78,38 +83,30 @@ class View extends BaseView {
                        this.loadFreeProcessList();
                    })
                    .catch(() => console.log('no date selected'));
-        }).on('change', 'select#appointmentForm_slotCount', (event) => {
+        }).on('change', 'select#appointmentForm_slotCount', (ev) => {
             console.log('slots changed manualy');
             this.slotCount = this.$main.find('select#appointmentForm_slotCount').val();
             this.loadFreeProcessList();
-        }).on('click', '.form-actions button.process-reserve', (event) => {
+        }).on('click', '.form-actions button.process-reserve', (ev) => {
             event.preventDefault();
             event.stopPropagation();
-            console.log('reserve button clicked');
-            this.reserveProcess();
-        }).on('click', '.form-actions button.process-queue', (event) => {
+            this.ProcessAction.reserve(ev).catch(err => this.loadErrorCallback(err)).then((processData) => {
+                console.log('RESERVE successfully', processData);
+                this.onSaveProcess(processData.id)
+            });
+        }).on('click', '.form-actions button.process-queue', (ev) => {
             event.preventDefault();
             event.stopPropagation();
-            console.log('queue button clicked')
+            this.ProcessAction.queue(ev);
+        }).on('click', '.form-actions button.process-edit', (ev) => {
+            this.onEditProcess($(ev.target).data('id'))
+        }).on('click', '.form-actions button.process-delete', (ev) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            this.ProcessAction.delete(ev).catch(err => this.loadErrorCallback(err)).then(() => {
+                this.onDeleteProcess()
+            });
         })
-    }
-
-    /**
-     * reserve process
-     */
-    reserveProcess () {
-        this.selectedDate = moment(this.$main.find('.appointment-form form #process_date').val(), 'DD.MM.YYYY').format('YYYY-MM-DD');
-        this.selectedTime = this.$main.find('.appointment-form form #process_time').val();
-        const sendData = this.$main.find('.appointment-form form').serialize();
-        const url = `/process/${this.selectedDate}/${this.selectedTime}/reserve/`;
-        this.loadCall(url, 'POST', sendData).catch(err => this.loadErrorCallback(err)).then((processData) => {
-            if (processData) {
-                console.log('RESERVE POST successfully', processData);
-                if ('confirmed' == processData.status)
-                    this.selectedProcess = processData.id;
-                    this.load();
-            }
-        });
     }
 
     loadErrorCallback(err) {

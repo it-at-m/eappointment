@@ -27,7 +27,7 @@ class QueueTable extends BaseController
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
         $cluster = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/cluster/')->getEntity();
         $processList = new ProcessList();
-        
+
         if (1 == $workstation->queue['clusterEnabled']) {
             $resultList = \App::$http
                 ->readGetResult('/cluster/'. $cluster->id .'/process/'. $selectedDate .'/')->getCollection();
@@ -53,6 +53,7 @@ class QueueTable extends BaseController
             'block/queue/table.twig',
             array(
                 'workstation' => $workstation->getArrayCopy(),
+                'source' => $workstation->getRedirect(),
                 'selectedDate' => ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d'),
                 'cluster' => ($cluster) ? $cluster : null,
                 'processList' => $queueList->toProcessList(),
