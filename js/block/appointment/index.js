@@ -5,6 +5,7 @@ import { lightbox } from '../../lib/utils'
 import CalendarView from '../calendar'
 import FormValidationView from '../form-validation'
 import ExceptionHandler from '../../lib/exceptionHandler'
+import MessageHandler from '../../lib/messageHandler';
 import ProcessActionHandler from "../process/action"
 
 class View extends BaseView {
@@ -12,6 +13,7 @@ class View extends BaseView {
     constructor (element, options) {
         super(element);
         this.ProcessAction = new ProcessActionHandler(element, options);
+        this.$main = $(element);
         this.selectedDate = options.selectedDate;
         this.selectedTime = options.selectedTime;
         this.includeUrl = options.includeUrl || "";
@@ -103,19 +105,23 @@ class View extends BaseView {
         }).on('click', '.form-actions button.process-delete', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
-            this.ProcessAction.delete(ev).catch(err => this.loadErrorCallback(err)).then(() => {
-                this.onDeleteProcess()
+            this.ProcessAction.delete(ev).catch(err => this.loadErrorCallback(err)).then((response) => {
+                this.loadMessage(response, this.onDeleteProcess);
             });
         })
     }
 
+    loadMessage (response, callback) {
+        const { lightboxContentElement, destroyLightbox } = lightbox(this.$main, () => {callback()})
+        new MessageHandler(lightboxContentElement, {message: response})
+    }
+
     loadErrorCallback(err) {
-        let isException = err.message.toLowerCase().includes('exception');
         if (err.status == 428)
             new FormValidationView(this.$main.find('.appointment-form form'), {
                 responseJson: err.responseJSON
             });
-        else if (isException) {
+        else if (err.message.toLowerCase().includes('exception')) {
             let exceptionType = $(err.message).filter('.exception').data('exception');
             if (exceptionType === 'reservation-failed')
                 this.loadFreeProcessList();

@@ -1,0 +1,16 @@
+.dialog {
+    @extend
+        .board_body--maxHeight,
+        .board;
+        max-width: 500px;
+    .header {
+    }
+    .body {
+    }
+    .button {
+        @extend
+            .btn,
+            .btn--alert,
+            .btn--shadow;
+    }
+}
