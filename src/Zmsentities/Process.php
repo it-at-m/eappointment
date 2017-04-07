@@ -88,28 +88,50 @@ class Process extends Schema\Entity
 
     public function addRequests($source, $requestCSV)
     {
+        $requestList = $this->getRequests();
         foreach (explode(',', $requestCSV) as $id) {
-            $this->requests[] = new Request(array(
-                'source' => $source,
-                'id' => $id
-            ));
-            ;
+            if (! $requestList->hasRequests($id)) {
+                $this->requests[] = new Request(array(
+                    'source' => $source,
+                    'id' => $id
+                ));
+            }
         }
         return $this;
     }
 
-    public function createFromFormData($dateTime, $scope, $formData, $requestData)
+    public function updateRequests($source, $requestCSV)
     {
-        $this->scope = $scope;
-        $this->addRequests('dldb', implode(',', $formData['requests']['value']));
-        $this->addAppointment(
-            (new Appointment())
-                ->addDate($dateTime->getTimestamp())
-                ->addScope($scope['id'])
-                ->addSlotCount($requestData['slotCount'])
-        );
+        $this->requests = new Collection\RequestList();
+        foreach (explode(',', $requestCSV) as $id) {
+            $this->requests->addEntity(
+                new Request(
+                    array(
+                        'source' => $source,
+                        'id' => $id
+                    )
+                )
+            );
+        }
+        return $this;
+    }
+
+    public function withUpdatedData($formData, $requestData, $scope = null, $dateTime = null)
+    {
+        if ($dateTime) {
+            $this->addAppointment(
+                (new Appointment())
+                    ->addDate($dateTime->getTimestamp())
+                    ->addScope($scope['id'])
+                    ->addSlotCount($requestData['slotCount'])
+            );
+        }
+        if ($scope) {
+            $this->scope = $scope;
+        }
+        $this->updateRequests('dldb', implode(',', $formData['requests']['value']));
         $this->addClientFromForm($formData);
-        $this->reminderTimestamp = (array_key_exists('headsUpTime', $requestData)) ?
+        $this->reminderTimestamp = (array_key_exists('headsUpTime', $requestData) && $requestData['headsUpTime'] > 0) ?
             $dateTime->getTimestamp() - $requestData['headsUpTime'] : 0;
         $this->amendment = (array_key_exists('amendment', $formData)) ?
             $formData['amendment']['value'] : null;
@@ -277,6 +299,13 @@ class Process extends Schema\Entity
             $this->status = 'confirmed';
         }
         return $this;
+    }
+
+    public function withoutPersonalData()
+    {
+        $entity = clone $this;
+        unset($entity['clients']);
+        unset($entity['appointments']);
     }
 
     /**
