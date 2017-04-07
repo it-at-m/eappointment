@@ -4210,7 +4210,7 @@ use \Psr\Http\Message\ResponseInterface;
         }
         $response = \BO\Slim\Render::withLastModified($response, time(), '0');
         $status = 500;
-        if ($exception->getCode() >= 200) {
+        if ($exception->getCode() >= 200 && $exception->getCode() <= 599) {
             $status = $exception->getcode();
         }
         if ($exception->getCode() >= 500 || !$exception->getCode()) {
