@@ -28,7 +28,7 @@ class View extends BaseView {
         $.ajaxSetup({ cache: false });
         this.load().then(() => {
             if (this.selectedProcess)
-                this.RequestListAction.readSelectedList()
+                this.RequestListAction.readList()
             else
                 this.RequestListAction.cleanLists();
             this.loadFreeProcessList();
@@ -110,6 +110,9 @@ class View extends BaseView {
             this.ProcessAction.delete(ev).catch(err => this.loadErrorCallback(err)).then((response) => {
                 this.loadMessage(response, this.onDeleteProcess);
             });
+        }).on('click', '.form-actions button.process-abort', (ev) => {
+            this.selectedProcess = null;
+            this.load();
         })
     }
 
