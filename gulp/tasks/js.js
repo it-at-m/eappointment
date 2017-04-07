@@ -1,57 +1,16 @@
 var gulp = require('gulp');
 var fs   = require('fs');
 var gutil = require('gulp-util');
-var browserify = require('browserify');
 var sourcemaps = require('gulp-sourcemaps');
 var uglify = require('gulp-uglify');
-var transform_stringify = require('stringify');
 var plumber = require('gulp-plumber');
 var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
-var transform_babelify = require('babelify');
-var transform_shim = require('browserify-shim');
 var notifier = require('node-notifier');
 var crypto = require('crypto');
+var bundler = require('../browserify.js');
 
 gulp.task('js', ['lint'], function (cb) {
-    //gutil.log('[browserify] ' +  'build js');
-    var bundler = browserify('./js/index.js', {
-        'transform': [
-            transform_stringify({
-                extension: ['html'],
-                minify: true
-            }),
-            transform_babelify.configure({
-                'presets': ['es2015', 'react'],
-                'plugins': []
-            }),
-            transform_shim
-        ],
-        'debug': true
-    });
-    bundler.on('log', function (message) {
-        gutil.log('[browserify] ' +  message);
-        notifier.notify({
-            "title": "zmsbot-Build-Log",
-            "message" : "Info: " + message
-        });
-    });
-    bundler.on('error', function (message) {
-        gutil.log('[browserify] ' +  gutil.colors.red(message));
-        notifier.notify({
-            "title": "zmsbot-Build-Error",
-            "message" : "Error: " + message
-        });
-    });
-    bundler.on('file', function (file) {
-        //gutil.log('[browserify] ' +  gutil.colors.yellow(file));
-    })
-    bundler.on('package', function (pkg) {
-        //gutil.log('[browserify] Require: ' +  gutil.colors.blue(pkg.__dirname));
-    })
-    bundler.on('transform', function (tr, file) {
-        //gutil.log('[browserify] Transform: ' +  gutil.colors.yellow(file));
-    })
     bundler.bundle()
            .on('error', function (message) {
                gutil.log('[browserify] ' +  gutil.colors.red(message));
