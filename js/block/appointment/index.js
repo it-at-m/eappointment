@@ -7,12 +7,14 @@ import FormValidationView from '../form-validation'
 import ExceptionHandler from '../../lib/exceptionHandler'
 import MessageHandler from '../../lib/messageHandler';
 import ProcessActionHandler from "../process/action"
+import RequestListAction from "./requests"
 
 class View extends BaseView {
 
     constructor (element, options) {
         super(element);
         this.ProcessAction = new ProcessActionHandler(element, options);
+        this.RequestListAction = new RequestListAction(element, options);
         this.$main = $(element);
         this.selectedDate = options.selectedDate;
         this.selectedTime = options.selectedTime;
@@ -21,17 +23,14 @@ class View extends BaseView {
         this.onDeleteProcess = options.onDeleteProcess || (() => {});
         this.onSaveProcess = options.onSaveProcess || (() => {});
         this.onEditProcess = options.onEditProcess || (() => {});
-        this.slotCount = 0;
         this.slotType = 'intern';
-        this.serviceList = [];
-        this.serviceListSelected = [];
 
         $.ajaxSetup({ cache: false });
         this.load().then(() => {
             if (this.selectedProcess)
-                this.readSelectedList()
+                this.RequestListAction.readSelectedList()
             else
-                this.cleanRequestLists();
+                this.RequestListAction.cleanLists();
             this.loadFreeProcessList();
             this.bindEvents();
         });
@@ -48,7 +47,7 @@ class View extends BaseView {
             selectedDate: this.selectedDate,
             selectedTime: this.selectedTime,
             includeUrl: this.includeUrl,
-            slotsRequired: this.slotCount,
+            slotsRequired: this.RequestListAction.slotCount,
             slotType: this.slotType
         })
     }
@@ -56,7 +55,7 @@ class View extends BaseView {
     cleanReload () {
         this.selectedProcess = null;
         this.load().then(() => {
-            this.cleanRequestLists();
+            this.RequestListAction.cleanLists();
             this.loadFreeProcessList();
             this.bindEvents();
         });
@@ -64,16 +63,19 @@ class View extends BaseView {
 
     bindEvents() {
         this.$main.on('change', '.checkboxselect input:checkbox', (event) => {
-            this.addServiceToList($(event.target), this.serviceListSelected);
-            this.removeServiceFromList($(event.target), this.serviceList);
-            this.updateRequestLists();
+            this.RequestListAction.addServiceToList($(event.target), this.RequestListAction.serviceListSelected);
+            this.RequestListAction.removeServiceFromList($(event.target), this.RequestListAction.serviceList);
+            this.RequestListAction.updateLists();
+            this.loadFreeProcessList();
         }).on('change', '.checkboxdeselect input:checkbox', (event) => {
-            this.removeServiceFromList($(event.target), this.serviceListSelected);
-            this.addServiceToList($(event.target), this.serviceList);
-            this.updateRequestLists();
+            this.RequestListAction.removeServiceFromList($(event.target), this.RequestListAction.serviceListSelected);
+            this.RequestListAction.addServiceToList($(event.target), this.RequestListAction.serviceList);
+            this.RequestListAction.updateLists();
+            this.loadFreeProcessList();
         }).on('click', '.clear-list', () => {
-            this.cleanRequestLists();
-            this.updateRequestLists();
+            this.RequestListAction.cleanLists();
+            this.RequestListAction.updateLists();
+            this.loadFreeProcessList();
         }).on('click', 'input[name=date]', () => {
             this.selectDateWithOverlay()
                    .then(date => {
@@ -81,13 +83,13 @@ class View extends BaseView {
                        this.setSelectedDate();
                    })
                    .then(() => {
-                       this.calculateSlotCount();
+                       this.RequestListAction.calculateSlotCount();
                        this.loadFreeProcessList();
                    })
                    .catch(() => console.log('no date selected'));
         }).on('change', 'select#appointmentForm_slotCount', (ev) => {
             console.log('slots changed manualy');
-            this.slotCount = this.$main.find('select#appointmentForm_slotCount').val();
+            this.RequestListAction.slotCount = this.$main.find('select#appointmentForm_slotCount').val();
             this.loadFreeProcessList();
         }).on('click', '.form-actions button.process-reserve', (ev) => {
             event.preventDefault();
@@ -134,75 +136,6 @@ class View extends BaseView {
         }
         else
             console.log('Ajax error', err);
-    }
-
-    /**
-     * update events after replacing list
-     */
-    updateRequestLists () {
-        this.$main.find('.checkboxdeselect input:checkbox').each((index, element) => {
-            $(element).prop("checked", false);
-            $(element).closest('label').hide();
-            if ($.inArray($(element).val(), this.serviceListSelected) !== -1) {
-                $(element).prop("checked", true);
-                $(element).closest('label').show();
-            }
-        });
-
-        this.$main.find('.checkboxselect input:checkbox').each((index, element) => {
-            $(element).prop("checked", false);
-            $(element).closest('label').hide();
-            if ($.inArray($(element).val(), this.serviceList) !== -1) {
-                $(element).closest('label').show();
-            }
-        });
-        this.calculateSlotCount();
-        this.loadFreeProcessList();
-    }
-
-    readSelectedList ()
-    {
-        this.$main.find('.checkboxselect input:checked').each((index, element) => {
-            if ($.inArray($(element).val(), this.serviceListSelected) === -1)
-                this.addServiceToList ($(element), this.serviceListSelected)
-        });
-        this.$main.find('.checkboxdeselect input:not(:checked)').each((index, element) => {
-            if ($.inArray($(element).val(), this.serviceList) === -1)
-                this.addServiceToList ($(element), this.serviceList)
-        });
-        this.updateRequestLists();
-    }
-
-    addServiceToList (element, list) {
-        return list.push(element.val());
-    }
-
-    removeServiceFromList (element, list) {
-        for (var i = 0; i < list.length; i++)
-            if (list[i] === element.val()) {
-                return list.splice(i,1);
-            }
-    }
-
-    cleanRequestLists ()
-    {
-        this.serviceList = this.$main.find('.checkboxselect input:checkbox').map(function() {
-            return $(this).val();
-        }).toArray();
-        this.serviceListSelected = [];
-    }
-
-    calculateSlotCount () {
-        var slotCount = 0;
-        var selectedSlots = this.$main.find('.checkboxdeselect label:visible input:checkbox').map(function() {
-            return $(this).data('slots');
-        }).toArray();
-        for (var i = 1; i < selectedSlots.length; i++)
-            if (selectedSlots[i] > 0) {
-                slotCount += selectedSlots[i];
-            }
-        this.slotCount = slotCount;
-        this.$main.find('#appointmentForm_slotCount option:eq(' + this.slotCount +')').prop('selected', true)
     }
 
     selectDateWithOverlay () {
