@@ -46,7 +46,7 @@ class ProcessReserve extends BaseController
                 );
             }
 
-            $process->createFromFormData($dateTime, $workstation->scope, $validationList->getStatus(), $input);
+            $process->withUpdatedData($validationList->getStatus(), $input, $workstation->scope, $dateTime);
             $reservedProcess = \App::$http->readPostResult('/process/status/reserved/', $process)->getEntity();
 
             if ($reservedProcess) {

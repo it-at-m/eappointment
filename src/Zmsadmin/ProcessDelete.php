@@ -34,9 +34,13 @@ class ProcessDelete extends BaseController
         $workstation->testMatchingProcessScope($cluster, $process);
 
         $authKey = $process->authKey;
-        \App::$http->readDeleteResult('/process/'. $process->id .'/'. $authKey . '/')->getEntity();
+        $deleted = \App::$http->readDeleteResult('/process/'. $process->id .'/'. $authKey . '/')->getEntity();
         \App::$http->readPostResult('/process/'. $process->id .'/'. $authKey .'/delete/mail/', $process);
         \App::$http->readPostResult('/process/'. $process->id .'/'. $authKey .'/delete/notification/', $process);
+
+        if (! $deleted) {
+            throw \Exception('Deleting Process failed');
+        }
 
         return \BO\Slim\Render::withHtml(
             $response,
