@@ -2158,6 +2158,52 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/process/{id}/{authKey}/delete/notification/":
+ *      post:
+ *          summary: send notification on delete process. Depending on config, if no mail is send, an empty mail is returned.
+ *          tags:
+ *              - process
+ *              - notification
+ *          parameters:
+ *              -   name: id
+ *                  description: process number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: authKey
+ *                  description: authentication key
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: process
+ *                  description: process data for building mail
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/process.json"
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/notification.json"
+ *              400:
+ *                  description: "Invalid input"
+ *              403:
+ *                  description: "forbidden, authkey does not match or status changes, only data may be changed"
+ *              404:
+ *                  description: "process id does not exists"
+ */
+\App::$slim->post('/process/{id:\d{1,11}}/{authKey}/delete/notification/',
+    '\BO\Zmsapi\ProcessDeleteNotification')
+    ->setName("ProcessDeleteNotification");
+
+/**
+ *  @swagger
  *  "/process/{id}/{authKey}/":
  *      delete:
  *          summary: Deletes a process but does not send any mails or notifications
