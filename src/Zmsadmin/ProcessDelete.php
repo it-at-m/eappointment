@@ -29,18 +29,20 @@ class ProcessDelete extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
         $processId = Validator::value($args['id'])->isNumber()->getValue();
         $process = \App::$http->readGetResult('/workstation/process/'. $processId .'/get/')->getEntity();
-
+        $process->status = 'deleted';
         $cluster = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/cluster/')->getEntity();
         $workstation->testMatchingProcessScope($cluster, $process);
 
-        $process = \App::$http->readDeleteResult('/process/'. $process->id .'/'. $process->authKey . '/');
-        \App::$http->readPostResult('/process/'. $process->id .'/'. $process->authKey .'/delete/mail/', $process);
+        $authKey = $process->authKey;
+        \App::$http->readDeleteResult('/process/'. $process->id .'/'. $authKey . '/')->getEntity();
+        \App::$http->readPostResult('/process/'. $process->id .'/'. $authKey .'/delete/mail/', $process);
+        \App::$http->readPostResult('/process/'. $process->id .'/'. $authKey .'/delete/notification/', $process);
 
-        return \BO\Slim\Render::redirect(
-            $workstation->getRedirect(),
-            array(),
+        return \BO\Slim\Render::withHtml(
+            $response,
+            'block/process/deleted.twig',
             array(
-                'success' => 'process_deleted'
+                'process' => $process
             )
         );
     }
