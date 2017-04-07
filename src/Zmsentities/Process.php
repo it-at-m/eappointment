@@ -310,6 +310,7 @@ class Process extends Schema\Entity
         if ($this->toProperty()->appointments->isAvailable()) {
             unset($entity['appointments']);
         }
+        return $entity;
     }
 
     /**
