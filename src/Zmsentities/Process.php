@@ -304,8 +304,12 @@ class Process extends Schema\Entity
     public function withoutPersonalData()
     {
         $entity = clone $this;
-        unset($entity['clients']);
-        unset($entity['appointments']);
+        if ($this->toProperty()->clients->isAvailable()) {
+            unset($entity['clients']);
+        }
+        if ($this->toProperty()->appointments->isAvailable()) {
+            unset($entity['appointments']);
+        }
     }
 
     /**
