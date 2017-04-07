@@ -32,7 +32,7 @@ class View extends BaseView {
         const ok = confirm('Wenn Sie den Kunden Nr. '+ id +' '+ name +' löschen wollen, klicken Sie auf OK. Der Kunde wird darüber per eMail und/oder SMS informiert.)')
         const url = `${this.includeUrl}/process/${id}/delete/`;
         if (ok) {
-            return this.loadCall(url);
+            return this.loadCall(url, 'DELETE');
         }
         return this.loadPromise;
     }
@@ -43,6 +43,13 @@ class View extends BaseView {
         this.selectedTime = this.$main.find('form #process_time').val();
         const sendData = this.$main.find('form').serialize();
         const url = `${this.includeUrl}/process/${this.selectedDate}/${this.selectedTime}/reserve/`;
+        return this.loadCall(url, 'POST', sendData);
+    }
+
+    save (ev) {
+        console.log("Save Button pressed", ev);
+        const sendData = this.$main.find('form').serialize();
+        const url = `${this.includeUrl}/process/${this.selectedProcess}/save/`;
         return this.loadCall(url, 'POST', sendData);
     }
 }

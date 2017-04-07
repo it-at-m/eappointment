@@ -42,7 +42,8 @@ class View extends BaseView {
     };
 
     onSaveProcess (processId) {
-        this.selectedProcess = processId;
+        if (processId)
+            this.selectedProcess = processId;
         this.loadAppointmentForm();
         this.loadQueueTable();
     }

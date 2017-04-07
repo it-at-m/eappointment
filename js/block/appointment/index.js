@@ -62,7 +62,7 @@ class View extends BaseView {
     }
 
     bindEvents() {
-        this.$main.on('change', '.checkboxselect input:checkbox', (event) => {
+        this.$main.off().on('change', '.checkboxselect input:checkbox', (event) => {
             this.RequestListAction.addServiceToList($(event.target), this.RequestListAction.serviceListSelected);
             this.RequestListAction.removeServiceFromList($(event.target), this.RequestListAction.serviceList);
             this.RequestListAction.updateLists();
@@ -113,6 +113,12 @@ class View extends BaseView {
         }).on('click', '.form-actions button.process-abort', (ev) => {
             this.selectedProcess = null;
             this.load();
+        }).on('click', '.form-actions button.process-save', (ev) => {
+            event.preventDefault();
+            event.stopPropagation();
+            this.ProcessAction.save(ev).catch(err => this.loadErrorCallback(err)).then((response) => {
+                this.loadMessage(response, this.onSaveProcess);
+            });
         })
     }
 

@@ -190,7 +190,7 @@ use \Psr\Http\Message\ResponseInterface;
  \App::$slim->post('/process/{id:\d+}/save/', '\BO\Zmsadmin\ProcessSave')
      ->setName("processSave");
 
- \App::$slim->map(['GET'], '/process/{id:\d+}/delete/', '\BO\Zmsadmin\ProcessDelete')
+ \App::$slim->delete('/process/{id:\d+}/delete/', '\BO\Zmsadmin\ProcessDelete')
     ->setName("processDelete");
 
 
