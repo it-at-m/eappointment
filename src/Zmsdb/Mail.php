@@ -71,6 +71,7 @@ class Mail extends Base
         $query = new Query\MailQueue(Query\Base::INSERT);
         $process = new \BO\Zmsentities\Process($mail->process);
         $client = $process->getFirstClient();
+
         $department = (new Department())->readByScopeId($process->getScopeId(), 0);
         $query->addValues(
             array(
