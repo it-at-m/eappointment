@@ -72,7 +72,6 @@ class Notification extends Base
             throw new Exception\Notification\ClientWithoutTelephone();
         }
         $notification->hasProperties('message', 'process');
-
         $query = new Query\Notification(Query\Base::INSERT);
         $query->addValues(array(
             'processID' => $notification->process['id'],
@@ -84,8 +83,11 @@ class Notification extends Base
             'clientTelephone' => $client->telephone,
         ));
         $result = $this->writeItem($query);
-        if ($result) {
-            $queueId = $this->getWriter()->lastInsertId();
+        if (! $result) {
+            throw new Exception\NotificationWriteInQueueFailed("Failed to write notification in queue");
+        }
+        $queueId = $this->getWriter()->lastInsertId();
+        if ('deleted' != $process->status) {
             $client->notificationsSendCount += 1;
             (new Process())->updateEntity($process);
         }

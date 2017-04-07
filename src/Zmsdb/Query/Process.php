@@ -288,16 +288,14 @@ class Process extends Base implements MappingInterface
             $data['telefonnummer_fuer_rueckfragen'] = $client->telephone;
             $data['Telefonnummer'] = $client->telephone; // to stay compatible with ZMS1
             $data['zustimmung_kundenbefragung'] = $client->surveyAccepted;
-            $data['EMailverschickt'] = $client->emailSendCount;
-            $data['SMSverschickt'] = $client->notificationsSendCount;
         }
-
         $data['IPAdresse'] = $process['createIP'];
         $data['vorlaeufigeBuchung'] = ($process['status'] == 'reserved') ? 1 : 0;
         $data['aufruferfolgreich'] = ($process['status'] == 'processing') ? 1 : 0;
         $data['Erinnerungszeitpunkt'] = $process->getReminderTimestamp();
         $data = $this->readProcessTimeValuesData($data, $process);
         $data = $this->readWaitingTime($data, $process);
+        $data = $this->readSendCount($data, $process);
 
         $data = array_filter(
             $data,
@@ -306,6 +304,18 @@ class Process extends Base implements MappingInterface
             }
         );
         $this->addValues($data);
+    }
+
+    protected function readSendCount($data, $process)
+    {
+        $client = $process->getFirstClient();
+        if ($client->emailSendCount) {
+            $data['EMailverschickt'] = $client->emailSendCount;
+        }
+        if ($client->notificationsSendCount) {
+            $data['SMSverschickt'] = $client->notificationsSendCount;
+        }
+        return $data;
     }
 
     protected function readProcessTimeValuesData($data, $process)

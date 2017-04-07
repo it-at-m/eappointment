@@ -109,6 +109,15 @@ class MailTest extends Base
                         "telephone" => "030 115"
                     ]
                 ),
+                "appointments"=>[
+                    [
+                        "date"=>"1464339600",
+                        "scope"=>[
+                            "id"=>"151"
+                        ],
+                        "slotCount"=>"1"
+                    ]
+                ],
                 "id" => 80410,
                 "authKey" => "f22c",
                 "reminderTimestamp" => 1447931730000,
