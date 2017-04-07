@@ -14,6 +14,7 @@ class Messaging
             'appointment' => 'notification_appointment.twig',
             'confirmed' => 'notification_confirmation.twig',
             'queued' => 'notification_headsup.twig',
+            'deleted' => 'notification_deleted.twig'
         ),
         'mail' => array(
             'appointment' => 'mail_confirmation.twig',
@@ -68,7 +69,7 @@ class Messaging
                 'config' => $config
             )
         );
-            return $message;
+        return $message;
     }
 
     protected static function getTemplateByProcessStatus($type, \BO\Zmsentities\Process $process)
@@ -99,8 +100,8 @@ class Messaging
                 'config' => $config
             )
         );
-            $subject = trim($subject);
-            return $subject;
+        $subject = trim($subject);
+        return $subject;
     }
 
     public static function getMailIcs(\BO\Zmsentities\Process $process, \BO\Zmsentities\Config $config, $now = false)
