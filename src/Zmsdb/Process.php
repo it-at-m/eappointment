@@ -61,11 +61,12 @@ class Process extends Base
     public function writeEntityReserved(
         \BO\Zmsentities\Process $process,
         \DateTimeInterface $now,
-        $slotType = "public"
+        $slotType = "public",
+        $slotsRequired = 0
     ) {
         $process->status = 'reserved';
         $appointment = $process->getAppointments()->getFirst();
-        $freeProcessList = $this->readFreeProcesses($process->toCalendar(), $now);
+        $freeProcessList = $this->readFreeProcesses($process->toCalendar(), $now, $slotType, $slotsRequired);
         if (!$freeProcessList->getAppointmentList()->hasAppointment($appointment)) {
             throw new Exception\Process\ProcessReserveFailed();
         }
