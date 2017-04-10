@@ -23,17 +23,7 @@ class AppointmentFormFreeProcessList extends BaseController
         $validator = $request->getAttribute('validator');
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
         $selectedTime = $validator->getParameter('selectedtime')->isString()->getValue();
-
-        $slotType = $validator->getParameter('slottype')->isString()->getValue();
-        $slotsRequired = $validator->getParameter('slotsrequired')->isNumber()->getValue();
-
-        $calendar = new Helper\Calendar($selectedDate);
-        $cluster = (1 == $workstation->queue['clusterEnabled']) ?
-            \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/cluster/')->getEntity() :
-            null;
-        $scopeList = $workstation->getScopeList($cluster);
-
-        $freeProcessList = $calendar->readAvailableSlotsFromDayAndScopeList($scopeList, $slotType, $slotsRequired);
+        $freeProcessList = Helper\AppointmentFormHelper::readFreeProcessList($request, $workstation);
 
         return \BO\Slim\Render::withHtml(
             $response,
@@ -41,9 +31,7 @@ class AppointmentFormFreeProcessList extends BaseController
             array(
                 'selectedDate' => $selectedDate,
                 'selectedTime' => $selectedTime,
-                'freeProcessList' => ($freeProcessList) ?
-                    $freeProcessList->toProcessListByTime()->sortByTimeKey() :
-                    null,
+                'freeProcessList' => $freeProcessList,
             )
         );
     }

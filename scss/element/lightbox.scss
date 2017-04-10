@@ -1,6 +1,6 @@
 .lightbox {
   display: flex;
-  position: absolute;
+  position: fixed;
   top: 0;
   bottom: 0;
   left: 0;
@@ -21,9 +21,10 @@
 
 
 .lightbox__content {
-  .loader {
-    margin: 0 !important;
-    position: relative;
-    border-left: 1.1em solid #ddd;
-  }
+    overflow: auto;
+    .loader {
+        margin: 0 !important;
+        position: relative;
+        border-left: 1.1em solid #ddd;
+    }
 }

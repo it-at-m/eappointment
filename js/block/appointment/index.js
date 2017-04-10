@@ -27,19 +27,24 @@ class View extends BaseView {
 
         $.ajaxSetup({ cache: false });
         this.load().then(() => {
-            if (this.selectedProcess)
-                this.RequestListAction.readList()
-            else
-                this.RequestListAction.cleanLists();
-            this.loadFreeProcessList();
             this.bindEvents();
         });
     }
 
     load() {
         const url = `${this.includeUrl}/appointmentForm/?selecteddate=${this.selectedDate}&selectedprocess=${this.selectedProcess}`
-        this.loadPromise = this.loadContent(url).catch(err => this.loadErrorCallback(err));
+        this.loadPromise = this.loadContent(url).then(() => {
+            this.loadRequestList();
+            //this.loadFreeProcessList();
+        }).catch(err => this.loadErrorCallback(err));
         return this.loadPromise;
+    }
+
+    loadRequestList () {
+        if (this.selectedProcess)
+            this.RequestListAction.readList()
+        else
+            this.RequestListAction.cleanLists();
     }
 
     loadFreeProcessList () {
@@ -55,8 +60,6 @@ class View extends BaseView {
     cleanReload () {
         this.selectedProcess = null;
         this.load().then(() => {
-            this.RequestListAction.cleanLists();
-            this.loadFreeProcessList();
             this.bindEvents();
         });
     }
@@ -94,10 +97,12 @@ class View extends BaseView {
         }).on('click', '.form-actions button.process-reserve', (ev) => {
             event.preventDefault();
             event.stopPropagation();
-            this.ProcessAction.reserve(ev).catch(err => this.loadErrorCallback(err)).then((processData) => {
-                console.log('RESERVE successfully', processData);
-                this.onSaveProcess(processData.id)
-            });
+            this.ProcessAction.reserve(ev).then((response) => {
+                let selectedProcess = $(response).filter('[data-process]').data('process');
+                this.loadMessage(response, () => {
+                    this.onSaveProcess(selectedProcess)
+                });
+            }).catch(err => this.loadErrorCallback(err));
         }).on('click', '.form-actions button.process-queue', (ev) => {
             event.preventDefault();
             event.stopPropagation();
@@ -107,22 +112,23 @@ class View extends BaseView {
         }).on('click', '.form-actions button.process-delete', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
-            this.ProcessAction.delete(ev).catch(err => this.loadErrorCallback(err)).then((response) => {
+            this.ProcessAction.delete(ev).then((response) => {
                 this.loadMessage(response, this.onDeleteProcess);
-            });
+            }).catch(err => this.loadErrorCallback(err));
         }).on('click', '.form-actions button.process-abort', (ev) => {
             this.selectedProcess = null;
             this.load();
         }).on('click', '.form-actions button.process-save', (ev) => {
             event.preventDefault();
             event.stopPropagation();
-            this.ProcessAction.save(ev).catch(err => this.loadErrorCallback(err)).then((response) => {
-                this.loadMessage(response, this.onSaveProcess);
-            });
+            this.ProcessAction.save(ev).then((response) => {
+                this.loadMessage(response, this.onSaveProcess,);
+            }).catch(err => this.loadErrorCallback(err));
         })
     }
 
     loadMessage (response, callback) {
+        this.$main.find('.form-actions').hide();
         const { lightboxContentElement, destroyLightbox } = lightbox(this.$main, () => {callback()})
         new MessageHandler(lightboxContentElement, {message: response})
     }
@@ -136,7 +142,7 @@ class View extends BaseView {
             let exceptionType = $(err.message).filter('.exception').data('exception');
             if (exceptionType === 'reservation-failed')
                 this.loadFreeProcessList();
-            if (exceptionType === 'process-not-found')
+            else if (exceptionType === 'process-not-found')
                 this.cleanReload()
             else {
                 this.load();

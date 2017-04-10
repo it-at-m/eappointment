@@ -71,6 +71,24 @@ class View extends BaseView {
         this.loadAppointmentTimes()
     }
 
+    onDeleteProcess () {
+        this.selectedProcess = null;
+        this.loadAppointmentForm();
+        this.loadQueueTable();
+    };
+
+    onEditProcess (processId) {
+        this.selectedProcess = processId;
+        this.loadAppointmentForm();
+    };
+
+    onSaveProcess (processId) {
+        if (processId)
+            this.selectedProcess = processId;
+        this.loadAppointmentForm();
+        this.loadQueueTable();
+    }
+
     onGhostWorkstationChange() {
         this.loadAllPartials();
     }

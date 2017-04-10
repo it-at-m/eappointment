@@ -1,6 +1,8 @@
 import BaseView from "../../lib/baseview"
 import $ from "jquery"
+import { lightbox } from '../../lib/utils'
 import ProcessActionHandler from "../process/action"
+import MessageHandler from '../../lib/messageHandler';
 
 class View extends BaseView {
 
@@ -36,6 +38,11 @@ class View extends BaseView {
         }
     }
 
+    loadMessage (response, callback) {
+        const { lightboxContentElement, destroyLightbox } = lightbox(this.$main, () => {callback()})
+        new MessageHandler(lightboxContentElement, {message: response})
+    }
+
     bindEvents() {
         this.$main.off('click').on('click', '.queue-table .reload', (ev) => {
             ev.preventDefault();
@@ -50,8 +57,8 @@ class View extends BaseView {
         }).on('click', 'a.process-delete', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
-            this.ProcessAction.delete(ev).catch(err => this.loadErrorCallback(err)).then(() => {
-                this.onDeleteProcess()
+            this.ProcessAction.delete(ev).catch(err => this.loadErrorCallback(err)).then((response) => {
+                this.loadMessage(response, this.onDeleteProcess);
             });
         }).on('click', '.queue-table .calendar-navigation .pagedaylink', (ev) => {
             ev.preventDefault();
