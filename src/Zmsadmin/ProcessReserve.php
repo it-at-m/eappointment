@@ -45,41 +45,16 @@ class ProcessReserve extends BaseController
                     428
                 );
             }
-
             $process->withUpdatedData($validationList->getStatus(), $input, $workstation->scope, $dateTime);
-            $reservedProcess = \App::$http->readPostResult('/process/status/reserved/', $process)->getEntity();
-
-            if ($reservedProcess) {
-                $process = \App::$http->readGetResult(
-                    '/process/'. $reservedProcess->id .'/'. $reservedProcess->authKey .'/'
-                )->getEntity();
-                $process = $this->writeProcessConfirmation($process, $validationList->getStatus());
-            }
+            $process = Helper\AppointmentFormHelper::writeReservedProcess($process);
+            $process = Helper\AppointmentFormHelper::writeConfirmedProcess($validationList->getStatus(), $process);
         }
-        return \BO\Slim\Render::withJson(
+        return \BO\Slim\Render::withHtml(
             $response,
-            [
-                'id' => $process->id,
-                'status' => $process->status
-            ]
+            'block/process/reserved.twig',
+            array(
+                'process' => $process
+            )
         );
-    }
-
-    private function writeProcessConfirmation(\BO\Zmsentities\Process $process, $formData)
-    {
-        $process = \App::$http->readPostResult('/process/status/confirmed/', $process)->getEntity();
-        if (array_key_exists('sendMailConfirmation', $formData) && 1 == $formData['sendMailConfirmation']['value']) {
-            \App::$http->readPostResult(
-                '/process/'. $process->id .'/'. $process->authKey .'/confirmation/mail/',
-                $process
-            );
-        }
-        if (array_key_exists('sendConfirmation', $formData) && 1 == $formData['sendConfirmation']['value']) {
-            \App::$http->readPostResult(
-                '/process/'. $process->id .'/'. $process->authKey .'/confirmation/notification/',
-                $process
-            );
-        }
-        return $process;
     }
 }

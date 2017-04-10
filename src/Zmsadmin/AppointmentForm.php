@@ -37,6 +37,9 @@ class AppointmentForm extends BaseController
             $requestList = \App::$http
                 ->readGetResult('/scope/'. $workstation->scope['id'] .'/request/')->getCollection();
         }
+
+        $freeProcessList = Helper\AppointmentFormHelper::readFreeProcessList($request, $workstation);
+
         return \BO\Slim\Render::withHtml(
             $response,
             'block/appointment/form.twig',
@@ -45,7 +48,8 @@ class AppointmentForm extends BaseController
                 'selectedProcess' => $selectedProcess,
                 'selectedDate' => ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d'),
                 'selectedTime' => ($selectedTime) ? $selectedTime : null,
-                'requestList' => (count($requestList)) ? $requestList->sortByName() : null
+                'requestList' => (count($requestList)) ? $requestList->sortByName() : null,
+                'freeProcessList' => $freeProcessList,
             )
         );
     }

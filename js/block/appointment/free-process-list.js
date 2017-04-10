@@ -1,6 +1,5 @@
 import BaseView from "../../lib/baseview"
 import $ from "jquery"
-const loaderHtml = '<div class="loader-small"></div>'
 
 class View extends BaseView {
 

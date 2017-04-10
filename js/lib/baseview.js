@@ -16,8 +16,8 @@ class BaseView extends ErrorHandler {
         this.loadPromise = Promise.reject(null).catch(noOp);
     }
 
-    loadContent(url, method = 'GET', data = null, container = null) {
-
+    showSpinner(container = null)
+    {
         if (container !== null) {
             var loaderContainer = container.find('.body');
             if (loaderContainer.length < 1)
@@ -30,6 +30,11 @@ class BaseView extends ErrorHandler {
 
 
         loaderContainer.html(loaderHtml);
+    }
+
+    loadContent(url, method = 'GET', data = null, container = null) {
+
+        this.showSpinner(container);
 
         const ajaxSettings = {
             method
@@ -70,6 +75,7 @@ class BaseView extends ErrorHandler {
     }
 
     loadCall(url, method = 'GET', data = null) {
+
         const ajaxSettings = {
             method
         };
