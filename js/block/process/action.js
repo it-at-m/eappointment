@@ -1,9 +1,5 @@
 import BaseView from "../../lib/baseview"
 import $ from "jquery"
-import AppointmentView from '../../block/appointment'
-import QueueView from '../../block/queue'
-import QueueInfoView from '../../block/queue/info'
-import CalendarView from '../../block/calendar'
 import moment from 'moment'
 
 class View extends BaseView {
@@ -17,6 +13,11 @@ class View extends BaseView {
         this.selectedProcess = options.selectedProcess;
         $.ajaxSetup({ cache: false });
         console.log('Component: Process actions', this, options);
+    }
+
+    addnew (ev) {
+        console.log("New Button pressed", ev);
+        this.loadNew();
     }
 
     queue (ev) {
