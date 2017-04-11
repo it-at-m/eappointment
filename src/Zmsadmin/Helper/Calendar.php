@@ -110,7 +110,7 @@ class Calendar
 
     protected function getDateTimeFromWeekAndYear($week, $year)
     {
-        $dateTime = new \DateTime();
+        $dateTime = new \DateTimeImmutable();
         return $dateTime->setISODate($year, $week);
     }
 }

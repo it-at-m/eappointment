@@ -13,7 +13,7 @@ use BO\Slim\Render;
 use BO\Zmsentities\Helper\ProcessFormValidation as FormValidation;
 
 /**
- * Delete a process
+ * Queue a process
  */
 class ProcessQueue extends BaseController
 {
@@ -29,15 +29,29 @@ class ProcessQueue extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
 
+        $validator = $request->getAttribute('validator');
         $selectedDate = Validator::value($args['date'])->isString()->getValue();
-        $selectedTime = Validator::value($args['time'])->isString()->getValue();
-        $selectedTime = $selectedTime ? str_replace('-', ':', $selectedTime) : '00:00:00';
-        $dateTime = \DateTime::createFromFormat('Y-m-d H:i', $selectedDate .' '. $selectedTime);
-        $input = $request->getParsedBody();
-        $process = new \BO\Zmsentities\Process();
+        $dateTime = \DateTime::createFromFormat('Y-m-d H:i', $selectedDate .' 00:00');
+        $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
+        $isPrint = $validator->getParameter('print')->isNumber()->getValue();
 
-        if ($selectedDate && $selectedTime && is_array($input)) {
-            $validationList = FormValidation::fromAdminParameters($workstation->scope['preferences']);
+        if ($selectedProcessId && $isPrint) {
+            $selectedProcess = \App::$http
+                ->readGetResult('/workstation/process/'. $selectedProcessId .'/get/')->getEntity();
+            return \BO\Slim\Render::withHtml(
+                $response,
+                'block/appointment/waitingnumber-print.twig',
+                array(
+                    'process' => $selectedProcess
+                )
+            );
+        }
+
+        $input = $request->getParsedBody();
+        $scope = new \BO\Zmsentities\Scope($workstation->scope);
+        $process = (new \BO\Zmsentities\Process)->createFromScope($scope, $dateTime);
+        if (is_array($input)) {
+            $validationList = FormValidation::fromAdminParameters($scope['preferences']);
             if ($validationList->hasFailed()) {
                 return \BO\Slim\Render::withJson(
                     $response,
@@ -45,13 +59,12 @@ class ProcessQueue extends BaseController
                     428
                 );
             }
-            $process->withUpdatedData($validationList->getStatus(), $input, $workstation->scope, $dateTime);
-            $process = Helper\AppointmentFormHelper::writeReservedProcess($process);
-            $process = Helper\AppointmentFormHelper::writeConfirmedProcess($validationList->getStatus(), $process);
+            $process->withUpdatedData($validationList->getStatus(), $input);
+            $process = Helper\AppointmentFormHelper::writeQueuedProcess($validationList->getStatus(), $process);
         }
         return \BO\Slim\Render::withHtml(
             $response,
-            'block/process/reserved.twig',
+            'block/appointment/waitingnumber.twig',
             array(
                 'process' => $process
             )

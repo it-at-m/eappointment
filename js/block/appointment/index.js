@@ -6,14 +6,14 @@ import CalendarView from '../calendar'
 import FormValidationView from '../form-validation'
 import ExceptionHandler from '../../lib/exceptionHandler'
 import MessageHandler from '../../lib/messageHandler';
-import ProcessActionHandler from "../process/action"
+import ButtonActionHandler from "./action"
 import RequestListAction from "./requests"
 
 class View extends BaseView {
 
     constructor (element, options) {
         super(element);
-        this.ProcessAction = new ProcessActionHandler(element, options);
+        this.ButtonAction = new ButtonActionHandler(element, options);
         this.RequestListAction = new RequestListAction(element, options);
         this.$main = $(element);
         this.selectedDate = options.selectedDate;
@@ -23,6 +23,7 @@ class View extends BaseView {
         this.onDeleteProcess = options.onDeleteProcess || (() => {});
         this.onSaveProcess = options.onSaveProcess || (() => {});
         this.onEditProcess = options.onEditProcess || (() => {});
+        this.onQueueProcess = options.onQueueProcess || (() => {});
         this.slotType = 'intern';
 
         $.ajaxSetup({ cache: false });
@@ -106,7 +107,7 @@ class View extends BaseView {
         }).on('click', '.form-actions button.process-reserve', (ev) => {
             event.preventDefault();
             event.stopPropagation();
-            this.ProcessAction.reserve(ev).then((response) => {
+            this.ButtonAction.reserve(ev).then((response) => {
                 let selectedProcess = $(response).filter('[data-process]').data('process');
                 this.loadMessage(response, () => {
                     this.onSaveProcess(selectedProcess)
@@ -115,7 +116,9 @@ class View extends BaseView {
         }).on('click', '.form-actions button.process-queue', (ev) => {
             event.preventDefault();
             event.stopPropagation();
-            this.ProcessAction.queue(ev);
+            this.ButtonAction.queue(ev).then((response) => {
+                this.loadMessage(response, this.onQueueProcess);
+            }).catch(err => this.loadErrorCallback(err));
         }).on('click', '.form-actions button.process-new', (ev) => {
             event.preventDefault();
             event.stopPropagation();
@@ -125,7 +128,7 @@ class View extends BaseView {
         }).on('click', '.form-actions button.process-delete', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
-            this.ProcessAction.delete(ev).then((response) => {
+            this.ButtonAction.delete(ev).then((response) => {
                 this.loadMessage(response, this.onDeleteProcess);
             }).catch(err => this.loadErrorCallback(err));
         }).on('click', '.form-actions button.process-abort', (ev) => {
@@ -134,9 +137,13 @@ class View extends BaseView {
         }).on('click', '.form-actions button.process-save', (ev) => {
             event.preventDefault();
             event.stopPropagation();
-            this.ProcessAction.save(ev).then((response) => {
-                this.loadMessage(response, this.onSaveProcess,);
+            this.ButtonAction.save(ev).then((response) => {
+                this.loadMessage(response, this.onSaveProcess);
             }).catch(err => this.loadErrorCallback(err));
+        }).on('click', '[data-button-print]', (ev) => {
+            ev.preventDefault()
+            ev.stopPropagation()
+            window.open(`${this.includeUrl}/process/queue/?print=1&selectedprocess=${this.selectedProcess}`)
         })
     }
 

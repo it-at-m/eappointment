@@ -30,6 +30,15 @@ class AppointmentFormHelper
         return $process;
     }
 
+    public static function writeQueuedProcess($formData, Entity $process)
+    {
+        $process = \App::$http->readPostResult('/workstation/process/waitingnumber/', $process)->getEntity();
+        if ('queued' == $process->status) {
+            static::updateMailAndNotificationCount($formData, $process);
+        }
+        return $process;
+    }
+
     public static function readFreeProcessList($request, $workstation)
     {
         $validator = $request->getAttribute('validator');

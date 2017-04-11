@@ -1,14 +1,14 @@
 import BaseView from "../../lib/baseview"
 import $ from "jquery"
 import { lightbox } from '../../lib/utils'
-import ProcessActionHandler from "../process/action"
+import ButtonActionHandler from "../appointment/action"
 import MessageHandler from '../../lib/messageHandler';
 
 class View extends BaseView {
 
     constructor (element, options) {
         super(element, options);
-        this.ProcessAction = new ProcessActionHandler(element, options);
+        this.ButtonAction = new ButtonActionHandler(element, options);
         this.selectedDate = options.selectedDate;
         this.includeUrl = options.includeUrl || "";
         this.onDatePick = options.onDatePick || (() => {});
@@ -57,7 +57,7 @@ class View extends BaseView {
         }).on('click', 'a.process-delete', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
-            this.ProcessAction.delete(ev).catch(err => this.loadErrorCallback(err)).then((response) => {
+            this.ButtonAction.delete(ev).catch(err => this.loadErrorCallback(err)).then((response) => {
                 this.loadMessage(response, this.onDeleteProcess);
             });
         }).on('click', '.queue-table .calendar-navigation .pagedaylink', (ev) => {

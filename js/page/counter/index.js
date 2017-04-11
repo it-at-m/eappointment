@@ -19,7 +19,7 @@ class View extends BaseView {
         this.selectedDate = options['selected-date'];
         this.selectedTime = options['selected-time'];
         this.selectedProcess = options['selected-process'];
-        this.bindPublicMethods('loadAllPartials', 'selectDateWithOverlay', 'onDatePick', 'onDateToday', 'onGhostWorkstationChange');
+        this.bindPublicMethods('loadAllPartials', 'selectDateWithOverlay', 'onDatePick', 'onDateToday', 'onGhostWorkstationChange','onDeleteProcess','onEditProcess','onSaveProcess','onQueueProcess');
         this.$.ready(this.loadData);
         $.ajaxSetup({ cache: false });
         this.loadAllPartials().then(() => this.bindEvents());
@@ -77,6 +77,12 @@ class View extends BaseView {
         this.loadQueueTable();
     };
 
+    onQueueProcess () {
+        this.selectedProcess = null;
+        this.loadAppointmentForm();
+        this.loadQueueTable();
+    };
+
     onEditProcess (processId) {
         this.selectedProcess = processId;
         this.loadAppointmentForm();
@@ -118,7 +124,20 @@ class View extends BaseView {
             selectedTime: this.selectedTime,
             selectedProcess: this.selectedProcess,
             includeUrl: this.includeUrl,
-            selectDateWithOverlay: this.selectDateWithOverlay,
+            onDeleteProcess: this.onDeleteProcess,
+            onQueueProcess: this.onQueueProcess,
+            onSaveProcess: this.onSaveProcess
+        })
+    }
+
+    loadQueueTable () {
+        return new QueueView(this.$main.find('[data-queue-table]'), {
+            selectedDate: this.selectedDate,
+            includeUrl: this.includeUrl,
+            onDatePick: this.onDatePick,
+            onDateToday: this.onDateToday,
+            onDeleteProcess: this.onDeleteProcess,
+            onEditProcess: this.onEditProcess
         })
     }
 
@@ -134,15 +153,6 @@ class View extends BaseView {
             selectedDate: this.selectedDate,
             includeUrl: this.includeUrl,
             onGhostWorkstationChange: this.onGhostWorkstationChange
-        })
-    }
-
-    loadQueueTable () {
-        return new QueueView(this.$main.find('[data-queue-table]'), {
-            selectedDate: this.selectedDate,
-            includeUrl: this.includeUrl,
-            onDatePick: this.onDatePick,
-            onDateToday: this.onDateToday,
         })
     }
 
