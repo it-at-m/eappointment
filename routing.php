@@ -4117,6 +4117,38 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/workstation/process/waitingnumber/":
+ *      post:
+ *          summary: Get a waitingNumber according to workstations scope or cluster
+ *          tags:
+ *              - workstation
+ *              - process
+ *          parameters:
+ *              -   name: workstation
+ *                  description: workstation with process data to update
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/workstation.json"
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/process.json"
+ *              404:
+ *                  description: "useraccount loginname does not exists"
+ */
+\App::$slim->post('/workstation/process/waitingnumber/',
+    '\BO\Zmsapi\WorkstationProcessWaitingnumber')
+    ->setName("WorkstationProcessWaitingnumber");
+
+/**
+ *  @swagger
  *  "/workstation/process/delete/":
  *      delete:
  *          summary: Remove a process from workstation
