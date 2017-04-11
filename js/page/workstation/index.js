@@ -15,7 +15,7 @@ class View extends BaseView {
         this.selectedDate = options['selected-date'];
         this.selectedTime = options['selected-time'];
         this.selectedProcess = options['selected-process'];
-        this.bindPublicMethods('loadAllPartials', 'onDatePick', 'onDateToday', 'onNextProcess','onDeleteProcess','onEditProcess','onSaveProcess');
+        this.bindPublicMethods('loadAllPartials', 'onDatePick', 'onDateToday', 'onNextProcess','onDeleteProcess','onEditProcess','onSaveProcess','onQueueProcess');
         this.$.ready(this.loadData);
         $.ajaxSetup({ cache: false });
         this.loadAllPartials().then(() => this.bindEvents());
@@ -31,6 +31,12 @@ class View extends BaseView {
     }
 
     onDeleteProcess () {
+        this.selectedProcess = null;
+        this.loadAppointmentForm();
+        this.loadQueueTable();
+    };
+
+    onQueueProcess () {
         this.selectedProcess = null;
         this.loadAppointmentForm();
         this.loadQueueTable();
@@ -92,6 +98,7 @@ class View extends BaseView {
             selectedProcess: this.selectedProcess,
             includeUrl: this.includeUrl,
             onDeleteProcess: this.onDeleteProcess,
+            onQueueProcess: this.onQueueProcess,
             onSaveProcess: this.onSaveProcess
         })
     }

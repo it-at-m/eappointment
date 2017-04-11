@@ -22,7 +22,10 @@ class View extends BaseView {
 
     queue (ev) {
         console.log("Queue Button pressed", ev);
-        return false;
+        this.selectedDate = moment(this.$main.find('form #process_date').val(), 'DD.MM.YYYY').format('YYYY-MM-DD');
+        const sendData = this.$main.find('form').serialize();
+        const url = `${this.includeUrl}/process/${this.selectedDate}/queue/`;
+        return this.loadCall(url, 'POST', sendData);
     }
 
     delete (ev) {
