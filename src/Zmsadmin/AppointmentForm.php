@@ -23,7 +23,6 @@ class AppointmentForm extends BaseController
         $validator = $request->getAttribute('validator');
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
         $selectedTime = $validator->getParameter('selectedtime')->isString()->getValue();
-
         $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
         $selectedProcess = ($selectedProcessId) ?
             \App::$http->readGetResult('/workstation/process/'. $selectedProcessId .'/get/')->getEntity() : null;
@@ -50,6 +49,7 @@ class AppointmentForm extends BaseController
                 'selectedTime' => ($selectedTime) ? $selectedTime : null,
                 'requestList' => (count($requestList)) ? $requestList->sortByName() : null,
                 'freeProcessList' => $freeProcessList,
+                'isNew' => ($validator->getParameter('new')->isNumber()->getValue() == 1)
             )
         );
     }

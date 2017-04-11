@@ -35,7 +35,16 @@ class View extends BaseView {
         const url = `${this.includeUrl}/appointmentForm/?selecteddate=${this.selectedDate}&selectedprocess=${this.selectedProcess}`
         this.loadPromise = this.loadContent(url).then(() => {
             this.loadRequestList();
-            //this.loadFreeProcessList();
+        }).catch(err => this.loadErrorCallback(err));
+        return this.loadPromise;
+    }
+
+    loadNew () {
+        const url = `${this.includeUrl}/appointmentForm/?selectedprocess=${this.selectedProcess}&new=1`
+        this.loadPromise = this.loadContent(url).then(() => {
+            this.loadRequestList();
+            this.loadFreeProcessList();
+            this.bindEvents();
         }).catch(err => this.loadErrorCallback(err));
         return this.loadPromise;
     }
@@ -107,6 +116,10 @@ class View extends BaseView {
             event.preventDefault();
             event.stopPropagation();
             this.ProcessAction.queue(ev);
+        }).on('click', '.form-actions button.process-new', (ev) => {
+            event.preventDefault();
+            event.stopPropagation();
+            this.loadNew();
         }).on('click', '.form-actions button.process-edit', (ev) => {
             this.onEditProcess($(ev.target).data('id'))
         }).on('click', '.form-actions button.process-delete', (ev) => {
