@@ -100,6 +100,16 @@ class Process extends Base
         return $this->writeNewProcess($process, $dateTime);
     }
 
+    public function writeNewFromAdmin(Entity $process, \DateTimeInterface $dateTime)
+    {
+        $process->setStatus('queued');
+        $newQueueNumber = (new Scope())->readWaitingNumberUpdated($process->scope['id'], $dateTime);
+        $process->addQueue($newQueueNumber, $dateTime);
+        $process = $this->writeNewProcess($process, $dateTime);
+        $this->writeRequestsToDb($process);
+        return $this->readEntity($process->id, $process->authKey, 2);
+    }
+
     public function writeNewPickup(\BO\Zmsentities\Scope $scope, \DateTimeInterface $dateTime, $newQueueNumber = 0)
     {
         $process = Entity::createFromScope($scope, $dateTime);

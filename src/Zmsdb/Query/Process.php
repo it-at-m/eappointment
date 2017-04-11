@@ -321,13 +321,15 @@ class Process extends Base implements MappingInterface
     protected function readProcessTimeValuesData($data, $process)
     {
         if (isset($process->queue['callTime']) && $process->queue['callTime']) {
-            $data['aufrufzeit'] = (new \DateTime())->setTimestamp($process->queue['callTime'])->format('H:i:s');
+            $data['aufrufzeit'] = (new \DateTimeImmutable())
+                ->setTimestamp($process->queue['callTime'])->format('H:i:s');
         }
         if (isset($process->queue['lastCallTime']) && $process->queue['lastCallTime']) {
-            $data['Timestamp'] = (new \DateTime())->setTimestamp($process->queue['lastCallTime'])->format('H:i:s');
+            $data['Timestamp'] = (new \DateTimeImmutable())
+                ->setTimestamp($process->queue['lastCallTime'])->format('H:i:s');
         }
         if (isset($process->queue['arrivalTime']) && $process->queue['arrivalTime']) {
-            $data['wsm_aufnahmezeit'] = (new \DateTime())
+            $data['wsm_aufnahmezeit'] = (new \DateTimeImmutable())
                 ->setTimestamp($process->queue['arrivalTime'])->format('H:i:s');
         }
         if (isset($data['wsm_aufnahmezeit']) && $data['wsm_aufnahmezeit'] == $data['Uhrzeit']) {
@@ -350,7 +352,7 @@ class Process extends Base implements MappingInterface
         $data["appointments__0__date"] = strtotime($data["appointments__0__date"]);
         if ('00:00:00' != $data["queue__callTime"]) {
             $time = explode(':', $data["queue__callTime"]);
-            $data["queue__callTime"] = (new \DateTime())
+            $data["queue__callTime"] = (new \DateTimeImmutable())
                 ->setTimestamp($data["appointments__0__date"])
                 ->setTime($time[0], $time[1], $time[2])
                 ->getTimestamp();
@@ -359,7 +361,7 @@ class Process extends Base implements MappingInterface
         }
         if ('00:00:00' != $data["queue__lastCallTime"]) {
             $time = explode(':', $data["queue__lastCallTime"]);
-            $data["queue__lastCallTime"] = (new \DateTime())
+            $data["queue__lastCallTime"] = (new \DateTimeImmutable())
                 ->setTimestamp($data["appointments__0__date"])
                 ->setTime($time[0], $time[1], $time[2])
                 ->getTimestamp();
