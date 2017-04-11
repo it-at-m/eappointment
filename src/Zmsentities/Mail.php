@@ -75,23 +75,38 @@ class Mail extends Schema\Entity
         $entity->process = $process;
         $entity->subject = Helper\Messaging::getMailSubject($process, $config);
         $entity->createIP = $process->createIP;
-        $entity->multipart = [
-            array(
-                'mime' => 'text/html',
-                'content' => $content,
-                'base64' => false
-            ),
-            array(
-                'mime' => 'text/plain',
-                'content' => Helper\Messaging::getPlainText($content),
-                'base64' => false
-            ),
-            array(
-                'mime' => 'text/calendar',
-                'content' => Helper\Messaging::getMailIcs($process, $config)->getContent(),
-                'base64' => false
-            )
-        ];
+        if ('queued' == $process->status) {
+            $entity->multipart = [
+                array(
+                    'mime' => 'text/html',
+                    'content' => $content,
+                    'base64' => false
+                ),
+                array(
+                    'mime' => 'text/plain',
+                    'content' => Helper\Messaging::getPlainText($content),
+                    'base64' => false
+                )
+            ];
+        } else {
+            $entity->multipart = [
+                array(
+                    'mime' => 'text/html',
+                    'content' => $content,
+                    'base64' => false
+                ),
+                array(
+                    'mime' => 'text/plain',
+                    'content' => Helper\Messaging::getPlainText($content),
+                    'base64' => false
+                ),
+                array(
+                    'mime' => 'text/calendar',
+                    'content' => Helper\Messaging::getMailIcs($process, $config)->getContent(),
+                    'base64' => false
+                )
+            ];
+        }
         return $entity;
     }
 }

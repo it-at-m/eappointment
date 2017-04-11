@@ -1,0 +1,34 @@
+{% block german %}
+<strong>Sehr geehrte/r Frau oder Herr {{ client.familyName }}</strong>
+<br /><br />
+hiermit bestätigen wir Ihre Wartenummer für den {{ toGermanDateFromTs(date).date }}<br /><br />
+<strong>Ort:</strong> {{ process.scope.provider.name ~ " " ~ process.scope.provider.contact.street ~", " ~ process.scope.provider.contact.postalCode ~ " " ~ process.scope.provider.contact.city }}<br />
+{% if process.scope.hint %}
+({{ process.scope.hint|split('|')|first }} {{ process.scope.hint|split('|')|last}})
+{% endif %}<br /><br />
+Ihre Wartenummer ist die <strong>"{{ process.queue.number }}"</strong><br /><br />
+{% if process.scope.provider.source == "dldb" and process.scope.provider.data.payment %}
+Zahlungshinweis: {{ process.scope.provider.data.payment }}<br /><br />
+{% endif %}
+{% if process.request|length > 0 %}
+{% set requestalias = "Dienstleistungen" %}
+{% else %}
+{% set requestalias = "Dienstleistung" %}
+{% endif %}
+Sie haben folgende {{ requestalias }} ausgewählt:
+<br />
+{% for request in process.requests %}
+<h2>{{ request.name }}</h2>
+{% if request.source == "dldb" %}
+{% include "@dldb/detail/service_detail_prerequisites.twig" with {"service":request.data} %}
+{% include "@dldb/detail/service_detail_requirements.twig" with {"service":request.data} %}
+{% include "@dldb/detail/service_detail_fees.twig" with {"service":request.data} %}
+{% endif %}
+{% endfor %}
+
+<br /><br />
+Mit freundlichem Gruß<br />
+Ihre Terminverwaltung des Landes Berlin
+<br /><br />
+{{ config.appointments.urlAppointments }}
+{% endblock %}

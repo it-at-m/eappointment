@@ -17,6 +17,7 @@ class Messaging
             'deleted' => 'notification_deleted.twig'
         ),
         'mail' => array(
+            'queued' => 'mail_queued.twig',
             'appointment' => 'mail_confirmation.twig',
             'deleted' => 'mail_delete.twig'
         ),

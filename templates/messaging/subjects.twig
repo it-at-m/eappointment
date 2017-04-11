@@ -3,6 +3,8 @@
 Terminbestaetigung
 {% elseif process.status == 'deleted' %}
 Terminabsage
+{% elseif process.status == 'queued' %}
+Wartenummerbestaetigung
 {% else %}
 Terminerinnerung
 {% endif %}
