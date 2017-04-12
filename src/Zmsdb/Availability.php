@@ -26,7 +26,7 @@ class Availability extends Base
         return clone self::$cache[$cacheKey];
     }
 
-    public function readList($scopeId, $resolveReferences = 0)
+    public function readList($scopeId, $resolveReferences = 0, $reserveEntityIds = false)
     {
         if (1 <= $resolveReferences) {
             $scope = (new Scope())->readEntity($scopeId, $resolveReferences - 1);
@@ -58,25 +58,29 @@ class Availability extends Base
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
             foreach ($result as $entity) {
-                if ($entity instanceof Entity) {
+                if ($reserveEntityIds) {
                     // reserve an ID by creating a temporary entity
                     $tempAvailability = $this->writeEntity(new Entity([
                         'description' => '--temporary--',
                         'scope' => new \BO\Zmsentities\Scope([
                             'id' => 0,
-                            ]),
+                        ]),
                     ]));
                     $entity->id = $tempAvailability->id;
-                    $entity['scope'] = clone $scope;
-                    $entity->workstationCount['intern'] = 0;
-                    $entity->workstationCount['callcenter'] = 0;
-                    $entity->workstationCount['public'] = 0;
-                    $collection->addEntity($entity);
                 }
+                $entity['scope'] = clone $scope;
+                $entity->workstationCount['intern'] = 0;
+                $entity->workstationCount['callcenter'] = 0;
+                $entity->workstationCount['public'] = 0;
+                $collection->addEntity($entity);
             }
-            $this->getReader()->exec(Query\Availability::TEMPORARY_DELETE);
+            if ($reserveEntityIds) {
+                // This can produce deadlocks:
+                $this->getReader()->exec(Query\Availability::TEMPORARY_DELETE);
+            }
         }
         // End remove
+        \BO\Zmsdb\Connection\Select::writeCommit();
         return $collection;
     }
 

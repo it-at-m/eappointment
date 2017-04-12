@@ -36,7 +36,7 @@ class AvailabilityTest extends Base
     public function testReadList()
     {
         $query = new Query();
-        $collection = $query->readList(109, 1); //by scope Helle Mitte
+        $collection = $query->readList(109, 1, true); //by scope Helle Mitte
         $this->assertEntityList("\\BO\\Zmsentities\\Availability", $collection);
         $this->assertEquals(true, $collection->hasEntity('99755'));
         $this->assertEquals(
