@@ -26,6 +26,7 @@ class View extends BaseView {
     }
 
     onDatePick(date) {
+        this.selectedProcess = null;
         this.selectedDate = date;
         this.loadAllPartials();
     }
@@ -55,6 +56,7 @@ class View extends BaseView {
     }
 
     onDateToday(date) {
+        this.selectedProcess = null;
         this.selectedDate = date;
         this.loadCalendar();
         this.loadAppointmentForm();
@@ -66,6 +68,7 @@ class View extends BaseView {
     }
 
     loadAllPartials() {
+        this.selectedProcess = null;
         return Promise.all([
             this.loadCalendar(),
             this.loadClientNext(),

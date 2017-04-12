@@ -40,6 +40,11 @@ class View extends BaseView {
         return this.loadPromise;
     }
 
+    loadByCallbackUrl(url) {
+        this.loadPromise = this.loadContent(url).catch(err => this.loadErrorCallback(err));
+        return this.loadPromise;
+    }
+
     loadNew () {
         const url = `${this.includeUrl}/appointmentForm/?selectedprocess=${this.selectedProcess}&new=1`
         this.loadPromise = this.loadContent(url).then(() => {
@@ -143,14 +148,23 @@ class View extends BaseView {
         }).on('click', '[data-button-print]', (ev) => {
             ev.preventDefault()
             ev.stopPropagation()
-            window.open(`${this.includeUrl}/process/queue/?print=1&selectedprocess=${this.selectedProcess}`)
+            this.ButtonAction.printWaitingNumber();
         })
     }
 
     loadMessage (response, callback) {
         this.$main.find('.form-actions').hide();
         const { lightboxContentElement, destroyLightbox } = lightbox(this.$main, () => {callback()})
-        new MessageHandler(lightboxContentElement, {message: response})
+        new MessageHandler(lightboxContentElement, {
+            message: response,
+            callback: (buttonAction, buttonUrl) => {
+                if (buttonAction)
+                    this.ButtonAction[buttonAction]()
+                else if (buttonUrl)
+                    this.loadByCallbackUrl(buttonUrl)
+                destroyLightbox()
+                this.cleanReload();
+            }})
     }
 
     loadErrorCallback(err) {
