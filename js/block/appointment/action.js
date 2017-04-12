@@ -30,7 +30,7 @@ class View extends BaseView {
 
     printWaitingNumber () {
         let selectedDate = moment(this.$main.find('form #process_date').val(), 'DD.MM.YYYY').format('YYYY-MM-DD');
-        let selectedProcess = this.$main.find('[data-selectedprocess]').data('selectedprocess');
+        let selectedProcess = this.$main.find('[data-id]').data('id');
         window.open(`${this.includeUrl}/process/${selectedDate}/queue/?print=1&selectedprocess=${selectedProcess}`)
     }
 
