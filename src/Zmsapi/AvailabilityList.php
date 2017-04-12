@@ -21,7 +21,8 @@ class AvailabilityList extends BaseController
     public static function render($scopeId)
     {
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
-        $availabilities = (new Query())->readList($scopeId, $resolveReferences);
+        $reserveEntityIds = Validator::param('reserveEntityIds')->isNumber()->setDefault(0)->getValue();
+        $availabilities = (new Query())->readList($scopeId, $resolveReferences, $reserveEntityIds);
         $message = Response\Message::create(Render::$request);
         $message->data = $availabilities;
         Render::lastModified(time(), '0');
