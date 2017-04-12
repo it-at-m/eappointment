@@ -12,6 +12,7 @@ class Workstation extends Schema\Entity
     {
         return [
             'useraccount' => new Useraccount(),
+            'process' => new Process(),
             'name' => '',
         ];
     }
@@ -112,8 +113,11 @@ class Workstation extends Schema\Entity
         return $scopeList;
     }
 
-    public function testMatchingProcessScope(Cluster $cluster, Process $process)
+    public function testMatchingProcessScope(Cluster $cluster, Process $process = null)
     {
+        if (null === $process) {
+            $process = $this->process;
+        }
         $scopeList = $this->getScopeList($cluster);
         if (! $scopeList->hasEntity($process->getScopeId())) {
             throw new Exception\WorkstationProcessMatchScopeFailed();
