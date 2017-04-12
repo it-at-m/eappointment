@@ -21,6 +21,14 @@ class AppointmentFormHelper
         return $process;
     }
 
+    public static function writeUpdatedProcess($formData, Entity $process)
+    {
+        $process = \App::$http
+            ->readPostResult('/process/'. $process->id .'/'. $process->authKey .'/', $process)->getEntity();
+        static::updateMailAndNotificationCount($formData, $process);
+        return $process;
+    }
+
     public static function writeConfirmedProcess($formData, Entity $process)
     {
         $process = \App::$http->readPostResult('/process/status/confirmed/', $process)->getEntity();
@@ -58,6 +66,7 @@ class AppointmentFormHelper
 
     protected static function updateMailAndNotificationCount($formData, Entity $process)
     {
+        //static::removeMailAndNotifictionDublicates($formData, $process);
         $client = $process->getFirstClient();
         if (array_key_exists('sendMailConfirmation', $formData) &&
             1 == $formData['sendMailConfirmation']['value'] &&
@@ -75,6 +84,20 @@ class AppointmentFormHelper
                 '/process/'. $process->id .'/'. $process->authKey .'/confirmation/notification/',
                 $process
             );
+        }
+    }
+
+    protected static function removeMailAndNotifictionDublicates($formData, Entity $process)
+    {
+        if (! array_key_exists('sendMailConfirmation', $formData) && 0 == $formData['sendMailConfirmation']['value']
+        ) {
+            \App::$http->readDeleteResult('/process/'. $process->id .'/mail/assigned/delete/');
+        }
+        if (! array_key_exists('sendConfirmation', $formData) && 0 == $formData['sendConfirmation']['value']
+        ) {
+            \App::$http->readDeleteResult('/process/'. $process->id .'/notification/assigned/delete/');
+            $process = \App::$http
+                ->readPostResult('/process/'. $process->id .'/'. $process->authKey .'/', $process)->getEntity();
         }
     }
 }

@@ -42,9 +42,8 @@ class ProcessSave extends BaseController
             );
         }
         $dateTime = (new \DateTimeImmutable())->setTimestamp($process->getFirstAppointment()->date);
-        $process->withUpdatedData($validationList->getStatus(), $input, null, $dateTime);
-        $process = \App::$http
-            ->readPostResult('/process/'. $process->id .'/'. $process->authKey .'/', $process)->getEntity();
+        $process->withUpdatedData($validationList->getStatus(), $input, $workstation->scope, $dateTime);
+        $process = Helper\AppointmentFormHelper::writeUpdatedProcess($validationList->getStatus(), $process);
         return \BO\Slim\Render::withHtml(
             $response,
             'block/process/updated.twig',

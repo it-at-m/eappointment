@@ -21,7 +21,7 @@ class MessageHandler {
         this.$main.off().on('click', '.btn', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
-            this.callback($(ev.target).attr('href'));
+            this.callback($(ev.target).data('action'), $(ev.target).attr('href'));
         })
     }
 }

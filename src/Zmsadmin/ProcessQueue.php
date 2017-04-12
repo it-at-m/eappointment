@@ -40,8 +40,9 @@ class ProcessQueue extends BaseController
                 ->readGetResult('/workstation/process/'. $selectedProcessId .'/get/')->getEntity();
             return \BO\Slim\Render::withHtml(
                 $response,
-                'block/appointment/waitingnumber-print.twig',
+                'page/printWaitingNumber.twig',
                 array(
+                    'title' => 'Wartenummer drucken',
                     'process' => $selectedProcess
                 )
             );
@@ -59,14 +60,15 @@ class ProcessQueue extends BaseController
                     428
                 );
             }
-            $process->withUpdatedData($validationList->getStatus(), $input);
+            $process->withUpdatedData($validationList->getStatus(), $input, $scope, $dateTime);
             $process = Helper\AppointmentFormHelper::writeQueuedProcess($validationList->getStatus(), $process);
         }
         return \BO\Slim\Render::withHtml(
             $response,
             'block/appointment/waitingnumber.twig',
             array(
-                'process' => $process
+                'process' => $process,
+                'selectedDate' => $selectedDate
             )
         );
     }

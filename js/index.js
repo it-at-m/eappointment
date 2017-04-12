@@ -25,6 +25,7 @@ import ScopeSelectView from './block/scopeselectform'
 import AvailabilityDayPage from './page/availabilityDay'
 import WeekCalendarPage from './page/weekCalendar'
 import printScopeAppointmentsByDay from './page/scopeAppointmentsByDay/print'
+import printWaitingNumber from './page/waitingnumber/print'
 import bindReact from './lib/bindReact.js'
 import { getDataAttributes } from './lib/utils'
 
@@ -69,6 +70,7 @@ $('form').each(function() {
 })
 
 printScopeAppointmentsByDay()
+printWaitingNumber()
 
 // Say hello
 console.log("Welcome to the ZMS admin interface...");

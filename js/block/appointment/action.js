@@ -28,6 +28,12 @@ class View extends BaseView {
         return this.loadCall(url, 'POST', sendData);
     }
 
+    printWaitingNumber () {
+        let selectedDate = moment(this.$main.find('form #process_date').val(), 'DD.MM.YYYY').format('YYYY-MM-DD');
+        let selectedProcess = this.$main.find('[data-selectedprocess]').data('selectedprocess');
+        window.open(`${this.includeUrl}/process/${selectedDate}/queue/?print=1&selectedprocess=${selectedProcess}`)
+    }
+
     delete (ev) {
         console.log("Delete Button pressed", ev);
         const id  = $(ev.target).data('id')
@@ -38,7 +44,7 @@ class View extends BaseView {
         if (ok) {
             return this.loadCall(url, 'DELETE');
         }
-        return this.loadPromise;
+        return false;
     }
 
     reserve (ev) {

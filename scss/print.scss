@@ -19,6 +19,7 @@ html {
 
 #main-body {
   color: #000;
+  text-align: center;
 
   * {
     background-color: transparent;
@@ -51,6 +52,14 @@ html {
       page-break-inside:avoid;
       page-break-after:auto;
     }
+  }
+
+  .msg_ihre_nummernanzeige{
+      font-size: 38pt !important;
+      font-weight: bold;
+      color:#993300;
+      text-align: center;
+      margin:10px;
   }
 
 }

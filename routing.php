@@ -184,7 +184,7 @@ use \Psr\Http\Message\ResponseInterface;
  \App::$slim->post('/process/{date:\d\d\d\d-\d\d-\d\d}/{time:\d\d-\d\d}/reserve/', '\BO\Zmsadmin\ProcessReserve')
      ->setName("processReserve");
 
- \App::$slim->post('/process/{date:\d\d\d\d-\d\d-\d\d}/queue/', '\BO\Zmsadmin\ProcessQueue')
+ \App::$slim->map(['GET','POST'], '/process/{date:\d\d\d\d-\d\d-\d\d}/queue/', '\BO\Zmsadmin\ProcessQueue')
      ->setName("processQueue");
 
  \App::$slim->post('/process/{id:\d+}/save/', '\BO\Zmsadmin\ProcessSave')
