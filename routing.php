@@ -4250,6 +4250,7 @@ use \Psr\Http\Message\ResponseInterface;
                 "PHP Fatal Exception: "
                 . " in " . $exception->getFile() . " +" . $exception->getLine()
                 . " -> " . $exception->getMessage()
+                . " | Trace: ". substr($exception->getTraceAsString(), 0, 500)
             );
         }
         return \BO\Slim\Render::withJson($response, $message, $status);
