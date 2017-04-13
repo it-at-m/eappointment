@@ -8,6 +8,14 @@ class Mimepart extends Schema\Entity
 
     public static $schema = "mimepart.json";
 
+    public function getDefaults()
+    {
+        return [
+            'mime' => '',
+            'content' => '',
+            ];
+    }
+
     public function isBase64Encoded()
     {
         return ($this->base64) ? true : false;
