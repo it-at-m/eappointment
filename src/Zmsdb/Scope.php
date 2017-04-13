@@ -9,6 +9,7 @@ use \BO\Zmsentities\Collection\ScopeList as Collection;
  *
  * @SuppressWarnings(Public)
  * @SuppressWarnings(Coupling)
+ * @SuppressWarnings(Complexity)
  *
  */
 class Scope extends Base
@@ -359,12 +360,14 @@ class Scope extends Base
      */
     public function writeImageData($scopeId, \BO\Zmsentities\Mimepart $entity)
     {
-        $imageName = 's_'. $scopeId .'_bild.'. $entity->mime;
-        $statement = $this->getWriter()->prepare((new Query\Scope(Query\Base::REPLACE))->getQueryWriteImageData());
-        $statement->execute(array(
-            'imagename' => $imageName,
-            'imagedata' => $entity->content
-        ));
+        if ($entity->mime && $entity->content) {
+            $imageName = 's_'. $scopeId .'_bild.'. preg_replace('#^.*/#', '', $entity->mime);
+            $statement = $this->getWriter()->prepare((new Query\Scope(Query\Base::REPLACE))->getQueryWriteImageData());
+            $statement->execute(array(
+                'imagename' => $imageName,
+                'imagedata' => $entity->content
+            ));
+        }
         $entity->id = $scopeId;
         return $entity;
     }
