@@ -23,9 +23,7 @@ class Healthcheck extends BaseController
         array $args
     ) {
         $status = \App::$http->readGetResult('/status/')->getEntity();
-        \BO\Slim\Render::withLastModified($response, time(), '0');
-        \BO\Zmsclient\Status::testStatus($status);
-        $result = "OK - DB=" . $status['database']['nodeConnections'] . "%";
-        return $result;
+        $response = \BO\Slim\Render::withLastModified($response, time(), '0');
+        return \BO\Zmsclient\Status::testStatus($response, $status);
     }
 }
