@@ -16,6 +16,8 @@ class Calldisplay
 
     public $collections = '';
 
+    const DEFAULT_STATUS = ['called', 'pickup'];
+
     public function __construct($request)
     {
         $this->entity = static::createInstance($request);
@@ -23,12 +25,17 @@ class Calldisplay
         $this->collections = static::getCollections($request);
     }
 
+    /**
+     * Get status for queue
+     *
+     * @return array
+     */
     public static function getRequestedQueueStatus($request)
     {
         $validator = $request->getAttribute('validator');
         $queue = $validator->getParameter('queue')->isArray()->getValue();
         $status = Validator::value($queue['status'])->isString()->getValue();
-        return ($status) ? $status : 'called';
+        return ($status) ? explode(',', $status) : static::DEFAULT_STATUS;
     }
 
     public function getEntity()

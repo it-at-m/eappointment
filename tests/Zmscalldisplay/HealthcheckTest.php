@@ -25,6 +25,6 @@ class HealthcheckTest extends Base
     public function testRendering()
     {
         $response = $this->render([ ], [ ], [ ]);
-        $this->assertContains('OK', $response);
+        $this->assertContains('WARN', (string)$response->getBody());
     }
 }
