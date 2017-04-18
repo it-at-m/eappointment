@@ -12,7 +12,7 @@ export default {
     'queue': {
         'calledIds' : '',
         'timeUntilOld': 60,
-        'status': 'called',
+        'status': 'called,pickup',
         'showOnlyNumeric':false
     },
     'reloadInterval': 5,
