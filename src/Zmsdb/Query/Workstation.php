@@ -17,27 +17,40 @@ class Workstation extends Base implements MappingInterface
         UPDATE
             '. self::TABLE .'
         SET
-            SessionID=?,
-            Datum=?,
-            Arbeitsplatznr="",
-            StandortID=0
+            `SessionID`=?,
+            `Datum`=?,
+            `Arbeitsplatznr`="",
+            `StandortID`=0
         WHERE
-            Name=? AND
-            Passworthash = ?
+            `Name`=? AND
+            `Passworthash` = ?
     ';
 
     const QUERY_LOGOUT = '
         UPDATE
             '. self::TABLE .'
         SET
-            SessionID="",
-            StandortID=0,
-            BehoerdenID=0,
-            Arbeitsplatznr="",
-            aufrufzusatz=""
+            `SessionID`="",
+            `StandortID`=0,
+            `BehoerdenID`=0,
+            `Arbeitsplatznr`="",
+            `aufrufzusatz`=""
         WHERE
-            Name=?
+            `Name`=?
     ';
+
+    public function getQueryLoggedInCheck()
+    {
+        return '
+            SELECT
+                SessionID as hash
+            FROM
+                '. self::TABLE .'
+            WHERE
+                `Name` = :loginName
+            LIMIT 1
+        ';
+    }
 
     protected function addRequiredJoins()
     {
