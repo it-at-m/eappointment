@@ -11,6 +11,7 @@ use \BO\Zmsentities\Collection\WorkstationList as Collection;
 
 /**
  * @SuppressWarnings(Coupling)
+ * @SuppressWarnings(Public)
  *
  */
 class Workstation extends Base
@@ -53,6 +54,16 @@ class Workstation extends Base
             }
         }
         return $workstation;
+    }
+
+    public function readLoggedInHashByName($loginName)
+    {
+        $query = Query\Workstation::getQueryLoggedInCheck();
+        $LoggedInWorkstation = $this->getReader()->fetchOne(
+            $query,
+            ['loginName' => $loginName]
+        );
+        return ($LoggedInWorkstation['hash']) ? $LoggedInWorkstation['hash'] : null;
     }
 
     public function readLoggedInListByScope($scopeId, \DateTimeInterface $dateTime, $resolveReferences = 0)
