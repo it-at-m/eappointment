@@ -23,6 +23,6 @@ class DayoffList extends BaseController
         $dayOffList = (new Query())->readCommonByYear($year);
         $message->data = $dayOffList;
         Render::lastModified(time(), '0');
-        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
+        Render::json($message, 200);
     }
 }
