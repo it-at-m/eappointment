@@ -30,6 +30,6 @@ class DayoffUpdate extends BaseController
         $message = Response\Message::create(Render::$request);
         $message->data = $collection;
         Render::lastModified(time(), '0');
-        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
+        Render::json($message, 200);
     }
 }
