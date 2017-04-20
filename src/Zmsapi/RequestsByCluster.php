@@ -29,7 +29,6 @@ class RequestsByCluster extends BaseController
         }
 
         $requestList = $query->readListByCluster($cluster, $resolveReferences - 1);
-        error_log(var_export($requestList, 1));
 
         $message = Response\Message::create(Render::$request);
         $message->data = $requestList;
