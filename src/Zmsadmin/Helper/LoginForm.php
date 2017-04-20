@@ -8,7 +8,6 @@
 namespace BO\Zmsadmin\Helper;
 
 use \BO\Mellon\Validator;
-use \BO\Zmsclient\Auth;
 
 class LoginForm
 {
@@ -69,25 +68,6 @@ class LoginForm
         // return validated collection
         $collection = Validator::collection($collection);
         return $collection;
-    }
-
-    public static function setLoginAuthKey($data)
-    {
-        $loginData = $data->getValues();
-        $userAccount = new \BO\Zmsentities\Useraccount(array(
-            'id' => $loginData['loginName']->getValue(),
-            'password' => $loginData['password']->getValue()
-        ));
-        $workstation = \App::$http->readPostResult(
-            '/workstation/'. $userAccount->id .'/',
-            $userAccount
-        )->getEntity();
-
-        if (isset($workstation->authkey)) {
-            Auth::setKey($workstation->authkey);
-            return true;
-        }
-        return false;
     }
 
     public static function writeWorkstationUpdate($data, $workstation)
