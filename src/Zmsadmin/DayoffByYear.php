@@ -29,10 +29,12 @@ class DayoffByYear extends BaseController
         $confirm_success = $request->getAttribute('validator')->getParameter('confirm_success')->isString()->getValue();
         $year = Validator::value($args['year'])->isNumber()->getValue();
         $collection = \App::$http->readGetResult('/dayoff/'. $year .'/')->getCollection();
+        $dayOffList = ($collection) ? array_values($collection->sortByCustomKey('date')->getArrayCopy()) : null;
+
         $updated = false;
         $input = $request->getParsedBody();
         if (array_key_exists('save', (array) $input)) {
-            $data = $input['dayoff'];
+            $data = (array_key_exists('dayoff', $input)) ? $input['dayoff'] : [];
             $collection = new Collection($data);
             $collection = \App::$http->readPostResult(
                 '/dayoff/'. $year .'/',
@@ -55,7 +57,7 @@ class DayoffByYear extends BaseController
                 'menuActive' => 'dayoff',
                 'workstation' => $workstation,
                 'confirm_success' => $confirm_success,
-                'dayoffList' => array_values($collection->sortByCustomKey('date')->getArrayCopy())
+                'dayoffList' => $dayOffList
             )
         );
     }
