@@ -23,12 +23,21 @@ class WorkstationLogin extends BaseController
         $query = new Query();
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
+        $logInHash = $query->readLoggedInHashByName($loginName);
         $workstation = $query
             ->writeEntityLoginByName($loginName, $input['password'], \App::getNow(), $resolveReferences);
-
         $workstation->testValid();
+
+        if ($logInHash) {
+            \BO\Zmsdb\Connection\Select::writeCommit();
+            $exception = new \BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn();
+            $exception->data = $workstation;
+            throw $exception;
+        }
+
         $message = Response\Message::create(Render::$request);
         $message->data = $workstation;
+
         Render::lastModified(time(), '0');
         Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }

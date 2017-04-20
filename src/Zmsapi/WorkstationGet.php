@@ -9,6 +9,8 @@ namespace BO\Zmsapi;
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\Workstation as Query;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 /**
   * Handle requests concerning services
@@ -16,11 +18,12 @@ use \BO\Zmsdb\Workstation as Query;
 class WorkstationGet extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render()
+    public function __invoke(RequestInterface $request, ResponseInterface $response, array $args)
     {
-        $workstation = Helper\User::checkRights();
+        $workstation = (new Helper\User($request))->checkRights();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
 
         if ($resolveReferences > 1) {
@@ -31,9 +34,11 @@ class WorkstationGet extends BaseController
             throw new Exception\Workstation\WorkstationNotFound();
         }
 
-        $message = Response\Message::create(Render::$request);
+        $message = Response\Message::create($request);
         $message->data = $workstation;
-        Render::lastModified(time(), '0');
-        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
+
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+        return $response;
     }
 }
