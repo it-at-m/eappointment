@@ -30,7 +30,7 @@ class NotificationDelete extends BaseController
         if ($query->deleteEntity($itemId)) {
             $message->data = $notification;
         } else {
-            throw new Exception\Mail\NotificationDeleteFailed();
+            throw new Exception\Notification\NotificationDeleteFailed();
         }
         Render::lastModified(time(), '0');
         Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
