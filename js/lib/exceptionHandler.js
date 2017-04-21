@@ -15,7 +15,7 @@ class ExceptionHandler {
     }
 
     render() {
-        this.$main.html(this.message);
+        this.$main.html($(this.message).find('.exception'));
     }
 
     bindEvents() {

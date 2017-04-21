@@ -72,6 +72,15 @@ class View extends BaseView {
             const selectedDate = $(ev.target).attr('data-date');
             console.log('today selected', selectedDate)
             this.onDateToday(selectedDate, this)
+        }).on('click', '.queue-table .process-notification-send', (ev) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            const ok = confirm('Möchten Sie dem Kunden per SMS mitteilen, dass er/sie bald an der Reihe ist, dann klicken Sie auf OK.')
+            if (ok) {
+                this.ButtonAction.sendNotificationReminder(ev).catch(err => this.loadErrorCallback(err)).then((response) => {
+                    this.loadMessage(response, this.load);
+                });
+            }
         })
     }
 }

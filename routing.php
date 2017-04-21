@@ -138,6 +138,8 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/notification/', '\BO\Zmsadmin\Notification')
     ->setName("notification");
 
+\App::$slim->post('/notification/send/', '\BO\Zmsadmin\NotificationSend')
+    ->setName("notificationSend");
 
 /*
  * ---------------------------------------------------------------------------
