@@ -2,7 +2,8 @@
 
 namespace BO\Zmsclient\Psr7;
 
-use \Asika\Http\Transport\CurlTransport as Curl;
+use Jgut\Spiral\Client as Transport;
+use Jgut\Spiral\Transport\Curl as Curl;
 
 class Client implements ClientInterface
 {
@@ -21,10 +22,11 @@ class Client implements ClientInterface
     public static function readResponse(\Psr\Http\Message\RequestInterface $request, array $curlopts = array())
     {
         $curlopts = $curlopts + self::$curlopt;
-        $transport = new Curl();
-        $transport->setOption('options', $curlopts);
+        $curl = Curl::createFromDefaults();
+        $curl->setOptions(static::$curlopt);
+        $transport = new Transport($curl);
         try {
-            return $transport->request($request);
+            return $transport->request($request, new Response());
         } catch (\Exception $exception) {
             throw new RequestException($exception->getMessage(), $request);
         }

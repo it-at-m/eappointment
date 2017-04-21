@@ -23,7 +23,8 @@ class ClientTest extends Base
     {
         $this->setExpectedException('\BO\Zmsclient\Psr7\RequestException');
         $uri = new Uri(self::$http_baseurl . '/status/');
+        $uri = $uri->withPort(4444);
         $request = new Request('GET', $uri);
-        $response = Client::readResponse($request, array('CURLOPT_TIMEOUT' => 1));
+        Client::readResponse($request, array('CURLOPT_TIMEOUT' => 0.1));
     }
 }
