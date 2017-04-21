@@ -80,6 +80,7 @@ class Http
     public function readResponse(\Psr\Http\Message\RequestInterface $request)
     {
         $request = $this->getAuthorizedRequest($request);
+        var_dump((string)$request->getBody());
         $startTime = microtime(true);
         $response = $this->client->readResponse($request);
         if (self::$logEnabled) {
