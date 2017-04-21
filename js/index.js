@@ -30,6 +30,7 @@ import bindReact from './lib/bindReact.js'
 import { getDataAttributes } from './lib/utils'
 
 import preventFormResubmit from './element/form/preventFormResubmit'
+import maxChars from './element/form/maxChars'
 
 
 
@@ -67,6 +68,10 @@ $('[data-scope-select-form]').each(function() {
 
 $('form').each(function() {
     preventFormResubmit(this);
+})
+
+$('textarea.maxchars').each(function() {
+    maxChars(this);
 })
 
 printScopeAppointmentsByDay()

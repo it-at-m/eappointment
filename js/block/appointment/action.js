@@ -16,12 +16,12 @@ class View extends BaseView {
     }
 
     addnew (ev) {
-        console.log("New Button pressed", ev);
+        console.log("New Button clicked", ev);
         this.loadNew();
     }
 
     queue (ev) {
-        console.log("Queue Button pressed", ev);
+        console.log("Queue Button clicked", ev);
         this.selectedDate = moment(this.$main.find('form #process_date').val(), 'DD.MM.YYYY').format('YYYY-MM-DD');
         const sendData = this.$main.find('form').serialize();
         const url = `${this.includeUrl}/process/${this.selectedDate}/queue/`;
@@ -35,7 +35,7 @@ class View extends BaseView {
     }
 
     delete (ev) {
-        console.log("Delete Button pressed", ev);
+        console.log("Delete Button clicked", ev);
         const id  = $(ev.target).data('id')
         const authkey  = $(ev.target).data('authkey')
         const name  = $(ev.target).data('name')
@@ -48,7 +48,7 @@ class View extends BaseView {
     }
 
     reserve (ev) {
-        console.log("Reserve Button pressed", ev);
+        console.log("Reserve Button clicked", ev);
         this.selectedDate = moment(this.$main.find('form #process_date').val(), 'DD.MM.YYYY').format('YYYY-MM-DD');
         this.selectedTime = this.$main.find('form #process_time').val();
         const sendData = this.$main.find('form').serialize();
@@ -57,10 +57,16 @@ class View extends BaseView {
     }
 
     save (ev) {
-        console.log("Save Button pressed", ev);
+        console.log("Save Button clicked", ev);
         const sendData = this.$main.find('form').serialize();
         const url = `${this.includeUrl}/process/${this.selectedProcess}/save/`;
         return this.loadCall(url, 'POST', sendData);
+    }
+
+    sendNotificationReminder (ev) {
+        const selectedProcessId = $(ev.target).data('process');
+        const url = `${this.includeUrl}/notification/send/`;
+        return this.loadCall(url, 'POST', { selectedProcess: selectedProcessId });
     }
 }
 
