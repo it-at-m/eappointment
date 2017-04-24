@@ -13,6 +13,8 @@ class Client implements ClientInterface
      */
     static public $curlopt = [];
 
+    static protected $curlClient = null;
+
     /**
      * @param \Psr\Http\Message\RequestInterface $request
      * @param Array $curlopts Additional or special curl options
@@ -21,14 +23,23 @@ class Client implements ClientInterface
      */
     public static function readResponse(\Psr\Http\Message\RequestInterface $request, array $curlopts = array())
     {
-        $curlopts = $curlopts + self::$curlopt;
-        $curl = Curl::createFromDefaults();
-        $curl->setOptions(static::$curlopt);
-        $transport = new Transport($curl);
+        $transport = static::getClient($curlopts);
         try {
             return $transport->request($request, new Response());
         } catch (\Exception $exception) {
             throw new RequestException($exception->getMessage(), $request);
         }
+    }
+
+    public static function getClient($curlopts)
+    {
+        $curlopts = $curlopts + self::$curlopt;
+        if (null === static::$curlClient) {
+            $curl = Curl::createFromDefaults();
+            $curl->setOptions(static::$curlopt);
+            $transport = new Transport($curl);
+            static::$curlClient = $transport;
+        }
+        return static::$curlClient;
     }
 }
