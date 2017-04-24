@@ -148,4 +148,34 @@ class DayOff extends Base
         }
         return $this->readCommonByYear($year);
     }
+
+    /**
+     * delete dayoff preferences by time interval
+     *
+     * @param
+     *            dayoffList,
+     *            year
+     *
+     * @return boolean
+     */
+    public function deleteByTimeInterval($deleteInSeconds)
+    {
+        $selectQuery = new Query\DayOff(Query\Base::SELECT);
+        $selectQuery
+            ->addEntityMapping()
+            ->addConditionDayoffDeleteInterval($deleteInSeconds);
+        $statement = $this->fetchStatement($selectQuery);
+        while ($dayoffData = $statement->fetch(\PDO::FETCH_ASSOC)) {
+            $dayoffData = (new Query\DayOff(Query\Base::SELECT))->postProcess($dayoffData);
+            $entity = new Entity($dayoffData);
+            if ($entity instanceof Entity) {
+                $deleteQuery = new Query\DayOff(Query\Base::DELETE);
+                $date = (new \DateTimeImmutable())->setTimestamp($entity->date)->format('Y-m-d');
+                $deleteQuery
+                    ->addConditionDate($date)
+                    ->addConditionName($entity->name);
+                $this->deleteItem($deleteQuery);
+            }
+        }
+    }
 }
