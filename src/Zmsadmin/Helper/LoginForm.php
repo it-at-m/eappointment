@@ -65,6 +65,10 @@ class LoginForm
              ->isString('Bitte wählen Sie einen Arbeitsplatz oder den Tresen aus')
              ->isSmallerThan(5, "Die Arbeitsplatz-Bezeichnung sollte 5 Zeichen nicht überschreiten");
 
+         // hint
+         $collection['hint'] = Validator::param('hint')
+              ->isString();
+
         // return validated collection
         $collection = Validator::collection($collection);
         return $collection;
@@ -76,6 +80,9 @@ class LoginForm
         if (isset($workstation->useraccount)) {
             if ($formData['workstation']->getValue()) {
                 $workstation->name = $formData['workstation']->getValue();
+            }
+            if ($formData['hint']->getValue()) {
+                $workstation->hint = $formData['hint']->getValue();
             }
             if ('cluster' === $formData['scope']->getValue()) {
                 $workstation->queue['clusterEnabled'] = 1;
