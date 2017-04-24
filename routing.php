@@ -134,11 +134,8 @@ use \Psr\Http\Message\ResponseInterface;
  * Mail
  * -------------------------------------------------------------------------
  */
-\App::$slim->get('/mail/', '\BO\Zmsadmin\Mail')
+\App::$slim->map(['GET', 'POST'], '/mail/', '\BO\Zmsadmin\Mail')
     ->setName("mail");
-
-\App::$slim->post('/mail/send/', '\BO\Zmsadmin\MailSend')
-    ->setName("mailSend");
 
 /*
  * ---------------------------------------------------------------------------
