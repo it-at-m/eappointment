@@ -23,6 +23,18 @@ class DayOff extends Base implements MappingInterface
         return $this;
     }
 
+    public function addConditionDate($date)
+    {
+        $this->query->where('dayOff`.`Datum', '=', $date);
+        return $this;
+    }
+
+    public function addConditionName($name)
+    {
+        $this->query->where('dayOff`.`Feiertag', '=', $name);
+        return $this;
+    }
+
     public function addConditionCommon()
     {
         $this->query
@@ -49,6 +61,18 @@ class DayOff extends Base implements MappingInterface
         $this->query
             ->where('dayOff.BehoerdenID', '=', $departmentId)
             ;
+        return $this;
+    }
+
+    public function addConditionDayoffDeleteInterval($deleteInSeconds)
+    {
+        $this->query->where(
+            self::expression(
+                'UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(`dayOff`.`Datum`)'
+            ),
+            '>=',
+            $deleteInSeconds
+        );
         return $this;
     }
 
