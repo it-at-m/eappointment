@@ -29,10 +29,6 @@ class LoginForm
             ->isBiggerThan(2, "Es muss ein Passwort eingegeben werden")
             ->isSmallerThan(250, "Das Passwort sollte 250 Zeichen nicht überschreiten");
 
-        // department
-        $collection['department'] = Validator::param('department')
-            ->isNumber('Bitte wählen Sie eine Behörde aus');
-
         // return validated collection
         $collection = Validator::collection($collection);
         return $collection;
@@ -70,6 +66,16 @@ class LoginForm
               ->isString();
 
         // return validated collection
+        $collection = Validator::collection($collection);
+        return $collection;
+    }
+
+    public static function fromQuickLogin()
+    {
+        $loginData = static::fromLoginParameters();
+        $additionalData = static::fromAdditionalParameters();
+        $collection = array_merge($loginData->getValues(), $additionalData->getValues());
+        $collection['redirectUrl'] = Validator::param('url')->isString();
         $collection = Validator::collection($collection);
         return $collection;
     }
