@@ -8,4 +8,5 @@ set +a
 
 if [[ $ZMS_CRONROOT =~ ^1|on|true|yes$ ]]; then
     $BIN/resetGhostWorkstationCount --commit
+    $BIN/deleteDayoffData 6 --commit
 fi
