@@ -68,6 +68,32 @@ class Mail extends Schema\Entity
         return $client;
     }
 
+    public function toCustomMessageEntity(Process $process, $input)
+    {
+        $entity = new self();
+        if (array_key_exists('message', $input) && '' != $input['message']) {
+            $message = $input['message'];
+        }
+        if (array_key_exists('subject', $input) && '' != $input['subject']) {
+            $entity->subject = $input['subject'];
+        }
+        $entity->process = $process;
+        $entity->createIP = $process->createIP;
+        $entity->multipart = [
+            array(
+                'mime' => 'text/html',
+                'content' => $message,
+                'base64' => false
+            ),
+            array(
+                'mime' => 'text/plain',
+                'content' => Helper\Messaging::getPlainText($message),
+                'base64' => false
+            )
+        ];
+        return $entity;
+    }
+
     public function toResolvedEntity(Process $process, Config $config)
     {
         $entity = clone $this;
