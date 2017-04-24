@@ -105,11 +105,14 @@ use \Psr\Http\Message\ResponseInterface;
 
 /*
  * ---------------------------------------------------------------------------
- * Index
+ * Login
  * -------------------------------------------------------------------------
  */
 \App::$slim->map(['GET','POST'], '/', '\BO\Zmsadmin\Index')
     ->setName("index");
+
+\App::$slim->get('/workstation/quicklogin/', '\BO\Zmsadmin\QuickLogin')
+    ->setName("quickLogin");
 
 
 /*

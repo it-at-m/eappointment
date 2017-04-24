@@ -37,7 +37,7 @@ class Index extends BaseController
                 $workstation = \App::$http
                     ->readPostResult('/workstation/'. $userAccount->id .'/', $userAccount)->getEntity();
             } catch (\BO\Zmsclient\Exception $exception) {
-                if ($exception->template != '\BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn') {
+                if ($exception->template == 'BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn') {
                     \BO\Zmsclient\Auth::setKey($exception->data['authkey']);
                     throw $exception;
                 }
