@@ -153,8 +153,7 @@ class DayOff extends Base
      * delete dayoff preferences by time interval
      *
      * @param
-     *            dayoffList,
-     *            year
+     *            deleteInSeconds
      *
      * @return boolean
      */

@@ -1,0 +1,22 @@
+#!/usr/bin/env php
+<?php
+$dir = realpath(__DIR__);
+do {
+    $dir = dirname($dir);
+    if (file_exists("$dir/autoload.php")) {
+        require_once("$dir/autoload.php");
+    }
+} while ($dir != '/' && !file_exists("$dir/config.php"));
+if (file_exists("$dir/bootstrap.php")) {
+    require("$dir/bootstrap.php");
+} else {
+    require("$dir/config.php");
+}
+if (isset($argv[2]) && $argv[2] == '--commit') {
+    \BO\Zmsdb\Helper\AppointmentDeleteByCron::init($argv[1]);
+} else {
+    echo "Usage: {$argv[0]} timeInterval --commit\n\tATTENTION! Delete Appointment Data based on time ('in days (1 i.e.)') interval. USE WITH CAUTION!\n\n"
+        . "\t!!!!!!!!!!!!!!!!!!!!!!!\n"
+        . "\t!! DATA LOSS WARNING !!\n"
+        . "\t!!!!!!!!!!!!!!!!!!!!!!!\n\n";
+}

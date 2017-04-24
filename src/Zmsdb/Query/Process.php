@@ -183,6 +183,25 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
+    public function addConditionProcessDeleteInterval($deleteInSeconds)
+    {
+        $this->query->where(function (\Solution10\SQL\ConditionBuilder $condition) use ($deleteInSeconds) {
+            $condition
+                ->andWith(
+                    self::expression(
+                        'UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(`process`.`Datum`)'
+                    ),
+                    '>=',
+                    $deleteInSeconds
+                )
+                ->andWith('process.Name', '!=', '(abgesagt)')
+                ->andWith('process.StandortID', '!=', 0)
+                ->andWith('process.AbholortID', '=', 0)
+                ->andWith('process.NutzerID', '=', 0);
+        });
+        return $this;
+    }
+
     public function addConditionProcessId($processId)
     {
         $this->query->where('process.BuergerID', '=', $processId);
