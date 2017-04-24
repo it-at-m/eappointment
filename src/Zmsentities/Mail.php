@@ -68,14 +68,14 @@ class Mail extends Schema\Entity
         return $client;
     }
 
-    public function toCustomMessageEntity(Process $process, $input)
+    public function toCustomMessageEntity(Process $process, $collection)
     {
         $entity = new self();
-        if (array_key_exists('message', $input) && '' != $input['message']) {
-            $message = $input['message'];
+        if (array_key_exists('message', $collection) && '' != $collection['message']->getValue()) {
+            $message = $collection['message']->getValue();
         }
-        if (array_key_exists('subject', $input) && '' != $input['subject']) {
-            $entity->subject = $input['subject'];
+        if (array_key_exists('subject', $collection) && '' != $collection['subject']->getValue()) {
+            $entity->subject = $collection['subject']->getValue();
         }
         $entity->process = $process;
         $entity->createIP = $process->createIP;
