@@ -129,6 +129,16 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/logout/', '\BO\Zmsadmin\Logout')
     ->setName("logout");
 
+/*
+ * ---------------------------------------------------------------------------
+ * Mail
+ * -------------------------------------------------------------------------
+ */
+\App::$slim->get('/mail/', '\BO\Zmsadmin\Mail')
+    ->setName("mail");
+
+\App::$slim->post('/mail/send/', '\BO\Zmsadmin\MailSend')
+    ->setName("mailSend");
 
 /*
  * ---------------------------------------------------------------------------

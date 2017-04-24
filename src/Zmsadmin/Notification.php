@@ -24,7 +24,7 @@ class Notification extends BaseController
 
         \BO\Slim\Render::html('page/notification.twig', array(
             'title' => 'SMS-Versand',
-            'menuActive' => 'notification',
+            'menuActive' => $workstation->getRedirect(),
             'workstation' => $workstation,
             'department' => $department,
             'process' => $process,
