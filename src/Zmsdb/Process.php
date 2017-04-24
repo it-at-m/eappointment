@@ -9,6 +9,7 @@ use BO\Zmsdb\Helper\ProcessStatus as Status;
  *
  * @SuppressWarnings(CouplingBetweenObjects)
  * @SuppressWarnings(TooManyPublicMethods)
+ * @SuppressWarnings(Complexity)
  */
 class Process extends Base
 {
@@ -427,5 +428,31 @@ class Process extends Base
             }
         }
         return $processList;
+    }
+
+    /**
+     * delete processList by time interval
+     *
+     * @param
+     *            deleteInSeconds
+     *
+     * @return boolean
+     */
+    public function deleteByTimeInterval($deleteInSeconds)
+    {
+        $selectQuery = new Query\Process(Query\Base::SELECT);
+        $selectQuery
+            ->addEntityMapping()
+            ->addConditionProcessDeleteInterval($deleteInSeconds)
+            ->addLimit(500);
+        $statement = $this->fetchStatement($selectQuery);
+        while ($processData = $statement->fetch(\PDO::FETCH_ASSOC)) {
+            $processData = (new Query\Process(Query\Base::SELECT))->postProcess($processData);
+            $entity = new Entity($processData);
+            if ($entity instanceof Entity) {
+                $this->deleteEntity($entity->id, $entity->authKey);
+            }
+            $this->deleteByTimeInterval($deleteInSeconds);
+        }
     }
 }
