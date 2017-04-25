@@ -30,7 +30,8 @@ class Messaging
             'deleted' => 'icsappointment_delete.twig'
         ),
         'admin' => array(
-            'deleted' => 'mail_admin_delete.twig'
+            'deleted' => 'mail_admin_delete.twig',
+            'updated' => 'mail_admin_update.twig'
         )
     );
 

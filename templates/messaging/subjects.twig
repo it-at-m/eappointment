@@ -5,6 +5,8 @@ Terminbestaetigung
 Terminabsage
 {% elseif process.status == 'deleted' and initiator %}
 Information Terminabsage
+{% elseif process.status == 'updated' and initiator %}
+Information Terminänderung
 {% elseif process.status == 'queued' %}
 Wartenummerbestaetigung
 {% else %}
