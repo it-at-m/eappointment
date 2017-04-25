@@ -7,7 +7,9 @@
 namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
-use \BO\Mellon\Validator;
+use \BO\Zmsdb\Config;
+use \BO\Zmsdb\Mail;
+use BO\Mellon\Validator;
 use \BO\Zmsdb\Process as Query;
 
 /**
@@ -38,7 +40,15 @@ class ProcessUpdate extends BaseController
         } else {
             $process->id = $itemId;
             $process->authKey = $authKey;
-            $message->data = $query->updateEntity($process);
+            $processUpdated = $query->updateEntity($process);
+            if ($process->hasScopeAdmin()) {
+                $initiator = Validator::param('initiator')->isString()->getValue();
+                $config = (new Config())->readEntity();
+                $process->status = 'updated';
+                $mail = (new \BO\Zmsentities\Mail())->toAdminInfoMail($process, $config, $initiator);
+                (new Mail())->writeInQueueWithAdmin($mail);
+            }
+            $message->data = $processUpdated;
         }
         Render::lastModified(time(), '0');
         Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
