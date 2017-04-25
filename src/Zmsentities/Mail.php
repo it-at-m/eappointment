@@ -94,6 +94,28 @@ class Mail extends Schema\Entity
         return $entity;
     }
 
+    public function toAdminInfoMail(Process $process, Config $config, $initator)
+    {
+        $entity = clone $this;
+        $content = Helper\Messaging::getMailContent($process, $config, $initator);
+        $entity->process = $process;
+        $entity->subject = Helper\Messaging::getMailSubject($process, $config, $initator);
+        $entity->createIP = $process->createIP;
+        $entity->multipart = [
+            array(
+                'mime' => 'text/html',
+                'content' => $content,
+                'base64' => false
+            ),
+            array(
+                'mime' => 'text/plain',
+                'content' => Helper\Messaging::getPlainText($content),
+                'base64' => false
+            )
+        ];
+        return $entity;
+    }
+
     public function toResolvedEntity(Process $process, Config $config)
     {
         $entity = clone $this;

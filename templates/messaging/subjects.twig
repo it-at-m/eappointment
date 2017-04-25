@@ -1,8 +1,10 @@
 {% block german %}
 {% if process.status == 'confirmed' %}
 Terminbestaetigung
-{% elseif process.status == 'deleted' %}
+{% elseif process.status == 'deleted' and not initiator %}
 Terminabsage
+{% elseif process.status == 'deleted' and initiator %}
+Information Terminabsage
 {% elseif process.status == 'queued' %}
 Wartenummerbestaetigung
 {% else %}

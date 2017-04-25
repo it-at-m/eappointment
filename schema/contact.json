@@ -43,6 +43,12 @@
         },
         "streetNumber": {
             "type": "string"
+        },
+        "email": {
+            "type": "string"
+        },
+        "telephone": {
+            "type": "string"
         }
     }
 }
