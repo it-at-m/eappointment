@@ -7,6 +7,7 @@ class View extends BaseView {
     constructor (element, options) {
         super(element, options);
         this.$main = $(element);
+        this.source = options.source;
         this.selectedDate = options.selectedDate;
         this.selectedTime = options.selectedTime;
         this.includeUrl = options.includeUrl || "";
@@ -34,13 +35,13 @@ class View extends BaseView {
         window.open(`${this.includeUrl}/process/${selectedDate}/queue/?print=1&selectedprocess=${selectedProcess}`)
     }
 
-    delete (ev) {
+    delete (ev, initiator) {
         console.log("Delete Button clicked", ev);
         const id  = $(ev.target).data('id')
         const authkey  = $(ev.target).data('authkey')
         const name  = $(ev.target).data('name')
         const ok = confirm('Wenn Sie den Kunden Nr. '+ id +' '+ name +' löschen wollen, klicken Sie auf OK. Der Kunde wird darüber per eMail und/oder SMS informiert.)')
-        const url = `${this.includeUrl}/process/${id}/delete/`;
+        const url = `${this.includeUrl}/process/${id}/delete/?initiator=backend-${this.source}`;
         if (ok) {
             return this.loadCall(url, 'DELETE');
         }

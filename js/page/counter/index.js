@@ -120,6 +120,7 @@ class View extends BaseView {
 
     loadAppointmentForm() {
         return new AppointmentView(this.$main.find('[data-appointment-form]'), {
+            source: 'counter',
             selectedDate: this.selectedDate,
             selectedTime: this.selectedTime,
             selectedProcess: this.selectedProcess,
@@ -132,6 +133,7 @@ class View extends BaseView {
 
     loadQueueTable () {
         return new QueueView(this.$main.find('[data-queue-table]'), {
+            source: 'counter',
             selectedDate: this.selectedDate,
             includeUrl: this.includeUrl,
             onDatePick: this.onDatePick,
