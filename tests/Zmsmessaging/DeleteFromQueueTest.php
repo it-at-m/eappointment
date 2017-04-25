@@ -10,21 +10,6 @@ class DeleteFromQueueTest extends Base
     {
         return [
             [
-                'function' => 'readPostResult',
-                'url' => '/workstation/_system_messenger/',
-                'response' => $this->readFixture("GET_workstation.json")
-            ],
-            [
-                'function' => 'readPostResult',
-                'url' => '/workstation/',
-                'response' => $this->readFixture("GET_workstation.json")
-            ],
-            [
-                'function' => 'readGetResult',
-                'url' => '/mails/',
-                'response' => $this->readFixture("GET_mails_queue.json"),
-            ],
-            [
                 'function' => 'readDeleteResult',
                 'url' => '/mails/1234/',
                 'response' => $this->readFixture("GET_mail.json"),
@@ -35,7 +20,6 @@ class DeleteFromQueueTest extends Base
     public function testDeleteMailFromQueue()
     {
         $entity = (new \BO\Zmsentities\Mail())->getExample();
-        \App::$messaging = new \BO\Zmsmessaging\SendQueue();
-        $this->assertTrue(\App::$messaging->deleteFromQueue($entity));
+        $this->assertTrue(\BO\Zmsmessaging\Transmission::deleteEntityFromQueue($entity));
     }
 }

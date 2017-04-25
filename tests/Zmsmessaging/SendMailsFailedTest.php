@@ -34,8 +34,8 @@ class SendMailsFailedTest extends Base
 
     public function testFailed()
     {
-        \App::$messaging = new \BO\Zmsmessaging\SendQueue();
-        $resultList = \App::$messaging->startMailTransmission();
+        \App::$messaging = new \BO\Zmsmessaging\Mail();
+        $resultList = \App::$messaging->initQueueTransmission();
         foreach ($resultList as $mail) {
             $this->assertContains('No mail entry found in Database', $mail['errorInfo']);
         }

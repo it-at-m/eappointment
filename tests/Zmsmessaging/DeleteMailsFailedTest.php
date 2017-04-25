@@ -10,21 +10,6 @@ class DeleteMailsFailedTest extends Base
     {
         return [
             [
-                'function' => 'readPostResult',
-                'url' => '/workstation/_system_messenger/',
-                'response' => $this->readFixture("GET_workstation.json")
-            ],
-            [
-                'function' => 'readPostResult',
-                'url' => '/workstation/',
-                'response' => $this->readFixture("GET_workstation.json")
-            ],
-            [
-                'function' => 'readGetResult',
-                'url' => '/mails/',
-                'response' => $this->readFixture("GET_mails_queue.json"),
-            ],
-            [
                 'function' => 'readDeleteResult',
                 'url' => '/mails/1234/',
                 'response' => $this->readFixture("GET_mail_failed.json"),
@@ -36,7 +21,6 @@ class DeleteMailsFailedTest extends Base
     {
         $this->expectException('\BO\Zmsclient\Exception');
         $entity = (new \BO\Zmsentities\Mail())->getExample();
-        \App::$messaging = new \BO\Zmsmessaging\SendQueue();
-        $mail = \App::$messaging->deleteFromQueue($entity);
+        \BO\Zmsmessaging\Transmission::deleteEntityFromQueue($entity);
     }
 }

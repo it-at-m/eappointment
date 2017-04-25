@@ -4,22 +4,24 @@
 // initialize the static \App singleton
 include(realpath(__DIR__) .'/../bootstrap.php');
 
-\App::$messaging = new \BO\Zmsmessaging\SendQueue('notification');
+\App::$messaging = new \BO\Zmsmessaging\Notification();
 
 $isValid = false;
 if (preg_grep('#--?s(end)?#', $argv)) {
     $isValid = true;
 }
-$resultList = \App::$messaging->startNotificationTransmission($isValid);
+$resultList = \App::$messaging->initQueueTransmission($isValid);
 if (preg_grep('#--?v(erbose)?#', $argv)) {
     foreach ($resultList as $notification) {
         if (isset($notification['errorInfo'])) {
-            echo "\033[01;31mERROR OCCURED: ". $notification['errorInfo'] . "\033[0m \n";
+            echo "ERROR OCCURED: ". $notification['errorInfo'] ."\n";
         } elseif (!array_key_exists('viaGateway', $notification)) {
-            echo "\033[01;32mTest notification with ID ". $notification['id'] ." successfully \033[0m \n";
-            echo "RECIPIENTS: ". json_encode($notification['recipients']) ."\n";
+            echo "Sent message successfully \n";
+            echo "Details:\n";
+            echo "ID: ". $notification['id'] ."\n";
             echo "MIME: ". trim($notification['mime']) ."\n";
-            echo "\033[01;31mDELETE NOTICE: Items will not be deleted in verbose mode \033[0m \n\n";
+            echo "RECIPIENTS: ". print_r($notification['recipients'], 1) ."\n";
+            echo "CUSTOM HEADERS: ". print_r($notification['customHeaders'], 1) ."\n\n";
         } else {
             $item = new \BO\Zmsentities\Notification($notification['item']);
             $preferences = (new \BO\Zmsentities\Config())->getNotificationPreferences();
