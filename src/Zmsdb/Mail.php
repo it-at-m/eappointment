@@ -65,6 +65,30 @@ class Mail extends Base
         return $mail;
     }
 
+    public function writeInQueueWithAdmin(Entity $mail)
+    {
+        $query = new Query\MailQueue(Query\Base::INSERT);
+        $process = new \BO\Zmsentities\Process($mail->process);
+        $department = (new Department())->readByScopeId($process->getScopeId(), 0);
+        $query->addValues(
+            array(
+                'processID' => $mail->process['id'],
+                'departmentID' => $department->toProperty()->id->get(),
+                'createIP' => $mail->createIP,
+                'createTimestamp' => time(),
+                'subject' => $mail->subject,
+                'clientFamilyName' => $process->scope['contact']['name'],
+                'clientEmail' => $process->scope['contact']['email']
+            )
+        );
+        if (! $this->writeItem($query)) {
+            throw new Exception\MailWriteInQueueFailed("Failed to write mail in queue (maybe email not given)");
+        }
+        $queueId = $this->getWriter()->lastInsertId();
+        $this->writeMimeparts($queueId, $mail->multipart);
+        return $this->readEntity($queueId);
+    }
+
     public function writeInQueue(Entity $mail)
     {
         $result = false;
