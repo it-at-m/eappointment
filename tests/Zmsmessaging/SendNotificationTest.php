@@ -26,16 +26,16 @@ class SendNotificationTest extends Base
             ],
             [
                 'function' => 'readDeleteResult',
-                'url' => '/workstation/_system_messenger/',
-                'response' => $this->readFixture("GET_mail.json")
+                'url' => '/notification/1234/',
+                'response' => $this->readFixture("GET_notification.json")
             ]
         ];
     }
 
     public function testSendNotificationQueue()
     {
-        \App::$messaging = new \BO\Zmsmessaging\SendQueue('notification');
-        $resultList = \App::$messaging->startNotificationTransmission();
+        \App::$messaging = new \BO\Zmsmessaging\Notification();
+        $resultList = \App::$messaging->initQueueTransmission();
         foreach ($resultList as $notification) {
             if (isset($notification['errorInfo'])) {
                 echo "ERROR OCCURED: ". $notification['errorInfo'] ."\n";

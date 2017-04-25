@@ -34,8 +34,8 @@ class SendNotificationsFailedTest extends Base
 
     public function testFailed()
     {
-        \App::$messaging = new \BO\Zmsmessaging\SendQueue('notification');
-        $resultList = \App::$messaging->startNotificationTransmission();
+        \App::$messaging = new \BO\Zmsmessaging\Notification();
+        $resultList = \App::$messaging->initQueueTransmission();
         foreach ($resultList as $notification) {
             $this->assertContains('No notification entry found in Database', $notification['errorInfo']);
         }

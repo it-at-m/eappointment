@@ -26,7 +26,7 @@ class SendMailTest extends Base
             ],
             [
                 'function' => 'readDeleteResult',
-                'url' => '/workstation/_system_messenger/',
+                'url' => '/mails/1234/',
                 'response' => $this->readFixture("GET_mail.json")
             ]
         ];
@@ -34,8 +34,8 @@ class SendMailTest extends Base
 
     public function testSendMailQueue()
     {
-        \App::$messaging = new \BO\Zmsmessaging\SendQueue();
-        $resultList = \App::$messaging->startMailTransmission();
+        \App::$messaging = new \BO\Zmsmessaging\Mail();
+        $resultList = \App::$messaging->initQueueTransmission();
         foreach ($resultList as $mail) {
             if (isset($mail['errorInfo'])) {
                 echo "ERROR OCCURED: ". $mail['errorInfo'] ."\n";
