@@ -21,10 +21,13 @@ class AppointmentFormHelper
         return $process;
     }
 
-    public static function writeUpdatedProcess($formData, Entity $process)
+    public static function writeUpdatedProcess($formData, Entity $process, $initiator)
     {
-        $process = \App::$http
-            ->readPostResult('/process/'. $process->id .'/'. $process->authKey .'/', $process)->getEntity();
+        $process = \App::$http->readPostResult(
+            '/process/'. $process->id .'/'. $process->authKey .'/',
+            $process,
+            ['initiator' => $initiator]
+        )->getEntity();
         static::updateMailAndNotificationCount($formData, $process);
         return $process;
     }

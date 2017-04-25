@@ -35,7 +35,7 @@ class View extends BaseView {
         window.open(`${this.includeUrl}/process/${selectedDate}/queue/?print=1&selectedprocess=${selectedProcess}`)
     }
 
-    delete (ev, initiator) {
+    delete (ev) {
         console.log("Delete Button clicked", ev);
         const id  = $(ev.target).data('id')
         const authkey  = $(ev.target).data('authkey')
@@ -60,7 +60,7 @@ class View extends BaseView {
     save (ev) {
         console.log("Save Button clicked", ev);
         const sendData = this.$main.find('form').serialize();
-        const url = `${this.includeUrl}/process/${this.selectedProcess}/save/`;
+        const url = `${this.includeUrl}/process/${this.selectedProcess}/save/?initiator=backend-${this.source}`;
         return this.loadCall(url, 'POST', sendData);
     }
 
