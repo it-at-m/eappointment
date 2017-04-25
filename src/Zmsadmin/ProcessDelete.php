@@ -32,9 +32,12 @@ class ProcessDelete extends BaseController
         $process->status = 'deleted';
         $cluster = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/cluster/')->getEntity();
         $workstation->testMatchingProcessScope($cluster, $process);
-
         $authKey = $process->authKey;
-        $deleted = \App::$http->readDeleteResult('/process/'. $process->id .'/'. $authKey . '/')->getEntity();
+
+        $initiator = Validator::param('initiator')->isString()->getValue();
+        $deleted = \App::$http
+            ->readDeleteResult('/process/'. $process->id .'/'. $authKey . '/', ['initiator' => $initiator])
+            ->getEntity();
         \App::$http->readPostResult('/process/'. $process->id .'/'. $authKey .'/delete/mail/', $process);
         \App::$http->readPostResult('/process/'. $process->id .'/'. $authKey .'/delete/notification/', $process);
 
