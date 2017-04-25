@@ -116,6 +116,11 @@ class Process extends Schema\Entity
         return $this;
     }
 
+    public function hasScopeAdmin()
+    {
+        return ('' != $this->toProperty()->scope->contact->email->get());
+    }
+
     public function withUpdatedData($formData, $requestData, $scope = null, $dateTime = null)
     {
         if ($dateTime) {

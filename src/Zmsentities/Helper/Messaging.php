@@ -7,6 +7,10 @@
  */
 namespace BO\Zmsentities\Helper;
 
+use \BO\Zmsentities\Process;
+
+use \BO\Zmsentities\Config;
+
 class Messaging
 {
     protected static $templates = array(
@@ -24,6 +28,9 @@ class Messaging
         'ics' => array(
             'appointment' => 'icsappointment.twig',
             'deleted' => 'icsappointment_delete.twig'
+        ),
+        'admin' => array(
+            'deleted' => 'mail_admin_delete.twig'
         )
     );
 
@@ -41,23 +48,28 @@ class Messaging
         return $twig;
     }
 
-    public static function getMailContent(\BO\Zmsentities\Process $process, \BO\Zmsentities\Config $config)
+    public static function getMailContent(Process $process, Config $config, $initiator = null)
     {
         $appointment = $process->getFirstAppointment();
         $template = self::getTemplateByProcessStatus('mail', $process);
+        if ($initiator) {
+            $template = self::getTemplateByProcessStatus('admin', $process);
+            error_log($template);
+        }
         $message = self::twigView()->render(
             'messaging/' . $template,
             array(
                 'date' => $appointment->toDateTime()->format('U'),
                 'client' => $process->getFirstClient(),
                 'process' => $process,
-                'config' => $config
+                'config' => $config,
+                'initiator' => $initiator
             )
         );
         return $message;
     }
 
-    public static function getNotificationContent(\BO\Zmsentities\Process $process, \BO\Zmsentities\Config $config)
+    public static function getNotificationContent(Process $process, Config $config)
     {
         $appointment = $process->getFirstAppointment();
         $template = self::getTemplateByProcessStatus('notification', $process);
@@ -73,7 +85,7 @@ class Messaging
         return $message;
     }
 
-    protected static function getTemplateByProcessStatus($type, \BO\Zmsentities\Process $process)
+    protected static function getTemplateByProcessStatus($type, Process $process)
     {
         $status = $process->status;
         if ('confirmed' == $status &&  $process->toProperty()->queue->withAppointment->get()) {
@@ -88,7 +100,7 @@ class Messaging
         return $template;
     }
 
-    public static function getMailSubject(\BO\Zmsentities\Process $process, \BO\Zmsentities\Config $config)
+    public static function getMailSubject(Process $process, Config $config, $initiator = null)
     {
         $appointment = $process->getFirstAppointment();
         $template = 'subjects.twig';
@@ -98,14 +110,15 @@ class Messaging
                 'date' => $appointment->toDateTime()->format('U'),
                 'client' => $process->getFirstClient(),
                 'process' => $process,
-                'config' => $config
+                'config' => $config,
+                'initiator' => $initiator
             )
         );
         $subject = trim($subject);
         return $subject;
     }
 
-    public static function getMailIcs(\BO\Zmsentities\Process $process, \BO\Zmsentities\Config $config, $now = false)
+    public static function getMailIcs(Process $process, Config $config, $now = false)
     {
         $ics = new \BO\Zmsentities\Ics();
         $template = self::getTemplateByProcessStatus('ics', $process);
