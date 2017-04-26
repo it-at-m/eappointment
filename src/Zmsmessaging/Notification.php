@@ -74,6 +74,7 @@ class Notification
     protected function getRecipientFromEntity(\BO\Zmsentities\Notification $entity)
     {
         $telephone = preg_replace('[^0-9]', '', $entity->client['telephone']);
+        $telephone = preg_replace('/\s+/', '', $telephone);
         $recipient = 'SMS='.preg_replace('/^0049/', '+49', $telephone).'@example.com';
         return $recipient;
     }
