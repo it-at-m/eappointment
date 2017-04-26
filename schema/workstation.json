@@ -22,7 +22,7 @@
                 "scope": true,
                 "ticketprinter": true
             },
-            "departments" : [
+            "departments": [
                 {
                     "id": 123
                 }
@@ -30,7 +30,8 @@
         }
     },
     "required": [
-        "hint"
+        "id",
+        "useraccount"
     ],
     "additionalProperties": false,
     "properties": {
@@ -70,11 +71,17 @@
             "additionalProperties": false,
             "properties": {
                 "appointmentsOnly": {
-                    "type": ["boolean", "number"],
+                    "type": [
+                        "boolean",
+                        "number"
+                    ],
                     "description": "true if only appointments should be shown in queue"
                 },
                 "clusterEnabled": {
-                    "type": ["boolean", "number"],
+                    "type": [
+                        "boolean",
+                        "number"
+                    ],
                     "description": "true if the complete cluster should be shown in queue"
                 }
             }
