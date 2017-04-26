@@ -72,6 +72,7 @@ class Notification extends Base
             throw new Exception\Notification\ClientWithoutTelephone();
         }
         $notification->hasProperties('message', 'process');
+        $telephone = preg_replace('/\s+/', '', $client->telephone);
         $query = new Query\Notification(Query\Base::INSERT);
         $query->addValues(array(
             'processID' => $notification->process['id'],
@@ -80,7 +81,7 @@ class Notification extends Base
             'createTimestamp' => time(),
             'message' => $notification->message,
             'clientFamilyName' => $client->familyName,
-            'clientTelephone' => $client->telephone,
+            'clientTelephone' => $telephone,
         ));
         $result = $this->writeItem($query);
         if (! $result) {
@@ -92,6 +93,27 @@ class Notification extends Base
             (new Process())->updateEntity($process);
         }
         return $queueId;
+    }
+
+    public function writeInCalculationTable($itemId)
+    {
+        $notification = $this->readEntity($itemId);
+        $amount = ceil((strlen($notification->message)) / 160);
+        $scopeId = $notification->process['scope']['id'];
+        $client = $notification->process->getClients()->getFirst();
+        $telephone = substr(preg_replace('/\s+/', '', $client->telephone), 0, 10);
+        $appointment = $notification->process->getAppointments()->getFirst();
+
+        $query = Query\notification::QUERY_WRITE_IN_CALCULATION;
+        $statement = $this->getWriter()->prepare($query);
+        return $statement->execute(
+            array(
+                $scopeId,
+                $telephone,
+                (new \DateTimeImmutable)->setTimestamp($appointment->date)->format('Y-m-d'),
+                $amount
+            )
+        );
     }
 
     public function deleteEntity($itemId)
