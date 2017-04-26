@@ -69,8 +69,6 @@ class SendQueue
                         'mime' => $result->getMailMIME(),
                         'customHeaders' => $result->getCustomHeaders(),
                     );
-                } elseif ('viaGateway' == $result) {
-                    $resultList[] = array('viaGateway' => true, 'item' => $item);
                 } else {
                     // @codeCoverageIgnoreStart
                     $resultList[] = array(
@@ -157,7 +155,6 @@ class SendQueue
 
     protected function createNotificationer($message)
     {
-        $preferences = (new \BO\Zmsentities\Config())->getNotificationPreferences();
         $sender = $message->getIdentification();
         $mailer = new PHPMailer(true);
         $mailer->Encoding = 'base64';
@@ -166,6 +163,7 @@ class SendQueue
         $mailer->Body = '';
         $mailer->AllowEmpty = true;
         $telephone = preg_replace('[^0-9]', '', $message->client['telephone']);
+        $telephone = preg_replace('/\s+/', '', $telephone);
         $recipient = 'SMS='.preg_replace('/^0049/', '+49', $telephone).'@example.com';
         $mailer->AddAddress($recipient);
         $mailer->SetFrom($message['department']['email']);
