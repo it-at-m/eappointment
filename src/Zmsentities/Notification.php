@@ -44,6 +44,14 @@ class Notification extends Schema\Entity
         return $this->toProperty()->department->preferences->notifications->identification->get();
     }
 
+    public function getRecipient()
+    {
+        $telephone = preg_replace('[^0-9]', '', $this->client['telephone']);
+        $telephone = preg_replace('/\s+/', '', $telephone);
+        $recipient = 'SMS='.preg_replace('/^0049/', '+49', $telephone).'@sms.verwalt-berlin.de';
+        return $recipient;
+    }
+
     public function toResolvedEntity(Process $process, Config $config, Department $department)
     {
         $entity = clone $this;
