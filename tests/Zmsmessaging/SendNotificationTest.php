@@ -26,8 +26,8 @@ class SendNotificationTest extends Base
             ],
             [
                 'function' => 'readDeleteResult',
-                'url' => '/notification/1234/',
-                'response' => $this->readFixture("GET_notification.json")
+                'url' => '/workstation/_system_messenger/',
+                'response' => $this->readFixture("GET_mail.json")
             ]
         ];
     }
