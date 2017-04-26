@@ -20,7 +20,7 @@ class MailAdd extends BaseController
      */
     public static function render()
     {
-        Helper\User::checkRights('sms');
+        Helper\User::checkRights('basic');
 
         $message = Response\Message::create(Render::$request);
         $input = Validator::input()->isJson()->getValue();

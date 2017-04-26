@@ -20,7 +20,7 @@ class NotificationAdd extends BaseController
      */
     public static function render()
     {
-        Helper\User::checkRights('department');
+        Helper\User::checkRights('sms');
 
         $message = Response\Message::create(Render::$request);
         $input = Validator::input()->isJson()->getValue();

@@ -19,6 +19,8 @@ class MailDelete extends BaseController
      */
     public static function render($itemId)
     {
+        Helper\User::checkRights('superuser');
+
         $query = new Query();
         $message = Response\Message::create(Render::$request);
         $mail = $query->readEntity($itemId);
