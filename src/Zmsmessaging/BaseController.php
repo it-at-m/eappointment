@@ -9,11 +9,11 @@ namespace BO\Zmsmessaging;
 
 class BaseController
 {
-    protected $userLogin = null;
+    protected $workstation = null;
 
     public function __construct()
     {
-        $this->userLogin = $this->writeLogin();
+        $this->workstation = $this->writeLogin();
     }
 
     protected function writeLogin()
@@ -53,7 +53,7 @@ class BaseController
         return $mailer;
     }
 
-    protected function deleteEntityFromQueue($entity)
+    public function deleteEntityFromQueue($entity)
     {
         $type = ($entity instanceof \BO\Zmsentities\Mail) ? 'mails' : 'notification';
         try {
