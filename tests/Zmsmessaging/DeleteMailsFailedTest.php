@@ -10,6 +10,16 @@ class DeleteMailsFailedTest extends Base
     {
         return [
             [
+                'function' => 'readPostResult',
+                'url' => '/workstation/_system_messenger/',
+                'response' => $this->readFixture("GET_workstation.json")
+            ],
+            [
+                'function' => 'readPostResult',
+                'url' => '/workstation/',
+                'response' => $this->readFixture("GET_workstation.json")
+            ],
+            [
                 'function' => 'readGetResult',
                 'url' => '/mails/',
                 'response' => $this->readFixture("GET_mails_queue.json"),
