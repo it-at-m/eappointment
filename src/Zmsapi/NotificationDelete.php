@@ -27,6 +27,7 @@ class NotificationDelete extends BaseController
             throw new Exception\Notification\NotificationNotFound();
         }
 
+        $query->writeInCalculationTable($itemId);
         if ($query->deleteEntity($itemId)) {
             $message->data = $notification;
         } else {
