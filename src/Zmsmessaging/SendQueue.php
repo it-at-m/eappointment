@@ -12,12 +12,13 @@ use \BO\Zmsentities\Mimepart;
 use \PHPMailer as PHPMailer;
 use \phpmailerException as phpmailerException;
 
-class SendQueue
+class SendQueue extends BaseController
 {
     protected $messagesQueue = null;
 
     public function __construct($type = "mails")
     {
+        parent::__construct();
         $queueList = \App::$http->readGetResult('/'. $type .'/')->getCollection();
         if (null !== $queueList) {
             $this->messagesQueue = $queueList->sortByCustomKey('createTimestamp');
@@ -52,6 +53,7 @@ class SendQueue
                 'errorInfo' => 'No mail entry found in Database...'
             );
         }
+        $this->writeLogout();
         return $resultList;
     }
 
@@ -82,6 +84,7 @@ class SendQueue
                 'errorInfo' => 'No notification entry found in Database...'
             );
         }
+        $this->writeLogout();
         return $resultList;
     }
 
