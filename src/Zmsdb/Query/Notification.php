@@ -16,6 +16,16 @@ class Notification extends Base
             nq.processID=?
     ';
 
+    const QUERY_WRITE_IN_CALCULATION = '
+    REPLACE INTO
+        abrechnung
+    SET
+        StandortID=?,
+        Telefonnummer=?,
+        Datum=?,
+        gesendet=?
+    ';
+
     public function getEntityMapping()
     {
         return [
