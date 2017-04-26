@@ -10,9 +10,24 @@ class SendNotificationTest extends Base
     {
         return [
             [
+                'function' => 'readPostResult',
+                'url' => '/workstation/_system_messenger/',
+                'response' => $this->readFixture("GET_workstation.json")
+            ],
+            [
+                'function' => 'readPostResult',
+                'url' => '/workstation/',
+                'response' => $this->readFixture("GET_workstation.json")
+            ],
+            [
                 'function' => 'readGetResult',
                 'url' => '/notification/',
                 'response' => $this->readFixture("GET_notifications_queue.json")
+            ],
+            [
+                'function' => 'readDeleteResult',
+                'url' => '/workstation/_system_messenger/',
+                'response' => $this->readFixture("GET_mail.json")
             ]
         ];
     }

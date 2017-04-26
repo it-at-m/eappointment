@@ -10,9 +10,24 @@ class SendNotificationsFailedTest extends Base
     {
         return [
             [
+                'function' => 'readPostResult',
+                'url' => '/workstation/_system_messenger/',
+                'response' => $this->readFixture("GET_workstation.json")
+            ],
+            [
+                'function' => 'readPostResult',
+                'url' => '/workstation/',
+                'response' => $this->readFixture("GET_workstation.json")
+            ],
+            [
                 'function' => 'readGetResult',
                 'url' => '/notification/',
-                'response' => $this->readFixture("GET_queue_empty.json"),
+                'response' => $this->readFixture("GET_queue_empty.json")
+            ],
+            [
+                'function' => 'readDeleteResult',
+                'url' => '/workstation/_system_messenger/',
+                'response' => $this->readFixture("GET_mail.json")
             ]
         ];
     }
