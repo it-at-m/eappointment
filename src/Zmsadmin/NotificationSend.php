@@ -40,12 +40,22 @@ class NotificationSend extends BaseController
             $notification->message = $input['message'];
         }
         $notification = \App::$http->readPostResult('/notification/', $notification)->getEntity();
+        $isFromForm = ('form' == $input['submit']);
+        if ($notification && ! $isFromForm) {
+            return \BO\Slim\Render::withHtml(
+                $response,
+                'block/notification/notificationReminder.twig',
+                array(
+                    'notification' => $notification
+                )
+            );
+        }
         return \BO\Slim\Render::withHtml(
             $response,
             'page/notification.twig',
             array(
+                'isFromForm' => $isFromForm,
                 'notification' => $notification,
-                'isFromForm' => ('form' == $input['submit'])
             )
         );
     }

@@ -36,6 +36,7 @@ class QueueTable extends BaseController
                 ->readGetResult('/scope/'. $workstation->scope['id'] .'/process/'. $selectedDate .'/')->getCollection();
         }
         $processList = ($resultList) ? $resultList : $processList;
+        $department = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/department/')->getEntity();
 
         $selectedDateTime = new \DateTimeImmutable($selectedDate);
         $queueList = $processList
@@ -53,6 +54,7 @@ class QueueTable extends BaseController
             'block/queue/table.twig',
             array(
                 'workstation' => $workstation->getArrayCopy(),
+                'department' => $department,
                 'source' => $workstation->getRedirect(),
                 'selectedDate' => ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d'),
                 'cluster' => ($cluster) ? $cluster : null,
