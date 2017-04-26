@@ -14,14 +14,12 @@ $resultList = \App::$messaging->startNotificationTransmission($isValid);
 if (preg_grep('#--?v(erbose)?#', $argv)) {
     foreach ($resultList as $notification) {
         if (isset($notification['errorInfo'])) {
-            echo "ERROR OCCURED: ". $notification['errorInfo'] ."\n";
-        } else if (!array_key_exists('viaGateway', $notification)) {
-            echo "Sent message successfully \n";
-            echo "Details:\n";
-            echo "ID: ". $notification['id'] ."\n";
+            echo "\033[01;31mERROR OCCURED: ". $notification['errorInfo'] . "\033[0m \n";
+        } elseif (!array_key_exists('viaGateway', $notification)) {
+            echo "\033[01;32mTest notification with ID ". $notification['id'] ." successfully \033[0m \n";
+            echo "RECIPIENTS: ". json_encode($notification['recipients']) ."\n";
             echo "MIME: ". trim($notification['mime']) ."\n";
-            echo "RECIPIENTS: ". print_r($notification['recipients'],1) ."\n";
-            echo "CUSTOM HEADERS: ". print_r($notification['customHeaders'],1) ."\n\n";
+            echo "\033[01;31mDELETE NOTICE: Items will not be deleted in verbose mode \033[0m \n\n";
         } else {
             $item = new \BO\Zmsentities\Notification($notification['item']);
             $preferences = (new \BO\Zmsentities\Config())->getNotificationPreferences();
@@ -31,7 +29,7 @@ if (preg_grep('#--?v(erbose)?#', $argv)) {
                 '&recipient=' .
                 urlencode($item->client['telephone'])
             ;
-            echo "Sent message successfully via Gateway URL:";
+            echo "\033[01;32mSent message successfully via Gateway URL\033[0m:";
             echo $url ."\n\n";
         }
     }
