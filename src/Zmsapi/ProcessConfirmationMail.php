@@ -1,6 +1,6 @@
 <?php
 /**
- * @package Zmsappointment
+ * @package Zmsapi
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -16,7 +16,6 @@ use \BO\Zmsdb\Process;
   *
   * @SuppressWarnings(CouplingBetweenObjects)
   *
-  * Handle requests concerning services
   * @SuppressWarnings(Coupling)
   */
 class ProcessConfirmationMail extends BaseController

@@ -20,6 +20,8 @@ class MailList extends BaseController
      */
     public static function render()
     {
+        Helper\User::checkRights('superuser');
+        
         $message = Response\Message::create(Render::$request);
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         $mailList = (new Query())->readList($resolveReferences);
