@@ -12,12 +12,13 @@ use \BO\Zmsentities\Mimepart;
 use \PHPMailer as PHPMailer;
 use \phpmailerException as phpmailerException;
 
-class Notification
+class Notification extends BaseController
 {
     protected $messagesQueue = null;
 
     public function __construct()
     {
+        parent::__construct();
         $queueList = \App::$http->readGetResult('/notification/')->getCollection();
         if (null !== $queueList) {
             $this->messagesQueue = $queueList->sortByCustomKey('createTimestamp');
@@ -30,8 +31,8 @@ class Notification
             foreach ($this->messagesQueue as $item) {
                 $entity = new \BO\Zmsentities\Notification($item);
                 $mailer = $this->getValidMailer($entity);
-                $mailer->AddAddress($this->getRecipientFromEntity($entity));
-                $result = Transmission::sendMailer($mailer, $action);
+                $mailer->AddAddress($entity->getRecipient());
+                $result = $this->sendMailer($mailer, $action);
                 if ($result instanceof \PHPMailer) {
                     $resultList[] = array(
                         'id' => ($result->getLastMessageID()) ? $result->getLastMessageID() : $entity->id,
@@ -39,7 +40,9 @@ class Notification
                         'mime' => $result->getMailMIME(),
                         'customHeaders' => $result->getCustomHeaders(),
                     );
-                    Transmission::deleteEntityFromQueue($entity);
+                    if ($action) {
+                        $this->deleteEntityFromQueue($entity);
+                    }
                 } else {
                     // @codeCoverageIgnoreStart
                     $resultList[] = array(
@@ -53,6 +56,7 @@ class Notification
                 'errorInfo' => 'No notification entry found in Database...'
             );
         }
+        $this->writeLogout();
         return $resultList;
     }
 
@@ -71,15 +75,7 @@ class Notification
         return $mailer;
     }
 
-    protected function getRecipientFromEntity(\BO\Zmsentities\Notification $entity)
-    {
-        $telephone = preg_replace('[^0-9]', '', $entity->client['telephone']);
-        $telephone = preg_replace('/\s+/', '', $telephone);
-        $recipient = 'SMS='.preg_replace('/^0049/', '+49', $telephone).'@example.com';
-        return $recipient;
-    }
-
-    public function readMailer(\BO\Zmsentities\Notification $entity)
+    protected function readMailer(\BO\Zmsentities\Notification $entity)
     {
         $sender = $entity->getIdentification();
         $mailer = new PHPMailer(true);

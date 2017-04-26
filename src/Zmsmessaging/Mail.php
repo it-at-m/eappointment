@@ -12,12 +12,13 @@ use \BO\Zmsentities\Mimepart;
 use \PHPMailer as PHPMailer;
 use \phpmailerException as phpmailerException;
 
-class Mail
+class Mail extends BaseController
 {
     protected $messagesQueue = null;
 
     public function __construct()
     {
+        parent::__construct();
         $queueList = \App::$http->readGetResult('/mails/')->getCollection();
         if (null !== $queueList) {
             $this->messagesQueue = $queueList->sortByCustomKey('createTimestamp');
@@ -31,7 +32,7 @@ class Mail
                 $entity = new \BO\Zmsentities\Mail($item);
                 $mailer = $this->getValidMailer($entity);
                 $mailer->AddAddress($entity->client['email'], $entity->client['familyName']);
-                $result = Transmission::sendMailer($mailer, $action);
+                $result = $this->sendMailer($mailer, $action);
                 if ($result instanceof \PHPMailer) {
                     $resultList[] = array(
                         'id' => ($result->getLastMessageID()) ? $result->getLastMessageID() : $entity->id,
@@ -40,7 +41,9 @@ class Mail
                         'attachments' => $result->getAttachments(),
                         'customHeaders' => $result->getCustomHeaders(),
                     );
-                    Transmission::deleteEntityFromQueue($entity);
+                    if ($action) {
+                        $this->deleteEntityFromQueue($entity);
+                    }
                 } else {
                     // @codeCoverageIgnoreStart
                     $resultList[] = array(
@@ -54,6 +57,7 @@ class Mail
                 'errorInfo' => 'No mail entry found in Database...'
             );
         }
+        $this->writeLogout();
         return $resultList;
     }
 

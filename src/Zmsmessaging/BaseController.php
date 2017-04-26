@@ -9,11 +9,11 @@ namespace BO\Zmsmessaging;
 
 class BaseController
 {
-    protected $workstation = null;
+    protected $userLogin = null;
 
     public function __construct()
     {
-        $this->workstation = $this->writeLogin();
+        $this->userLogin = $this->writeLogin();
     }
 
     protected function writeLogin()
@@ -38,5 +38,29 @@ class BaseController
     protected function writeLogout()
     {
         \App::$http->readDeleteResult('/workstation/_system_messenger/');
+    }
+
+    protected function sendMailer($mailer = null, $action = false)
+    {
+        if (false !== $action) {
+            if (null !== $mailer) {
+                if (! $mailer->Send()) {
+                    \App::$log->debug('Zmsmessaging Failed', [$mailer->ErrorInfo]);
+                }
+            }
+        }
+        // @codeCoverageIgnoreEnd
+        return $mailer;
+    }
+
+    protected function deleteEntityFromQueue($entity)
+    {
+        $type = ($entity instanceof \BO\Zmsentities\Mail) ? 'mails' : 'notification';
+        try {
+            $entity = \App::$http->readDeleteResult('/'. $type .'/'. $entity->id .'/')->getEntity();
+        } catch (\BO\Zmsclient\Exception $exception) {
+            throw $exception;
+        }
+        return ($entity) ? true : false;
     }
 }
