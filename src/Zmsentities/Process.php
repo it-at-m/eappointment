@@ -212,6 +212,16 @@ class Process extends Schema\Entity
         return $this->getAppointments()->hasDateScope($date, $scopeId);
     }
 
+    public function hasProcessCredentials()
+    {
+        return (isset($this['id']) && isset($this['authKey']) && $this['id'] && $this['authKey']);
+    }
+
+    public function hasQueueNumber()
+    {
+        return (isset($this['queue']) && isset($this['queue']['number']) && $this['queue']['number']);
+    }
+
     public function addAppointment(Appointment $newappointment)
     {
         $this->appointments[] = $newappointment;
