@@ -246,6 +246,26 @@ class Process extends Base
         return $this->readList($statement, $resolveReferences);
     }
 
+    /**
+     * Read processList by scopeId and status
+     *
+     * @param
+     * scopeId
+     *
+     * @return Collection processList
+     */
+    public function readProcessListByScopeAndStatus($scopeId, $status, $resolveReferences = 0)
+    {
+        $query = new Query\Process(Query\Base::SELECT);
+        $query
+            ->setResolveLevel($resolveReferences)
+            ->addEntityMapping()
+            ->addConditionScopeId($scopeId)
+            ->addConditionStatus($status);
+        $statement = $this->fetchStatement($query);
+        return $this->readList($statement, $resolveReferences);
+    }
+
     public function readSearch($queryString, $resolveReferences = 0)
     {
         $query = new Query\Process(Query\Base::SELECT);
