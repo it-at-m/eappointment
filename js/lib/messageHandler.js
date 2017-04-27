@@ -14,7 +14,8 @@ class MessageHandler {
     }
 
     render() {
-        this.$main.html($(this.message).filter('.dialog'));
+        let message = $(this.message).filter('div.dialog');
+        this.$main.html(message);
     }
 
     bindEvents() {

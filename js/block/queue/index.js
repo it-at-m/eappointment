@@ -24,23 +24,48 @@ class View extends BaseView {
 
     load() {
         const url = `${this.includeUrl}/queueTable/?selecteddate=${this.selectedDate}`
-        return this.loadContent(url).catch(err => this.loadErrorCallback(err.source, err.url));
+        return this.loadContent(url).catch(err => this.loadErrorCallback(err));
     }
 
-    loadErrorCallback(source, url) {
-        if (source == 'button') {
-            return this.loadContent(url)
-        } else if (source == 'lightbox') {
-            console.log('lightbox closed without action call');
-        } else {
-            const defaultUrl = `${this.includeUrl}/workstation/process/cancel/`
-            return this.loadContent(defaultUrl)
+    cleanReload () {
+        this.load().then(() => {
+            this.bindEvents();
+        });
+    }
+
+    loadErrorCallback(err) {
+        if (err.message) {
+            let exceptionType = $(err.message).find('.exception').data('exception');
+            if (exceptionType === 'process-not-found')
+                this.cleanReload()
+            else {
+                this.load();
+                console.log('EXCEPTION thrown: ' + exceptionType);
+            }
         }
+        else
+            console.log('Ajax error', err);
     }
 
     loadMessage (response, callback) {
-        const { lightboxContentElement, destroyLightbox } = lightbox(this.$main, () => {callback()})
-        new MessageHandler(lightboxContentElement, {message: response})
+        if (response) {
+            const { lightboxContentElement, destroyLightbox } = lightbox(this.$main, () => {callback()})
+            new MessageHandler(lightboxContentElement, {
+                message: response,
+                callback: (buttonAction, buttonUrl) => {
+                    if (buttonAction)
+                        this.ButtonAction[buttonAction]()
+                    else if (buttonUrl)
+                        this.loadByCallbackUrl(buttonUrl)
+                    destroyLightbox()
+                    this.cleanReload();
+                }})
+        }
+    }
+
+    loadByCallbackUrl(url) {
+        this.loadPromise = this.loadContent(url).catch(err => this.loadErrorCallback(err));
+        return this.loadPromise;
     }
 
     bindEvents() {
@@ -55,8 +80,6 @@ class View extends BaseView {
         }).on('click', 'a.process-edit', (ev) => {
             this.onEditProcess($(ev.target).data('id'))
         }).on('click', 'a.process-delete', (ev) => {
-            ev.preventDefault();
-            ev.stopPropagation();
             this.ButtonAction.delete(ev).catch(err => this.loadErrorCallback(err)).then((response) => {
                 this.loadMessage(response, this.onDeleteProcess);
             });
@@ -73,14 +96,13 @@ class View extends BaseView {
             console.log('today selected', selectedDate)
             this.onDateToday(selectedDate, this)
         }).on('click', '.queue-table .process-notification-send', (ev) => {
-            ev.preventDefault();
-            ev.stopPropagation();
-            const ok = confirm('Möchten Sie dem Kunden per SMS mitteilen, dass er/sie bald an der Reihe ist, dann klicken Sie auf OK.')
-            if (ok) {
-                this.ButtonAction.sendNotificationReminder(ev).catch(err => this.loadErrorCallback(err)).then((response) => {
-                    this.loadMessage(response, this.load);
-                });
-            }
+            this.ButtonAction.sendNotificationReminder(ev).catch(err => this.loadErrorCallback(err)).then((response) => {
+                this.loadMessage(response, this.load);
+            });
+        }).on('click', 'a.process-requeued', (ev) => {
+            this.ButtonAction.reset(ev).catch(err => this.loadErrorCallback(err)).then((response) => {
+                this.loadMessage(response, this.load);
+            });
         })
     }
 }
