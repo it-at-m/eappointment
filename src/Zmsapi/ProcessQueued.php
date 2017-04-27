@@ -1,6 +1,6 @@
 <?php
 /**
- * @package 115Mandant
+ * @package Zmsapi
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -9,39 +9,43 @@ namespace BO\Zmsapi;
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\Process as Query;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 /**
-  * Create or update a process for pickup
+  * Handle requests concerning services
   */
-class ProcessPickup extends BaseController
+class ProcessQueued extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render()
+    public function __invoke(RequestInterface $request, ResponseInterface $response, array $args)
     {
-        $workstation = Helper\User::checkRights();
+        $workstation = (new Helper\User($request))->checkRights();
+        $message = Response\Message::create($request);
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Process($input);
+        $entity->testValid();
+
         if ($entity->hasProcessCredentials()) {
             $process = (new Query())->readEntity($entity['id'], $entity['authKey'], 0);
             if ($process->scope['id'] != $workstation->scope['id']) {
                 throw new Exception\Process\ProcessNoAccess();
             }
-            $process->addData($input);
-            $process->testValid();
-            $process = (new Query())->updateEntity($process);
         } elseif ($entity->hasQueueNumber()) {
             $process = (new Query())->readByQueueNumberAndScope($entity['queue']['number'], $workstation->scope['id']);
-            if (!$process->id) {
-                $process = (new Query())->writeNewPickup($workstation->scope, \App::$now, $entity['queue']['number']);
-            }
         } else {
             throw new Exception\Process\ProcessInvalid();
         }
-        $message = Response\Message::create(Render::$request);
+        
+        $process->status = 'queued';
+        $process = (new Query())->updateEntity($process);
         $message->data = $process;
-        Render::lastModified(time(), '0');
-        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
+
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+        return $response;
     }
 }
