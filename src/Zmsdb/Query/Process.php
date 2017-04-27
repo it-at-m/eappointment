@@ -3,8 +3,9 @@
 namespace BO\Zmsdb\Query;
 
 /**
- * @SuppressWarnings(TooManyPublicMethods)
- *
+*
+* @SuppressWarnings(TooManyPublicMethods)
+* @SuppressWarnings(Complexity)
  */
 class Process extends Base implements MappingInterface
 {
@@ -290,16 +291,57 @@ class Process extends Base implements MappingInterface
         $data = array();
         $data['Anmerkung'] = $process->getAmendment();
         $data['StandortID'] = $process->getScopeId();
+        $data['IPAdresse'] = $process['createIP'];
+        $data['Erinnerungszeitpunkt'] = $process->getReminderTimestamp();
+        $data = $this->readStatusData($data, $process);
+        $data = $this->readAppointmentData($data, $process);
+        $data = $this->readClientData($data, $process);
+        $data = $this->readProcessTimeValuesData($data, $process);
+        $data = $this->readWaitingTime($data, $process);
+        $data = $this->readSendCount($data, $process);
+        $data = $this->readFilteredData($data);
+        $this->addValues($data);
+    }
+
+    protected function readFilteredData($data)
+    {
+        return array_filter(
+            $data,
+            function ($value) {
+                return ($value !== null && $value !== false && $value !== '');
+            }
+        );
+    }
+
+    protected function readStatusData($data, $process)
+    {
+        $data['vorlaeufigeBuchung'] = ($process['status'] == 'reserved') ? 1 : 0;
+        $data['aufruferfolgreich'] = ($process['status'] == 'processing') ? 1 : 0;
         if ($process->status == 'pending' || $process->status == 'pickup') {
             $data['AbholortID'] = $process->scope['id'];
             $data['Abholer'] = 1;
         }
+        if ($process->status == 'queued') {
+            $data['Timestamp'] = 0;
+            $data['AnzahlAufrufe'] = 0;
+            $data['nicht_erschienen'] = 0;
+        }
+        return $data;
+    }
+
+    protected function readAppointmentData($data, $process)
+    {
         $appointment = $process->getFirstAppointment();
         if (null !== $appointment) {
             $datetime = $appointment->toDateTime();
             $data['Datum'] = $datetime->format('Y-m-d');
             $data['Uhrzeit'] = $datetime->format('H:i:s');
         }
+        return $data;
+    }
+
+    protected function readClientData($data, $process)
+    {
         $client = $process->getFirstClient();
         if (null !== $client) {
             $data['Name'] = $client->familyName;
@@ -308,21 +350,7 @@ class Process extends Base implements MappingInterface
             $data['Telefonnummer'] = $client->telephone; // to stay compatible with ZMS1
             $data['zustimmung_kundenbefragung'] = $client->surveyAccepted;
         }
-        $data['IPAdresse'] = $process['createIP'];
-        $data['vorlaeufigeBuchung'] = ($process['status'] == 'reserved') ? 1 : 0;
-        $data['aufruferfolgreich'] = ($process['status'] == 'processing') ? 1 : 0;
-        $data['Erinnerungszeitpunkt'] = $process->getReminderTimestamp();
-        $data = $this->readProcessTimeValuesData($data, $process);
-        $data = $this->readWaitingTime($data, $process);
-        $data = $this->readSendCount($data, $process);
-
-        $data = array_filter(
-            $data,
-            function ($value) {
-                return ($value !== null && $value !== false && $value !== '');
-            }
-        );
-        $this->addValues($data);
+        return $data;
     }
 
     protected function readSendCount($data, $process)
