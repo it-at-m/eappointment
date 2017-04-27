@@ -2475,6 +2475,45 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/process/status/queued/":
+ *      post:
+ *          summary: set process back to queued status.
+ *          tags:
+ *              - process
+ *          parameters:
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: process
+ *                  description: process data to update
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/process.json"
+ *          responses:
+ *              200:
+ *                  description: process has queued status now
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/process.json"
+ *              400:
+ *                  description: "Invalid input"
+ *              403:
+ *                  description: "authkey does not match"
+ */
+\App::$slim->post('/process/status/queued/',
+    '\BO\Zmsapi\ProcessQueued')
+    ->setName("ProcessQueued");
+
+/**
+ *  @swagger
  *  "/provider/{source}/{id}/":
  *      get:
  *          summary: Get an provider by id

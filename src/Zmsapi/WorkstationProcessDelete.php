@@ -9,7 +9,6 @@ namespace BO\Zmsapi;
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\Workstation;
-use \BO\Zmsdb\Process;
 
 /**
   * Handle requests concerning services
@@ -24,7 +23,7 @@ class WorkstationProcessDelete extends BaseController
         $workstation = Helper\User::checkRights();
         $workstation->process['queue']['callCount']++;
         $workstation->process = (new \BO\Zmsentities\Process($workstation->process))->setStatusBySettings();
-        (new Process)->writeRemovedWorkstation($workstation);
+        (new Workstation)->writeRemovedProcess($workstation);
         unset($workstation->process);
 
         $message = Response\Message::create(Render::$request);

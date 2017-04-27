@@ -22,18 +22,19 @@ class ProcessPickup extends BaseController
     {
         $workstation = Helper\User::checkRights();
         $input = Validator::input()->isJson()->assertValid()->getValue();
-        if (static::hasProcessCredentials($input)) {
-            $process = (new Query())->readEntity($input['id'], $input['authKey'], 0);
+        $entity = new \BO\Zmsentities\Process($input);
+        if ($entity->hasProcessCredentials()) {
+            $process = (new Query())->readEntity($entity['id'], $entity['authKey'], 0);
             if ($process->scope['id'] != $workstation->scope['id']) {
                 throw new Exception\Process\ProcessNoAccess();
             }
             $process->addData($input);
             $process->testValid();
             $process = (new Query())->updateEntity($process);
-        } elseif (static::hasQueueNumber($input)) {
-            $process = (new Query())->readByQueueNumberAndScope($input['queue']['number'], $workstation->scope['id']);
+        } elseif ($entity->hasQueueNumber()) {
+            $process = (new Query())->readByQueueNumberAndScope($entity['queue']['number'], $workstation->scope['id']);
             if (!$process->id) {
-                $process = (new Query())->writeNewPickup($workstation->scope, \App::$now, $input['queue']['number']);
+                $process = (new Query())->writeNewPickup($workstation->scope, \App::$now, $entity['queue']['number']);
             }
         } else {
             throw new Exception\Process\ProcessInvalid();
@@ -42,22 +43,5 @@ class ProcessPickup extends BaseController
         $message->data = $process;
         Render::lastModified(time(), '0');
         Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
-    }
-
-    protected static function hasProcessCredentials($input)
-    {
-        return (isset($input['id'])
-            && isset($input['authKey'])
-            && $input['id']
-            && $input['authKey']
-        );
-    }
-
-    protected static function hasQueueNumber($input)
-    {
-        return (isset($input['queue'])
-            && isset($input['queue']['number'])
-            && $input['queue']['number']
-        );
     }
 }
