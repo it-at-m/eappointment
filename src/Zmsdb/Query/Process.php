@@ -251,18 +251,18 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionStatus($status)
+    public function addConditionStatus($status, $scopeId)
     {
-        $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($status) {
+        $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($status, $scopeId) {
             if ('pending' == $status) {
                 $query
-                    ->andWith('process.AbholortID', '!=', 0)
+                    ->andWith('process.AbholortID', '=', $scopeId)
                     ->andWith('process.Abholer', '!=', 0)
                     ->andWith('process.NutzerID', '=', 0);
             }
             if ('pickup' == $status) {
                 $query
-                    ->andWith('process.AbholortID', '!=', 0)
+                    ->andWith('process.AbholortID', '=', $scopeId)
                     ->andWith('process.NutzerID', '!=', 0);
             }
             if ('called' == $status) {
@@ -271,16 +271,18 @@ class Process extends Base implements MappingInterface
                     ->andWith('process.NutzerID', '!=', 0)
                     ->andWith('process.AbholortID', '=', 0);
             }
-            if ('confirmed' == $status) {
-                $query
-                    ->andWith('process.vorlaeufigeBuchung', '=', 0)
-                    ->andWith('process.IPTimeStamp', '!=', 0);
-            }
             if ('missed' == $status) {
                 $query->andWith('process.nicht_erschienen', '!=', 0);
             }
             if ('queued' == $status) {
                 $query->andWith('process.wsm_aufnahmezeit', '!=', '00:00:00');
+            }
+            if ('confirmed' == $status) {
+                $query
+                    ->andWith('process.vorlaeufigeBuchung', '=', 0)
+                    ->andWith('process.Abholer', '=', 0)
+                    ->andWith('process.wsm_aufnahmezeit', '=', '00:00:00')
+                    ->andWith('process.IPTimeStamp', '!=', 0);
             }
         });
         return $this;

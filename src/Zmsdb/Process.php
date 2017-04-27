@@ -261,7 +261,8 @@ class Process extends Base
             ->setResolveLevel($resolveReferences)
             ->addEntityMapping()
             ->addConditionScopeId($scopeId)
-            ->addConditionStatus($status);
+            ->addConditionStatus($status, $scopeId)
+            ->addLimit(1000);
         $statement = $this->fetchStatement($query);
         return $this->readList($statement, $resolveReferences);
     }
