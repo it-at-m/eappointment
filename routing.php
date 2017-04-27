@@ -199,6 +199,9 @@ use \Psr\Http\Message\ResponseInterface;
  \App::$slim->map(['GET','POST'], '/process/{date:\d\d\d\d-\d\d-\d\d}/queue/', '\BO\Zmsadmin\ProcessQueue')
      ->setName("processQueue");
 
+ \App::$slim->get('/process/queue/reset/', '\BO\Zmsadmin\ProcessQueueReset')
+     ->setName("processQueueReset");
+
  \App::$slim->post('/process/{id:\d+}/save/', '\BO\Zmsadmin\ProcessSave')
      ->setName("processSave");
 
