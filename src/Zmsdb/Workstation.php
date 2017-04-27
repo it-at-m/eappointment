@@ -193,6 +193,33 @@ class Workstation extends Base
     }
 
     /**
+     *
+     * entferne den Process aus einer Workstation
+     *
+     * @param
+     *            workstation
+     *
+     * @return Boolean
+     */
+    public function writeRemovedProcess(\BO\Zmsentities\Workstation $workstation)
+    {
+        $process = new \BO\Zmsentities\Process($workstation->process);
+        $query = new Query\Process(Query\Base::UPDATE);
+        $query->addConditionProcessId($process->id);
+        $query->addValues(
+            [
+                'aufrufzeit' => 0,
+                'NutzerID' => 0,
+                'AnzahlAufrufe' => $process->queue['callCount'],
+                'nicht_erschienen' => ('missed' == $process->status) ? 1 : 0
+            ]
+        );
+        return $this->writeItem($query);
+        //Log::writeLogEntry("UPDATE (Process::writeRemovedWorkstation $workstation->id) $process ", $process->id);
+    }
+
+
+    /**
      * update a workstation
      *
      * @param
