@@ -1,0 +1,13 @@
+{% block german %}
+    <strong>Sehr geehrte/r Frau oder Herr {{ client.familyName }}</strong>
+    <br /><br />
+    Ihr Dokument ({{ process.requests|first.name }}) ist fertig und liegt zur Abholung bereit.,
+    <br /><br />
+    Die Adresse lautet: {{ process.scope.provider.name ~ " " ~ process.scope.provider.contact.street ~", " ~ process.scope.provider.contact.postalCode ~ " " ~ process.scope.provider.contact.city }}.
+    Bitte beachten Sie, dass Antworten auf diese eMail nicht möglich sind.
+    <br /><br />
+    Mit freundlichem Gruß<br />
+    Ihre Terminverwaltung des Landes Berlin
+    <br /><br />
+    {{ config.appointments.urlAppointments }}
+{% endblock %}
