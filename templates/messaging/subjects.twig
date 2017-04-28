@@ -1,15 +1,17 @@
 {% block german %}
-{% if process.status == 'confirmed' %}
-Terminbestaetigung
-{% elseif process.status == 'deleted' and not initiator %}
-Terminabsage
-{% elseif process.status == 'deleted' and initiator %}
-Information Terminabsage
-{% elseif process.status == 'updated' and initiator %}
-Information Terminänderung
-{% elseif process.status == 'queued' %}
-Wartenummerbestaetigung
-{% else %}
-Terminerinnerung
-{% endif %}
+    {% if process.status == 'confirmed' %}
+    Terminbestaetigung
+    {% elseif process.status == 'deleted' and not initiator %}
+    Terminabsage
+    {% elseif process.status == 'deleted' and initiator %}
+    Information Terminabsage
+    {% elseif process.status == 'updated' and initiator %}
+    Information Terminänderung
+    {% elseif process.status == 'queued' %}
+    Wartenummerbestaetigung
+    {% elseif process.status == 'pickup' %}
+    Ihr Dokument ({{ process.requests|first.name }}) ist fertig und liegt zur Abholung bereit.
+    {% else %}
+    Terminerinnerung
+    {% endif %}
 {% endblock %}

@@ -18,11 +18,13 @@ class Messaging
             'appointment' => 'notification_appointment.twig',
             'confirmed' => 'notification_confirmation.twig',
             'queued' => 'notification_headsup.twig',
+            'pickup' => 'notification_pickup.twig',
             'deleted' => 'notification_deleted.twig'
         ),
         'mail' => array(
             'queued' => 'mail_queued.twig',
             'appointment' => 'mail_confirmation.twig',
+            'pickup' => 'mail_pickup.twig',
             'deleted' => 'mail_delete.twig'
         ),
         'ics' => array(
@@ -55,7 +57,6 @@ class Messaging
         $template = self::getTemplateByProcessStatus('mail', $process);
         if ($initiator) {
             $template = self::getTemplateByProcessStatus('admin', $process);
-            error_log($template);
         }
         $message = self::twigView()->render(
             'messaging/' . $template,
