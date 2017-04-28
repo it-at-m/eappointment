@@ -37,7 +37,7 @@ class Pickup extends BaseController
         $query = new Query();
         $processList = new \BO\Zmsentities\Collection\ProcessList();
         foreach ($scopeList as $scope) {
-            $list = $query->readProcessListByScopeAndStatus($scope[id], 'pending', $resolveReferences);
+            $list = $query->readProcessListByScopeAndStatus($scope['id'], 'pending', $resolveReferences);
             if ($list->count()) {
                 $processList->addList($list);
             }
