@@ -21,27 +21,27 @@ class PickupNotification extends BaseController
      * @SuppressWarnings(Param)
      * @return String
      */
-     public function readResponse(
-         \Psr\Http\Message\RequestInterface $request,
-         \Psr\Http\Message\ResponseInterface $response,
-         array $args
-     ) {
-         $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
-         $validator = $request->getAttribute('validator');
-         $processId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
-         $process = \App::$http->readGetResult('/workstation/process/'. $processId .'/get/')->getEntity();
-         $process->status = 'pickup';
-         $cluster = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/cluster/')->getEntity();
-         $workstation->testMatchingProcessScope($cluster, $process);
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
+        $validator = $request->getAttribute('validator');
+        $processId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
+        $process = \App::$http->readGetResult('/workstation/process/'. $processId .'/get/')->getEntity();
+        $process->status = 'pickup';
+        $cluster = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/cluster/')->getEntity();
+        $workstation->testMatchingProcessScope($cluster, $process);
 
-         \App::$http->readPostResult('/notification/', $process);
+        \App::$http->readPostResult('/notification/', $process);
 
-         return \BO\Slim\Render::withHtml(
-             $response,
-             'block/pickup/notificationSent.twig',
-             array(
-                 'process' => $process
-             )
-         );
-     }
+        return \BO\Slim\Render::withHtml(
+            $response,
+            'block/pickup/notificationSent.twig',
+            array(
+               'process' => $process
+            )
+        );
+    }
 }
