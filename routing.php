@@ -186,7 +186,32 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/owner/delete/{id:\d+}/', '\BO\Zmsadmin\OwnerDelete')
     ->setName("ownerDelete");
 
+/*
+ * ---------------------------------------------------------------------------
+ * Pickup
+ * -------------------------------------------------------------------------
+ */
 
+ \App::$slim->get('/pickup/', '\BO\Zmsadmin\Pickup')
+     ->setName("pickup");
+
+ \App::$slim->get('/pickup/delete/[{id:\d+}/]', '\BO\Zmsadmin\Pickup')
+     ->setName("pickup_delete");
+
+ \App::$slim->map(['GET','POST'], '/pickup/handheld/', '\BO\Zmsadmin\PickupHandheld')
+     ->setName("pickup_handheld");
+
+ \App::$slim->get('/pickup/keyboard/', '\BO\Zmsadmin\PickupKeyboard')
+     ->setName("pickup_keyboard");
+
+ \App::$slim->get('/pickup/spreadsheet/', '\BO\Zmsadmin\PickupSpreadSheet')
+     ->setName("pickup_spreadsheet");
+
+ \App::$slim->get('/pickup/mail/', '\BO\Zmsadmin\PickupMail')
+     ->setName("pickup_mail");
+
+ \App::$slim->get('/pickup/notification/', '\BO\Zmsadmin\PickupNotification')
+     ->setName("pickup_notification");
 /*
  * ---------------------------------------------------------------------------
  * Process
@@ -226,8 +251,7 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->map(['GET','POST'], '/scope/{id:\d+}/', '\BO\Zmsadmin\Scope')
     ->setName("scope");
 
-\App::$slim->get('/scope/{id:\d+}/pickup/', '\BO\Zmsadmin\Pickup')
-    ->setName("pickup");
+
 
 \App::$slim->get('/scope/{id:\d+}/process/{date:\d\d\d\d-\d\d-\d\d}/', '\BO\Zmsadmin\ScopeAppointmentsByDay')
     ->setName("scopeAppointmentsByDay");
@@ -237,12 +261,6 @@ use \Psr\Http\Message\ResponseInterface;
 
 \App::$slim->get('/scope/delete/{id:\d+}/', '\BO\Zmsadmin\ScopeDelete')
     ->setName("scopeDelete");
-
-\App::$slim->map(['GET','POST'], '/scope/{id:\d+}/pickup/handheld/', '\BO\Zmsadmin\PickupHandheld')
-    ->setName("pickup_handheld");
-
-\App::$slim->get('/scope/{id:\d+}/pickup/keyboard/', '\BO\Zmsadmin\PickupKeyboard')
-    ->setName("pickup_keyboard");
 
 \App::$slim->get('/scope/{id:\d+}/availability/day/{date:\d\d\d\d-\d\d-\d\d}/', '\BO\Zmsadmin\ScopeAvailabilityDay')
     ->setName("scopeAvailabilityDay");

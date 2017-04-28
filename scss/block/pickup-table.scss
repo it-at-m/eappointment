@@ -1,12 +1,26 @@
 .pickup-table {
     @extend .board;
     > .body {
-        @extend 
+        @extend
             .board_body--noPadding;
     }
     table {
-        @extend 
+        @extend
             .table,
             .table--cells;
+        thead {
+            th {
+                border:         0 none;
+            }
+        }
+        td {
+            vertical-align:     middle;
+            padding:            0 0.5em;
+        }
+    }
+    .form-actions {
+        > * {
+            margin-bottom:          0;
+        }
     }
 }
