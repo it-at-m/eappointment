@@ -16,7 +16,7 @@ class MailTest extends Base
 
         $this->assertEntity("\\BO\\Zmsentities\\Mail", $entity);
         $this->assertEquals('Das ist ein Plaintext Test', $entity->getPlainPart());
-        $this->assertEquals("Max Mustermann", $entity->getFirstClient()['familyName']);
+        $this->assertEquals("D54643264", $entity->getFirstClient()['familyName']);
 
         $collection = $query->readList(2);
         $collection->addEntity($input);
@@ -104,9 +104,9 @@ class MailTest extends Base
             "process" => [
                 "clients" => array(
                     [
-                        "familyName" => "Max Mustermann",
-                        "email" => "torsten.kunst@berlinonline.de",
-                        "telephone" => "030 115"
+                        "familyName" => "D54643264",
+                        "email" => "zms@service.berlinonline.de",
+                        "telephone" => "004917680588471"
                     ]
                 ),
                 "appointments"=>[
