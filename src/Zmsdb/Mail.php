@@ -116,7 +116,7 @@ class Mail extends Base
         }
         $queueId = $this->getWriter()->lastInsertId();
         $this->writeMimeparts($queueId, $mail->multipart);
-        if ('deleted' != $process->status) {
+        if ('pickup' == $process->status) {
             $client->emailSendCount += 1;
             (new Process())->updateEntity($process);
         }
