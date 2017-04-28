@@ -45,7 +45,7 @@ class Pickup extends BaseController
         $message = Response\Message::create($request);
         $message->data = $processList;
         $response = Render::withLastModified($response, time(), '0');
-        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+        $response = Render::withJson($response, $message, 200);
         return $response;
     }
 }
