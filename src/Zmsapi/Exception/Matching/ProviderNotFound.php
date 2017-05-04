@@ -7,7 +7,7 @@ namespace BO\Zmsapi\Exception\Matching;
  */
 class ProviderNotFound extends \Exception
 {
-    protected $code = 500;
+    protected $code = 404;
 
     protected $message = 'Provider does not exists';
 }
