@@ -62,6 +62,17 @@ class Notification extends Schema\Entity
         return $entity;
     }
 
+    public function toCustomMessageEntity(Process $process, $collection)
+    {
+        $entity = new self();
+        if (array_key_exists('message', $collection) && '' != $collection['message']->getValue()) {
+            $entity->message = $collection['message']->getValue();
+        }
+        $entity->process = $process;
+        $entity->createIP = $process->createIP;
+        return $entity;
+    }
+
     public function hasProperties()
     {
         $requiredProperties = func_get_args();

@@ -123,7 +123,7 @@ class Mail extends Schema\Entity
         $entity->process = $process;
         $entity->subject = Helper\Messaging::getMailSubject($process, $config);
         $entity->createIP = $process->createIP;
-        if ('queued' == $process->status) {
+        if ('queued' == $process->status || 'pickup' == $process->status) {
             $entity->multipart = [
                 array(
                     'mime' => 'text/html',
