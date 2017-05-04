@@ -73,10 +73,11 @@ class Notification extends Base
         }
         $notification->hasProperties('message', 'process');
         $telephone = preg_replace('/\s+/', '', $client->telephone);
+        $department = (new Department())->readByScopeId($process->getScopeId(), 0);
         $query = new Query\Notification(Query\Base::INSERT);
         $query->addValues(array(
             'processID' => $notification->process['id'],
-            'departmentID' => $notification->department['id'],
+            'departmentID' => $department->toProperty()->id->get(),
             'createIP' => $notification->createIP,
             'createTimestamp' => time(),
             'message' => $notification->message,
