@@ -21,7 +21,9 @@ class WorkstationProcessDelete extends BaseController
     public static function render()
     {
         $workstation = Helper\User::checkRights();
-        $workstation->process['queue']['callCount']++;
+        if ('pickup' != $workstation->process['status']) {
+            $workstation->process['queue']['callCount']++;
+        }
         $workstation->process = (new \BO\Zmsentities\Process($workstation->process))->setStatusBySettings();
         (new Workstation)->writeRemovedProcess($workstation);
         unset($workstation->process);

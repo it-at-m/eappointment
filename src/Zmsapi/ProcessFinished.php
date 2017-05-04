@@ -27,7 +27,9 @@ class ProcessFinished extends BaseController
         $entity->testValid();
 
         if ($entity->hasProcessCredentials() && ('pending' == $entity['status'] || 'finished' == $entity['status'])) {
-            if ($entity->scope['id'] != $workstation->scope['id']) {
+            $cluster = (new \BO\Zmsdb\Cluster)->readByScopeId($workstation->scope['id'], 1);
+            $workstation->process = $entity;
+            if ($workstation->testMatchingProcessScope($cluster)) {
                 throw new Exception\Process\ProcessNoAccess();
             }
         } else {
