@@ -10,6 +10,7 @@ use BO\Zmsdb\Helper\ProcessStatus as Status;
  * @SuppressWarnings(CouplingBetweenObjects)
  * @SuppressWarnings(TooManyPublicMethods)
  * @SuppressWarnings(Complexity)
+ * @SuppressWarnings(TooManyMethods)
  */
 class Process extends Base
 {
@@ -101,8 +102,18 @@ class Process extends Base
         \BO\Zmsentities\Process $process,
         \DateTimeInterface $now
     ) {
-        //todo write to statistic Table
-        return $process;
+        $archive = null;
+        if ($this->deleteEntity($process->id, $process->authKey, true)) {
+            $archive = (new Archive)->writeNewArchivedProcess($process, $now);
+        }
+        // update xRequest entry and update process id as well es archived id
+        if ($archive) {
+            $this->updateXRequestsArchived($process->id, $archive->id);
+        }
+        /******************************************************
+            ToDo write to statistic Table
+        ******************************************************/
+        return $archive;
     }
 
     public function writeNewFromTicketprinter(\BO\Zmsentities\Scope $scope, \DateTimeInterface $dateTime)
@@ -363,7 +374,7 @@ class Process extends Base
      *
      * @return Resource Status
      */
-    public function deleteEntity($processId, $authKey)
+    public function deleteEntity($processId, $authKey, $archive = false)
     {
         $query = Query\Process::QUERY_DELETE;
         $statement = $this->getWriter()->prepare($query);
@@ -374,7 +385,7 @@ class Process extends Base
                 $processId
             )
         );
-        if ($status) {
+        if ($status && ! $archive) {
             $query =  new Query\XRequest(Query\Base::DELETE);
             $query->addConditionProcessId($processId);
             $status = $this->deleteItem($query);
@@ -398,6 +409,17 @@ class Process extends Base
             );
             $this->writeItem($query);
         }
+    }
+
+    protected function updateXRequestsArchived($processId, $archiveId)
+    {
+        $query = new Query\XRequest(Query\Base::UPDATE);
+        $query->addConditionProcessId($processId);
+        $query->addValues([
+            'BuergerID' => 0,
+            'BuergerarchivID' => $archiveId
+        ]);
+        $this->writeItem($query);
     }
 
     public function readFreeProcesses(
