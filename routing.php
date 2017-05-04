@@ -2471,6 +2471,45 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/process/status/finished/":
+ *      post:
+ *          summary: set process to finished or pending status. (other status settings are not allowed)
+ *          tags:
+ *              - process
+ *          parameters:
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: process
+ *                  description: process data to update
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/process.json"
+ *          responses:
+ *              200:
+ *                  description: process has finished or pending status now
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/process.json"
+ *              400:
+ *                  description: "Invalid input"
+ *              403:
+ *                  description: "authkey does not match"
+ */
+\App::$slim->post('/process/status/finished/',
+    '\BO\Zmsapi\ProcessFinished')
+    ->setName("ProcessFinished");
+
+/**
+ *  @swagger
  *  "/process/status/pickup/":
  *      post:
  *          summary: Find or create a process to be used to pickup documents.
