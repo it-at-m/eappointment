@@ -38,9 +38,10 @@ class WorkstationSelect extends BaseController
             $selectedDate = Validator::param('selectedDate')->isString()->getValue();
             $queryParams = ($selectedDate) ? array('date' => $selectedDate) : array();
             $isUpdated = LoginForm::writeWorkstationUpdate($form, $workstation);
+            $redirect = (array_key_exists('redirect', $input)) ? $input['redirect'] : null;
             if (! $form->hasFailed() && $isUpdated) {
                 return \BO\Slim\Render::redirect(
-                    $workstation->getRedirect(),
+                    ($redirect) ? $redirect : $workstation->getRedirect(),
                     array(),
                     $queryParams
                 );

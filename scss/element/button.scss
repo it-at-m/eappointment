@@ -4,7 +4,7 @@ $buttonInactiveFontColor:   $fontInactiveColor !default;
 $buttonMargin:              0.5em;
 
 .btn {
-    @extend 
+    @extend
         .btn--shadow;
     margin:                 $buttonMargin;
     padding:                0.286em 0.643em; // 4px / 9px
@@ -12,19 +12,19 @@ $buttonMargin:              0.5em;
 }
 
 .button-default {
-    @extend 
+    @extend
         .btn;
 }
 
 button.link  {
-    @extend 
+    @extend
         .btn--link;
 }
 
 .button-emergency {
-    @extend 
-        .btn, 
-        .btn--full, 
+    @extend
+        .btn,
+        .btn--full,
         .btn--bold,
         .btn--noShadow,
         .btn--alert;
@@ -33,41 +33,41 @@ button.link  {
 }
 
 .button-submit {
-    @extend 
+    @extend
         .btn,
         .btn--success;
 }
 
 .button-reload {
-    @extend 
+    @extend
         .btn;
 }
 
 .button-new {
-    @extend 
+    @extend
         .btn;
 }
 
 .button-logout {
-    @extend 
+    @extend
         .btn;
     margin:                 0;
 }
 
 .button-save {
-    @extend 
+    @extend
         .btn,
         .btn--success;
 }
 
 .button-login {
-    @extend 
+    @extend
         .btn,
         .btn--success;
 }
 
 .button-delete {
-    @extend 
+    @extend
         .btn,
         .btn--alert;
     &::before {
@@ -78,7 +78,7 @@ button.link  {
 
 .button-edit-availabilty {
     /*
-    @extend 
+    @extend
         .btn,
         .btn--small;
     margin:                 $buttonMargin / 2;
@@ -90,19 +90,25 @@ button.link  {
 }
 
 .button-close {
-    @extend 
+    @extend
+        .btn,
+        .btn--alert;
+}
+
+.button-cancel {
+    @extend
         .btn,
         .btn--alert;
 }
 
 .button-reset {
-    @extend 
+    @extend
         .btn,
         .btn--alert;
 }
 
 .button-keyboard {
-    @extend 
+    @extend
         .btn;
     width:      4em;
     height:     4em;
@@ -117,13 +123,13 @@ button.link  {
 }
 
 .button-pickupcall {
- @extend 
+ @extend
         .btn,
         .btn--success;
 }
 
 .button-callnextclient {
-    @extend 
+    @extend
         .btn;
     position:           relative;
     width:              12em;
@@ -150,7 +156,7 @@ button.link  {
         margin-top:     0.0em;
         font-weight:    bold;
         font-size:      1.1em;
-        color:          $baseTextColor; 
+        color:          $baseTextColor;
     }
     &.pending {
         background:     none;
@@ -184,7 +190,7 @@ button.link  {
         color:              $linkColor;
     }
 }
-        
+
 .btn--alert,
 .btn--alert:hover,
 .btn--alert:active,
@@ -210,7 +216,7 @@ button.link  {
     background-color:       darken($btn-background, 5%);
     border-color:           lighten($btn-background, 15%);
     color:                  $buttonInactiveFontColor;
-    cursor:                 text;     
+    cursor:                 text;
 }
 
 .btn--shadow {
@@ -222,7 +228,7 @@ button.link  {
 }
 
 .btn--bigicon {
-    font-size:              1.4em; 
+    font-size:              1.4em;
     line-height:            1em;
     padding:                0.18em !important;
     text-align:             center;

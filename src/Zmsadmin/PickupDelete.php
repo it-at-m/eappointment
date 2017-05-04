@@ -13,6 +13,7 @@ namespace BO\Zmsadmin;
 class PickupDelete extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
     public function readResponse(
@@ -21,10 +22,16 @@ class PickupDelete extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
-        if ($workstation && \App::$http->readDeleteResult('/pickup/')) {
-            \BO\Slim\Render::redirect(
-                'pickup',
-                array('deleted' => 1)
+        $workstation->process['status'] = 'finished';
+        $process = \App::$http->readPostResult('/process/status/finished/', $workstation->process)->getEntity();
+        if ($workstation) {
+            return \BO\Slim\Render::withHtml(
+                $response,
+                'block/pickup/deleted.twig',
+                array(
+                    'workstation' => $workstation,
+                    'process' => $process
+                )
             );
         }
     }

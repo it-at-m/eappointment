@@ -65,17 +65,16 @@ export const lightbox = (parentElement, onBackgroundClick) => {
         lightboxElement.remove()
     }
 
-    const lightboxContentElement = lightboxElement.find('.lightbox__content')
-    lightboxContentElement.on('click', (ev) => {
-        ev.stopPropagation()
-    })
+    const lightboxContentElement = lightboxElement.find('.lightbox__content');
 
     lightboxElement.on('click', (ev) => {
+        console.log('background click', ev);
         ev.stopPropagation()
         ev.preventDefault()
-
         destroyLightbox()
         onBackgroundClick()
+    }).on('click', '.lightbox__content', (ev) => {
+        ev.stopPropagation();
     })
 
     $(parentElement).append(lightboxElement)
