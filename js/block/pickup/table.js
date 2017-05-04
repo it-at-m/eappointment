@@ -37,19 +37,23 @@ class View extends BaseView {
 
     loadMessage (response, callback) {
         if (response) {
-            const { lightboxContentElement, destroyLightbox } = lightbox(this.$main, () => {callback()})
+            const { lightboxContentElement, destroyLightbox } = lightbox(this.$main, () => {
+                this.ButtonAction.cancel();
+                callback();
+            });
             new MessageHandler(lightboxContentElement, {
                 message: response,
                 callback: (buttonAction, buttonUrl, ev) => {
                     if (buttonAction) {
                         var newPromise = this.ButtonAction[buttonAction](ev);
-                        newPromise.then((response) => {
+                        newPromise.catch(err => this.loadErrorCallback(err)).then((response) => {
                             this.loadMessage(response, callback);
                         });
                     } else if (buttonUrl) {
                         this.loadByCallbackUrl(buttonUrl)
                     }
                     destroyLightbox();
+                    location.reload();
                 }
             })
         }

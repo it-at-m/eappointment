@@ -6,6 +6,8 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Mellon\Validator;
+
 /**
   * Handle requests concerning services
   *
@@ -22,17 +24,20 @@ class PickupDelete extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
-        $workstation->process['status'] = 'finished';
-        $process = \App::$http->readPostResult('/process/status/finished/', $workstation->process)->getEntity();
-        if ($workstation) {
-            return \BO\Slim\Render::withHtml(
-                $response,
-                'block/pickup/deleted.twig',
-                array(
-                    'workstation' => $workstation,
-                    'process' => $process
-                )
-            );
-        }
+        $processId = Validator::value($args['id'])->isNumber()->getValue();
+        $process = \App::$http->readGetResult('/workstation/process/'. $processId .'/get/')->getEntity();
+        $process->status = 'finished';
+        \App::$http->readDeleteResult('/workstation/process/delete/');
+        $archive = \App::$http->readPostResult('/process/status/finished/', $process)->getEntity();
+        
+        return \BO\Slim\Render::withHtml(
+            $response,
+            'block/pickup/deleted.twig',
+            array(
+                'workstation' => $workstation,
+                'process' => $process,
+                'archive' => $archive
+            )
+        );
     }
 }
