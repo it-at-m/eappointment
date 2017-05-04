@@ -12,4 +12,10 @@
             .btn--alert,
             .btn--shadow;
     }
+    .button-cancel {
+        @extend
+            .btn,
+            .btn--alert,
+            .btn--shadow;
+    }
 }

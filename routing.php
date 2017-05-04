@@ -145,11 +145,9 @@ use \Psr\Http\Message\ResponseInterface;
  * Notification
  * -------------------------------------------------------------------------
  */
-\App::$slim->get('/notification/', '\BO\Zmsadmin\Notification')
-    ->setName("notification");
 
-\App::$slim->post('/notification/send/', '\BO\Zmsadmin\NotificationSend')
-    ->setName("notificationSend");
+\App::$slim->map(['GET', 'POST'], '/notification/', '\BO\Zmsadmin\Notification')
+    ->setName("notification");
 
 /*
  * ---------------------------------------------------------------------------
@@ -195,7 +193,7 @@ use \Psr\Http\Message\ResponseInterface;
  \App::$slim->get('/pickup/', '\BO\Zmsadmin\Pickup')
      ->setName("pickup");
 
- \App::$slim->get('/pickup/delete/[{id:\d+}/]', '\BO\Zmsadmin\Pickup')
+ \App::$slim->delete('/pickup/delete/[{id:\d+}/]', '\BO\Zmsadmin\PickupDelete')
      ->setName("pickup_delete");
 
  \App::$slim->map(['GET','POST'], '/pickup/handheld/', '\BO\Zmsadmin\PickupHandheld')
@@ -212,6 +210,10 @@ use \Psr\Http\Message\ResponseInterface;
 
  \App::$slim->get('/pickup/notification/', '\BO\Zmsadmin\PickupNotification')
      ->setName("pickup_notification");
+
+ \App::$slim->get('/pickup/call/{id:\d+}/', '\BO\Zmsadmin\PickupCall')
+     ->setName("pickup_call");
+
 /*
  * ---------------------------------------------------------------------------
  * Process

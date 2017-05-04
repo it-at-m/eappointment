@@ -20,6 +20,7 @@ import TicketPrinterConfigView from './block/ticketprinter/config'
 import CallDisplayConfigView from './block/calldisplay/config'
 import CounterView from './page/counter'
 import WorkstationView from './page/workstation'
+import PickupView from './page/pickup'
 
 import ScopeSelectView from './block/scopeselectform'
 import AvailabilityDayPage from './page/availabilityDay'
@@ -65,6 +66,11 @@ $('.calendar-weektable').each(function() {
 $('[data-scope-select-form]').each(function() {
     new ScopeSelectView(this, getDataAttributes(this));
 })
+
+$('.pickup-table').each(function() {
+    new PickupView(this, getDataAttributes(this));
+})
+
 
 $('form').each(function() {
     preventFormResubmit(this);

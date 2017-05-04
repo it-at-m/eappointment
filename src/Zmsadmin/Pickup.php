@@ -6,13 +6,10 @@
 
 namespace BO\Zmsadmin;
 
-/**
-  * Handle requests concerning services
-  *
-  */
 class Pickup extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
     public function readResponse(

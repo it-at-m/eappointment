@@ -40,7 +40,6 @@ class View extends BaseView {
         ev.preventDefault();
         ev.stopPropagation();
         const id  = $(ev.target).data('id')
-        const authkey  = $(ev.target).data('authkey')
         const name  = $(ev.target).data('name')
         const ok = confirm('Wenn Sie den Kunden Nr. '+ id +' '+ name +' löschen wollen, klicken Sie auf OK. Der Kunde wird darüber per eMail und/oder SMS informiert.)')
         const url = `${this.includeUrl}/process/${id}/delete/?initiator=backend-${this.source}`;
@@ -50,6 +49,25 @@ class View extends BaseView {
         return Promise.resolve(false);
     }
 
+    finish (ev) {
+        console.log("Finish Pickup Button clicked", ev);
+        ev.preventDefault();
+        ev.stopPropagation();
+        const id  = $(ev.target).data('id');
+        const url = `${this.includeUrl}/pickup/delete/${id}/`;
+        const name  = $(ev.target).data('name');
+        const withoutconfirmation  = $(ev.target).data('no-confirmation');
+        if (withoutconfirmation) {
+            return this.loadCall(url, 'DELETE');
+        }
+        const ok = confirm('Wenn Sie den Kunden Nr. '+ id +' '+ name +' löschen und ins Archiv verschieben wollen, klicken Sie auf OK.')
+        if (ok) {
+            return this.loadCall(url, 'DELETE');
+        }
+        return Promise.resolve(false);
+
+    }
+
     reserve (ev) {
         console.log("Reserve Button clicked", ev);
         this.selectedDate = moment(this.$main.find('form #process_date').val(), 'DD.MM.YYYY').format('YYYY-MM-DD');
@@ -57,6 +75,15 @@ class View extends BaseView {
         const sendData = this.$main.find('form').serialize();
         const url = `${this.includeUrl}/process/${this.selectedDate}/${this.selectedTime}/reserve/`;
         return this.loadCall(url, 'POST', sendData);
+    }
+
+    pickup (ev) {
+        console.log("Pickup Button clicked", ev);
+        ev.preventDefault();
+        ev.stopPropagation();
+        const processId  = $(ev.target).data('id')
+        const url = `${this.includeUrl}/pickup/call/${processId}/`
+        return this.loadCall(url);
     }
 
     save (ev) {
@@ -73,9 +100,23 @@ class View extends BaseView {
         const url = `${this.includeUrl}/notification/send/`;
         const ok = confirm('Möchten Sie dem Kunden per SMS mitteilen, dass er/sie bald an der Reihe ist, dann klicken Sie auf OK.')
         if (ok) {
-            return this.loadCall(url, 'POST', { selectedProcess: selectedProcessId });
+            return this.loadCall(url, 'POST', { 'selectedProcess': selectedProcessId, 'status': 'queued' });
         }
         return Promise.resolve(false);
+    }
+
+    sendNotification (ev, url) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        const selectedProcessId = $(ev.target).data('process');
+        return this.loadCall(url + `?selectedprocess=${selectedProcessId}&dialog=1`);
+    }
+
+    sendMail (ev, url) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        const selectedProcessId = $(ev.target).data('process');
+        return this.loadCall(url + `?selectedprocess=${selectedProcessId}&dialog=1`);
     }
 
     reset (ev) {

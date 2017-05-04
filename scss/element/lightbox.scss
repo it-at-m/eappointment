@@ -20,9 +20,11 @@
 }
 
 
-.lightbox__content {
+.lightbox .lightbox__content {
     overflow: auto;
-    max-width: 500px;
+    max-width: 600px;
+    min-width: 500px;
+    display: table;
     .loader {
         margin: 0 !important;
         position: relative;

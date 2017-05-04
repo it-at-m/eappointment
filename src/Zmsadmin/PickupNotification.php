@@ -10,6 +10,7 @@ namespace BO\Zmsadmin;
 
 use BO\Mellon\Validator;
 use BO\Slim\Render;
+use BO\Zmsentities\Notification as Entity;
 
 /**
  * Delete a process
@@ -33,14 +34,18 @@ class PickupNotification extends BaseController
         $process->status = 'pickup';
         $cluster = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/cluster/')->getEntity();
         $workstation->testMatchingProcessScope($cluster, $process);
+        $department = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/department/')->getEntity();
+        $config = \App::$http->readGetResult('/config/')->getEntity();
 
-        \App::$http->readPostResult('/notification/', $process);
+        $notification = (new Entity)->toResolvedEntity($process, $config, $department);
+        $notification = \App::$http->readPostResult('/notification/', $notification)->getEntity();
 
         return \BO\Slim\Render::withHtml(
             $response,
             'block/pickup/notificationSent.twig',
             array(
-               'process' => $process
+               'process' => $process,
+               'notification' => $notification
             )
         );
     }

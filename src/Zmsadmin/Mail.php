@@ -23,6 +23,7 @@ class Mail extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $selectedProcessId = Validator::param('selectedprocess')->isNumber()->getValue();
+        $dialog = Validator::param('dialog')->isNumber()->getValue();
         $success = Validator::param('result')->isString()->getValue();
         if ($selectedProcessId) {
             $process = \App::$http->readGetResult('/workstation/process/'. $selectedProcessId .'/get/')->getEntity();
@@ -38,6 +39,7 @@ class Mail extends BaseController
                     [],
                     [
                         'selectedprocess' => $process->id,
+                        'dialog' => $dialog,
                         'result' => ('form' == $input['submit'] && $formResponse->hasId()) ? 'success' : 'error'
                     ]
                 );
@@ -53,6 +55,7 @@ class Mail extends BaseController
                 'workstation' => $workstation,
                 'department' => $department,
                 'process' => $process,
+                'dialog' => $dialog,
                 'result' => $success,
                 'form' => $formResponse,
                 'source' => $workstation->getRedirect()
