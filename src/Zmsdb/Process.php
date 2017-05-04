@@ -92,6 +92,19 @@ class Process extends Base
         return $process;
     }
 
+    /**
+     * Insert a new process if there are free slots
+     *
+     * @SuppressWarnings("unused")
+     */
+    public function writeEntityFinished(
+        \BO\Zmsentities\Process $process,
+        \DateTimeInterface $now
+    ) {
+        //todo write to statistic Table
+        return $process;
+    }
+
     public function writeNewFromTicketprinter(\BO\Zmsentities\Scope $scope, \DateTimeInterface $dateTime)
     {
         $process = Entity::createFromScope($scope, $dateTime);
