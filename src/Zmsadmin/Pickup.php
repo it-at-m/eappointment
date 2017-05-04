@@ -19,7 +19,7 @@ class Pickup extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
         $cluster = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/cluster/')->getEntity();
-        $processList = \App::$http->readGetResult('/pickup/')->getCollection();
+        $processList = \App::$http->readGetResult('/pickup/', ['resolveReferences' => 1])->getCollection();
         $department = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/department/')->getEntity();
 
         \BO\Slim\Render::withHtml(

@@ -65,7 +65,6 @@ class View extends BaseView {
             return this.loadCall(url, 'DELETE');
         }
         return Promise.resolve(false);
-
     }
 
     reserve (ev) {
@@ -125,6 +124,16 @@ class View extends BaseView {
         ev.stopPropagation();
         let selectedProcess = $(ev.target).data('id');
         const url = `${this.includeUrl}/process/queue/reset/?selectedprocess=${selectedProcess}`;
+        return this.loadCall(url);
+    }
+
+    cancel (ev) {
+        console.log("Cancel Button clicked");
+        if (ev) {
+            ev.preventDefault();
+            ev.stopPropagation();
+        }
+        const url = `${this.includeUrl}/workstation/process/cancel/?noredirect=1`;
         return this.loadCall(url);
     }
 }

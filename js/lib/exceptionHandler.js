@@ -15,7 +15,10 @@ class ExceptionHandler {
     }
 
     render() {
-        let message = $(this.message).find('div.exception').get(0).outerHTML;
+        var message = $(this.message).filter('div.exception');
+        if (message.length == 0) {
+            var message = $(this.message).find('div.exception').get(0).outerHTML;
+        }
         this.$main.html(message);
     }
 
