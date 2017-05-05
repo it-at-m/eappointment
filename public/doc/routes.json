@@ -117,7 +117,7 @@
 			],
 			"responses": {
 				"200": {
-					"description": "success, returns deleted object",
+					"description": "success, returns deleted object or empty if object did not exists",
 					"schema": {
 						"type": "object",
 						"properties": {
@@ -129,9 +129,6 @@
 							}
 						}
 					}
-				},
-				"404": {
-					"description": "availability id does not exists"
 				}
 			}
 		}
@@ -2253,6 +2250,51 @@
 			}
 		}
 	},
+	"/pickup/": {
+		"get": {
+			"summary": "Get a list of processes with pending status by workstation scope or cluster scopes in clusterEnabled",
+			"tags": [
+				"process",
+				"pickup"
+			],
+			"parameters": [
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/process.json"
+							}
+						}
+					}
+				},
+				"401": {
+					"description": "login required"
+				},
+				"404": {
+					"description": "scope or cluster id does not exists"
+				}
+			}
+		}
+	},
 	"/process/{id}/{authKey}/": {
 		"get": {
 			"summary": "Get a process",
@@ -2634,6 +2676,65 @@
 			}
 		}
 	},
+	"/process/{id}/{authKey}/delete/notification/": {
+		"post": {
+			"summary": "send notification on delete process. Depending on config, if no mail is send, an empty mail is returned.",
+			"tags": [
+				"process",
+				"notification"
+			],
+			"parameters": [
+				{
+					"name": "id",
+					"description": "process number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "authKey",
+					"description": "authentication key",
+					"in": "path",
+					"required": true,
+					"type": "string"
+				},
+				{
+					"name": "process",
+					"description": "process data for building mail",
+					"required": true,
+					"in": "body",
+					"schema": {
+						"$ref": "schema/process.json"
+					}
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/notification.json"
+							}
+						}
+					}
+				},
+				"400": {
+					"description": "Invalid input"
+				},
+				"403": {
+					"description": "forbidden, authkey does not match or status changes, only data may be changed"
+				},
+				"404": {
+					"description": "process id does not exists"
+				}
+			}
+		}
+	},
 	"/process/search/": {
 		"get": {
 			"summary": "Get a list of search results for processes",
@@ -2869,6 +2970,157 @@
 				},
 				"302": {
 					"description": "Redirects to /processes/status/reserved/ since the given process does not exists in the list (any longer)"
+				},
+				"400": {
+					"description": "Invalid input"
+				},
+				"403": {
+					"description": "authkey does not match"
+				}
+			}
+		}
+	},
+	"/process/status/finished/": {
+		"post": {
+			"summary": "set process to finished or pending status. (other status settings are not allowed)",
+			"tags": [
+				"process"
+			],
+			"parameters": [
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				},
+				{
+					"name": "process",
+					"description": "process data to update",
+					"required": true,
+					"in": "body",
+					"schema": {
+						"$ref": "schema/process.json"
+					}
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "process has finished or pending status now",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/process.json"
+								}
+							}
+						}
+					}
+				},
+				"400": {
+					"description": "Invalid input"
+				},
+				"403": {
+					"description": "authkey does not match"
+				}
+			}
+		}
+	},
+	"/process/status/pickup/": {
+		"post": {
+			"summary": "Find or create a process to be used to pickup documents.",
+			"description": "Only process.queue.number is a necessary input. But it is possible to create a full process with a given waiting number. If the process already exists, an update is only performed, if process.id and process.authkey matches. Information about the scope are taken from the workstation fetches by X-Authkey",
+			"tags": [
+				"process"
+			],
+			"parameters": [
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				},
+				{
+					"name": "process",
+					"description": "process data to create",
+					"required": true,
+					"in": "body",
+					"schema": {
+						"$ref": "schema/process.json"
+					}
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "you are able to call this process now",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/process.json"
+								}
+							}
+						}
+					}
+				},
+				"400": {
+					"description": "Invalid input"
+				},
+				"403": {
+					"description": "authkey does not match"
+				}
+			}
+		}
+	},
+	"/process/status/queued/": {
+		"post": {
+			"summary": "set process back to queued status.",
+			"tags": [
+				"process"
+			],
+			"parameters": [
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				},
+				{
+					"name": "process",
+					"description": "process data to update",
+					"required": true,
+					"in": "body",
+					"schema": {
+						"$ref": "schema/process.json"
+					}
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "process has queued status now",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/process.json"
+								}
+							}
+						}
+					}
 				},
 				"400": {
 					"description": "Invalid input"
@@ -3707,6 +3959,65 @@
 			}
 		}
 	},
+	"/scope/{id}/process/{status}/": {
+		"get": {
+			"summary": "Get a list of processes with pending status",
+			"tags": [
+				"scope",
+				"process"
+			],
+			"parameters": [
+				{
+					"name": "id",
+					"description": "scope number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "status",
+					"description": "status of process",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/process.json"
+								}
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "scope id does not exists"
+				}
+			}
+		}
+	},
 	"/scope/{id}/emergency/": {
 		"post": {
 			"summary": "Trigger an emergency",
@@ -4084,6 +4395,51 @@
 				},
 				"404": {
 					"description": "scope id does not exists"
+				}
+			}
+		}
+	},
+	"/scope/{id}/ghostworkstation/": {
+		"post": {
+			"summary": "set selected amount of ghostworkstations in workstation scope",
+			"tags": [
+				"scope"
+			],
+			"parameters": [
+				{
+					"name": "id",
+					"description": "scope number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "scope",
+					"description": "scope content",
+					"in": "body",
+					"required": true,
+					"schema": {
+						"$ref": "schema/scope.json"
+					}
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "get updated ghostworkstation count",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/scope.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "Could not find workstation scope"
 				}
 			}
 		}
@@ -4908,6 +5264,45 @@
 			}
 		}
 	},
+	"/workstation/process/waitingnumber/": {
+		"post": {
+			"summary": "Get a waitingNumber according to workstations scope or cluster",
+			"tags": [
+				"workstation",
+				"process"
+			],
+			"parameters": [
+				{
+					"name": "workstation",
+					"description": "workstation with process data to update",
+					"required": true,
+					"in": "body",
+					"schema": {
+						"$ref": "schema/workstation.json"
+					}
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/process.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "useraccount loginname does not exists"
+				}
+			}
+		}
+	},
 	"/workstation/process/delete/": {
 		"delete": {
 			"summary": "Remove a process from workstation",
@@ -4932,6 +5327,57 @@
 				},
 				"404": {
 					"description": "process does not exists"
+				}
+			}
+		}
+	},
+	"/workstation/process/{id}/get/": {
+		"get": {
+			"summary": "Get the current process created by workstation without authkey",
+			"tags": [
+				"workstation"
+			],
+			"parameters": [
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				},
+				{
+					"name": "id",
+					"description": "process number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/workstation.json"
+							}
+						}
+					}
+				},
+				"401": {
+					"description": "login required"
+				},
+				"404": {
+					"description": "process not found"
 				}
 			}
 		}
