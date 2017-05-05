@@ -100,6 +100,11 @@ class View extends BaseView {
         return this.loadCall(url);
     }
 
+    pickupDirect (processId) {
+        const url = `${this.includeUrl}/pickup/call/${processId}/`
+        return this.loadCall(url);
+    }
+
     save (ev) {
         console.log("Save Button clicked", ev);
         const sendData = this.$main.find('form').serialize();

@@ -118,6 +118,10 @@ class BaseView extends ErrorHandler {
         return this.$main;
     }
 
+    cleanReload () {
+        window.location.href = window.location.href;
+    }
+
 }
 
 export default BaseView;
