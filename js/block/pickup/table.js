@@ -53,7 +53,6 @@ class View extends BaseView {
                         this.loadByCallbackUrl(buttonUrl)
                     }
                     destroyLightbox();
-                    location.reload();
                 }
             })
         }
@@ -87,6 +86,10 @@ class View extends BaseView {
             $(ev.target).closest('form').submit();
         }).on('click', 'a.process-finish', (ev) => {
             this.ButtonAction.finish(ev).catch(err => this.loadErrorCallback(err)).then((response) => {
+                this.loadMessage(response, this.onFinishProcess);
+            });
+        }).on('click', 'a.process-finish-list', (ev) => {
+            this.ButtonAction.finishList(ev).catch(err => this.loadErrorCallback(err)).then((response) => {
                 this.loadMessage(response, this.onFinishProcess);
             });
         }).on('click', 'a.process-pickup', (ev) => {
