@@ -91,7 +91,7 @@
                     "description": "Status of database cluster health"
                 },
                 "nodeConnections": {
-                    "type": "float",
+                    "type": "number",
                     "description": "Percentage of used connections on requested node."
                 }
             }
