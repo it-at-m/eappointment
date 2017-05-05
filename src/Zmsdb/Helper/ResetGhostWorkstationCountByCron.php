@@ -20,7 +20,7 @@ class ResetGhostWorkstationCountByCron
         $scopeList = $query->readList();
         foreach ($scopeList as $scope) {
             $scope->setStatusQueue('ghostWorkstationCount', '-1');
-            $query->updateGhostWorkstationCount($scope->id, $scope, $dateTime);
+            $query->updateGhostWorkstationCount($scope, $dateTime);
         }
     }
 }
