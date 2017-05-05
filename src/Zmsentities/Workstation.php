@@ -98,6 +98,16 @@ class Workstation extends Schema\Entity
         return (0 == $this->name) ? 'counter' : 'workstation';
     }
 
+    public function getScope()
+    {
+        if (!array_key_exists('scope', $this)) {
+            $this->scope = new Scope();
+        } elseif (!$this->scope instanceof Scope) {
+            $this->scope = new Scope($this->scope);
+        }
+        return $this->scope;
+    }
+
     public function getScopeList($cluster = null)
     {
         $scopeList = new Collection\ScopeList();
