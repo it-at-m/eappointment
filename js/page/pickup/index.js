@@ -17,19 +17,19 @@ class View extends BaseView {
     bindEvents() {}
 
     onFinishProcess () {
-        location.reload();
+        this.cleanReload()
     };
 
     onPickupCallProcess (processId) {
-        location.reload();
+        this.cleanReload()
     };
 
     onMailSent () {
-        location.reload();
+        this.cleanReload()
     };
 
     onNotificationSent () {
-        location.reload();
+        this.cleanReload()
     };
 
     loadPickupTable () {

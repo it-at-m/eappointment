@@ -18,21 +18,28 @@ class View extends BaseView {
         this.onNotificationSent = options.onNotificationSent || (() => {});
         this.bindPublicMethods('bindEvents');
         $.ajaxSetup({ cache: false });
+        this.loadDirectCall();
         this.bindEvents();
+    }
+
+    loadDirectCall() {
+        const processId = this.$main.filter('[data-selectedprocess]').data('selectedprocess');
+        if (processId) {
+            this.ButtonAction.pickupDirect(processId).catch(err => this.loadErrorCallback(err)).then((response) => {
+                this.loadMessage(response, this.onPickupCallProcess);
+            });
+        }
     }
 
     loadErrorCallback(err) {
         if (err.message) {
             let exceptionType = $(err.message).find('.exception').data('exception');
-            if (exceptionType === 'process-not-found')
-                location.reload();
-            else {
-                location.reload();
-                console.log('EXCEPTION thrown: ' + exceptionType);
-            }
+            console.log('EXCEPTION thrown: ' + exceptionType);
         }
-        else
+        else {
             console.log('Ajax error', err);
+        }
+        this.ButtonAction.cancel().then(this.cleanReload());
     }
 
     loadMessage (response, callback) {
@@ -48,7 +55,7 @@ class View extends BaseView {
                         var newPromise = this.ButtonAction[buttonAction](ev);
                         newPromise.catch(err => this.loadErrorCallback(err)).then((response) => {
                             this.loadMessage(response, callback);
-                        });
+                        }).then(this.cleanReload());
                     } else if (buttonUrl) {
                         this.loadByCallbackUrl(buttonUrl)
                     }

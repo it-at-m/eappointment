@@ -12,7 +12,6 @@ import 'moment/locale/de';
 
 // Import Views
 import FormView from "./element/form";
-import PickupKeyboardHandheldView from "./block/pickup-keyboard-handheld";
 import EmergencyView from './block/emergency'
 import DepartmentLinksView from './block/department/links'
 import DepartmentDaysOffView from './block/department/daysOff'
@@ -21,6 +20,7 @@ import CallDisplayConfigView from './block/calldisplay/config'
 import CounterView from './page/counter'
 import WorkstationView from './page/workstation'
 import PickupView from './page/pickup'
+import PickupKeyboardHandheldView from "./block/pickup/keyboard-handheld"
 
 import ScopeSelectView from './block/scopeselectform'
 import AvailabilityDayPage from './page/availabilityDay'
@@ -67,7 +67,7 @@ $('[data-scope-select-form]').each(function() {
     new ScopeSelectView(this, getDataAttributes(this));
 })
 
-$('.pickup-table').each(function() {
+$('.pickup-table, .pickup-table-handheld').each(function() {
     new PickupView(this, getDataAttributes(this));
 })
 

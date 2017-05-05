@@ -1,5 +1,5 @@
 
-import BaseView from '../lib/baseview';
+import BaseView from '../../lib/baseview';
 import $ from "jquery";
 
 class View extends BaseView {
@@ -37,11 +37,10 @@ class View extends BaseView {
     }
 
     checkNumber () {
-        console.log(this.$numberInput.val());
         var number = this.$numberInput.val();
         number = number.replace(/^0+/, '');
         number = number.replace(/[^\d]/g, '');
-        var $button = this.$.find('.aufrufen');
+        var $button = this.$.find('.process-pickup');
         if (number.length >= this.minNumberLength) {
             $button.removeClass('disabled').attr('disabled', false);
         } else {
@@ -51,7 +50,6 @@ class View extends BaseView {
         }
         this.$numberInput.val(number);
     }
-
 }
 
 export default View;
