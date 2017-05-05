@@ -22,12 +22,13 @@ class CounterGhostWorkstation extends BaseController
     public static function render()
     {
         $workstation = Helper\User::checkRights('basic');
-        $scope = new Entity($workstation->scope);
         $input = Validator::input()->isJson()->getValue();
-        $scope->setStatusQueue('ghostWorkstationCount', $input['count']);
-
+        $scope = new Entity($input);
+        if ($scope->id != $workstation->getScope()->id) {
+            throw new Exception\Scope\ScopeNoAccess();
+        }
         $message = Response\Message::create(Render::$request);
-        $message->data = (new Query())->updateGhostWorkstationCount($scope->id, $scope, \App::$now);
+        $message->data = (new Query())->updateGhostWorkstationCount($scope, \App::$now);
         Render::lastModified(time(), '0');
         Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }
