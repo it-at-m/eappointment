@@ -25,7 +25,7 @@ class WorkstationProcessCancel extends BaseController
         $validator = $request->getAttribute('validator');
         $noRedirect = $validator->getParameter('noredirect')->isNumber()->getValue();
         if ($workstation->process['id']) {
-            $result = \App::$http->readDeleteResult('/workstation/process/delete/')->getEntity();
+            $result = \App::$http->readDeleteResult('/workstation/process/')->getEntity();
         }
         if (1 == $noRedirect) {
             return $result;

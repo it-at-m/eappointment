@@ -29,7 +29,7 @@ class PickupDelete extends BaseController
         foreach ($idList as $processId) {
             $process = \App::$http->readGetResult('/workstation/process/'. $processId .'/get/')->getEntity();
             $process->status = 'finished';
-            \App::$http->readDeleteResult('/workstation/process/delete/');
+            \App::$http->readDeleteResult('/workstation/process/');
             $archive = \App::$http->readPostResult('/process/status/finished/', $process)->getEntity();
         }
 
