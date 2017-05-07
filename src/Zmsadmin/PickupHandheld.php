@@ -23,7 +23,8 @@ class PickupHandheld extends BaseController
             $selectedProcess = $this->readPickupProcess($input['selectedprocess']);
         }
         $cluster = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/cluster/')->getEntity();
-        $processList = \App::$http->readGetResult('/pickup/', ['resolveReferences' => 1])->getCollection();
+        $processList = \App::$http->readGetResult('/workstation/process/pickup/', ['resolveReferences' => 1])
+            ->getCollection();
         $department = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/department/')->getEntity();
 
         \BO\Slim\Render::withHtml(

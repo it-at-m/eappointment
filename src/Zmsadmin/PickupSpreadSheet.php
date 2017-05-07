@@ -20,7 +20,7 @@ class PickupSpreadSheet extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
-        $processList = \App::$http->readGetResult('/pickup/')->getCollection();
+        $processList = \App::$http->readGetResult('/workstation/process/pickup/')->getCollection();
         $department = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/department/')->getEntity();
 
         $providerName = $workstation->scope['provider']['name'];
