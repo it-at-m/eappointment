@@ -23,7 +23,7 @@ class WorkstationProcessCancelNext extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         if ($workstation->process['id']) {
-            \App::$http->readDeleteResult('/workstation/process/delete/')->getEntity();
+            \App::$http->readDeleteResult('/workstation/process/')->getEntity();
         }
         return \BO\Slim\Render::redirect(
             'workstationProcessNext',
