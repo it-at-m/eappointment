@@ -1861,42 +1861,6 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
- *  "/pickup/":
- *      get:
- *          summary: Get a list of processes with pending status by workstation scope or cluster scopes in clusterEnabled
- *          tags:
- *              - process
- *              - pickup
- *          parameters:
- *              -   name: X-Authkey
- *                  description: authentication key to identify user for testing access rights
- *                  in: header
- *                  type: string
- *              -   name: resolveReferences
- *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
- *                  in: query
- *                  type: integer
- *          responses:
- *              200:
- *                  description: "success"
- *                  schema:
- *                      type: object
- *                      properties:
- *                          meta:
- *                              $ref: "schema/metaresult.json"
- *                          data:
- *                              $ref: "schema/process.json"
- *              401:
- *                  description: "login required"
- *              404:
- *                  description: "scope or cluster id does not exists"
- */
-\App::$slim->get('/pickup/',
-    '\BO\Zmsapi\Pickup')
-    ->setName("Pickup");
-
-/**
- *  @swagger
  *  "/process/{id}/{authKey}/":
  *      get:
  *          summary: Get a process
@@ -4280,6 +4244,44 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->post('/workstation/process/called/',
     '\BO\Zmsapi\WorkstationProcess')
     ->setName("WorkstationProcess");
+
+/**
+ *  @swagger
+ *  "/workstation/process/pickup/":
+ *      get:
+ *          summary: Get a list of processes with pending status by workstation scope or cluster scopes in clusterEnabled
+ *          tags:
+ *              - process
+ *              - workstation
+ *          parameters:
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/process.json"
+ *              401:
+ *                  description: "login required"
+ *              404:
+ *                  description: "scope or cluster id does not exists"
+ */
+\App::$slim->get('/workstation/process/pickup/',
+    '\BO\Zmsapi\Pickup')
+    ->setName("Pickup");
 
 /**
  *  @swagger
