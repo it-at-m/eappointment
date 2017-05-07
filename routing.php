@@ -4317,7 +4317,7 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
- *  "/workstation/process/delete/":
+ *  "/workstation/process/":
  *      delete:
  *          summary: Remove a process from workstation
  *          tags:
@@ -4336,7 +4336,7 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "process does not exists"
  */
-\App::$slim->delete('/workstation/process/delete/',
+\App::$slim->delete('/workstation/process/',
     '\BO\Zmsapi\WorkstationProcessDelete')
     ->setName("WorkstationProcessDelete");
 
