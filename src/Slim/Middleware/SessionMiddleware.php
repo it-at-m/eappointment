@@ -9,28 +9,22 @@ class SessionMiddleware
 {
     const SESSION_ATTRIBUTE = 'session';
 
-    private $sessionName;
-
     protected $sessionClass = null;
 
     public function __construct($name = 'default', $sessionClass = null)
     {
+        session_name($name);
         $this->sessionName = $name;
         $this->sessionClass = $sessionClass;
     }
 
-    /**
-     *
-     * @SuppressWarnings(Superglobals)
-     *
-     */
     public function __invoke(
         ServerRequestInterface $requestInterface,
         ResponseInterface $response,
         callable $next
     ) {
-        $sessionContainer = Session\SessionHuman::fromContainer(function () {
-            return $this->getSessionContainer($this->sessionName);
+        $sessionContainer = Session\SessionHuman::fromContainer(function () use ($requestInterface) {
+            return $this->getSessionContainer($requestInterface);
         });
 
         if (null !== $next) {
@@ -39,10 +33,10 @@ class SessionMiddleware
         return $response;
     }
 
-    public function getSessionContainer($sessionName = 'default')
+    public function getSessionContainer($request)
     {
-            $session = Session\SessionData::getSessionFromName($sessionName);
-            $session->setEntityClass($this->sessionClass);
-            return $session;
+        $session = Session\SessionData::getSession($request);
+        $session->setEntityClass($this->sessionClass);
+        return $session;
     }
 }

@@ -97,8 +97,7 @@ abstract class Base extends \PHPUnit_Framework_TestCase
         $request = \Slim\Http\Request::createFromEnvironment(\Slim\Http\Environment::mock([
             'REQUEST_METHOD'       => $method,
             'REQUEST_URI'          => $uri,
-            'REMOTE_ADDR'          => '127.0.0.1',
-            'HTTP_COOKIE'          => 'Zmsappointment=unittest;', // fake session cookie
+            'REMOTE_ADDR'          => '127.0.0.1'
         ]));
         return $request;
     }
