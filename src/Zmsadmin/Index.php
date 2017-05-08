@@ -35,19 +35,18 @@ class Index extends BaseController
             ));
             try {
                 $workstation = \App::$http
-                    ->readPostResult('/workstation/'. $userAccount->id .'/', $userAccount)->getEntity();
+                    ->readPostResult('/workstation/login/', $userAccount)->getEntity();
             } catch (\BO\Zmsclient\Exception $exception) {
                 if ($exception->template == 'BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn') {
                     \BO\Zmsclient\Auth::setKey($exception->data['authkey']);
                     throw $exception;
                 }
             }
+            if (array_key_exists('authkey', $workstation)) {
+                \BO\Zmsclient\Auth::setKey($workstation->authkey);
+                return \BO\Slim\Render::redirect('workstationSelect', array(), array());
+            }
         }
-        if (array_key_exists('authkey', $workstation)) {
-            \BO\Zmsclient\Auth::setKey($workstation->authkey);
-            return \BO\Slim\Render::redirect('workstationSelect', array(), array());
-        }
-
         return \BO\Slim\Render::withHtml(
             $response,
             'page/index.twig',
