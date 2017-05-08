@@ -2250,51 +2250,6 @@
 			}
 		}
 	},
-	"/pickup/": {
-		"get": {
-			"summary": "Get a list of processes with pending status by workstation scope or cluster scopes in clusterEnabled",
-			"tags": [
-				"process",
-				"pickup"
-			],
-			"parameters": [
-				{
-					"name": "X-Authkey",
-					"description": "authentication key to identify user for testing access rights",
-					"in": "header",
-					"type": "string"
-				},
-				{
-					"name": "resolveReferences",
-					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
-					"in": "query",
-					"type": "integer"
-				}
-			],
-			"responses": {
-				"200": {
-					"description": "success",
-					"schema": {
-						"type": "object",
-						"properties": {
-							"meta": {
-								"$ref": "schema/metaresult.json"
-							},
-							"data": {
-								"$ref": "schema/process.json"
-							}
-						}
-					}
-				},
-				"401": {
-					"description": "login required"
-				},
-				"404": {
-					"description": "scope or cluster id does not exists"
-				}
-			}
-		}
-	},
 	"/process/{id}/{authKey}/": {
 		"get": {
 			"summary": "Get a process",
@@ -5139,20 +5094,13 @@
 			}
 		}
 	},
-	"/workstation/{loginname}/": {
+	"/workstation/login/": {
 		"post": {
 			"summary": "Create a workstation for an username, used to login",
 			"tags": [
 				"workstation"
 			],
 			"parameters": [
-				{
-					"name": "loginname",
-					"description": "useraccount identifier, usually the unique loginname",
-					"in": "path",
-					"required": true,
-					"type": "string"
-				},
 				{
 					"name": "useraccount",
 					"description": "useraccount data to update",
@@ -5182,7 +5130,9 @@
 					"description": "useraccount loginname does not exists"
 				}
 			}
-		},
+		}
+	},
+	"/workstation/login/{loginname}/": {
 		"delete": {
 			"operationId": "WorkstationDelete",
 			"summary": "Logout a user and delete his workstation entry",
@@ -5264,6 +5214,54 @@
 			}
 		}
 	},
+	"/workstation/process/pickup/": {
+		"get": {
+			"summary": "Get a list of processes with pending status by workstation scope or cluster scopes in clusterEnabled",
+			"tags": [
+				"process",
+				"workstation"
+			],
+			"parameters": [
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/process.json"
+								}
+							}
+						}
+					}
+				},
+				"401": {
+					"description": "login required"
+				},
+				"404": {
+					"description": "scope or cluster id does not exists"
+				}
+			}
+		}
+	},
 	"/workstation/process/waitingnumber/": {
 		"post": {
 			"summary": "Get a waitingNumber according to workstations scope or cluster",
@@ -5303,7 +5301,7 @@
 			}
 		}
 	},
-	"/workstation/process/delete/": {
+	"/workstation/process/": {
 		"delete": {
 			"summary": "Remove a process from workstation",
 			"tags": [
