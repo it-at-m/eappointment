@@ -13,9 +13,6 @@ use \BO\Zmsdb\Cluster;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-/**
-  * Handle requests concerning services
-  */
 class Pickup extends BaseController
 {
     /**
@@ -26,14 +23,13 @@ class Pickup extends BaseController
     {
         $workstation = (new Helper\User($request))->checkRights();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
-        $scopeList = (new \BO\Zmsentities\Collection\ScopeList)->addEntity($workstation->scope);
-        if (1 == $workstation->queue['clusterEnabled']) {
-            $cluster = (new Cluster())->readByScopeId($workstation->scope['id'], $resolveReferences);
-            if (! $cluster) {
-                throw new Exception\Cluster\ClusterNotFound();
-            }
-            $scopeList = $scopeList = (new \BO\Zmsentities\Collection\ScopeList)->addList($cluster->scopes);
+
+        $cluster = (new Cluster())->readByScopeId($workstation->scope['id'], $resolveReferences);
+        if (1 == $workstation->queue['clusterEnabled'] && ! $cluster) {
+            throw new Exception\Cluster\ClusterNotFound();
         }
+        $scopeList = $workstation->getScopeList($cluster);
+
         $query = new Query();
         $processList = new \BO\Zmsentities\Collection\ProcessList();
         foreach ($scopeList as $scope) {
