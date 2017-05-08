@@ -2523,6 +2523,47 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/process/{id}/":
+ *      get:
+ *          summary: Get a process (access restricted by X-Authkey)
+ *          tags:
+ *              - process
+ *              - workstation
+ *          parameters:
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: id
+ *                  description: process number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/workstation.json"
+ *              401:
+ *                  description: "login required"
+ *              404:
+ *                  description: "process not found"
+ */
+\App::$slim->get('/process/{id}/',
+    '\BO\Zmsapi\WorkstationProcessGet')
+    ->setName("WorkstationProcessGet");
+
+/**
+ *  @swagger
  *  "/provider/{source}/{id}/":
  *      get:
  *          summary: Get an provider by id
@@ -4334,46 +4375,6 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->delete('/workstation/process/',
     '\BO\Zmsapi\WorkstationProcessDelete')
     ->setName("WorkstationProcessDelete");
-
-/**
- *  @swagger
- *  "/workstation/process/{id}/get/":
- *      get:
- *          summary: Get the current process created by workstation without authkey
- *          tags:
- *              - workstation
- *          parameters:
- *              -   name: X-Authkey
- *                  description: authentication key to identify user for testing access rights
- *                  in: header
- *                  type: string
- *              -   name: id
- *                  description: process number
- *                  in: path
- *                  required: true
- *                  type: integer
- *              -   name: resolveReferences
- *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
- *                  in: query
- *                  type: integer
- *          responses:
- *              200:
- *                  description: "success"
- *                  schema:
- *                      type: object
- *                      properties:
- *                          meta:
- *                              $ref: "schema/metaresult.json"
- *                          data:
- *                              $ref: "schema/workstation.json"
- *              401:
- *                  description: "login required"
- *              404:
- *                  description: "process not found"
- */
-\App::$slim->get('/workstation/process/{id}/get/',
-    '\BO\Zmsapi\WorkstationProcessGet')
-    ->setName("WorkstationProcessGet");
 
 /* ---------------------------------------------------------------------------
  * maintenance
