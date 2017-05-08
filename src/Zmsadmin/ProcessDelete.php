@@ -28,7 +28,7 @@ class ProcessDelete extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
         $processId = Validator::value($args['id'])->isNumber()->getValue();
-        $process = \App::$http->readGetResult('/workstation/process/'. $processId .'/get/')->getEntity();
+        $process = \App::$http->readGetResult('/process/'. $processId .'/')->getEntity();
         $process->status = 'deleted';
         $cluster = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/cluster/')->getEntity();
         $workstation->testMatchingProcessScope($cluster, $process);

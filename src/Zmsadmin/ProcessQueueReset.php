@@ -30,7 +30,7 @@ class ProcessQueueReset extends BaseController
         $validator = $request->getAttribute('validator');
         $processId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
         if ($processId) {
-            $selectedProcess = \App::$http->readGetResult('/workstation/process/'. $processId .'/get/')->getEntity();
+            $selectedProcess = \App::$http->readGetResult('/process/'. $processId .'/')->getEntity();
         }
         $queuedProcess = \App::$http->readPostResult('/process/status/queued/', $selectedProcess)->getEntity();
 

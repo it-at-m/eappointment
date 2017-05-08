@@ -45,7 +45,7 @@ class PickupHandheld extends BaseController
     protected function readPickupProcess($selectedProcess)
     {
         try {
-            $process = \App::$http->readGetResult('/workstation/process/'. $selectedProcess .'/get/')->getEntity();
+            $process = \App::$http->readGetResult('/process/'. $selectedProcess .'/')->getEntity();
         } catch (\BO\Zmsclient\Exception $exception) {
             if ($exception->template == 'BO\Zmsapi\Exception\Process\ProcessNotFound') {
                 $process = new \BO\Zmsentities\Process([

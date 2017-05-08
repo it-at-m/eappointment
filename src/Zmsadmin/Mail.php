@@ -26,7 +26,7 @@ class Mail extends BaseController
         $dialog = Validator::param('dialog')->isNumber()->getValue();
         $success = Validator::param('result')->isString()->getValue();
         if ($selectedProcessId) {
-            $process = \App::$http->readGetResult('/workstation/process/'. $selectedProcessId .'/get/')->getEntity();
+            $process = \App::$http->readGetResult('/process/'. $selectedProcessId .'/')->getEntity();
         }
         $department = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/department/')->getEntity();
         $formResponse = null;

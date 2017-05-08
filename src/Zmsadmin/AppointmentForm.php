@@ -25,7 +25,7 @@ class AppointmentForm extends BaseController
         $selectedTime = $validator->getParameter('selectedtime')->isString()->getValue();
         $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
         $selectedProcess = ($selectedProcessId) ?
-            \App::$http->readGetResult('/workstation/process/'. $selectedProcessId .'/get/')->getEntity() : null;
+            \App::$http->readGetResult('/process/'. $selectedProcessId .'/')->getEntity() : null;
 
         if (1 == $workstation->queue['clusterEnabled']) {
             $cluster = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/cluster/')->getEntity();
