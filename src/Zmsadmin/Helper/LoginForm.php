@@ -98,7 +98,7 @@ class LoginForm
                     'id' => $formData['scope']->getValue(),
                 ]);
             }
-            if ($formData['appointmentsOnly']) {
+            if (isset($formData['appointmentsOnly']) && $formData['appointmentsOnly']) {
                 $workstation->queue['appointmentsOnly'] = $formData['appointmentsOnly']->getValue();
             } else {
                 $workstation->queue['appointmentsOnly'] = 0;
