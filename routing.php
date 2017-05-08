@@ -4144,17 +4144,12 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
- *  "/workstation/{loginname}/":
+ *  "/workstation/login/":
  *      post:
  *          summary: Create a workstation for an username, used to login
  *          tags:
  *              - workstation
  *          parameters:
- *              -   name: loginname
- *                  description: useraccount identifier, usually the unique loginname
- *                  in: path
- *                  required: true
- *                  type: string
  *              -   name: useraccount
  *                  description: useraccount data to update
  *                  required: true
@@ -4174,13 +4169,13 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "useraccount loginname does not exists"
  */
-\App::$slim->post('/workstation/{loginname}/',
+\App::$slim->post('/workstation/login/',
     '\BO\Zmsapi\WorkstationLogin')
     ->setName("WorkstationLogin");
 
 /**
  *  @swagger
- *  "/workstation/{loginname}/":
+ *  "/workstation/login/{loginname}/":
  *      delete:
  *          operationId: WorkstationDelete
  *          summary: Logout a user and delete his workstation entry
@@ -4209,7 +4204,7 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "useraccount loginname does not exists"
  */
-\App::$slim->delete('/workstation/{loginname}/',
+\App::$slim->delete('/workstation/login/{loginname}/',
     '\BO\Zmsapi\WorkstationDelete')
     ->setName("WorkstationDelete");
 

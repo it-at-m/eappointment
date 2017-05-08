@@ -18,14 +18,15 @@ class WorkstationLogin extends BaseController
     /**
      * @return String
      */
-    public static function render($loginName)
+    public static function render()
     {
         $query = new Query();
-        $input = Validator::input()->isJson()->assertValid()->getValue();
+        $useraccount = Validator::input()->isJson()->assertValid()->getValue();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
+        $loginName = $useraccount['id'];
         $logInHash = $query->readLoggedInHashByName($loginName);
         $workstation = $query
-            ->writeEntityLoginByName($loginName, $input['password'], \App::getNow(), $resolveReferences);
+            ->writeEntityLoginByName($loginName, $useraccount['password'], \App::getNow(), $resolveReferences);
         $workstation->testValid();
 
         if ($logInHash) {
