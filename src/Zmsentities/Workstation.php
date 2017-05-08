@@ -111,14 +111,10 @@ class Workstation extends Schema\Entity
     public function getScopeList($cluster = null)
     {
         $scopeList = new Collection\ScopeList();
+        $scopeList->addEntity(new Scope($this->scope));
         if ($cluster && 1 == $this->queue['clusterEnabled']) {
-            foreach ($cluster->scopes as $scope) {
-                $scope = new Scope($scope);
-                $scopeList->addEntity($scope);
-            }
-        } else {
-            $scope = new Scope($this->scope);
-            $scopeList->addEntity($scope);
+            $scopeList = new Collection\ScopeList();
+            $scopeList->addList($cluster->scopes);
         }
         return $scopeList;
     }
