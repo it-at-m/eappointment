@@ -31,7 +31,7 @@ class ProcessSave extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
         $processId = Validator::value($args['id'])->isNumber()->getValue();
         $initiator = Validator::param('initiator')->isString()->getValue();
-        $process = \App::$http->readGetResult('/workstation/process/'. $processId .'/get/')->getEntity();
+        $process = \App::$http->readGetResult('/process/'. $processId .'/')->getEntity();
         $input = $request->getParsedBody();
 
         $validationList = FormValidation::fromAdminParameters($workstation->scope['preferences']);

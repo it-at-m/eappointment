@@ -37,7 +37,7 @@ class ProcessQueue extends BaseController
 
         if ($selectedProcessId && $isPrint) {
             $selectedProcess = \App::$http
-                ->readGetResult('/workstation/process/'. $selectedProcessId .'/get/')->getEntity();
+                ->readGetResult('/process/'. $selectedProcessId .'/')->getEntity();
             return \BO\Slim\Render::withHtml(
                 $response,
                 'page/printWaitingNumber.twig',

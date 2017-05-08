@@ -32,7 +32,7 @@ class Notification extends BaseController
         $success = Validator::param('result')->isString()->getValue();
         $sendStatus = Validator::param('status')->isString()->isBiggerThan(2)->getValue();
 
-        $process = \App::$http->readGetResult('/workstation/process/'. $selectedProcessId .'/get/')->getEntity();
+        $process = \App::$http->readGetResult('/process/'. $selectedProcessId .'/')->getEntity();
         $department = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/department/')->getEntity();
         $config = \App::$http->readGetResult('/config/')->getEntity();
 
