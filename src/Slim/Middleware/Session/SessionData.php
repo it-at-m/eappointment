@@ -2,12 +2,14 @@
 
 namespace BO\Slim\Middleware\Session;
 
+use \Psr\Http\Message\ServerRequestInterface as Request;
+
 class SessionData implements SessionInterface
 {
     /**
      * @var array
      */
-    private $data;
+    protected $data;
 
     /**
      * @var boolean
@@ -33,11 +35,11 @@ class SessionData implements SessionInterface
      *
      * @return self
      */
-    public static function getSessionFromName($name)
+    public static function getSession(Request $request)
     {
+        $cookies = $request->getCookieParams();
         $session = array();
-        if (headers_sent() === false && session_status() !== PHP_SESSION_ACTIVE) {
-            session_name($name);
+        if (count($cookies) && headers_sent() === false && session_status() !== PHP_SESSION_ACTIVE) {
             session_start();
             if (!count($_SESSION)) {
                 $_SESSION['status'] = 'start';
@@ -46,6 +48,7 @@ class SessionData implements SessionInterface
         } else {
             throw  new \BO\Slim\Exception\SessionFailed("Headers sent or a session is already active");
         }
+
         $instance = new self();
         $instance->data = $session;
         return $instance;
