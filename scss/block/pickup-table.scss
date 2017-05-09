@@ -17,8 +17,11 @@
             vertical-align:     middle;
             padding:            0 0.5em;
         }
+        td.notificationColumn {
+            min-width:          75px;
+        }
     }
-    
+
     p {
         padding:                0.5em;
     }
