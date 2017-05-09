@@ -79,81 +79,44 @@ class Mail extends Schema\Entity
         }
         $entity->process = $process;
         $entity->createIP = $process->createIP;
-        $entity->multipart = [
-            array(
-                'mime' => 'text/html',
-                'content' => $message,
-                'base64' => false
-            ),
-            array(
-                'mime' => 'text/plain',
-                'content' => Helper\Messaging::getPlainText($message),
-                'base64' => false
-            )
-        ];
+        $entity->multipart[] = new Mimepart(array(
+            'mime' => 'text/html',
+            'content' => $message,
+            'base64' => false
+        ));
+        $entity->multipart[] = new Mimepart(array(
+            'mime' => 'text/plain',
+            'content' => Helper\Messaging::getPlainText($message),
+            'base64' => false
+        ));
         return $entity;
     }
 
-    public function toAdminInfoMail(Process $process, Config $config, $initator)
+    public function toResolvedEntity(Process $process, Config $config, $initator = null)
     {
         $entity = clone $this;
+        $icsRequired = (in_array($process->status, Helper\Messaging::$icsRequiredForStatus));
         $content = Helper\Messaging::getMailContent($process, $config, $initator);
         $entity->process = $process;
         $entity->subject = Helper\Messaging::getMailSubject($process, $config, $initator);
         $entity->createIP = $process->createIP;
-        $entity->multipart = [
-            array(
-                'mime' => 'text/html',
-                'content' => $content,
-                'base64' => false
-            ),
-            array(
-                'mime' => 'text/plain',
-                'content' => Helper\Messaging::getPlainText($content),
-                'base64' => false
-            )
-        ];
-        return $entity;
-    }
 
-    public function toResolvedEntity(Process $process, Config $config)
-    {
-        $entity = clone $this;
-        $content = Helper\Messaging::getMailContent($process, $config);
-        $entity->process = $process;
-        $entity->subject = Helper\Messaging::getMailSubject($process, $config);
-        $entity->createIP = $process->createIP;
-        if ('queued' == $process->status || 'pickup' == $process->status) {
-            $entity->multipart = [
-                array(
-                    'mime' => 'text/html',
-                    'content' => $content,
-                    'base64' => false
-                ),
-                array(
-                    'mime' => 'text/plain',
-                    'content' => Helper\Messaging::getPlainText($content),
-                    'base64' => false
-                )
-            ];
-        } else {
-            $entity->multipart = [
-                array(
-                    'mime' => 'text/html',
-                    'content' => $content,
-                    'base64' => false
-                ),
-                array(
-                    'mime' => 'text/plain',
-                    'content' => Helper\Messaging::getPlainText($content),
-                    'base64' => false
-                ),
-                array(
-                    'mime' => 'text/calendar',
-                    'content' => Helper\Messaging::getMailIcs($process, $config)->getContent(),
-                    'base64' => false
-                )
-            ];
+        $entity->multipart[] = new Mimepart(array(
+            'mime' => 'text/html',
+            'content' => $content,
+            'base64' => false
+        ));
+        $entity->multipart[] = new Mimepart(array(
+            'mime' => 'text/plain',
+            'content' => Helper\Messaging::getPlainText($content),
+            'base64' => false
+        ));
+        if ($icsRequired) {
+            $entity->multipart[] = new Mimepart(array(
+                'mime' => 'text/calendar',
+                'content' => Helper\Messaging::getMailIcs($process, $config)->getContent(),
+                'base64' => false
+            ));
         }
         return $entity;
     }
