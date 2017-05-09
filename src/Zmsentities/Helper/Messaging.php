@@ -13,6 +13,11 @@ use \BO\Zmsentities\Config;
 
 class Messaging
 {
+    public static $icsRequiredForStatus = [
+        'confirmed',
+        'deleted'
+    ];
+
     protected static $templates = array(
         'notification' => array(
             'appointment' => 'notification_appointment.twig',
@@ -25,7 +30,8 @@ class Messaging
             'queued' => 'mail_queued.twig',
             'appointment' => 'mail_confirmation.twig',
             'pickup' => 'mail_pickup.twig',
-            'deleted' => 'mail_delete.twig'
+            'deleted' => 'mail_delete.twig',
+            'survey' => 'mail_survey.twig'
         ),
         'ics' => array(
             'appointment' => 'icsappointment.twig',
@@ -92,6 +98,9 @@ class Messaging
         $status = $process->status;
         if ('confirmed' == $status &&  $process->toProperty()->queue->withAppointment->get()) {
             $status = 'appointment';
+        }
+        if ('finished' == $status &&  $process->getFirstClient()->hasSurveyAccepted()) {
+            $status = 'survey';
         }
         $template = null;
         if (array_key_exists($type, self::$templates)) {
