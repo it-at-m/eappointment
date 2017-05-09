@@ -34,10 +34,9 @@ class PickupMail extends BaseController
         $process->status = 'pickup';
         $cluster = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/cluster/')->getEntity();
         $workstation->testMatchingProcessScope($cluster, $process);
-        $department = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/department/')->getEntity();
         $config = \App::$http->readGetResult('/config/')->getEntity();
 
-        $mail = (new Entity)->toResolvedEntity($process, $config, $department);
+        $mail = (new Entity)->toResolvedEntity($process, $config);
         $mail = \App::$http->readPostResult('/mails/', $mail)->getEntity();
 
         return \BO\Slim\Render::withHtml(
