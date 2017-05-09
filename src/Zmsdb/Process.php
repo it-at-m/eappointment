@@ -113,7 +113,7 @@ class Process extends Base
         /******************************************************
             ToDo write to statistic Table
         ******************************************************/
-        return $archive;
+        return $process;
     }
 
     public function writeNewFromTicketprinter(\BO\Zmsentities\Scope $scope, \DateTimeInterface $dateTime)
