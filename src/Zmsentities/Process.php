@@ -282,6 +282,16 @@ class Process extends Schema\Entity
         return $client;
     }
 
+    public function setClientsCount($count)
+    {
+        $clientList = $this->getClients();
+        while ($clientList->count() < $count) {
+            error_log($clientList->count() .' : '. $count);
+            $clientList->addEntity(new Client());
+        }
+        return $this;
+    }
+
     public function getFirstAppointment()
     {
         $appointment = $this->getAppointments()->getFirst();
