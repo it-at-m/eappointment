@@ -102,6 +102,7 @@ class Process extends Base
         \BO\Zmsentities\Process $process,
         \DateTimeInterface $now
     ) {
+        $process = $this->updateEntity($process, 1);
         $archive = null;
         if ($this->deleteEntity($process->id, $process->authKey, true)) {
             $archive = (new Archive)->writeNewArchivedProcess($process, $now);
