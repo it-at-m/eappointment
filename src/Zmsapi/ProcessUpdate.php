@@ -45,7 +45,7 @@ class ProcessUpdate extends BaseController
                 $initiator = Validator::param('initiator')->isString()->getValue();
                 $config = (new Config())->readEntity();
                 $process->status = 'updated';
-                $mail = (new \BO\Zmsentities\Mail())->toAdminInfoMail($process, $config, $initiator);
+                $mail = (new \BO\Zmsentities\Mail())->toResolvedEntity($process, $config, $initiator);
                 (new Mail())->writeInQueueWithAdmin($mail);
             }
             $message->data = $processUpdated;

@@ -12,6 +12,10 @@ use \BO\Zmsdb\Process as Query;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
+/**
+ * @SuppressWarnings(Coupling)
+ * @return String
+ */
 class ProcessFinished extends BaseController
 {
     /**
@@ -37,9 +41,19 @@ class ProcessFinished extends BaseController
         }
 
         $query = new Query();
-        $process = ('pending' == $entity['status']) ?
-            $query->updateEntity($entity) :
-            $query->writeEntityFinished($entity, \App::$now);
+        if ('pending' == $entity['status']) {
+            $process = $query->updateEntity($entity);
+        } else {
+            $process = $query->writeEntityFinished($entity, \App::$now);
+            foreach ($process->getClients() as $client) {
+                if ($client->hasSurveyAccepted()) {
+                    $config = (new \BO\Zmsdb\Config())->readEntity();
+                    $mail = (new \BO\Zmsentities\Mail())->toResolvedEntity($process, $config);
+                    (new \BO\Zmsdb\Mail())->writeInQueue($mail);
+                }
+            }
+        }
+
         $message->data = $process;
 
         $response = Render::withLastModified($response, time(), '0');
