@@ -1,6 +1,7 @@
 import $ from 'jquery';
 import BaseView from './baseview'
 import { lightbox } from './utils';
+import ExceptionHandler from './exceptionHandler'
 
 class MessageHandler {
 
@@ -14,11 +15,19 @@ class MessageHandler {
     }
 
     render() {
-        var message = $(this.message).filter('div.dialog');
-        if (message.length == 0) {
-            var message = $(this.message).find('div.dialog').get(0).outerHTML;
+        var content = $(this.message).filter('div.dialog');
+        if (content.length == 0) {
+            var message = $(this.message).find('div.dialog');
+            if (message.length > 0) {
+                var content = message.get(0).outerHTML;
+            }
         }
-        this.$main.html(message);
+
+        if (content.length == 0) {
+            new ExceptionHandler(this.$main, {'message': this.message});
+        } else {
+            this.$main.html(content);
+        }
     }
 
     bindEvents() {
