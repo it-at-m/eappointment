@@ -1,6 +1,7 @@
 import $ from 'jquery';
 import BaseView from './baseview'
 import { lightbox } from './utils';
+import ExceptionHandler from './exceptionHandler'
 import maxChars from '../element/form/maxChars'
 
 class DialogHandler extends BaseView {
@@ -13,29 +14,25 @@ class DialogHandler extends BaseView {
         this.bindEvents();
         this.render();
     }
+
     render() {
         var content = $(this.response).filter('div.dialog');
         if (content.length == 0) {
-            var content = $(this.response).find('div.dialog').get(0).outerHTML;
+            var message = $(this.response).find('div.dialog');
+            if (message.length > 0) {
+                var content = message.get(0).outerHTML;
+            }
         }
-        this.$main.html(content);
+
+        if (content.length == 0) {
+            new ExceptionHandler(this.$main, {'message': this.response});
+        } else {
+            this.$main.html(content);
+        }
+
         $('textarea.maxchars').each(function() {
             maxChars(this);
         })
-    }
-
-    loadErrorCallback(err) {
-        if (err.message) {
-            let exceptionType = $(err.message).find('.exception').data('exception');
-            if (exceptionType === 'process-not-found')
-                location.reload();
-            else {
-                location.reload();
-                console.log('EXCEPTION thrown: ' + exceptionType);
-            }
-        }
-        else
-            console.log('Ajax error', err);
     }
 
     bindEvents() {
