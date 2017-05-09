@@ -18,17 +18,49 @@ class WorkstationProcessFinished extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-        $department = \App::$http
-            ->readGetResult('/scope/'. $workstation->scope['id'] .'/department/', ['resolveReferences' => 2])
-            ->getEntity();
         $requestList = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/request/')->getCollection();
+
+        $statisticEnabled = $workstation->getScope()->getPreference('queue', 'statisticsEnabled');
+        $isDefaultPickup = $workstation->getScope()->getPreference('pickup', 'isDefault');
+
+        $workstation->process['status'] = (! $statisticEnabled && $isDefaultPickup) ? 'pending' : 'finished';
+        $process = clone $workstation->process;
+
+        if ($statisticEnabled) {
+            $input = $request->getParsedBody();
+            if (is_array($input) && array_key_exists('id', $input['process'])) {
+                $process->addData($input['process']);
+                //pickup
+                if (array_key_exists('pickupScope', $input) && 0 != $input['pickupScope']) {
+                    $process->status = 'pending';
+                    $process->scope['id'] = $input['pickupScope'];
+                }
+                $process->setClientsCount($input['statistic']['clientsCount']);
+                $process = \App::$http->readPostResult('/process/status/finished/', $process)->getEntity();
+                $workstation = \App::$http->readDeleteResult('/workstation/process/')->getEntity();
+                return \BO\Slim\Render::redirect(
+                    $workstation->getRedirect(),
+                    array(),
+                    array()
+                );
+            }
+        } else {
+            $process = \App::$http->readPostResult('/process/status/finished/', $process)->getEntity();
+            $workstation = \App::$http->readDeleteResult('/workstation/process/')->getEntity();
+            return \BO\Slim\Render::redirect(
+                $workstation->getRedirect(),
+                array(),
+                array()
+            );
+        }
+
         return \BO\Slim\Render::withHtml(
             $response,
             'page/workstationProcessFinished.twig',
             array(
                 'title' => 'Sachbearbeiter',
                 'workstation' => $workstation,
-                'pickupList' => $department->getScopeList(),
+                'pickupList' => $workstation->getScopeList(),
                 'requestList' => $requestList->toSortedByGroup(),
                 'menuActive' => 'workstation'
             )
