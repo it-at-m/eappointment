@@ -330,6 +330,7 @@ class Process extends Base implements MappingInterface
         $data['StandortID'] = $process->getScopeId();
         $data['IPAdresse'] = $process['createIP'];
         $data['Erinnerungszeitpunkt'] = $process->getReminderTimestamp();
+        $data['AnzahlPersonen'] = $process->getClients()->count();
         $data = $this->readStatusData($data, $process);
         $data = $this->readAppointmentData($data, $process);
         $data = $this->readClientData($data, $process);
