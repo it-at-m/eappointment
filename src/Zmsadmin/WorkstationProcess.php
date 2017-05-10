@@ -23,10 +23,10 @@ class WorkstationProcess extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 3])->getEntity();
         $workstationInfo = Helper\WorkstationInfo::getInfoBoxData($workstation);
-
+        $template = ($workstation->process->hasId()) ? 'info' : 'next';
         return \BO\Slim\Render::withHtml(
             $response,
-            'block/process/next.twig',
+            'block/process/'. $template .'.twig',
             array(
                 'workstation' => $workstation,
                 'workstationInfo' => $workstationInfo
