@@ -23,11 +23,10 @@ class WorkstationProcessProcessing extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $workstationInfo = Helper\WorkstationInfo::getInfoBoxData($workstation);
-        $process = new \BO\Zmsentities\Process($workstation->process);
-        $process->status = 'processing';
-        $process = \App::$http->readPostResult(
-            '/process/'. $process->id .'/'. $process->authKey .'/',
-            $process
+        $workstation->process->status = 'processing';
+        $workstation->process = \App::$http->readPostResult(
+            '/process/'. $workstation->process->id .'/'. $workstation->process->authKey .'/',
+            $workstation->process
         )->getEntity();
 
         return \BO\Slim\Render::withHtml(
@@ -35,8 +34,7 @@ class WorkstationProcessProcessing extends BaseController
             'block/process/info.twig',
             array(
                 'workstation' => $workstation,
-                'workstationInfo' => $workstationInfo,
-                'process' => $process
+                'workstationInfo' => $workstationInfo
             )
         );
     }
