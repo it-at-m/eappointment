@@ -20,6 +20,7 @@ import CallDisplayConfigView from './block/calldisplay/config'
 import CounterView from './page/counter'
 import WorkstationView from './page/workstation'
 import PickupView from './page/pickup'
+import StatisticView from './page/statistic'
 import PickupKeyboardHandheldView from "./block/pickup/keyboard-handheld"
 
 import ScopeSelectView from './block/scopeselectform'
@@ -69,6 +70,10 @@ $('[data-scope-select-form]').each(function() {
 
 $('.pickup-table, .pickup-table-handheld').each(function() {
     new PickupView(this, getDataAttributes(this));
+})
+
+$('.client-processed').each(function() {
+    new StatisticView(this, getDataAttributes(this));
 })
 
 
