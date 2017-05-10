@@ -93,7 +93,7 @@ class HttpTest extends Base
             'id' => 'berlinonline',
             'password' => '1palme1'
         ));
-        $workstation = $http->readPostResult('/workstation/'. $userAccount->id .'/', $userAccount)->getEntity();
+        $workstation = $http->readPostResult('/workstation/login/', $userAccount)->getEntity();
         if (isset($workstation->authkey)) {
             \BO\Zmsclient\Auth::setKey($workstation->authkey);
             $this->assertEquals($workstation->authkey, \BO\Zmsclient\Auth::getKey());
@@ -104,6 +104,6 @@ class HttpTest extends Base
     protected function writeTestLogout()
     {
         $http = $this->createHttpClient();
-        $http->readDeleteResult('/workstation/berlinonline/')->getEntity();
+        $http->readDeleteResult('/workstation/login/berlinonline/')->getEntity();
     }
 }
