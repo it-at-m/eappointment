@@ -104,12 +104,12 @@ class Process extends Base
     ) {
         $process = $this->updateEntity($process, 1);
         $archive = null;
-        if ($this->deleteEntity($process->id, $process->authKey, true)) {
+        if ($this->writeDereferencedEntity($process->id, $process->authKey)) {
             $archive = (new Archive)->writeNewArchivedProcess($process, $now);
         }
         // update xRequest entry and update process id as well es archived id
         if ($archive) {
-            $this->updateXRequestsArchived($process->id, $archive->id);
+            $this->writeXRequestsArchived($process->id, $archive->id);
         }
         /******************************************************
             ToDo write to statistic Table
@@ -368,14 +368,14 @@ class Process extends Base
     }
 
     /**
-     * Markiere einen Termin als abgesagt
+     * Löscht einen Termin aus der Datenbank
      *
      * @param
      *            processId and authKey
      *
      * @return Resource Status
      */
-    public function deleteEntity($processId, $authKey, $archive = false)
+    public function writeDeletedEntity($processId, $authKey)
     {
         $query = Query\Process::QUERY_DELETE;
         $statement = $this->getWriter()->prepare($query);
@@ -386,20 +386,82 @@ class Process extends Base
                 $processId
             )
         );
-        if ($status && ! $archive) {
-            $query =  new Query\XRequest(Query\Base::DELETE);
-            $query->addConditionProcessId($processId);
-            $status = $this->deleteItem($query);
+        if ($status) {
+            $this->deleteXRequests($processId);
         }
-        Log::writeLogEntry("DELETE (Process::deleteEntity) $processId ", $processId);
+        Log::writeLogEntry("DELETE (Process::writeDeletedEntity) $processId ", $processId);
+        return $status;
+    }
+
+    /**
+     * ACHTUNG: Nur noch als Helferfunction vor Refactoring durch MF,
+     * damit unittests und zmsappointment wie gewohnt funktionieren
+     *
+     * @param
+     *            processId and authKey
+     *
+     * @return Resource Status
+     */
+    public function deleteEntity($processId, $authKey)
+    {
+        return $this->writeCanceledEntity($processId, $authKey);
+    }
+
+    /**
+     * Markiere einen Termin als abgesagt
+     *
+     * @param
+     *            processId and authKey
+     *
+     * @return Resource Status
+     */
+    public function writeCanceledEntity($processId, $authKey)
+    {
+        $query = Query\Process::QUERY_CANCELED;
+        $statement = $this->getWriter()->prepare($query);
+        $status = $statement->execute(
+            array(
+                $processId,
+                $authKey,
+                $processId
+            )
+        );
+        if ($status) {
+            $this->deleteXRequests($processId);
+        }
+        Log::writeLogEntry("DELETE (Process::writeCanceledEntity) $processId ", $processId);
+        return $status;
+    }
+
+    /**
+     * Markiere einen Termin als dereferenced
+     *
+     * @param
+     *            processId and authKey
+     *
+     * @return Resource Status
+     */
+    public function writeDereferencedEntity($processId, $authKey)
+    {
+        $process = $this->readEntity($processId, $authKey);
+        $amendment = $process->toDerefencedAmendment();
+        $query = Query\Process::QUERY_DEREFERENCED;
+        $statement = $this->getWriter()->prepare($query);
+        $status = $statement->execute(
+            array(
+                $amendment,
+                $processId,
+                $authKey,
+                $processId
+            )
+        );
+        Log::writeLogEntry("DELETE (Process::writeDereferencedEntity) $processId ", $processId);
         return $status;
     }
 
     protected function writeRequestsToDb(\BO\Zmsentities\Process $process)
     {
-        $deleteQuery = new Query\XRequest(Query\Base::DELETE);
-        $deleteQuery->addConditionProcessId($process->id);
-        $this->deleteItem($deleteQuery);
+        $this->deleteXRequests($process->id);
         $query = new Query\XRequest(Query\Base::INSERT);
         foreach ($process->requests as $request) {
             $query->addValues(
@@ -412,7 +474,7 @@ class Process extends Base
         }
     }
 
-    protected function updateXRequestsArchived($processId, $archiveId)
+    protected function writeXRequestsArchived($processId, $archiveId)
     {
         $query = new Query\XRequest(Query\Base::UPDATE);
         $query->addConditionProcessId($processId);
@@ -421,6 +483,13 @@ class Process extends Base
             'BuergerarchivID' => $archiveId
         ]);
         $this->writeItem($query);
+    }
+
+    protected function deleteXRequests($processId)
+    {
+        $query =  new Query\XRequest(Query\Base::DELETE);
+        $query->addConditionProcessId($processId);
+        return $this->deleteItem($query);
     }
 
     public function readFreeProcesses(

@@ -16,7 +16,22 @@ class Process extends Base implements MappingInterface
      */
     const TABLE = 'buerger';
 
-    const QUERY_DELETE = "UPDATE `buerger` process LEFT JOIN `standort` s USING(StandortID)
+    const QUERY_DEREFERENCED = "UPDATE `buerger` process LEFT JOIN `standort` s USING(StandortID)
+        SET
+            process.Anmerkung = ?,
+            process.StandortID = 0,
+            process.Name = 'dereferenced',
+            process.IPadresse = '',
+            process.IPTimeStamp = 0,
+            process.vorlaeufigeBuchung = 1,
+            process.absagecode = 'deref!0',
+            process.EMail = ''
+        WHERE
+            (process.BuergerID = ? AND process.absagecode = ?)
+            OR process.istFolgeterminvon = ?
+        ";
+
+    const QUERY_CANCELED = "UPDATE `buerger` process LEFT JOIN `standort` s USING(StandortID)
         SET
             process.Anmerkung = CONCAT(
                 'Abgesagter Termin gebucht am: ',
@@ -28,6 +43,12 @@ class Process extends Base implements MappingInterface
             process.IPadresse = '',
             process.IPTimeStamp = FLOOR(UNIX_TIMESTAMP()) + (s.loeschdauer * 60),
             process.vorlaeufigeBuchung = 1
+        WHERE
+            (process.BuergerID = ? AND process.absagecode = ?)
+            OR process.istFolgeterminvon = ?
+        ";
+
+    const QUERY_DELETE = "DELETE FROM `buerger` process 
         WHERE
             (process.BuergerID = ? AND process.absagecode = ?)
             OR process.istFolgeterminvon = ?
@@ -195,8 +216,6 @@ class Process extends Base implements MappingInterface
                     '>=',
                     $deleteInSeconds
                 )
-                ->andWith('process.Name', '!=', '(abgesagt)')
-                ->andWith('process.StandortID', '!=', 0)
                 ->andWith('process.AbholortID', '=', 0)
                 ->andWith('process.NutzerID', '=', 0);
         });
