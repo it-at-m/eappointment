@@ -355,7 +355,12 @@ class Process extends Base implements MappingInterface
     {
         $data['vorlaeufigeBuchung'] = ($process['status'] == 'reserved') ? 1 : 0;
         $data['aufruferfolgreich'] = ($process['status'] == 'processing') ? 1 : 0;
-        if ($process->status == 'pending' || $process->status == 'pickup') {
+        if ($process->status == 'pending') {
+            $data['AbholortID'] = $process->scope['id'];
+            $data['Abholer'] = 1;
+            $data['SMSverschickt'] = 0;
+        }
+        if ($process->status == 'pickup') {
             $data['AbholortID'] = $process->scope['id'];
             $data['Abholer'] = 1;
         }
