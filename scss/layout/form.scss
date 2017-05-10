@@ -92,7 +92,7 @@ input[type="radio"] {
     min-height: 20px;
 }
 
-
+button[disabled],
 input[disabled],
 select[disabled],
 input[readonly],
@@ -102,9 +102,10 @@ input[readonly="readonly"],
 .form-control[readonly],
 fieldset[disabled] .form-control {
     cursor:                 not-allowed;
-    background-color:       #f8f8f8;
+    background-color:       #f8f8f8 !important;
     opacity:                1;
-    color:                  #999;
+    color:                  #999 !important;
+    border:                 none !important;
 }
 
 select > option {
