@@ -1,6 +1,6 @@
 <?php
 /**
- * @package 115Mandant
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -21,14 +21,13 @@ class ClusterCalldisplayImageDataGet extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('cluster');
-        $query = new Query();
-        $cluster = $query->readEntity([$args['id']]);
+        $cluster = (new Query)->readEntity($args['id']);
         if (! $cluster) {
             throw new Exception\Cluster\ClusterNotFound();
         }
+
         $message = Response\Message::create($request);
-        $message->data = $query->readImageData($cluster->id);
+        $message->data = (new Query)->readImageData($cluster->id);
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message, $message->getStatuscode());
