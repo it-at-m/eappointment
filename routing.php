@@ -3105,8 +3105,8 @@ use \Psr\Http\Message\ResponseInterface;
  *                  description: "scope id does not exists"
  */
 \App::$slim->get('/scope/{id:\d{1,11}}/availability/',
-    '\BO\Zmsapi\AvailabilityList')
-    ->setName("AvailabilityList");
+    '\BO\Zmsapi\AvailabilityListByScope')
+    ->setName("AvailabilityListByScope");
 
 /**
  *  @swagger
