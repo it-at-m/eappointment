@@ -48,7 +48,7 @@ class Process extends Base implements MappingInterface
             OR process.istFolgeterminvon = ?
         ";
 
-    const QUERY_DELETE = "DELETE FROM `buerger` process 
+    const QUERY_DELETE = "DELETE FROM `buerger` process
         WHERE
             (process.BuergerID = ? AND process.absagecode = ?)
             OR process.istFolgeterminvon = ?
@@ -111,7 +111,7 @@ class Process extends Base implements MappingInterface
             'CASE
                 WHEN process.Name = "(abgesagt)"
                     THEN "deleted"
-                WHEN process.StandortID = 0
+                WHEN process.Name = "dereferenced" AND process.StandortID = 0
                     THEN "blocked"
                 WHEN process.vorlaeufigeBuchung = 1
                     THEN "reserved"
