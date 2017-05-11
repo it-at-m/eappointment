@@ -2,13 +2,12 @@
 
 namespace BO\Zmsapi\Tests;
 
-class CalldisplayGetTest extends Base
+class CalldisplayQueueTest extends Base
 {
-    protected $classname = "CalldisplayGet";
+    protected $classname = "CalldisplayQueue";
 
     public function testRendering()
     {
-        $this->setWorkstation();
         $response = $this->render([], [
             '__body' => '{
                 "scopes": [
@@ -29,13 +28,12 @@ class CalldisplayGetTest extends Base
                 }
             }'
         ], []);
-        $this->assertContains('calldisplay.json', (string)$response->getBody());
+        $this->assertContains('queue.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
     public function testEmpty()
     {
-        $this->setWorkstation();
         $this->setExpectedException('\BO\Mellon\Failure\Exception');
         $this->render([], [], []);
     }
@@ -74,7 +72,6 @@ class CalldisplayGetTest extends Base
 
     public function testNotFoundClusterOrScopeLists()
     {
-        $this->setWorkstation();
         $this->expectException('\BO\Zmsapi\Exception\Calldisplay\ScopeAndClusterNotFound');
         $this->expectExceptionCode(404);
         $this->render([], [
