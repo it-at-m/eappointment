@@ -30,12 +30,12 @@ class Calldisplay extends Schema\Entity
 
     public function hasScopeList()
     {
-        return $this->toProperty()->scopes->isAvailable();
+        return (0 < $this->getScopeList()->count());
     }
 
     public function hasClusterList()
     {
-        return $this->toProperty()->clusters->isAvailable();
+        return (0 < $this->getClusterList()->count());
     }
 
     public function setServerTime($timestamp)
