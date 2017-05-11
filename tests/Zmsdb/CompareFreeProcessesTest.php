@@ -3,7 +3,7 @@
 namespace BO\Zmsdb\Tests;
 
 use \BO\Zmsdb\Calendar;
-use \BO\Zmsdb\Process;
+use \BO\Zmsdb\ProcessStatusFree;
 use \BO\Zmsdb\Scope;
 
 class CompareFreeProcessesTest extends Base
@@ -50,7 +50,7 @@ class CompareFreeProcessesTest extends Base
             $input2 = $this->getTestEntity();
             $input2->addScope($scope->id);
             $input2->firstDay = $day;
-            $freeProcessList = (new Process())->readFreeProcesses($input2, $now);
+            $freeProcessList = ProcessStatusFree::init()->readFreeProcesses($input2, $now);
             $processAppointments += count($freeProcessList->getAppointmentList());
             $freeProcessesTime += count($freeProcessList->getAppointmentList());
 

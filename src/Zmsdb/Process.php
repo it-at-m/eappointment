@@ -55,68 +55,6 @@ class Process extends Base
         return $process;
     }
 
-    /**
-     * Insert a new process if there are free slots
-     *
-     * @SuppressWarnings("unused")
-     */
-    public function writeEntityReserved(
-        \BO\Zmsentities\Process $process,
-        \DateTimeInterface $now,
-        $slotType = "public",
-        $slotsRequired = 0
-    ) {
-        $process->status = 'reserved';
-        $appointment = $process->getAppointments()->getFirst();
-        $freeProcessList = $this->readFreeProcesses($process->toCalendar(), $now, $slotType, $slotsRequired);
-        if (!$freeProcessList->getAppointmentList()->hasAppointment($appointment)) {
-            throw new Exception\Process\ProcessReserveFailed();
-        }
-        $slotList = (new Slot)->readByAppointment($appointment);
-        /*
-        if (!$slotList->isAvailableForAll($slotType)) {
-            throw new Exception\Process\ProcessReserveFailed("Could not reserve multiple slots");
-        }
-        */
-        foreach ($slotList as $slot) {
-            if ($process->id > 99999) {
-                $newProcess = clone $process;
-                $newProcess->getFirstAppointment()->setTime($slot->time);
-                $this->writeNewProcess($newProcess, $now, $process->id);
-            } elseif ($process->id === 0) {
-                $process = $this->writeNewProcess($process, $now, 0, count($slotList) - 1);
-            } else {
-                throw new \Exception("SQL UPDATE error on inserting new $process on $slot");
-            }
-        }
-        $this->writeRequestsToDb($process);
-        return $process;
-    }
-
-    /**
-     * Insert a new process if there are free slots
-     *
-     * @SuppressWarnings("unused")
-     */
-    public function writeEntityFinished(
-        \BO\Zmsentities\Process $process,
-        \DateTimeInterface $now
-    ) {
-        $process = $this->updateEntity($process, 1);
-        $archive = null;
-        if ($this->writeDereferencedEntity($process->id, $process->authKey)) {
-            $archive = (new Archive)->writeNewArchivedProcess($process, $now);
-        }
-        // update xRequest entry and update process id as well es archived id
-        if ($archive) {
-            $this->writeXRequestsArchived($process->id, $archive->id);
-        }
-        /******************************************************
-            ToDo write to statistic Table
-        ******************************************************/
-        return $process;
-    }
-
     public function writeNewFromTicketprinter(\BO\Zmsentities\Scope $scope, \DateTimeInterface $dateTime)
     {
         $process = Entity::createFromScope($scope, $dateTime);
@@ -490,41 +428,6 @@ class Process extends Base
         $query =  new Query\XRequest(Query\Base::DELETE);
         $query->addConditionProcessId($processId);
         return $this->deleteItem($query);
-    }
-
-    public function readFreeProcesses(
-        \BO\Zmsentities\Calendar $calendar,
-        \DateTimeInterface $now,
-        $slotType = 'public',
-        $slotsRequired = 0
-    ) {
-        $resolvedCalendar = new Calendar();
-        $selectedDate = $calendar->getFirstDay();
-        $calendar->setLastDayTime($selectedDate);
-        $calendar = $resolvedCalendar->readResolvedEntity($calendar, $now, $selectedDate, $slotType, $slotsRequired);
-        return (isset($calendar['freeProcesses'])) ? $calendar['freeProcesses'] : new Collection();
-    }
-
-    public function readReservedProcesses($resolveReferences = 2)
-    {
-        $processList = new Collection();
-        $query = new Query\Process(Query\Base::SELECT);
-        $query
-            ->addResolvedReferences($resolveReferences)
-            ->addEntityMapping()
-            ->addConditionAssigned()
-            ->addConditionIsReserved();
-        $resultData = $this->fetchList($query, new Entity());
-        foreach ($resultData as $process) {
-            if (2 == $resolveReferences) {
-                $process['requests'] = (new Request())->readRequestByProcessId($process->id, $resolveReferences);
-                $process['scope'] = (new Scope())->readEntity($process->getScopeId(), $resolveReferences);
-            }
-            if ($process instanceof Entity) {
-                $processList->addEntity($process);
-            }
-        }
-        return $processList;
     }
 
     /**
