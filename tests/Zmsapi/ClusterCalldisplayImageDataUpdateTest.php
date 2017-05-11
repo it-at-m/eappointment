@@ -11,26 +11,13 @@ class ClusterCalldisplayImageDataUpdateTest extends Base
 {
     protected $classname = "ClusterCalldisplayImageDataUpdate";
 
-    const SCOPE_ID = 141;
-
     const CLUSTER_ID = 109;
 
     public function testRendering()
     {
-        User::$workstation = new Workstation([
-            'id' => '138',
-            'useraccount' => new Useraccount([
-                'id' => 'berlinonline',
-                'rights' => [
-                    'superuser' => true,
-                    'cluster' => true
-                ]
-            ]),
-            'scope' => new Scope([
-                'id' => self::SCOPE_ID,
-            ])
-        ]);
-        $response = $this->render([self::CLUSTER_ID], [
+        $this->setWorkstation();
+        User::$workstation->useraccount->setRights('cluster');
+        $response = $this->render(['id' => self::CLUSTER_ID], [
             '__body' => $this->readFixture("GetBase64Image.json")
         ], []);
         $this->assertContains('mimepart.json', (string)$response->getBody());
@@ -40,28 +27,19 @@ class ClusterCalldisplayImageDataUpdateTest extends Base
 
     public function testNoRights()
     {
-        User::$workstation = new Workstation([
-            'id' => '137',
-            'useraccount' => new Useraccount([
-                'id' => 'testuser',
-                'rights' => [
-                    'cluster' => false
-                ]
-            ]),
-            'scope' => new Scope([
-                'id' => self::SCOPE_ID,
-            ])
-        ]);
+        $this->setWorkstation();
         $this->setExpectedException('BO\Zmsentities\Exception\UserAccountMissingRights');
-        $this->render([self::CLUSTER_ID], [
+        $this->render(['id' => self::CLUSTER_ID], [
             '__body' => '',
         ], []);
     }
 
     public function testClusterNotFound()
     {
+        $this->setWorkstation();
+        User::$workstation->useraccount->setRights('cluster');
         $this->expectException('\BO\Zmsapi\Exception\Cluster\ClusterNotFound');
         $this->expectExceptionCode(404);
-        $response = $this->render([999], [], []);
+        $this->render(['id' => 999], [], []);
     }
 }
