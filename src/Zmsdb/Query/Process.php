@@ -48,10 +48,10 @@ class Process extends Base implements MappingInterface
             OR process.istFolgeterminvon = ?
         ";
 
-    const QUERY_DELETE = "DELETE FROM `buerger` process
+    const QUERY_DELETE = "DELETE FROM `buerger`
         WHERE
-            (process.BuergerID = ? AND process.absagecode = ?)
-            OR process.istFolgeterminvon = ?
+            (BuergerID = ? AND absagecode = ?)
+            OR istFolgeterminvon = ?
         ";
 
     public function getQueryNewProcessId()
@@ -217,7 +217,13 @@ class Process extends Base implements MappingInterface
                     $deleteInSeconds
                 )
                 ->andWith('process.AbholortID', '=', 0)
-                ->andWith('process.NutzerID', '=', 0);
+                ->andWith('process.NutzerID', '=', 0)
+                ->andWith(function (\Solution10\SQL\ConditionBuilder $condition) {
+                    $condition
+                        ->andWith('process.vorlaeufigeBuchung', '=', 1)
+                        ->orWith('process.Name', '=', '(abgesagt)')
+                        ->orWith('process.Name', '=', 'dereferenced');
+                });
         });
         return $this;
     }
@@ -270,7 +276,7 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionStatus($status, $scopeId)
+    public function addConditionStatus($status, $scopeId = 0)
     {
         $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($status, $scopeId) {
             if ('pending' == $status) {
@@ -302,6 +308,26 @@ class Process extends Base implements MappingInterface
                     ->andWith('process.Abholer', '=', 0)
                     ->andWith('process.wsm_aufnahmezeit', '=', '00:00:00')
                     ->andWith('process.IPTimeStamp', '!=', 0);
+            }
+            if ('blocked' == $status) {
+                $query
+                    ->andWith('process.Name', '=', 'dereferenced')
+                    ->andWith('process.StandortID', '=', 0);
+            }
+            if ('deleted' == $status) {
+                $query
+                    ->andWith('process.Name', '=', '(abgesagt)')
+                    ->andWith('process.StandortID', '=', 0);
+            }
+            if ('reserved' == $status) {
+                $query
+                    ->andWith('process.name', 'NOT IN', array(
+                        'dereferenced',
+                        '(abgesagt)'
+                    ))
+                    ->andWith('process.vorlaeufigeBuchung', '=', 1)
+                    ->andWith('process.StandortID', '<>', 1)
+                    ->andWith('process.istFolgeterminvon', 'is', null);
             }
         });
         return $this;

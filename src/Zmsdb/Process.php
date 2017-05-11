@@ -543,13 +543,19 @@ class Process extends Base
             ->addConditionProcessDeleteInterval($deleteInSeconds)
             ->addLimit(500);
         $statement = $this->fetchStatement($selectQuery);
-        while ($processData = $statement->fetch(\PDO::FETCH_ASSOC)) {
-            $processData = (new Query\Process(Query\Base::SELECT))->postProcess($processData);
+        $processList = $statement->fetchAll();
+        $nextProcess = array_shift($processList);
+        if (! $nextProcess) {
+            return false;
+        }
+        while ($nextProcess) {
+            $processData = (new Query\Process(Query\Base::SELECT))->postProcess($nextProcess);
             $entity = new Entity($processData);
             if ($entity instanceof Entity) {
-                $this->deleteEntity($entity->id, $entity->authKey);
+                $this->writeDeletedEntity($entity->id, $entity->authKey);
             }
-            $this->deleteByTimeInterval($deleteInSeconds);
+            $nextProcess = array_shift($processList);
         }
+        $this->deleteByTimeInterval($deleteInSeconds);
     }
 }
