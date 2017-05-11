@@ -17,14 +17,20 @@ class AvailabilityDelete extends BaseController
     /**
      * @return String
      */
-    public static function render($itemId)
-    {
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        (new Helper\User($request))->checkRights();
         $query = new Query();
-        $message = Response\Message::create(Render::$request);
-        $entity = $query->readEntity($itemId);
-        $query->deleteEntity($itemId);
+        $message = Response\Message::create($request);
+        $entity = $query->readEntity($args['id']);
+        $query->deleteEntity($args['id']);
         $message->data = $entity;
-        Render::lastModified(time(), '0');
-        Render::json($message->setUpdatedMetaData(), 200);
+
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message->setUpdatedMetaData(), 200);
+        return $response;
     }
 }
