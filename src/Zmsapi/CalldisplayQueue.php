@@ -1,6 +1,6 @@
 <?php
 /**
- * @package 115Mandant
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -8,59 +8,63 @@ namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
-use \BO\Zmsdb\Scope;
-use \BO\Zmsdb\Cluster;
-use \BO\Zmsentities\Collection\QueueList as Collection;
 
 /**
-  * Handle requests concerning services
-  */
+ * @SuppressWarnings(Coupling)
+ * @return String
+ */
 class CalldisplayQueue extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render()
-    {
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $calldisplay = (new \BO\Zmsentities\Calldisplay($input))->withOutClusterDuplicates();
-        $queueList = new Collection();
+        $this->testScopeAndCluster($calldisplay);
 
-        if ($calldisplay->hasScopeList()) {
-            foreach ($calldisplay->getScopeList() as $scope) {
-                $queueList->addList(static::getCalculatedQueueListFromScope($scope, $resolveReferences));
-            }
+        $queueList = new \BO\Zmsentities\Collection\QueueList();
+        foreach ($calldisplay->scopes as $scope) {
+            $queueList->addList($this->getCalculatedQueueListFromScope($scope, $resolveReferences));
         }
-        if ($calldisplay->hasClusterList()) {
-            $clusterQuery = new Cluster();
-            foreach ($calldisplay->getClusterList() as $cluster) {
-                $cluster = $clusterQuery->readEntity($cluster->id, $resolveReferences);
-                if (! $cluster) {
-                    throw new Exception\Cluster\ClusterNotFound();
-                }
-                if ($cluster->scopes->count()) {
-                    foreach ($cluster->scopes as $scope) {
-                        $queueList->addList(static::getCalculatedQueueListFromScope($scope, $resolveReferences));
-                    }
-                }
-            }
-        }
-        $message = Response\Message::create(Render::$request);
+
+        $message = Response\Message::create($request);
         $message->data = $queueList->withoutDublicates();
-        Render::lastModified(time(), '0');
-        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
+
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+        return $response;
     }
 
-    protected static function getCalculatedQueueListFromScope($scope, $resolveReferences)
+    protected function testScopeAndCluster($calldisplay)
     {
-        $scopeQuery = new Scope();
-        $scope = $scopeQuery->readEntity($scope->id, $resolveReferences - 1);
-        if (! $scope) {
-            throw new Exception\Scope\ScopeNotFound();
+        if (! $calldisplay->hasScopeList() && ! $calldisplay->hasClusterList()) {
+            throw new Exception\Calldisplay\ScopeAndClusterNotFound();
         }
-        $scope = $scopeQuery->readWithWorkstationCount($scope->id, \App::$now);
-        return $scopeQuery
+        foreach ($calldisplay->getClusterList() as $cluster) {
+            $cluster = (new \BO\Zmsdb\Cluster)->readEntity($cluster->id);
+            if (! $cluster) {
+                throw new Exception\Cluster\ClusterNotFound();
+            }
+        }
+        foreach ($calldisplay->getScopeList() as $scope) {
+            $scope = (new \BO\Zmsdb\Scope)->readEntity($scope->id);
+            if (! $scope) {
+                throw new Exception\Scope\ScopeNotFound();
+            }
+        }
+    }
+
+    protected function getCalculatedQueueListFromScope($scope, $resolveReferences)
+    {
+        $scope = (new \BO\Zmsdb\Scope)->readWithWorkstationCount($scope->id, \App::$now, $resolveReferences);
+        return (new \BO\Zmsdb\Scope)
             ->readQueueListWithWaitingTime($scope, \App::$now)
             ->withPickupDestination($scope);
     }

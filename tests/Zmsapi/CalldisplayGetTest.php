@@ -40,7 +40,39 @@ class CalldisplayGetTest extends Base
         $this->render([], [], []);
     }
 
-    public function testNotFound()
+    public function testClusterNotFound()
+    {
+        $this->expectException('\BO\Zmsapi\Exception\Cluster\ClusterNotFound');
+        $this->expectExceptionCode(404);
+        $this->render([], [
+            '__body' => '{
+                "clusters": [
+                    {
+                      "id": 999
+                    }
+                ]
+            }'
+        ], []);
+        $this->assertContains('queue.json', (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
+    }
+
+    public function testScopeNotFound()
+    {
+        $this->expectException('\BO\Zmsapi\Exception\Scope\ScopeNotFound');
+        $this->expectExceptionCode(404);
+        $this->render([], [
+            '__body' => '{
+                "scopes": [
+                    {
+                      "id": 999
+                    }
+                ]
+            }'
+        ], []);
+    }
+
+    public function testNotFoundClusterOrScopeLists()
     {
         $this->setWorkstation();
         $this->expectException('\BO\Zmsapi\Exception\Calldisplay\ScopeAndClusterNotFound');
