@@ -20,13 +20,13 @@ class Calldisplay extends Base
      *
      * @return Resource Entity
      */
-    public function readResolvedEntity(Entity $calldisplay, \DateTimeImmutable $dateTime)
+    public function readResolvedEntity(Entity $calldisplay, \DateTimeImmutable $dateTime, $resolveReferences = 0)
     {
         if ($calldisplay->hasScopeList()) {
             $scopeList = new \BO\Zmsentities\Collection\ScopeList();
             foreach ($calldisplay->scopes as $key => $entity) {
                 $query = new Scope();
-                $scope = $query->readEntity($entity['id']);
+                $scope = $query->readEntity($entity['id'], $resolveReferences - 1);
                 if (! $scope) {
                     throw new Exception\Calldisplay\ScopeNotFound();
                 }
@@ -38,7 +38,7 @@ class Calldisplay extends Base
             $clusterList = new \BO\Zmsentities\Collection\ClusterList();
             foreach ($calldisplay->clusters as $key => $entity) {
                 $query = new Cluster();
-                $cluster = $query->readEntity($entity['id'], 1);
+                $cluster = $query->readEntity($entity['id'], $resolveReferences);
                 if (! $cluster) {
                     throw new Exception\Calldisplay\ClusterNotFound();
                 }
