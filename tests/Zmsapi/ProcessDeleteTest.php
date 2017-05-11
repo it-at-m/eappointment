@@ -2,6 +2,8 @@
 
 namespace BO\Zmsapi\Tests;
 
+use \BO\Zmsdb\ProcessStatusFree;
+
 class ProcessDeleteTest extends Base
 {
     protected $classname = "ProcessDelete";
@@ -13,14 +15,13 @@ class ProcessDeleteTest extends Base
     public function testRendering()
     {
         $now = new \DateTimeImmutable("2016-04-01 11:55");
-        $query = new \BO\Zmsdb\Process();
         $entity = (new \BO\Zmsentities\Process())->getExample();
         $entity->requests[0]['id'] = 120703;
         $entity->scope['id'] = 141;
         $entity->id = 0;
         $entity->getFirstAppointment()->setTime('2016-05-30 11:00:00');
         $entity->getFirstAppointment()->scope = $entity->scope;
-        $process = $query->writeEntityReserved($entity, $now);
+        $process = ProcessStatusFree::init()->writeEntityReserved($entity, $now);
         $this->processId = $process->id;
         $this->authKey = $process->authKey;
         $response = $this->render([$this->processId, $this->authKey], [], []);

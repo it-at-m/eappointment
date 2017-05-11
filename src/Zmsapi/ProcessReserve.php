@@ -9,6 +9,7 @@ namespace BO\Zmsapi;
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\Process as Query;
+use \BO\Zmsdb\ProcessStatusFree;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -42,7 +43,7 @@ class ProcessReserve extends BaseController
             throw new Exception\Process\ProcessReserveFailed();
         }
         $process = $query->readSlotCount($process);
-        $process = $query->writeEntityReserved($process, \App::$now, $slotType, $slotsRequired);
+        $process = ProcessStatusFree::init()->writeEntityReserved($process, \App::$now, $slotType, $slotsRequired);
         $message->data = $process;
 
         $response = Render::withLastModified($response, time(), '0');
