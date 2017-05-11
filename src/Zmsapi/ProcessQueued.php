@@ -9,6 +9,7 @@ namespace BO\Zmsapi;
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\Process as Query;
+use \BO\Zmsdb\ProcessStatusQueued;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -35,7 +36,8 @@ class ProcessQueued extends BaseController
                 throw new Exception\Process\ProcessNoAccess();
             }
         } elseif ($entity->hasQueueNumber()) {
-            $process = (new Query())->readByQueueNumberAndScope($entity['queue']['number'], $workstation->scope['id']);
+            $process = ProcessStatusQueued::init()
+                ->readByQueueNumberAndScope($entity['queue']['number'], $workstation->scope['id']);
         } else {
             throw new Exception\Process\ProcessInvalid();
         }

@@ -9,7 +9,7 @@ namespace BO\Zmsapi;
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\Workstation;
-use \BO\Zmsdb\Process;
+use \BO\Zmsdb\ProcessStatusQueued;
 use \BO\Zmsdb\Cluster;
 
 class WorkstationProcessWaitingnumber extends BaseController
@@ -33,7 +33,7 @@ class WorkstationProcessWaitingnumber extends BaseController
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $process = new \BO\Zmsentities\Process($input);
         $process->scope = $scope;
-        $process = (new Process())->writeNewFromAdmin($process, \App::$now);
+        $process = ProcessStatusQueued::init()->writeNewFromAdmin($process, \App::$now);
 
         $message = Response\Message::create(Render::$request);
         $message->data = $process;
