@@ -398,6 +398,21 @@ class Process extends Schema\Entity
         return $queue->setProcess($this);
     }
 
+    public function toDerefencedAmendment()
+    {
+        $lastChange = (new \DateTimeImmutable)->setTimestamp($this->createTimestamp)->format('c');
+        return var_export(
+            array(
+                'BuergerID' => $this->id,
+                'StandortID' => $this->scope['id'],
+                'Anmerkung' => $this->amendment,
+                'IPTimeStamp' => $this->createTimestamp,
+                'LastChange' => $lastChange,
+            ),
+            1
+        );
+    }
+
     public function __toString()
     {
         $string = "process#";
