@@ -10,26 +10,29 @@ use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\Availability as Query;
 
-/**
- * Handle requests concerning services
- */
 class AvailabilityGet extends BaseController
 {
 
     /**
-     *
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render($itemId)
-    {
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        (new Helper\User($request))->checkRights();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
-        $availability = (new Query())->readEntity($itemId, $resolveReferences);
+        $availability = (new Query())->readEntity($args['id'], $resolveReferences);
         if (! $availability->hasId()) {
             throw new Exception\Availability\AvailabilityNotFound();
         }
-        $message = Response\Message::create(Render::$request);
+        $message = Response\Message::create($request);
         $message->data = $availability;
-        Render::lastModified(time(), '0');
-        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
+
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+        return $response;
     }
 }

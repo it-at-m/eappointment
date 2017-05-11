@@ -36,7 +36,7 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
         return file_get_contents($path);
     }
 
-    protected function setWorkstation($workstationId = 123, $loginname = "testuser", $scopeId = 143)
+    protected function setWorkstation($workstationId = 137, $loginname = "testuser", $scopeId = 143)
     {
         User::$workstation = new Workstation([
             'id' => $workstationId,
