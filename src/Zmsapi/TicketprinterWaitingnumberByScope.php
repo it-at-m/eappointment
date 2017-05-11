@@ -10,7 +10,7 @@ use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\Ticketprinter as Query;
 use \BO\Zmsdb\Scope;
-use \BO\Zmsdb\Process;
+use \BO\Zmsdb\ProcessStatusQueued;
 
 /**
   * Handle requests concerning services
@@ -37,7 +37,7 @@ class TicketprinterWaitingnumberByScope extends BaseController
             throw new Exception\Scope\ScopeNotFound();
         }
 
-        $process = (new Process())->writeNewFromTicketprinter($scope, \App::$now);
+        $process = ProcessStatusQueued::init()->writeNewFromTicketprinter($scope, \App::$now);
         if (! $process->hasId()) {
             throw new Exception\Process\ProcessReserveFailed();
         }

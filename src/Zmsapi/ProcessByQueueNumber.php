@@ -8,7 +8,7 @@ namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
-use \BO\Zmsdb\Process;
+use \BO\Zmsdb\ProcessStatusQueued;
 use \BO\Zmsdb\Scope;
 
 /**
@@ -29,7 +29,7 @@ class ProcessByQueueNumber extends BaseController
             throw new Exception\Scope\ScopeNotFound();
         }
 
-        $process = (new Process())->readByQueueNumberAndScope($queueNumber, $scopeId, $resolveReferences);
+        $process = ProcessStatusQueued::init()->readByQueueNumberAndScope($queueNumber, $scopeId, $resolveReferences);
         if (! $process->hasId()) {
             throw new Exception\Process\ProcessNotFound();
         }

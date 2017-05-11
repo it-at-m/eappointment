@@ -10,7 +10,7 @@ use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\Ticketprinter as Query;
 use \BO\Zmsdb\Cluster;
-use \BO\Zmsdb\Process;
+use \BO\Zmsdb\ProcessStatusQueued;
 
 /**
   * Handle requests concerning services
@@ -38,7 +38,7 @@ class TicketprinterWaitingnumberByCluster extends BaseController
         }
 
         $scope = (new Cluster())->readScopeWithShortestWaitingTime($cluster->id, \App::$now);
-        $process = (new Process())->writeNewFromTicketprinter($scope, \App::$now);
+        $process = ProcessStatusQueued::init()->writeNewFromTicketprinter($scope, \App::$now);
         if (! $process->hasId()) {
             throw new Exception\Process\ProcessReserveFailed();
         }

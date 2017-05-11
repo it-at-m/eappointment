@@ -9,6 +9,7 @@ namespace BO\Zmsapi;
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\Process as Query;
+use \BO\Zmsdb\ProcessStatusQueued;
 
 /**
   * Create or update a process for pickup
@@ -32,7 +33,8 @@ class ProcessPickup extends BaseController
             $process->testValid();
             $process = (new Query())->updateEntity($process);
         } elseif ($entity->hasQueueNumber()) {
-            $process = (new Query())->readByQueueNumberAndScope($entity['queue']['number'], $workstation->scope['id']);
+            $process = ProcessStatusQueued::init()
+                ->readByQueueNumberAndScope($entity['queue']['number'], $workstation->scope['id']);
             if (!$process->id) {
                 $process = (new Query())->writeNewPickup($workstation->scope, \App::$now, $entity['queue']['number']);
             }
