@@ -2268,7 +2268,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  type: integer
  *          responses:
  *              200:
- *                  description: get a list of available processes
+ *                  description: get a list of available processes, if not process found, return empty list
  *                  schema:
  *                      type: object
  *                      properties:
@@ -2278,12 +2278,6 @@ use \Psr\Http\Message\ResponseInterface;
  *                              type: array
  *                              items:
  *                                  $ref: "schema/process.json"
- *              404:
- *                  description: "Could not find any available processes, returns empty list"
- *                  schema:
- *                      type: array
- *                      items:
- *                          $ref: "schema/process.json"
  */
 \App::$slim->post('/process/status/free/',
     '\BO\Zmsapi\ProcessFree')
