@@ -270,7 +270,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  type: integer
 *          responses:
 *              200:
-*                  description: get a list of queue entries
+*                  description: get a list of queue entries, return empty list if no queue was found
 *                  schema:
 *                      type: object
 *                      properties:
@@ -281,7 +281,7 @@ use \Psr\Http\Message\ResponseInterface;
 *                              items:
 *                                  $ref: "schema/queue.json"
 *              404:
-*                  description: "Could not find a given cluster or scope, see metaresult"
+*                  description: "Could not find a given cluster or scope or missing cluster and sopelist in entity, see metaresult"
 *                  schema:
 *                      type: object
 *                      properties:
