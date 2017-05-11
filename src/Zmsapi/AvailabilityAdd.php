@@ -1,6 +1,6 @@
 <?php
 /**
- * @package 115Mandant
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -10,18 +10,22 @@ use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\Availability as Query;
 
-/**
-  * Handle requests concerning services
-  */
 class AvailabilityAdd extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render()
-    {
-        $message = Response\Message::create(Render::$request);
-        $input = Validator::input()->isJson()->getValue();
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        (new Helper\User($request))->checkRights();
+        $input = Validator::input()->isJson()->assertValid()->getValue();
+        if (0 == count($input)) {
+            throw new Exception\Availability\AvailabilityNotFound();
+        }
         $collection = new \BO\Zmsentities\Collection\AvailabilityList();
         foreach ($input as $availability) {
             $entity = new \BO\Zmsentities\Availability($availability);
@@ -38,8 +42,12 @@ class AvailabilityAdd extends BaseController
             }
             $collection[] = $entity;
         }
+
+        $message = Response\Message::create($request);
         $message->data = $collection->getArrayCopy();
-        Render::lastModified(time(), '0');
-        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
+
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+        return $response;
     }
 }
