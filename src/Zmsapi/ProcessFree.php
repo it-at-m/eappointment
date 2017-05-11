@@ -1,6 +1,6 @@
 <?php
 /**
- * @package 115Mandant
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 namespace BO\Zmsapi;
@@ -12,15 +12,18 @@ use \BO\Zmsdb\Process as Query;
 class ProcessFree extends BaseController
 {
     /**
-     *
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render()
-    {
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
         $slotsRequired = Validator::param('slotsRequired')->isNumber()->getValue();
         $slotType = Validator::param('slotType')->isString()->getValue();
         if ($slotType || $slotsRequired) {
-            Helper\User::checkRights();
+            (new Helper\User($request))->checkRights();
         } else {
             $slotsRequired = 0;
             $slotType = 'public';
@@ -31,15 +34,11 @@ class ProcessFree extends BaseController
         $entity = new \BO\Zmsentities\Calendar($input);
         $processList = $query->readFreeProcesses($entity, \App::getNow(), $slotType, $slotsRequired);
 
-        $message = Response\Message::create(Render::$request);
-        $message->data = null;
-        if (!$processList->getFirstProcess()) {
-            throw new Exception\Process\FreeProcessListEmpty();
-        } else {
-            $message->data = $processList->withLessData();
-        }
+        $message = Response\Message::create($request);
+        $message->data = $processList->withLessData();
 
-        Render::lastModified(time(), '0');
-        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message, 200);
+        return $response;
     }
 }

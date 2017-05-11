@@ -11,40 +11,31 @@ class ClusterCalldisplayImageDataGetTest extends Base
 {
     protected $classname = "ClusterCalldisplayImageDataGet";
 
-    const SCOPE_ID = 141;
-
     const CLUSTER_ID = 109;
 
     public function testRendering()
     {
-        User::$workstation = new Workstation([
-            'id' => '138',
-            'useraccount' => new Useraccount([
-                'id' => 'berlinonline',
-                'rights' => [
-                    'superuser' => true,
-                    'cluster' => true
-                ]
-            ]),
-            'scope' => new Scope([
-                'id' => self::SCOPE_ID,
-            ])
-        ]);
-        $response = $this->render([self::CLUSTER_ID], [], []);
+        $this->setWorkstation();
+        User::$workstation->useraccount->setRights('cluster');
+        $response = $this->render(['id'=>self::CLUSTER_ID], [], []);
         $this->assertContains('mimepart.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
     public function testEmpty()
     {
+        $this->setWorkstation();
+        User::$workstation->useraccount->setRights('cluster');
         $this->setExpectedException('\ErrorException');
-        $response = $this->render([], [], []);
+        $this->render([], [], []);
     }
 
     public function testClusterNotFound()
     {
+        $this->setWorkstation();
+        User::$workstation->useraccount->setRights('cluster');
         $this->expectException('\BO\Zmsapi\Exception\Cluster\ClusterNotFound');
         $this->expectExceptionCode(404);
-        $response = $this->render([999], [], []);
+        $this->render(['id'=>999], [], []);
     }
 }

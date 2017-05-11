@@ -43,8 +43,6 @@ class ProcessFreeTest extends Base
 
     public function testFreeProcessListEmpty()
     {
-        $this->expectException('\BO\Zmsapi\Exception\Process\FreeProcessListEmpty');
-        $this->expectExceptionCode(404);
         $response = $this->render([], [
             '__body' => '{
                 "requests": [
@@ -61,5 +59,7 @@ class ProcessFreeTest extends Base
                 ]
             }'
         ], []);
+        $this->assertContains('"data":{}', (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
     }
 }
