@@ -4,6 +4,7 @@ namespace BO\Zmsdb\Tests;
 
 use \BO\Zmsdb\Process as Query;
 use \BO\Zmsdb\ProcessStatusFree;
+use \BO\Zmsdb\ProcessStatusQueued;
 use \BO\Zmsentities\Process as Entity;
 use \BO\Zmsentities\Calendar;
 
@@ -27,7 +28,7 @@ class ProcessTest extends Base
     public function testReadByQueueNumberAndScope()
     {
         $now = new \DateTimeImmutable("2016-04-01 11:55");
-        $query = new Query();
+        $query = new ProcessStatusQueued();
         $scope = (new \BO\Zmsdb\Scope())->readEntity(141);
         $process = $query->writeNewFromTicketprinter($scope, $now);
         $process = $query->readByQueueNumberAndScope($process->queue['number'], $scope->id);
