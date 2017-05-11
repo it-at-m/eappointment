@@ -1,6 +1,6 @@
 <?php
 /**
- * @package 115Mandant
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -11,26 +11,30 @@ use \BO\Mellon\Validator;
 use \BO\Zmsdb\Calldisplay as Query;
 use \BO\Zmsentities\Calldisplay as Entity;
 
-/**
-  * Handle requests concerning services
-  */
 class CalldisplayGet extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render()
-    {
-        $message = Response\Message::create(Render::$request);
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
         $query = new Query();
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $input = Validator::input()->isJson()->assertValid()->getValue();
-
         $entity = new Entity($input);
         if (! $entity->hasScopeList() && ! $entity->hasClusterList()) {
             throw new Exception\Calldisplay\ScopeAndClusterNotFound();
         }
-        $message->data = $query->readResolvedEntity($entity, \App::getNow());
-        Render::lastModified(time(), '0');
-        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
+
+        $message = Response\Message::create($request);
+        $message->data = $query->readResolvedEntity($entity, \App::getNow(), $resolveReferences);
+
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+        return $response;
     }
 }
