@@ -3,6 +3,7 @@
 namespace BO\Zmsdb\Tests;
 
 use \BO\Zmsdb\Process as Query;
+use \BO\Zmsdb\ProcessStatusFree;
 use \BO\Zmsentities\Process as Entity;
 use \BO\Zmsentities\Calendar;
 
@@ -17,7 +18,7 @@ class ProcessTest extends Base
         $this->setExpectedException('\BO\Zmsdb\Exception\Process\ProcessAuthFailed');
 
         $now = new \DateTimeImmutable("2016-04-01 11:55");
-        $query = new Query();
+        $query = new ProcessStatusFree();
         $input = $this->getTestProcessEntity();
         $process = $query->writeEntityReserved($input, $now);
         $process = $query->readEntity($process->id, '1234');
@@ -50,7 +51,7 @@ class ProcessTest extends Base
         $this->setExpectedException('\BO\Zmsdb\Exception\Process\ProcessReserveFailed');
 
         $now = new \DateTimeImmutable("2016-04-01 11:55");
-        $query = new Query();
+        $query = new ProcessStatusFree();
         $input = $this->getTestProcessEntity();
         $process = $query->writeEntityReserved($input, $now);
         $process = $query->writeEntityReserved($process, $now);
@@ -60,7 +61,7 @@ class ProcessTest extends Base
     public function testExceptionSQLUpdateFailed()
     {
         $now = new \DateTimeImmutable("2016-04-01 11:55");
-        $query = new Query();
+        $query = new ProcessStatusFree();
         $input = $this->getTestProcessEntity();
         $input->id = 1000;
         try {
@@ -74,7 +75,7 @@ class ProcessTest extends Base
     public function testUpdateProcess()
     {
         $now = new \DateTimeImmutable("2016-04-01 11:55");
-        $query = new Query();
+        $query = new ProcessStatusFree();
         $input = $this->getTestProcessEntity();
         $process = $query->writeEntityReserved($input, $now);
         $process->amendment = 'Test amendment';
@@ -92,7 +93,7 @@ class ProcessTest extends Base
     public function testProcessStatusCalled()
     {
         $now = new \DateTimeImmutable("2016-04-01 11:55");
-        $query = new Query();
+        $query = new ProcessStatusFree();
         $input = $this->getTestProcessEntity();
         $input->queue['callTime'] = 1464350400;
         $process = $query->writeEntityReserved($input, $now);
@@ -110,7 +111,7 @@ class ProcessTest extends Base
     public function testReadSlotCount()
     {
         $now = new \DateTimeImmutable("2016-04-01 11:55");
-        $query = new Query();
+        $query = new ProcessStatusFree();
         $input = $this->getTestProcessEntity();
         $process = $query->writeEntityReserved($input, $now);
         $process = $query->readSlotCount($process);
@@ -120,7 +121,7 @@ class ProcessTest extends Base
     public function testMultipleSlots()
     {
         $now = new \DateTimeImmutable("2016-04-01 11:55");
-        $query = new Query();
+        $query = new ProcessStatusFree();
         $input = $this->getTestProcessEntity();
         $input->getFirstAppointment()->slotCount = 3;
         $process = $query->writeEntityReserved($input, $now);
@@ -131,7 +132,7 @@ class ProcessTest extends Base
     public function testDeleteProcess()
     {
         $now = new \DateTimeImmutable("2016-04-01 11:55");
-        $query = new Query();
+        $query = new ProcessStatusFree();
         $input = $this->getTestProcessEntity();
         $process = $query->writeEntityReserved($input, $now);
         $deleteTest = $query->deleteEntity($process->id, $process->authKey);
@@ -147,7 +148,7 @@ class ProcessTest extends Base
     public function testReserveProcess()
     {
         $now = new \DateTimeImmutable("2016-04-01 11:55");
-        $query = new Query();
+        $query = new ProcessStatusFree();
         $input = $this->getTestProcessEntity();
         $process = $query->writeEntityReserved($input, $now);
         $authCheck = $query->readAuthKeyByProcessId($process->id);
@@ -165,19 +166,18 @@ class ProcessTest extends Base
 
     public function testStatusFree()
     {
-        $query = new Query();
         $now = new \DateTimeImmutable("2016-05-30 08:00");
 
         $calendar = $this->getTestCalendarEntity();
         $calendar->addFirstAndLastDay($now->getTimestamp(), 'Europe/Berlin');
 
-        $processList = $query->readFreeProcesses($calendar, $now);
+        $processList = ProcessStatusFree::init()->readFreeProcesses($calendar, $now);
         $this->assertTrue(0 < count($processList));
     }
 
     public function testStatusReserved()
     {
-        $query = new Query();
+        $query = new ProcessStatusFree();
         $processList = $query->readReservedProcesses();
         $firstProcess = $processList->getFirstProcess();
         $process = $query->readEntity($firstProcess->id, $firstProcess->authKey);
