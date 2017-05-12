@@ -10,8 +10,6 @@ namespace BO\Zmsapi;
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\Calendar as Query;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
 
 class CalendarGet extends BaseController
 {
@@ -19,8 +17,11 @@ class CalendarGet extends BaseController
      * @SuppressWarnings(Param)
      * @return String
      */
-    public function __invoke(RequestInterface $request, ResponseInterface $response, array $args)
-    {
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
         $slotsRequired = Validator::param('slotsRequired')->isNumber()->getValue();
         $slotType = Validator::param('slotType')->isString()->getValue();
         if ($slotType || $slotsRequired) {
@@ -41,8 +42,8 @@ class CalendarGet extends BaseController
             throw new Exception\Calendar\InvalidFirstDay('First and last day are required');
         } else {
             $calendar = $query
-                ->readResolvedEntity($calendar, \App::getNow(), null, $slotType, $slotsRequired)
-                ->withLessData();
+              ->readResolvedEntity($calendar, \App::getNow(), null, $slotType, $slotsRequired)
+              ->withLessData();
             if ($fillWithEmptyDays) {
                 $calendar = $calendar->withFilledEmptyDays();
             }
