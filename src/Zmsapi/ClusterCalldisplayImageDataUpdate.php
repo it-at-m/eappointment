@@ -27,7 +27,7 @@ class ClusterCalldisplayImageDataUpdate extends BaseController
             throw new Exception\Cluster\ClusterNotFound();
         }
 
-        $input = Validator::input()->isJson()->assertValid()->getValue();
+        $input = Validator::input()->isJson()->getValue();
         $mimepart = new \BO\Zmsentities\Mimepart($input);
 
         $message = Response\Message::create($request);
