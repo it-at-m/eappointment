@@ -50,9 +50,7 @@ class AvailabilityAddTest extends Base
         $this->expectException('\BO\Zmsapi\Exception\Availability\AvailabilityNotFound');
         $this->expectExceptionCode(404);
         $this->render([], [
-            '__body' => '[
-                
-            ]'
+            '__body' => '[]'
         ], []);
     }
 }
