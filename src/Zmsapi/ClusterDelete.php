@@ -1,6 +1,6 @@
 <?php
 /**
- * @package 115Mandant
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -10,22 +10,30 @@ use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\Cluster as Query;
 
-/**
-  * Handle requests concerning services
-  */
 class ClusterDelete extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render($itemId)
-    {
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        (new Helper\User($request))->checkRights('cluster');
         $query = new Query();
-        $message = Response\Message::create(Render::$request);
-        $cluster = $query->readEntity($itemId);
-        $query->deleteEntity($itemId);
+        $cluster = $query->readEntity($args['id']);
+        if (! $cluster) {
+            throw new Exception\Cluster\ClusterNotFound();
+        }
+        $query->deleteEntity($cluster->id);
+
+        $message = Response\Message::create($request);
         $message->data = $cluster;
-        Render::lastModified(time(), '0');
-        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
+
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+        return $response;
     }
 }

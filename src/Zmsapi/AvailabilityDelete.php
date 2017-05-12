@@ -1,6 +1,6 @@
 <?php
 /**
- * @package 115Mandant
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -9,9 +9,6 @@ namespace BO\Zmsapi;
 use \BO\Slim\Render;
 use \BO\Zmsdb\Availability as Query;
 
-/**
-  * Handle requests concerning services
-  */
 class AvailabilityDelete extends BaseController
 {
     /**
@@ -24,9 +21,10 @@ class AvailabilityDelete extends BaseController
     ) {
         (new Helper\User($request))->checkRights();
         $query = new Query();
-        $message = Response\Message::create($request);
         $entity = $query->readEntity($args['id']);
         $query->deleteEntity($args['id']);
+
+        $message = Response\Message::create($request);
         $message->data = $entity;
 
         $response = Render::withLastModified($response, time(), '0');
