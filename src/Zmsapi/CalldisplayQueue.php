@@ -30,7 +30,7 @@ class CalldisplayQueue extends BaseController
         $this->testScopeAndCluster($calldisplay);
 
         $queueList = new \BO\Zmsentities\Collection\QueueList();
-        foreach ($calldisplay->scopes as $scope) {
+        foreach ($calldisplay->getFullScopeList() as $scope) {
             $queueList->addList($this->getCalculatedQueueListFromScope($scope, $resolveReferences));
         }
 
