@@ -450,7 +450,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  type: integer
  *          responses:
  *              200:
- *                  description: "success"
+ *                  description: "success, return empty queueList if no entry was found"
  *                  schema:
  *                      type: object
  *                      properties:
