@@ -44,6 +44,22 @@ class Calldisplay extends Schema\Entity
         return $this;
     }
 
+    public function getFullScopeList()
+    {
+        $scopeList = $this->getScopeList();
+        foreach ($this->clusters as $cluster) {
+            if (array_key_exists('scopes', $cluster)) {
+                foreach ($cluster['scopes'] as $clusterScope) {
+                    $scope = new Scope($clusterScope);
+                    if (! $scopeList->hasEntity($scope['id'])) {
+                        $scopeList->addEntity($scope);
+                    }
+                }
+            }
+        }
+        return $scopeList;
+    }
+
     public function getScopeList()
     {
         if (!$this->scopes instanceof Collection\ScopeList) {
