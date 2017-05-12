@@ -1,6 +1,6 @@
 <?php
 /**
- * @package 115Mandant
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -11,21 +11,23 @@ use \BO\Mellon\Validator;
 use \BO\Zmsdb\Scope as Query;
 use \BO\Zmsentities\Helper\DateTime;
 
-/**
-  * Handle requests concerning services
-  */
 class ProcessNextByScope extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render($scopeId)
-    {
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        (new Helper\User($request))->checkRights();
         $query = new Query();
         $selectedDate = Validator::param('date')->isString()->getValue();
         $exclude = Validator::param('exclude')->isString()->getValue();
         $dateTime = ($selectedDate) ? new DateTime($selectedDate) : \App::$now;
-        $scope = $query->readEntity($scopeId)->withLessData();
+        $scope = $query->readEntity($args['id']);
         if (! $scope) {
             throw new Exception\Scope\ScopeNotFound();
         }
@@ -34,10 +36,11 @@ class ProcessNextByScope extends BaseController
         if (! $process) {
             throw new Exception\Process\ProcessNotFound();
         }
-
-        $message = Response\Message::create(Render::$request);
+        $message = Response\Message::create($request);
         $message->data = $process;
-        Render::lastModified(time(), '0');
-        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
+
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+        return $response;
     }
 }
