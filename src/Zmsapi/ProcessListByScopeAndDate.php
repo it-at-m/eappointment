@@ -1,6 +1,6 @@
 <?php
 /**
- * @package Zmsapi
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -10,26 +10,33 @@ use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\Scope as Query;
 
-/**
-  * Handle requests concerning services
-  */
 class ProcessListByScopeAndDate extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render($scopeId, $dayString)
-    {
-        Helper\User::checkRights();
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        (new Helper\User($request))->checkRights('scope');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
+        $dateTime = new \BO\Zmsentities\Helper\DateTime($args['date']);
 
         $query = new Query();
-        $dateTime = new \BO\Zmsentities\Helper\DateTime($dayString);
-        $queueList = $query->readQueueList($scopeId, $dateTime, $resolveReferences);
+        $scope = $query->readEntity($args['id'], $resolveReferences);
+        if (! $scope) {
+            throw new Exception\Scope\ScopeNotFound();
+        }
+        $queueList = $query->readQueueList($scope->id, $dateTime, $resolveReferences);
 
-        $message = Response\Message::create(Render::$request);
+        $message = Response\Message::create($request);
         $message->data = $queueList->toProcessList();
-        Render::lastModified(time(), '0');
-        Render::json($message, 200);
+
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message, 200);
+        return $response;
     }
 }

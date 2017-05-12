@@ -1,6 +1,6 @@
 <?php
 /**
- * @package Zmsapi
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -10,26 +10,34 @@ use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\Cluster as Query;
 
-/**
-  * Handle requests concerning services
-  */
 class ProcessListByClusterAndDate extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render($clusterId, $dayString)
-    {
-        Helper\User::checkRights('useraccount');
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        (new Helper\User($request))->checkRights('cluster');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
+        $dateTime = new \BO\Zmsentities\Helper\DateTime($args['date']);
 
         $query = new Query();
-        $dateTime = new \BO\Zmsentities\Helper\DateTime($dayString);
-        $queueList = $query->readQueueList($clusterId, $dateTime, $resolveReferences);
+        $cluster = $query->readEntity($args['id'], $resolveReferences);
+        if (! $cluster) {
+            throw new Exception\Cluster\ClusterNotFound();
+        }
 
-        $message = Response\Message::create(Render::$request);
+        $queueList = $query->readQueueList($cluster->id, $dateTime, $resolveReferences);
+
+        $message = Response\Message::create($request);
         $message->data = $queueList->toProcessList();
-        Render::lastModified(time(), '0');
-        Render::json($message, 200);
+
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message, 200);
+        return $response;
     }
 }
