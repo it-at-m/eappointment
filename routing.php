@@ -568,7 +568,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  type: integer
  *          responses:
  *              200:
- *                  description: "success"
+ *                  description: "success, return exception with code 200 if ticketprinter is disabled"
  *                  schema:
  *                      type: object
  *                      properties:
@@ -579,11 +579,11 @@ use \Psr\Http\Message\ResponseInterface;
  *              403:
  *                  description: "hash is not valid"
  *              404:
- *                  description: "cluster id does not exists"
+ *                  description: "cluster id does not exists, reserve process failed"
  */
 \App::$slim->get('/cluster/{id:\d{1,11}}/waitingnumber/{hash}/',
     '\BO\Zmsapi\TicketprinterWaitingnumberByCluster')
-    ->setName("TicketprinterWaitingnumberByCluster:");
+    ->setName("TicketprinterWaitingnumberByCluster");
 
 /**
  *  @swagger
