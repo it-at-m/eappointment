@@ -1,6 +1,6 @@
 <?php
 /**
- * @package 115Mandant
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -17,22 +17,30 @@ use \BO\Zmsdb\Scope;
 class OrganisationByScope extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render($itemId)
-    {
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        (new Helper\User($request))->checkRights();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
-        $scope = (new Scope())->readEntity($itemId, 0);
+        $scope = (new Scope())->readEntity($args['id'], 0);
         if (! $scope) {
             throw new Exception\Scope\ScopeNotFound();
         }
-        $organisation = (new Query())->readByScopeId($itemId, $resolveReferences);
+        $organisation = (new Query())->readByScopeId($scope->id, $resolveReferences);
         if (! $organisation) {
             throw new Exception\Organisation\OrganisationNotFound();
         }
-        $message = Response\Message::create(Render::$request);
+
+        $message = Response\Message::create($request);
         $message->data = $organisation;
-        Render::lastModified(time(), '0');
-        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
+
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+        return $response;
     }
 }

@@ -711,6 +711,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                  in: path
  *                  required: true
  *                  type: integer
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
  *          responses:
  *              200:
  *                  description: "success"
@@ -722,7 +726,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                          data:
  *                              $ref: "schema/organisation.json"
  *              404:
- *                  description: "organisation id does not exists"
+ *                  description: "organisation or cluster id does not exists"
  */
 \App::$slim->get('/cluster/{id:\d{1,4}}/organisation/',
     '\BO\Zmsapi\OrganisationByCluster')
@@ -3477,6 +3481,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                  in: path
  *                  required: true
  *                  type: integer
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
  *          responses:
  *              200:
  *                  description: "success"
@@ -3488,7 +3496,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                          data:
  *                              $ref: "schema/organisation.json"
  *              404:
- *                  description: "organisation id does not exists"
+ *                  description: "organisation or scope id does not exists"
  */
 \App::$slim->get('/scope/{id:\d{1,4}}/organisation/',
     '\BO\Zmsapi\OrganisationByScope')
