@@ -7,7 +7,7 @@ namespace BO\Zmsdb\Exception;
  */
 class TicketprinterUnvalidButtonList extends \Exception
 {
-    protected $code = 500;
+    protected $code = 404;
 
     protected $message = "Failed to get buttons of buttonlist, maybe one scope or cluster does not exist";
 }
