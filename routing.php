@@ -411,6 +411,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                  in: path
  *                  required: true
  *                  type: integer
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
  *          responses:
  *              200:
  *                  description: get a process
@@ -444,6 +448,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                  in: path
  *                  required: true
  *                  type: integer
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
  *              -   name: resolveReferences
  *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
  *                  in: query
@@ -3310,6 +3318,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                  in: path
  *                  required: true
  *                  type: integer
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
  *          responses:
  *              200:
  *                  description: get a process
@@ -3343,6 +3355,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                  in: path
  *                  required: true
  *                  type: integer
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
  *              -   name: id
  *                  description: number of scope
  *                  in: path
@@ -3490,7 +3506,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  type: integer
  *          responses:
  *              200:
- *                  description: "success"
+ *                  description: "success, return empty queueList if no entry was found"
  *                  schema:
  *                      type: object
  *                      properties:

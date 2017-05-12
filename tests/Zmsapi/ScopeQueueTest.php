@@ -4,15 +4,15 @@ namespace BO\Zmsapi\Tests;
 
 use BO\Zmsapi\Helper\User;
 
-class ClusterQueueTest extends Base
+class ScopeQueueTest extends Base
 {
-    protected $classname = "ClusterQueue";
+    protected $classname = "ScopeQueue";
 
     public function testRendering()
     {
         $this->setWorkstation();
-        User::$workstation->useraccount->setRights('cluster');
-        $response = $this->render(['id' => 109], [], []);
+        User::$workstation->useraccount->setRights('scope');
+        $response = $this->render(['id' => 141], [], []);
         $this->assertContains('queue.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
@@ -20,17 +20,17 @@ class ClusterQueueTest extends Base
     public function testQueueEmpty()
     {
         $this->setWorkstation();
-        User::$workstation->useraccount->setRights('cluster');
-        $response = $this->render(['id' => 109], ['date' => '2015-04-01'], []);
+        User::$workstation->useraccount->setRights('scope');
+        $response = $this->render(['id' => 141], ['date' => '2015-04-01'], []);
         $this->assertContains('"data":{}', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
-    public function testClusterNotFound()
+    public function testScopeNotFound()
     {
         $this->setWorkstation();
-        User::$workstation->useraccount->setRights('cluster');
-        $this->expectException('\BO\Zmsapi\Exception\Cluster\ClusterNotFound');
+        User::$workstation->useraccount->setRights('scope');
+        $this->expectException('\BO\Zmsapi\Exception\Scope\ScopeNotFound');
         $this->expectExceptionCode(404);
         $this->render(['id' => 999], [], []);
     }
