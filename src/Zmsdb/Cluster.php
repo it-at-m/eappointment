@@ -295,7 +295,7 @@ class Cluster extends Base
         $this->writeItem($query);
         $lastInsertId = $this->getWriter()->lastInsertId();
         if ($entity->toProperty()->scopes->isAvailable()) {
-            $this->writeAssignedScopes($entity->id, $entity->scopes);
+            $this->writeAssignedScopes($lastInsertId, $entity->scopes);
         }
         return $this->readEntity($lastInsertId, 1);
     }
