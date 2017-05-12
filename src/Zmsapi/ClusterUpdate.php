@@ -1,6 +1,6 @@
 <?php
 /**
- * @package 115Mandant
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -10,21 +10,29 @@ use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\Cluster as Query;
 
-/**
-  * Handle requests concerning services
-  */
 class ClusterUpdate extends BaseController
 {
     /**
      * @return String
      */
-    public static function render($itemId)
-    {
-        $message = Response\Message::create(Render::$request);
-        $input = Validator::input()->isJson()->getValue();
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        (new Helper\User($request))->checkRights('cluster');
+        $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Cluster($input);
-        $message->data = (new Query())->updateEntity($itemId, $entity);
-        Render::lastModified(time(), '0');
-        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
+        $cluster = (new Query())->readEntity($args['id']);
+        if (! $cluster) {
+            throw new Exception\Cluster\ClusterNotFound();
+        }
+
+        $message = Response\Message::create($request);
+        $message->data = (new Query())->updateEntity($cluster->id, $entity);
+
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+        return $response;
     }
 }
