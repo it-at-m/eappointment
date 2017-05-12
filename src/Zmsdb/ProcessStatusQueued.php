@@ -10,7 +10,6 @@ use BO\Zmsdb\Helper\ProcessStatus as Status;
  */
 class ProcessStatusQueued extends Process
 {
-
     public function writeNewFromTicketprinter(\BO\Zmsentities\Scope $scope, \DateTimeInterface $dateTime)
     {
         $process = Entity::createFromScope($scope, $dateTime);

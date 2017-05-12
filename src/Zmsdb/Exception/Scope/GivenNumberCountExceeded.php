@@ -4,7 +4,7 @@ namespace BO\Zmsdb\Exception\Scope;
 
 class GivenNumberCountExceeded extends \Exception
 {
-    protected $error = 500;
+    protected $code = 404;
 
     protected $message = "Queue numbers contingent exceeded";
 }

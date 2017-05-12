@@ -7,7 +7,7 @@ namespace BO\Zmsdb\Exception;
  */
 class TicketprinterTooManyButtons extends \Exception
 {
-    protected $code = 500;
+    protected $code = 404;
 
     protected $message = "Only 6 buttons are allowed";
 }
