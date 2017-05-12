@@ -38,25 +38,24 @@ class DepartmentAddScope extends BaseController
             )
         )->getCollection()->sortByName();
 
-        $parentId = Validator::value($args['id'])->isNumber()->getValue();
+        $departmentId = Validator::value($args['id'])->isNumber()->getValue();
+        $department = \App::$http
+            ->readGetResult('/department/'. $departmentId .'/', ['resolveReferences' => 2])->getEntity();
         $input = $request->getParsedBody();
         if (is_array($input) && array_key_exists('save', $input)) {
-            try {
-                $entity = new Entity($input);
-                $entity = \App::$http->readPostResult('/department/'. $parentId .'/scope/', $entity)
-                    ->getEntity();
-                return \BO\Slim\Render::redirect(
-                    'scope',
-                    array(
-                        'id' => $entity->id
-                    ),
-                    array(
-                        'success' => 'scope_created'
-                    )
-                );
-            } catch (\Exception $exception) {
-                return Helper\Render::error($exception);
-            }
+            $entity = (new Entity($input))->withCleanedUpFormData();
+            $entity->hint = implode(' | ', $input['hint']);
+            $entity = \App::$http->readPostResult('/department/'. $department->id .'/scope/', $entity)
+                ->getEntity();
+            return \BO\Slim\Render::redirect(
+                'scope',
+                array(
+                    'id' => $entity->id
+                ),
+                array(
+                    'success' => 'scope_created'
+                )
+            );
         }
 
         return \BO\Slim\Render::withHtml($response, 'page/scope.twig', array(

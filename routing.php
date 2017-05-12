@@ -87,7 +87,7 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/department/{departmentId:\d+}/cluster/{clusterId:\d+}/delete/', '\BO\Zmsadmin\ClusterDelete')
     ->setName("clusterDelete");
 
-\App::$slim->get('/department/{departmentId:\d+}/cluster/', '\BO\Zmsadmin\DepartmentAddCluster')
+\App::$slim->map(['GET','POST'], '/department/{departmentId:\d+}/cluster/', '\BO\Zmsadmin\DepartmentAddCluster')
     ->setName("departmentAddCluster");
 
 \App::$slim->map(['GET','POST'], '/department/{id:\d+}/scope/', '\BO\Zmsadmin\DepartmentAddScope')
