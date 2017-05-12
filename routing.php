@@ -761,7 +761,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  type: integer
  *          responses:
  *              200:
- *                  description: "success"
+ *                  description: "success, also if process list is empty"
  *                  schema:
  *                      type: object
  *                      properties:
@@ -3155,7 +3155,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  type: integer
  *          responses:
  *              200:
- *                  description: "success"
+ *                  description: "success, also if process list is empty"
  *                  schema:
  *                      type: object
  *                      properties:
