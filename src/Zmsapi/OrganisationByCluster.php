@@ -1,6 +1,6 @@
 <?php
 /**
- * @package 115Mandant
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -17,22 +17,30 @@ use \BO\Zmsdb\Cluster;
 class OrganisationByCluster extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render($itemId)
-    {
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        (new Helper\User($request))->checkRights();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
-        $cluster = (new Cluster())->readEntity($itemId, 0);
-        if ($cluster && ! $cluster->hasId()) {
+        $cluster = (new Cluster())->readEntity($args['id']);
+        if (! $cluster) {
             throw new Exception\Cluster\ClusterNotFound();
         }
-        $organisation = (new Query())->readByClusterId($itemId, $resolveReferences);
+        $organisation = (new Query())->readByClusterId($cluster->id, $resolveReferences);
         if (! $organisation) {
             throw new Exception\Organisation\OrganisationNotFound();
         }
-        $message = Response\Message::create(Render::$request);
+
+        $message = Response\Message::create($request);
         $message->data = $organisation;
-        Render::lastModified(time(), '0');
-        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
+
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+        return $response;
     }
 }
