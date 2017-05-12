@@ -246,7 +246,7 @@ class Scope extends Base implements MappingInterface
         $data['Hinweis'] = $entity->getScopeHint();
         $data['Bezeichnung'] = $entity->getName();
         $data['standortkuerzel'] = $entity->shortName;
-        $data['Adresse'] = $entity->contact['street'];
+        $data['Adresse'] = (isset($entity->contact['street'])) ? $entity->contact['street'] : '';
         $data['loeschdauer'] = $entity->getPreference('appointment', 'deallocationDuration');
         $data['Termine_bis'] = $entity->getPreference('appointment', 'endInDaysDefault');
         $data['Termine_ab'] = $entity->getPreference('appointment', 'startInDaysDefault');
