@@ -51,8 +51,6 @@ class CalldisplayQueueTest extends Base
                 ]
             }'
         ], []);
-        $this->assertContains('queue.json', (string)$response->getBody());
-        $this->assertTrue(200 == $response->getStatusCode());
     }
 
     public function testScopeNotFound()
