@@ -1,6 +1,6 @@
 <?php
 /**
- * @package 115Mandant
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -12,18 +12,18 @@ use \BO\Zmsdb\Ticketprinter as Query;
 use \BO\Zmsdb\Cluster;
 use \BO\Zmsdb\ProcessStatusQueued;
 
-/**
-  * Handle requests concerning services
-  */
 class TicketprinterWaitingnumberByCluster extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render($clusterId, $hash)
-    {
-        $message = Response\Message::create(Render::$request);
-        $ticketprinter = (new Query())->readByHash($hash);
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        $ticketprinter = (new Query())->readByHash($args['hash']);
 
         if (! $ticketprinter->hasId()) {
             throw new Exception\Ticketprinter\TicketprinterHashNotValid();
@@ -32,20 +32,19 @@ class TicketprinterWaitingnumberByCluster extends BaseController
             throw new Exception\Ticketprinter\TicketprinterNotEnabled();
         }
 
-        $cluster = (new Cluster())->readEntity($clusterId, 0);
+        $cluster = (new Cluster())->readEntity($args['id'], 0);
         if (! $cluster) {
             throw new Exception\Cluster\ClusterNotFound();
         }
 
         $scope = (new Cluster())->readScopeWithShortestWaitingTime($cluster->id, \App::$now);
         $process = ProcessStatusQueued::init()->writeNewFromTicketprinter($scope, \App::$now);
-        if (! $process->hasId()) {
-            throw new Exception\Process\ProcessReserveFailed();
-        }
 
+        $message = Response\Message::create($request);
         $message->data = $process;
 
-        Render::lastModified(time(), '0');
-        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+        return $response;
     }
 }
