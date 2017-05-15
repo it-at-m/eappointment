@@ -45,7 +45,7 @@ class DaysOffView extends Component {
     }
 
     changeItemField(index, field, value) {
-        console.log('change item field', index, field, value)
+        //console.log('change item field', index, field, value)
         this.setState({
             days: this.state.days.map((day, dayIndex) => {
                 return index === dayIndex ? Object.assign({}, day, { [field]: value }) : day
