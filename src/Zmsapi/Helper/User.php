@@ -78,10 +78,10 @@ class User
     {
         $workstation = static::readWorkstation();
         $userAccount = $workstation->getUseraccount();
-        if (!$userAccount->hasId()) {
+        if (! $userAccount->hasId()) {
             throw new \BO\Zmsentities\Exception\UserAccountMissingLogin();
         }
-        if (!$userAccount->isSuperUser()) {
+        if (! $userAccount->isSuperUser()) {
             $department = $userAccount->testDepartmentById($departmentId);
         } else {
             $department = (new \BO\Zmsdb\Department())->readEntity($departmentId);

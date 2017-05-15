@@ -1147,10 +1147,14 @@ use \Psr\Http\Message\ResponseInterface;
  *                              type: array
  *                              items:
  *                                  $ref: "schema/organisation.json"
+ *              403:
+ *                  description: "department is not assigned to logged in useraccount"
+ *              404:
+ *                  description: "department does not exist"
  */
 \App::$slim->get('/department/{id:\d{1,11}}/organisation/',
-    '\BO\Zmsapi\DepartmentOrganisation')
-    ->setName("DepartmentOrganisation");
+    '\BO\Zmsapi\OrganisationByDepartment')
+    ->setName("OrganisationByDepartment");
 
 /**
  *  @swagger
@@ -1186,6 +1190,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                              type: array
  *                              items:
  *                                  $ref: "schema/useraccount.json"
+ *              403:
+ *                  description: "department is not assigned to logged in useraccount"
+ *              404:
+ *                  description: "department does not exist"
  */
 \App::$slim->get('/department/{id:\d{1,11}}/useraccount/',
     '\BO\Zmsapi\DepartmentUseraccountList')
@@ -1225,6 +1233,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                              type: array
  *                              items:
  *                                  $ref: "schema/workstation.json"
+ *              403:
+ *                  description: "department is not assigned to logged in useraccount"
+ *              404:
+ *                  description: "department does not exist"
  */
 \App::$slim->get('/department/{id:\d{1,11}}/workstation/',
     '\BO\Zmsapi\DepartmentWorkstationList')

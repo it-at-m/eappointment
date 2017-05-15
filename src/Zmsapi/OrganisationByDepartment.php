@@ -8,10 +8,10 @@ namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
-use \BO\Zmsdb\Organisation as Query;
-use \BO\Zmsdb\Cluster;
+use \BO\Zmsdb\Organisation;
+use \BO\Zmsdb\Department;
 
-class OrganisationByCluster extends BaseController
+class OrganisationByDepartment extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
@@ -22,16 +22,15 @@ class OrganisationByCluster extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights();
-        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
-        $cluster = (new Cluster())->readEntity($args['id']);
-        if (! $cluster) {
-            throw new Exception\Cluster\ClusterNotFound();
+        $workstation = (new Helper\User($request))->checkRights('useraccount');
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
+        $department = Helper\User::checkDepartment($args['id']);
+        if (! $department->hasId()) {
+            throw new Exception\Department\DepartmentNotFound();
         }
-        $organisation = (new Query())->readByClusterId($cluster->id, $resolveReferences);
-        if (! $organisation) {
-            throw new Exception\Organisation\OrganisationNotFound();
-        }
+
+        $organisation = (new Organisation())->readByDepartmentId($department->id, $resolveReferences);
+        $organisation->departments = $organisation->getDepartmentList()->withAccess($workstation->getUseraccount());
 
         $message = Response\Message::create($request);
         $message->data = $organisation;
