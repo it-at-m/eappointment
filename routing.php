@@ -2662,8 +2662,8 @@ use \Psr\Http\Message\ResponseInterface;
  *                  description: "provider id does not exists"
  */
 \App::$slim->get('/provider/{source}/{id:\d{1,11}}/scopes/',
-    '\BO\Zmsapi\ScopeByProviderList')
-    ->setName("ScopeByProviderList");
+    '\BO\Zmsapi\ScopeListByProvider')
+    ->setName("ScopeListByProvider");
 
 /**
  *  @swagger
@@ -3082,8 +3082,8 @@ use \Psr\Http\Message\ResponseInterface;
  *                  description: "cluster id does not exists"
  */
 \App::$slim->get('/scope/cluster/{id:\d{1,11}}/',
-    '\BO\Zmsapi\ScopeByClusterList')
-    ->setName("ScopeByClusterList");
+    '\BO\Zmsapi\ScopeListByCluster')
+    ->setName("ScopeListByCluster");
 
 /**
  *  @swagger
