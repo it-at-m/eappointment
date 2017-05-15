@@ -1,6 +1,6 @@
 <?php
 /**
- * @package 115Mandant
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -10,26 +10,30 @@ use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\DayOff as Query;
 
-/**
-  * Handle requests concerning services
-  */
 class DayoffUpdate extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render($year)
-    {
-        Helper\User::checkRights('superuser');
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        (new Helper\User($request))->checkRights('superuser');
 
         $query = new Query();
-        $input = Validator::input()->isJson()->getValue();
+        $input = Validator::input()->isJson()->assertValid()->getValue();
         $collection = new \BO\Zmsentities\Collection\DayoffList($input);
-        $collection->hasDatesInYear($year);
-        $collection = $query->writeCommonDayoffsByYear($input, $year);
-        $message = Response\Message::create(Render::$request);
+        $collection->testDatesInYear($args['year']);
+        $collection = $query->writeCommonDayoffsByYear($input, $args['year']);
+
+        $message = Response\Message::create($request);
         $message->data = $collection;
-        Render::lastModified(time(), '0');
-        Render::json($message, 200);
+
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message, 200);
+        return $response;
     }
 }

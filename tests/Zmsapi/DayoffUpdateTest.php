@@ -18,32 +18,44 @@ class DayoffUpdateTest extends Base
     public function testNoLogin()
     {
         $this->setExpectedException('BO\Zmsentities\Exception\UserAccountMissingLogin');
-        $this->render([self::YEAR], [
+        $this->render(['year' => self::YEAR], [
             '__body' => '',
         ], []);
     }
 
     public function testRendering()
     {
-        User::$workstation = new Workstation([
-            'id' => '138',
-            'useraccount' => new Useraccount([
-                'id' => 'berlinonline',
-                'rights' => [
-                    'superuser' => true
-                ]
-            ]),
-            'scope' => new Scope([
-                'id' => self::SCOPE_ID,
-            ])
-        ]);
+        $this->setWorkstation();
+        User::$workstation->useraccount->setRights('superuser');
         $dayoffList = new \BO\Zmsentities\Collection\DayoffList(
             json_decode($this->readFixture("GetDayoffList.json"))
         );
-        $response = $this->render([self::YEAR], [
+        $response = $this->render(['year' => self::YEAR], [
             '__body' => json_encode($dayoffList)
         ], []);
         $this->assertContains('dayoff.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
+    }
+
+    public function testUnvalidInput()
+    {
+        $this->setWorkstation();
+        User::$workstation->useraccount->setRights('superuser');
+        $this->setExpectedException('BO\Mellon\Failure\Exception');
+        $this->render([], [], []);
+    }
+
+    public function testDatesInYear()
+    {
+        $this->setWorkstation();
+        User::$workstation->useraccount->setRights('superuser');
+        $this->expectException('\BO\Zmsentities\Exception\DayoffWrongYear');
+        $this->expectExceptionCode(404);
+        $dayoffList = new \BO\Zmsentities\Collection\DayoffList(
+            json_decode($this->readFixture("GetDayoffList.json"))
+        );
+        $this->render(['year' => self::YEAR - 1], [
+            '__body' => json_encode($dayoffList)
+        ], []);
     }
 }

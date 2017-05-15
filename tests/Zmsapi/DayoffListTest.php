@@ -2,6 +2,8 @@
 
 namespace BO\Zmsapi\Tests;
 
+use BO\Zmsapi\Helper\User;
+
 class DayoffListTest extends Base
 {
     protected $classname = "DayoffList";
@@ -9,6 +11,7 @@ class DayoffListTest extends Base
     public function testRendering()
     {
         $this->setWorkstation();
+        User::$workstation->useraccount->setRights('superuser');
         $response = $this->render(['year' => 2016], [], []);
         $this->assertContains('dayoff.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
@@ -17,14 +20,16 @@ class DayoffListTest extends Base
     public function testEmpty()
     {
         $this->setWorkstation();
+        User::$workstation->useraccount->setRights('superuser');
         $this->setExpectedException('\ErrorException');
         $this->render([], [], []);
     }
 
     public function testNotFound()
     {
-        $testYear = (new \DateTimeImmutable)->modify('+ 11years')->format('Y');
         $this->setWorkstation();
+        User::$workstation->useraccount->setRights('superuser');
+        $testYear = \App::$now->modify('+ 11years')->format('Y');
         $this->expectException('\BO\Zmsapi\Exception\Dayoff\YearOutOfRange');
         $this->expectExceptionCode(404);
         $this->render(['year' => $testYear], [], []);
