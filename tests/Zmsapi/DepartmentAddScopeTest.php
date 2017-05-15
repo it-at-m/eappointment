@@ -8,7 +8,7 @@ class DepartmentAddScopeTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation();
+        $this->setWorkstation()->getUseraccount()->setRights('department');
         $response = $this->render(['id' => 72], [
             '__body' => '{
                   "shortName": "Test Scope",
@@ -24,7 +24,7 @@ class DepartmentAddScopeTest extends Base
 
     public function testUnvalidScope()
     {
-        $this->setWorkstation();
+        $this->setWorkstation()->getUseraccount()->setRights('department');
         $this->setExpectedException('\BO\Mellon\Failure\Exception');
         $this->render([], [], []);
     }

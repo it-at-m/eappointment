@@ -21,7 +21,7 @@ class DepartmentAddScope extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights();
+        (new Helper\User($request))->checkRights('department');
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $scope = new \BO\Zmsentities\Scope($input);
         $scope->testValid();
