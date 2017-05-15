@@ -11,9 +11,6 @@ use \BO\Mellon\Validator;
 use \BO\Zmsdb\Organisation as Query;
 use \BO\Zmsdb\Cluster;
 
-/**
-  * Handle requests concerning services
-  */
 class OrganisationByCluster extends BaseController
 {
     /**
