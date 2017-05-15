@@ -803,8 +803,6 @@ use \Psr\Http\Message\ResponseInterface;
  *                              type: array
  *                              items:
  *                                  $ref: "schema/config.json"
- *              404:
- *                  description: "config not found"
  *              401:
  *                  description: "authentification failed"
  */
