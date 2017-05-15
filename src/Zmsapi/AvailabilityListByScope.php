@@ -10,12 +10,10 @@ use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\Availability as Query;
 
-/**
-  * Handle requests concerning services
-  */
 class AvailabilityListByScope extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
     public function readResponse(

@@ -12,6 +12,7 @@ use \BO\Zmsdb\Availability as Query;
 class AvailabilityDelete extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
     public function readResponse(
@@ -21,11 +22,14 @@ class AvailabilityDelete extends BaseController
     ) {
         (new Helper\User($request))->checkRights();
         $query = new Query();
-        $entity = $query->readEntity($args['id']);
-        $query->deleteEntity($args['id']);
+        $availability = $query->readEntity($args['id']);
+        if (! $availability->hasId()) {
+            throw new Exception\Availability\AvailabilityNotFound();
+        }
+        $query->deleteEntity($availability->id);
 
         $message = Response\Message::create($request);
-        $message->data = $entity;
+        $message->data = $availability;
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), 200);

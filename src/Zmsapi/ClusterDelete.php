@@ -7,7 +7,6 @@
 namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
-use \BO\Mellon\Validator;
 use \BO\Zmsdb\Cluster as Query;
 
 class ClusterDelete extends BaseController

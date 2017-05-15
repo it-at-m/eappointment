@@ -4,26 +4,25 @@ namespace BO\Zmsapi\Tests;
 
 use BO\Zmsapi\Helper\User;
 
-class DepartmentDeleteTest extends Base
+class DepartmentGetTest extends Base
 {
-    protected $classname = "DepartmentDelete";
+    protected $classname = "DepartmentGet";
 
     public function testRendering()
     {
         $this->setWorkstation();
         User::$workstation->useraccount->setRights('department');
-        $response = $this->render(['id' => 999], [], []); //Test Department
+        $response = $this->render(['id' => 74], [], []);
         $this->assertContains('department.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
-    public function testHasChildren()
+    public function testEmpty()
     {
         $this->setWorkstation();
         User::$workstation->useraccount->setRights('department');
-        $this->expectException('\BO\Zmsdb\Exception\Department\ScopeListNotEmpty');
-        $this->expectExceptionCode(428);
-        $this->render(['id' => 74], [], []);
+        $this->setExpectedException('\ErrorException');
+        $this->render([], [], []);
     }
 
     public function testNotFound()
