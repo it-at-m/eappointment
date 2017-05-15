@@ -11,7 +11,7 @@ class Department extends Schema\Entity
     public function getDefaults()
     {
         return [
-            'id' => false,
+            'id' => 0,
             'scopes' => new Collection\ScopeList(),
             'links' => new Collection\LinkList(),
             'dayoff' => new Collection\DayoffList(),
