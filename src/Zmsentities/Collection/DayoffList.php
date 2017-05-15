@@ -44,7 +44,7 @@ class DayoffList extends Base
         return $collection;
     }
 
-    public function hasDatesInYear($year)
+    public function testDatesInYear($year)
     {
         foreach ($this as $data) {
             $entity = new \BO\Zmsentities\Dayoff($data); // if source is an array
