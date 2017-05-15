@@ -1,6 +1,6 @@
 <?php
 /**
- * @package 115Mandant
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -9,20 +9,29 @@ namespace BO\Zmsapi;
 use \BO\Slim\Render;
 use \BO\Zmsdb\DayOff as Query;
 
-/**
-  * Handle requests concerning services
-  */
 class DayoffList extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render($year)
-    {
-        $message = Response\Message::create(Render::$request);
-        $dayOffList = (new Query())->readCommonByYear($year);
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        (new Helper\User($request))->checkRights();
+        $yearRange = (new \DateTimeImmutable)->modify('+ 10years')->format('Y');
+        if ($args['year'] > $yearRange) {
+            throw new Exception\Dayoff\YearOutOfRange();
+        }
+        $dayOffList = (new Query())->readCommonByYear($args['year']);
+
+        $message = Response\Message::create($request);
         $message->data = $dayOffList;
-        Render::lastModified(time(), '0');
-        Render::json($message, 200);
+
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message, 200);
+        return $response;
     }
 }

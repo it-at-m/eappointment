@@ -827,13 +827,9 @@ use \Psr\Http\Message\ResponseInterface;
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
- *              -   name: resolveReferences
- *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
- *                  in: query
- *                  type: integer
  *          responses:
  *              200:
- *                  description: "success"
+ *                  description: "success, returns empty list if no dayoff was found"
  *                  schema:
  *                      type: object
  *                      properties:
