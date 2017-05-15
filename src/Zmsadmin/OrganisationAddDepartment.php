@@ -1,6 +1,6 @@
 <?php
 /**
- * @package 115Mandant
+ * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -9,10 +9,6 @@ namespace BO\Zmsadmin;
 use BO\Zmsentities\Department as Entity;
 use BO\Mellon\Validator;
 
-/**
-  * Handle requests concerning services
-  *
-  */
 class OrganisationAddDepartment extends BaseController
 {
     /**
@@ -25,31 +21,43 @@ class OrganisationAddDepartment extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
         $input = $request->getParsedBody();
-        $parentId = Validator::value($args['id'])->isNumber()->getValue();
+        $organisationId = Validator::value($args['id'])->isNumber()->getValue();
         if (is_array($input) && array_key_exists('save', $input)) {
-            try {
-                $entity = new Entity($input);
-                $department = \App::$http->readPostResult('/organisation/'. $parentId .'/department/', $entity)
-                    ->getEntity();
-                return \BO\Slim\Render::redirect(
-                    'department',
-                    array(
-                        'id' => $department->id
-                    ),
-                    array(
-                        'success' => 'department_created'
-                    )
-                );
-            } catch (\Exception $exception) {
-                return Helper\Render::error($exception);
-            }
+            $input = $this->cleanupLinks($input);
+            $entity = (new Entity($input))->withCleanedUpFormData();
+            $entity->dayoff = $entity->getDayoffList()->withTimestampFromDateformat();
+            $department = \App::$http->readPostResult('/organisation/'. $organisationId .'/department/', $entity)
+                ->getEntity();
+            return \BO\Slim\Render::redirect(
+                'department',
+                array(
+                    'id' => $department->id
+                ),
+                array(
+                    'success' => 'department_created'
+                )
+            );
         }
 
-        return \BO\Slim\Render::withHtml($response, 'page/department.twig', array(
-            'title' => 'Standort',
-            'action' => 'add',
-            'menuActive' => 'owner',
-            'workstation' => $workstation
-        ));
+        return \BO\Slim\Render::withHtml(
+            $response,
+            'page/department.twig',
+                array(
+                'title' => 'Standort',
+                'action' => 'add',
+                'menuActive' => 'owner',
+                'workstation' => $workstation
+            ));
+    }
+
+    protected function cleanupLinks(array $input)
+    {
+        $links = $input['links'];
+
+        $input['links'] = array_filter($links, function ($link) {
+            return !($link['name'] === '' && $link['url'] == '');
+        });
+
+        return $input;
     }
 }

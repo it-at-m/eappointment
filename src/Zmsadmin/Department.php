@@ -8,6 +8,7 @@ namespace BO\Zmsadmin;
 
 use BO\Zmsentities\Department as Entity;
 use BO\Mellon\Validator;
+use \BO\Zmsentities\Schema\Schema;
 
 /**
   * Handle requests concerning services
@@ -36,7 +37,7 @@ class Department extends BaseController
         $input = $request->getParsedBody();
         if (array_key_exists('save', (array) $input)) {
             $input = $this->cleanupLinks($input);
-            $entity = new Entity($input);
+            $entity =  new Entity($input);
             $entity->id = $entityId;
             $entity->dayoff = $entity->getDayoffList()->withTimestampFromDateformat();
             $entity = \App::$http->readPostResult(
@@ -56,7 +57,7 @@ class Department extends BaseController
             array(
                 'title' => 'Standort',
                 'workstation' => $workstation,
-                'department' => $entity->getArrayCopy(),
+                'department' => (new Schema($entity))->toSanitizedArray(),
                 'menuActive' => 'owner',
                 'confirm_success' => $confirm_success,
             )
