@@ -22,14 +22,11 @@ class AvailabilityDelete extends BaseController
     ) {
         (new Helper\User($request))->checkRights();
         $query = new Query();
-        $availability = $query->readEntity($args['id']);
-        if (! $availability->hasId()) {
-            throw new Exception\Availability\AvailabilityNotFound();
-        }
-        $query->deleteEntity($availability->id);
+        $entity = $query->readEntity($args['id']);
+        $query->deleteEntity($args['id']);
 
         $message = Response\Message::create($request);
-        $message->data = $availability;
+        $message->data = $entity;
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), 200);
