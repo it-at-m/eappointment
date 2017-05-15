@@ -6,14 +6,29 @@ class DepartmentUseraccountListTest extends Base
 {
     protected $classname = "DepartmentUseraccountList";
 
-    const DEPARTMENT_ID = 74;
-
     public function testRendering()
     {
         $this->setWorkstation()->useraccount->setRights('useraccount');
-        $this->setDepartment(static::DEPARTMENT_ID);
-        $response = $this->render([static::DEPARTMENT_ID], [], ['isAssigned' => true]);
+        $this->setDepartment(74);
+        $response = $this->render(['id' => 74], [], []);
         $this->assertContains('testuser', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
+    }
+
+    public function testDepartmentNotAssigned()
+    {
+        $this->setWorkstation()->getUseraccount()->setRights('useraccount');
+        $this->setDepartment(74);
+        $this->setExpectedException('BO\Zmsentities\Exception\UserAccountMissingDepartment');
+        $this->expectExceptionCode(403);
+        $this->render(['id' => 72], [], []);
+    }
+
+    public function testDepartmentNotFound()
+    {
+        $this->setWorkstation()->getUseraccount()->setRights('superuser', 'useraccount');
+        $this->setExpectedException('BO\Zmsapi\Exception\Department\DepartmentNotFound');
+        $this->expectExceptionCode(404);
+        $this->render(['id' => 9999], [], []);
     }
 }

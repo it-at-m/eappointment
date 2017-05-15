@@ -9,7 +9,6 @@ namespace BO\Zmsapi;
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\Organisation;
-use \BO\Zmsdb\Department;
 
 class OrganisationByDepartment extends BaseController
 {

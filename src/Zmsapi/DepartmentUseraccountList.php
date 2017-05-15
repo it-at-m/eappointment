@@ -1,6 +1,6 @@
 <?php
 /**
- * @package 115Mandant
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -8,28 +8,33 @@ namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
-use \BO\Zmsdb\UserAccount as Query;
+use \BO\Zmsdb\Useraccount;
 
-/**
-  * Handle requests concerning services
-  */
 class DepartmentUseraccountList extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render($departmentId)
-    {
-        Helper\User::checkRights('useraccount');
-        Helper\User::checkDepartment($departmentId);
-
-        $query = new Query();
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        (new Helper\User($request))->checkRights('useraccount');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
-        $collection = $query->readCollectionByDepartmentId($departmentId, $resolveReferences);
+        $department = Helper\User::checkDepartment($args['id']);
+        if (! $department->hasId()) {
+            throw new Exception\Department\DepartmentNotFound();
+        }
 
-        $message = Response\Message::create(Render::$request);
-        $message->data = $collection;
-        Render::lastModified(time(), '0');
-        Render::json($message, 200);
+        $useraccountList = (new Useraccount)->readCollectionByDepartmentId($department->id, $resolveReferences);
+
+        $message = Response\Message::create($request);
+        $message->data = $useraccountList;
+
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message, 200);
+        return $response;
     }
 }
