@@ -21,8 +21,7 @@ class DayoffList extends BaseController
         array $args
     ) {
         (new Helper\User($request))->checkRights();
-        $yearRange = (new \DateTimeImmutable)->modify('+ 10years')->format('Y');
-        if ($args['year'] > $yearRange) {
+        if ($args['year'] > \App::$now->modify('+ 10years')->format('Y') || $args['year'] < \App::$now->format('Y')) {
             throw new Exception\Dayoff\YearOutOfRange();
         }
         $dayOffList = (new Query())->readCommonByYear($args['year']);
