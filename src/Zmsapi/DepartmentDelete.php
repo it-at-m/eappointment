@@ -1,32 +1,38 @@
 <?php
-
 /**
- *
- * @package Zmsadmin
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
- *
  */
+
 namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Zmsdb\Department as Query;
 
-/**
- * Delete a department
- */
 class DepartmentDelete extends BaseController
 {
-
     /**
-     *
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render($itemId)
-    {
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        (new Helper\User($request))->checkRights('department');
         $query = new Query();
-        $message = Response\Message::create(Render::$request);
-        $message->data = $query->deleteEntity($itemId);
-        Render::lastModified(time(), '0');
-        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
+        $department = $query->readEntity($args['id']);
+        if (! $department->hasId()) {
+            throw new Exception\Department\DepartmentNotFound();
+        }
+        $query->deleteEntity($department->id);
+
+        $message = Response\Message::create($request);
+        $message->data = $department;
+
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+        return $response;
     }
 }

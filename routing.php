@@ -917,6 +917,8 @@ use \Psr\Http\Message\ResponseInterface;
  *                              type: array
  *                              items:
  *                                  $ref: "schema/department.json"
+ *              403:
+ *                  description: "missing or wrong access rights"
  */
 \App::$slim->get('/department/',
     '\BO\Zmsapi\DepartmentList')
@@ -1022,6 +1024,8 @@ use \Psr\Http\Message\ResponseInterface;
  *                  description: "success"
  *              404:
  *                  description: "department id does not exists"
+ *              428:
+ *                  description: "department has still assigned scopes or clusters"
  */
 \App::$slim->delete('/department/{id:\d{1,11}}/',
     '\BO\Zmsapi\DepartmentDelete')
