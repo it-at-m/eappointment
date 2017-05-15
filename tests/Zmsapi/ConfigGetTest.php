@@ -15,8 +15,6 @@ class ConfigGetTest extends Base
                 'X-Token' => 'a9b215f1-e460-490c-8a0b-6d42c274d5e4'
             )
         ], []);
-        $xToken = Render::$request->getHeader('X_TOKEN');
-        $this->assertEquals('a9b215f1-e460-490c-8a0b-6d42c274d5e4', reset($xToken));
         $this->assertContains('config.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }

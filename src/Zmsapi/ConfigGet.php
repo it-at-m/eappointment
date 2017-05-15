@@ -1,6 +1,6 @@
 <?php
 /**
- * @package 115Mandant
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -14,29 +14,30 @@ use \BO\Zmsapi\Helper\User;
 class ConfigGet extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render()
-    {
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
         try {
-            Helper\User::checkRights('basic');
+            (new Helper\User($request))->checkRights('basic');
         } catch (\Exception $exception) {
-            $token = Render::$request->getHeader('X-Token');
+            $token = $request->getHeader('X-Token');
             if (\App::SECURE_TOKEN != current($token)) {
                 throw new Exception\Config\ConfigAuthentificationFailed();
             }
         }
 
         $config = (new Query())->readEntity();
-        if (!$config) {
-            throw new Exception\Config\ConfigNotFound();
-        }
 
-        $message = Response\Message::create(Render::$request);
+        $message = Response\Message::create($request);
         $message->data = $config;
-        $message->data->id = 1;
 
-        Render::lastModified(time(), '0');
-        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message, $message->getStatuscode());
+        return $response;
     }
 }
