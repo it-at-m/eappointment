@@ -189,7 +189,9 @@ class Department extends Base
         if ($entity->toProperty()->dayoff->isAvailable()) {
             $this->writeDepartmentDayoffs($departmentId, $entity->dayoff);
         }
-        $this->updateDepartmentMail($departmentId, $entity->email);
+        if ($entity->toProperty()->email->isAvailable()) {
+            $this->updateDepartmentMail($departmentId, $entity->email);
+        }
         $this->updateDepartmentNotifications($departmentId, $entity->getNotificationPreferences());
         return $this->readEntity($departmentId);
     }
