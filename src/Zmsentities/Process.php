@@ -18,6 +18,7 @@ class Process extends Schema\Entity
         return [
             'amendment' => '',
             'appointments' => new Collection\AppointmentList(),
+            'authKey' => '',
             'clients' => new Collection\ClientList(),
             'createIP' => '',
             'createTimestamp' => time(),
