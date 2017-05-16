@@ -63,7 +63,9 @@
     "additionalProperties": false,
     "properties": {
         "amendment": {
-            "type": ["string"],
+            "type": [
+                "string"
+            ],
             "description": "additional information for this process from the client",
             "default": ""
         },
@@ -75,7 +77,8 @@
         },
         "authKey": {
             "type": "string",
-            "description": "key for client to delete or change process"
+            "description": "key for client to delete or change process",
+            "minLength": 4
         },
         "clients": {
             "type": "array",
