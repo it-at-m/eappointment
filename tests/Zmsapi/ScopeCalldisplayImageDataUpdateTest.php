@@ -15,20 +15,8 @@ class ScopeCalldisplayImageDataUpdateTest extends Base
 
     public function testRendering()
     {
-        User::$workstation = new Workstation([
-            'id' => '138',
-            'useraccount' => new Useraccount([
-                'id' => 'berlinonline',
-                'rights' => [
-                    'superuser' => true,
-                    'scope' => true
-                ]
-            ]),
-            'scope' => new Scope([
-                'id' => self::SCOPE_ID,
-            ])
-        ]);
-        $response = $this->render([self::SCOPE_ID], [
+        $this->setWorkstation()->getUserAccount()->setRights('scope');
+        $response = $this->render(['id' => self::SCOPE_ID], [
             '__body' => $this->readFixture("GetBase64Image.json")
         ], []);
         $this->assertContains('mimepart.json', (string)$response->getBody());
@@ -38,28 +26,18 @@ class ScopeCalldisplayImageDataUpdateTest extends Base
 
     public function testNoRights()
     {
-        User::$workstation = new Workstation([
-            'id' => '137',
-            'useraccount' => new Useraccount([
-                'id' => 'testuser',
-                'rights' => [
-                    'scope' => false
-                ]
-            ]),
-            'scope' => new Scope([
-                'id' => self::SCOPE_ID,
-            ])
-        ]);
+        $this->setWorkstation();
         $this->setExpectedException('BO\Zmsentities\Exception\UserAccountMissingRights');
-        $this->render([self::SCOPE_ID], [
+        $this->render(['id' => self::SCOPE_ID], [
             '__body' => '',
         ], []);
     }
 
     public function testScopeNotFound()
     {
+        $this->setWorkstation()->getUserAccount()->setRights('scope');
         $this->expectException('\BO\Zmsapi\Exception\Scope\ScopeNotFound');
         $this->expectExceptionCode(404);
-        $response = $this->render([999], [], []);
+        $this->render(['id' => 999], [], []);
     }
 }

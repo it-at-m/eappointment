@@ -15,34 +15,24 @@ class ScopeCalldisplayImageDataGetTest extends Base
 
     public function testRendering()
     {
-        User::$workstation = new Workstation([
-            'id' => '138',
-            'useraccount' => new Useraccount([
-                'id' => 'berlinonline',
-                'rights' => [
-                    'superuser' => true,
-                    'scope' => true
-                ]
-            ]),
-            'scope' => new Scope([
-                'id' => self::SCOPE_ID,
-            ])
-        ]);
-        $response = $this->render([self::SCOPE_ID], [], []); //Pankow
+        $this->setWorkstation()->getUseraccount()->setRights('scope');
+        $response = $this->render(['id' => self::SCOPE_ID], [], []);
         $this->assertContains('mimepart.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
     public function testEmpty()
     {
+        $this->setWorkstation()->getUseraccount()->setRights('scope');
         $this->setExpectedException('\ErrorException');
-        $response = $this->render([], [], []);
+        $this->render([], [], []);
     }
 
     public function testScopeNotFound()
     {
+        $this->setWorkstation()->getUseraccount()->setRights('scope');
         $this->expectException('\BO\Zmsapi\Exception\Scope\ScopeNotFound');
         $this->expectExceptionCode(404);
-        $response = $this->render([999], [], []);
+        $this->render(['id' => 999], [], []);
     }
 }
