@@ -51,7 +51,7 @@ class SchemaTest extends Base
             $entity->testValid();
             $this->fail("Expected exception SchemaValidation not thrown");
         } catch (\BO\Zmsentities\Exception\SchemaValidation $exception) {
-            $this->assertEquals(500, $exception->getCode());
+            $this->assertEquals(400, $exception->getCode());
         }
     }
 
