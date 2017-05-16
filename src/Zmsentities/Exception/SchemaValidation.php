@@ -9,7 +9,7 @@ use \League\JsonGuard\ErrorCode;
  */
 class SchemaValidation extends \Exception
 {
-    protected $code = 500;
+    protected $code = 400;
 
     protected $errorMessages = [
         ErrorCode::INVALID_NUMERIC         => "INVALID_NUMERIC",
