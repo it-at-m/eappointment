@@ -1,6 +1,6 @@
 <?php
 /**
- * @package 115Mandant
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -10,22 +10,25 @@ use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\Log as Query;
 
-/**
-  * Handle requests concerning services
-  */
 class ProcessLog extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render($processId)
-    {
-        Helper\User::checkRights('superuser');
-        $message = Response\Message::create(Render::$request);
-        $logList = (new Query())->readByProcessId($processId);
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        (new Helper\User($request))->checkRights('superuser');
+        $logList = (new Query())->readByProcessId($args['id']);
+
+        $message = Response\Message::create($request);
         $message->data = $logList;
 
-        Render::lastModified(time(), '0');
-        Render::json($message, 200);
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message, 200);
+        return $response;
     }
 }

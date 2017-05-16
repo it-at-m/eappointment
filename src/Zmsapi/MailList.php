@@ -1,6 +1,6 @@
 <?php
 /**
- * @package 115Mandant
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -10,29 +10,26 @@ use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\Mail as Query;
 
-/**
-  * Handle requests concerning services
-  */
 class MailList extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render()
-    {
-        Helper\User::checkRights('superuser');
-        
-        $message = Response\Message::create(Render::$request);
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        (new Helper\User($request))->checkRights('superuser');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         $mailList = (new Query())->readList($resolveReferences);
 
-        if (0 < count($mailList)) {
-            $message->data = $mailList;
-        } else {
-            $message->data = new \BO\Zmsentities\Collection\MailList();
-            $message->error = false;
-            $message->message = '';
-        }
-        Render::json($message, 200);
+        $message = Response\Message::create($request);
+        $message->data = $mailList;
+
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message, 200);
+        return $response;
     }
 }
