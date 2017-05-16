@@ -2,56 +2,34 @@
 
 namespace BO\Zmsapi\Tests;
 
-class ProcessConfirmationTest extends Base
+class ProcessConfirmationMailTest extends Base
 {
-    protected $classname = "ProcessConfirmationNotification";
+    protected $classname = "ProcessConfirmationMail";
 
-    const PROCESS_ID = 10030;
+    const PROCESS_ID = 10029;
 
     const AUTHKEY = '1c56';
 
     public function testRendering()
     {
         $response = $this->render([], [
-            '__body' => '{
-                "id": '. self::PROCESS_ID .',
-                "authKey": "'. self::AUTHKEY .'",
-                "scope": {
-                    "id": 141
-                },
-                "clients": [
-                    {
-                        "familyName": "Max Mustermann",
-                        "email": "max@service.berlin.de",
-                        "telephone": "030 115"
-                    }
-                ],
-                "appointments" : [
-                    {
-                        "date": 1447869172,
-                        "scope": {
-                            "id": 141
-                        },
-                        "slotCount": 2
-                    }
-                ],
-                "status": "confirmed"
-            }'
+            '__body' => $this->readFixture('GetProcess_10029.json')
         ], []);
-        $this->assertContains('Otto-Suhr-Allee 100', (string)$response->getBody()); //department exists
+        $this->assertContains('mail.json', (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
+        return $response;
     }
 
     public function testEmpty()
     {
-        $this->setExpectedException('\BO\Mellon\Failure\Exception');
-        $this->render([], [
-            '__body' => '',
-        ], []);
+        $this->expectException('\BO\Mellon\Failure\Exception');
+        $this->render([], [], []);
     }
 
-    public function testProcessNotFound()
+    public function testNotFound()
     {
-        $this->setExpectedException('\BO\Zmsapi\Exception\Process\ProcessNotFound');
+        $this->expectException('\BO\Zmsapi\Exception\Process\ProcessNotFound');
+        $this->expectExceptionCode(404);
         $this->render([], [
             '__body' => '{
                 "id": 123456,
@@ -82,7 +60,8 @@ class ProcessConfirmationTest extends Base
 
     public function testAuthKeyMatchFailed()
     {
-        $this->setExpectedException('\BO\Zmsapi\Exception\Process\AuthKeyMatchFailed');
+        $this->expectException('\BO\Zmsapi\Exception\Process\AuthKeyMatchFailed');
+        $this->expectExceptionCode(403);
         $this->render([], [
             '__body' => '{
                 "id": '. self::PROCESS_ID .',
@@ -106,6 +85,53 @@ class ProcessConfirmationTest extends Base
                         "slotCount": 2
                     }
                 ],
+                "status": "confirmed"
+            }'
+        ], []);
+    }
+
+    public function testMissingMail()
+    {
+        $this->expectException('\BO\Zmsapi\Exception\Process\EmailRequired');
+        $this->expectExceptionCode(400);
+        $this->render([], [
+            '__body' => '{
+                "id": '. self::PROCESS_ID .',
+                "authKey": "'. self::AUTHKEY .'",
+                "scope": {
+                    "id": 141,
+                    "preferences": {
+                        "client": {
+            				"emailRequired": "1"
+            			}
+                    }
+                },
+                "clients": [
+                    {
+                        "familyName": "Max Mustermann",
+                        "telephone": "030 115"
+                    }
+                ],
+                "appointments" : [
+                    {
+                        "date": 1447869172,
+                        "scope": {
+                            "id": 141
+                        },
+                        "slotCount": 2
+                    }
+                ],
+                "status": "confirmed"
+            }'
+        ], []);
+    }
+
+    public function testUnvalidInput()
+    {
+        $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
+        $this->expectExceptionCode(400);
+        $this->render([], [
+            '__body' => '{
                 "status": "confirmed"
             }'
         ], []);
