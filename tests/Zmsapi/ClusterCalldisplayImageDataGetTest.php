@@ -15,25 +15,22 @@ class ClusterCalldisplayImageDataGetTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation();
-        User::$workstation->useraccount->setRights('cluster');
-        $response = $this->render(['id'=>self::CLUSTER_ID], [], []);
+        $this->setWorkstation()->getUseraccount()->setRights('cluster');
+        $response = $this->render(['id' => self::CLUSTER_ID], [], []);
         $this->assertContains('mimepart.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
     public function testEmpty()
     {
-        $this->setWorkstation();
-        User::$workstation->useraccount->setRights('cluster');
+        $this->setWorkstation()->getUseraccount()->setRights('cluster');
         $this->setExpectedException('\ErrorException');
         $this->render([], [], []);
     }
 
     public function testClusterNotFound()
     {
-        $this->setWorkstation();
-        User::$workstation->useraccount->setRights('cluster');
+        $this->setWorkstation()->getUseraccount()->setRights('cluster');
         $this->expectException('\BO\Zmsapi\Exception\Cluster\ClusterNotFound');
         $this->expectExceptionCode(404);
         $this->render(['id'=>999], [], []);

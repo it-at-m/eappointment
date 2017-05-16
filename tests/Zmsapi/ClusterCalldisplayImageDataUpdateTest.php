@@ -15,8 +15,7 @@ class ClusterCalldisplayImageDataUpdateTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation();
-        User::$workstation->useraccount->setRights('cluster');
+        $this->setWorkstation()->getUserAccount()->setRights('cluster');
         $response = $this->render(['id' => self::CLUSTER_ID], [
             '__body' => $this->readFixture("GetBase64Image.json")
         ], []);
@@ -36,8 +35,7 @@ class ClusterCalldisplayImageDataUpdateTest extends Base
 
     public function testClusterNotFound()
     {
-        $this->setWorkstation();
-        User::$workstation->useraccount->setRights('cluster');
+        $this->setWorkstation()->getUserAccount()->setRights('cluster');
         $this->expectException('\BO\Zmsapi\Exception\Cluster\ClusterNotFound');
         $this->expectExceptionCode(404);
         $this->render(['id' => 999], [], []);
