@@ -1262,7 +1262,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  type: number
  *          responses:
  *              200:
- *                  description: get a list of processes
+ *                  description: Get a list of log entries for a process or empty list
  *                  schema:
  *                      type: object
  *                      properties:
