@@ -52,7 +52,7 @@ class ProcessConfirmationTest extends Base
     public function testProcessNotFound()
     {
         $this->setExpectedException('\BO\Zmsapi\Exception\Process\ProcessNotFound');
-        $response = $this->render([], [
+        $this->render([], [
             '__body' => '{
                 "id": 123456,
                 "authKey": "'. self::AUTHKEY .'",
@@ -83,7 +83,7 @@ class ProcessConfirmationTest extends Base
     public function testAuthKeyMatchFailed()
     {
         $this->setExpectedException('\BO\Zmsapi\Exception\Process\AuthKeyMatchFailed');
-        $response = $this->render([], [
+        $this->render([], [
             '__body' => '{
                 "id": '. self::PROCESS_ID .',
                 "authKey": "1234",

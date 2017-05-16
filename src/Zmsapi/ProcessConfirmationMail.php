@@ -1,6 +1,6 @@
 <?php
 /**
- * @package Zmsapi
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -8,50 +8,54 @@ namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
-use \BO\Zmsdb\Mail as Query;
-use \BO\Zmsdb\Config;
 use \BO\Zmsdb\Process;
 
 /**
-  *
-  * @SuppressWarnings(CouplingBetweenObjects)
-  *
-  * @SuppressWarnings(Coupling)
-  */
+ * @SuppressWarnings(Coupling)
+ */
 class ProcessConfirmationMail extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render()
-    {
-        $message = Response\Message::create(Render::$request);
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $process = new \BO\Zmsentities\Process($input);
+        $process->testValid();
+        $this->testProcessData($process);
+
+        $config = (new \BO\Zmsdb\Config)->readEntity();
+        $mail = (new \BO\Zmsentities\Mail)->toResolvedEntity($process, $config);
+
+        if ($process->getFirstClient()->hasEmail()) {
+            $mail = (new \BO\Zmsdb\Mail)->writeInQueue($mail);
+            \App::$log->debug("Send mail", [$mail]);
+        }
+
+        $message = Response\Message::create($request);
+        $message->data = $mail;
+
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message, 200);
+        return $response;
+    }
+
+    protected function testProcessData($process)
+    {
         $authCheck = (new Process())->readAuthKeyByProcessId($process->id);
         if (! $authCheck) {
             throw new Exception\Process\ProcessNotFound();
         } elseif ($authCheck['authKey'] != $process->authKey && $authCheck['authName'] != $process->authKey) {
             throw new Exception\Process\AuthKeyMatchFailed();
-        } elseif ($process->toProperty()->scope->preferences->client->emailRequired->get()
-            && !$process->getFirstClient()->hasEmail()
+        } elseif ($process->toProperty()->scope->preferences->client->emailRequired->get() &&
+            ! $process->getFirstClient()->hasEmail()
         ) {
             throw new Exception\Process\EmailRequired();
-        } elseif ($process->getFirstClient()->hasEmail()) {
-            $config = (new Config())->readEntity();
-            $mail = (new \BO\Zmsentities\Mail())->toResolvedEntity($process, $config);
-            $mail = (new Query())->writeInQueue($mail);
-            $message->data = $mail;
-            \App::$log->debug("Send mail", [$mail]);
-        } else {
-            // Create message for possible ICS attachment used in frontend
-            $config = (new Config())->readEntity();
-            $mail = (new \BO\Zmsentities\Mail())->toResolvedEntity($process, $config);
-            $message->data = $mail;
         }
-
-        Render::lastModified(time(), '0');
-        // Always return a 200, even if no mail is send
-        Render::json($message, 200);
     }
 }

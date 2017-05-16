@@ -21,7 +21,7 @@ class DepartmentGetTest extends Base
     {
         $this->setWorkstation();
         User::$workstation->useraccount->setRights('department');
-        $this->setExpectedException('\ErrorException');
+        $this->expectException('\ErrorException');
         $this->render([], [], []);
     }
 

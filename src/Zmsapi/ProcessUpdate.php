@@ -26,11 +26,7 @@ class ProcessUpdate extends BaseController
         $message = Response\Message::create(Render::$request);
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $process = new \BO\Zmsentities\Process($input);
-        try {
-            $process->testValid();
-        } catch (\BO\Zmsentities\Exception\SchemaValidation $exception) {
-            throw new Exception\Process\ProcessInvalid();
-        }
+        $process->testValid();
 
         $authCheck = (new Query())->readAuthKeyByProcessId($itemId);
         if (! $authCheck) {
