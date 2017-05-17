@@ -8,3 +8,5 @@ tests/*.html
 public/_tests
 cache
 .DS_Store
+vendor.old
+vendor.update
