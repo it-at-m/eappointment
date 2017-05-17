@@ -123,10 +123,11 @@ class Bootstrap
             if ($githead) {
                 $path .= '/' . $githead . '/';
             } else {
-                $path .= '/static';
+                $path .= '/static/';
             }
             if (!is_dir($path)) {
                 mkdir($path);
+                chmod($path, 0777);
             }
         }
         return $path;
