@@ -159,7 +159,12 @@ class Bootstrap
         $cacheFile = static::readCacheDir();
         if ($cacheFile) {
             $cacheFile = $cacheFile . '/routing.cache';
-            $container['router']->setCacheFile($cacheFile);
+            try {
+                $container['router']->setCacheFile($cacheFile);
+            } catch (\Exception $exception) {
+                error_log("Could not write Router-Cache-File: $cacheFile");
+                throw $exception;
+            }
         }
         $bootstrap->addRoutingToSlim($filename);
     }
