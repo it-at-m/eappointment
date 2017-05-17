@@ -3,3 +3,5 @@ vendor
 coverage
 tags
 config.php
+vendor.old
+vendor.update
