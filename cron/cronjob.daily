@@ -11,3 +11,6 @@ if [[ $ZMS_CRONROOT =~ ^1|on|true|yes$ ]]; then
     $BIN/deleteDayoffData 6 --commit
     #$BIN/deleteAppointmentData 1 --commit
 fi
+if [[ $ZMS_ENV =~ ^dev|stage$ ]]; then
+    $BIN/migrate --update
+fi
