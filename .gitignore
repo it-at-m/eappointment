@@ -5,3 +5,5 @@ tags
 .DS_Store
 public/doc/bundle.*
 cache
+vendor.old
+vendor.update
