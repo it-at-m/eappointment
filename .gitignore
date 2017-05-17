@@ -6,3 +6,5 @@ config.php
 .DS_Store
 bower_components
 cache/
+vendor.old
+vendor.update
