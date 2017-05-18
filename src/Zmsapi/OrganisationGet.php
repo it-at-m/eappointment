@@ -1,6 +1,6 @@
 <?php
 /**
- * @package 115Mandant
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -10,31 +10,37 @@ use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\Organisation as Query;
 
-/**
-  * Handle requests concerning services
-  */
 class OrganisationGet extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render($itemId)
-    {
-        $message = Response\Message::create(Render::$request);
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        $workstation = new Helper\User($request);
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
-        $organisation = (new Query())->readEntity($itemId, $resolveReferences);
+        $organisation = (new Query())->readEntity($args['id'], $resolveReferences);
         if (! $organisation) {
             throw new Exception\Organisation\OrganisationNotFound();
         }
-        if (Helper\User::hasRights()) {
-            Helper\User::checkRights('organisation');
+
+        $message = Response\Message::create($request);
+
+        if ($workstation->hasRights()) {
+            $workstation->checkRights('organisation');
         } else {
             $organisation = $organisation->withLessData();
             $message->meta->reducedData = true;
         }
 
         $message->data = $organisation;
-        Render::lastModified(time(), '0');
-        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
+
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+        return $response;
     }
 }

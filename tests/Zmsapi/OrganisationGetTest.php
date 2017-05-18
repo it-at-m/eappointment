@@ -8,21 +8,29 @@ class OrganisationGetTest extends Base
 
     public function testRendering()
     {
-        $response = $this->render([54], ['resolveReferences' => 1], []); //Pankow
-        $this->assertContains('ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2', (string)$response->getBody());
+        $this->setWorkstation()->getUseraccount()->setRights('organisation');
+        $response = $this->render(['id' => 54], ['resolveReferences' => 1], []);
+        $this->assertContains('organisation.json', (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
+    }
+
+    public function testReducedData()
+    {
+        $response = $this->render(['id' => 54], ['resolveReferences' => 1], []);
+        $this->assertContains('reducedData', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
     public function testEmpty()
     {
         $this->setExpectedException('\ErrorException');
-        $response = $this->render([], [], []);
+        $this->render([], [], []);
     }
 
     public function testOrganisationNotFound()
     {
         $this->expectException('\BO\Zmsapi\Exception\Organisation\OrganisationNotFound');
         $this->expectExceptionCode(404);
-        $response = $this->render([53], [], []);
+        $this->render(['id' => 999], [], []);
     }
 }

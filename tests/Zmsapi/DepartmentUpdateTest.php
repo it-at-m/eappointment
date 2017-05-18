@@ -10,8 +10,7 @@ class DepartmentUpdateTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation();
-        User::$workstation->useraccount->setRights('department');
+        $this->setWorkstation()->getUseraccount()->setRights('department');
         $response = $this->render(["id"=> 999], [
             '__body' => '{
                   "id": 999,
@@ -25,16 +24,14 @@ class DepartmentUpdateTest extends Base
 
     public function testEmpty()
     {
-        $this->setWorkstation();
-        User::$workstation->useraccount->setRights('department');
+        $this->setWorkstation()->getUseraccount()->setRights('department');
         $this->setExpectedException('\BO\Mellon\Failure\Exception');
         $this->render([], [], []);
     }
 
     public function testNotFound()
     {
-        $this->setWorkstation();
-        User::$workstation->useraccount->setRights('department');
+        $this->setWorkstation()->getUseraccount()->setRights('department');
         $this->expectException('\BO\Zmsapi\Exception\Department\DepartmentNotFound');
         $this->expectExceptionCode(404);
         $this->render(["id"=> 1], [
