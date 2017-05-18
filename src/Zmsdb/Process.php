@@ -3,7 +3,7 @@ namespace BO\Zmsdb;
 
 use \BO\Zmsentities\Process as Entity;
 use \BO\Zmsentities\Collection\ProcessList as Collection;
-use BO\Zmsdb\Helper\ProcessStatus as Status;
+use BO\Zmsdb\Helper\ProcessStatus;
 
 /**
  *
@@ -262,7 +262,7 @@ class Process extends Base implements Interfaces\ResolveReferences
     public function updateProcessStatus(\BO\Zmsentities\Process $process, $status = 'free')
     {
         //\App::$log->debug('UPDATE STATUS');
-        $process = (new Status())->readUpdatedStatus($process, $status);
+        $process = (new ProcessStatus())->readUpdatedStatus($process, $status);
         return $process;
     }
 
