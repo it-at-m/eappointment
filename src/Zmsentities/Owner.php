@@ -4,7 +4,6 @@ namespace BO\Zmsentities;
 
 class Owner extends Schema\Entity
 {
-
     const PRIMARY = 'id';
 
     public static $schema = "owner.json";
@@ -37,5 +36,18 @@ class Owner extends Schema\Entity
     {
         return $useraccount->hasRights(['superuser'])
             || 0 < $this->getOrganisationList()->withAccess($useraccount)->count();
+    }
+
+    /**
+     * Reduce data of dereferenced entities to a required minimum
+     *
+     */
+    public function withLessData()
+    {
+        $entity = clone $this;
+        if ($entity->toProperty()->organisations->isAvailable()) {
+            unset($entity['organisations']);
+        }
+        return $entity;
     }
 }
