@@ -1,6 +1,6 @@
 <?php
 /**
- * @package Zmsapi
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -10,24 +10,28 @@ use \BO\Slim\Render;
 use \BO\Zmsdb\Ticketprinter as Ticketprinter;
 use \BO\Zmsdb\Organisation as Query;
 
-/**
-  * Handle requests concerning services
-  */
 class OrganisationHash extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render($organisationId)
-    {
-        $message = Response\Message::create(Render::$request);
-        $organisation = (new Query())->readEntity($organisationId);
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        $organisation = (new Query())->readEntity($args['id']);
         if (! $organisation) {
             throw new Exception\Organisation\OrganisationNotFound();
         }
-        $ticketprinter = (new Ticketprinter())->writeEntityWithHash($organisationId);
+        $ticketprinter = (new Ticketprinter())->writeEntityWithHash($organisation->id);
+
+        $message = Response\Message::create($request);
         $message->data = $ticketprinter;
-        Render::lastModified(time(), '0');
-        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
+
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+        return $response;
     }
 }
