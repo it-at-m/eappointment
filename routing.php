@@ -1675,8 +1675,8 @@ use \Psr\Http\Message\ResponseInterface;
  *                              $ref: "schema/metaresult.json"
  *                          data:
  *                              $ref: "schema/organisation.json"
- *              404:
- *                  description: "Missing required properties in the organisation"
+ *              400:
+ *                  description: "Invalid input"
  */
 \App::$slim->post('/owner/{id:\d{1,11}}/organisation/',
     '\BO\Zmsapi\OwnerAddOrganisation')
@@ -1701,7 +1701,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  type: integer
  *          responses:
  *              200:
- *                  description: "success"
+ *                  description: "success, might be empty"
  *                  schema:
  *                      type: object
  *                      properties:

@@ -13,50 +13,40 @@ class OrganisationUpdateTest extends Base
 
     const SCOPE_ID = 143;
 
-    public function testNoRights()
+    public function testRendering()
     {
-        User::$workstation = new Workstation([
-            'id' => '137',
-            'useraccount' => new Useraccount([
-                'id' => 'testuser',
-                'rights' => [
-                    'organisation' => false
-                ]
-            ]),
-            'scope' => new Scope([
-                'id' => self::SCOPE_ID,
-            ])
-        ]);
-        $this->setExpectedException('BO\Zmsentities\Exception\UserAccountMissingRights');
-        $this->render([54], [
-            '__body' => '',
+        $this->setWorkstation()->getUseraccount()->setRights('organisation');
+        $response = $this->render(['id' => 54], [
+            '__body' => $this->readFixture("GetOrganisation.json")
+        ], []);
+        $this->assertContains('organisation.json', (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
+    }
+
+    public function testEmpty()
+    {
+        $this->setWorkstation()->getUseraccount()->setRights('organisation');
+        $this->setExpectedException('\BO\Mellon\Failure\Exception');
+        $this->render([], [], []);
+    }
+
+    public function testNotFound()
+    {
+        $this->setWorkstation()->getUseraccount()->setRights('organisation');
+        $this->expectException('\BO\Zmsapi\Exception\Organisation\OrganisationNotFound');
+        $this->expectExceptionCode(404);
+        $this->render(["id" => 9999], [
+            '__body' => '{}'
         ], []);
     }
 
-    public function testRendering()
+    public function testNoRights()
     {
-        User::$workstation = new Workstation([
-            'id' => '138',
-            'useraccount' => new Useraccount([
-                'id' => 'berlinonline',
-                'rights' => [
-                    'organisation' => true,
-                    'superuser' => true
-                ]
-            ]),
-            'scope' => new Scope([
-                'id' => self::SCOPE_ID,
-            ])
-        ]);
-        $organisation = new \BO\Zmsentities\Organisation(
-            json_decode($this->readFixture("GetOrganisation.json"))
-        );
-        $organisation->preferences->ticketPrinterProtectionEnabled = 1;
-        $response = $this->render([54], [
-            '__body' => json_encode($organisation)
+        $this->setWorkstation()->getUseraccount()->setRights('department');
+        $this->expectException('BO\Zmsentities\Exception\UserAccountMissingRights');
+        $this->expectExceptionCode(403);
+        $this->render(["id" => 54], [
+            '__body' => '',
         ], []);
-        $this->assertContains('organisation.json', (string)$response->getBody());
-        $this->assertContains('"ticketPrinterProtectionEnabled":"1"', (string)$response->getBody());
-        $this->assertTrue(200 == $response->getStatusCode());
     }
 }
