@@ -1,6 +1,6 @@
 <?php
 /**
- * @package 115Mandant
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -8,20 +8,22 @@ namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 
-/**
-  * Handle requests concerning services
-  */
 class Index extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render()
-    {
-        $base = \App::$slim->request->getScheme();
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        $uri = $request->getUri();
+        $base = $uri->getScheme();
         $base .= '://';
-        $base .= \App::$slim->request->getHost();
-        $base .= \App::$slim->request->getRootUri();
+        $base .= $uri->getHost();
+        $base .= $uri->getBasePath();
         $schema = [
             '$schema' => "http://json-schema.org/draft-04/schema#",
             'meta' => [
@@ -42,6 +44,9 @@ class Index extends BaseController
                 ]
             ],
         ];
-        Render::json($schema);
+
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $schema, 200);
+        return $response;
     }
 }

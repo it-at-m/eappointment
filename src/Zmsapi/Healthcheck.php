@@ -1,6 +1,6 @@
 <?php
 /**
- * @package 115Mandant
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -9,15 +9,12 @@ namespace BO\Zmsapi;
 use \BO\Slim\Render;
 use \BO\Zmsdb\Status as Query;
 
-/**
-  * Handle requests concerning services
-  */
 class Healthcheck extends BaseController
 {
     /**
      * @SuppressWarnings(UnusedFormalParameter)
      */
-    public function __invoke(
+    public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
