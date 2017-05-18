@@ -34,6 +34,15 @@ class Notification extends Schema\Entity
         return $this;
     }
 
+    public function getFirstClient()
+    {
+        $client = null;
+        if ($this->toProperty()->process->isAvailable()) {
+            $client = $this->process->getFirstClient();
+        }
+        return $client;
+    }
+
     public function getMessage()
     {
         return $this->message;
