@@ -3,15 +3,12 @@ namespace BO\Zmsdb;
 
 use \BO\Zmsentities\Process as Entity;
 use \BO\Zmsentities\Collection\ProcessList as Collection;
-use BO\Zmsdb\Helper\ProcessStatus as Status;
 
 /**
  *
  */
 class ProcessStatusFree extends Process
 {
-
-
     public function readFreeProcesses(
         \BO\Zmsentities\Calendar $calendar,
         \DateTimeInterface $now,
