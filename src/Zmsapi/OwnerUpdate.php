@@ -1,6 +1,6 @@
 <?php
 /**
- * @package 115Mandant
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -10,21 +10,30 @@ use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\Owner as Query;
 
-/**
-  * Handle requests concerning services
-  */
 class OwnerUpdate extends BaseController
 {
     /**
      * @return String
      */
-    public static function render($itemId)
-    {
-        $message = Response\Message::create(Render::$request);
-        $input = Validator::input()->isJson()->getValue();
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        (new Helper\User($request))->checkRights('superuser');
+        $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Owner($input);
-        $message->data = (new Query)->updateEntity($itemId, $entity);
-        Render::lastModified(time(), '0');
-        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
+        $entity->testValid();
+        $owner = (new Query())->readEntity($args['id']);
+        if (! $owner->hasId()) {
+            throw new Exception\Owner\OwnerNotFound();
+        }
+
+        $message = Response\Message::create($request);
+        $message->data = (new Query)->updateEntity($owner->id, $entity);
+
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+        return $response;
     }
 }

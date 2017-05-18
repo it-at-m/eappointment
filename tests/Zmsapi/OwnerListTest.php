@@ -4,15 +4,15 @@ namespace BO\Zmsapi\Tests;
 
 use BO\Zmsapi\Helper\User;
 
-class OrganisationListTest extends Base
+class OwnerListTest extends Base
 {
-    protected $classname = "OrganisationList";
+    protected $classname = "OwnerList";
 
     public function testRendering()
     {
-        $this->setWorkstation();
+        $this->setWorkstation()->getUseraccount()->setRights('superuser');
         $response = $this->render([], [], []);
-        $this->assertContains('organisation.json', (string)$response->getBody());
+        $this->assertContains('owner.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 }
