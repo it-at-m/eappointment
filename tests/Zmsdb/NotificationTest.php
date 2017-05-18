@@ -11,21 +11,20 @@ class NotificationTest extends Base
     {
         $input = $this->getTestEntity();
         $query = new Query();
-        $queueId = $query->writeInQueue($input);
-        $entity = $query->readEntity($queueId, 1);
+        $entity = $query->writeInQueue($input);
 
         $this->assertEntity("\\BO\\Zmsentities\\Notification", $entity);
         $this->assertEquals("80410", $entity->getProcessId());
         $this->assertEquals("f22c", $entity->getProcessAuthKey());
 
         $collection = $query->readList(1);
-        $this->assertTrue($collection->hasEntity($queueId), "Missing Test Entity with ID 1234 in collection");
+        $this->assertTrue($collection->hasEntity($entity->id), "Missing Test Entity with ID 1234 in collection");
 
-        $deleteTest = $query->deleteEntity($queueId);
+        $deleteTest = $query->deleteEntity($entity->id);
         $this->assertTrue($deleteTest, "Failed to delete Notification from Database.");
 
-        $entity = $query->readEntity($queueId);
-        $this->assertFalse($entity->hasId($queueId), "Deleted Notification still exists in Database.");
+        $entity2 = $query->readEntity($entity->id);
+        $this->assertFalse($entity2->hasId($entity->id), "Deleted Notification still exists in Database.");
     }
 
     public function testDeleteByProcessId()

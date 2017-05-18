@@ -93,12 +93,11 @@ class Notification extends Base
             $client->notificationsSendCount += 1;
             (new Process())->updateEntity($process);
         }
-        return $queueId;
+        return $this->readEntity($queueId);
     }
 
-    public function writeInCalculationTable($itemId)
+    public function writeInCalculationTable(\BO\Zmsentities\Schema\Entity $notification)
     {
-        $notification = $this->readEntity($itemId);
         $amount = ceil((strlen($notification->message)) / 160);
         $scopeId = $notification->process['scope']['id'];
         $client = $notification->process->getClients()->getFirst();
