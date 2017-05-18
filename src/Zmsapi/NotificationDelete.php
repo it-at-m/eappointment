@@ -1,6 +1,6 @@
 <?php
 /**
- * @package 115Mandant
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -9,33 +9,34 @@ namespace BO\Zmsapi;
 use \BO\Slim\Render;
 use \BO\Zmsdb\Notification as Query;
 
-/**
-  * Handle requests concerning services
-  */
 class NotificationDelete extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render($itemId)
-    {
-        Helper\User::checkRights('superuser');
-        
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        (new Helper\User($request))->checkRights('superuser');
         $query = new Query();
-        $message = Response\Message::create(Render::$request);
-        $notification = $query->readEntity($itemId);
-
+        $notification = $query->readEntity($args['id']);
         if ($notification && ! $notification->hasId()) {
             throw new Exception\Notification\NotificationNotFound();
         }
 
-        $query->writeInCalculationTable($itemId);
-        if ($query->deleteEntity($itemId)) {
-            $message->data = $notification;
-        } else {
+        if (! $query->deleteEntity($notification->id)) {
             throw new Exception\Notification\NotificationDeleteFailed();
         }
-        Render::lastModified(time(), '0');
-        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
+        $query->writeInCalculationTable($notification);
+
+        $message = Response\Message::create($request);
+        $message->data = $notification;
+
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message->setUpdatedMetaData(), 200);
+        return $response;
     }
 }
