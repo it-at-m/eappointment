@@ -9,10 +9,6 @@ namespace BO\Zmsadmin;
 use BO\Zmsentities\Organisation as Entity;
 use BO\Mellon\Validator;
 
-/**
-  * Handle requests concerning services
-  *
-  */
 class OwnerAddOrganisation extends BaseController
 {
     /**
@@ -27,22 +23,18 @@ class OwnerAddOrganisation extends BaseController
         $input = $request->getParsedBody();
         $parentId = Validator::value($args['id'])->isNumber()->getValue();
         if (is_array($input) && array_key_exists('save', $input)) {
-            try {
-                $entity = new Entity($input);
-                $entity = \App::$http->readPostResult('/owner/'. $parentId .'/organisation/', $entity)
-                    ->getEntity();
-                return \BO\Slim\Render::redirect(
-                    'organisation',
-                    array(
-                        'id' => $entity->id
-                    ),
-                    array(
-                        'success' => 'organisation_created'
-                    )
-                );
-            } catch (\Exception $exception) {
-                return Helper\Render::error($exception);
-            }
+            $entity = (new Entity($input))->withCleanedUpFormData();
+            $entity = \App::$http->readPostResult('/owner/'. $parentId .'/organisation/', $entity)
+                ->getEntity();
+            return \BO\Slim\Render::redirect(
+                'organisation',
+                array(
+                    'id' => $entity->id
+                ),
+                array(
+                    'success' => 'organisation_created'
+                )
+            );
         }
 
         return \BO\Slim\Render::withHtml($response, 'page/organisation.twig', array(
