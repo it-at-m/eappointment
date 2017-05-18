@@ -1485,7 +1485,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  type: integer
  *          responses:
  *              200:
- *                  description: "success"
+ *                  description: "success, might be empty"
  *                  schema:
  *                      type: object
  *                      properties:
@@ -1571,6 +1571,8 @@ use \Psr\Http\Message\ResponseInterface;
  *                              $ref: "schema/metaresult.json"
  *                          data:
  *                              $ref: "schema/owner.json"
+ *              400:
+ *                  description: "Invalid input"
  *              404:
  *                  description: "owner id does not exists"
  */

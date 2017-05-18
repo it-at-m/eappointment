@@ -4,15 +4,25 @@ namespace BO\Zmsapi\Tests;
 
 use BO\Zmsapi\Helper\User;
 
-class OrganisationListTest extends Base
+class DepartmentListTest extends Base
 {
-    protected $classname = "OrganisationList";
+    protected $classname = "DepartmentList";
 
     public function testRendering()
     {
         $this->setWorkstation();
+        User::$workstation->useraccount->setRights('department');
         $response = $this->render([], [], []);
-        $this->assertContains('organisation.json', (string)$response->getBody());
+        $this->assertContains('department.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
+    }
+
+    public function testMissingRights()
+    {
+        $this->setWorkstation();
+        User::$workstation->useraccount->setRights('basic');
+        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingRights');
+        $this->expectExceptionCode(403);
+        $this->render([], [], []);
     }
 }

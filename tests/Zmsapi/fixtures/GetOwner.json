@@ -1,0 +1,12 @@
+{
+    "$schema": "https://schema.berlin.de/queuemanagement/owner.json",
+    "id": "99",
+    "name": "Test Kunde",
+    "url": "",
+    "contact": {
+        "city": "Schönefeld",
+        "street": "Schönefeld",
+        "country": "Germany",
+        "name": "Test Kunde"
+    }
+}

@@ -1,6 +1,6 @@
 <?php
 /**
- * @package 115Mandant
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -10,22 +10,37 @@ use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\Owner as Query;
 
-/**
-  * Handle requests concerning services
-  */
-
 class OwnerGet extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render($itemId)
-    {
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        $workstation = new Helper\User($request);
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
-        $owner = (new Query())->readEntity($itemId, $resolveReferences);
-        $message = Response\Message::create(Render::$request);
+        $owner = (new Query())->readEntity($args['id'], $resolveReferences);
+        if (! $owner->hasId()) {
+            throw new Exception\Owner\OwnerNotFound();
+        }
+
+        $message = Response\Message::create($request);
+
+        if ($workstation->hasRights()) {
+            $workstation->checkRights('superuser');
+        } else {
+            $owner = $owner->withLessData();
+            $message->meta->reducedData = true;
+        }
+
         $message->data = $owner;
-        Render::lastModified(time(), '0');
-        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
+
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+        return $response;
     }
 }
