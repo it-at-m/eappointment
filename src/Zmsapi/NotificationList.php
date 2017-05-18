@@ -1,6 +1,6 @@
 <?php
 /**
- * @package 115Mandant
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -10,29 +10,27 @@ use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\Notification as Query;
 
-/**
-  * Handle requests concerning services
-  */
 class NotificationList extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render()
-    {
-        Helper\User::checkRights('superuser');
-        
-        $message = Response\Message::create(Render::$request);
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        (new Helper\User($request))->checkRights('superuser');
+
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         $notificationList = (new Query())->readList($resolveReferences);
 
-        if (0 < count($notificationList)) {
-            $message->data = $notificationList;
-        } else {
-            $message->data = new \BO\Zmsentities\Collection\NotificationList();
-            $message->error = false;
-            $message->message = '';
-        }
-        Render::json($message, 200);
+        $message = Response\Message::create($request);
+        $message->data = $notificationList;
+
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message, 200);
+        return $response;
     }
 }

@@ -1,6 +1,6 @@
 <?php
 /**
- * @package 115Mandant
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -10,25 +10,29 @@ use \BO\Slim\Render;
 use \BO\Zmsdb\Notification as Query;
 use \BO\Mellon\Validator;
 
-/**
-  * Handle requests concerning services
-  */
 class NotificationAdd extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render()
-    {
-        Helper\User::checkRights('sms');
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        (new Helper\User($request))->checkRights('sms');
 
-        $message = Response\Message::create(Render::$request);
-        $input = Validator::input()->isJson()->getValue();
+        $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Notification($input);
-        $queueId = (new Query())->writeInQueue($entity);
-        $message->data = $entity;
-        $message->data->id = $queueId;
-        Render::lastModified(time(), '0');
-        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
+        $entity->testValid();
+        $notification = (new Query())->writeInQueue($entity);
+
+        $message = Response\Message::create($request);
+        $message->data = $notification;
+
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+        return $response;
     }
 }

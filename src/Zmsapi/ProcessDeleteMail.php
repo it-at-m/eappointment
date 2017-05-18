@@ -33,11 +33,14 @@ class ProcessDeleteMail extends BaseController
 
         $config = (new Config())->readEntity();
         $mail = (new \BO\Zmsentities\Mail())->toResolvedEntity($process, $config);
-        $mail = (new Query())->writeInQueue($mail);
+
+        if ($process->getFirstClient()->hasEmail()) {
+            $mail = (new \BO\Zmsdb\Mail)->writeInQueue($mail);
+            \App::$log->debug("Send mail", [$mail]);
+        }
 
         $message = Response\Message::create($request);
         $message->data = $mail;
-        \App::$log->debug("Send mail", [$mail]);
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message, 200);
