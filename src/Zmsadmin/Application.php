@@ -17,6 +17,8 @@ class Application extends \BO\Slim\Application
     const DEBUG = false;
 
     const TWIG_CACHE = '/cache/';
+
+    public static $includeUrl = '/terminvereinbarung/admin';
     /**
      * language preferences
      */
