@@ -211,9 +211,9 @@ class TwigExtension extends \Twig_Extension
     {
         if (null === \App::$includeUrl) {
             $request = $this->container['request'];
-            $uri = (string)$request->getUri()->getBasePath();
+            $uri = (string)$request->getUri()->getPath();
             if ($withUri) {
-                $uri = $request->getUri()->getBaseUrl();
+                $uri = $request->getUri()->getBaseUrl() . $uri;
                 $uri = preg_replace('#^https?://[^/]+#', '', $uri); //Do not force protocoll or host
             }
             return Helper::proxySanitizeUri($uri);
@@ -267,7 +267,7 @@ class TwigExtension extends \Twig_Extension
             "display.cascade" => [5,10,10],
         ]);
         $output = '<h2>App Profiles</h2>'
-            .' <p>For debugging: This log contains runtime information. 
+            .' <p>For debugging: This log contains runtime information.
             <strong>DISABLE FOR PRODUCTION!</strong></p><ul>';
         foreach (Profiler::$profileList as $entry) {
             if ($entry instanceof Profiler) {
