@@ -24,7 +24,8 @@ class ProcessDelete extends BaseController
         array $args
     ) {
         $this->testProcessData($args['id'], $args['authKey']);
-        $process = (new Process)->deleteEntity($args['id'], $args['authKey']);
+        $process = (new Process)->readEntity($args['id'], $args['authKey'], 1);
+        $process->status = 'deleted';
         if ($process->hasScopeAdmin()) {
             $initiator = Validator::param('initiator')->isString()->getValue();
             $config = (new Config())->readEntity();
@@ -33,7 +34,7 @@ class ProcessDelete extends BaseController
         }
 
         $message = Response\Message::create($request);
-        $message->data = $process;
+        $message->data = (new Process)->deleteEntity($args['id'], $args['authKey']);
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());

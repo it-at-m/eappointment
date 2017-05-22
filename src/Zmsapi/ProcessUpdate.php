@@ -24,13 +24,11 @@ class ProcessUpdate extends BaseController
         array $args
     ) {
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
-
         $input = Validator::input()->isJson()->assertValid()->getValue();
-        $process = new \BO\Zmsentities\Process($input);
-        $process->testValid();
-        $this->testProcessData($process);
-
-        $processUpdated = (new Process)->updateEntity($process, $resolveReferences);
+        $entity = new \BO\Zmsentities\Process($input);
+        $entity->testValid();
+        $this->testProcessData($entity);
+        $process = (new Process)->readEntity($args['id'], $args['authKey'], 1);
         if ($process->hasScopeAdmin()) {
             $initiator = Validator::param('initiator')->isString()->getValue();
             $config = (new Config())->readEntity();
@@ -40,19 +38,19 @@ class ProcessUpdate extends BaseController
         }
 
         $message = Response\Message::create($request);
-        $message->data = $processUpdated;
+        $message->data = (new Process)->updateEntity($process, $resolveReferences);
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
         return $response;
     }
 
-    protected function testProcessData($process)
+    protected function testProcessData($entity)
     {
-        $authCheck = (new Process())->readAuthKeyByProcessId($process->id);
+        $authCheck = (new Process())->readAuthKeyByProcessId($entity->id);
         if (! $authCheck) {
             throw new Exception\Process\ProcessNotFound();
-        } elseif ($authCheck['authKey'] != $process->authKey && $authCheck['authName'] != $process->authKey) {
+        } elseif ($authCheck['authKey'] != $entity->authKey && $authCheck['authName'] != $entity->authKey) {
             throw new Exception\Process\AuthKeyMatchFailed();
         }
     }
