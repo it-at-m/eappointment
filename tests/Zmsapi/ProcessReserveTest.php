@@ -8,8 +8,6 @@ class ProcessReserveTest extends Base
 
     public function testRendering()
     {
-        $query = new \BO\Zmsdb\Process();
-
         $processList = new \BO\Zmsentities\Collection\ProcessList(
             json_decode($this->readFixture("GetFreeProcessList.json"))
         );
@@ -18,15 +16,25 @@ class ProcessReserveTest extends Base
             '__body' => json_encode($process)
         ], []);
 
-        $responseData = json_decode($response->getBody(), 1);
-        $processId = $responseData['data']['id'];
-        $authKey = $responseData['data']['authKey'];
-
-        $this->assertTrue('reserved' == $responseData['data']['status']);
+        $this->assertContains('reserved', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
+    }
 
-        //delete tested data
-        $query->deleteEntity($processId, $authKey);
+    public function testSlotsRequired()
+    {
+        $this->setWorkstation();
+        $processList = new \BO\Zmsentities\Collection\ProcessList(
+            json_decode($this->readFixture("GetFreeProcessList.json"))
+        );
+        $process = $processList->getFirstProcess();
+        $response = $this->render([], [
+            '__body' => json_encode($process),
+            'slotsRequired' => 1,
+            'slotType' => 'intern'
+        ], []);
+
+        $this->assertContains('reserved', (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
     }
 
     public function testMultipleSlots()
