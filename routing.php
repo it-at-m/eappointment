@@ -2453,9 +2453,9 @@ use \Psr\Http\Message\ResponseInterface;
  *                              items:
  *                                  $ref: "schema/process.json"
  *              400:
- *                  description: "Invalid input"
+ *                  description: "Invalid input or missing credentials"
  *              403:
- *                  description: "authkey does not match"
+ *                  description: "authkey does not match or process scope does not match with workstation scope"
  */
 \App::$slim->post('/process/status/finished/',
     '\BO\Zmsapi\ProcessFinished')
