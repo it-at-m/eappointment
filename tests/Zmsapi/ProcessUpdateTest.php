@@ -23,6 +23,20 @@ class ProcessUpdateTest extends Base
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
+    public function testRenderingWithInitiator()
+    {
+        $response = $this->render(['id' => 27758, 'authKey' => 'f3e9'], [
+            '__body' => '{
+                "id": 27758,
+                "authKey": "f3e9",
+                "amendment": "Beispiel Termin"
+            }',
+            'initiator' => 1
+        ], []);
+        $this->assertContains('process.json', (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
+    }
+
     public function testEmpty()
     {
         $this->setExpectedException('\BO\Mellon\Failure\Exception');
