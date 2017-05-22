@@ -20,11 +20,14 @@ class ProcessConfirmTest extends Base
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
-    public function testInvalidInput()
+    public function testUnvalidInput()
     {
-        $this->expectException('BO\Mellon\Failure\Exception');
+        $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
+        $this->expectExceptionCode(400);
         $this->render([], [
-            '__body' => '',
+            '__body' => '{
+                "status": "confirmed"
+            }'
         ], []);
     }
 
@@ -36,6 +39,30 @@ class ProcessConfirmTest extends Base
         $process->status = 'free';
         $this->render([], [
             '__body' => json_encode($process)
+        ], []);
+    }
+
+    public function testProcessNotFound()
+    {
+        $this->setExpectedException('\BO\Zmsapi\Exception\Process\ProcessNotFound');
+        $this->render([], [
+            '__body' => '{
+                "id": 123456,
+                "authKey": "abcd",
+                "amendment": "Beispiel Termin"
+            }'
+        ], []);
+    }
+
+    public function testAuthKeyMatchFailed()
+    {
+        $this->setExpectedException('\BO\Zmsapi\Exception\Process\AuthKeyMatchFailed');
+        $this->render([], [
+            '__body' => '{
+                "id": 10029,
+                "authKey": "abcd",
+                "amendment": "Beispiel Termin"
+            }'
         ], []);
     }
 }
