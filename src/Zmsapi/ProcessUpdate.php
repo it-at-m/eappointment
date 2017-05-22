@@ -38,7 +38,7 @@ class ProcessUpdate extends BaseController
         }
 
         $message = Response\Message::create($request);
-        $message->data = (new Process)->updateEntity($process, $resolveReferences);
+        $message->data = (new Process)->updateEntity($entity, $resolveReferences);
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
