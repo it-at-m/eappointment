@@ -24,7 +24,7 @@ class ProcessDeleteTest extends Base
         $process = ProcessStatusFree::init()->writeEntityReserved($entity, $now);
         $this->processId = $process->id;
         $this->authKey = $process->authKey;
-        $response = $this->render([$this->processId, $this->authKey], [], []);
+        $response = $this->render(['id' => $this->processId, 'authKey' => $this->authKey], [], []);
         $this->assertContains('Abgesagter Termin', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
@@ -33,13 +33,13 @@ class ProcessDeleteTest extends Base
     {
         $this->expectException('BO\Zmsapi\Exception\Process\AuthKeyMatchFailed');
         $this->expectExceptionCode(403);
-        $this->render(['10030', $this->authKey], [], []); //day off Beispiel Termin
+        $this->render(['id' => '10030', 'authKey' => $this->authKey], [], []); //day off Beispiel Termin
     }
 
     public function testFailedDelete()
     {
         $this->expectException('BO\Zmsapi\Exception\Process\ProcessNotFound');
         $this->expectExceptionCode(404);
-        $this->render([$this->processId, $this->authKey], [], []);
+        $this->render(['id' => $this->processId, 'authKey' => $this->authKey], [], []);
     }
 }
