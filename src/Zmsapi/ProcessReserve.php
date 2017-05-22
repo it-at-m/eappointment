@@ -11,9 +11,6 @@ use \BO\Mellon\Validator;
 use \BO\Zmsdb\Process;
 use \BO\Zmsdb\ProcessStatusFree;
 
-/**
-  * Handle requests concerning services
-  */
 class ProcessReserve extends BaseController
 {
     /**
