@@ -136,10 +136,7 @@ class ProcessTest extends Base
         $query = new ProcessStatusFree();
         $input = $this->getTestProcessEntity();
         $process = $query->writeEntityReserved($input, $now);
-        $deleteTest = $query->deleteEntity($process->id, $process->authKey);
-        $this->assertTrue($deleteTest, "Failed to delete Process from Database.");
-
-        $process = $query->readEntity($process->id, $process->authKey);
+        $process = $query->deleteEntity($process->id, $process->authKey);
         $this->assertEquals('deleted', $process->getStatus());
 
         $process = $query->readEntity(); //check null
