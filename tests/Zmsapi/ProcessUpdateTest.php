@@ -19,6 +19,7 @@ class ProcessUpdateTest extends Base
                 "amendment": "Beispiel Termin"
             }'
         ], []);
+        $this->assertContains('Beispiel Termin', (string)$response->getBody());
         $this->assertContains('process.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
