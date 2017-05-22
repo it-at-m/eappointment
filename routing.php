@@ -2337,7 +2337,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  type: integer
  *          responses:
  *              200:
- *                  description: get a list of processes
+ *                  description: get a list of processes, might be empty
  *                  schema:
  *                      type: object
  *                      properties:
@@ -2347,17 +2347,6 @@ use \Psr\Http\Message\ResponseInterface;
  *                              type: array
  *                              items:
  *                                  $ref: "schema/process.json"
- *              404:
- *                  description: "Could not find any processes, returns empty list"
- *                  schema:
- *                      type: object
- *                      properties:
- *                          meta:
- *                              $ref: "schema/metaresult.json"
- *                          data:
- *                              type: array
- *                              items:
- *                                  type: object
  */
 \App::$slim->get('/process/status/reserved/',
     '\BO\Zmsapi\ProcessReservedList')
