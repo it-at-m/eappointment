@@ -346,7 +346,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         $amendment = $process->toDerefencedAmendment();
         $query = Query\Process::QUERY_DEREFERENCED;
         $statement = $this->getWriter()->prepare($query);
-        $statement->execute(
+        $status = $statement->execute(
             array(
                 $amendment,
                 $processId,
@@ -355,7 +355,7 @@ class Process extends Base implements Interfaces\ResolveReferences
             )
         );
         Log::writeLogEntry("DELETE (Process::writeDereferencedEntity) $processId ", $processId);
-        return $this->readEntity($processId, $authKey, 0);
+        return $status;
     }
 
     protected function writeRequestsToDb(\BO\Zmsentities\Process $process)
