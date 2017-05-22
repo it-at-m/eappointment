@@ -1,6 +1,6 @@
 <?php
 /**
- * @package 115Mandant
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -8,31 +8,38 @@ namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
-use \BO\Zmsdb\Process as Query;
+use \BO\Zmsdb\Process;
 
-/**
-  * Handle requests concerning services
-  */
 class ProcessGet extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render($itemId, $authKey)
-    {
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        (new Helper\User($request))->checkRights();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
-        $message = Response\Message::create(Render::$request);
-        $authCheck = (new Query())->readAuthKeyByProcessId($itemId);
+        $this->testProcessData($args['id'], $args['authKey']);
+
+        $message = Response\Message::create($request);
+        $message->data = (new Process())->readEntity($args['id'], $args['authKey'], $resolveReferences);
+
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+        return $response;
+    }
+
+    protected function testProcessData($processId, $authKey)
+    {
+        $authCheck = (new Process())->readAuthKeyByProcessId($processId);
         if (! $authCheck) {
             throw new Exception\Process\ProcessNotFound();
         } elseif ($authCheck['authKey'] != $authKey && $authCheck['authName'] != $authKey) {
             throw new Exception\Process\AuthKeyMatchFailed();
-        } else {
-            $process = (new Query())->readEntity($itemId, $authKey, $resolveReferences);
-            $message->data = $process;
         }
-
-        Render::lastModified(time(), '0');
-        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
     }
 }
