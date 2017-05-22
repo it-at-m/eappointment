@@ -329,7 +329,7 @@ class Process extends Base implements Interfaces\ResolveReferences
             $this->deleteXRequests($processId);
         }
         Log::writeLogEntry("DELETE (Process::writeCanceledEntity) $processId ", $processId);
-        return $status;
+        return $this->readEntity($processId, $authKey, 0);
     }
 
     /**
@@ -346,7 +346,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         $amendment = $process->toDerefencedAmendment();
         $query = Query\Process::QUERY_DEREFERENCED;
         $statement = $this->getWriter()->prepare($query);
-        $status = $statement->execute(
+        $statement->execute(
             array(
                 $amendment,
                 $processId,
@@ -355,7 +355,7 @@ class Process extends Base implements Interfaces\ResolveReferences
             )
         );
         Log::writeLogEntry("DELETE (Process::writeDereferencedEntity) $processId ", $processId);
-        return $status;
+        return $this->readEntity($processId, $authKey, 0);
     }
 
     protected function writeRequestsToDb(\BO\Zmsentities\Process $process)
