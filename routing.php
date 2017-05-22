@@ -2411,12 +2411,12 @@ use \Psr\Http\Message\ResponseInterface;
  *                              type: array
  *                              items:
  *                                  $ref: "schema/process.json"
- *              302:
- *                  description: "Redirects to /processes/status/reserved/ since the given process does not exists in the list (any longer)"
  *              400:
  *                  description: "Invalid input"
  *              403:
  *                  description: "authkey does not match"
+ *              404:
+ *                  description: "given process is not reserved anymore"
  */
 \App::$slim->post('/process/status/confirmed/',
     '\BO\Zmsapi\ProcessConfirm')
