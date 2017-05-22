@@ -30,4 +30,4 @@ watch: build # Build CSS, JS and Swagger docs on changes
 	./node_modules/.bin/gulp watch
 
 coverage:
-	php -dzend_extension=xdebug.so vendor/bin/phpunit --coverage-html public/_tests/coverage/
+	php vendor/bin/phpunit --coverage-html public/_tests/coverage/
