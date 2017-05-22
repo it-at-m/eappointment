@@ -8,30 +8,32 @@ class ProcessGetTest extends Base
 
     public function testRendering()
     {
-        $response = $this->render([10030,'1c56'], [], []);
+        $this->setWorkstation();
+        $response = $this->render(['id' => 10030, 'authKey' => '1c56'], [], []);
         $this->assertContains('process.json', (string)$response->getBody());
-        //by name
-        $response = $this->render([10030,'Dayoff'], [], []);
-        $this->assertContains('process.json', (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
     }
 
     public function testEmpty()
     {
+        $this->setWorkstation();
         $this->expectException('\ErrorException');
         $this->render([], [], []);
     }
 
-    public function testProcessNotFound()
+    public function testNotFound()
     {
+        $this->setWorkstation();
         $this->expectException('\BO\Zmsapi\Exception\Process\ProcessNotFound');
         $this->expectExceptionCode(404);
-        $response = $this->render([123456,null], [], []);
+        $this->render(['id' => 999999, 'authKey' => null], [], []);
     }
 
     public function testAuthKeyMatchFailed()
     {
+        $this->setWorkstation();
         $this->expectException('\BO\Zmsapi\Exception\Process\AuthKeyMatchFailed');
         $this->expectExceptionCode(403);
-        $response = $this->render([10030,null], [], []);
+        $this->render(['id' => 10030, 'authKey' => null], [], []);
     }
 }
