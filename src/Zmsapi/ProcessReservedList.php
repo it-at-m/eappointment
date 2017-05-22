@@ -1,6 +1,6 @@
 <?php
 /**
- * @package Zmsapi
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -8,27 +8,27 @@ namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
-use \BO\Zmsdb\ProcessStatusFree as Query;
+use \BO\Zmsdb\ProcessStatusFree;
 
-/**
-  * Handle requests concerning services
-  */
 class ProcessReservedList extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render()
-    {
-        Helper\User::checkRights('useraccount');
-
-        $query = new Query();
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        (new Helper\User($request))->checkRights('basic');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
-        $collection = $query->readReservedProcesses($resolveReferences);
 
-        $message = Response\Message::create(Render::$request);
-        $message->data = $collection;
-        Render::lastModified(time(), '0');
-        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
+        $message = Response\Message::create($request);
+        $message->data = (new ProcessStatusFree)->readReservedProcesses($resolveReferences);
+
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message, 200);
+        return $response;
     }
 }
