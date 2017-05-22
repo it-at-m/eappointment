@@ -211,9 +211,9 @@ class TwigExtension extends \Twig_Extension
     {
         if (null === \App::$includeUrl) {
             $request = $this->container['request'];
-            $uri = (string)$request->getUri()->getPath();
+            $uri = (string)$request->getUri()->getBasePath();
             if ($withUri) {
-                $uri = $request->getUri()->getBaseUrl() . $uri;
+                $uri = $request->getUri()->getBaseUrl();
                 $uri = preg_replace('#^https?://[^/]+#', '', $uri); //Do not force protocoll or host
             }
             return Helper::proxySanitizeUri($uri);
