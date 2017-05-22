@@ -17,16 +17,8 @@ class ProcessPickupTest extends Base
 
     public function testRendering()
     {
-        User::$workstation = new Workstation([
-            'id' => '123a',
-            'useraccount' => new Useraccount([
-                'id' => 'testuser',
-            ]),
-            'scope' => new Scope([
-                'id' => self::SCOPE_ID,
-            ])
-        ]);
-
+        $workstation = $this->setWorkstation(138, 'berlinonline', 141);
+        $workstation['queue']['clusterEnabled'] = 1;
         $response = $this->render([], [
             '__body' => '{
                 "id": '. self::PROCESS_ID .',
@@ -50,56 +42,49 @@ class ProcessPickupTest extends Base
                         "slotCount": 2
                     }
                 ],
-                "status": "confirmed"
+                "status": "pickup"
             }'
         ], []);
-        $this->assertContains('Max Mustermann', (string)$response->getBody()); //department exists
+        $this->assertContains('pickup', (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
     }
 
-    public function testLogin()
+    public function testNoAccess()
     {
-        $this->setExpectedException('\BO\Zmsentities\Exception\UserAccountMissingLogin');
+        $this->expectException('\BO\Zmsentities\Exception\WorkstationProcessMatchScopeFailed');
+        $this->expectExceptionCode(403);
+
+        $workstation = $this->setWorkstation(138, 'berlinonline', 141);
+        $workstation['queue']['clusterEnabled'] = 1;
+        $workstation->process = json_decode($this->readFixture("GetProcess_10030.json"));
+        $process = json_decode($this->readFixture("GetProcess_10029.json"));
         $this->render([], [
-            '__body' => '{}',
+            '__body' => json_encode($process)
         ], []);
     }
-
 
     public function testEmpty()
     {
-        User::$workstation = new Workstation([
-            'id' => '123a',
-            'useraccount' => new Useraccount([
-                'id' => 'testuser',
-            ]),
-            'scope' => new Scope([
-                'id' => self::SCOPE_ID,
-            ])
-        ]);
-        $this->setExpectedException('\BO\Zmsapi\Exception\Process\ProcessInvalid');
+        $this->setWorkstation();
+        $this->expectException('\BO\Zmsapi\Exception\Process\ProcessInvalid');
+        $this->expectExceptionCode(400);
         $this->render([], [
-            '__body' => '{}',
+            '__body' => '{}'
         ], []);
     }
 
-    public function testProcessNoAccess()
+    public function testUnvalidInput()
     {
-        $this->setExpectedException('\BO\Zmsapi\Exception\Process\ProcessNoAccess');
-        User::$workstation = new Workstation([
-            'id' => '123a',
-            'useraccount' => new Useraccount([
-                'id' => 'testuser',
-            ]),
-            'scope' => new Scope([
-                'id' => '133',
-            ])
-        ]);
+        $workstation = $this->setWorkstation(138, 'berlinonline', 141);
+        $workstation['queue']['clusterEnabled'] = 1;
+        $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
+        $this->expectExceptionCode(400);
         $this->render([], [
             '__body' => '{
                 "id": '. self::PROCESS_ID .',
-                "authKey": "'. self::AUTHKEY .'",
+                "authKey": "123",
                 "scope": {
-                    "id": 123
+                    "id": '. self::SCOPE_ID . '
                 },
                 "clients": [
                     {
@@ -117,23 +102,15 @@ class ProcessPickupTest extends Base
                         "slotCount": 2
                     }
                 ],
-                "status": "confirmed"
+                "status": "pickup"
             }'
         ], []);
     }
 
     public function testQueue()
     {
-        User::$workstation = new Workstation([
-            'id' => '123a',
-            'useraccount' => new Useraccount([
-                'id' => 'testuser',
-            ]),
-            'scope' => new Scope([
-                'id' => self::SCOPE_ID,
-            ])
-        ]);
-
+        $workstation = $this->setWorkstation(138, 'berlinonline', 141);
+        $workstation['queue']['clusterEnabled'] = 1;
         $response = $this->render([], [
             '__body' => '{
                 "queue": {
@@ -141,6 +118,35 @@ class ProcessPickupTest extends Base
                 }
             }'
         ], []);
-        $this->assertContains('55', (string)$response->getBody()); //department exists
+        $this->assertContains('pickup', (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
+    }
+
+    public function testProcessNotFound()
+    {
+        $workstation = $this->setWorkstation(138, 'berlinonline', 141);
+        $workstation['queue']['clusterEnabled'] = 1;
+        $this->setExpectedException('\BO\Zmsapi\Exception\Process\ProcessNotFound');
+        $this->render([], [
+            '__body' => '{
+                "id": 123456,
+                "authKey": "abcd",
+                "amendment": "Beispiel Termin"
+            }'
+        ], []);
+    }
+
+    public function testAuthKeyMatchFailed()
+    {
+        $workstation = $this->setWorkstation(138, 'berlinonline', 141);
+        $workstation['queue']['clusterEnabled'] = 1;
+        $this->setExpectedException('\BO\Zmsapi\Exception\Process\AuthKeyMatchFailed');
+        $this->render([], [
+            '__body' => '{
+                "id": 10029,
+                "authKey": "abcd",
+                "amendment": "Beispiel Termin"
+            }'
+        ], []);
     }
 }
