@@ -21,7 +21,6 @@ class ProcessGet extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         $this->testProcessData($args['id'], $args['authKey']);
 
