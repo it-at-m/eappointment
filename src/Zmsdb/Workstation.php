@@ -184,7 +184,6 @@ class Workstation extends Base
      */
     public function writeAssignedProcess($workstationId, \BO\Zmsentities\Process $process)
     {
-        $process->status = 'called';
         $process = (new Process)->updateEntity($process);
         $query = new Query\Process(Query\Base::UPDATE);
         $query->addConditionProcessId($process->id);
