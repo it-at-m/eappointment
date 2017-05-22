@@ -12,26 +12,27 @@ class ProcessUpdateTest extends Base
 
     public function testRendering()
     {
-        $response = $this->render([self::PROCESS_ID,self::AUTHKEY], [
+        $response = $this->render(['id' => self::PROCESS_ID, 'authKey' => self::AUTHKEY], [
             '__body' => '{
                 "id": '. self::PROCESS_ID .',
                 "authKey": "'. self::AUTHKEY .'",
                 "amendment": "Beispiel Termin"
             }'
         ], []);
-        $this->assertContains('Beispiel Termin', (string)$response->getBody());
+        $this->assertContains('process.json', (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
     }
 
     public function testEmpty()
     {
         $this->setExpectedException('\BO\Mellon\Failure\Exception');
-        $this->render([self::PROCESS_ID,self::AUTHKEY], [], []);
+        $this->render(['id' => self::PROCESS_ID, 'authKey' => self::AUTHKEY], [], []);
     }
 
     public function testProcessNotFound()
     {
         $this->setExpectedException('\BO\Zmsapi\Exception\Process\ProcessNotFound');
-        $this->render([123456,"abcd"], [
+        $this->render(['id' => 123456, 'authKey' => 'abcd'], [
             '__body' => '{
                 "id": 123456,
                 "authKey": "abcd",
@@ -43,7 +44,7 @@ class ProcessUpdateTest extends Base
     public function testAuthKeyMatchFailed()
     {
         $this->setExpectedException('\BO\Zmsapi\Exception\Process\AuthKeyMatchFailed');
-        $this->render([self::PROCESS_ID,"abcd"], [
+        $this->render(['id' => self::PROCESS_ID, 'authKey' => 'abcd'], [
             '__body' => '{
                 "id": '. self::PROCESS_ID .',
                 "authKey": "abcd",
