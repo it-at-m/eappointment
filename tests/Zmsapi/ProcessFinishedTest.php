@@ -76,7 +76,8 @@ class ProcessFinishedTest extends Base
     public function testProcessNotFound()
     {
         $this->setWorkstation();
-        $this->setExpectedException('\BO\Zmsapi\Exception\Process\ProcessNotFound');
+        $this->expectException('\BO\Zmsapi\Exception\Process\ProcessNotFound');
+        $this->expectExceptionCode(404);
         $this->render([], [
             '__body' => '{
                 "id": 123456,
@@ -89,7 +90,8 @@ class ProcessFinishedTest extends Base
     public function testAuthKeyMatchFailed()
     {
         $this->setWorkstation();
-        $this->setExpectedException('\BO\Zmsapi\Exception\Process\AuthKeyMatchFailed');
+        $this->expectException('\BO\Zmsapi\Exception\Process\AuthKeyMatchFailed');
+        $this->expectExceptionCode(403);
         $this->render([], [
             '__body' => '{
                 "id": 10029,
