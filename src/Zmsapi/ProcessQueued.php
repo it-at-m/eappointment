@@ -1,6 +1,6 @@
 <?php
 /**
- * @package Zmsapi
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -10,44 +10,48 @@ use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\Process as Query;
 use \BO\Zmsdb\ProcessStatusQueued;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
 
 /**
-  * Handle requests concerning services
-  */
+ * @SuppressWarnings(Coupling)
+ */
 class ProcessQueued extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
      * @return String
      */
-    public function __invoke(RequestInterface $request, ResponseInterface $response, array $args)
-    {
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
         $workstation = (new Helper\User($request))->checkRights();
-        $message = Response\Message::create($request);
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Process($input);
         $entity->testValid();
-
-        if ($entity->hasProcessCredentials()) {
-            $process = (new Query())->readEntity($entity['id'], $entity['authKey'], 0);
-            if ($process->scope['id'] != $workstation->scope['id']) {
-                throw new Exception\Process\ProcessNoAccess();
-            }
-        } elseif ($entity->hasQueueNumber()) {
-            $process = ProcessStatusQueued::init()
-                ->readByQueueNumberAndScope($entity['queue']['number'], $workstation->scope['id']);
-        } else {
-            throw new Exception\Process\ProcessInvalid();
-        }
-        
+        $this->testProcessData($entity);
+        $process = (new Query())->readEntity($entity['id'], $entity['authKey'], 0);
         $process->status = 'queued';
+
+        $cluster = (new \BO\Zmsdb\Cluster)->readByScopeId($workstation->scope['id'], 1);
+        $workstation->testMatchingProcessScope($cluster, $process);
         $process = (new Query())->updateEntity($process);
+
+        $message = Response\Message::create($request);
         $message->data = $process;
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
         return $response;
+    }
+
+    protected function testProcessData($entity)
+    {
+        $authCheck = (new Query())->readAuthKeyByProcessId($entity->id);
+        if (! $authCheck) {
+            throw new Exception\Process\ProcessNotFound();
+        } elseif ($authCheck['authKey'] != $entity->authKey && $authCheck['authName'] != $entity->authKey) {
+            throw new Exception\Process\AuthKeyMatchFailed();
+        }
     }
 }
