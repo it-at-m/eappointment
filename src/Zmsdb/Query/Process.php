@@ -376,12 +376,12 @@ class Process extends Base implements MappingInterface
         $data['IPAdresse'] = $process['createIP'];
         $data['Erinnerungszeitpunkt'] = $process->getReminderTimestamp();
         $data['AnzahlPersonen'] = $process->getClients()->count();
-        $data = $this->readStatusData($data, $process);
         $data = $this->readAppointmentData($data, $process);
         $data = $this->readClientData($data, $process);
         $data = $this->readProcessTimeValuesData($data, $process);
         $data = $this->readWaitingTime($data, $process);
         $data = $this->readSendCount($data, $process);
+        $data = $this->readStatusData($data, $process);
         $data = $this->readFilteredData($data);
         $this->addValues($data);
     }
@@ -413,6 +413,7 @@ class Process extends Base implements MappingInterface
             $data['Timestamp'] = 0;
             $data['AnzahlAufrufe'] = 0;
             $data['nicht_erschienen'] = 0;
+            $data['wsm_aufnahmezeit'] = (new \DateTimeImmutable())->format('H:i:s');
         }
         return $data;
     }
