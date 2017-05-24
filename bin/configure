@@ -10,4 +10,4 @@ echo $ROOT
 mkdir -p $ROOT/.git/hooks
 ln -sf $ROOT/bin/test $ROOT/.git/hooks/pre-commit
 
-chmod -R a+rwX $ROOT/cache
+test -d $ROOT/cache && chmod -R a+rwX $ROOT/cache
