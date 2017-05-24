@@ -31,7 +31,7 @@ class CalldisplayQueue extends BaseController
 
         $queueList = new \BO\Zmsentities\Collection\QueueList();
         foreach ($calldisplay->getFullScopeList() as $scope) {
-            $queueList->addList($this->getCalculatedQueueListFromScope($scope, $resolveReferences));
+            $queueList->addList($this->readCalculatedQueueListFromScope($scope, $resolveReferences));
         }
 
         $message = Response\Message::create($request);
@@ -61,7 +61,7 @@ class CalldisplayQueue extends BaseController
         }
     }
 
-    protected function getCalculatedQueueListFromScope($scope, $resolveReferences)
+    protected function readCalculatedQueueListFromScope($scope, $resolveReferences)
     {
         $scope = (new \BO\Zmsdb\Scope)->readWithWorkstationCount($scope->id, \App::$now, $resolveReferences);
         return (new \BO\Zmsdb\Scope)
