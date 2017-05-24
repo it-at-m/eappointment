@@ -3177,7 +3177,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/scope/{id}/process/{status}/":
  *      get:
- *          summary: Get a list of processes with pending status
+ *          summary: Get a list of processes by scope and status (pending for example)
  *          tags:
  *              - scope
  *              - process

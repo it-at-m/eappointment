@@ -1,6 +1,6 @@
 <?php
 /**
- * @package 115Mandant
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -11,31 +11,34 @@ use \BO\Mellon\Validator;
 use \BO\Zmsdb\ProcessStatusQueued;
 use \BO\Zmsdb\Scope;
 
-/**
-  * Handle requests concerning services
-  */
 class ProcessByQueueNumber extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render($scopeId, $queueNumber)
-    {
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
-        $message = Response\Message::create(Render::$request);
-
-        $scope = (new Scope())->readEntity($scopeId);
+        $scope = (new Scope())->readEntity($args['id']);
         if (! $scope) {
             throw new Exception\Scope\ScopeNotFound();
         }
 
-        $process = ProcessStatusQueued::init()->readByQueueNumberAndScope($queueNumber, $scopeId, $resolveReferences);
+        $process = ProcessStatusQueued::init()
+            ->readByQueueNumberAndScope($args['number'], $scope->id, $resolveReferences);
         if (! $process->hasId()) {
             throw new Exception\Process\ProcessNotFound();
         }
 
+        $message = Response\Message::create($request);
         $message->data = $process;
-        Render::lastModified(time(), '0');
-        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
+
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+        return $response;
     }
 }
