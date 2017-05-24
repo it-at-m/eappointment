@@ -16,4 +16,4 @@ if [ ! -e $ROOT/config.php ]
 then	
     cp $ROOT/config.example.php $ROOT/config.php
 fi
-chmod -R a+rwX $ROOT/cache
+test -d $ROOT/cache && chmod -R a+rwX $ROOT/cache
