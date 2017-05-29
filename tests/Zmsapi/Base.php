@@ -47,6 +47,7 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
                 'id' => $scopeId,
             ])
         ]);
+        User::$workstationResolved = 2;
         return User::$workstation;
     }
 

@@ -12,26 +12,36 @@ use \BO\Zmsdb\Workstation;
 class User
 {
     public static $workstation = null;
+    public static $workstationResolved = null;
 
     public static $assignedWorkstation = null;
 
     public static $request = null;
 
-    public function __construct($request)
+    public function __construct($request, $resolveReferences = 0)
     {
         static::$request = $request;
+        static::readWorkstation($resolveReferences);
     }
 
-    public static function readWorkstation()
+    public static function readWorkstation($resolveReferences = 0)
     {
         if (! static::$workstation) {
             $xAuthKey = static::getXAuthKey();
             $useraccount = (new UserAccount())->readEntityByAuthKey($xAuthKey);
             if ($useraccount->hasId()) {
-                static::$workstation = (new Workstation())->readEntity($useraccount->id, 2);
+                static::$workstation = (new Workstation())->readEntity($useraccount->id, $resolveReferences);
+                if ($resolveReferences < 1) {
+                    static::$workstation->useraccount = $useraccount;
+                }
+                static::$workstationResolved = $resolveReferences;
             } else {
                 static::$workstation = new \BO\Zmsentities\Workstation();
             }
+        }
+        if ($resolveReferences > static::$workstationResolved) {
+            static::$workstation = (new Workstation())
+                ->readResolvedReferences(static::$workstation, $resolveReferences);
         }
         return static::$workstation;
     }
@@ -76,7 +86,7 @@ class User
      */
     public static function checkDepartment($departmentId)
     {
-        $workstation = static::readWorkstation();
+        $workstation = static::readWorkstation(2);
         $userAccount = $workstation->getUseraccount();
         if (! $userAccount->hasId()) {
             throw new \BO\Zmsentities\Exception\UserAccountMissingLogin();
