@@ -20,7 +20,7 @@ class Workstation extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $provider = \App::$http->readGetResult(
             '/provider/dldb/'. $workstation->getProviderOfGivenScope() .'/'
         )->getEntity();

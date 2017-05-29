@@ -20,7 +20,7 @@ class ScopeAvailabilityDay extends BaseController
      */
     public static function render($scope_id, $dateString)
     {
-        $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $scope = \App::$http->readGetResult('/scope/' . intval($scope_id) . '/')->getEntity();
         $data = static::getAvailabilityData($scope_id, $dateString);
         $data['workstation'] = $workstation;

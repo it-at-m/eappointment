@@ -22,7 +22,7 @@ class Calldisplay extends BaseController
         \psr\http\message\responseinterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $scopeId = $workstation['scope']['id'];
         $entityId = Validator::value($scopeId)->isNumber()->getValue();
 

@@ -17,7 +17,7 @@ class Pickup extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         // todo Get cluster from workstation, avoid extra api call
         $cluster = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/cluster/')->getEntity();
         $processList = \App::$http->readGetResult('/workstation/process/pickup/', ['resolveReferences' => 1])

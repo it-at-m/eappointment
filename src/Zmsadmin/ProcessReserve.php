@@ -27,7 +27,7 @@ class ProcessReserve extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
 
         $selectedDate = Validator::value($args['date'])->isString()->getValue();
         $selectedTime = Validator::value($args['time'])->isString()->getValue();

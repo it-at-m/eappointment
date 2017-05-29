@@ -25,7 +25,7 @@ class CalendarWeek extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
 
         $selectedYear = Validator::value($args['year'])->isNumber()->getValue();
         $selectedWeek = Validator::value($args['weeknr'])->isNumber()->getValue();

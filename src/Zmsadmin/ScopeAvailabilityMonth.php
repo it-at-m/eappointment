@@ -27,7 +27,7 @@ class ScopeAvailabilityMonth extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         if (isset($args['date'])) {
             $dateTime = new \BO\Zmsentities\Helper\DateTime($args['date']);
         } else {

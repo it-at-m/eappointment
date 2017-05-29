@@ -23,7 +23,7 @@ class WorkstationStatus extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
 
         $response = Render::withLastModified($response, time(), '0');
         return Render::withJson($response, ['workstation' => $workstation]);
