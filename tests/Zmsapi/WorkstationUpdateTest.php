@@ -24,7 +24,7 @@ class WorkstationUpdateTest extends Base
     public function testOveragedLogin()
     {
         $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingLogin');
-        $this->expectExceptionCode(403);
+        $this->expectExceptionCode(401);
 
         User::$workstation = new Workstation([
             'id' => '137',
