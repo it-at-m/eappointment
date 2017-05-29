@@ -1,6 +1,6 @@
 <?php
 /**
- * @package Zmsadmin
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -12,16 +12,27 @@ use \BO\Zmsdb\Workstation;
 use \BO\Zmsdb\ProcessStatusQueued;
 use \BO\Zmsdb\Cluster;
 
+/**
+ * @SuppressWarnings(Coupling)
+ */
 class WorkstationProcessWaitingnumber extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render()
-    {
-        $workstation = Helper\User::checkRights();
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        $workstation = (new Helper\User($request))->checkRights();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $scope = $workstation->scope;
+        $scope = (new \BO\Zmsdb\Scope)->readEntity($workstation->scope['id'], 0);
+        if (! $scope) {
+            throw new Exception\Scope\ScopeNotFound();
+        }
         if (1 == $workstation->queue['clusterEnabled']) {
             $cluster = (new Cluster())->readByScopeId($workstation->scope['id'], $resolveReferences);
             if (! $cluster) {
@@ -35,9 +46,11 @@ class WorkstationProcessWaitingnumber extends BaseController
         $process->scope = $scope;
         $process = ProcessStatusQueued::init()->writeNewFromAdmin($process, \App::$now);
 
-        $message = Response\Message::create(Render::$request);
+        $message = Response\Message::create($request);
         $message->data = $process;
-        Render::lastModified(time(), '0');
-        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
+
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+        return $response;
     }
 }
