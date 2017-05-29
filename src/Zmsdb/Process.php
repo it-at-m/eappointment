@@ -148,6 +148,21 @@ class Process extends Base implements Interfaces\ResolveReferences
         return $processList;
     }
 
+    public function readByWorkstation(\BO\Zmsentities\Workstation $workstation, $resolveReferences = 0)
+    {
+        $query = new Query\Process(Query\Base::SELECT);
+        $query
+            ->addEntityMapping()
+            ->addConditionWorkstationId($workstation->id);
+        $process = $this->fetchOne($query, new Entity());
+        if ($process->hasId()) {
+            $process = $this->readResolvedReferences($process, $resolveReferences);
+        } else {
+            $process = null;
+        }
+        return $process;
+    }
+
     /**
      * Read processList by scopeId and DateTime
      *

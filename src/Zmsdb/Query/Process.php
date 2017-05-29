@@ -4,7 +4,7 @@ namespace BO\Zmsdb\Query;
 
 /**
 *
-* @SuppressWarnings(TooManyPublicMethods)
+* @SuppressWarnings(Methods)
 * @SuppressWarnings(Complexity)
  */
 class Process extends Base implements MappingInterface
@@ -246,6 +246,12 @@ class Process extends Base implements MappingInterface
     public function addConditionQueueNumber($queueNumber)
     {
         $this->query->where('process.wartenummer', '=', $queueNumber);
+        return $this;
+    }
+
+    public function addConditionWorkstationId($workstationId)
+    {
+        $this->query->where('process.NutzerID', '=', $workstationId);
         return $this;
     }
 
