@@ -1,6 +1,6 @@
 <?php
 
-namespace BO\Zmsdb\Exception\Process;
+namespace BO\Zmsapi\Exception\Process;
 
 class ProcessAlreadyCalled extends \Exception
 {
