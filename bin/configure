@@ -16,4 +16,4 @@ if [ ! -e $ROOT/config.php ]
 then	
     cp $ROOT/config.example.php $ROOT/config.php
 fi
-test -d $ROOT/cache && chmod -fR a+rwX $ROOT/cache
+test -d $ROOT/cache && chmod -fR a+rwX $ROOT/cache || echo "Could not chmod cache files"
