@@ -8,7 +8,7 @@ namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
-use \BO\Zmsdb\Provider as Query;
+use \BO\Zmsdb\Provider;
 
 class ProviderGet extends BaseController
 {
@@ -17,17 +17,17 @@ class ProviderGet extends BaseController
      * @return String
      */
     public function readResponse(
-        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\RequestInterface $requestInterface,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
-        $provider = (new Query())->readEntity($args['source'], $args['id'], $resolveReferences);
+        $provider = (new Provider())->readEntity($args['source'], $args['id'], $resolveReferences);
         if (! $provider->hasId()) {
             throw new Exception\Provider\ProviderNotFound();
         }
 
-        $message = Response\Message::create($request);
+        $message = Response\Message::create($requestInterface);
         $message->data = $provider;
 
         $response = Render::withLastModified($response, time(), '0');
