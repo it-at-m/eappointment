@@ -28,7 +28,7 @@ class ProcessSave extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $processId = Validator::value($args['id'])->isNumber()->getValue();
         $initiator = Validator::param('initiator')->isString()->getValue();
         $process = \App::$http->readGetResult('/process/'. $processId .'/')->getEntity();

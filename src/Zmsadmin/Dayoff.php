@@ -17,7 +17,7 @@ class Dayoff extends BaseController
      */
     public static function render()
     {
-        $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         \BO\Slim\Render::html('page/dayoff.twig', array(
             'title' => 'Allgemein gültige Feiertage - Jahresauswahl',
             'workstation' => $workstation,

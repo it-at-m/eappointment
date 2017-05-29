@@ -27,7 +27,7 @@ class ProcessQueue extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
 
         $validator = $request->getAttribute('validator');
         $selectedDate = Validator::value($args['date'])->isString()->getValue();

@@ -26,7 +26,7 @@ class CalendarPage extends BaseController
         $slotType = $validator->getParameter('slottype')->isString()->getValue();
         $slotsRequired = $validator->getParameter('slotsrequired')->isNumber()->getValue();
 
-        $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $scope = new Scope($workstation->scope);
         $calendar = new Helper\Calendar($selectedDate);
 

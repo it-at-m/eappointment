@@ -27,7 +27,7 @@ class ScopeAppointmentsByDay extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
 
         $scopeId = $args['id'];
         $scope = \App::$http->readGetResult('/scope/' . $scopeId . '/')->getEntity();

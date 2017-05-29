@@ -23,7 +23,7 @@ class PickupDelete extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $processIdList = Validator::value($args['ids'])->isString()->getValue();
         $idList = explode(',', $processIdList);
         foreach ($idList as $processId) {

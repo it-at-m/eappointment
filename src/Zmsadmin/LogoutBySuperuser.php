@@ -22,7 +22,7 @@ class LogoutBySuperuser extends BaseController
         array $args
     ) {
         $validator = $request->getAttribute('validator');
-        $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 0])->getEntity();
         $workstationToLogout = $validator->getParameter('workstation')->isArray()->getValue();
 
         if (array_key_exists('useraccount', $workstationToLogout) && isset($workstationToLogout['useraccount']['id'])) {

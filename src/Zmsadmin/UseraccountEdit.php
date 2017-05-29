@@ -24,7 +24,7 @@ class UseraccountEdit extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $userAccountName = Validator::value($args['loginname'])->isString()->getValue();
         $confirm_success = $request->getAttribute('validator')->getParameter('confirm_success')->isString()->getValue();
         $userAccount = \App::$http->readGetResult('/useraccount/'. $userAccountName .'/')->getEntity();

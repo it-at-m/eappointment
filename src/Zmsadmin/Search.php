@@ -21,7 +21,7 @@ class Search extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $validator = $request->getAttribute('validator');
         $queryString = $validator->getParameter('query')
             ->isString()

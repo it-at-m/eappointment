@@ -17,7 +17,7 @@ class OwnerOverview extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences'=>4))->getCollection();
         $organisationList = $ownerList->getOrganisationsByOwnerId(23);
 
