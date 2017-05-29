@@ -23,17 +23,11 @@ class WorkstationGet extends BaseController
      */
     public function __invoke(RequestInterface $request, ResponseInterface $response, array $args)
     {
-        $workstation = (new Helper\User($request))->checkRights();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
-
-        if ($resolveReferences > 1) {
-            $query = new Query();
-            $workstation = $query->readEntity($workstation->useraccount->id, $resolveReferences);
-        }
+        $workstation = (new Helper\User($request, $resolveReferences))->checkRights();
         if (! $workstation) {
             throw new Exception\Workstation\WorkstationNotFound();
         }
-
         $message = Response\Message::create($request);
         $message->data = $workstation;
 
