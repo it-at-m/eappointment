@@ -73,7 +73,7 @@ class WorkstationTest extends EntityCommonTests
             $userAccount->testRights(array_keys(array('superuser')), $now);
             $this->fail("Expected exception UserAccountMissingRights not thrown");
         } catch (\BO\Zmsentities\Exception\UserAccountMissingLogin $exception) {
-            $this->assertEquals(403, $exception->getCode());
+            $this->assertEquals(401, $exception->getCode());
         }
     }
 }
