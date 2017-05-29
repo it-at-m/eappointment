@@ -1,6 +1,6 @@
 <?php
 /**
- * @package Zmsadmin
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -11,32 +11,43 @@ use \BO\Mellon\Validator;
 use \BO\Zmsdb\Workstation;
 use \BO\Zmsdb\Process;
 
+/**
+ * @SuppressWarnings(Coupling)
+ */
 class WorkstationProcess extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render()
-    {
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
         $workstation = Helper\User::checkRights();
-        if ($workstation->process['id']) {
-            $process = $workstation->process;
-        } else {
+        $process = $workstation->process;
+        if (! $process->hasId()) {
             $input = Validator::input()->isJson()->assertValid()->getValue();
-            $process = new \BO\Zmsentities\Process($input);
-            $processAuthData = (new Process)->readAuthKeyByProcessId($process['id']);
-            $process = (new Process)->readEntity($process['id'], $processAuthData['authKey']);
-            if ('called' == $process->status || 'processing' == $process->status) {
-                throw new Exception\Process\ProcessAlreadyCalled();
-            }
+            $entity = new \BO\Zmsentities\Process($input);
+            $authCheck = (new Process)->readAuthKeyByProcessId($entity['id']);
+            $process = (new Process)->readEntity($entity['id'], $authCheck['authKey']);
         }
-
+        if (! $process) {
+            throw new Exception\Process\ProcessNotFound();
+        }
+        if ('called' == $process->status || 'processing' == $process->status) {
+            throw new Exception\Process\ProcessAlreadyCalled();
+        }
+        $process->testValid();
         $process->setCallTime(\App::$now);
         $workstation->process = (new Workstation)->writeAssignedProcess($workstation->id, $process);
 
-        $message = Response\Message::create(Render::$request);
+        $message = Response\Message::create($request);
         $message->data = $workstation;
-        Render::lastModified(time(), '0');
-        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
+
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+        return $response;
     }
 }
