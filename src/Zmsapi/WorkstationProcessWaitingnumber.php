@@ -34,7 +34,7 @@ class WorkstationProcessWaitingnumber extends BaseController
             throw new Exception\Scope\ScopeNotFound();
         }
         if (1 == $workstation->queue['clusterEnabled']) {
-            $cluster = (new Cluster())->readByScopeId($workstation->scope['id'], $resolveReferences);
+            $cluster = (new Cluster())->readByScopeId($scope->id, $resolveReferences);
             if (! $cluster) {
                 throw new Exception\Cluster\ClusterNotFound();
             }
@@ -44,6 +44,7 @@ class WorkstationProcessWaitingnumber extends BaseController
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $process = new \BO\Zmsentities\Process($input);
         $process->scope = $scope;
+        $process->testValid();
         $process = ProcessStatusQueued::init()->writeNewFromAdmin($process, \App::$now);
 
         $message = Response\Message::create($request);

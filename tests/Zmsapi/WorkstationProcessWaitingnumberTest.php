@@ -14,14 +14,13 @@ class WorkstationProcessWaitingnumberTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation();
-        User::$workstation->queue['clusterEnabled'] = 1;
-        User::$workstation->scope['id'] = 141;
+        $workstation = $this->setWorkstation();
+        $workstation->queue['clusterEnabled'] = 1;
+        $workstation->scope['id'] = 146; //ghostworkstation count 3
         $response = $this->render([], [
             '__body' => '{
                 "id": '. self::PROCESS_ID .',
-                "authKey": "'. self::AUTHKEY .'",
-                "amendment": "Beispiel Termin"
+                "authKey": "'. self::AUTHKEY .'"
             }'
         ], []);
         $this->assertContains('process.json', (string)$response->getBody());
@@ -31,9 +30,9 @@ class WorkstationProcessWaitingnumberTest extends Base
 
     public function testEmpty()
     {
-        $this->setWorkstation();
-        User::$workstation->queue['clusterEnabled'] = 1;
-        User::$workstation->scope['id'] = 141;
+        $workstation = $this->setWorkstation();
+        $workstation->queue['clusterEnabled'] = 1;
+        $workstation->scope['id'] = 146; //ghostworkstation count 3
         $this->setExpectedException('\BO\Mellon\Failure\Exception');
         $this->render([], [], []);
     }
