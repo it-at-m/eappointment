@@ -25,7 +25,7 @@ class WorkstationProcess extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = Helper\User::checkRights();
+        $workstation = (new Helper\User($request))->checkRights();
         $process = $workstation->process;
         if (! $process->hasId()) {
             $input = Validator::input()->isJson()->assertValid()->getValue();

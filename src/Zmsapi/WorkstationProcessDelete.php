@@ -1,6 +1,6 @@
 <?php
 /**
- * @package 115Mandant
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -10,17 +10,21 @@ use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\Workstation;
 
-/**
-  * Handle requests concerning services
-  */
 class WorkstationProcessDelete extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render()
-    {
-        $workstation = Helper\User::checkRights();
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        $workstation = (new Helper\User($request))->checkRights();
+        if (! $workstation->process['id']) {
+            throw new Exception\Process\ProcessNotFound();
+        }
         if ('pickup' != $workstation->process['status']) {
             $workstation->process['queue']['callCount']++;
         }
@@ -28,9 +32,11 @@ class WorkstationProcessDelete extends BaseController
         (new Workstation)->writeRemovedProcess($workstation);
         unset($workstation->process);
 
-        $message = Response\Message::create(Render::$request);
+        $message = Response\Message::create($request);
         $message->data = $workstation;
-        Render::lastModified(time(), '0');
-        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
+
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+        return $response;
     }
 }
