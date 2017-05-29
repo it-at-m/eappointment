@@ -2,9 +2,6 @@
 
 namespace BO\Zmsapi\Exception\Provider;
 
-/**
- * example class to generate an exception
- */
 class ProviderNotFound extends \Exception
 {
     protected $code = 404;

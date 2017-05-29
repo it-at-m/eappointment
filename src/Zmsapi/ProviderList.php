@@ -8,35 +8,32 @@ namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
-use \BO\Zmsdb\Provider as Query;
+use \BO\Zmsdb\Provider;
 
-/**
-  * Handle requests concerning services
-  */
 class ProviderList extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render($source, $requestIdCsv = null)
-    {
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
-        $query = new Query();
         $isAssigned = Validator::param('isAssigned')->isBool()->getValue();
 
-        if (null !== $requestIdCsv) {
-            $providerList = $query->readListByRequest($source, $requestIdCsv, $resolveReferences);
-        } else {
-            $providerList = $query->readList($source, $resolveReferences, $isAssigned);
-        }
-
-        if (0 == count($providerList)) {
+        $providerList = (new Provider)->readList($args['source'], $resolveReferences, $isAssigned);
+        if (0 == $providerList->count()) {
             throw new Exception\Provider\ProviderNotFound();
         }
 
-        $message = Response\Message::create(Render::$request);
+        $message = Response\Message::create($request);
         $message->data = $providerList;
-        Render::lastModified(time(), '0');
-        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
+
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+        return $response;
     }
 }
