@@ -71,7 +71,6 @@ class Workstation extends Base implements MappingInterface
     public function addJoin()
     {
         return [
-            $this->addJoinProcess(),
             $this->addJoinUseraccount(),
             $this->addJoinScope(),
         ];
@@ -99,18 +98,6 @@ class Workstation extends Base implements MappingInterface
             'userAccount.NutzerID'
         );
         $joinQuery = new UserAccount($this, $this->getPrefixed('useraccount__'));
-        return $joinQuery;
-    }
-
-    public function addJoinProcess()
-    {
-        $this->leftJoin(
-            new Alias(Process::TABLE, 'process'),
-            'workstation.NutzerID',
-            '=',
-            'process.NutzerID'
-        );
-        $joinQuery = new Process($this, $this->getPrefixed('process__'));
         return $joinQuery;
     }
 
