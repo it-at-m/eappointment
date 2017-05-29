@@ -4375,8 +4375,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                              $ref: "schema/metaresult.json"
  *                          data:
  *                              $ref: "schema/process.json"
+ *              401:
+ *                  description: "login required"
  *              404:
- *                  description: "useraccount loginname does not exists"
+ *                  description: "scope or cluster not found"
  */
 \App::$slim->post('/workstation/process/waitingnumber/',
     '\BO\Zmsapi\WorkstationProcessWaitingnumber')
