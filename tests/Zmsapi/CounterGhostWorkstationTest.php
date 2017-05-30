@@ -17,11 +17,16 @@ class CounterGhostWorkstationTest extends Base
                 "provider": {
                     "id": "122217",
                     "$ref": "/provider/122217/"
+                },
+                "status": {
+                    "queue": {
+                        "ghostWorkstationCount": 4
+                    }
                 }
             }'
         ], []);
         $this->assertContains('scope.json', (string)$response->getBody());
-        $this->assertContains('"ghostWorkstationCount":"3",', (string)$response->getBody());
+        $this->assertContains('"ghostWorkstationCount":4', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

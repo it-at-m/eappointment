@@ -22,11 +22,11 @@ class CounterGhostWorkstation extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = Helper\User::checkRights('basic');
+        $workstation = (new Helper\User($request))->checkRights('basic');
         $input = Validator::input()->isJson()->assertValid()->getValue();
-        $scope = new Entity($input);
-        $scope->testValid();
-        $scope = (new Scope)->readEntity($scope->id, 0);
+        $entity = new Entity($input);
+        $entity->testValid();
+        $scope = (new Scope)->readEntity($entity->id, 0);
         if (! $scope) {
             throw new Exception\Scope\ScopeNotFound();
         }
@@ -34,7 +34,7 @@ class CounterGhostWorkstation extends BaseController
             throw new Exception\Scope\ScopeNoAccess();
         }
         $message = Response\Message::create($request);
-        $message->data = (new Scope())->updateGhostWorkstationCount($scope, \App::$now);
+        $message->data = (new Scope())->updateGhostWorkstationCount($entity, \App::$now);
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message, $message->getStatuscode());
