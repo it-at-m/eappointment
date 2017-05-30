@@ -1,0 +1,16 @@
+{
+    "$schema": "https://schema.berlin.de/queuemanagement/scope.json",
+    "id": "141",
+    "hint": "Nr. wird zum Termin aufgerufen",
+    "shortName": "",
+    "contact": {
+        "name": "Bürgeramt Heerstraße",
+        "street": "Heerstr. 12, 14052 Berlin",
+        "email": "",
+        "country": "Germany"
+    },
+    "provider": {
+        "id": "122217",
+        "$ref": "/provider/122217/"
+    }
+}

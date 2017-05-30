@@ -1,6 +1,6 @@
 <?php
 /**
- * @package 115Mandant
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -8,28 +8,30 @@ namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
-use \BO\Zmsdb\Scope as Query;
+use \BO\Zmsdb\Scope;
 
-/**
-  * Handle requests concerning services
-  */
 class ScopeWithWorkstationCount extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render($itemId)
-    {
-        $query = new Query();
-        $message = Response\Message::create(Render::$request);
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
-        $scope = $query->readWithWorkstationCount($itemId, \App::$now, $resolveReferences);
-        if (! $scope) {
+        $scope = (new Scope)->readWithWorkstationCount($args['id'], \App::$now, $resolveReferences);
+        if (! $scope->hasId()) {
             throw new Exception\Scope\ScopeNotFound();
         }
+
+        $message = Response\Message::create($request);
         $message->data = $scope;
 
-        Render::lastModified(time(), '0');
-        Render::json($message, $message->getStatuscode());
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message, $message->getStatuscode());
+        return $response;
     }
 }
