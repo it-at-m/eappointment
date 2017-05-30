@@ -3427,7 +3427,7 @@
 			}
 		}
 	},
-	"/request/{source}/provider/{id}/": {
+	"/provider/{source}/{id}/request/": {
 		"get": {
 			"summary": "Get a list of requests by provider ID",
 			"tags": [

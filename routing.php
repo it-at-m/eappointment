@@ -519,7 +519,8 @@ use \Psr\Http\Message\ResponseInterface;
  *      get:
  *          summary: Get a list of today logged in workstations by cluster ID
  *          tags:
- *              - request
+ *              - cluster
+ *              - workstation
  *          parameters:
  *              -   name: id
  *                  description: number of cluster
@@ -536,7 +537,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  type: integer
  *          responses:
  *              200:
- *                  description: "success"
+ *                  description: "success, might by empty"
  *                  schema:
  *                      type: object
  *                      properties:
@@ -2866,7 +2867,8 @@ use \Psr\Http\Message\ResponseInterface;
  *      get:
  *          summary: Get a list of today logged in workstations by scope ID
  *          tags:
- *              - request
+ *              - scope
+ *              - workstation
  *          parameters:
  *              -   name: id
  *                  description: number of scope
@@ -2879,7 +2881,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  type: integer
  *          responses:
  *              200:
- *                  description: "success"
+ *                  description: "success, might by empty"
  *                  schema:
  *                      type: object
  *                      properties:
