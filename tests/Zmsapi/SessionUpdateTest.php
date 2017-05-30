@@ -15,6 +15,7 @@ class SessionUpdateTest extends Base
             }',
         ], []);
         $this->assertContains('session.json', (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
     }
 
     public function testEmpty()
@@ -22,6 +23,15 @@ class SessionUpdateTest extends Base
         $this->setExpectedException('BO\Mellon\Failure\Exception');
         $this->render([], [
             '__body' => '',
+        ], []);
+    }
+
+    public function testUnvalidInput()
+    {
+        $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
+        $this->expectExceptionCode(400);
+        $this->render([], [
+            '__body' => '{}'
         ], []);
     }
 

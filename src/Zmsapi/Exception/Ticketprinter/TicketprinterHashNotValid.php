@@ -9,5 +9,5 @@ class TicketprinterHashNotValid extends \Exception
 {
     protected $code = 403;
 
-    protected $message = 'No valid hash found';
+    protected $message = 'No valid hash existing';
 }

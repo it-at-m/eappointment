@@ -12,14 +12,9 @@ class SessionDeleteTest extends Base
 
     public function testRendering()
     {
-        $query = new \BO\Zmsdb\Session();
-        $session = new \BO\Zmsentities\Session(array(
-            'id' => self::SESSION_ID,
-            'name' => self::SESSION_NAME,
-            'content' => []
-        ));
-        $query->updateEntity($session);
+        (new SessionUpdateTest)->testRendering();
         $response = $this->render(['name' => self::SESSION_NAME, 'id' => self::SESSION_ID], [], []);
+        $this->assertContains('session.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

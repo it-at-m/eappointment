@@ -10,10 +10,9 @@ class TicketprinterTest extends Base
     {
         $response = $this->render([], [
             '__body' => '{
-                "buttonlist": "s141,c110,l[http://www.berlin.de/|Portal+Berlin.de]",
                 "enabled": true,
-                "hash": "65d88282b9a15d355af1dd619cb86e057c",
-                "id": 1234,
+                "hash": "ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2",
+                "id": 1,
                 "lastUpdate": 1447925326000,
                 "name": "Eingangsbereich links",
                 "buttons": [
@@ -48,16 +47,64 @@ class TicketprinterTest extends Base
             }'
         ], []);
         $this->assertContains('ticketprinter.json', (string)$response->getBody());
-        $this->assertContains('"hash":"65d88282b9a15d355af1dd619cb86e057c', (string)$response->getBody());
-        $this->assertContains('"type":"scope"', (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
+    }
+
+    public function testFromButtonList()
+    {
+        $response = $this->render([], [
+            '__body' => '{
+                "buttonlist": "s141,c110,l[http://www.berlin.de/|Portal+Berlin.de]",
+                "enabled": true,
+                "hash": "ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2",
+                "id": 1,
+                "lastUpdate": 1447925326000,
+                "name": "Eingangsbereich links"
+            }'
+        ], []);
+        $this->assertContains('ticketprinter.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
     public function testUnvalidInput()
     {
-        $this->setExpectedException('\BO\Mellon\Failure\Exception');
+        $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
+        $this->expectExceptionCode(400);
         $this->render([], [
-            '__body' => '',
+            '__body' => '{
+                "buttonlist": {}
+            }',
+        ], []);
+    }
+
+    public function testUnvalidHash()
+    {
+        $this->expectException('\BO\Zmsapi\Exception\Ticketprinter\TicketprinterHashNotValid');
+        $this->expectExceptionCode(403);
+        $this->render([], [
+            '__body' => '{
+                "buttonlist": "s141,c110,l[http://www.berlin.de/|Portal+Berlin.de]",
+                "hash": "ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2",
+                "id": 1234
+            }'
+        ], []);
+    }
+
+    public function testEmpty()
+    {
+        $this->setExpectedException('\BO\Mellon\Failure\Exception');
+        $this->render([], [], []);
+    }
+
+    public function testNotFound()
+    {
+        $this->expectException('\BO\Zmsapi\Exception\Ticketprinter\TicketprinterNotFound');
+        $this->expectExceptionCode(404);
+        $this->render([], [
+            '__body' => '{
+                "buttonlist": "s141,c110,l[http://www.berlin.de/|Portal+Berlin.de]",
+                "hash": "1234567890098765432"
+            }'
         ], []);
     }
 }

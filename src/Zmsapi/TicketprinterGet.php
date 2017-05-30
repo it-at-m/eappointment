@@ -1,6 +1,6 @@
 <?php
 /**
- * @package Zmsapi
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -9,28 +9,27 @@ namespace BO\Zmsapi;
 use \BO\Slim\Render;
 use \BO\Zmsdb\Ticketprinter as Query;
 
-/**
-  * Handle requests concerning services
-  */
 class TicketprinterGet extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render($hash)
-    {
-        $message = Response\Message::create(Render::$request);
-        $query = new Query();
-        $ticketprinter = $query->readByHash($hash);
-
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        $ticketprinter = (new Query)->readByHash($args['hash']);
         if (! $ticketprinter->hasId()) {
             throw new Exception\Ticketprinter\TicketprinterNotFound();
         }
-        if (! $ticketprinter->isEnabled()) {
-            throw new Exception\Ticketprinter\TicketprinterNotEnabled();
-        }
+
+        $message = Response\Message::create($request);
         $message->data = $ticketprinter;
-        Render::lastModified(time(), '0');
-        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
+
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+        return $response;
     }
 }

@@ -3783,16 +3783,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                      $ref: "schema/session.json"
  *          responses:
  *              200:
- *                  description: get an updated session object
- *                  schema:
- *                      type: object
- *                      properties:
- *                          meta:
- *                              $ref: "schema/metaresult.json"
- *                          data:
- *                              $ref: "schema/session.json"
- *              404:
- *                  description: "Could not find any available session"
+ *                  description: get an updated or new created session object
  *                  schema:
  *                      type: object
  *                      properties:
