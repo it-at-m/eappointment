@@ -618,7 +618,8 @@
 		"get": {
 			"summary": "Get a list of today logged in workstations by cluster ID",
 			"tags": [
-				"request"
+				"cluster",
+				"workstation"
 			],
 			"parameters": [
 				{
@@ -643,7 +644,7 @@
 			],
 			"responses": {
 				"200": {
-					"description": "success",
+					"description": "success, might by empty",
 					"schema": {
 						"type": "object",
 						"properties": {
@@ -3522,7 +3523,8 @@
 		"get": {
 			"summary": "Get a list of today logged in workstations by scope ID",
 			"tags": [
-				"request"
+				"scope",
+				"workstation"
 			],
 			"parameters": [
 				{
@@ -3541,7 +3543,7 @@
 			],
 			"responses": {
 				"200": {
-					"description": "success",
+					"description": "success, might by empty",
 					"schema": {
 						"type": "object",
 						"properties": {

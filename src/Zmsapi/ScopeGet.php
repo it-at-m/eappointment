@@ -1,42 +1,43 @@
 <?php
 /**
- * @package 115Mandant
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
-use \BO\Zmsdb\Scope as Query;
+use \BO\Zmsdb\Scope;
 
-/**
- * Handle requests concerning services
- */
 class ScopeGet extends BaseController
 {
 
     /**
-     *
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render($itemId)
-    {
-        $message = Response\Message::create(Render::$request);
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        $message = Response\Message::create($request);
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
-        $query = new Query();
-        $scope = $query->readEntity($itemId, $resolveReferences);
+        $scope = (new Scope)->readEntity($args['id'], $resolveReferences);
         if (! $scope) {
             throw new Exception\Scope\ScopeNotFound();
         }
-        if (Helper\User::hasRights()) {
-            Helper\User::checkRights();
+        if ((new Helper\User($request))->hasRights()) {
+            (new Helper\User($request))->checkRights('scope');
         } else {
             $scope = $scope->withLessData();
             $message->meta->reducedData = true;
         }
 
         $message->data = $scope;
-        Render::lastModified(time(), '0');
-        Render::json($message, $message->getStatuscode());
+
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+        return $response;
     }
 }

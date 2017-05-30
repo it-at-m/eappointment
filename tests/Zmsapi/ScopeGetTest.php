@@ -13,43 +13,33 @@ class ScopeGetTest extends Base
 
     const SCOPE_ID = 141;
 
-    public function testRendering()
+    public function testReducedDataAccess()
     {
-        User::$workstation = new Workstation([
-            'id' => '138',
-            'useraccount' => new Useraccount([
-                'id' => 'berlinonline',
-                'rights' => [
-                    'superuser' => true,
-                    'scope' => true
-                ]
-            ]),
-            'scope' => new Scope([
-                'id' => self::SCOPE_ID,
-            ])
-        ]);
-        $response = $this->render([self::SCOPE_ID], [], []); //Pankow
-        $this->assertNotContains('"reducedData"', (string)$response->getBody());
+        $response = $this->render(['id' => self::SCOPE_ID], [], []); //Pankow
+        $this->assertContains('scope.json', (string)$response->getBody());
+        $this->assertContains('"reducedData":true', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
-    public function testReducedDataAccess()
+    public function testRendering()
     {
-        $response = $this->render([self::SCOPE_ID], [], []); //Pankow
-        $this->assertContains('"reducedData":true', (string)$response->getBody());
+        $this->setWorkstation()->getUseraccount()->setRights('scope');
+        $response = $this->render(['id' => self::SCOPE_ID], [], []); //Pankow
+        $this->assertContains('scope.json', (string)$response->getBody());
+        $this->assertNotContains('"reducedData"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
     public function testEmpty()
     {
         $this->setExpectedException('\ErrorException');
-        $response = $this->render([], [], []);
+        $this->render([], [], []);
     }
 
     public function testScopeNotFound()
     {
         $this->expectException('\BO\Zmsapi\Exception\Scope\ScopeNotFound');
         $this->expectExceptionCode(404);
-        $response = $this->render([999], [], []);
+        $this->render(['id' => 999], [], []);
     }
 }
