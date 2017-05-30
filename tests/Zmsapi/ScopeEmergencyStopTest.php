@@ -15,42 +15,31 @@ class ScopeEmergencyStopTest extends Base
 
     public function testNoLogin()
     {
-        $this->setExpectedException('BO\Zmsentities\Exception\UserAccountMissingLogin');
-        $this->render([self::SCOPE_ID], [
+        $this->expectException('BO\Zmsentities\Exception\UserAccountMissingLogin');
+        $this->expectExceptionCode(401);
+        $this->render(['id' => self::SCOPE_ID], [
             '__body' => '',
         ], []);
     }
 
     public function testRendering()
     {
-        User::$workstation = new Workstation([
-            'id' => '123a',
-            'useraccount' => new Useraccount([
-                'id' => 'testuser',
-            ]),
-            'scope' => new Scope([
-                'id' => self::SCOPE_ID,
-            ])
-        ]);
-        $this->render([self::SCOPE_ID], [
+        $this->setWorkstation();
+        $response = $this->render(['id' => self::SCOPE_ID], [
             '__body' => '{
             }'
         ], []);
+        $this->assertContains('scope.json', (string)$response->getBody());
+        $this->assertContains('"activated":"0"', (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
     }
 
     public function testNoAccess()
     {
-        User::$workstation = new Workstation([
-            'id' => '123a',
-            'useraccount' => new Useraccount([
-                'id' => 'testuser',
-            ]),
-            'scope' => new Scope([
-                'id' => self::SCOPE_ID + 1,
-            ])
-        ]);
-        $this->setExpectedException('\BO\Zmsapi\Exception\Scope\ScopeNoAccess');
-        $this->render([self::SCOPE_ID], [
+        $this->setWorkstation();
+        $this->expectException('\BO\Zmsapi\Exception\Scope\ScopeNoAccess');
+        $this->expectExceptionCode(404);
+        $this->render(['id' => 141], [
             '__body' => '',
         ], []);
     }
