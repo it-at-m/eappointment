@@ -1,6 +1,6 @@
 <?php
 /**
- * @package 115Mandant
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -8,30 +8,33 @@ namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
-use \BO\Zmsdb\Scope as Query;
-use \BO\Zmsdb\Workstation as WorkstationQuery;
-use \BO\Zmsentities\Scope;
+use \BO\Zmsdb\Scope;
 
-/**
-  * Handle requests concerning services
-  */
 class ScopeEmergencyStop extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render($itemId)
-    {
-        $workstation = Helper\User::checkRights();
-        if (!$workstation->scope instanceof Scope || $workstation->scope->id != $itemId) {
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        $workstation = (new Helper\User($request, 1))->checkRights();
+        if (! $workstation->getScopeList()->hasEntity($args['id'])) {
             throw new Exception\Scope\ScopeNoAccess();
         }
-        $message = Response\Message::create(Render::$request);
+
         $workstation->scope->status['emergency']['activated'] = 0;
         $workstation->scope->status['emergency']['calledByWorkstation'] = -1;
         $workstation->scope->status['emergency']['acceptedByWorkstation'] = -1;
-        $message->data = (new Query)->updateEmergency($itemId, $workstation->scope);
-        Render::lastModified(time(), '0');
-        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
+
+        $message = Response\Message::create($request);
+        $message->data = (new Scope)->updateEmergency($args['id'], $workstation->scope);
+
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+        return $response;
     }
 }

@@ -39,7 +39,7 @@ class User
                 static::$workstation = new \BO\Zmsentities\Workstation();
             }
         }
-        if ($resolveReferences > static::$workstationResolved) {
+        if ($resolveReferences > static::$workstationResolved && static::$workstation->hasId()) {
             static::$workstation = (new Workstation())
                 ->readResolvedReferences(static::$workstation, $resolveReferences);
         }
