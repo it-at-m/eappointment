@@ -1,6 +1,6 @@
 <?php
 /**
- * @package 115Mandant
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -8,24 +8,34 @@ namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
-use \BO\Zmsdb\Scope as Query;
+use \BO\Zmsdb\Scope;
 
-/**
-  * Handle requests concerning services
-  */
 class ScopeUpdate extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render($itemId)
-    {
-        Helper\User::checkRights('scope');
-        $message = Response\Message::create(Render::$request);
-        $input = Validator::input()->isJson()->getValue();
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        (new Helper\User($request))->checkRights('scope');
+
+        $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Scope($input);
-        $message->data = (new Query)->updateEntity($itemId, $entity);
-        Render::lastModified(time(), '0');
-        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
+        $entity->testValid();
+        $scope = (new Scope)->readEntity($args['id'], 0);
+        if (! $scope) {
+            throw new Exception\Scope\ScopeNotFound();
+        }
+
+        $message = Response\Message::create($request);
+        $message->data = (new Scope)->updateEntity($scope->id, $entity);
+
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message, $message->getStatuscode());
+        return $response;
     }
 }
