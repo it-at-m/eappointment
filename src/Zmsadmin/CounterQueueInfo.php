@@ -25,9 +25,9 @@ class CounterQueueInfo extends BaseController
         if ($ghostWorkstation) {
             $scope = $workstation->getScope();
             $scope->setStatusQueue('ghostWorkstationCount', $ghostWorkstation);
-            \App::$http->readPostResult("/scope/$scope->id/ghostworkstation/", $scope)->getEntity();
+            $workstation->scope = \App::$http
+                ->readPostResult("/scope/$scope->id/ghostworkstation/", $scope)->getEntity();
         }
-
         $workstationInfo = Helper\WorkstationInfo::getInfoBoxData($workstation, $selectedDate);
 
         return \BO\Slim\Render::withHtml(
