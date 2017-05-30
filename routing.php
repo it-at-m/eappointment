@@ -498,7 +498,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  type: integer
  *          responses:
  *              200:
- *                  description: "success"
+ *                  description: "success, might be empty"
  *                  schema:
  *                      type: object
  *                      properties:
@@ -510,8 +510,8 @@ use \Psr\Http\Message\ResponseInterface;
  *                  description: "cluster id does not exists"
  */
 \App::$slim->get('/cluster/{id:\d{1,11}}/request/',
-    '\BO\Zmsapi\RequestsByCluster')
-    ->setName("RequestsByCluster");
+    '\BO\Zmsapi\RequestListByCluster')
+    ->setName("RequestListByCluster");
 
 /**
  *  @swagger
@@ -2789,7 +2789,7 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
- *  "/request/{source}/provider/{id}/":
+ *  "/provider/{source}/{id}/request/":
  *      get:
  *          summary: Get a list of requests by provider ID
  *          tags:
@@ -2822,9 +2822,9 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "provider id does not exists"
  */
-\App::$slim->get('/request/{source}/provider/{id:\d{1,11}}/',
-    '\BO\Zmsapi\RequestsByProvider')
-    ->setName("RequestsByProvider");
+\App::$slim->get('/provider/{source}/{id:\d{1,11}}/request/',
+    '\BO\Zmsapi\RequestListByProvider')
+    ->setName("RequestListByProvider");
 
 /**
  *  @swagger
@@ -2857,8 +2857,8 @@ use \Psr\Http\Message\ResponseInterface;
  *                  description: "scope id does not exists"
  */
 \App::$slim->get('/scope/{id:\d{1,11}}/request/',
-    '\BO\Zmsapi\RequestsByScope')
-    ->setName("RequestsByScope");
+    '\BO\Zmsapi\RequestListByScope')
+    ->setName("RequestListByScope");
 
 /**
  *  @swagger

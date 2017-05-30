@@ -312,7 +312,7 @@
 			],
 			"responses": {
 				"200": {
-					"description": "get a list of queue entries",
+					"description": "get a list of queue entries, return empty list if no queue was found",
 					"schema": {
 						"type": "object",
 						"properties": {
@@ -329,7 +329,7 @@
 					}
 				},
 				"404": {
-					"description": "Could not find a given cluster or scope, see metaresult",
+					"description": "Could not find a given cluster or scope or missing cluster and sopelist in entity, see metaresult",
 					"schema": {
 						"type": "object",
 						"properties": {
@@ -482,6 +482,12 @@
 					"in": "path",
 					"required": true,
 					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
 				}
 			],
 			"responses": {
@@ -524,6 +530,12 @@
 					"type": "integer"
 				},
 				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				},
+				{
 					"name": "resolveReferences",
 					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
 					"in": "query",
@@ -532,7 +544,7 @@
 			],
 			"responses": {
 				"200": {
-					"description": "success",
+					"description": "success, return empty queueList if no entry was found",
 					"schema": {
 						"type": "object",
 						"properties": {
@@ -569,6 +581,12 @@
 					"type": "integer"
 				},
 				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				},
+				{
 					"name": "resolveReferences",
 					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
 					"in": "query",
@@ -577,7 +595,7 @@
 			],
 			"responses": {
 				"200": {
-					"description": "success",
+					"description": "success, might be empty",
 					"schema": {
 						"type": "object",
 						"properties": {
@@ -609,6 +627,12 @@
 					"in": "path",
 					"required": true,
 					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
 				},
 				{
 					"name": "resolveReferences",
@@ -669,7 +693,7 @@
 			],
 			"responses": {
 				"200": {
-					"description": "success",
+					"description": "success, return exception with code 200 if ticketprinter is disabled",
 					"schema": {
 						"type": "object",
 						"properties": {
@@ -686,7 +710,7 @@
 					"description": "hash is not valid"
 				},
 				"404": {
-					"description": "cluster id does not exists"
+					"description": "cluster id does not exists, reserve process failed"
 				}
 			}
 		}
@@ -705,6 +729,12 @@
 					"in": "path",
 					"required": true,
 					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
 				}
 			],
 			"responses": {
@@ -823,6 +853,12 @@
 					"in": "path",
 					"required": true,
 					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
 				}
 			],
 			"responses": {
@@ -841,7 +877,7 @@
 					}
 				},
 				"404": {
-					"description": "organisation id does not exists"
+					"description": "organisation or cluster id does not exists"
 				}
 			}
 		}
@@ -883,7 +919,7 @@
 			],
 			"responses": {
 				"200": {
-					"description": "success",
+					"description": "success, also if process list is empty",
 					"schema": {
 						"type": "object",
 						"properties": {
@@ -940,9 +976,6 @@
 				},
 				"401": {
 					"description": "authentification failed"
-				},
-				"404": {
-					"description": "config not found"
 				}
 			}
 		}
@@ -966,17 +999,11 @@
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
-				},
-				{
-					"name": "resolveReferences",
-					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
-					"in": "query",
-					"type": "integer"
 				}
 			],
 			"responses": {
 				"200": {
-					"description": "success",
+					"description": "success, returns empty list if no dayoff was found",
 					"schema": {
 						"type": "object",
 						"properties": {
@@ -1089,6 +1116,9 @@
 							}
 						}
 					}
+				},
+				"403": {
+					"description": "missing or wrong access rights"
 				}
 			}
 		}
@@ -1215,6 +1245,9 @@
 				},
 				"404": {
 					"description": "department id does not exists"
+				},
+				"428": {
+					"description": "department has still assigned scopes or clusters"
 				}
 			}
 		}
@@ -1368,6 +1401,12 @@
 							}
 						}
 					}
+				},
+				"403": {
+					"description": "department is not assigned to logged in useraccount"
+				},
+				"404": {
+					"description": "department does not exist"
 				}
 			}
 		}
@@ -1417,6 +1456,12 @@
 							}
 						}
 					}
+				},
+				"403": {
+					"description": "department is not assigned to logged in useraccount"
+				},
+				"404": {
+					"description": "department does not exist"
 				}
 			}
 		}
@@ -1466,6 +1511,12 @@
 							}
 						}
 					}
+				},
+				"403": {
+					"description": "department is not assigned to logged in useraccount"
+				},
+				"404": {
+					"description": "department does not exist"
 				}
 			}
 		}
@@ -1494,7 +1545,7 @@
 			],
 			"responses": {
 				"200": {
-					"description": "get a list of processes",
+					"description": "Get a list of log entries for a process or empty list",
 					"schema": {
 						"type": "object",
 						"properties": {
@@ -1755,7 +1806,7 @@
 			],
 			"responses": {
 				"200": {
-					"description": "success",
+					"description": "success, might be empty",
 					"schema": {
 						"type": "object",
 						"properties": {
@@ -1907,6 +1958,9 @@
 						}
 					}
 				},
+				"400": {
+					"description": "Invalid input"
+				},
 				"404": {
 					"description": "owner id does not exists"
 				}
@@ -1988,8 +2042,8 @@
 						}
 					}
 				},
-				"404": {
-					"description": "Missing required properties in the organisation"
+				"400": {
+					"description": "Invalid input"
 				}
 			}
 		}
@@ -2016,7 +2070,7 @@
 			],
 			"responses": {
 				"200": {
-					"description": "success",
+					"description": "success, might be empty",
 					"schema": {
 						"type": "object",
 						"properties": {
@@ -2763,7 +2817,7 @@
 			],
 			"responses": {
 				"200": {
-					"description": "get a list of available processes",
+					"description": "get a list of available processes, if no process found, return empty list",
 					"schema": {
 						"type": "object",
 						"properties": {
@@ -2776,15 +2830,6 @@
 									"$ref": "schema/process.json"
 								}
 							}
-						}
-					}
-				},
-				"404": {
-					"description": "Could not find any available processes, returns empty list",
-					"schema": {
-						"type": "array",
-						"items": {
-							"$ref": "schema/process.json"
 						}
 					}
 				}
@@ -2813,7 +2858,7 @@
 			],
 			"responses": {
 				"200": {
-					"description": "get a list of processes",
+					"description": "get a list of processes, might be empty",
 					"schema": {
 						"type": "object",
 						"properties": {
@@ -2824,23 +2869,6 @@
 								"type": "array",
 								"items": {
 									"$ref": "schema/process.json"
-								}
-							}
-						}
-					}
-				},
-				"404": {
-					"description": "Could not find any processes, returns empty list",
-					"schema": {
-						"type": "object",
-						"properties": {
-							"meta": {
-								"$ref": "schema/metaresult.json"
-							},
-							"data": {
-								"type": "array",
-								"items": {
-									"type": "object"
 								}
 							}
 						}
@@ -2923,14 +2951,14 @@
 						}
 					}
 				},
-				"302": {
-					"description": "Redirects to /processes/status/reserved/ since the given process does not exists in the list (any longer)"
-				},
 				"400": {
 					"description": "Invalid input"
 				},
 				"403": {
 					"description": "authkey does not match"
+				},
+				"404": {
+					"description": "given process is not reserved anymore"
 				}
 			}
 		}
@@ -2977,10 +3005,10 @@
 					}
 				},
 				"400": {
-					"description": "Invalid input"
+					"description": "Invalid input or missing credentials"
 				},
 				"403": {
-					"description": "authkey does not match"
+					"description": "authkey does not match or process scope does not match with workstation scope"
 				}
 			}
 		}
@@ -3082,6 +3110,58 @@
 				},
 				"403": {
 					"description": "authkey does not match"
+				}
+			}
+		}
+	},
+	"/process/{id}/": {
+		"get": {
+			"summary": "Get a process (access restricted by X-Authkey)",
+			"tags": [
+				"process",
+				"workstation"
+			],
+			"parameters": [
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				},
+				{
+					"name": "id",
+					"description": "process number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/workstation.json"
+							}
+						}
+					}
+				},
+				"401": {
+					"description": "login required"
+				},
+				"404": {
+					"description": "process not found"
 				}
 			}
 		}
@@ -3892,7 +3972,7 @@
 			],
 			"responses": {
 				"200": {
-					"description": "success",
+					"description": "success, also if process list is empty",
 					"schema": {
 						"type": "object",
 						"properties": {
@@ -3916,7 +3996,7 @@
 	},
 	"/scope/{id}/process/{status}/": {
 		"get": {
-			"summary": "Get a list of processes with pending status",
+			"summary": "Get a list of processes by scope and status (pending for example)",
 			"tags": [
 				"scope",
 				"process"
@@ -4111,6 +4191,12 @@
 					"in": "path",
 					"required": true,
 					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
 				}
 			],
 			"responses": {
@@ -4151,6 +4237,12 @@
 					"in": "path",
 					"required": true,
 					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
 				},
 				{
 					"name": "id",
@@ -4279,6 +4371,12 @@
 					"in": "path",
 					"required": true,
 					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
 				}
 			],
 			"responses": {
@@ -4297,7 +4395,7 @@
 					}
 				},
 				"404": {
-					"description": "organisation id does not exists"
+					"description": "organisation or scope id does not exists"
 				}
 			}
 		}
@@ -4332,7 +4430,7 @@
 			],
 			"responses": {
 				"200": {
-					"description": "success",
+					"description": "success, return empty queueList if no entry was found",
 					"schema": {
 						"type": "object",
 						"properties": {
@@ -5295,8 +5393,11 @@
 						}
 					}
 				},
+				"401": {
+					"description": "login required"
+				},
 				"404": {
-					"description": "useraccount loginname does not exists"
+					"description": "scope or cluster not found"
 				}
 			}
 		}
@@ -5325,57 +5426,6 @@
 				},
 				"404": {
 					"description": "process does not exists"
-				}
-			}
-		}
-	},
-	"/workstation/process/{id}/get/": {
-		"get": {
-			"summary": "Get the current process created by workstation without authkey",
-			"tags": [
-				"workstation"
-			],
-			"parameters": [
-				{
-					"name": "X-Authkey",
-					"description": "authentication key to identify user for testing access rights",
-					"in": "header",
-					"type": "string"
-				},
-				{
-					"name": "id",
-					"description": "process number",
-					"in": "path",
-					"required": true,
-					"type": "integer"
-				},
-				{
-					"name": "resolveReferences",
-					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
-					"in": "query",
-					"type": "integer"
-				}
-			],
-			"responses": {
-				"200": {
-					"description": "success",
-					"schema": {
-						"type": "object",
-						"properties": {
-							"meta": {
-								"$ref": "schema/metaresult.json"
-							},
-							"data": {
-								"$ref": "schema/workstation.json"
-							}
-						}
-					}
-				},
-				"401": {
-					"description": "login required"
-				},
-				"404": {
-					"description": "process not found"
 				}
 			}
 		}
