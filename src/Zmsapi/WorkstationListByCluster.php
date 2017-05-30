@@ -1,6 +1,6 @@
 <?php
 /**
- * @package Zmsapi
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -8,31 +8,32 @@ namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
-use \BO\Zmsdb\Workstation as Query;
+use \BO\Zmsdb\Workstation;
 use \BO\Zmsentities\Helper\DateTime;
 
-/**
-  * Handle requests concerning services
-  */
 class WorkstationListByCluster extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render($itemId)
-    {
-        $query = new Query();
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
-        $cluster = (new \BO\Zmsdb\Cluster)->readEntity($itemId, 0);
+        $cluster = (new \BO\Zmsdb\Cluster)->readEntity($args['id'], 0);
         if (! $cluster) {
             throw new Exception\Cluster\ClusterNotFound();
         }
-        $workstationList = $query->readLoggedInListByCluster($itemId, \App::$now, $resolveReferences);
+        $workstationList = (new Workstation)->readLoggedInListByCluster($cluster->id, \App::$now, $resolveReferences);
 
-        $message = Response\Message::create(Render::$request);
+        $message = Response\Message::create($request);
         $message->data = $workstationList;
 
-        Render::lastModified(time(), '0');
-        Render::json($message, $message->getStatuscode());
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message, $message->getStatuscode());
+        return $response;
     }
 }
