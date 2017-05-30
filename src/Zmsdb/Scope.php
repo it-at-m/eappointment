@@ -387,7 +387,7 @@ class Scope extends Base
         $imageData = new \BO\Zmsentities\Mimepart();
         $imageData->content = $this->getReader()->fetchValue(
             (new Query\Scope(Query\Base::SELECT))->getQueryReadImageData(),
-            ['imagename' => "%$imageName%"]
+            ['imagename' => "$imageName%"]
         );
         return $imageData;
     }

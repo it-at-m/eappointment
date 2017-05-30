@@ -70,9 +70,12 @@ class Calldisplay extends Base
     public function readImage(Entity $entity)
     {
         $name = $entity->getImageName();
-        $image = $this->getReader()
-            ->fetchOne((new Query\Calldisplay(Query\Base::SELECT))
-            ->getQueryImage(), ['name' => "%$name%"]);
+        $image = null;
+        if ($name) {
+            $image = $this->getReader()
+                ->fetchOne((new Query\Calldisplay(Query\Base::SELECT))
+                ->getQueryImage(), ['name' => "$name%"]);
+        }
         if (! $image) {
             $image = $this->getReader()
             ->fetchOne((new Query\Calldisplay(Query\Base::SELECT))
