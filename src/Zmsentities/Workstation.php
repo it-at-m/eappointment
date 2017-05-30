@@ -98,6 +98,11 @@ class Workstation extends Schema\Entity
         return (0 == $this->name) ? 'counter' : 'workstation';
     }
 
+    public function getName()
+    {
+        return ($this->name) ? $this->name : "Tresen";
+    }
+
     public function getScope()
     {
         if (!array_key_exists('scope', $this)) {
