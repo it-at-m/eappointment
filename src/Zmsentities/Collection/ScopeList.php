@@ -40,4 +40,13 @@ class ScopeList extends Base
         }
         return $this;
     }
+
+    public function withLessData()
+    {
+        $scopeList = new self();
+        foreach ($this as $scope) {
+            $scopeList->addEntity(clone $scope->withLessData());
+        }
+        return $scopeList;
+    }
 }
