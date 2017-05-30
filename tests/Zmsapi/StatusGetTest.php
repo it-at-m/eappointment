@@ -10,5 +10,6 @@ class StatusGetTest extends Base
     {
         $response = $this->render();
         $this->assertContains('status.json', (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
     }
 }

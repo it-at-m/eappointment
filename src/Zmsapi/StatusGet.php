@@ -1,32 +1,36 @@
 <?php
+
 /**
- * @package 115Mandant
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
 namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
-use \BO\Zmsdb\Status as Query;
+use \BO\Zmsdb\Status;
 
-/**
-  * Handle requests concerning services
-  */
 class StatusGet extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render()
-    {
-        $status = (new Query())->readEntity();
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        $status = (new Status())->readEntity();
         $status['version']['major'] = \App::VERSION_MAJOR;
         $status['version']['minor'] = \App::VERSION_MINOR;
         $status['version']['patch'] = \App::VERSION_PATCH;
-        $message = Response\Message::create(Render::$request);
+
+        $message = Response\Message::create($request);
         $message->data = $status;
-        //throw new \Exception("Test");
-        Render::lastModified(time(), '0');
-        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
+
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+        return $response;
     }
 }

@@ -12,7 +12,22 @@ class SessionGetTest extends Base
 
     public function testRendering()
     {
-        $this->setExpectedException('BO\Zmsapi\Exception\Session\SessionNotFound');
-        $this->render(['name' => self::SESSION_NAME, 'id' => self::SESSION_ID], [], []);
+        (new SessionUpdateTest)->testRendering();
+        $response = $this->render(['name' => self::SESSION_NAME, 'id' => self::SESSION_ID], [], []);
+        $this->assertContains('session.json', (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
+    }
+
+    public function testEmpty()
+    {
+        $this->setExpectedException('\ErrorException');
+        $this->render([], [], []);
+    }
+
+    public function testNotFound()
+    {
+        $this->expectException('\BO\Zmsapi\Exception\Session\SessionNotFound');
+        $this->expectExceptionCode(404);
+        $this->render(['name' => 'unittest2', 'id' => 'unittest2'], [], []);
     }
 }
