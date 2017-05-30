@@ -54,7 +54,7 @@ class CounterGhostWorkstationTest extends Base
 
     public function testNotFound()
     {
-        $workstation = $this->setWorkstation();
+        $this->setWorkstation();
         $this->expectException('\BO\Zmsapi\Exception\Scope\ScopeNotFound');
         $this->expectExceptionCode(404);
         $this->render([], [
