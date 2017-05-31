@@ -62,7 +62,7 @@ class Session extends Base
             ->addConditionSessionDeleteInterval($deleteInSeconds);
         $statement = $this->fetchStatement($selectQuery);
         while ($sessionData = $statement->fetch(\PDO::FETCH_ASSOC)) {
-            $sessionData = (new Query\Session(Query\Base::SELECT))->postProcess($sessionData);
+            $sessionData = (new Query\Session(Query\Base::SELECT))->postProcessJoins($sessionData);
             $entity = new Entity($sessionData);
             if ($entity instanceof Entity) {
                 $deleteQuery = new Query\Session(Query\Base::DELETE);

@@ -141,7 +141,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         $query = new Query\Process(Query\Base::SELECT);
         $processList = new Collection();
         while ($processData = $statement->fetch(\PDO::FETCH_ASSOC)) {
-            $entity = new Entity($query->postProcess($processData));
+            $entity = new Entity($query->postProcessJoins($processData));
             $entity = $this->readResolvedReferences($entity, $resolveReferences);
             $processList->addEntity($entity);
         }
@@ -428,7 +428,7 @@ class Process extends Base implements Interfaces\ResolveReferences
             return false;
         }
         while ($nextProcess) {
-            $processData = (new Query\Process(Query\Base::SELECT))->postProcess($nextProcess);
+            $processData = (new Query\Process(Query\Base::SELECT))->postProcessJoins($nextProcess);
             $entity = new Entity($processData);
             if ($entity instanceof Entity) {
                 $this->writeDeletedEntity($entity->id, $entity->authKey);

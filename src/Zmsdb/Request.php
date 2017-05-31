@@ -61,7 +61,7 @@ class Request extends Base
         $requestList = new Collection();
         $statement = $this->fetchStatement($query);
         while ($requestData = $statement->fetch(\PDO::FETCH_ASSOC)) {
-            $request = new Entity($query->postProcess($requestData));
+            $request = new Entity($query->postProcessJoins($requestData));
             $requestList->addEntity($request);
         }
         return $requestList;

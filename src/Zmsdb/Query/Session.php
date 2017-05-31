@@ -65,7 +65,7 @@ class Session extends Base
      */
     public function postProcess($data)
     {
-        $data['content'] = json_decode($data['content'], 1);
+        $data[$this->getPrefixed('content')] = json_decode($data[$this->getPrefixed('content')], 1);
         return $data;
     }
 }

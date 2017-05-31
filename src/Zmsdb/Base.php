@@ -116,7 +116,7 @@ abstract class Base
         $statement = $this->fetchStatement($query);
         $data = $statement->fetch(\PDO::FETCH_ASSOC);
         if ($data) {
-            $entity->exchangeArray($query->postProcess($data));
+            $entity->exchangeArray($query->postProcessJoins($data));
         }/* else {
             throw new Exception\PDOFailed("Could not fetch one: ". $query->getName()
                 . " --> " . var_export($query->getParameters(), 1));
@@ -130,7 +130,7 @@ abstract class Base
         $statement = $this->fetchStatement($query);
         while ($data = $statement->fetch(\PDO::FETCH_ASSOC)) {
             $dataEntity = clone $entity;
-            $dataEntity->exchangeArray($query->postProcess($data));
+            $dataEntity->exchangeArray($query->postProcessJoins($data));
             $resultList[] = $dataEntity;
         }
         return $resultList;

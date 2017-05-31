@@ -314,15 +314,8 @@ class Scope extends Base implements MappingInterface
 
     public function postProcess($data)
     {
-        if (isset($data["status__queue__lastGivenNumberTimestamp"]) &&
-            $data["status__queue__lastGivenNumberTimestamp"]
-        ) {
-            $data["status__queue__lastGivenNumberTimestamp"] =
-                (new \DateTimeImmutable($data["status__queue__lastGivenNumberTimestamp"]))->getTimestamp();
-        }
-        if (isset($data['provider__data']) && $data['provider__data']) {
-            $data['provider__data'] = json_decode($data['provider__data'], true);
-        }
+        $data[$this->getPrefixed("status__queue__lastGivenNumberTimestamp")] =
+            strtotime($data[$this->getPrefixed("status__queue__lastGivenNumberTimestamp")]);
         return $data;
     }
 }

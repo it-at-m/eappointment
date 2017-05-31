@@ -126,8 +126,8 @@ class Useraccount extends Base implements MappingInterface
 
     public function postProcess($data)
     {
-        $data["lastLogin"] = ('0000-00-00' != $data["lastLogin"]) ?
-            strtotime($data["lastLogin"]) :
+        $data[$this->getPrefixed("lastLogin")] = ('0000-00-00' != $data[$this->getPrefixed("lastLogin")]) ?
+            strtotime($data[$this->getPrefixed("lastLogin")]) :
             null;
         return $data;
     }
