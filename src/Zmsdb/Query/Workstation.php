@@ -92,10 +92,10 @@ class Workstation extends Base implements MappingInterface
     public function addJoinUseraccount()
     {
         $this->leftJoin(
-            new Alias(Useraccount::TABLE, 'userAccount'),
+            new Alias(Useraccount::TABLE, 'useraccount'),
             'workstation.NutzerID',
             '=',
-            'userAccount.NutzerID'
+            'useraccount.NutzerID'
         );
         $joinQuery = new Useraccount($this, $this->getPrefixed('useraccount__'));
         return $joinQuery;

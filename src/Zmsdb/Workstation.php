@@ -133,9 +133,9 @@ class Workstation extends Base
 
     public function writeEntityLoginByName($loginName, $password, \DateTimeInterface $dateTime, $resolveReferences = 0)
     {
-        $userAccount = new Useraccount();
+        $useraccount = new Useraccount();
         $workstation = new Entity();
-        if ($userAccount->readIsUserExisting($loginName, $password)) {
+        if ($useraccount->readIsUserExisting($loginName, $password)) {
             $query = Query\Workstation::QUERY_LOGIN;
             $statement = $this->getWriter()->prepare($query);
             $authKey = (new \BO\Zmsentities\Workstation())->getAuthKey();
@@ -220,7 +220,7 @@ class Workstation extends Base
      * update a workstation
      *
      * @param
-     * userAccountId
+     * useraccountId
      *
      * @return Entity
      */

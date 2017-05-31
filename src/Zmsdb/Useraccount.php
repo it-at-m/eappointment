@@ -19,8 +19,8 @@ class Useraccount extends Base
         if ($password) {
             $query->addConditionPassword($password);
         }
-        $userAccount = $this->fetchOne($query, new Entity());
-        return ($userAccount->hasId()) ? true : false;
+        $useraccount = $this->fetchOne($query, new Entity());
+        return ($useraccount->hasId()) ? true : false;
     }
 
     public function readEntity($loginname, $resolveReferences = 1)
@@ -29,18 +29,18 @@ class Useraccount extends Base
         $query->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
             ->addConditionLoginName($loginname);
-        $userAccount = $this->fetchOne($query, new Entity());
-        return $this->readResolvedReferences($userAccount, $resolveReferences);
+        $useraccount = $this->fetchOne($query, new Entity());
+        return $this->readResolvedReferences($useraccount, $resolveReferences);
     }
 
-    public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $userAccount, $resolveReferences)
+    public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $useraccount, $resolveReferences)
     {
         if (0 < $resolveReferences) {
-            if ($userAccount->toProperty()->id->get()) {
-                $userAccount->departments = $this->readAssignedDepartmentList($userAccount, $resolveReferences);
+            if ($useraccount->toProperty()->id->get()) {
+                $useraccount->departments = $this->readAssignedDepartmentList($useraccount, $resolveReferences);
             }
         }
-        return $userAccount;
+        return $useraccount;
     }
 
     /**
@@ -77,14 +77,14 @@ class Useraccount extends Base
      *
      * @return Resource Collection
      */
-    public function readAssignedDepartmentList($userAccount, $resolveReferences = 0)
+    public function readAssignedDepartmentList($useraccount, $resolveReferences = 0)
     {
-        if ($userAccount->isSuperUser()) {
+        if ($useraccount->isSuperUser()) {
             $query = Query\Useraccount::QUERY_READ_SUPERUSER_DEPARTMENTS;
             $departmentIds = $this->getReader()->fetchAll($query);
         } else {
             $query = Query\Useraccount::QUERY_READ_ASSIGNED_DEPARTMENTS;
-            $departmentIds = $this->getReader()->fetchAll($query, ['userAccountName' => $userAccount->id]);
+            $departmentIds = $this->getReader()->fetchAll($query, ['useraccountName' => $useraccount->id]);
         }
         $departmentList = new \BO\Zmsentities\Collection\DepartmentList();
         foreach ($departmentIds as $item) {
@@ -135,7 +135,7 @@ class Useraccount extends Base
     }
 
     /**
-     * write an userAccount
+     * write an useraccount
      *
      * @param
      *            entity
@@ -146,22 +146,22 @@ class Useraccount extends Base
     {
         $query = new Query\Useraccount(Query\Base::INSERT);
         if ($this->readIsUserExisting($entity->id)) {
-            $userAccount = $this->updateEntity($entity->id, $entity);
+            $useraccount = $this->updateEntity($entity->id, $entity);
         } else {
             $values = $query->reverseEntityMapping($entity);
             $query->addValues($values);
             $this->writeItem($query);
             $this->updateAssignedDepartments($entity);
-            $userAccount = $this->readEntity($entity->id, $resolveReferences);
+            $useraccount = $this->readEntity($entity->id, $resolveReferences);
         }
-        return $userAccount;
+        return $useraccount;
     }
 
     /**
-     * update a userAccount
+     * update a useraccount
      *
      * @param
-     *            userAccountId
+     *            useraccountId
      *
      * @return Entity
      */

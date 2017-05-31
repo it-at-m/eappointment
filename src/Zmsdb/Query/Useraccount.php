@@ -44,41 +44,41 @@ class Useraccount extends Base implements MappingInterface
         SELECT userAssignment.`behoerdenid` AS id,
             organisation.Organisationsname as organisation__name
         FROM '. self::TABLE_ASSIGNMENT .' userAssignment
-        LEFT JOIN '. self::TABLE .' userAccount ON userAccount.Name = :userAccountName
+        LEFT JOIN '. self::TABLE .' useraccount ON useraccount.Name = :useraccountName
         LEFT JOIN behoerde ON userAssignment.behoerdenid = behoerde.BehoerdenID
         LEFT JOIN organisation USING(OrganisationsID)
         WHERE
-            userAccount.`NutzerID` = userAssignment.`nutzerid`
+            useraccount.`NutzerID` = userAssignment.`nutzerid`
         ORDER BY organisation.Organisationsname, behoerde.Name
     ';
 
     public function getEntityMapping()
     {
         return [
-            'id' => 'userAccount.Name',
-            'lastLogin' => 'userAccount.Datum',
-            'rights__superuser' => self::expression('`userAccount`.`Berechtigung` = 90'),
-            'rights__organisation' => self::expression('`userAccount`.`Berechtigung` >= 70'),
-            'rights__department' => self::expression('`userAccount`.`Berechtigung` >= 50'),
-            'rights__cluster' => self::expression('`userAccount`.`Berechtigung` >= 40'),
-            'rights__useraccount' => self::expression('`userAccount`.`Berechtigung` >= 40'),
-            'rights__scope' => self::expression('`userAccount`.`Berechtigung` >= 30'),
-            'rights__availability' => self::expression('`userAccount`.`Berechtigung` >= 20'),
-            'rights__ticketprinter' => self::expression('`userAccount`.`Berechtigung` >= 15'),
-            'rights__sms' => self::expression('`userAccount`.`Berechtigung` >= 10'),
-            'rights__basic' => self::expression('`userAccount`.`Berechtigung` >= 0'),
+            'id' => 'useraccount.Name',
+            'lastLogin' => 'useraccount.Datum',
+            'rights__superuser' => self::expression('`useraccount`.`Berechtigung` = 90'),
+            'rights__organisation' => self::expression('`useraccount`.`Berechtigung` >= 70'),
+            'rights__department' => self::expression('`useraccount`.`Berechtigung` >= 50'),
+            'rights__cluster' => self::expression('`useraccount`.`Berechtigung` >= 40'),
+            'rights__useraccount' => self::expression('`useraccount`.`Berechtigung` >= 40'),
+            'rights__scope' => self::expression('`useraccount`.`Berechtigung` >= 30'),
+            'rights__availability' => self::expression('`useraccount`.`Berechtigung` >= 20'),
+            'rights__ticketprinter' => self::expression('`useraccount`.`Berechtigung` >= 15'),
+            'rights__sms' => self::expression('`useraccount`.`Berechtigung` >= 10'),
+            'rights__basic' => self::expression('`useraccount`.`Berechtigung` >= 0'),
         ];
     }
 
     public function addConditionLoginName($loginName)
     {
-        $this->query->where('userAccount.Name', '=', $loginName);
+        $this->query->where('useraccount.Name', '=', $loginName);
         return $this;
     }
 
     public function addConditionUserId($userId)
     {
-        $this->query->where('userAccount.NutzerID', '=', $userId);
+        $this->query->where('useraccount.NutzerID', '=', $userId);
         return $this;
     }
 
@@ -86,13 +86,13 @@ class Useraccount extends Base implements MappingInterface
 
     public function addConditionPassword($password)
     {
-        $this->query->where('userAccount.Passworthash', '=', md5($password));
+        $this->query->where('useraccount.Passworthash', '=', md5($password));
         return $this;
     }
 
     public function addConditionXauthKey($xAuthKey)
     {
-        $this->query->where('userAccount.SessionID', '=', $xAuthKey);
+        $this->query->where('useraccount.SessionID', '=', $xAuthKey);
         return $this;
     }
 
@@ -100,7 +100,7 @@ class Useraccount extends Base implements MappingInterface
     {
         $this->leftJoin(
             new Alias(static::TABLE_ASSIGNMENT, 'useraccount_department'),
-            'userAccount.NutzerID',
+            'useraccount.NutzerID',
             '=',
             'useraccount_department.nutzerid'
         );
