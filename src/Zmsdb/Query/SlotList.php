@@ -12,7 +12,6 @@ use BO\Zmsentities\Slot;
  */
 class SlotList extends Base
 {
-
     const QUERY = 'SELECT
 
             -- collect some important settings, especially from the scope, use the appointment key
@@ -166,7 +165,7 @@ class SlotList extends Base
      *
      * @var Array $slots
      */
-    protected $slots = array ();
+    protected $slots = array();
 
     public function __construct(
         array $slotData = ['availability__id' => null],
@@ -176,7 +175,6 @@ class SlotList extends Base
         \BO\Zmsentities\Availability $availability = null,
         \BO\Zmsentities\Scope $scope = null
     ) {
-
         $this->availability = $availability;
         $this->scope = $scope;
         $this->setSlotData($slotData);
@@ -191,7 +189,7 @@ class SlotList extends Base
         return self::QUERY;
     }
 
-    public function getParameters($scopeId, \DateTimeInterface $monthDateTime, \DateTimeInterface $now)
+    public static function getParametersMonth($scopeId, \DateTimeInterface $monthDateTime, \DateTimeInterface $now)
     {
         $now = DateTime::create($now);
         $monthDateTime = DateTime::create($monthDateTime);

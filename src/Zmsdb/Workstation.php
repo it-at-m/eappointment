@@ -39,9 +39,8 @@ class Workstation extends Base
                     $resolveReferences - 1
                 );
             if ($workstation->scope['id']) {
-                $scopeData = (new Query\Scope(Query\Base::SELECT))->postProcess($workstation->scope);
                 $workstation->scope = (new Scope)->readResolvedReferences(
-                    new ScopeEntity($scopeData),
+                    new ScopeEntity($workstation->scope),
                     $resolveReferences - 1
                 );
                 $workstation->linkList = (new Link)->readByScopeId($workstation->scope['id']);

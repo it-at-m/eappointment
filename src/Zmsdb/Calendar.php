@@ -128,7 +128,7 @@ class Calendar extends Base
                 if ($freeProcessesDate) {
                     $statement->execute(SlotList::getParametersDay($scope['id'], $freeProcessesDate, $now));
                 } else {
-                    $statement->execute(SlotList::getParameters($scope['id'], $monthDateTime, $now));
+                    $statement->execute(SlotList::getParametersMonth($scope['id'], $monthDateTime, $now));
                 }
 
                 if (! $slotsRequired && array_key_exists(
