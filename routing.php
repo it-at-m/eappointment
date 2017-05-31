@@ -3952,7 +3952,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  type: integer
  *          responses:
  *              200:
- *                  description: "success"
+ *                  description: "success, might be empty"
  *                  schema:
  *                      type: object
  *                      properties:
@@ -3962,6 +3962,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                              type: array
  *                              items:
  *                                  $ref: "schema/useraccount.json"
+ *              401:
+ *                  description: "login required"
+ *              403:
+ *                  description: "missing or wrong access rights"
  */
 \App::$slim->get('/useraccount/',
     '\BO\Zmsapi\UseraccountList')

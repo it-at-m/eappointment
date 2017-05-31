@@ -1,6 +1,6 @@
 <?php
 /**
- * @package Zmsadmin
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -8,29 +8,33 @@ namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
-use \BO\Zmsdb\UserAccount as Query;
+use \BO\Zmsdb\UserAccount;
 
-/**
-  * Handle requests concerning services
-  */
 class UseraccountAdd extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render()
-    {
-        Helper\User::checkRights('useraccount');
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        (new Helper\User($request))->checkRights('useraccount');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
-        $query = new Query();
         $input = Validator::input()->isJson()->assertValid()->getValue();
+        if (0 == count($input)) {
+            throw new Exception\Useraccount\UseraccountNotFound();
+        }
         $entity = new \BO\Zmsentities\Useraccount($input);
         $entity->testValid();
-        $userAccount = $query->writeEntity($entity, $resolveReferences);
 
-        $message = Response\Message::create(Render::$request);
-        $message->data = $userAccount;
-        Render::lastModified(time(), '0');
-        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
+        $message = Response\Message::create($request);
+        $message->data = (new UserAccount)->writeEntity($entity, $resolveReferences);
+
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+        return $response;
     }
 }
