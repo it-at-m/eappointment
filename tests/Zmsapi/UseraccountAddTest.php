@@ -1,0 +1,66 @@
+<?php
+
+namespace BO\Zmsapi\Tests;
+
+class UseraccountAddTest extends Base
+{
+    protected $classname = "UseraccountAdd";
+
+    public function testRendering()
+    {
+        $this->setWorkstation()->getUseraccount()->setRights('useraccount');
+        $response = $this->render([], [
+            '__body' => '{
+                "rights": {
+                "availability": "0",
+                "basic": "0",
+                "cluster": "0",
+                "department": "0",
+                "organisation": "0",
+                "scope": "0",
+                "sms": "0",
+                "superuser": "0",
+                "ticketprinter": "0",
+                "useraccount": "1"
+              },
+              "id": "unittest",
+              "lastLogin": 1459461600
+            }'
+        ], []);
+        $this->assertContains('useraccount.json', (string)$response->getBody());
+        $this->assertContains('unittest', (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
+    }
+
+    public function testMissingLogin()
+    {
+        $this->setExpectedException('BO\Zmsentities\Exception\UserAccountMissingLogin');
+        $this->expectExceptionCode(401);
+        $this->render([], [], []);
+    }
+
+    public function testMissingRights()
+    {
+        $this->setWorkstation();
+        $this->setExpectedException('BO\Zmsentities\Exception\UserAccountMissingRights');
+        $this->expectExceptionCode(403);
+        $this->render([], [], []);
+    }
+
+    public function testEmpty()
+    {
+        $this->setWorkstation()->getUseraccount()->setRights('useraccount');
+        $this->setExpectedException('\BO\Mellon\Failure\Exception');
+        $this->render([], [], []);
+    }
+
+    public function testNotFound()
+    {
+        $this->setWorkstation()->getUseraccount()->setRights('useraccount');
+        $this->expectException('\BO\Zmsapi\Exception\Useraccount\UseraccountNotFound');
+        $this->expectExceptionCode(404);
+        $this->render([], [
+            '__body' => '[]'
+        ], []);
+    }
+}

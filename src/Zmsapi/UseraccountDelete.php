@@ -1,6 +1,6 @@
 <?php
 /**
- * @package 115Mandant
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -8,27 +8,30 @@ namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
-use \BO\Zmsdb\UserAccount as Query;
+use \BO\Zmsdb\UserAccount;
 
-/**
-  * Handle requests concerning services
-  */
 class UseraccountDelete extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render($loginName)
-    {
-        Helper\User::checkRights('useraccount');
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        (new Helper\User($request))->checkRights('useraccount');
+        $userAccount = (new Useraccount)->readEntity($args['loginname']);
+        if (! $userAccount->hasId() || ! (new Useraccount)->deleteEntity($userAccount->id)) {
+            throw new Exception\Useraccount\UseraccountNotFound();
+        }
 
-        $query = new Query();
-        $userAccount = $query->readEntity($loginName);
-        $query->deleteEntity($loginName);
-
-        $message = Response\Message::create(Render::$request);
+        $message = Response\Message::create($request);
         $message->data = $userAccount;
-        Render::lastModified(time(), '0');
-        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
+
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+        return $response;
     }
 }
