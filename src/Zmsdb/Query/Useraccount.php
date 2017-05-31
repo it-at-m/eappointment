@@ -2,7 +2,7 @@
 
 namespace BO\Zmsdb\Query;
 
-class UserAccount extends Base implements MappingInterface
+class Useraccount extends Base implements MappingInterface
 {
     /**
      * @var String TABLE mysql table reference

@@ -92,12 +92,12 @@ class Workstation extends Base implements MappingInterface
     public function addJoinUseraccount()
     {
         $this->leftJoin(
-            new Alias(UserAccount::TABLE, 'userAccount'),
+            new Alias(Useraccount::TABLE, 'userAccount'),
             'workstation.NutzerID',
             '=',
             'userAccount.NutzerID'
         );
-        $joinQuery = new UserAccount($this, $this->getPrefixed('useraccount__'));
+        $joinQuery = new Useraccount($this, $this->getPrefixed('useraccount__'));
         return $joinQuery;
     }
 
@@ -134,7 +134,7 @@ class Workstation extends Base implements MappingInterface
     public function addConditionDepartmentId($departmentId)
     {
         $this->leftJoin(
-            new Alias(UserAccount::TABLE_ASSIGNMENT, 'workstation_department'),
+            new Alias(Useraccount::TABLE_ASSIGNMENT, 'workstation_department'),
             'workstation.NutzerID',
             '=',
             'workstation_department.nutzerid'

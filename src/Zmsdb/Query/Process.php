@@ -520,7 +520,7 @@ class Process extends Base implements MappingInterface
     protected function addRequiredJoins()
     {
         $this->leftJoin(
-            new Alias(UserAccount::TABLE, 'processuser'),
+            new Alias(Useraccount::TABLE, 'processuser'),
             'process.NutzerID',
             '=',
             'processuser.NutzerID'
