@@ -33,7 +33,7 @@ class Workstation extends Base
     public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $workstation, $resolveReferences)
     {
         if (0 < $resolveReferences) {
-            $workstation->useraccount = (new UserAccount())
+            $workstation->useraccount = (new Useraccount())
                 ->readResolvedReferences(
                     new UseraccountEntity($workstation->useraccount),
                     $resolveReferences - 1
@@ -134,7 +134,7 @@ class Workstation extends Base
 
     public function writeEntityLoginByName($loginName, $password, \DateTimeInterface $dateTime, $resolveReferences = 0)
     {
-        $userAccount = new UserAccount();
+        $userAccount = new Useraccount();
         $workstation = new Entity();
         if ($userAccount->readIsUserExisting($loginName, $password)) {
             $query = Query\Workstation::QUERY_LOGIN;

@@ -9,11 +9,11 @@ use \BO\Zmsentities\Collection\UseraccountList as Collection;
  * @SuppressWarnings(Public)
  *
  */
-class UserAccount extends Base
+class Useraccount extends Base
 {
     public function readIsUserExisting($loginName, $password = false)
     {
-        $query = new Query\UserAccount(Query\Base::SELECT);
+        $query = new Query\Useraccount(Query\Base::SELECT);
         $query->addEntityMapping()
             ->addConditionLoginName($loginName);
         if ($password) {
@@ -25,7 +25,7 @@ class UserAccount extends Base
 
     public function readEntity($loginname, $resolveReferences = 1)
     {
-        $query = new Query\UserAccount(Query\Base::SELECT);
+        $query = new Query\Useraccount(Query\Base::SELECT);
         $query->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
             ->addConditionLoginName($loginname);
@@ -54,7 +54,7 @@ class UserAccount extends Base
     public function readList($resolveReferences = 0)
     {
         $collection = new Collection();
-        $query = new Query\UserAccount(Query\Base::SELECT);
+        $query = new Query\Useraccount(Query\Base::SELECT);
         $query->addResolvedReferences($resolveReferences)
             ->addEntityMapping();
         $result = $this->fetchList($query, new Entity());
@@ -80,10 +80,10 @@ class UserAccount extends Base
     public function readAssignedDepartmentList($userAccount, $resolveReferences = 0)
     {
         if ($userAccount->isSuperUser()) {
-            $query = Query\UserAccount::QUERY_READ_SUPERUSER_DEPARTMENTS;
+            $query = Query\Useraccount::QUERY_READ_SUPERUSER_DEPARTMENTS;
             $departmentIds = $this->getReader()->fetchAll($query);
         } else {
-            $query = Query\UserAccount::QUERY_READ_ASSIGNED_DEPARTMENTS;
+            $query = Query\Useraccount::QUERY_READ_ASSIGNED_DEPARTMENTS;
             $departmentIds = $this->getReader()->fetchAll($query, ['userAccountName' => $userAccount->id]);
         }
         $departmentList = new \BO\Zmsentities\Collection\DepartmentList();
@@ -99,7 +99,7 @@ class UserAccount extends Base
 
     public function readEntityByAuthKey($xAuthKey, $resolveReferences = 0)
     {
-        $query = new Query\UserAccount(Query\Base::SELECT);
+        $query = new Query\Useraccount(Query\Base::SELECT);
         $query->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
             ->addConditionXauthKey($xAuthKey);
@@ -108,7 +108,7 @@ class UserAccount extends Base
 
     public function readEntityByUserId($userId, $resolveReferences = 0)
     {
-        $query = new Query\UserAccount(Query\Base::SELECT);
+        $query = new Query\Useraccount(Query\Base::SELECT);
         $query->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
             ->addConditionUserId($userId);
@@ -118,7 +118,7 @@ class UserAccount extends Base
     public function readCollectionByDepartmentId($departmentId, $resolveReferences = 0)
     {
         $collection = new Collection();
-        $query = new Query\UserAccount(Query\Base::SELECT);
+        $query = new Query\Useraccount(Query\Base::SELECT);
         $query->addResolvedReferences($resolveReferences)
             ->addConditionDepartmentId($departmentId)
             ->addEntityMapping();
@@ -144,7 +144,7 @@ class UserAccount extends Base
      */
     public function writeEntity(\BO\Zmsentities\Useraccount $entity, $resolveReferences = 0)
     {
-        $query = new Query\UserAccount(Query\Base::INSERT);
+        $query = new Query\Useraccount(Query\Base::INSERT);
         if ($this->readIsUserExisting($entity->id)) {
             $userAccount = $this->updateEntity($entity->id, $entity);
         } else {
@@ -167,7 +167,7 @@ class UserAccount extends Base
      */
     public function updateEntity($loginName, \BO\Zmsentities\Useraccount $entity, $resolveReferences = 0)
     {
-        $query = new Query\UserAccount(Query\Base::UPDATE);
+        $query = new Query\Useraccount(Query\Base::UPDATE);
         $query->addConditionLoginName($loginName);
         $values = $query->reverseEntityMapping($entity);
         $query->addValues($values);
@@ -187,7 +187,7 @@ class UserAccount extends Base
      */
     public function deleteEntity($loginName)
     {
-        $query = new Query\UserAccount(Query\Base::DELETE);
+        $query = new Query\Useraccount(Query\Base::DELETE);
         $query->addConditionLoginName($loginName);
         $this->deleteAssignedDepartments($loginName);
         return $this->deleteItem($query);
@@ -198,7 +198,7 @@ class UserAccount extends Base
         $loginName = $entity->id;
         $this->deleteAssignedDepartments($loginName);
         if (! $entity->isSuperUser()) {
-            $query = Query\UserAccount::QUERY_WRITE_ASSIGNED_DEPARTMENTS;
+            $query = Query\Useraccount::QUERY_WRITE_ASSIGNED_DEPARTMENTS;
             $statement = $this->getWriter()->prepare($query);
             $userId = $this->readEntityIdByLoginName($loginName);
             foreach ($entity->departments as $department) {
@@ -214,14 +214,14 @@ class UserAccount extends Base
 
     protected function readEntityIdByLoginName($loginName)
     {
-        $query = Query\UserAccount::QUERY_READ_ID_BY_USERNAME;
+        $query = Query\Useraccount::QUERY_READ_ID_BY_USERNAME;
         $result = $this->getReader()->fetchOne($query, [$loginName]);
         return $result['id'];
     }
 
     protected function deleteAssignedDepartments($loginName)
     {
-        $query = Query\UserAccount::QUERY_DELETE_ASSIGNED_DEPARTMENTS;
+        $query = Query\Useraccount::QUERY_DELETE_ASSIGNED_DEPARTMENTS;
         $statement = $this->getWriter()->prepare($query);
         $userId = $this->readEntityIdByLoginName($loginName);
         $statement->execute([$userId]);
