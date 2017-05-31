@@ -8,7 +8,7 @@ namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
-use \BO\Zmsdb\UserAccount;
+use \BO\Zmsdb\Useraccount;
 
 class UseraccountList extends BaseController
 {
@@ -25,7 +25,7 @@ class UseraccountList extends BaseController
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
 
         $message = Response\Message::create($request);
-        $message->data = (new UserAccount)->readList($resolveReferences);
+        $message->data = (new Useraccount)->readList($resolveReferences);
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), 200);

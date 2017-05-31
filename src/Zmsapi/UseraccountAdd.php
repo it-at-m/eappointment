@@ -8,7 +8,7 @@ namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
-use \BO\Zmsdb\UserAccount;
+use \BO\Zmsdb\Useraccount;
 
 class UseraccountAdd extends BaseController
 {
@@ -31,7 +31,7 @@ class UseraccountAdd extends BaseController
         $entity->testValid();
 
         $message = Response\Message::create($request);
-        $message->data = (new UserAccount)->writeEntity($entity, $resolveReferences);
+        $message->data = (new Useraccount)->writeEntity($entity, $resolveReferences);
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
