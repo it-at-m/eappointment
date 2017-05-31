@@ -3,7 +3,7 @@
 namespace BO\Zmsapi\Helper;
 
 use \BO\Slim\Render;
-use \BO\Zmsdb\UserAccount;
+use \BO\Zmsdb\Useraccount;
 use \BO\Zmsdb\Workstation;
 
 /**
@@ -28,7 +28,7 @@ class User
     {
         if (! static::$workstation) {
             $xAuthKey = static::getXAuthKey();
-            $useraccount = (new UserAccount())->readEntityByAuthKey($xAuthKey);
+            $useraccount = (new Useraccount())->readEntityByAuthKey($xAuthKey);
             if ($useraccount->hasId()) {
                 static::$workstation = (new Workstation())->readEntity($useraccount->id, $resolveReferences);
                 if ($resolveReferences < 1) {
@@ -89,7 +89,7 @@ class User
         $workstation = static::readWorkstation(2);
         $userAccount = $workstation->getUseraccount();
         if (! $userAccount->hasId()) {
-            throw new \BO\Zmsentities\Exception\UserAccountMissingLogin();
+            throw new \BO\Zmsentities\Exception\UseraccountMissingLogin();
         }
         if (! $userAccount->isSuperUser()) {
             $department = $userAccount->testDepartmentById($departmentId);

@@ -8,7 +8,7 @@ namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
-use \BO\Zmsdb\UserAccount;
+use \BO\Zmsdb\Useraccount;
 
 class UseraccountGet extends BaseController
 {
@@ -23,7 +23,7 @@ class UseraccountGet extends BaseController
     ) {
         (new Helper\User($request))->checkRights('useraccount');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
-        $userAccount = (new UserAccount)->readEntity($args['loginname'], $resolveReferences);
+        $userAccount = (new Useraccount)->readEntity($args['loginname'], $resolveReferences);
         if (! $userAccount->hasId()) {
             throw new Exception\Useraccount\UseraccountNotFound();
         }

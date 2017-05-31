@@ -1,6 +1,6 @@
 <?php
 /**
- * @package Zmsadmin
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -8,32 +8,33 @@ namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
-use \BO\Zmsdb\UserAccount as Query;
+use \BO\Zmsdb\Useraccount;
 
-/**
-  * Handle requests concerning services
-  */
 class UseraccountUpdate extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render($itemId)
-    {
-        Helper\User::checkRights('useraccount');
-
-        $query = new Query();
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        (new Helper\User($request))->checkRights('useraccount');
+        if (! (new Useraccount)->readIsUserExisting($args['loginname'])) {
+            throw new Exception\Useraccount\UseraccountNotFound();
+        }
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Useraccount($input);
         $entity->testValid();
 
-        if (! $query->readIsUserExisting($itemId)) {
-            throw new Exception\UseraccountNotFound();
-        }
-        $message = Response\Message::create(Render::$request);
-        $message->data = $query->updateEntity($itemId, $entity, $resolveReferences);
-        Render::lastModified(time(), '0');
-        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
+        $message = Response\Message::create($request);
+        $message->data = (new Useraccount)->updateEntity($args['loginname'], $entity, $resolveReferences);
+
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+        return $response;
     }
 }

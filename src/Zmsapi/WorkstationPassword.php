@@ -8,7 +8,7 @@ namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
-use \BO\Zmsdb\Useraccount as UserAccountQuery;
+use \BO\Zmsdb\Useraccount as UseraccountQuery;
 
 /**
  * Handle requests concerning services
@@ -28,7 +28,7 @@ class WorkstationPassword extends BaseController
         $oldLoginName = $useraccount['id'];
         $oldPassword = $input['password'];
 
-        $query = new UserAccountQuery();
+        $query = new UseraccountQuery();
 
         if ($query->readIsUserExisting($oldLoginName, $oldPassword)) {
             $entity = $query->readEntity($oldLoginName, 1);

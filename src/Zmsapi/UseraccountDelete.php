@@ -8,7 +8,7 @@ namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
-use \BO\Zmsdb\UserAccount;
+use \BO\Zmsdb\Useraccount;
 
 class UseraccountDelete extends BaseController
 {
