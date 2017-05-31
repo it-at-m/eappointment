@@ -35,7 +35,7 @@ class Provider extends Base
         $providerList = new Collection();
         $statement = $this->fetchStatement($query);
         while ($providerData = $statement->fetch(\PDO::FETCH_ASSOC)) {
-            $provider = new Entity($query->postProcess($providerData));
+            $provider = new Entity($query->postProcessJoins($providerData));
             $providerList->addEntity($provider);
         }
         return $providerList;

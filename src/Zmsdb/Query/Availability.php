@@ -257,8 +257,9 @@ class Availability extends Base implements MappingInterface
 
     public function postProcess($data)
     {
-        $data["startDate"] = (new \DateTime($data["startDate"]))->getTimestamp();
-        $data["endDate"] = (new \DateTime($data["endDate"]))->getTimestamp();
+        $data[$this->getPrefixed("startDate")] =
+            (new \DateTime($data[$this->getPrefixed("startDate")]))->getTimestamp();
+        $data[$this->getPrefixed("endDate")] = (new \DateTime($data[$this->getPrefixed("endDate")]))->getTimestamp();
         return $data;
     }
 }

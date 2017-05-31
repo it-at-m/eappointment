@@ -36,7 +36,7 @@ class Log extends Base
 
     public function postProcess($data)
     {
-        $data['ts'] = strtotime($data['ts']);
+        $data[$this->getPrefixed('ts')] = strtotime($data[$this->getPrefixed('ts')]);
         return $data;
     }
 }

@@ -10,7 +10,7 @@ use BO\Zmsentities\Slot;
  * @SuppressWarnings(CouplingBetweenObjects)
  * Calculate Slots for available booking times
  */
-class SlotList
+class SlotList extends Base
 {
 
     const QUERY = 'SELECT
@@ -191,7 +191,7 @@ class SlotList
         return self::QUERY;
     }
 
-    public static function getParameters($scopeId, \DateTimeInterface $monthDateTime, \DateTimeInterface $now)
+    public function getParameters($scopeId, \DateTimeInterface $monthDateTime, \DateTimeInterface $now)
     {
         $now = DateTime::create($now);
         $monthDateTime = DateTime::create($monthDateTime);
@@ -400,9 +400,11 @@ class SlotList
 
     public function postProcess($data)
     {
-        $data["appointment__date"] = strtotime($data["appointment__date"]);
-        $data["availability__startDate"] = strtotime($data["availability__startDate"]);
-        $data["availability__endDate"] = strtotime($data["availability__endDate"]);
+        $data[$this->getPrefixed("appointment__date")] = strtotime($data[$this->getPrefixed("appointment__date")]);
+        $data[$this->getPrefixed("availability__startDate")] =
+            strtotime($data[$this->getPrefixed("availability__startDate")]);
+        $data[$this->getPrefixed("availability__endDate")] =
+            strtotime($data[$this->getPrefixed("availability__endDate")]);
         return $data;
     }
 

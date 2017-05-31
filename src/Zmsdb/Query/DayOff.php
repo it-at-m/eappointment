@@ -78,7 +78,7 @@ class DayOff extends Base implements MappingInterface
 
     public function postProcess($data)
     {
-        $data["date"] = (new \DateTime($data["date"]))->getTimestamp();
+        $data[$this->getPrefixed("date")] = (new \DateTime($data[$this->getPrefixed("date")]))->getTimestamp();
         return $data;
     }
 }

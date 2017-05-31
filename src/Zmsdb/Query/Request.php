@@ -81,8 +81,8 @@ class Request extends Base
 
     public function postProcess($data)
     {
-        if (isset($data['data']) && $data['data']) {
-            $data['data'] = json_decode($data['data'], true);
+        if (isset($data[$this->getPrefixed('data')]) && $data[$this->getPrefixed('data')]) {
+            $data[$this->getPrefixed('data')] = json_decode($data[$this->getPrefixed('data')], true);
         }
         return $data;
     }

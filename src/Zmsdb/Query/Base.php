@@ -57,10 +57,16 @@ abstract class Base
     protected $currentSqlString = null;
 
     /**
+     * List of joined aliasnames to avoid double joins
+     *
+     */
+    protected $joinedAliasList = [];
+
+    /**
      * List of joined queries to avoid double joins
      *
      */
-    protected $joinedQueries = [];
+    protected $joinedQueryList = [];
 
     /**
      * Create query builder if necessary
@@ -94,7 +100,7 @@ abstract class Base
             $this->addTableAlias();
         } elseif ($queryType instanceof self) {
             $this->query = $queryType->query;
-            $this->joinedQueries =& $queryType->joinedQueries;
+            $this->joinedAliasList =& $queryType->joinedAliasList;
             $this->resolveLevel = $queryType->resolveLevel - 1;
         } elseif ($queryType instanceof \Solution10\SQL\Query) {
             $this->query = $queryType;
@@ -234,6 +240,7 @@ abstract class Base
                 $query->addResolvedReferences($depth - 1);
                 $query->addEntityMapping();
             }
+            $this->joinedQueryList = $queryList;
         } else {
             $this->addReferenceMapping();
         }
@@ -253,9 +260,9 @@ abstract class Base
     protected function leftJoin($alias, $left = null, $operator = null, $right = null)
     {
         $aliasId = $alias->getAliasIdentifier();
-        //error_log(get_class($this) . " JOIN $aliasId CHECK " . implode(',', $this->joinedQueries));
-        if (!in_array($aliasId, $this->joinedQueries)) {
-            $this->joinedQueries[] = $aliasId;
+        //error_log(get_class($this) . " JOIN $aliasId CHECK " . implode(',', $this->joinedAliasList));
+        if (!in_array($aliasId, $this->joinedAliasList)) {
+            $this->joinedAliasList[] = $aliasId;
             $this->query->leftJoin($alias, $left, $operator, $right);
         } else {
             //throw new \Exception("Tried to add Alias ".$aliasId);
@@ -362,6 +369,19 @@ abstract class Base
      */
     public function postProcess($data)
     {
+        return $data;
+    }
+
+    /**
+     * postProcess data including joined queries if necessary
+     *
+     */
+    public function postProcessJoins($data)
+    {
+        $data = $this->postProcess($data);
+        foreach ($this->joinedQueryList as $query) {
+            $data = $query->postProcess($data);
+        }
         return $data;
     }
 }

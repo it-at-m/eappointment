@@ -491,28 +491,32 @@ class Process extends Base implements MappingInterface
 
     public function postProcess($data)
     {
-        $data["appointments__0__date"] = strtotime($data["appointments__0__date"]);
-        if ('00:00:00' != $data["queue__callTime"]) {
-            $time = explode(':', $data["queue__callTime"]);
-            $data["queue__callTime"] = (new \DateTimeImmutable())
-                ->setTimestamp($data["appointments__0__date"])
+        $data[$this->getPrefixed("appointments__0__date")] =
+            strtotime($data[$this->getPrefixed("appointments__0__date")]);
+        if ('00:00:00' != $data[$this->getPrefixed("queue__callTime")]) {
+            $time = explode(':', $data[$this->getPrefixed("queue__callTime")]);
+            $data[$this->getPrefixed("queue__callTime")] = (new \DateTimeImmutable())
+                ->setTimestamp($data[$this->getPrefixed("appointments__0__date")])
                 ->setTime($time[0], $time[1], $time[2])
                 ->getTimestamp();
         } else {
-            $data["queue__callTime"] = 0;
+            $data[$this->getPrefixed("queue__callTime")] = 0;
         }
-        if ('00:00:00' != $data["queue__lastCallTime"]) {
-            $time = explode(':', $data["queue__lastCallTime"]);
-            $data["queue__lastCallTime"] = (new \DateTimeImmutable())
-                ->setTimestamp($data["appointments__0__date"])
+        if ('00:00:00' != $data[$this->getPrefixed("queue__lastCallTime")]) {
+            $time = explode(':', $data[$this->getPrefixed("queue__lastCallTime")]);
+            $data[$this->getPrefixed("queue__lastCallTime")] = (new \DateTimeImmutable())
+                ->setTimestamp($data[$this->getPrefixed("appointments__0__date")])
                 ->setTime($time[0], $time[1], $time[2])
                 ->getTimestamp();
         } else {
-            $data["queue__lastCallTime"] = 0;
+            $data[$this->getPrefixed("queue__lastCallTime")] = 0;
         }
-        $data["queue__arrivalTime"] = strtotime($data["queue__arrivalTime"]);
-        if (isset($data['scope__provider__data']) && $data['scope__provider__data']) {
-            $data['scope__provider__data'] = json_decode($data['scope__provider__data'], true);
+        $data[$this->getPrefixed("queue__arrivalTime")] =
+            strtotime($data[$this->getPrefixed("queue__arrivalTime")]);
+        if (isset($data[$this->getPrefixed('scope__provider__data')])
+            && $data[$this->getPrefixed('scope__provider__data')]) {
+            $data[$this->getPrefixed('scope__provider__data')] =
+                json_decode($data[$this->getPrefixed('scope__provider__data')], true);
         }
         return $data;
     }

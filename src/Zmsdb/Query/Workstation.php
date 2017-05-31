@@ -157,13 +157,4 @@ class Workstation extends Base implements MappingInterface
         });
         return $data;
     }
-
-    public function postProcess($data)
-    {
-        if (isset($data["useraccount__lastLogin"])) {
-            $data["useraccount__lastLogin"] = ('0000-00-00' != $data["useraccount__lastLogin"]) ?
-                strtotime($data["useraccount__lastLogin"]) : null;
-        }
-        return $data;
-    }
 }
