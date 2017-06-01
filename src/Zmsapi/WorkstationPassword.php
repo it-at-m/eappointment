@@ -1,6 +1,6 @@
 <?php
 /**
- * @package 115Mandant
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -8,44 +8,44 @@ namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
-use \BO\Zmsdb\Useraccount as UseraccountQuery;
+use \BO\Zmsdb\Useraccount as Query;
 
-/**
- * Handle requests concerning services
- */
 class WorkstationPassword extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render()
-    {
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        $workstation = (new Helper\User($request))->checkRights();
         $input = Validator::input()->isJson()->assertValid()->getValue();
-        $workstation = Helper\User::checkRights();
-        $useraccount = $workstation->useraccount;
-
-
-        $oldLoginName = $useraccount['id'];
-        $oldPassword = $input['password'];
-
-        $query = new UseraccountQuery();
-
-        if ($query->readIsUserExisting($oldLoginName, $oldPassword)) {
-            $entity = $query->readEntity($oldLoginName, 1);
-
-            if (!empty($input['newPassword'])) {
-                $entity->password = $input['newPassword'];
-            }
-
-            $entity->id = $input['id'];
-            $updatedEntity = $query->updateEntity($oldLoginName, $entity);
-        } else {
-            throw new Exception\Useraccount\InvalidCredentials();
+        $useraccount = new \BO\Zmsentities\Useraccount($input);
+        $useraccount->testValid();
+        $this->testUseraccount($workstation->useraccount['id'], $useraccount->password);
+        if ($useraccount->changePassword) {
+            $useraccount->password = reset($useraccount->changePassword);
         }
 
-        $message = Response\Message::create(Render::$request);
-        $message->data = $updatedEntity;
-        Render::lastModified(time(), '0');
-        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
+        $message = Response\Message::create($request);
+        $message->data = (new Query)->updateEntity($workstation->useraccount['id'], $useraccount);
+
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+        return $response;
+    }
+
+    protected function testUseraccount($oldLoginName, $oldPassword)
+    {
+        $query = new Query();
+        if (! $query->readIsUserExisting($oldLoginName)) {
+            throw new Exception\Useraccount\UseraccountNotFound();
+        }
+        if (! $query->readIsUserExisting($oldLoginName, $oldPassword)) {
+            throw new Exception\Useraccount\InvalidCredentials();
+        }
     }
 }

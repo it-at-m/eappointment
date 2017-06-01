@@ -4715,21 +4715,7 @@
 			],
 			"responses": {
 				"200": {
-					"description": "get an updated session object",
-					"schema": {
-						"type": "object",
-						"properties": {
-							"meta": {
-								"$ref": "schema/metaresult.json"
-							},
-							"data": {
-								"$ref": "schema/session.json"
-							}
-						}
-					}
-				},
-				"404": {
-					"description": "Could not find any available session",
+					"description": "get an updated or new created session object",
 					"schema": {
 						"type": "object",
 						"properties": {
@@ -4885,7 +4871,7 @@
 			],
 			"responses": {
 				"200": {
-					"description": "success",
+					"description": "success, might be empty",
 					"schema": {
 						"type": "object",
 						"properties": {
@@ -4900,6 +4886,12 @@
 							}
 						}
 					}
+				},
+				"401": {
+					"description": "login required"
+				},
+				"403": {
+					"description": "missing or wrong access rights"
 				}
 			}
 		},
@@ -5187,6 +5179,9 @@
 							}
 						}
 					}
+				},
+				"401": {
+					"description": "invalid credentials"
 				},
 				"404": {
 					"description": "useraccount loginname does not exists"

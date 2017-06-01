@@ -1,0 +1,16 @@
+{
+    "rights": {
+        "availability": "0",
+        "basic": "0",
+        "cluster": "0",
+        "department": "0",
+        "organisation": "0",
+        "scope": "0",
+        "sms": "0",
+        "superuser": "0",
+        "ticketprinter": "0",
+        "useraccount": "1"
+    },
+    "id": "testadmin",
+    "password": "vorschau"
+}
