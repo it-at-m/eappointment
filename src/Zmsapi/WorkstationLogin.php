@@ -1,6 +1,6 @@
 <?php
 /**
- * @package
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -8,38 +8,49 @@ namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
-use \BO\Zmsdb\Workstation as Query;
+use \BO\Zmsdb\Workstation;
+use \BO\Zmsdb\Useraccount;
 
-/**
-  * Handle requests concerning services
-  */
 class WorkstationLogin extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render()
-    {
-        $query = new Query();
-        $useraccount = Validator::input()->isJson()->assertValid()->getValue();
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
-        $loginName = $useraccount['id'];
-        $logInHash = $query->readLoggedInHashByName($loginName);
-        $workstation = $query
-            ->writeEntityLoginByName($loginName, $useraccount['password'], \App::getNow(), $resolveReferences);
-        $workstation->testValid();
+        $input = Validator::input()->isJson()->assertValid()->getValue();
+        $useraccount = new \BO\Zmsentities\Useraccount($input);
+        $useraccount->testValid();
 
-        if ($logInHash) {
+        if (! (new Useraccount)->readIsUserExisting($useraccount->id) || 0 == count($input)) {
+            throw new Exception\Useraccount\UseraccountNotFound();
+        }
+
+        $logInHash = (new Workstation)->readLoggedInHashByName($useraccount->id);
+        $workstation = (new Workstation)->writeEntityLoginByName(
+            $useraccount->id,
+            $useraccount->password,
+            \App::getNow(),
+            $resolveReferences
+        );
+
+        if (null !== $logInHash) {
             \BO\Zmsdb\Connection\Select::writeCommit();
             $exception = new \BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn();
             $exception->data = $workstation;
             throw $exception;
         }
 
-        $message = Response\Message::create(Render::$request);
+        $message = Response\Message::create($request);
         $message->data = $workstation;
 
-        Render::lastModified(time(), '0');
-        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+        return $response;
     }
 }

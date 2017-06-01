@@ -4204,6 +4204,8 @@ use \Psr\Http\Message\ResponseInterface;
  *                              $ref: "schema/metaresult.json"
  *                          data:
  *                              $ref: "schema/useraccount.json"
+ *              401:
+ *                  description: "invalid credentials"
  *              404:
  *                  description: "useraccount loginname does not exists"
  */
