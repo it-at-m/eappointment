@@ -180,8 +180,15 @@ class Useraccount extends Schema\Entity
 
     public function withCleanedUpFormData()
     {
-        unset($this['password_check']);
         unset($this['save']);
+        unset($this['checkPassword']);
+        if (isset($this['password']) && '' == $this['password']) {
+            unset($this['password']);
+        }
+        if (0 == count(array_filter($this['changePassword']))) {
+            unset($this['changePassword']);
+        }
+
         return $this;
     }
 }

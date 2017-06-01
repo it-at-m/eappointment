@@ -286,7 +286,6 @@ class Process extends Schema\Entity
     {
         $clientList = $this->getClients();
         while ($clientList->count() < $count) {
-            error_log($clientList->count() .' : '. $count);
             $clientList->addEntity(new Client());
         }
         return $this;

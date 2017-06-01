@@ -3,7 +3,7 @@
     "type": "object",
     "example": {
         "lastLogin": 1447926465,
-        "id": "johndoe",
+        "id": "johndoeid",
         "password": "secret",
         "rights": {
             "scope": true,
@@ -27,58 +27,97 @@
         },
         "id": {
             "type": "string",
-            "description": "loginname, the unique identifier. Used as id to enable fetching"
+            "description": "loginname, the unique identifier. Used as id to enable fetching",
+            "minLength": 8
         },
         "password": {
             "type": "string",
             "description": "this field is only used on changing the password and login"
         },
         "changePassword": {
-            "type": "string",
-            "description": "this field is only used on changing the password and login"
+            "type": "array",
+            "items": {
+                "type": "string",
+                "minLength": 8,
+                "maxLength": 40
+            },
+            "description": "this field is only used on changing the password",
+            "format": "sameValues",
+            "maxItems": 2,
+            "minItems": 2
         },
         "rights": {
             "type": "object",
             "properties": {
                 "availability": {
                     "description": "Allow editing availability with opening hours",
-                    "type": ["boolean", "number"]
+                    "type": [
+                        "boolean",
+                        "number"
+                    ]
                 },
                 "basic": {
                     "description": "Allow login and basic usage",
-                    "type": ["boolean", "number"]
+                    "type": [
+                        "boolean",
+                        "number"
+                    ]
                 },
                 "cluster": {
                     "description": "Allow editing clusters",
-                    "type": ["boolean", "number"]
+                    "type": [
+                        "boolean",
+                        "number"
+                    ]
                 },
                 "department": {
                     "description": "Allow editing departments",
-                    "type": ["boolean", "number"]
+                    "type": [
+                        "boolean",
+                        "number"
+                    ]
                 },
                 "organisation": {
                     "description": "Allow editing organisations",
-                    "type": ["boolean", "number"]
+                    "type": [
+                        "boolean",
+                        "number"
+                    ]
                 },
                 "scope": {
                     "description": "Allow editing scopes",
-                    "type": ["boolean", "number"]
+                    "type": [
+                        "boolean",
+                        "number"
+                    ]
                 },
                 "sms": {
                     "description": "Allow sending SMS",
-                    "type": ["boolean", "number"]
+                    "type": [
+                        "boolean",
+                        "number"
+                    ]
                 },
                 "superuser": {
                     "description": "Special rights for administrators, especially for maintenance",
-                    "type": ["boolean", "number"]
+                    "type": [
+                        "boolean",
+                        "number"
+                    ]
                 },
                 "ticketprinter": {
                     "description": "Manage ticketprinter",
-                    "type": ["boolean", "number"]
+                    "type": [
+                        "boolean",
+                        "number"
+                    ]
                 },
                 "useraccount": {
                     "description": "Allow create, edit and delete user accounts",
-                    "type": ["boolean", "number"]
+                    "type": [
+                        "boolean",
+                        "number"
+                    ]
                 }
             }
         },

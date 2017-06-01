@@ -11,6 +11,8 @@ class SchemaValidation extends \Exception
 {
     protected $code = 400;
 
+    public $data = [];
+
     protected $errorMessages = [
         ErrorCode::INVALID_NUMERIC         => "INVALID_NUMERIC",
         ErrorCode::INVALID_NULL            => "INVALID_NULL",
@@ -48,6 +50,7 @@ class SchemaValidation extends \Exception
         ErrorCode::NOT_ALLOWED_ITEM        => "NOT_ALLOWED_ITEM",
         ErrorCode::UNMET_DEPENDENCY        => "UNMET_DEPENDENCY",
         ErrorCode::MAX_PROPERTIES_EXCEEDED => "MAX_PROPERTIES_EXCEEDED",
+        "INVALID_STRING_MATCHING"          => "INVALID_STRING_MATCHING"
     ];
 
     protected $validationError = null;
@@ -58,13 +61,29 @@ class SchemaValidation extends \Exception
     {
         $this->validationError = $validationError;
         $this->setMessages();
+        $this->setData();
         return $this;
     }
 
     public function setSchemaName($schemaName)
     {
-        $this->schemaName = $schemaName;
+        $this->schemaName = $schemaName . '.json';
+        $this->template = $schemaName;
         return $this;
+    }
+
+    public function setData()
+    {
+        foreach ($this->validationError as $error) {
+            $pointer = str_replace('/', '', $error->getPointer());
+            $pointer = (strpos($pointer, 'changePassword') !== false) ? 'changePassword[]' : $pointer;
+            if (isset($this->data[$pointer]['messages']) &&
+                ! in_array($error->getMessage(), $this->data[$pointer]['messages'])
+            ) {
+                $this->data[$pointer]['messages'][] = $error->getMessage();
+            }
+            $this->data[$pointer]['failed'] = 1;
+        }
     }
 
     public function setMessages()

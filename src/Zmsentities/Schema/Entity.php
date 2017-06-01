@@ -117,13 +117,20 @@ class Entity extends \ArrayObject implements \JsonSerializable
     public function testValid()
     {
         $validator = $this->getValidator();
+        $validator = $this->registerExtensions($validator);
         if (!$validator->isValid()) {
             $exception = new \BO\Zmsentities\Exception\SchemaValidation();
-            $exception->setSchemaName($this->getEntityName() . '.json');
+            $exception->setSchemaName($this->getEntityName());
             $exception->setValidationError($validator->getErrors());
             throw $exception;
         }
         return true;
+    }
+
+    public function registerExtensions($validator)
+    {
+        $validator->registerFormatExtension('sameValues', new Extensions\SameValues());
+        return $validator;
     }
 
     /**
