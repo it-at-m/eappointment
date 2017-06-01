@@ -19,7 +19,7 @@ class View extends BaseView {
                     .find('[name="' + index +'"], [data-form-validate="'+ index +'"]')
                     .closest('div.controls')
                     .addClass('has-error')
-                    .after(this.getMessageList(item.messages));
+                    .append(this.getMessageList(item.messages));
             }
         });
     }
@@ -28,7 +28,10 @@ class View extends BaseView {
         let list = document.createElement('ul');
         $(list).addClass('list-error');
         $.each(messages, (index, messageItem) => {
-            $(list).append('<li>'+ messageItem.message +'</li>')
+            if (messageItem.message)
+                $(list).append('<li>'+ messageItem.message +'</li>')
+            else
+                $(list).append('<li>'+ messageItem +'</li>')
         });
         return list;
     }

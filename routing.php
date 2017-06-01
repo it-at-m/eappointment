@@ -413,7 +413,6 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->getContainer()
     ->offsetSet('errorHandler',
     function ($container) {
-        error_log('test');
         return function (RequestInterface $request, ResponseInterface $response, \Exception $exception) {
             return \BO\Zmsadmin\Helper\TwigExceptionHandler::withHtml($request, $response, $exception);
         };
