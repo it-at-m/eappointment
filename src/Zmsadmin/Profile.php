@@ -24,19 +24,13 @@ class Profile extends BaseController
         $confirm_success = $request->getAttribute('validator')->getParameter('confirm_success')->isString()->getValue();
         $entity = new Entity($workstation->useraccount);
 
-        if (!$entity->hasId()) {
+        if (! $entity->hasId()) {
             return Helper\Render::withHtml($response, 'page/404.twig', array());
         }
 
-        $updated = false;
-
         $input = $request->getParsedBody();
-        if (is_array($input) && array_key_exists('save', $input)) {
-            if ($input['newPassword'] && $input['newPassword'] !== $input['repeatPassword']) {
-                throw new \Exception('Passwörter stimmen nicht überein.');
-            }
-
-            $newEntity = new Entity($input);
+        if (is_array($input) && array_key_exists('changePassword', $input)) {
+            $newEntity = (new Entity($input))->withCleanedUpFormData();
             $entity = \App::$http->readPostResult('/workstation/password/', $newEntity)
                     ->getEntity();
             return \BO\Slim\Render::redirect('profile', [], [
@@ -50,10 +44,9 @@ class Profile extends BaseController
             array(
                 'title' => 'Nutzerprofil',
                 'menuActive' => 'profile',
-                'updated' => $updated,
                 'workstation' => $workstation,
                 'useraccount' => $entity->getArrayCopy(),
-                'confirm_success' => $confirm_success,
+                'confirm_success' => $confirm_success
             )
         );
     }
