@@ -24,13 +24,8 @@ class ProviderList extends BaseController
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $isAssigned = Validator::param('isAssigned')->isBool()->getValue();
 
-        $providerList = (new Provider)->readList($args['source'], $resolveReferences, $isAssigned);
-        if (0 == $providerList->count()) {
-            throw new Exception\Provider\ProviderNotFound();
-        }
-
         $message = Response\Message::create($request);
-        $message->data = $providerList;
+        $message->data = (new Provider)->readList($args['source'], $resolveReferences, $isAssigned);
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
