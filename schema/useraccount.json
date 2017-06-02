@@ -3,7 +3,7 @@
     "type": "object",
     "example": {
         "lastLogin": 1447926465,
-        "id": "johndoeid",
+        "id": "johndoe",
         "password": "secret",
         "rights": {
             "scope": true,
@@ -28,7 +28,7 @@
         "id": {
             "type": "string",
             "description": "loginname, the unique identifier. Used as id to enable fetching",
-            "minLength": 8
+            "minLength": 4
         },
         "password": {
             "type": "string",
