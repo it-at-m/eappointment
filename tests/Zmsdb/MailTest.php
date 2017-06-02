@@ -31,14 +31,53 @@ class MailTest extends Base
         $this->assertFalse($entity->hasId($entityId), "Deleted Mail still exists in Database.");
     }
 
+    public function testWriteInQueueWithAdmin()
+    {
+        $input = $this->getTestEntity();
+        $input->multipart = array(
+            [
+                "queueId" => "1234",
+                "mime" => "text/html",
+                "content" =>  "<h1>Title</h1><p>Die Terminänderung wurde initiiert via admin</p>",
+                "base64" => false
+            ],
+            [
+                "queueId" => "1234",
+                "mime" => "text/plain",
+                "content" =>  "Die Terminänderung wurde initiiert via admin",
+                "base64" => false
+            ]
+        );
+        $entity = (new Query)->writeInQueueWithAdmin($input);
+        $this->assertContains('Die Terminänderung wurde initiiert via', $entity->getPlainPart());
+    }
+
+    public function testWriteMailInQueueWithAdminFailed()
+    {
+        $this->setExpectedException('BO\Zmsdb\Exception\MailWriteInQueueFailed');
+        $query = new Query();
+        $input = $this->getTestEntity();
+        $input->process['scope']['contact']['email'] = null;
+        $query->writeInQueueWithAdmin($input);
+    }
+
+    public function testWriteInQueueWithPickupStatus()
+    {
+        $entity = $this->getTestEntity();
+        $entity->process['status'] = 'pickup';
+        $this->assertEquals('0', $entity->getFirstClient()->emailSendCount);
+        $entity = (new Query)->writeInQueue($entity);
+        $this->assertEntity("\\BO\\Zmsentities\\Mail", $entity);
+        $this->assertEquals('1', $entity->getFirstClient()->emailSendCount);
+    }
+
     public function testWriteMailInQueueFailed()
     {
         $this->setExpectedException('BO\Zmsdb\Exception\MailWriteInQueueFailed');
         $query = new Query();
         $input = $this->getTestEntity();
         $input->process['clients'][0]['email'] = null;
-        $entity = $query->writeInQueue($input);
-        $query->deleteEntity($entity->id);
+        $query->writeInQueue($input);
     }
 
     public function testWriteMimepartFailed()
@@ -47,7 +86,7 @@ class MailTest extends Base
         $query = new Query();
         $input = $this->getTestEntity();
         $input->multipart[0]['content'] = null;
-        $entity = $query->writeInQueue($input);
+        $query->writeInQueue($input);
     }
 
     public function testDeleteByProcessId()
@@ -55,7 +94,7 @@ class MailTest extends Base
         $input = $this->getTestEntity();
         $query = new Query();
         $entity = $query->writeInQueue($input);
-        $deleteTest = $query->deleteEntityByProcess($input->process['id']);
+        $query->deleteEntityByProcess($input->process['id']);
         $entity = $query->readEntity($entity->id);
         $this->assertFalse($entity->hasId(), "Delete Mail by process id failed.");
     }
@@ -159,6 +198,10 @@ class MailTest extends Base
                             "notificationsDelay" => "0"
                         ],
                     ],
+                    "contact" => [
+                        "name" => "admin",
+                        "email" => "zms@service.berlinonline.de"
+                    ]
                 ],
                 "status" => "confirmed"
             ],
