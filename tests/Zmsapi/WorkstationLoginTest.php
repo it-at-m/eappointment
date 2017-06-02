@@ -22,10 +22,11 @@ class WorkstationLoginTest extends Base
         $this->expectExceptionCode(404);
         $this->render([], [
             '__body' => $this->readFixture('GetUseraccount.json')
-        ], []);
+        ], ['nocommit' => 1]);
         $this->render([], [
             '__body' => $this->readFixture('GetUseraccount.json')
         ], []);
+        var_dump("test nach test");
     }
 
     public function testEmpty()

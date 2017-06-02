@@ -8,10 +8,12 @@ class WorkstationDeleteTest extends Base
 {
     protected $classname = "WorkstationDelete";
 
+    public static $loginName = 'berlinonline';
+
     public function testRendering()
     {
         $this->setWorkstation();
-        $response = $this->render(['loginname' => 'berlinonline'], [], []);
+        $response = $this->render(['loginname' => static::$loginName], [], []);
         $this->assertContains('workstation.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }

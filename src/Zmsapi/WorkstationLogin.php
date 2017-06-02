@@ -40,7 +40,11 @@ class WorkstationLogin extends BaseController
         );
 
         if (null !== $logInHash) {
-            \BO\Zmsdb\Connection\Select::writeCommit();
+            //to avoid commit on unit tests, is there a better solution?
+            $noCommit = Validator::param('nocommit')->isNumber()->setDefault(0)->getValue();
+            if ($noCommit) {
+                \BO\Zmsdb\Connection\Select::writeCommit();
+            }
             $exception = new \BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn();
             $exception->data = $workstation;
             throw $exception;
