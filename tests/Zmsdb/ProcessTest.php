@@ -5,6 +5,7 @@ namespace BO\Zmsdb\Tests;
 use \BO\Zmsdb\Process as Query;
 use \BO\Zmsdb\ProcessStatusFree;
 use \BO\Zmsdb\ProcessStatusQueued;
+use \BO\Zmsdb\ProcessStatusArchived;
 use \BO\Zmsentities\Process as Entity;
 use \BO\Zmsentities\Calendar;
 
@@ -118,6 +119,18 @@ class ProcessTest extends Base
 
         $process = $query->updateProcessStatus($process, 'confirmed');
         $this->assertEquals('called', $process->getStatus());
+    }
+
+    public function testProcessStatusFinished()
+    {
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $query = new ProcessStatusArchived();
+        $entity =(new Query)->readEntity(10029, '1c56');
+        $entity->process = 'finished';
+        $query->writeEntityFinished($entity, $now);
+        $process =(new Query)->readEntity(10029, 'deref!0');
+        $this->assertEntity("\\BO\\Zmsentities\\Process", $process);
+        $this->assertEquals('dereferenced', $process->getFirstClient()->familyName);
     }
 
     public function testReadSlotCount()
@@ -350,6 +363,7 @@ class ProcessTest extends Base
             "createIP"=>"127.0.0.1",
             "createTimestamp" =>"1459028767",
             "queue"=>[
+                "withAppointment" => 1,
                 "arrivalTime" =>"1464339600",
                 "callCount" =>"0",
                 "callTime" => "0",
