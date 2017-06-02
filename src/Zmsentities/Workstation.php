@@ -20,7 +20,7 @@ class Workstation extends Schema\Entity
     public function getQueuePreference($key, $isBoolean = false)
     {
         $result = null;
-        if (array_key_exists($key, $this['queue'])) {
+        if (isset($this['queue']) && array_key_exists($key, $this['queue'])) {
             if ($isBoolean) {
                 $result = ($this['queue'][$key]) ? 1 : 0;
             } else {
