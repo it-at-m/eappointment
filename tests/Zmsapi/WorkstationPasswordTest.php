@@ -32,6 +32,19 @@ class WorkstationPasswordTest extends Base
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
+    public function testInvalidCredentials()
+    {
+        $this->setWorkstation();
+        $this->expectException('\BO\Zmsapi\Exception\Useraccount\InvalidCredentials');
+        $this->expectExceptionCode(401);
+        $response = $this->render([], [
+            '__body' => '{
+                "id": "testadmin",
+                "password": "vorschau2"
+            }'
+        ], []);
+    }
+
     public function testEmpty()
     {
         $this->setWorkstation();
