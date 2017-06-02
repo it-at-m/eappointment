@@ -55,7 +55,7 @@ class Workstation extends Base
 
     public function readLoggedInHashByName($loginName)
     {
-        $query = Query\Workstation::getQueryLoggedInCheck();
+        $query = Query\Workstation::QUERY_LOGGEDIN_CHECK;
         $LoggedInWorkstation = $this->getReader()->fetchOne(
             $query,
             ['loginName' => $loginName]

@@ -39,18 +39,15 @@ class Workstation extends Base implements MappingInterface
             `Name`=?
     ';
 
-    public function getQueryLoggedInCheck()
-    {
-        return '
-            SELECT
-                SessionID as hash
-            FROM
-                '. self::TABLE .'
-            WHERE
-                `Name` = :loginName
-            LIMIT 1
-        ';
-    }
+    const QUERY_LOGGEDIN_CHECK = '
+        SELECT
+            SessionID as hash
+        FROM
+            '. self::TABLE .'
+        WHERE
+            `Name` = :loginName
+        LIMIT 1
+    ';
 
     protected function addRequiredJoins()
     {
