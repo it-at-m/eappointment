@@ -52,7 +52,7 @@ class CalendarTest extends Base
 
     public function testInvalidFirstDay()
     {
-        $this->setExpectedException('BO\Zmsapi\Exception\Calendar\InvalidFirstDay');
+        $this->expectException('BO\Zmsapi\Exception\Calendar\InvalidFirstDay');
         $this->render([], [
             '__body' => '{
                 "requests": [
@@ -72,9 +72,47 @@ class CalendarTest extends Base
         ], []);
     }
 
+    public function testWithRights()
+    {
+        $this->setWorkstation();
+        $response = $this->render([], [
+            'slotType' => 'intern',
+            '__body' => '{
+                "firstDay": {
+                    "year": '. \App::$now->format("Y") .',
+                    "month": '. \App::$now->format("n") .',
+                    "day": '. \App::$now->format("j") .'
+                },
+                "lastDay": {
+                    "year": '. \App::$now->modify("+1 month")->format("Y") .',
+                    "month": '. \App::$now->modify("+1 month")->format("n") .',
+                    "day": '. \App::$now->modify("+1 month")->format("t") .'
+                },
+                "requests": [
+                    {
+                      "id": "120703",
+                      "name": "Personalausweis beantragen",
+                      "source": "dldb"
+                    }
+                ],
+                "providers": [
+                    {
+                      "id": 122217
+                    }
+                ],
+                "scopes": [
+                    {
+                      "id": 141
+                    }
+                ]
+            }'
+        ], []);
+        $this->assertContains('calendar.json', (string)$response->getBody());
+    }
+
     public function testEmptyDays()
     {
-        $this->setExpectedException('BO\Zmsapi\Exception\Calendar\AppointmentsMissed');
+        $this->expectException('BO\Zmsapi\Exception\Calendar\AppointmentsMissed');
         $this->render([], [
             '__body' => '{
                 "requests": [
@@ -97,5 +135,33 @@ class CalendarTest extends Base
                 }
             }'
         ], []);
+    }
+
+    public function testFillWithEmptyDays()
+    {
+        $response = $this->render([], [
+            'fillWithEmptyDays' => '1',
+            '__body' => '{
+                "requests": [
+                    {
+                      "id": "120703",
+                      "name": "Personalausweis beantragen",
+                      "source": "dldb"
+                    }
+                ],
+                "scopes": [{"id":141, "provider":{"id":122217}}],
+                "firstDay": {
+                    "year": '. \App::$now->modify("+3 month")->format("Y") .',
+                    "month": '. \App::$now->modify("+3 month")->format("n") .',
+                    "day": '. \App::$now->modify("+3 month")->format("j") .'
+                },
+                "lastDay": {
+                    "year": '. \App::$now->modify("+4 month")->format("Y") .',
+                    "month": '. \App::$now->modify("+4 month")->format("n") .',
+                    "day": '. \App::$now->modify("+4 month")->format("t") .'
+                }
+            }'
+        ], []);
+        $this->assertContains('calendar.json', (string)$response->getBody());
     }
 }
