@@ -84,11 +84,11 @@ class Notification extends Base
             'clientFamilyName' => $client->familyName,
             'clientTelephone' => $telephone,
         ));
-        $result = $this->writeItem($query);
-        if (! $result) {
-            throw new Exception\NotificationWriteInQueueFailed("Failed to write notification in queue");
-        }
+        $this->writeItem($query);
         $queueId = $this->getWriter()->lastInsertId();
+        if (! $queueId) {
+            throw new Exception\Notification\WriteInQueueFailed();
+        }
         if ('pickup' == $process->status || 'queued' == $process->status) {
             $client->notificationsSendCount += 1;
             (new Process())->updateEntity($process);

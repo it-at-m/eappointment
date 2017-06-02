@@ -27,12 +27,20 @@ class NotificationTest extends Base
         $this->assertFalse($entity2->hasId($entity->id), "Deleted Notification still exists in Database.");
     }
 
+    public function testWriteInCalculationTable()
+    {
+        $query = new Query();
+        $input = $this->getTestEntity();
+        $input->process = new \BO\Zmsentities\Process($input->process);
+        $this->assertTrue($query->writeInCalculationTable($input));
+    }
+
     public function testDeleteByProcessId()
     {
         $input = $this->getTestEntity();
         $query = new Query();
         $queueId = $query->writeInQueue($input);
-        $deleteTest = $query->deleteEntityByProcess($input->process['id']);
+        $query->deleteEntityByProcess($input->process['id']);
         $entity = $query->readEntity($queueId);
         $this->assertFalse($entity->hasId($queueId), "Deleted Notification still exists in Database.");
     }
@@ -43,7 +51,7 @@ class NotificationTest extends Base
         $query = new Query();
         $input = $this->getTestEntity();
         $input->process['clients'][0]['telephone'] = '';
-        $queueId = $query->writeInQueue($input);
+        $query->writeInQueue($input);
     }
 
     public function testExceptionMissingProperty()
@@ -52,7 +60,7 @@ class NotificationTest extends Base
         $query = new Query();
         $input = $this->getTestEntity();
         unset($input->message);
-        $queueId = $query->writeInQueue($input);
+        $query->writeInQueue($input);
     }
 
     protected function getTestEntity()
@@ -74,6 +82,15 @@ class NotificationTest extends Base
             ],
             "message" => "Denken Sie an ihren Termin mit der Nummer 80410",
             "process" => [
+                "appointments"=>[
+                    [
+                        "date"=>"1464339600",
+                        "scope"=>[
+                            "id"=>"141"
+                        ],
+                        "slotCount"=>"1"
+                    ]
+                ],
                 "clients" => [
                     [
                         "familyName" => "Max Mustermann",
