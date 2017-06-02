@@ -35,6 +35,18 @@ class ProcessTest extends Base
         $this->assertEquals(1, $process->queue['number']);
     }
 
+    public function testReadByWorkstation()
+    {
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $workstation = (new \BO\Zmsdb\Workstation)->writeEntityLoginByName('testadmin', 'vorschau', $now, 2);
+        $process =(new Query)->readEntity(10029, '1c56');
+        $workstation->process = (new \BO\Zmsdb\Workstation)->writeAssignedProcess($workstation->id, $process);
+        $process = (new Query)->readByWorkstation($workstation, 1);
+        $this->assertEntity("\\BO\\Zmsentities\\Process", $process);
+        $this->assertEquals(1, $process->requests->count());
+        $this->assertEquals(10029, $process->id);
+    }
+
     public function testPending()
     {
         $now = new \DateTimeImmutable("2016-04-01 11:55");
