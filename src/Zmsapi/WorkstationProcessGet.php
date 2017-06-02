@@ -1,6 +1,6 @@
 <?php
 /**
- * @package Zmsadmin
+ * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
 
@@ -14,21 +14,27 @@ use \BO\Zmsdb\Process;
 class WorkstationProcessGet extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render($processId)
-    {
-        Helper\User::checkRights();
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        (new Helper\User($request))->checkRights();
         $query = new Process();
-        $processAuthData = $query->readAuthKeyByProcessId($processId);
-        $process = $query->readEntity($processId, $processAuthData['authKey']);
+        $processAuthData = $query->readAuthKeyByProcessId($args['id']);
+        $process = $query->readEntity($args['id'], $processAuthData['authKey']);
         if (! $process) {
             throw new Exception\Process\ProcessNotFound();
         }
 
-        $message = Response\Message::create(Render::$request);
+        $message = Response\Message::create($request);
         $message->data = $process;
-        Render::lastModified(time(), '0');
-        Render::json($message->setUpdatedMetaData(), $message->getStatuscode());
+
+        $response = Render::withLastModified($response, time(), '0');
+        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+        return $response;
     }
 }

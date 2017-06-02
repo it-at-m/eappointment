@@ -4174,6 +4174,8 @@ use \Psr\Http\Message\ResponseInterface;
  *                              $ref: "schema/workstation.json"
  *              401:
  *                  description: "login required"
+ *              404:
+ *                  description: "useraccount loginname does not exists"
  */
 \App::$slim->post('/workstation/',
     '\BO\Zmsapi\WorkstationUpdate')

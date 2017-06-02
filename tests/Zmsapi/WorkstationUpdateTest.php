@@ -26,67 +26,32 @@ class WorkstationUpdateTest extends Base
         $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingLogin');
         $this->expectExceptionCode(401);
 
-        User::$workstation = new Workstation([
-            'id' => '137',
-            'useraccount' => new Useraccount([
-                'lastLogin' => 1447926465, //19.11.2015
-                'id' => self::TESTUSER,
-                'rights' => [
-                    'basic' => true
-                ]
-            ]),
-            'scope' => new Scope([
-                'id' => self::SCOPE_ID,
-            ])
-        ]);
-        $this->render([], ['__body' => json_encode(User::$workstation)], []);
+        $workstation = $this->setWorkstation();
+        $workstation->getUseraccount()->lastLogin = 1447926465; //19.11.2015;
+        
+        $this->render([], ['__body' => json_encode($workstation)], []);
     }
 
     public function testAssignedWorkstationExists()
     {
         $this->expectException('\BO\Zmsapi\Exception\Workstation\WorkstationAlreadyAssigned');
+        $this->expectExceptionCode(200);
+
         $workstation = $this->setWorkstation();
-        $workstation->getUseraccount()->lastLogin = self::LASTLOGIN;
-
-        User::$assignedWorkstation = new Workstation([
-            'id' => '137',
-            'useraccount' => new Useraccount([
-                'lastLogin' => self::LASTLOGIN,
-                'id' => self::TESTUSER,
-                'rights' => [
-                    'basic' => true
-                ]
-            ]),
-            'scope' => new Scope([
-                'id' => self::SCOPE_ID,
-            ])
-        ]);
-
-        $workstation = (new \BO\Zmsentities\Workstation())->getExample();
         $workstation->name = self::PLACE;
-        $workstation->scope['id'] = self::SCOPE_ID;
-        $workstation->useraccount['lastLogin'] = self::LASTLOGIN; //1.4.2016 11:55
+        $workstation->id = 123;
 
-        $response = $this->render([], [
+        User::$assignedWorkstation = $this->setWorkstation();
+        User::$assignedWorkstation->name = self::PLACE;
+
+        $this->render([], [
             '__body' => json_encode($workstation)
         ], []);
-
-        $this->assertContains('workstation.json', (string)$response->getBody());
-        $this->assertTrue(200 == $response->getStatusCode());
     }
 
     public function testRendering()
     {
-        User::$assignedWorkstation = null;
-        $userworkstation = $this->setWorkstation();
-        $userworkstation->getUseraccount()->lastLogin = self::LASTLOGIN;
-
-        $workstation = (new \BO\Zmsentities\Workstation())->getExample();
-        $workstation->name = self::NEWPLACE;
-        $workstation->id = 138;
-        $workstation->scope['id'] = self::SCOPE_ID;
-        $workstation->useraccount['id'] = 'berlinonline';
-        $workstation->useraccount['lastLogin'] = self::LASTLOGIN;
+        $workstation = $this->setWorkstation();
         $response = $this->render([], [
             '__body' => json_encode($workstation)
         ], []);

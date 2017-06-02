@@ -61,6 +61,8 @@ class User
         }
         if (static::$assignedWorkstation &&
             static::$assignedWorkstation->id != $entity->id &&
+            static::$assignedWorkstation->name == $entity->name &&
+            static::$assignedWorkstation->scope['id'] == $entity->scope['id'] &&
             ! static::$assignedWorkstation->getUseraccount()->isOveraged(\App::$now)
         ) {
             throw new \BO\Zmsapi\Exception\Workstation\WorkstationAlreadyAssigned();

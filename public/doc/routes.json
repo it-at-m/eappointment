@@ -5143,6 +5143,9 @@
 				},
 				"401": {
 					"description": "login required"
+				},
+				"404": {
+					"description": "useraccount loginname does not exists"
 				}
 			}
 		}
