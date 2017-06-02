@@ -62,4 +62,32 @@ class ProcessFreeTest extends Base
         $this->assertContains('"data":{}', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
+
+    public function testWithRights()
+    {
+        $this->setWorkstation();
+        $response = $this->render([], [
+            'slotType' => 'intern',
+            '__body' => '{
+                "firstDay": {
+                    "year": 2016,
+                    "month": 5,
+                    "day": 27
+                },
+                "requests": [
+                    {
+                        "id": "120703",
+                        "name": "Personalausweis beantragen",
+                        "source": "dldb"
+                    }
+                ],
+                "providers": [
+                    {
+                        "id": 122217
+                    }
+                ]
+            }'
+        ], []);
+        $this->assertContains('process.json', (string)$response->getBody());
+    }
 }
