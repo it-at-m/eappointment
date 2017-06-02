@@ -24,6 +24,16 @@ class ClusterTest extends Base
         $this->assertEntityList("\\BO\\Zmsentities\\Cluster", $entityList);
     }
 
+    public function testReadByScopeId()
+    {
+        $query = new Query();
+        $cluster = $query->readByScopeId(141, 1); //Heerstraße
+        $this->assertEntity("\\BO\\Zmsentities\\Cluster", $cluster);
+        $this->assertEquals(true, $cluster->scopes->hasEntity('141'));
+        $cluster = $query->readByScopeId(101, 1);
+        $this->assertEquals(null, $cluster);
+    }
+
     public function testReadListByDepartment()
     {
         $query = new Query();
@@ -61,6 +71,23 @@ class ClusterTest extends Base
         $estimatedData = $scope->getWaitingTimeFromQueueList($queueList, $now);
         $this->assertEquals(146, $scope->id);
         $this->assertEquals(233, $estimatedData['waitingTimeEstimate']);
+    }
+
+    public function testReadWithScopeWorkstationCount()
+    {
+        $query = new Query();
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $cluster = $query->readWithScopeWorkstationCount(4, $now);
+        $this->assertEquals(3, $cluster->scopes->getFirst()->status['queue']['workstationCount']);
+    }
+
+    public function testReadScopeWithShortestWaitingTimeFailed()
+    {
+        $this->expectException('\BO\Zmsdb\Exception\Cluster\ScopesWithoutWorkstationCount');
+        $this->expectExceptionCode('404');
+        $query = new Query();
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $query->readScopeWithShortestWaitingTime(110, $now);
     }
 
     public function testWriteEntity()

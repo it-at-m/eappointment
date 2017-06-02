@@ -24,6 +24,13 @@ class DayOffTest extends Base
         $this->assertEquals(1459461600, $dayOffList->getEntityByName('Test Feiertag')['date']);
     }
 
+    public function testDeleteByTimeInterval()
+    {
+        (new Dayoff())->deleteByTimeInterval(3600);
+        $dayOffList = (new Dayoff())->readByYear('2016'); //all dayoff dates in 2016
+        $this->assertEquals(0, $dayOffList->count());
+    }
+
     protected function getTestEntity()
     {
         return new Entity(array(
