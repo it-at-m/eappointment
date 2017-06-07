@@ -24,7 +24,7 @@ class BaseController
         ));
         try {
             $workstation = \App::$http
-                ->readPostResult('/workstation/'. $userAccount->id .'/', $userAccount)->getEntity();
+                ->readPostResult('/workstation/login/', $userAccount)->getEntity();
         } catch (\BO\Zmsclient\Exception $exception) {
             //ignore double login exception on quick login
             $workstation = new \BO\Zmsentities\Workstation($exception->data);
