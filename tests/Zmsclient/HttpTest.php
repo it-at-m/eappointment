@@ -93,7 +93,15 @@ class HttpTest extends Base
             'id' => 'berlinonline',
             'password' => '1palme1'
         ));
-        $workstation = $http->readPostResult('/workstation/login/', $userAccount)->getEntity();
+        try {
+            $workstation = $http->readPostResult('/workstation/login/', $userAccount)->getEntity();
+        } catch (\BO\Zmsclient\Exception $exception) {
+            if (isset($exception->data)) {
+                $workstation = new \BO\Zmsentities\Workstation($exception->data);
+            } else {
+                throw $exception;
+            }
+        }
         if (isset($workstation->authkey)) {
             \BO\Zmsclient\Auth::setKey($workstation->authkey);
             $this->assertEquals($workstation->authkey, \BO\Zmsclient\Auth::getKey());
