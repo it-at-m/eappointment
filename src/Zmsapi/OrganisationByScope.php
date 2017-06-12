@@ -25,18 +25,24 @@ class OrganisationByScope extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $scope = (new Scope())->readEntity($args['id'], 0);
         if (! $scope) {
             throw new Exception\Scope\ScopeNotFound();
         }
         $organisation = (new Query())->readByScopeId($scope->id, $resolveReferences);
+
         if (! $organisation) {
             throw new Exception\Organisation\OrganisationNotFound();
         }
 
         $message = Response\Message::create($request);
+        if ((new Helper\User($request))->hasRights()) {
+            (new Helper\User($request))->checkRights('basic');
+        } else {
+            $organisation = $organisation->withLessData();
+            $message->meta->reducedData = true;
+        }
         $message->data = $organisation;
 
         $response = Render::withLastModified($response, time(), '0');

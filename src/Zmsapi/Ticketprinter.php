@@ -48,7 +48,7 @@ class Ticketprinter extends BaseController
         if (! $entity->isEnabled()) {
             throw new Exception\Ticketprinter\TicketprinterNotEnabled();
         }
-        if ((new Query)->readByHash($entity->hash)->id != $entity->id) {
+        if ($entity->id && (new Query)->readByHash($entity->hash)->id != $entity->id) {
             throw new Exception\Ticketprinter\TicketprinterHashNotValid();
         }
     }
