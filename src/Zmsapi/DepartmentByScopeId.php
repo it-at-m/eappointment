@@ -21,7 +21,6 @@ class DepartmentByScopeId extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('department');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $department = (new \BO\Zmsdb\Department())->readByScopeId($args['id'], $resolveReferences);
         if (! $department->hasId()) {
@@ -29,6 +28,12 @@ class DepartmentByScopeId extends BaseController
         }
 
         $message = Response\Message::create($request);
+        if ((new Helper\User($request))->hasRights()) {
+            (new Helper\User($request))->checkRights('department');
+        } else {
+            $department = $department->withLessData();
+            $message->meta->reducedData = true;
+        }
         $message->data = $department;
 
         $response = Render::withLastModified($response, time(), '0');
