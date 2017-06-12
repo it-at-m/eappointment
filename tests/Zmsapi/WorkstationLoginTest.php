@@ -9,7 +9,8 @@ class WorkstationLoginTest extends Base
     public function testRendering()
     {
         $response = $this->render([], [
-            '__body' => $this->readFixture('GetUseraccount.json')
+            '__body' => $this->readFixture('GetUseraccount.json'),
+            'nocommit' => 1
         ], []);
         $this->assertContains('workstation.json', (string)$response->getBody());
         $this->assertContains('testadmin', (string)$response->getBody());
@@ -21,12 +22,13 @@ class WorkstationLoginTest extends Base
         $this->expectException('\BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn');
         $this->expectExceptionCode(404);
         $this->render([], [
-            '__body' => $this->readFixture('GetUseraccount.json')
-        ], ['nocommit' => 1]);
-        $this->render([], [
-            '__body' => $this->readFixture('GetUseraccount.json')
+            '__body' => $this->readFixture('GetUseraccount.json'),
+            'nocommit' => 1
         ], []);
-        var_dump("test nach test");
+        $this->render([], [
+            '__body' => $this->readFixture('GetUseraccount.json'),
+            'nocommit' => 1
+        ], []);
     }
 
     public function testEmpty()
