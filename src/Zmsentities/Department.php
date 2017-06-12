@@ -130,4 +130,35 @@ class Department extends Schema\Entity
     {
         return $useraccount->hasRights(['superuser']) || $useraccount->hasDepartment($this->id);
     }
+
+    /**
+     * Reduce data of dereferenced entities to a required minimum
+     *
+     */
+    public function withLessData()
+    {
+        $entity = clone $this;
+        if (isset($entity['preferences'])) {
+            unset($entity['preferences']);
+        }
+        if (isset($entity['email'])) {
+            unset($entity['email']);
+        }
+        if (isset($entity['scopes'])) {
+            unset($entity['scopes']);
+        }
+        if (isset($entity['clusters'])) {
+            unset($entity['clusters']);
+        }
+        if (isset($entity['links'])) {
+            unset($entity['links']);
+        }
+        if (isset($entity['dayoff'])) {
+            unset($entity['dayoff']);
+        }
+        if (isset($entity['contact'])) {
+            unset($entity['contact']);
+        }
+        return $entity;
+    }
 }
