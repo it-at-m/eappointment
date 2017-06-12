@@ -34,6 +34,14 @@ class OrganisationTest extends Base
         $this->assertEquals('Charlottenburg-Wilmersdorf', $entity->name);
     }
 
+    public function testReadByDepartmentId()
+    {
+        $query = new Query();
+        $entity = $query->readByDepartmentId(74); //Otto-Suhr-Allee
+        $this->assertEntity("\\BO\\Zmsentities\\Organisation", $entity);
+        $this->assertEquals('Charlottenburg-Wilmersdorf', $entity->name);
+    }
+
     public function testReadByClusterId()
     {
         $query = new Query();
@@ -42,11 +50,19 @@ class OrganisationTest extends Base
         $this->assertEquals('Charlottenburg-Wilmersdorf', $entity->name);
     }
 
+    public function testReadByTicketprinterHash()
+    {
+        $query = new Query();
+        $entity = $query->readByHash('ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2'); //Test Ticketprinter
+        $this->assertEntity("\\BO\\Zmsentities\\Organisation", $entity);
+        $this->assertEquals('Charlottenburg-Wilmersdorf', $entity->name);
+    }
+
     public function testReadByClusterIdFailed()
     {
         $query = new Query();
         $this->setExpectedException('\BO\Zmsdb\Exception\ClusterWithoutScopes');
-        $entity = $query->readByClusterId(999);
+        $query->readByClusterId(999);
     }
 
     public function testReadList()
@@ -74,6 +90,18 @@ class OrganisationTest extends Base
         $entity = $query->updateEntity($entity->id, $entity);
         $this->assertEquals('Flughafen BER', $entity->name);
 
+        $ticketprinterList = new \BO\Zmsentities\Collection\TicketprinterList($entity->ticketprinters);
+        $this->assertEquals('e744a234c1', $ticketprinterList->getEntityByHash('e744a234c1')->hash);
+    }
+
+    public function testUpdateEntityWithTicketprinters()
+    {
+        $query = new Query();
+        $input = $this->getTestEntity();
+
+        $entity = $query->writeEntity($input, 23); //with parent Berlin
+        $entity = $query->updateEntity($entity->id, $input);
+        
         $ticketprinterList = new \BO\Zmsentities\Collection\TicketprinterList($entity->ticketprinters);
         $this->assertEquals('e744a234c1', $ticketprinterList->getEntityByHash('e744a234c1')->hash);
     }
