@@ -22,7 +22,6 @@ class ScopeQueue extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('scope');
         $query = new Query();
         $selectedDate = Validator::param('date')->isString()->getValue();
         $dateTime = ($selectedDate) ? new DateTime($selectedDate) : \App::$now;
@@ -39,6 +38,12 @@ class ScopeQueue extends BaseController
         )->withPickupDestination($scope);
 
         $message = Response\Message::create($request);
+        if ((new Helper\User($request))->hasRights()) {
+            (new Helper\User($request))->checkRights('scope');
+        } else {
+            $queueList = $queueList->withLessData();
+            $message->meta->reducedData = true;
+        }
         $message->data = $queueList;
 
         $response = Render::withLastModified($response, time(), '0');
