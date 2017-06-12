@@ -61,9 +61,9 @@ class Mail extends Schema\Entity
     public function getFirstClient()
     {
         $client = null;
-        if (count($this->process['clients']) > 0) {
-            $data = current($this->process['clients']);
-            $client = new Client($data);
+        if ($this->toProperty()->process->isAvailable()) {
+            $process = new Process($this->process);
+            $client = $process->getFirstClient();
         }
         return $client;
     }
