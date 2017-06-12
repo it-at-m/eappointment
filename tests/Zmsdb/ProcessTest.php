@@ -133,6 +133,13 @@ class ProcessTest extends Base
         $this->assertEquals('dereferenced', $process->getFirstClient()->familyName);
     }
 
+    public function testProcessListByScopeAndStatus()
+    {
+        $collection =(new Query)->readProcessListByScopeAndStatus(141, 'confirmed');
+        $this->assertEntityList("\\BO\\Zmsentities\\Process", $collection);
+        $this->assertEquals(1000, $collection->count());
+    }
+
     public function testReadSlotCount()
     {
         $now = new \DateTimeImmutable("2016-04-01 11:55");

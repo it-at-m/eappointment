@@ -1,11 +1,11 @@
 <?php
 
-namespace BO\Zmsdb\Exception;
+namespace BO\Zmsdb\Exception\Ticketprinter;
 
 /**
  * example class to generate an exception
  */
-class TicketprinterDisabledByScope extends \Exception
+class DisabledByScope extends \Exception
 {
     protected $code = 200;
 

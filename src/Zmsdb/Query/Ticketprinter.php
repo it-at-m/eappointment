@@ -11,6 +11,14 @@ class Ticketprinter extends Base implements MappingInterface
 
     const PRIMARY = 'hash';
 
+    public function getOrganisationIdByHash()
+    {
+        return '
+            SELECT organisationsid
+            FROM `kiosk` ticketprinter
+            WHERE ticketprinter.`cookiecode` = :hash';
+    }
+
     public function getEntityMapping()
     {
         return [
@@ -51,6 +59,6 @@ class Ticketprinter extends Base implements MappingInterface
         $data = array_filter($data, function ($value) {
             return ($value !== null && $value !== false);
         });
-            return $data;
+        return $data;
     }
 }
