@@ -217,13 +217,13 @@ class Process extends Base implements MappingInterface
                     $deleteInSeconds
                 )
                 ->andWith('process.AbholortID', '=', 0)
-                ->andWith('process.NutzerID', '=', 0)
-                ->andWith(function (\Solution10\SQL\ConditionBuilder $condition) {
-                    $condition
-                        ->andWith('process.vorlaeufigeBuchung', '=', 1)
-                        ->orWith('process.Name', '=', '(abgesagt)')
-                        ->orWith('process.Name', '=', 'dereferenced');
-                });
+                ->andWith('process.NutzerID', '=', 0);
+        });
+        $this->query->where(function (\Solution10\SQL\ConditionBuilder $condition) {
+            $condition
+                ->andWith('process.vorlaeufigeBuchung', '=', 1)
+                ->orWith('process.Name', '=', '(abgesagt)')
+                ->orWith('process.Name', '=', 'dereferenced');
         });
         return $this;
     }
