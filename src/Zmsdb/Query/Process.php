@@ -193,7 +193,8 @@ class Process extends Base implements MappingInterface
                     "1"
                 )'
             ),
-            'reminderTimestamp' => 'process.Erinnerungszeitpunkt.'
+            'reminderTimestamp' => 'process.Erinnerungszeitpunkt.',
+            '__clientsCount' => 'process.AnzahlPersonen',
         ];
     }
 
@@ -517,6 +518,13 @@ class Process extends Base implements MappingInterface
             && $data[$this->getPrefixed('scope__provider__data')]) {
             $data[$this->getPrefixed('scope__provider__data')] =
                 json_decode($data[$this->getPrefixed('scope__provider__data')], true);
+        }
+        if (isset($data[$this->getPrefixed('__clientsCount')])) {
+            $clientsCount = $data[$this->getPrefixed('__clientsCount')];
+            unset($data[$this->getPrefixed('__clientsCount')]);
+            while (--$clientsCount > 0) {
+                $data[$this->getPrefixed('clients__'.$clientsCount.'__familyName')] = 'Unbekannt';
+            }
         }
         return $data;
     }
