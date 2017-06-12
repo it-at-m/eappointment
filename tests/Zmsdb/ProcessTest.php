@@ -92,6 +92,7 @@ class ProcessTest extends Base
         $input = $this->getTestProcessEntity();
         $process = $query->writeEntityReserved($input, $now);
         $process->amendment = 'Test amendment';
+        $process->clients[] = new \BO\Zmsentities\Client(['familyName' => 'Unbekannt']);
         $process->queue['lastCallTime'] = 1459511700;
         $process = $query->updateEntity($process);
 
@@ -102,6 +103,7 @@ class ProcessTest extends Base
         $process = $query->updateProcessStatus($process, 'confirmed');
         $this->assertEquals('confirmed', $process->getStatus());
         $this->assertEquals(1464339600, $process->queue['arrivalTime']);
+        $this->assertEquals(2, $process->clients->count());
     }
 
     public function testUpdateProcessWithStatusProcessing()
