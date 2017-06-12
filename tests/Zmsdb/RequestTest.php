@@ -22,7 +22,7 @@ class RequestTest extends Base
     public function testExceptionRequestNotFound()
     {
         $this->setExpectedException("\\BO\\Zmsdb\\Exception\\RequestNotFound");
-        $entity = (new Query())->readEntity('dldb', 999999);
+        (new Query())->readEntity('dldb', 999999);
     }
 
     public function testExceptionUnknownDataSource()
@@ -39,5 +39,13 @@ class RequestTest extends Base
         $collection = (new Query())->readListByProvider('dldb', 122208, 0);
         $this->assertEntityList("\\BO\\Zmsentities\\Request", $collection);
         $this->assertEquals(true, $collection->hasEntity('120335')); //Abmeldung einer Wohnung
+    }
+
+    public function testListByCluster()
+    {
+        //Cluster Rathaus Schöneberg
+        $cluster = (new \BO\Zmsdb\Cluster())->readEntity(4, 2);
+        $collection = (new Query)->readListByCluster($cluster);
+        $this->assertEntityList("\\BO\\Zmsentities\\Request", $collection);
     }
 }
