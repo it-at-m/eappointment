@@ -35,6 +35,16 @@ class NotificationTest extends Base
         $this->assertTrue($query->writeInCalculationTable($input));
     }
 
+    public function testWriteInQueueWithPickupStatus()
+    {
+        $entity = $this->getTestEntity();
+        $entity->process['status'] = 'pickup';
+        $this->assertEquals('0', $entity->getFirstClient()->emailSendCount);
+        $entity = (new Query)->writeInQueue($entity);
+        $this->assertEntity("\\BO\\Zmsentities\\Notification", $entity);
+        $this->assertEquals('1', $entity->getFirstClient()->notificationsSendCount);
+    }
+
     public function testDeleteByProcessId()
     {
         $input = $this->getTestEntity();
