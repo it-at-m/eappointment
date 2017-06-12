@@ -38,7 +38,8 @@ class Notification extends Schema\Entity
     {
         $client = null;
         if ($this->toProperty()->process->isAvailable()) {
-            $client = $this->process->getFirstClient();
+            $process = new Process($this->process);
+            $client = $process->getFirstClient();
         }
         return $client;
     }
