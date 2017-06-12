@@ -56,4 +56,17 @@ class Organisation extends Schema\Entity
         return $useraccount->hasRights(['superuser'])
             || 0 < $this->getDepartmentList()->withAccess($useraccount)->count();
     }
+
+    /**
+     * Reduce data of dereferenced entities to a required minimum
+     *
+     */
+    public function withLessData()
+    {
+        $entity = clone $this;
+        unset($entity['preferences']);
+        unset($entity['ticketprinters']);
+        unset($entity['departments']);
+        return $entity;
+    }
 }
