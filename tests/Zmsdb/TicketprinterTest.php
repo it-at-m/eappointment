@@ -61,7 +61,8 @@ class TicketprinterTest extends Base
 
     public function testUnvalidButtonListNoCluster()
     {
-        $this->setExpectedException('\BO\Zmsdb\Exception\TicketprinterUnvalidButtonList');
+        $this->expectException('\BO\Zmsdb\Exception\Ticketprinter\UnvalidButtonList');
+        $this->expectExceptionCode(428);
         $now = new \DateTimeImmutable("2016-04-01 11:55");
         $query = new Query();
         $input = (new Entity)->getExample()->toStructuredButtonList();
@@ -70,7 +71,8 @@ class TicketprinterTest extends Base
 
     public function testUnvalidButtonListNoScope()
     {
-        $this->setExpectedException('\BO\Zmsdb\Exception\TicketprinterUnvalidButtonList');
+        $this->expectException('\BO\Zmsdb\Exception\Ticketprinter\UnvalidButtonList');
+        $this->expectExceptionCode(428);
         $now = new \DateTimeImmutable("2016-04-01 11:55");
         $query = new Query();
         $buttonlist = 's999';
@@ -81,7 +83,7 @@ class TicketprinterTest extends Base
 
     public function testTooManyButtons()
     {
-        $this->setExpectedException('\BO\Zmsdb\Exception\TicketprinterTooManyButtons');
+        $this->expectException('\BO\Zmsdb\Exception\Ticketprinter\TooManyButtons');
         $now = new \DateTimeImmutable("2016-04-02 11:55");
         $query = new Query();
         $buttonlist = 's1,s2,s3,s4,s5,s6,s7';
@@ -92,7 +94,7 @@ class TicketprinterTest extends Base
 
     public function testUnvalidDisabledByScope()
     {
-        $this->setExpectedException('\BO\Zmsdb\Exception\TicketprinterDisabledByScope');
+        $this->expectException('\BO\Zmsdb\Exception\Ticketprinter\DisabledByScope');
         $now = new \DateTimeImmutable("2016-04-02 11:55");
         $query = new Query();
         $buttonlist = 's101';
@@ -103,7 +105,7 @@ class TicketprinterTest extends Base
 
     public function testUnvalidDisabledByScopeInCluster()
     {
-        $this->setExpectedException('\BO\Zmsdb\Exception\TicketprinterDisabledByScope');
+        $this->expectException('\BO\Zmsdb\Exception\Ticketprinter\DisabledByScope');
         $now = new \DateTimeImmutable("2016-04-02 11:55");
         $query = new Query();
         $buttonlist = 'c171';
@@ -114,7 +116,8 @@ class TicketprinterTest extends Base
 
     public function testReadByButtonListClusterFailed()
     {
-        $this->setExpectedException('\BO\Zmsdb\Exception\TicketprinterUnvalidButtonList');
+        $this->expectException('\BO\Zmsdb\Exception\Ticketprinter\UnvalidButtonList');
+        $this->expectExceptionCode(428);
         $now = new \DateTimeImmutable("2016-04-01 11:55");
         $query = new Query();
         $input = $this->getTestEntity();

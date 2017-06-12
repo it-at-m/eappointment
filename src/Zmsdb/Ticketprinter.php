@@ -84,14 +84,14 @@ class Ticketprinter extends Base
     public function readByButtonList(Entity $ticketprinter, \DateTimeImmutable $now)
     {
         if (count($ticketprinter->buttons) > 6) {
-            throw new Exception\TicketprinterTooManyButtons();
+            throw new Exception\Ticketprinter\TooManyButtons();
         }
         foreach ($ticketprinter->buttons as $key => $button) {
             if ('scope' == $button['type']) {
                 $query = new Scope();
                 $scope = $query->readEntity($button['scope']['id']);
                 if (! $scope) {
-                    throw new Exception\TicketprinterUnvalidButtonList();
+                    throw new Exception\Ticketprinter\UnvalidButtonList();
                 }
                 $ticketprinter->buttons[$key]['scope'] = $scope;
                 $ticketprinter->buttons[$key]['enabled'] = $query->readIsEnabled($scope->id, $now);
@@ -100,7 +100,7 @@ class Ticketprinter extends Base
                 $query = new Cluster();
                 $cluster = $query->readEntity($button['cluster']['id'], 1);
                 if (! $cluster) {
-                    throw new Exception\TicketprinterUnvalidButtonList();
+                    throw new Exception\Ticketprinter\UnvalidButtonList();
                 }
                 $scopeList = $query->readEnabledScopeList($cluster->id, $now);
                 $ticketprinter->buttons[$key]['cluster'] = $cluster;
@@ -121,7 +121,7 @@ class Ticketprinter extends Base
             throw new Exception\Scope\GivenNumberCountExceeded();
         }
         if ($scope && $scope->getStatus('ticketprinter', 'deactivated')) {
-            throw new Exception\TicketprinterDisabledByScope(
+            throw new Exception\Ticketprinter\DisabledByScope(
                 $scope->getPreference('ticketprinter', 'deactivatedText')
             );
         }

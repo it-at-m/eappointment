@@ -5,6 +5,11 @@ namespace BO\Zmsdb;
 use \BO\Zmsentities\Organisation as Entity;
 use \BO\Zmsentities\Collection\OrganisationList as Collection;
 
+/**
+ *
+ * @SuppressWarnings(Public)
+ *
+ */
 class Organisation extends Base
 {
     public function readEntity($itemId, $resolveReferences = 0)
@@ -78,6 +83,23 @@ class Organisation extends Base
             }
         }
         return $organisationList;
+    }
+
+    /**
+     * read Organisation by Ticketprinter Hash
+     *
+     * @param
+     * hash
+     *
+     * @return Resource Entity
+     */
+    public function readByHash($hash)
+    {
+        $organisationId = $this->getReader()
+            ->fetchValue((new Query\Ticketprinter(Query\Base::SELECT))
+            ->getOrganisationIdByHash(), ['hash' => $hash]);
+
+        return $this->readEntity($organisationId);
     }
 
     public function readList($resolveReferences = 0)
