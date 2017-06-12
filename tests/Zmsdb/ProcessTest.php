@@ -140,6 +140,14 @@ class ProcessTest extends Base
         $this->assertEquals(1000, $collection->count());
     }
 
+    public function testProcessListByClusterAndTime()
+    {
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $collection =(new Query)->readProcessListByClusterAndTime(110, $now);
+        $this->assertEntityList("\\BO\\Zmsentities\\Process", $collection);
+        $this->assertEquals(105, $collection->count());
+    }
+
     public function testReadSlotCount()
     {
         $now = new \DateTimeImmutable("2016-04-01 11:55");
@@ -172,6 +180,13 @@ class ProcessTest extends Base
 
         $process = $query->readEntity(); //check null
         $this->assertEquals(null, $process);
+    }
+
+    public function testDereferenceProcess()
+    {
+        $query = new Query();
+        $status = $query->writeDeletedEntity(10029, '1c56');
+        $this->assertTrue($status);
     }
 
     public function testReserveProcess()
@@ -222,6 +237,16 @@ class ProcessTest extends Base
         $processList = $query->readSearch("10029");
         $this->assertEquals(1, $processList->count());
         $this->assertEquals(10029, $processList->getFirst()->id);
+    }
+
+    public function testDeleteByTimeInterval()
+    {
+        $query = new Query();
+        $date = new \DateTimeImmutable("2016-05-27 11:55");
+        $now = new \DateTimeImmutable();
+        $seconds = $now->getTimestamp() - $date->getTimestamp();
+        $deleteTest = $query->deleteByTimeInterval($seconds);
+        $this->assertEquals(null, $deleteTest);
     }
 
     protected function getTestCalendarEntity()
