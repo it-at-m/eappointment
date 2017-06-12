@@ -66,10 +66,8 @@ class Ticketprinter
         $entity = new Entity($validator->getParameter('ticketprinter')->isArray()->getValue());
         $entity = $entity->toStructuredButtonList();
         self::$organisation = self::readOrganisation($entity);
-        if (self::$organisation->hasClusterScopesFromButtonList($entity->buttons)) {
-            $ticketprinter = static::readWithHash($request);
-            $entity->hash = $ticketprinter->hash;
-        }
+        $ticketprinter = static::readWithHash($request);
+        $entity->hash = $ticketprinter->hash;
         return $entity;
     }
 

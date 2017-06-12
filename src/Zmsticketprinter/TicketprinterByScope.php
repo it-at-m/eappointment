@@ -25,6 +25,7 @@ class TicketprinterByScope extends BaseController
         $ticketprinter = $ticketprinterHelper->getEntity();
         $scope = $ticketprinter->getScopeList()->getFirst();
         $scope = \App::$http->readGetResult('/scope/'. $scope->id . '/workstationcount/')->getEntity();
+        $department = \App::$http->readGetResult('/scope/'. $scope->id . '/department/')->getEntity();
         $queueList = \App::$http->readGetResult('/scope/'. $scope->id . '/queue/')->getCollection();
         $estimatedData = ($queueList) ? $scope->getWaitingTimeFromQueueList($queueList, \App::$now) : null;
 
@@ -40,6 +41,7 @@ class TicketprinterByScope extends BaseController
                 'title' => 'Wartennumer ziehen',
                 'ticketprinter' => $ticketprinter,
                 'organisation' => $organisation,
+                'department' => $department,
                 'queueList' => $queueList,
                 'scope' => $scope,
                 'waitingClients' => $estimatedData['amountBefore'],

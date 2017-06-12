@@ -36,6 +36,11 @@ class TicketprinterByScopeTest extends Base
             ],
             [
                 'function' => 'readGetResult',
+                'url' => '/scope/312/department/',
+                'response' => $this->readFixture("GET_department_127.json"),
+            ],
+            [
+                'function' => 'readGetResult',
                 'url' => '/scope/312/queue/',
                 'response' => $this->readFixture("GET_queuelist_312.json"), //Bürgeramt 1 in Köpenick
             ]
