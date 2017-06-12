@@ -18,7 +18,7 @@ class TicketprinterTest extends Base
                 "buttons": [
                     {
                 		"type": "scope",
-                		"url": "/scope/141/",
+                		"url": "/scope/101/",
                 		"scope": {
                 			"id": 141
                 		},

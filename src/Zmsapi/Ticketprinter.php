@@ -12,6 +12,11 @@ use \BO\Mellon\Validator;
 use \BO\Zmsdb\Ticketprinter as Query;
 use \BO\Zmsentities\Ticketprinter as Entity;
 
+/**
+ *
+ * @SuppressWarnings(Coupling)
+ *
+ */
 class Ticketprinter extends BaseController
 {
     /**
@@ -31,6 +36,7 @@ class Ticketprinter extends BaseController
         if (! $entity->toProperty()->buttons->isAvailable()) {
             $entity = $entity->toStructuredButtonList();
         }
+        $this->testMatchingClusterAndScopes($entity);
 
         $message = Response\Message::create($request);
         $message->data = (new Query)->readByButtonList($entity, \App::$now);
@@ -38,6 +44,21 @@ class Ticketprinter extends BaseController
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
         return $response;
+    }
+
+    protected function testMatchingClusterAndScopes($entity)
+    {
+        $organisation = (new \BO\Zmsdb\Organisation)->readByHash($entity->hash);
+        $departmentList = (new \BO\Zmsdb\Department)->readByOrganisationId($organisation->id, 1);
+        $scopeList = $departmentList->getUniqueScopeList();
+        $clusterList = $departmentList->getUniqueClusterList();
+        foreach ($entity->buttons as $button) {
+            if ('scope' == $button['type'] && ! $scopeList->hasEntity($button['scope']['id'])) {
+                throw new Exception\Ticketprinter\UnvalidButtonList();
+            } elseif ('cluster' == $button['type'] && ! $clusterList->hasEntity($button['cluster']['id'])) {
+                throw new Exception\Ticketprinter\UnvalidButtonList();
+            }
+        }
     }
 
     protected function testTicketprinter($entity)
