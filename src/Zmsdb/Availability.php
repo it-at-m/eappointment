@@ -28,10 +28,9 @@ class Availability extends Base
 
     public function readList($scopeId, $resolveReferences = 0, $reserveEntityIds = false)
     {
+        $scope = new \BO\Zmsentities\Scope(['id' => $scopeId]);
         if (1 <= $resolveReferences) {
             $scope = (new Scope())->readEntity($scopeId, $resolveReferences - 1);
-        } else {
-            $scope = new \BO\Zmsentities\Scope(['id' => $scopeId]);
         }
         $collection = new Collection();
         $query = new Query\Availability(Query\Base::SELECT);
