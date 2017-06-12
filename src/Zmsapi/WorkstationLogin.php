@@ -22,7 +22,8 @@ class WorkstationLogin extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
+        $validator = $request->getAttribute('validator');
+        $resolveReferences = $validator->getParameter('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $useraccount = new \BO\Zmsentities\Useraccount($input);
         $useraccount->testValid();
@@ -41,8 +42,8 @@ class WorkstationLogin extends BaseController
 
         if (null !== $logInHash) {
             //to avoid commit on unit tests, is there a better solution?
-            $noCommit = Validator::param('nocommit')->isNumber()->setDefault(0)->getValue();
-            if ($noCommit) {
+            $noCommit = $validator->getParameter('nocommit')->isNumber()->setDefault(0)->getValue();
+            if (!$noCommit) {
                 \BO\Zmsdb\Connection\Select::writeCommit();
             }
             $exception = new \BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn();
