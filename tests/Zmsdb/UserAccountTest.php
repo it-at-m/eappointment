@@ -34,6 +34,14 @@ class UserAccountTest extends Base
         $this->assertEntity("\\BO\\Zmsentities\\Useraccount", $userAccount);
     }
 
+    public function testReadByUserId()
+    {
+        $query = new Query();
+        $useraccount = $query->readEntityByUserId('137'); //testReadByUserId
+        $this->assertEntity("\\BO\\Zmsentities\\Useraccount", $useraccount);
+        $this->assertEquals('testuser', $useraccount->id);
+    }
+
     public function testReadList()
     {
         $query = new Query();
