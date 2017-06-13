@@ -67,7 +67,6 @@ class Mail extends Base
 
     public function writeInQueueWithAdmin(Entity $mail)
     {
-        $result = false;
         $query = new Query\MailQueue(Query\Base::INSERT);
         $process = new \BO\Zmsentities\Process($mail->process);
         $department = (new Department())->readByScopeId($process->getScopeId(), 0);
@@ -82,12 +81,7 @@ class Mail extends Base
                 'clientEmail' => $process->scope['contact']['email']
             )
         );
-        if ($process->scope['contact']['email']) {
-            $result = $this->writeItem($query);
-        }
-        if (! $result) {
-            throw new Exception\MailWriteInQueueFailed("Failed to write mail in queue (maybe email not given)");
-        }
+        $this->writeItem($query);
         $queueId = $this->getWriter()->lastInsertId();
         $this->writeMimeparts($queueId, $mail->multipart);
         return $this->readEntity($queueId);
@@ -95,11 +89,12 @@ class Mail extends Base
 
     public function writeInQueue(Entity $mail)
     {
-        $result = false;
         $query = new Query\MailQueue(Query\Base::INSERT);
         $process = new \BO\Zmsentities\Process($mail->process);
         $client = $process->getFirstClient();
-
+        if (! $client->hasEmail()) {
+            throw new Exception\Mail\ClientWithoutEmail();
+        }
         $department = (new Department())->readByScopeId($process->getScopeId(), 0);
         $query->addValues(
             array(
@@ -112,12 +107,7 @@ class Mail extends Base
                 'clientEmail' => $client->email
             )
         );
-        if ($client->hasEmail()) {
-            $result = $this->writeItem($query);
-        }
-        if (! $result) {
-            throw new Exception\MailWriteInQueueFailed("Failed to write mail in queue (maybe email not given)");
-        }
+        $this->writeItem($query);
         $queueId = $this->getWriter()->lastInsertId();
         $this->writeMimeparts($queueId, $mail->multipart);
         if ('pickup' == $process->status) {

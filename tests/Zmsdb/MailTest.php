@@ -52,15 +52,6 @@ class MailTest extends Base
         $this->assertContains('Die Terminänderung wurde initiiert via', $entity->getPlainPart());
     }
 
-    public function testWriteMailInQueueWithAdminFailed()
-    {
-        $this->setExpectedException('BO\Zmsdb\Exception\MailWriteInQueueFailed');
-        $query = new Query();
-        $input = $this->getTestEntity();
-        $input->process['scope']['contact']['email'] = null;
-        $query->writeInQueueWithAdmin($input);
-    }
-
     public function testWriteInQueueWithPickupStatus()
     {
         $entity = $this->getTestEntity();
@@ -69,15 +60,6 @@ class MailTest extends Base
         $entity = (new Query)->writeInQueue($entity);
         $this->assertEntity("\\BO\\Zmsentities\\Mail", $entity);
         $this->assertEquals('1', $entity->getFirstClient()->emailSendCount);
-    }
-
-    public function testWriteMailInQueueFailed()
-    {
-        $this->setExpectedException('BO\Zmsdb\Exception\MailWriteInQueueFailed');
-        $query = new Query();
-        $input = $this->getTestEntity();
-        $input->process['clients'][0]['email'] = null;
-        $query->writeInQueue($input);
     }
 
     public function testWriteMimepartFailed()
