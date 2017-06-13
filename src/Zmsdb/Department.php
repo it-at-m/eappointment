@@ -76,7 +76,7 @@ class Department extends Base
             ->addConditionScopeId($scopeId);
         $department = $this->fetchOne($query, new Entity());
         $department = $this->readResolvedReferences($department, $resolveReferences);
-        return (isset($department['id'])) ? $department->withOutClusterDuplicates() : null;
+        return (isset($department['id']) && $department['id']) ? $department->withOutClusterDuplicates() : null;
     }
 
     public function readByOrganisationId($organisationId, $resolveReferences = 0)
