@@ -67,11 +67,13 @@ class ProcessStatus extends \BO\Zmsdb\Process
         return $status;
     }
 
+
     /**
      * get the current process status from given Id and authKey
-     *
+     * removed 2017-06-13 from TK, not in use
      * @return String
      */
+     /*
     public function readQueueStatus($processId, $authKey)
     {
         $status = '';
@@ -100,6 +102,7 @@ class ProcessStatus extends \BO\Zmsdb\Process
         }
         return $status;
     }
+    */
 
     protected function createConfirmedProcessEntity($process)
     {
