@@ -92,6 +92,7 @@ class ProcessTest extends Base
         $input = $this->getTestProcessEntity();
         $process = $query->writeEntityReserved($input, $now);
         $process->amendment = 'Test amendment';
+        $process->queue['lastCallTime'] = 1459511700;
         $process = $query->updateEntity($process);
 
         $this->assertEntity("\\BO\\Zmsentities\\Process", $process);
@@ -101,6 +102,19 @@ class ProcessTest extends Base
         $process = $query->updateProcessStatus($process, 'confirmed');
         $this->assertEquals('confirmed', $process->getStatus());
         $this->assertEquals(1464339600, $process->queue['arrivalTime']);
+    }
+
+    public function testUpdateProcessWithStatusProcessing()
+    {
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $query = new ProcessStatusFree();
+        $input = $this->getTestProcessEntity();
+        $process = $query->writeEntityReserved($input, $now);
+        $process->status = 'processing';
+        $process->queue['callTime'] = $process->queue['arrivalTime'] + 3600;
+        $process = $query->updateEntity($process);
+        $this->assertEntity("\\BO\\Zmsentities\\Process", $process);
+        $this->assertEquals(60, $process->queue['waitingTime']);
     }
 
     public function testProcessStatusCalled()
@@ -145,9 +159,14 @@ class ProcessTest extends Base
 
     public function testProcessListByScopeAndStatus()
     {
+        $statusArray = ['pending','pickup','called','missed','queued','confirmed','blocked','deleted','reserved'];
         $collection =(new Query)->readProcessListByScopeAndStatus(141, 'confirmed');
         $this->assertEntityList("\\BO\\Zmsentities\\Process", $collection);
         $this->assertEquals(1000, $collection->count());
+        foreach ($statusArray as $status) {
+            $collection =(new Query)->readProcessListByScopeAndStatus(141, $status);
+            $this->assertEntityList("\\BO\\Zmsentities\\Process", $collection);
+        }
     }
 
     public function testProcessListByClusterAndTime()
