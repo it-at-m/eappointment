@@ -29,7 +29,7 @@ class Department extends Base
             ->addResolvedReferences($resolveReferences)
             ->addConditionDepartmentId($departmentId);
         $department = $this->fetchOne($query, new Entity());
-        if (isset($department['id'])) {
+        if (isset($department['id']) && $department['id']) {
             $department = $this->readResolvedReferences($department, $resolveReferences);
             $department = $department->withOutClusterDuplicates();
             self::$departmentCache[$cacheKey] = $department;
