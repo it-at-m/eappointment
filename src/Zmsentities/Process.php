@@ -23,6 +23,7 @@ class Process extends Schema\Entity
             'createIP' => '',
             'createTimestamp' => time(),
             'id' => 0,
+            'archiveId' => 0,
             'queue' => new Queue(),
             'reminderTimestamp' => 0,
             'requests' => new Collection\RequestList(),
@@ -395,6 +396,17 @@ class Process extends Schema\Entity
             $queue->arrivalTime = ($queue->arrivalTime) ? $queue->arrivalTime : $dateTime->getTimestamp();
         }
         return $queue->setProcess($this);
+    }
+
+    /**
+     * Calculate real waiting time, only available after called
+     */
+    public function getWaitedSeconds()
+    {
+        if (!$this->queue->callTime) {
+            return null;
+        }
+        return $this->queue->arrivalTime - $this->queue->callTime;
     }
 
     public function toDerefencedAmendment()

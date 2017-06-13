@@ -75,6 +75,10 @@
                 "$ref": "appointment.json"
             }
         },
+        "archiveId": {
+            "type": "number",
+            "description": "Number is used to identify a process in an archive (for statistical purposes)\n"
+        },
         "authKey": {
             "type": "string",
             "description": "key for client to delete or change process",
