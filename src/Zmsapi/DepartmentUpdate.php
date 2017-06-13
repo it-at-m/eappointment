@@ -24,7 +24,7 @@ class DepartmentUpdate extends BaseController
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Department($input);
         $department = (new Query())->readEntity($args['id']);
-        if (! $department->hasId()) {
+        if (! $department) {
             throw new Exception\Department\DepartmentNotFound();
         }
 

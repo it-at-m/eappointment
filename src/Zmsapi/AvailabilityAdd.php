@@ -23,24 +23,30 @@ class AvailabilityAdd extends BaseController
     ) {
         (new Helper\User($request))->checkRights();
         $input = Validator::input()->isJson()->assertValid()->getValue();
+        $useMigrationFix = Validator::param('migrationfix')->isNumber()->setDefault(1)->getValue();
+        $newEntity = null;
         if (0 == count($input)) {
             throw new Exception\Availability\AvailabilityNotFound();
         }
         $collection = new \BO\Zmsentities\Collection\AvailabilityList();
         foreach ($input as $availability) {
             $entity = new \BO\Zmsentities\Availability($availability);
+            $entity->testValid();
             if ($entity->id) {
                 $oldentity = (new Query())->readEntity($entity->id);
                 if ($oldentity->hasId()) {
-                    $entity = (new Query())->updateEntity($entity->id, $entity);
-                } else {
+                    $newEntity = (new Query())->updateEntity($entity->id, $entity);
+                } elseif ($useMigrationFix) {
                     //Workaround for openinghours migration, remove after AP13
-                    $entity = (new Query())->writeEntity($entity);
+                    $newEntity = (new Query())->writeEntity($entity);
                 }
             } else {
-                $entity = (new Query())->writeEntity($entity);
+                $newEntity = (new Query())->writeEntity($entity);
             }
-            $collection[] = $entity;
+            if (! $newEntity) {
+                throw new Exception\Availability\AvailabilityUpdateFailed();
+            }
+            $collection[] = $newEntity;
         }
 
         $message = Response\Message::create($request);

@@ -23,7 +23,7 @@ class DepartmentByScopeId extends BaseController
     ) {
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $department = (new \BO\Zmsdb\Department())->readByScopeId($args['id'], $resolveReferences);
-        if (! $department->hasId()) {
+        if (! $department) {
             throw new Exception\Department\DepartmentNotFound();
         }
 

@@ -24,7 +24,7 @@ class DepartmentWorkstationList extends BaseController
         (new Helper\User($request))->checkRights('useraccount');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $department = Helper\User::checkDepartment($args['id']);
-        if (! $department->hasId()) {
+        if (! $department) {
             throw new Exception\Department\DepartmentNotFound();
         }
 

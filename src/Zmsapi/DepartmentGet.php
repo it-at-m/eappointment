@@ -24,7 +24,7 @@ class DepartmentGet extends BaseController
         (new Helper\User($request))->checkRights('department');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $department = (new Query)->readEntity($args['id'], $resolveReferences);
-        if (! $department->hasId()) {
+        if (! $department) {
             throw new Exception\Department\DepartmentNotFound();
         }
 
