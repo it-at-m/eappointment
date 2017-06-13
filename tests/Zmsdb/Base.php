@@ -44,15 +44,16 @@ abstract class Base extends \PHPUnit_Framework_TestCase
     protected function dumpProfiler()
     {
         echo "\nProfiler:\n";
-        /*
         $profiles = \BO\Zmsdb\Connection\Select::getReadConnection()->getProfiler()->getProfiles();
         foreach ($profiles as $profile) {
             $this->dumpProfile($profile);
-        }*/
+        }
+        /*
         $profiling = \BO\Zmsdb\Connection\Select::getReadConnection()->fetchAll('SHOW PROFILES');
         foreach ($profiling as $profile) {
             echo $profile['Query_ID']. ' ' . $profile['Duration']. ' ' . $profile['Query'] . "\n";
         }
+        */
         //var_dump($profiling);
     }
 

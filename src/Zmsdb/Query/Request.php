@@ -68,6 +68,18 @@ class Request extends Base
         return $this;
     }
 
+    public function addConditionArchiveId($archiveId)
+    {
+        $this->leftJoin(
+            new Alias("buergeranliegen", 'buergeranliegen'),
+            'buergeranliegen.AnliegenID',
+            '=',
+            'request.id'
+        );
+        $this->query->where('buergeranliegen.BuergerarchivID', '=', $archiveId);
+        return $this;
+    }
+
     public function addConditionProviderId($providerId)
     {
         $this->leftJoin(

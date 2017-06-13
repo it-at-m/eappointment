@@ -140,13 +140,32 @@ class ProcessTest extends Base
     public function testProcessStatusFinished()
     {
         $now = new \DateTimeImmutable("2016-04-01 11:55");
-        $query = new ProcessStatusArchived();
-        $entity =(new Query)->readEntity(10029, '1c56');
-        $entity->process = 'finished';
-        $query->writeEntityFinished($entity, $now);
-        $process =(new Query)->readEntity(10029, 'deref!0');
+        $entity =(new Query)->readEntity(10029, '1c56', 0);
+        $entity->status = 'finished';
+        $entity->requests[] = new \BO\Zmsentities\Request(
+            [
+                "id"=>"120686",
+                "link"=>"https://service.berlin.de/dienstleistung/120686/",
+                "name"=>"Anmeldung einer Wohnung",
+                "source"=>"dldb"
+            ]
+        );
+        $this->assertCount(1, $entity->requests);
+        $queryArchived = new ProcessStatusArchived();
+        $archived = $queryArchived->writeEntityFinished($entity, $now);
+        //$this->dumpProfiler();
+        $process =(new Query)->readEntity(10029, new \BO\Zmsdb\Helper\NoAuth(), 0);
+        $this->assertEquals('deref!0', $process->authKey);
         $this->assertEntity("\\BO\\Zmsentities\\Process", $process);
         $this->assertEquals('dereferenced', $process->getFirstClient()->familyName);
+        $this->assertCount(0, $process->requests);
+
+        $this->assertNotEquals($archived->id, $process->id);
+        $this->assertTrue($archived->archiveId > 0, "Archived ID should be set");
+        $this->assertCount(0, $archived->requests);
+        $archived = $queryArchived->readArchivedEntity($archived->archiveId, 1);
+        $this->assertCount(1, $archived->requests);
+        $this->assertEquals("Anmeldung einer Wohnung", $archived->requests->getFirst()->name);
     }
 
     public function testNewWriteFromAdmin()
