@@ -23,7 +23,7 @@ class DepartmentDelete extends BaseController
         (new Helper\User($request))->checkRights('department');
         $query = new Query();
         $department = $query->readEntity($args['id']);
-        if (! $department->hasId()) {
+        if (! $department) {
             throw new Exception\Department\DepartmentNotFound();
         }
         $query->deleteEntity($department->id);
