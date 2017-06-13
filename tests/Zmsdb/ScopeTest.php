@@ -132,6 +132,17 @@ class ScopeTest extends Base
         $this->assertEquals(1, $query->readWaitingNumberUpdated(109, $now));
     }
 
+    public function testUpdateGhostWorkstationCount()
+    {
+        $query = new Query();
+        $entity = $query->readEntity(146, 1);
+        $entity->status['queue']['ghostWorkstationCount'] = 4;
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $query->updateGhostWorkstationCount($entity, $now);
+        $entityUpdated = $query->readEntity(146, 1);
+        $this->assertEquals(4, $entity->status['queue']['ghostWorkstationCount']);
+    }
+
     public function testReadIsOpened()
     {
         $query = new Query();
