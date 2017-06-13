@@ -31,6 +31,15 @@ abstract class Base
     const DELETE = 'DELETE';
 
     /**
+     * Name of table in DB
+     */
+    const TABLE = null;
+    /**
+     * Alias used to access TABLE
+     */
+    const ALIAS = null;
+
+    /**
      * @var \Solution10\SQL\Query $query
      */
     protected $query = null;
@@ -174,7 +183,10 @@ abstract class Base
     public static function getAlias()
     {
         $class = get_called_class();
-        $alias = lcfirst(preg_replace('#^.*\\\#', '', $class));
+        $alias = constant($class . '::ALIAS');
+        if (null === $alias) {
+            $alias = lcfirst(preg_replace('#^.*\\\#', '', $class));
+        }
         return $alias;
     }
 

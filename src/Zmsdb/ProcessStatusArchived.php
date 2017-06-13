@@ -9,28 +9,62 @@ use \BO\Zmsentities\Collection\ProcessList as Collection;
  */
 class ProcessStatusArchived extends Process
 {
+    public function readArchivedEntity($archiveId, $resolveReferences = 0)
+    {
+        if (!$archiveId) {
+            return null;
+        }
+        $query = new Query\ProcessStatusArchived(Query\Base::SELECT);
+        $query->addEntityMapping()
+            ->addResolvedReferences($resolveReferences)
+            ->addConditionArchiveId($archiveId);
+        $archive = $this->fetchOne($query, new Entity());
+        $archive = $this->readResolvedReferences($archive, $resolveReferences);
+        return $archive;
+    }
 
-    /**
-     * Insert a new process if there are free slots
-     *
-     * @SuppressWarnings("unused")
-     */
     public function writeEntityFinished(
         \BO\Zmsentities\Process $process,
         \DateTimeInterface $now
     ) {
         $process = $this->updateEntity($process, 1);
-        $archive = null;
-        if ($this->writeDereferencedEntity($process->id, $process->authKey)) {
-            $archive = (new Archive)->writeNewArchivedProcess($process, $now);
+        $archived = null;
+        if ($this->writeBlockedEntity($process)) {
+            $archived = $this->writeNewArchivedProcess($process, $now);
         }
         // update xRequest entry and update process id as well es archived id
-        if ($archive) {
-            $this->writeXRequestsArchived($process->id, $archive->id);
+        if ($archived) {
+            $this->writeXRequestsArchived($process->id, $archived->archiveId);
         }
-        /******************************************************
-            ToDo write to statistic Table
-        ******************************************************/
-        return $process;
+        //ToDo write to statistic Table
+        return $archived;
+    }
+
+    /**
+     * write a new archived process to DB
+     *
+     */
+    public function writeNewArchivedProcess(
+        \BO\Zmsentities\Process $process,
+        \DateTimeInterface $now,
+        $resolveReferences = 0
+    ) {
+        $query = new Query\ProcessStatusArchived(Query\Base::INSERT);
+        $query->addValuesNewArchive($process, $now);
+        $this->writeItem($query);
+        $archiveId = $this->getWriter()->lastInsertId();
+        Log::writeLogEntry("ARCHIVE (Archive::writeNewArchivedProcess) $archiveId -> $process ", $process->id);
+        return $this->readArchivedEntity($archiveId, $resolveReferences);
+    }
+
+    protected function writeXRequestsArchived($processId, $archiveId)
+    {
+        $query = new Query\XRequest(Query\Base::UPDATE);
+        $query->addConditionProcessId($processId);
+        $query->addValues([
+            'BuergerID' => 0,
+            'BuergerarchivID' => $archiveId
+        ]);
+        $this->writeItem($query);
     }
 }

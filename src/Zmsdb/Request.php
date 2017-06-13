@@ -69,11 +69,28 @@ class Request extends Base
 
     public function readRequestByProcessId($processId, $resolveReferences = 0)
     {
-        $query = new Query\Request(Query\Base::SELECT);
-        $query->setResolveLevel($resolveReferences);
-        $query->addConditionProcessId($processId);
-        $query->addEntityMapping();
-        return $this->readCollection($query, $resolveReferences);
+        $collection = new Collection();
+        if ($processId) {
+            $query = new Query\Request(Query\Base::SELECT);
+            $query->setResolveLevel($resolveReferences);
+            $query->addConditionProcessId($processId);
+            $query->addEntityMapping();
+            $collection = $this->readCollection($query, $resolveReferences);
+        }
+        return $collection;
+    }
+
+    public function readRequestByArchiveId($archiveId, $resolveReferences = 0)
+    {
+        $collection = new Collection();
+        if ($archiveId) {
+            $query = new Query\Request(Query\Base::SELECT);
+            $query->setResolveLevel($resolveReferences);
+            $query->addConditionArchiveId($archiveId);
+            $query->addEntityMapping();
+            $collection = $this->readCollection($query, $resolveReferences);
+        }
+        return $collection;
     }
 
     public function readListByProvider($source, $providerId, $resolveReferences = 0)

@@ -22,8 +22,10 @@ class Process extends Base implements Interfaces\ResolveReferences
         $query = new Query\Process(Query\Base::SELECT);
         $query->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
-            ->addConditionProcessId($processId)
-            ->addConditionAuthKey($authKey);
+            ->addConditionProcessId($processId);
+        if (!$authKey instanceof Helper\NoAuth) {
+            $query->addConditionAuthKey($authKey);
+        }
         $process = $this->fetchOne($query, new Entity());
         if ($process->id != $processId) {
             throw new Exception\Process\ProcessAuthFailed("Could not find process $processId identified by '$authKey'");
@@ -35,7 +37,13 @@ class Process extends Base implements Interfaces\ResolveReferences
     public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $process, $resolveReferences)
     {
         if (1 <= $resolveReferences) {
-            $process['requests'] = (new Request())->readRequestByProcessId($process->id, $resolveReferences - 1);
+            if ($process->archiveId) {
+                $process['requests'] = (new Request())
+                    ->readRequestByArchiveId($process->archiveId, $resolveReferences - 1);
+            } else {
+                $process['requests'] = (new Request())
+                    ->readRequestByProcessId($process->id, $resolveReferences - 1);
+            }
         }
         return $process;
     }
@@ -48,9 +56,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         $query->addValuesUpdateProcess($process);
         $this->writeItem($query);
         $this->writeRequestsToDb($process);
-
         $process = $this->readEntity($process->id, $process->authKey, $resolveReferences);
-
         Log::writeLogEntry("UPDATE (Process::updateEntity) $process ", $process->id);
         return $process;
     }
@@ -355,21 +361,21 @@ class Process extends Base implements Interfaces\ResolveReferences
      *
      * @return Resource Status
      */
-    public function writeDereferencedEntity($processId, $authKey)
+    public function writeBlockedEntity(\BO\Zmsentities\Process $process)
     {
-        $process = $this->readEntity($processId, $authKey);
         $amendment = $process->toDerefencedAmendment();
+        $process->status = 'blocked';
         $query = Query\Process::QUERY_DEREFERENCED;
         $statement = $this->getWriter()->prepare($query);
         $status = $statement->execute(
             array(
                 $amendment,
-                $processId,
-                $authKey,
-                $processId
+                $process->id,
+                $process->authKey,
+                $process->id
             )
         );
-        Log::writeLogEntry("DELETE (Process::writeDereferencedEntity) $processId ", $processId);
+        Log::writeLogEntry("DELETE (Process::writeBlockedEntity) $process ", $process->id);
         return $status;
     }
 
@@ -386,17 +392,6 @@ class Process extends Base implements Interfaces\ResolveReferences
             );
             $this->writeItem($query);
         }
-    }
-
-    protected function writeXRequestsArchived($processId, $archiveId)
-    {
-        $query = new Query\XRequest(Query\Base::UPDATE);
-        $query->addConditionProcessId($processId);
-        $query->addValues([
-            'BuergerID' => 0,
-            'BuergerarchivID' => $archiveId
-        ]);
-        $this->writeItem($query);
     }
 
     protected function deleteXRequests($processId)
