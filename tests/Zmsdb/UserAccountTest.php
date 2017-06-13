@@ -22,6 +22,12 @@ class UserAccountTest extends Base
         $this->assertEntity("\\BO\\Zmsentities\\Useraccount", $entity);
     }
 
+    public function testReadWorkstationFailed()
+    {
+        $entityFailed = (new Workstation)->readEntity('maxmuster', 1);
+        $this->assertEquals(null, $entityFailed);
+    }
+
     public function testReadByAuthKey()
     {
         $this->dateTime = new \DateTimeImmutable("2016-04-01 11:55");
@@ -111,6 +117,18 @@ class UserAccountTest extends Base
         $this->assertEntity("\\BO\\Zmsentities\\Workstation", $workstation);
     }
 
+    public function testWriteRemovedProcess()
+    {
+        $workstation = $this->writeTestLogin();
+        $process = (new \BO\Zmsdb\Process)->readEntity(10029, '1c56');
+        $workstation->process = (new Workstation)->writeAssignedProcess($workstation->id, $process);
+        $workstation->process->queue['callCount'] = 1;
+        (new Workstation)->writeRemovedProcess($workstation);
+        $process = (new \BO\Zmsdb\Process)->readEntity(10029, '1c56');
+        $this->assertEntity("\\BO\\Zmsentities\\Process", $process);
+        $this->assertEquals(1, $process->queue['callCount']);
+    }
+
     public function testDelete()
     {
         $query = new Query();
@@ -129,6 +147,13 @@ class UserAccountTest extends Base
         $userAccount = $query->writeEntity($input);
         $query->deleteEntity($userAccount->id);
         $this->assertFalse($query->readIsUserExisting($userAccount->id), "Dublicate UserAccount Entry found in DB.");
+    }
+
+    public function testLoginFailed()
+    {
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $this->expectException('\BO\Zmsdb\Exception\Useraccount\InvalidCredentials');
+        (new Workstation())->writeEntityLoginByName('johndoe', 'secret', $now);
     }
 
     protected function writeTestLogin($scopeId = false)
