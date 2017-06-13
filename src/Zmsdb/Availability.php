@@ -120,7 +120,7 @@ class Availability extends Base
      * @param
      * entityId
      *
-     * @return lastInsertId()
+     * @return Entity
      */
     public function writeEntity(\BO\Zmsentities\Availability $entity)
     {
@@ -131,9 +131,11 @@ class Availability extends Base
         $query->addValues($values);
         $this->writeItem($query);
         $entity->id = $this->getWriter()->lastInsertId();
+        /* removed 2017-06-13, tested in api
         if (!$entity->id) {
             throw new \Exception("Could not insert $entity");
         }
+        */
         return $entity;
     }
 
