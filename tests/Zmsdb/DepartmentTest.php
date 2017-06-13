@@ -59,6 +59,13 @@ class DepartmentTest extends Base
         $this->assertEquals(true, $collection->hasEntity('123')); //Test Entity exists
     }
 
+    public function testReadEntityFailed()
+    {
+        $query = new Query();
+        $entity = $query->readEntity(9999);
+        $this->assertEquals(null, $entity);
+    }
+
     protected function getTestEntity()
     {
         return new Entity(array(
