@@ -48,4 +48,10 @@ class RequestTest extends Base
         $collection = (new Query)->readListByCluster($cluster);
         $this->assertEntityList("\\BO\\Zmsentities\\Request", $collection);
     }
+
+    public function testResolveReferencesFailed()
+    {
+        $this->expectException('\Exception');
+        (new Query)->readEntity('dldb', 120335, null);
+    }
 }
