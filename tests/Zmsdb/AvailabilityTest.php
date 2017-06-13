@@ -18,6 +18,10 @@ class AvailabilityTest extends Base
 
         $entity = $query->readEntity(21202, 0, true); //check cache
         $this->assertTrue((bool)$entity->weekday['saturday']);
+
+        //without real resolving, returns entity as it is, just for test method
+        $entityResolved = $query->readResolvedReferences($entity, 0);
+        $this->assertEntity("\\BO\\Zmsentities\\Availability", $entityResolved);
     }
 
 

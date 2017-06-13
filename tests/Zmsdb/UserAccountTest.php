@@ -156,6 +156,16 @@ class UserAccountTest extends Base
         (new Workstation())->writeEntityLoginByName('johndoe', 'secret', $now);
     }
 
+    public function testWriteHintByName()
+    {
+        $workstation = $this->writeTestLogin();
+        $workstationInput = (new WorkstationEntity())->getExample();
+        $workstationInput->id = $workstation->id;
+        $workstationInput->hint = '';
+        $workstation = (new Workstation())->updateEntity($workstationInput);
+        $this->assertEquals('3', $workstation->hint);
+    }
+
     protected function writeTestLogin($scopeId = false)
     {
         $this->dateTime = new \DateTimeImmutable("2016-04-01 11:55");

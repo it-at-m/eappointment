@@ -28,16 +28,6 @@ class Cluster extends Base
         ';
     }
 
-    public function getQueryWriteImageData()
-    {
-        return '
-            REPLACE INTO `imagedata`
-            SET
-                imagename=:imagename,
-                imagecontent=:imagedata
-        ';
-    }
-
     public function getEntityMapping()
     {
         return [

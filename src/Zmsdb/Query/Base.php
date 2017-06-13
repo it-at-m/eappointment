@@ -110,6 +110,9 @@ abstract class Base
         }
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function __toString()
     {
         if ($this->name) {
