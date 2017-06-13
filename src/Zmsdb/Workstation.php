@@ -172,7 +172,7 @@ class Workstation extends Base
 
     /**
      *
-     * Weise den Process einer Workstation zu
+     * assign a process to workstation
      *
      * @param
      *            workstation
@@ -191,7 +191,7 @@ class Workstation extends Base
 
     /**
      *
-     * entferne den Process aus einer Workstation
+     * remove a process from workstation
      *
      * @param
      *            workstation
