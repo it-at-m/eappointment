@@ -60,11 +60,13 @@ class Provider extends Base
         return $this;
     }
 
+    /* unused 2017-06-13 TK
     public function addConditionProviderSource($source)
     {
         $this->query->where('provider.source', '=', $source);
         return $this;
     }
+    */
 
     public function addConditionRequestCsv($requestIdCsv)
     {

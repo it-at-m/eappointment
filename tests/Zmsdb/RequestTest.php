@@ -17,6 +17,16 @@ class RequestTest extends Base
         $entity = (new Query())->readEntity('dldb', 120335, 1);
         $this->assertEntity("\\BO\\Zmsentities\\Request", $entity);
         $this->assertTrue(array_key_exists('data', $entity), 'Addional data attribute missed');
+
+        $class = new \BO\Zmsdb\Query\Request(\BO\Zmsdb\Query\Base::SELECT);
+        $name = $class->getName();
+        $this->assertEquals('BO\Zmsdb\Query\Request', $name);
+    }
+
+    public function testSolution10Query()
+    {
+        $class = new \BO\Zmsdb\Query\Request((new \Solution10\SQL\Select));
+        $this->assertEquals('request', $class->getAlias());
     }
 
     public function testExceptionRequestNotFound()
