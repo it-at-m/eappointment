@@ -27,9 +27,11 @@ class Calldisplay extends Base
             foreach ($calldisplay->scopes as $key => $entity) {
                 $query = new Scope();
                 $scope = $query->readEntity($entity['id'], $resolveReferences - 1);
+                /* test in zmsapi CalldisplayGet
                 if (! $scope) {
                     throw new Exception\Calldisplay\ScopeNotFound();
                 }
+                */
                 $scopeList->addEntity($scope);
             }
             $calldisplay->scopes = $scopeList;
@@ -39,9 +41,11 @@ class Calldisplay extends Base
             foreach ($calldisplay->clusters as $key => $entity) {
                 $query = new Cluster();
                 $cluster = $query->readEntity($entity['id'], $resolveReferences);
+                /* test in zmsapi CalldisplayGet
                 if (! $cluster) {
                     throw new Exception\Calldisplay\ClusterNotFound();
                 }
+                */
                 $clusterList->addEntity($cluster);
             }
             $calldisplay->clusters = $clusterList;

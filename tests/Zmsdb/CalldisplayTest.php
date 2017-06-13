@@ -45,20 +45,8 @@ class CalldisplayTest extends Base
         $this->assertEquals('Bürgeramt Hohenzollerndamm', $contact['name']);
     }
 
-    public function testExceptionClusterNotFound()
-    {
-        $this->setExpectedException('\BO\Zmsdb\Exception\Calldisplay\ClusterNotFound');
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
-        $query = new Query();
-        $input = $this->getTestEntity();
-        $cluster = (new \BO\Zmsentities\Cluster())->getExample();
-        $cluster->id = 999;
-        $input->clusters[] = $cluster;
-        $entity = $query->readResolvedEntity($input, $now);
-    }
-
     protected function getTestEntity()
     {
-        return $input = (new Entity())->getExample();
+        return (new Entity())->getExample();
     }
 }
