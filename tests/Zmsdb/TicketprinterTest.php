@@ -69,6 +69,17 @@ class TicketprinterTest extends Base
         $query->readByButtonList($input, $now);
     }
 
+    public function testScopeNumberContingentExceeded()
+    {
+        $this->expectException('\BO\Zmsdb\Exception\Scope\GivenNumberCountExceeded');
+        $this->expectExceptionCode(404);
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $query = new Query();
+        $input = (new Entity)->getExample();
+        $input['buttonlist'] = 's109';
+        $query->readByButtonList($input->toStructuredButtonList(), $now);
+    }
+
     public function testUnvalidButtonListNoScope()
     {
         $this->expectException('\BO\Zmsdb\Exception\Ticketprinter\UnvalidButtonList');

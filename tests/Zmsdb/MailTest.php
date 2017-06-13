@@ -62,6 +62,15 @@ class MailTest extends Base
         $this->assertEquals('1', $entity->getFirstClient()->emailSendCount);
     }
 
+    public function testExceptionWithoutMail()
+    {
+        $this->setExpectedException('\BO\Zmsdb\Exception\Mail\ClientWithoutEmail');
+        $query = new Query();
+        $input = $this->getTestEntity();
+        $input->process['clients'][0]['email'] = '';
+        $query->writeInQueue($input);
+    }
+
     public function testWriteMimepartFailed()
     {
         $this->setExpectedException('BO\Zmsdb\Exception\MailWritePartFailed');

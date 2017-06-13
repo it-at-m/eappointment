@@ -117,6 +117,13 @@ class UserAccountTest extends Base
         $this->assertEntity("\\BO\\Zmsentities\\Workstation", $workstation);
     }
 
+    public function testReadWorkstationByScopeAndNameFailed()
+    {
+        $this->writeTestLogin();
+        $workstation = (new Workstation())->readWorkstationByScopeAndName(123, 4);
+        $this->assertEquals(null, $workstation);
+    }
+
     public function testWriteRemovedProcess()
     {
         $workstation = $this->writeTestLogin();
