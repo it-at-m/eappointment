@@ -25,21 +25,15 @@ class WorkstationProcess extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = (new Helper\User($request))->checkRights();
+        $workstation = (new Helper\User($request, 1))->checkRights();
         $process = $workstation->process;
-        if (! $process->hasId()) {
+        if (! $process) {
             $input = Validator::input()->isJson()->assertValid()->getValue();
             $entity = new \BO\Zmsentities\Process($input);
-            $authCheck = (new Process)->readAuthKeyByProcessId($entity['id']);
-            $process = (new Process)->readEntity($entity['id'], $authCheck['authKey']);
+            $process = (new Process)->readEntity($entity['id'], new \BO\Zmsdb\Helper\NoAuth());
+            $this->testProcess($process);
         }
-        if (! $process) {
-            throw new Exception\Process\ProcessNotFound();
-        }
-        if ('called' == $process->status || 'processing' == $process->status) {
-            throw new Exception\Process\ProcessAlreadyCalled();
-        }
-        $process->testValid();
+
         $process->setCallTime(\App::$now);
         $process->queue['callCount']++;
         $workstation->process = (new Workstation)->writeAssignedProcess($workstation->id, $process);
@@ -50,5 +44,16 @@ class WorkstationProcess extends BaseController
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
         return $response;
+    }
+
+    protected function testProcess($process)
+    {
+        if (! $process) {
+            throw new Exception\Process\ProcessNotFound();
+        }
+        if ('called' == $process->status || 'processing' == $process->status) {
+            throw new Exception\Process\ProcessAlreadyCalled();
+        }
+        $process->testValid();
     }
 }
