@@ -9,6 +9,11 @@ class Session extends Base
      */
     const TABLE = 'sessiondata';
 
+    /**
+     * No resolving required here
+     */
+    protected $resolveLevel = 0;
+
     const QUERY_WRITE = '
         REPLACE INTO
             sessiondata

@@ -36,15 +36,17 @@ class ProcessStatusQueued extends Process
      *
      * @return String authKey
      */
-    public function readByQueueNumberAndScope($queueNumber, $scopeId)
+    public function readByQueueNumberAndScope($queueNumber, $scopeId, $resolveReferences = 0)
     {
         $query = new Query\Process(Query\Base::SELECT);
         $query
             ->addEntityMapping()
+            ->addResolvedReferences($resolveReferences)
             ->addConditionScopeId($scopeId)
             ->addConditionAssigned()
             ->addConditionQueueNumber($queueNumber);
         $process = $this->fetchOne($query, new Entity());
+        $process = $this->readResolvedReferences($process, $resolveReferences);
         return $process;
     }
 }

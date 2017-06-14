@@ -9,6 +9,11 @@ class Mimepart extends Base
      */
     const TABLE = 'mailpart';
 
+    /**
+     * No resolving required here
+     */
+    protected $resolveLevel = 0;
+
     public function getEntityMapping()
     {
         return [

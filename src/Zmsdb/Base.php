@@ -117,6 +117,7 @@ abstract class Base
         $data = $statement->fetch(\PDO::FETCH_ASSOC);
         if ($data) {
             $entity->exchangeArray($query->postProcessJoins($data));
+            $entity->setResolveLevel($query->getResolveLevel());
         }/* else {
             throw new Exception\PDOFailed("Could not fetch one: ". $query->getName()
                 . " --> " . var_export($query->getParameters(), 1));
@@ -131,6 +132,7 @@ abstract class Base
         while ($data = $statement->fetch(\PDO::FETCH_ASSOC)) {
             $dataEntity = clone $entity;
             $dataEntity->exchangeArray($query->postProcessJoins($data));
+            $dataEntity->setResolveLevel($query->getResolveLevel());
             $resultList[] = $dataEntity;
         }
         return $resultList;

@@ -9,6 +9,11 @@ class Log extends Base
      */
     const TABLE = 'log';
 
+    /**
+     * No resolving required here
+     */
+    protected $resolveLevel = 0;
+
     const QUERY_DELETE_BY_PROCESS = '
         DELETE mq,  mp
         FROM '. self::TABLE .' mq

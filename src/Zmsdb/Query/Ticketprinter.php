@@ -11,6 +11,11 @@ class Ticketprinter extends Base implements MappingInterface
 
     const PRIMARY = 'hash';
 
+    /**
+     * No resolving required here
+     */
+    protected $resolveLevel = 0;
+
     public function getOrganisationIdByHash()
     {
         return '

@@ -4,7 +4,7 @@ namespace BO\Zmsdb;
 use \BO\Zmsentities\Availability as Entity;
 use \BO\Zmsentities\Collection\AvailabilityList as Collection;
 
-class Availability extends Base
+class Availability extends Base implements Interfaces\ResolveReferences
 {
     public static $cache = [];
 
@@ -18,12 +18,20 @@ class Availability extends Base
                 ->addResolvedReferences($resolveReferences)
                 ->addConditionAvailabilityId($availabilityId);
             $availability = $this->fetchOne($query, new Entity());
-            if ($availability->hasId() && $resolveReferences > 0) {
-                $availability['scope'] = (new Scope())->readEntity($availability->scope['id'], $resolveReferences - 1);
-            }
+            $availability = $this->readResolvedReferences($availability, $resolveReferences);
             self::$cache[$cacheKey] = $availability;
         }
         return clone self::$cache[$cacheKey];
+    }
+
+    public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $entity, $resolveReferences)
+    {
+        if (1 <= $resolveReferences && $entity->hasId()) {
+            if (isset($entity->scope['id'])) {
+                $entity['scope'] = (new Scope())->readEntity($entity->scope['id'], $resolveReferences - 1);
+            }
+        }
+        return $entity;
     }
 
     public function readList($scopeId, $resolveReferences = 0, $reserveEntityIds = false)
@@ -97,6 +105,7 @@ class Availability extends Base
         if (count($result)) {
             foreach ($result as $entity) {
                 if ($entity instanceof Entity) {
+                    $entity = $this->readResolvedReferences($entity, $resolveReferences);
                     $collection->addEntity($entity);
                 }
             }
@@ -104,14 +113,17 @@ class Availability extends Base
         return $collection;
     }
 
-    public function readByAppointment(\BO\Zmsentities\Appointment $appointment)
+    public function readByAppointment(\BO\Zmsentities\Appointment $appointment, $resolveReferences = 0)
     {
         $query = new Query\Availability(Query\Base::SELECT);
         $query->addEntityMapping();
+        $query->addResolvedReferences($resolveReferences);
         $query->addConditionScopeId($appointment->toProperty()->scope->id->get());
         $query->addConditionDate($appointment->toDateTime());
         $query->addConditionAppointmentTime($appointment->toDateTime());
-        return $this->fetchOne($query, new Entity());
+        $entity = $this->fetchOne($query, new Entity());
+        $entity = $this->readResolvedReferences($entity, $resolveReferences);
+        return $entity;
     }
 
     /**
