@@ -2,6 +2,7 @@ import BaseView from "../../lib/baseview"
 import $ from "jquery"
 import { lightbox } from '../../lib/utils'
 import ButtonActionHandler from "../appointment/action"
+import ProcessNext from "../process/next"
 import MessageHandler from '../../lib/messageHandler';
 
 class View extends BaseView {
@@ -15,6 +16,7 @@ class View extends BaseView {
         this.onDateToday = options.onDateToday || (() => {});
         this.onDeleteProcess = options.onDeleteProcess || (() => {});
         this.onEditProcess = options.onEditProcess || (() => {});
+        this.onNextProcess = options.onNextProcess || (() => {});
         this.bindPublicMethods('load');
         $.ajaxSetup({ cache: false });
         this.bindEvents();
@@ -77,6 +79,14 @@ class View extends BaseView {
             $(ev.target).closest('form').submit();
         }).on('change', '.queue-table .appointmentsOnly input', (ev) => {
             $(ev.target).closest('form').submit();
+        }).on('click', '.queue-table .callnextclient a', (ev) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            new ProcessNext($.find('[data-client-next]'), {
+                    'processId': $(ev.target).data('process'),
+                    'includeUrl': this.includeUrl,
+                    'onNextProcess': this.onNextProcess
+            }).loadCall().catch(err => this.loadErrorCallback(err));
         }).on('click', 'a.process-edit', (ev) => {
             this.onEditProcess($(ev.target).data('id'))
         }).on('click', 'a.process-delete', (ev) => {

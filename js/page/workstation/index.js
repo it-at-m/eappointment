@@ -115,7 +115,8 @@ class View extends BaseView {
             onDatePick: this.onDatePick,
             onDateToday: this.onDateToday,
             onDeleteProcess: this.onDeleteProcess,
-            onEditProcess: this.onEditProcess
+            onEditProcess: this.onEditProcess,
+            onNextProcess: this.onNextProcess
         })
     }
 

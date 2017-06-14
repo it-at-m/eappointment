@@ -7,7 +7,7 @@ class View extends BaseView {
         super(element, options);
         this.includeUrl = options.includeUrl || "";
         this.exclude = "";
-        this.processId = 0;
+        this.processId = options.processId || 0;
         this.refreshCounter = null;
         this.refreshCurrentTime = null;
         this.onNextProcess = options.onNextProcess || (() => {});
@@ -15,7 +15,8 @@ class View extends BaseView {
         $.ajaxSetup({ cache: false });
         this.bindEvents();
         console.log('Component: Client', this, options);
-        this.load();
+        if (! this.processId)
+            this.load();
     }
 
     load() {
@@ -28,6 +29,12 @@ class View extends BaseView {
         this.cleanInstance();
         this.setTimeSinceCall();
         const url = `${this.includeUrl}/workstation/process/next/?exclude=` + this.exclude
+        return this.loadContent(url).catch(err => this.loadErrorCallback(err.source, err.url));
+    }
+
+    loadCall() {
+        this.cleanInstance();
+        const url = `${this.includeUrl}/workstation/call/${this.processId}/`
         return this.loadContent(url).catch(err => this.loadErrorCallback(err.source, err.url));
     }
 
