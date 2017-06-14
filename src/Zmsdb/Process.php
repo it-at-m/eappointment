@@ -158,15 +158,11 @@ class Process extends Base implements Interfaces\ResolveReferences
     {
         $query = new Query\Process(Query\Base::SELECT);
         $query
+            ->addResolvedReferences($resolveReferences)
             ->addEntityMapping()
             ->addConditionWorkstationId($workstation->id);
         $process = $this->fetchOne($query, new Entity());
-        if ($process->hasId()) {
-            $process = $this->readResolvedReferences($process, $resolveReferences);
-        } else {
-            $process = null;
-        }
-        return $process;
+        return ($process->hasId()) ? $this->readResolvedReferences($process, $resolveReferences) : null;
     }
 
     /**
@@ -182,7 +178,7 @@ class Process extends Base implements Interfaces\ResolveReferences
     {
         $query = new Query\Process(Query\Base::SELECT);
         $query
-            ->setResolveLevel($resolveReferences)
+            ->addResolvedReferences($resolveReferences)
             ->addEntityMapping()
             ->addConditionScopeId($scopeId)
             ->addConditionAssigned()
@@ -203,7 +199,7 @@ class Process extends Base implements Interfaces\ResolveReferences
     {
         $query = new Query\Process(Query\Base::SELECT);
         $query
-            ->setResolveLevel($resolveReferences)
+            ->addResolvedReferences($resolveReferences)
             ->addEntityMapping()
             ->addConditionScopeId($scopeId)
             ->addConditionStatus($status, $scopeId)
@@ -216,7 +212,7 @@ class Process extends Base implements Interfaces\ResolveReferences
     {
         $query = new Query\Process(Query\Base::SELECT);
         $query
-            ->setResolveLevel($resolveReferences)
+            ->addResolvedReferences($resolveReferences)
             ->addResolvedReferences($resolveReferences)
             ->addEntityMapping()
             ->addConditionAssigned()
