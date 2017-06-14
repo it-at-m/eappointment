@@ -214,9 +214,11 @@ class Entity extends \ArrayObject implements \JsonSerializable
     {
         foreach ($mergeData as $key => $item) {
             if (array_key_exists($key, $this) && $this[$key] instanceof Entity) {
+                $this[$key]->setResolveLevel($this->getResolveLevel() - 1);
                 $this[$key]->addData($item);
             } elseif (array_key_exists($key, $this) && $this[$key] instanceof \BO\Zmsentities\Collection\Base) {
                 $this[$key]->exchangeArray([]);
+                $this[$key]->setResolveLevel($this->getResolveLevel() - 1);
                 $this[$key]->addData($item);
             } elseif (array_key_exists($key, $this) && is_array($this[$key])) {
                 if (!is_array($item)) {

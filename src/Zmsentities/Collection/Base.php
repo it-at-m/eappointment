@@ -18,6 +18,11 @@ class Base extends \ArrayObject
 {
     const ENTITY_CLASS = '';
 
+    /**
+     * @var Int $resolveLevel indicator on data integrity
+     */
+    protected $resolveLevel = null;
+
     public function getFirst()
     {
         $item = reset($this);
@@ -125,10 +130,14 @@ class Base extends \ArrayObject
     {
         foreach ($mergeData as $item) {
             if ($item instanceof Entity) {
+                if (null === $item->getResolveLevel()) {
+                    $item->setResolveLevel($this->getResolveLevel());
+                }
                 $this->addEntity($item);
             } else {
                 $className = $this::ENTITY_CLASS;
                 $entity = new $className($item);
+                $entity->setResolveLevel($this->getResolveLevel());
                 $this->addEntity($entity);
             }
         }
@@ -177,5 +186,23 @@ class Base extends \ArrayObject
             $list[] = $item->__toString();
         }
         return "[" . implode(',', $list) . "]";
+    }
+
+    /**
+     * @return Int
+     */
+    public function getResolveLevel()
+    {
+        return $this->resolveLevel;
+    }
+
+    /**
+     * @param Int $resolveLevel
+     * @return self
+     */
+    public function setResolveLevel($resolveLevel)
+    {
+        $this->resolveLevel = $resolveLevel;
+        return $this;
     }
 }
