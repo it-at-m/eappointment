@@ -94,8 +94,7 @@ class View extends BaseView {
             ev.preventDefault();
             ev.stopPropagation();
             this.exclude = '';
-            this.loadCancel();
-            this.onNextProcess();
+            this.loadCancel().then(() => this.onNextProcess());
         })
     }
 
