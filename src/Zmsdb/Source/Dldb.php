@@ -51,7 +51,7 @@ class Dldb extends \BO\Zmsdb\Base
     public function replaceRequestProvider($providerList)
     {
         $this->getWriter()->exec('DELETE FROM `request_provider`;');
-        $sql = 'REPLACE INTO `request_provider` SET 
+        $sql = 'REPLACE INTO `request_provider` SET
             `source`=:source,
             `request__id`=:request__id,
             `provider__id`=:provider__id,
@@ -75,7 +75,7 @@ class Dldb extends \BO\Zmsdb\Base
     public function replaceProvider($providerList)
     {
         $this->getWriter()->exec('DELETE FROM `provider`;');
-        $sql = 'REPLACE INTO `provider` SET 
+        $sql = 'REPLACE INTO `provider` SET
             `source`=:source,
             `id`=:id,
             `name`=:name,
@@ -113,10 +113,13 @@ class Dldb extends \BO\Zmsdb\Base
         }
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function replaceRequests($serviceList)
     {
         $this->getWriter()->exec('DELETE FROM `request`;');
-        $sql = 'REPLACE INTO `request` SET 
+        $sql = 'REPLACE INTO `request` SET
             `source`=:source,
             `id`=:id,
             `name`=:name,
