@@ -248,6 +248,7 @@ abstract class Base
      */
     public function addResolvedReferences($depth)
     {
+        $this->setResolveLevel($depth);
         if ($depth > 0) {
             $queryList = $this->addJoin();
             foreach ($queryList as $query) {

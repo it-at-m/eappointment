@@ -102,6 +102,7 @@ class Process extends Base implements MappingInterface
             'scope.StandortID'
         );
         $joinQuery = new Scope($this, $this->getPrefixed('scope__'));
+        //error_log(var_export($joinQuery, 1));
         return $joinQuery;
     }
 
@@ -383,6 +384,7 @@ class Process extends Base implements MappingInterface
         $data['IPAdresse'] = $process['createIP'];
         $data['Erinnerungszeitpunkt'] = $process->getReminderTimestamp();
         $data['AnzahlPersonen'] = $process->getClients()->count();
+        $data['AnzahlAufrufe'] = $process->queue['callCount'];
         $data = $this->readAppointmentData($data, $process);
         $data = $this->readClientData($data, $process);
         $data = $this->readProcessTimeValuesData($data, $process);
@@ -415,10 +417,11 @@ class Process extends Base implements MappingInterface
         if ($process->status == 'pickup') {
             $data['AbholortID'] = $process->scope['id'];
             $data['Abholer'] = 1;
-        }
-        if ($process->status == 'queued') {
             $data['Timestamp'] = 0;
             $data['AnzahlAufrufe'] = 0;
+            $data['nicht_erschienen'] = 0;
+        }
+        if ($process->status == 'queued') {
             $data['nicht_erschienen'] = 0;
             $data['wsm_aufnahmezeit'] = (new \DateTimeImmutable())->format('H:i:s');
         }
