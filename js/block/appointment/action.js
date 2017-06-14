@@ -156,6 +156,15 @@ class View extends BaseView {
         const url = `${this.includeUrl}/workstation/process/cancel/?noredirect=1`;
         return this.loadCall(url);
     }
+
+    abort (ev) {
+        console.log("Abort Button clicked");
+        if (ev) {
+            ev.preventDefault();
+            ev.stopPropagation();
+        }
+        this.selectedProcess = null;
+    }
 }
 
 export default View;

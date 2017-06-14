@@ -341,7 +341,7 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->map(['GET','POST'], '/workstation/process/finished/', '\BO\Zmsadmin\WorkstationProcessFinished')
     ->setName("workstationProcessFinished");
 
-\App::$slim->get('/workstation/call/{waitingnumber:\d+}/', '\BO\Zmsadmin\WorkstationCallProcess')
+\App::$slim->get('/workstation/call/{id:\d+}/', '\BO\Zmsadmin\WorkstationProcessCall')
     ->setName("workstationCallProcess");
 
 \App::$slim->get('/workstation/process/cancel/', '\BO\Zmsadmin\WorkstationProcessCancel')

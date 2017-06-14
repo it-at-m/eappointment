@@ -161,7 +161,7 @@ class View extends BaseView {
                 if (buttonAction)
                     this.ButtonAction[buttonAction]()
                 else if (buttonUrl)
-                    this.loadByCallbackUrl(buttonUrl)
+                    this.loadByCallbackUrl(buttonUrl);
                 destroyLightbox()
                 this.cleanReload();
             }})
