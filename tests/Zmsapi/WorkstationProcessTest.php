@@ -8,7 +8,7 @@ class WorkstationProcessTest extends Base
 {
     protected $classname = "WorkstationProcess";
 
-    const PROCESS_ID = 10030;
+    const PROCESS_ID = 10029;
 
     const AUTHKEY = '1c56';
 
@@ -46,13 +46,9 @@ class WorkstationProcessTest extends Base
         $this->setWorkstation();
         $this->expectException('\BO\Zmsapi\Exception\Process\ProcessAlreadyCalled');
         $this->expectExceptionCode(404);
-        User::$workstation->process = (new \BO\Zmsentities\Process())->getExample();
-        User::$workstation->process->id = 10029;
-        User::$workstation->process->authKey = self::AUTHKEY;
-        User::$workstation->process->status = 'called';
         $this->render([], [
             '__body' => '{
-                "id": '. self::PROCESS_ID .'
+                "id": 9999999
             }'
         ], []);
     }
@@ -69,11 +65,9 @@ class WorkstationProcessTest extends Base
         $this->setWorkstation();
         $this->expectException('\BO\Zmsapi\Exception\Process\ProcessNotFound');
         $this->expectExceptionCode(404);
-        $this->render(['id' => 123456, 'authKey' => 'abcd'], [
+        $this->render([], [
             '__body' => '{
-                "id": 123456,
-                "authKey": "abcd",
-                "amendment": "Beispiel Termin"
+                "id": 123456
             }'
         ], []);
     }
