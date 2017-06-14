@@ -27,9 +27,6 @@ class Process extends Base implements Interfaces\ResolveReferences
             $query->addConditionAuthKey($authKey);
         }
         $process = $this->fetchOne($query, new Entity());
-        if ($process->id != $processId) {
-            throw new Exception\Process\ProcessAuthFailed("Could not find process $processId identified by '$authKey'");
-        }
         $process = $this->readResolvedReferences($process, $resolveReferences);
         return $process;
     }
