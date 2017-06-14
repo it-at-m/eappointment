@@ -32,7 +32,8 @@ class ProcessQueued extends BaseController
         $this->testProcessData($entity);
         $process = (new Query())->readEntity($entity['id'], $entity['authKey'], 0);
         $process->status = 'queued';
-
+        $process->queue['callCount'] = 0;
+        $process->queue['lastCallTime'] = 0;
         $cluster = (new \BO\Zmsdb\Cluster)->readByScopeId($workstation->scope['id'], 1);
         $workstation->testMatchingProcessScope($cluster, $process);
         $process = (new Query())->updateEntity($process);
