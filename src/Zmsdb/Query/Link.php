@@ -9,6 +9,11 @@ class Link extends Base
      */
     const TABLE = 'kundenlinks';
 
+    /**
+     * No resolving required here
+     */
+    protected $resolveLevel = 0;
+
     public function getEntityMapping()
     {
         return [

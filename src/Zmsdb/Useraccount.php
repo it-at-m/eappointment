@@ -15,6 +15,7 @@ class Useraccount extends Base
     {
         $query = new Query\Useraccount(Query\Base::SELECT);
         $query->addEntityMapping()
+            ->setResolveLevel(0)
             ->addConditionLoginName($loginName);
         if ($password) {
             $query->addConditionPassword($password);

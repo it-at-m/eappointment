@@ -26,7 +26,7 @@ class Ticketprinter extends Base
             ->addEntityMapping()
             ->addConditionTicketprinterId($itemId);
         $ticketprinter = $this->fetchOne($query, new Entity());
-        $ticketprinter = $this->getAdditionalData($ticketprinter);
+        $ticketprinter = $this->readWithContactData($ticketprinter);
         return $ticketprinter;
     }
 
@@ -44,7 +44,7 @@ class Ticketprinter extends Base
         if (count($result)) {
             foreach ($result as $ticketprinter) {
                 if ($ticketprinter instanceof Entity) {
-                    $ticketprinter = $this->getAdditionalData($ticketprinter);
+                    $ticketprinter = $this->readWithContactData($ticketprinter);
                     $ticketprinterList->addEntity($ticketprinter);
                 }
             }
@@ -68,7 +68,7 @@ class Ticketprinter extends Base
             ->addConditionHash($hash);
         $ticketprinter = $this->fetchOne($query, new Entity());
         $ticketprinter->enabled = (1 == $ticketprinter->enabled);
-        $ticketprinter = $this->getAdditionalData($ticketprinter);
+        $ticketprinter = $this->readWithContactData($ticketprinter);
         return $ticketprinter;
     }
 
@@ -109,7 +109,7 @@ class Ticketprinter extends Base
             }
         }
         $this->readExceptions($ticketprinter);
-        $ticketprinter = $this->getAdditionalData($ticketprinter);
+        $ticketprinter = $this->readWithContactData($ticketprinter);
         return $ticketprinter;
     }
 
@@ -125,12 +125,6 @@ class Ticketprinter extends Base
                 $scope->getPreference('ticketprinter', 'deactivatedText')
             );
         }
-    }
-
-    protected function getAdditionalData($ticketprinter)
-    {
-        $ticketprinter = $this->readWithContactData($ticketprinter);
-        return $ticketprinter;
     }
 
     protected function readWithContactData(Entity $entity)
@@ -231,7 +225,7 @@ class Ticketprinter extends Base
         if (count($result)) {
             foreach ($result as $ticketprinter) {
                 if ($ticketprinter instanceof Entity) {
-                    $ticketprinter = $this->getAdditionalData($ticketprinter);
+                    $ticketprinter = $this->readWithContactData($ticketprinter);
                     $ticketprinterList->addEntity($ticketprinter);
                 }
             }

@@ -134,7 +134,10 @@ class Process extends Base implements Interfaces\ResolveReferences
     public function readAuthKeyByProcessId($processId)
     {
         $query = new Query\Process(Query\Base::SELECT);
-        $query->addEntityMapping()->addConditionProcessId($processId);
+        $query
+            ->addEntityMapping()
+            ->addResolvedReferences(0)
+            ->addConditionProcessId($processId);
         $process = $this->fetchOne($query, new Entity());
         return ($process->hasId()) ? array(
             'authName' => $process->getFirstClient()['familyName'],

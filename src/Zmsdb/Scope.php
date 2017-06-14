@@ -180,6 +180,7 @@ class Scope extends Base
     {
         $query = new Query\Scope(Query\Base::SELECT);
         $query->addEntityMapping()
+            ->setResolveLevel(0)
             ->addConditionScopeId($scopeId);
         $scope = $this->fetchOne($query, new Entity());
         return (

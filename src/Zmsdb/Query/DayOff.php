@@ -9,6 +9,11 @@ class DayOff extends Base implements MappingInterface
      */
     const TABLE = 'feiertage';
 
+    /**
+     * No resolving required here
+     */
+    protected $resolveLevel = 0;
+
     public function getEntityMapping()
     {
         return [

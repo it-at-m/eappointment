@@ -56,6 +56,7 @@ class Department extends Base
         $departmentList = new Collection();
         $query = new Query\Department(Query\Base::SELECT);
         $query->addEntityMapping();
+        $query->addResolvedReferences($resolveReferences);
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
             foreach ($result as $department) {
