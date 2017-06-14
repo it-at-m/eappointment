@@ -88,9 +88,7 @@ abstract class Base
     {
         $this->prefix = $prefix;
         $this->name = $name;
-        if ($resolveLevel !== null) {
-            $this->resolveLevel = $resolveLevel;
-        }
+        $this->setResolveLevel($resolveLevel);
         $dialect = new MySQL();
         if (self::SELECT === $queryType) {
             $this->query = new Select($dialect);
@@ -161,9 +159,11 @@ abstract class Base
         return $this;
     }
 
-    public function setResolveLevel($level)
+    public function setResolveLevel($resolveLevel)
     {
-        $this->resolveLevel = $level;
+        if ($resolveLevel !== null) {
+            $this->resolveLevel = $resolveLevel;
+        }
         return $this;
     }
 
