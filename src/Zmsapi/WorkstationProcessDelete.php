@@ -21,14 +21,11 @@ class WorkstationProcessDelete extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = (new Helper\User($request))->checkRights();
+        $workstation = (new Helper\User($request, 2))->checkRights();
         if (! $workstation->process['id']) {
             throw new Exception\Process\ProcessNotFound();
         }
-        if ('pickup' != $workstation->process['status']) {
-            $workstation->process['queue']['callCount']++;
-        }
-        $workstation->process = (new \BO\Zmsentities\Process($workstation->process))->setStatusBySettings();
+        $workstation->process->setStatusBySettings();
         (new Workstation)->writeRemovedProcess($workstation);
         unset($workstation->process);
 
