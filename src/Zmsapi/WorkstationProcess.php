@@ -27,7 +27,7 @@ class WorkstationProcess extends BaseController
     ) {
         $workstation = (new Helper\User($request, 1))->checkRights();
         $process = $workstation->process;
-        if (! $process) {
+        if ($process && ! $process->hasId()) {
             $input = Validator::input()->isJson()->assertValid()->getValue();
             $entity = new \BO\Zmsentities\Process($input);
             $process = (new Process)->readEntity($entity['id'], new \BO\Zmsdb\Helper\NoAuth());
@@ -48,7 +48,7 @@ class WorkstationProcess extends BaseController
 
     protected function testProcess($process)
     {
-        if (! $process) {
+        if (! $process->hasId()) {
             throw new Exception\Process\ProcessNotFound();
         }
         if ('called' == $process->status || 'processing' == $process->status) {
