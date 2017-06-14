@@ -144,7 +144,7 @@ class Messaging
                 'endTime' => $appointment->getEndTime(),
                 'process' => $process,
                 'timestamp' => (!$now) ? time() : $now,
-                'message' => $plainContent
+                'message' => trim($plainContent)
             )
         );
         $result = \html_entity_decode($icsString);
