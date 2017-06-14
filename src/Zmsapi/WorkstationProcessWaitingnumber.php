@@ -44,9 +44,8 @@ class WorkstationProcessWaitingnumber extends BaseController
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $process = new \BO\Zmsentities\Process($input);
         $process->scope = $scope;
-        $process->testValid();
         $process = ProcessStatusQueued::init()->writeNewFromAdmin($process, \App::$now);
-
+        $process->testValid();
         $message = Response\Message::create($request);
         $message->data = $process;
 
