@@ -31,6 +31,11 @@ class Entity extends \ArrayObject implements \JsonSerializable
     protected static $schemaCache = [];
 
     /**
+     * @var Int $resolveLevel indicator on data integrity
+     */
+    protected $resolveLevel = null;
+
+    /**
      * Read the json schema and let array act like an object
      */
     public function __construct($input = null, $flags = \ArrayObject::ARRAY_AS_PROPS, $iterator_class = "ArrayIterator")
@@ -260,5 +265,23 @@ class Entity extends \ArrayObject implements \JsonSerializable
         $entity = clone $this;
         unset($entity['save']);
         return $entity;
+    }
+
+    /**
+     * @return Int
+     */
+    public function getResolveLevel()
+    {
+        return $this->resolveLevel;
+    }
+
+    /**
+     * @param Int $resolveLevel
+     * @return self
+     */
+    public function setResolveLevel($resolveLevel)
+    {
+        $this->resolveLevel = $resolveLevel;
+        return $this;
     }
 }
