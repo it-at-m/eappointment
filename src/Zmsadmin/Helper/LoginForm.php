@@ -84,6 +84,7 @@ class LoginForm
     {
         $formData = $data->getValues();
         if (isset($workstation->useraccount)) {
+            $workstation->name = '';
             if ($formData['workstation']->getValue()) {
                 $workstation->name = $formData['workstation']->getValue();
             }
