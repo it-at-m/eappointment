@@ -79,7 +79,8 @@ class View extends BaseView {
             $(ev.target).closest('form').submit();
         }).on('change', '.queue-table .appointmentsOnly input', (ev) => {
             $(ev.target).closest('form').submit();
-        }).on('click', '.queue-table .callnextclient a', (ev) => {
+        })/*.on('click', '.queue-table .callnextclient a', (ev) => {
+
             ev.preventDefault();
             ev.stopPropagation();
             new ProcessNext($.find('[data-client-next]'), {
@@ -87,7 +88,8 @@ class View extends BaseView {
                     'includeUrl': this.includeUrl,
                     'onNextProcess': this.onNextProcess
             }).loadCall().catch(err => this.loadErrorCallback(err));
-        }).on('click', 'a.process-edit', (ev) => {
+
+        })*/.on('click', 'a.process-edit', (ev) => {
             this.onEditProcess($(ev.target).data('id'))
         }).on('click', 'a.process-delete', (ev) => {
             this.ButtonAction.delete(ev).catch(err => this.loadErrorCallback(err)).then((response) => {
