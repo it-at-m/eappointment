@@ -23,9 +23,8 @@ class WorkstationProcessNext extends BaseController
         $validator = $request->getAttribute('validator');
         $excludedIds = $validator->getParameter('exclude')->isString()->getValue();
         $excludedIds = ($excludedIds) ? $excludedIds : '';
-
-        if (1 == $workstation->queue['clusterEnabled']) {
-            $cluster = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/cluster/')->getEntity();
+        $cluster = (new Helper\ClusterHelper($workstation))->getEntity();
+        if ($cluster) {
             $process = \App::$http
                 ->readGetResult('/cluster/'. $cluster['id'] .'/queue/next/', ['exclude' => $excludedIds])
                 ->getEntity();

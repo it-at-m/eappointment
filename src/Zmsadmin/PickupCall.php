@@ -23,12 +23,11 @@ class PickupCall extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-        $cluster = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/cluster/')->getEntity();
         $processId = Validator::value($args['id'])->isNumber()->getValue();
         $process = new \BO\Zmsentities\Process(['id' => $processId]);
         $workstation = \App::$http->readPostResult('/workstation/process/called/', $process)->getEntity();
         $process = \App::$http->readPostResult('/process/status/pickup/', $workstation->process)->getEntity();
-        $workstation->testMatchingProcessScope($cluster);
+        $workstation->testMatchingProcessScope((new Helper\ClusterHelper($workstation))->getScopeList());
 
         return \BO\Slim\Render::withHtml(
             $response,

@@ -18,7 +18,6 @@ class PickupKeyboard extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
-        $cluster = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/cluster/')->getEntity();
         $department = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/department/')->getEntity();
 
         \BO\Slim\Render::withHtml(
@@ -29,7 +28,7 @@ class PickupKeyboard extends BaseController
               'menuActive' => 'pickup',
               'workstation' => $workstation->getArrayCopy(),
               'department' => $department,
-              'cluster' => ($cluster) ? $cluster : null
+              'cluster' => (new Helper\ClusterHelper($workstation))->getEntity()
             )
         );
     }

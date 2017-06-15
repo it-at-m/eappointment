@@ -31,10 +31,7 @@ class CalendarWeek extends BaseController
         $selectedWeek = Validator::value($args['weeknr'])->isNumber()->getValue();
         $calendar = new Helper\Calendar(null, $selectedWeek, $selectedYear);
 
-        if (1 == $workstation->queue['clusterEnabled']) {
-            $cluster = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/cluster/')->getEntity();
-        }
-        $scopeList = $workstation->getScopeList($cluster);
+        $scopeList = (new Helper\ClusterHelper($workstation))->getScopeList();
 
         return \BO\Slim\Render::withHtml(
             $response,

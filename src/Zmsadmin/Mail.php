@@ -32,7 +32,7 @@ class Mail extends BaseController
         $formResponse = null;
         $input = $request->getParsedBody();
         if (array_key_exists('submit', (array)$input) && 'form' == $input['submit']) {
-            $formResponse = $this->writeValidatedMail($process);
+            $formResponse = $this->writeValidatedMail($process, $department);
             if ($formResponse instanceof Entity) {
                 return \BO\Slim\Render::redirect(
                     'mail',
@@ -63,7 +63,7 @@ class Mail extends BaseController
         );
     }
 
-    private function writeValidatedMail($process)
+    private function writeValidatedMail($process, $department)
     {
         $collection = array();
         $collection['subject'] = Validator::param('subject')->isString()
@@ -73,7 +73,7 @@ class Mail extends BaseController
         $collection = Validator::collection($collection);
         if (! $collection->hasFailed()) {
             $mail = (new Entity)->toCustomMessageEntity($process, $collection->getValues());
-            $mail = \App::$http->readPostResult('/mails/', $mail)->getEntity();
+            $mail = \App::$http->readPostResult('/mails/', $mail->withDepartment($department))->getEntity();
             return $mail;
         }
         return $collection->getStatus();

@@ -19,21 +19,18 @@ class CalendarPage extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $cluster = null;
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+
         $validator = $request->getAttribute('validator');
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
 
         $slotType = $validator->getParameter('slottype')->isString()->getValue();
         $slotsRequired = $validator->getParameter('slotsrequired')->isNumber()->getValue();
 
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $scope = new Scope($workstation->scope);
         $calendar = new Helper\Calendar($selectedDate);
 
-        if (1 == $workstation->queue['clusterEnabled']) {
-            $cluster = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/cluster/')->getEntity();
-        }
-        $scopeList = $workstation->getScopeList($cluster);
+        $scopeList = (new Helper\ClusterHelper($workstation))->getScopeList();
 
         return \BO\Slim\Render::withHtml(
             $response,
