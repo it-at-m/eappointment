@@ -15,6 +15,7 @@ class View extends BaseView {
         this.selectedDate = options['selected-date'];
         this.selectedTime = options['selected-time'];
         this.selectedProcess = options['selected-process'];
+        this.calledProcess = options['called-process'];
         this.bindPublicMethods('loadAllPartials', 'onDatePick', 'onDateToday', 'onNextProcess','onDeleteProcess','onEditProcess','onSaveProcess','onQueueProcess');
         this.$.ready(this.loadData);
         $.ajaxSetup({ cache: false });
@@ -64,6 +65,7 @@ class View extends BaseView {
     }
 
     onNextProcess() {
+        this.calledProcess = null;
         this.loadQueueTable();
     }
 
@@ -90,6 +92,7 @@ class View extends BaseView {
         return new ClientNextView(this.$main.find('[data-client-next]'), {
             selectedDate: this.selectedDate,
             includeUrl: this.includeUrl,
+            calledProcess: this.calledProcess,
             onNextProcess: this.onNextProcess
         })
     }

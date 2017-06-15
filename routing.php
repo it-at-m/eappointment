@@ -342,7 +342,7 @@ use \Psr\Http\Message\ResponseInterface;
     ->setName("workstationProcessFinished");
 
 \App::$slim->get('/workstation/call/{id:\d+}/', '\BO\Zmsadmin\WorkstationProcessCall')
-    ->setName("workstationCallProcess");
+    ->setName("workstationProcessCall");
 
 \App::$slim->get('/workstation/process/cancel/', '\BO\Zmsadmin\WorkstationProcessCancel')
     ->setName("workstationProcessCancel");

@@ -24,7 +24,7 @@ class WorkstationProcessCalled extends BaseController
     ) {
         $validator = $request->getAttribute('validator');
 
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 3])->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $workstationInfo = Helper\WorkstationInfo::getInfoBoxData($workstation);
         $cluster = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/cluster/')->getEntity();
         $processId = Validator::value($args['id'])->isNumber()->getValue();
