@@ -19,10 +19,12 @@ class ProcessArchiveTest extends Base
         $now = new \DateTimeImmutable("2016-04-18 11:55");
         $entity =(new Query)->readEntity(10029, '1c56', 0);
         $entity->status = 'finished';
+        $entity->queue->callTime = 1460972400;
         $archivedWrite = $queryArchived->writeEntityFinished($entity, $now);
         $archivedRead = $queryArchived->readArchivedEntity($archivedWrite->archiveId, 1);
         $this->assertEquals($archivedWrite->archiveId, $archivedRead->archiveId);
         $this->assertEquals('archived', $archivedRead->status);
+        $this->assertEquals('600', $archivedRead->waitingTime);
 
         $archivedRead = $queryArchived->readArchivedEntity(null);
         $this->assertEquals(null, $archivedRead);
