@@ -406,7 +406,7 @@ class Process extends Schema\Entity
         if (!$this->queue->callTime) {
             return null;
         }
-        return $this->queue->arrivalTime - $this->queue->callTime;
+        return $this->queue->callTime - $this->queue->arrivalTime;
     }
 
     public function toDerefencedAmendment()
