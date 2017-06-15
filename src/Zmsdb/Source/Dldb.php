@@ -113,9 +113,7 @@ class Dldb extends \BO\Zmsdb\Base
         }
     }
 
-    /**
-     * @codeCoverageIgnore
-     */
+    //@codeCoverageIgnoreStart
     public function replaceRequests($serviceList)
     {
         $this->getWriter()->exec('DELETE FROM `request`;');
@@ -140,4 +138,5 @@ class Dldb extends \BO\Zmsdb\Base
             $query->execute();
         }
     }
+    //@codeCoverageIgnoreEnd
 }

@@ -56,7 +56,7 @@ class ProcessStatusArchived extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionTime(DateTimeInterface $now)
+    public function addConditionTime(\DateTimeInterface $now)
     {
         $this->query->where('process.Datum', '=', $now->format('Y-m-d'));
         return $this;
@@ -80,17 +80,11 @@ class ProcessStatusArchived extends Base implements MappingInterface
             'StandortID' => $process->scope['id'],
             'Datum' => $process->getFirstAppointment()->toDateTime()->format('Y-m-d'),
             'mitTermin' => $process->toQueue($now)->withAppointment,
-            'nicht_erschienen' => ('missed' == $process->status) ? 1 : 0,
+            'nicht_erschienen' => ('missed' == $process->queue['status']) ? 1 : 0,
             'Timestamp' => $now->format('H:i:s'),
             'wartezeit' => $process->getWaitedSeconds(),
             'AnzahlPersonen' => $process->getClients()->count()
         ]);
-    }
-
-    public function postArchive($data)
-    {
-        $data["date"] = strtotime($data["date"]);
-        return $data;
     }
 
     public function postProcess($data)
@@ -104,8 +98,8 @@ class ProcessStatusArchived extends Base implements MappingInterface
         if (isset($data[$this->getPrefixed('__clientsCount')])) {
             $clientsCount = $data[$this->getPrefixed('__clientsCount')];
             unset($data[$this->getPrefixed('__clientsCount')]);
-            while (--$clientsCount > 0) {
-                $data[$this->getPrefixed('clients__'.$clientsCount.'__familyName')] = 'Unbekannt';
+            while ($clientsCount-- > 0) {
+                $data[$this->getPrefixed('clients__'.$clientsCount.'__familyName')] = 'Unknown';
             }
         }
         return $data;

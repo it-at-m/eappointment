@@ -157,6 +157,7 @@ abstract class Base
 
     /**
      * @SuppressWarnings(Param)
+     * @codeCoverageIgnore
      *
      */
     public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $entity, $resolveReferences)
