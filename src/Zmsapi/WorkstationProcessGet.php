@@ -24,9 +24,8 @@ class WorkstationProcessGet extends BaseController
     ) {
         (new Helper\User($request))->checkRights();
         $query = new Process();
-        $processAuthData = $query->readAuthKeyByProcessId($args['id']);
-        $process = $query->readEntity($args['id'], $processAuthData['authKey']);
-        if (! $process) {
+        $process = $query->readEntity($args['id'], (new \BO\Zmsdb\Helper\NoAuth()));
+        if (! $process || ! $process->hasId()) {
             throw new Exception\Process\ProcessNotFound();
         }
 

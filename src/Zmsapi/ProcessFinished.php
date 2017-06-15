@@ -40,7 +40,7 @@ class ProcessFinished extends BaseController
         }
         $cluster = (new \BO\Zmsdb\Cluster)->readByScopeId($workstation->scope['id'], 1);
         $workstation->process = $process;
-        $workstation->testMatchingProcessScope($cluster);
+        $workstation->testMatchingProcessScope($workstation->getScopeList($cluster));
 
         $query = new Query();
         if ('pending' == $process['status']) {

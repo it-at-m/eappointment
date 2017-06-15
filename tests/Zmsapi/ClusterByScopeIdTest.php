@@ -10,8 +10,7 @@ class ClusterByScopeIdTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation();
-        User::$workstation->useraccount->setRights('cluster');
+        $this->setWorkstation()->getUseraccount()->setRights('cluster');
         $response = $this->render(['id' => 141], [], []);
         $this->assertContains('cluster.json', (string)$response->getBody());
         $this->assertContains('109', (string)$response->getBody());
@@ -20,18 +19,15 @@ class ClusterByScopeIdTest extends Base
 
     public function testEmpty()
     {
-        $this->setWorkstation();
-        User::$workstation->useraccount->setRights('cluster');
+        $this->setWorkstation()->getUseraccount()->setRights('cluster');
         $this->setExpectedException('\ErrorException');
         $this->render([], [], []);
     }
 
     public function testNotFound()
     {
-        $this->setWorkstation();
-        User::$workstation->useraccount->setRights('cluster');
-        $this->expectException('\BO\Zmsapi\Exception\Cluster\ClusterNotFound');
-        $this->expectExceptionCode(404);
-        $this->render(['id' => 999], [], []);
+        $this->setWorkstation()->getUseraccount()->setRights('cluster');
+        $response = $this->render(['id' => 999], [], []);
+        $this->assertTrue(200 == $response->getStatusCode());
     }
 }
