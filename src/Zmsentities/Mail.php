@@ -79,6 +79,11 @@ class Mail extends Schema\Entity
         }
         $entity->process = $process;
         $entity->createIP = $process->createIP;
+
+        if (! isset($entity['client'])) {
+            $entity['client'] = $entity->getFirstClient();
+        }
+
         $entity->multipart[] = new Mimepart(array(
             'mime' => 'text/html',
             'content' => $message,
@@ -101,6 +106,10 @@ class Mail extends Schema\Entity
         $entity->subject = Helper\Messaging::getMailSubject($process, $config, $initator);
         $entity->createIP = $process->createIP;
 
+        if (! isset($entity['client'])) {
+            $entity['client'] = $entity->getFirstClient();
+        }
+
         $entity->multipart[] = new Mimepart(array(
             'mime' => 'text/html',
             'content' => $content,
@@ -119,5 +128,11 @@ class Mail extends Schema\Entity
             ));
         }
         return $entity;
+    }
+
+    public function withDepartment($department)
+    {
+        $this->department = $department;
+        return $this;
     }
 }
