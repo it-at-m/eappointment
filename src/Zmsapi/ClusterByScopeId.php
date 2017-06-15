@@ -24,15 +24,12 @@ class ClusterByScopeId extends BaseController
         (new Helper\User($request))->checkRights('cluster');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $cluster = (new Query)->readByScopeId($args['id'], $resolveReferences);
-        if (! $cluster) {
-            throw new Exception\Cluster\ClusterNotFound();
-        }
 
         $message = Response\Message::create($request);
-        $message->data = ($cluster) ? $cluster : array();
+        $message->data = $cluster;
 
         $response = Render::withLastModified($response, time(), '0');
-        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+        $response = Render::withJson($response, $message, 200);
         return $response;
     }
 }

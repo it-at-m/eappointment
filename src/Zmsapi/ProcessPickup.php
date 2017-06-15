@@ -45,7 +45,7 @@ class ProcessPickup extends BaseController
         } else {
             throw new Exception\Process\ProcessInvalid();
         }
-        $workstation->testMatchingProcessScope($cluster, $process);
+        $workstation->testMatchingProcessScope($workstation->getScopeList($cluster), $process);
         (new \BO\Zmsdb\Workstation)->writeAssignedProcess($workstation->id, $process);
 
         $message = Response\Message::create($request);

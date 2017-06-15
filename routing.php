@@ -3032,7 +3032,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  type: integer
  *          responses:
  *              200:
- *                  description: "success"
+ *                  description: "success, might be empty"
  *                  schema:
  *                      type: object
  *                      properties:
@@ -3040,8 +3040,6 @@ use \Psr\Http\Message\ResponseInterface;
  *                              $ref: "schema/metaresult.json"
  *                          data:
  *                              $ref: "schema/cluster.json"
- *              404:
- *                  description: "could not find a cluster"
  */
 \App::$slim->get('/scope/{id:\d{1,11}}/cluster/',
     '\BO\Zmsapi\ClusterByScopeId')
