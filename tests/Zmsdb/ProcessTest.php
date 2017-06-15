@@ -11,21 +11,11 @@ use \BO\Zmsentities\Calendar;
 
 /**
  * @SuppressWarnings(TooManyPublicMethods)
+ * @SuppressWarnings(Coupling)
  *
  */
 class ProcessTest extends Base
 {
-    public function testReadEntityFailed()
-    {
-        $this->setExpectedException('\BO\Zmsdb\Exception\Process\ProcessAuthFailed');
-
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
-        $query = new ProcessStatusFree();
-        $input = $this->getTestProcessEntity();
-        $process = $query->writeEntityReserved($input, $now);
-        $process = $query->readEntity($process->id, '1234');
-    }
-
     public function testReadByQueueNumberAndScope()
     {
         $now = new \DateTimeImmutable("2016-04-01 11:55");
