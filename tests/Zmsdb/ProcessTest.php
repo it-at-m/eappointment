@@ -94,6 +94,7 @@ class ProcessTest extends Base
         $this->assertEquals('confirmed', $process->getStatus());
         $this->assertEquals(1464339600, $process->queue['arrivalTime']);
         $this->assertEquals(2, $process->clients->count());
+        $this->assertEquals('Unbekannt', $process->getClients()->getLast()->familyName);
     }
 
     public function testUpdateProcessWithStatusProcessing()

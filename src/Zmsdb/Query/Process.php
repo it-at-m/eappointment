@@ -112,7 +112,7 @@ class Process extends Base implements MappingInterface
             'CASE
                 WHEN process.Name = "(abgesagt)"
                     THEN "deleted"
-                WHEN process.Name = "dereferenced" AND process.StandortID = 0
+                WHEN process.Name = "dereferenced" AND process.StandortID = 0 AND process.nicht_erschienen = 0
                     THEN "blocked"
                 WHEN process.vorlaeufigeBuchung = 1
                     THEN "reserved"
@@ -426,6 +426,9 @@ class Process extends Base implements MappingInterface
         if ($process->status == 'queued') {
             $data['nicht_erschienen'] = 0;
             $data['wsm_aufnahmezeit'] = (new \DateTimeImmutable())->format('H:i:s');
+        }
+        if ($process->status == 'missed') {
+            $data['nicht_erschienen'] = 1;
         }
         return $data;
     }

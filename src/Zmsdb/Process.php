@@ -360,6 +360,9 @@ class Process extends Base implements Interfaces\ResolveReferences
     public function writeBlockedEntity(\BO\Zmsentities\Process $process)
     {
         $amendment = $process->toDerefencedAmendment();
+        if (! isset($process->queue['status'])) {
+            $process->queue['status'] = $process->status;
+        }
         $process->status = 'blocked';
         $query = Query\Process::QUERY_DEREFERENCED;
         $statement = $this->getWriter()->prepare($query);
