@@ -17,6 +17,7 @@ use \Solution10\SQL\Expression;
 
 /**
  * @SuppressWarnings(NumberOfChildren)
+ * @SuppressWarnings(Complexity)
  *
  */
 abstract class Base
