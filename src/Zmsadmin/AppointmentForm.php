@@ -27,16 +27,7 @@ class AppointmentForm extends BaseController
         $selectedProcess = ($selectedProcessId) ?
             \App::$http->readGetResult('/process/'. $selectedProcessId .'/')->getEntity() : null;
 
-        if (1 == $workstation->queue['clusterEnabled']) {
-            $cluster = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/cluster/')->getEntity();
-            $requestList = \App::$http
-                ->readGetResult('/cluster/'. $cluster->id .'/request/')->getCollection();
-        } else {
-            $cluster = null;
-            $requestList = \App::$http
-                ->readGetResult('/scope/'. $workstation->scope['id'] .'/request/')->getCollection();
-        }
-
+        $requestList = (new Helper\ClusterHelper($workstation))->getRequestList();
         $freeProcessList = Helper\AppointmentFormHelper::readFreeProcessList($request, $workstation);
 
         return \BO\Slim\Render::withHtml(

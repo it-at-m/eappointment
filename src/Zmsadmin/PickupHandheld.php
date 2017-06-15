@@ -22,7 +22,6 @@ class PickupHandheld extends BaseController
         if (is_array($input) && array_key_exists('selectedprocess', $input)) {
             $selectedProcess = $this->readPickupProcess($input['selectedprocess']);
         }
-        $cluster = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/cluster/')->getEntity();
         $processList = \App::$http->readGetResult('/workstation/process/pickup/', ['resolveReferences' => 1])
             ->getCollection();
         $department = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/department/')->getEntity();
@@ -35,7 +34,7 @@ class PickupHandheld extends BaseController
               'menuActive' => 'pickup',
               'workstation' => $workstation->getArrayCopy(),
               'department' => $department,
-              'cluster' => ($cluster) ? $cluster : null,
+              'cluster' => (new Helper\ClusterHelper($workstation))->getEntity(),
               'processList' => $processList,
               'selectedProcess' => $selectedProcess
             )

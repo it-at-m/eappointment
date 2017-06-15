@@ -19,7 +19,6 @@ class Pickup extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         // todo Get cluster from workstation, avoid extra api call
-        $cluster = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/cluster/')->getEntity();
         $processList = \App::$http->readGetResult('/workstation/process/pickup/', ['resolveReferences' => 1])
             ->getCollection();
         $department = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/department/')->getEntity();
@@ -33,7 +32,7 @@ class Pickup extends BaseController
               'workstation' => $workstation->getArrayCopy(),
               'department' => $department,
               'source' => $workstation->getRedirect(),
-              'cluster' => ($cluster) ? $cluster : null,
+              'cluster' => (new Helper\ClusterHelper($workstation))->getEntity(),
               'processList' => $processList
             )
         );

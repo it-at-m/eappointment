@@ -69,7 +69,7 @@ $('[data-scope-select-form]').each(function() {
     new ScopeSelectView(this, getDataAttributes(this));
 })
 
-$('.pickup-table, .pickup-table-handheld').each(function() {
+$('.pickup-view, .pickup-handheld-view').each(function() {
     new PickupView(this, getDataAttributes(this));
 })
 

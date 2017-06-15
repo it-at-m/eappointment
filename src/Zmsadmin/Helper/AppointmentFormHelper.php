@@ -59,10 +59,7 @@ class AppointmentFormHelper
         $slotsRequired = $validator->getParameter('slotsrequired')->isNumber()->getValue();
         $slotsRequired = ($slotsRequired) ? $slotsRequired : 0;
         $calendar = new Calendar($selectedDate);
-        $cluster = (1 == $workstation->queue['clusterEnabled']) ?
-            \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/cluster/')->getEntity() :
-            null;
-        $scopeList = $workstation->getScopeList($cluster);
+        $scopeList = (new ClusterHelper($workstation))->getScopeList();
         $freeProcessList = $calendar->readAvailableSlotsFromDayAndScopeList($scopeList, $slotType, $slotsRequired);
         return ($freeProcessList) ? $freeProcessList->toProcessListByTime()->sortByTimeKey() : null;
     }
