@@ -54,38 +54,21 @@ class Entity extends \ArrayObject implements \JsonSerializable
         $this->addData($input);
     }
 
+    public function getUnflattenedArray($input)
+    {
+        if (!$input instanceof UnflattedArray) {
+            $input = new UnflattedArray($input);
+            $input->getUnflattenedArray();
+        }
+        $input = $input->getValue();
+        return $input;
+    }
     /**
      * Set Default values
      */
     public function getDefaults()
     {
         return [];
-    }
-
-    /**
-      * split fields
-      * If a key to a field has two underscores "__" it should go into a subarray
-      * ATTENTION: performance critical function, keep highly optimized!
-      * @param  array $hash
-      *
-      * @return array
-      */
-    public function getUnflattenedArray($hash)
-    {
-        foreach ($hash as $key => $value) {
-            if (false !== strpos($key, '__')) {
-                $currentLevel =& $hash;
-                unset($hash[$key]);
-                foreach (explode('__', $key) as $currentKey) {
-                    if (!isset($currentLevel[$currentKey])) {
-                        $currentLevel[$currentKey] = [];
-                    }
-                    $currentLevel =& $currentLevel[$currentKey];
-                }
-                $currentLevel = $value;
-            }
-        }
-        return (array)$hash;
     }
 
     /**
@@ -187,8 +170,12 @@ class Entity extends \ArrayObject implements \JsonSerializable
             '$schema' => 'https://schema.berlin.de/queuemanagement/' . $this->getEntityName() . '.json'
         );
         $schema = array_merge($schema, $this->getArrayCopy());
+        if ($this instanceof \BO\Zmsentities\Helper\NoSanitize) {
+            $serialize = $schema;
+        } else {
         $schema = new Schema($schema);
         $serialize = $schema->toJsonObject();
+        }
         return $serialize;
     }
 
@@ -213,21 +200,19 @@ class Entity extends \ArrayObject implements \JsonSerializable
     public function addData($mergeData)
     {
         foreach ($mergeData as $key => $item) {
-            if (array_key_exists($key, $this) && $this[$key] instanceof Entity) {
+            if (isset($this[$key])) {
+                if ($this[$key] instanceof Entity) {
                 $this[$key]->setResolveLevel($this->getResolveLevel() - 1);
                 $this[$key]->addData($item);
-            } elseif (array_key_exists($key, $this) && $this[$key] instanceof \BO\Zmsentities\Collection\Base) {
+                } elseif ($this[$key] instanceof \BO\Zmsentities\Collection\Base) {
                 $this[$key]->exchangeArray([]);
                 $this[$key]->setResolveLevel($this->getResolveLevel() - 1);
                 $this[$key]->addData($item);
-            } elseif (array_key_exists($key, $this) && is_array($this[$key])) {
-                /* is this in use?
-                if (!is_array($item)) {
-                    var_dump($key);
-                    var_dump($item);
+                } elseif (is_array($this[$key])) {
+                    $this[$key] = array_replace_recursive($this[$key], $item);
+                } else {
+                    $this[$key] = $item;
                 }
-                */
-                $this[$key] = array_replace_recursive($this[$key], $item);
             } else {
                 $this[$key] = $item;
             }

@@ -15,6 +15,22 @@ class ProcessList extends Base
         return $list;
     }
 
+    protected function sortByArrivalTime()
+    {
+        $this->uasort(function ($a, $b) {
+            return ($a->queue['arrivalTime'] - $b->queue['arrivalTime']);
+        });
+        return $this;
+    }
+
+    public function sortByTimeKey()
+    {
+        $this->uksort(function ($a, $b) {
+            return ($a - $b);
+        });
+        return $this;
+    }
+
     public function toProcessListByStatusAndTime()
     {
         $list = $this->getWithHoursByDay();

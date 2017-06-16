@@ -49,4 +49,15 @@ class ScopeList extends Base
         }
         return $scopeList;
     }
+
+    public function sortByContactName()
+    {
+        $this->uasort(function ($a, $b) {
+            return strcmp(
+                Sorter::toSortableString(ucfirst($a->contact['name'])),
+                Sorter::toSortableString(ucfirst($b->contact['name']))
+            );
+        });
+        return $this;
+    }
 }

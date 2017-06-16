@@ -6,7 +6,7 @@ namespace BO\Zmsentities\Collection;
  * @SuppressWarnings(PublicMethod)
  *
  */
-class QueueList extends Base
+class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
 {
     const ENTITY_CLASS = '\BO\Zmsentities\Queue';
 
@@ -185,21 +185,15 @@ class QueueList extends Base
     public function withoutDublicates()
     {
         $list = new self();
+        $exists = [];
         foreach ($this as $entity) {
-            $hasEntity = false;
-            foreach ($list as $inListEntity) {
-                if ($inListEntity->number == $entity->number &&
-                    $inListEntity->arrivalTime == $entity->arrivalTime &&
-                    $inListEntity->withAppointment == $entity->withAppointment
-                ) {
-                    $hasEntity = true;
-                }
-            }
-            if (! $hasEntity) {
-                $list->addEntity($entity);
+            $key = "$entity->number-$entity->arrivalTime-$entity->withAppointment";
+            if (!isset($exists[$key])) {
+                $list[] = $entity;
+                $exists[$key] = true;
             }
         }
-        return $list->withSortedArrival();
+        return $list->withSortedArrival(); // Cloning with this function
     }
 
     public function getWaitingNumberList()

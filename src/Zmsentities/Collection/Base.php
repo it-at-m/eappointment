@@ -46,33 +46,6 @@ class Base extends \ArrayObject
         return $this;
     }
 
-    public function sortByContactName()
-    {
-        $this->uasort(function ($a, $b) {
-            return strcmp(
-                Sorter::toSortableString(ucfirst($a->contact['name'])),
-                Sorter::toSortableString(ucfirst($b->contact['name']))
-            );
-        });
-        return $this;
-    }
-
-    public function sortByArrivalTime()
-    {
-        $this->uasort(function ($a, $b) {
-            return ($a->queue['arrivalTime'] - $b->queue['arrivalTime']);
-        });
-        return $this;
-    }
-
-    public function sortByTimeKey()
-    {
-        $this->uksort(function ($a, $b) {
-            return ($a - $b);
-        });
-        return $this;
-    }
-
     public function sortByCustomKey($key)
     {
         $this->uasort(function ($a, $b) use ($key) {
