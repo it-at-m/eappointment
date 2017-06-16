@@ -83,22 +83,7 @@ class Department extends Schema\Entity
     public function withCompleteScopeList()
     {
         $department = clone $this;
-        $scopeList = new Collection\ScopeList();
-
-        foreach ($department->scopes as $scope) {
-            $scopeList->addEntity(new Scope($scope));
-        }
-
-        foreach ($department->clusters as $cluster) {
-            if (array_key_exists('scopes', $cluster)) {
-                foreach ($cluster['scopes'] as $clusterScope) {
-                    $scopeList->addEntity(new Scope($clusterScope));
-                }
-            }
-        }
-
-        $department->scopes = $scopeList->withUniqueScopes();
-
+        $department->scopes = $this->getScopeList()->withUniqueScopes();
         return $department;
     }
 

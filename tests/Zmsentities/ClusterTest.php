@@ -28,7 +28,12 @@ class ClusterTest extends EntityCommonTests
 
         $this->assertTrue($collection->hasScope(1234), 'Failed to get scope with id 1234 in clusterlist');
         $this->assertFalse($collection->hasScope(1235), 'Scope with id 1235 should not available in clusterlist');
+    }
 
-
+    public function testGetScopesWorkstationCount()
+    {
+        $entity = $this->getExample();
+        $entity['scopes'] = [(new \BO\Zmsentities\Scope)->getExample()];
+        $this->assertEquals(1, $entity->getScopesWorkstationCount());
     }
 }

@@ -4,7 +4,6 @@ namespace BO\Zmsentities\Tests;
 
 class MailTest extends EntityCommonTests
 {
-
     public $entityclass = '\BO\Zmsentities\Mail';
 
     public $collectionclass = '\BO\Zmsentities\Collection\MailList';
@@ -31,7 +30,8 @@ class MailTest extends EntityCommonTests
         $entity = (new $this->entityclass())->getExample();
         $process = (new \BO\Zmsentities\Process())->getExample();
         $config = (new \BO\Zmsentities\Config())->getExample();
-        $entity->addMultiPart(array ());
+        $entity->addMultiPart(array());
+        $entity->client = null;
         $this->assertTrue(null === $entity->getHtmlPart(), 'Mimepart with mime text/html should not exist');
         $this->assertTrue(null === $entity->getPlainPart(), 'Mimepart with mime text/plain should not exist');
         $this->assertTrue(null === $entity->getIcsPart(), 'Mimepart with mime text/calendar should not exist');
@@ -47,5 +47,67 @@ class MailTest extends EntityCommonTests
             'Mimepart content is not plain text'
         );
         $this->assertContains('BEGIN:VCALENDAR', $resolvedEntity->getIcsPart(), 'Mimepart content is not plain text');
+    }
+
+    public function testMailWithInitiator()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $process = (new \BO\Zmsentities\Process())->getExample();
+        $process->status = 'updated';
+        $config = (new \BO\Zmsentities\Config())->getExample();
+        $entity->addMultiPart(array());
+        $entity->client = null;
+        $resolvedEntity = $entity->toResolvedEntity($process, $config, 'admin');
+        $this->assertContains(
+            'Geändert wurde der Termin von Max Mustermann',
+            $resolvedEntity->getHtmlPart(),
+            'Mimepart content is not html'
+        );
+        $this->assertContains(
+            'Die Terminänderung wurde initiiert via "admin"',
+            $resolvedEntity->getPlainPart(),
+            'Mimepart content is not plain text'
+        );
+    }
+
+    public function testMailWithSurveyAccepted()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $process = (new \BO\Zmsentities\Process())->getExample();
+        $process->status = 'finished';
+        $process->scope['preferences']['survey']['emailContent'] = 'Das ist eine Umfrage';
+        $process->getFirstClient()->surveyAccepted = 1;
+        $config = (new \BO\Zmsentities\Config())->getExample();
+        $entity->addMultiPart(array());
+        $entity->client = null;
+        $resolvedEntity = $entity->toResolvedEntity($process, $config);
+        $this->assertContains(
+            'Das ist eine Umfrage',
+            $resolvedEntity->getPlainPart(),
+            'Mimepart content is not plain text'
+        );
+    }
+
+    public function testToCustomMessageEntity()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $process = (new \BO\Zmsentities\Process())->getExample();
+        $formCollection = array(
+            'subject' => \BO\Mellon\Validator::value('Das ist ein Test')->isString()->isBiggerThan(2),
+            'message' => \BO\Mellon\Validator::value('Das ist eine Testnachricht')->isString()->isBiggerThan(2)
+        );
+        $formCollection = \BO\Mellon\Validator::collection($formCollection);
+        $entity = $entity->toCustomMessageEntity($process, $formCollection->getValues());
+        $this->assertEquals('Das ist ein Test', $entity->subject);
+        $this->assertEquals('Das ist eine Testnachricht', $entity->getPlainPart());
+        $this->assertEquals(null, $entity->getIcsPart());
+    }
+
+    public function testWithDepartment()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $department = (new \BO\Zmsentities\Department)->getExample();
+        $entity->withDepartment($department);
+        $this->assertEquals('Flughafen Schönefeld, Landebahn', $entity->department->getContact()->name);
     }
 }

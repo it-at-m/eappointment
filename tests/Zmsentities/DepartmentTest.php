@@ -9,7 +9,6 @@ use BO\Zmsentities\Scope;
 
 class DepartmentTest extends EntityCommonTests
 {
-
     public $entityclass = '\BO\Zmsentities\Department';
 
     public $collectionclass = '\BO\Zmsentities\Collection\DepartmentList';
@@ -68,5 +67,29 @@ class DepartmentTest extends EntityCommonTests
         $this->assertEquals(2, $collection->getFirst()->scopes->count());
         $collection = $collection->withOutClusterDuplicates();
         $this->assertEquals(0, $collection->getFirst()->scopes->count());
+    }
+
+    public function testGetDayoffList()
+    {
+        $entity = $this->getExample();
+        $entity->dayoff = $entity->getDayoffList()->getArrayCopy();
+        $entity->dayoff[] = [
+            "date" => 1447922381000,
+            "name" => "TestAsArray"
+        ];
+        $this->assertEquals(3, $entity->getDayoffList()->count());
+        $this->assertEntityList('\BO\Zmsentities\Dayoff', $entity->getDayoffList());
+    }
+
+    public function testWithCompleteScopeList()
+    {
+        $entity = $this->getExample();
+        $cluster = (new Cluster())->getExample();
+        $scope = (new Scope())->getExample();
+        $scope->id = 141;
+        $cluster['scopes'][] = $scope;
+        $entity['clusters'] = (new ClusterList());
+        $entity['clusters']->addEntity($cluster);
+        $this->assertEquals(4, $entity->withCompleteScopeList()->scopes->count());
     }
 }

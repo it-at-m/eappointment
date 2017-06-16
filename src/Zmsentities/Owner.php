@@ -23,7 +23,7 @@ class Owner extends Schema\Entity
     public function getOrganisationList()
     {
         if (!$this->organisations instanceof Collection\OrganisationList) {
-            $this->organisations = new Collection\DepartmentList($this->organisations);
+            $this->organisations = new Collection\OrganisationList($this->organisations);
             foreach ($this->organisations as $key => $organisation) {
                 $this->organisations[$key] = new Organisation($organisation);
             }

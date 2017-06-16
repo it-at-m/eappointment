@@ -47,8 +47,9 @@ class SchemaTest extends Base
 
     public function testTestValid()
     {
-        $entity = new \BO\Zmsentities\Department();
-        $entity->id = 'Ident';
+        $entity = new \BO\Zmsentities\Useraccount();
+        $entity->id= 123;
+        $entity->changePassword= array('test', 'testfailed');
         try {
             $entity->testValid();
             $this->fail("Expected exception SchemaValidation not thrown");

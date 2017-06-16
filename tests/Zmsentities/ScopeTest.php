@@ -17,12 +17,19 @@ class ScopeTest extends EntityCommonTests
         $this->assertTrue(is_array($entity->getNotificationPreferences()), 'Notification preferences not available');
         $this->assertContains('erfolgreich', $entity->getConfirmationContent(), 'Confirmation content not available');
         $this->assertContains('Warteraum', $entity->getHeadsUpContent(), 'Confirmation HeadsUpContent not available');
-        $this->assertTrue('23' == $entity->getStatus('queue','givenNumberCount'), 'Status is not accessible');
+        $this->assertTrue('23' == $entity->getStatus('queue', 'givenNumberCount'), 'Status is not accessible');
         $this->assertTrue(null === $entity->getContactEmail(), 'Contact eMail should not be available');
         $this->assertContains('Flughafen', $entity->getName(), 'Contact name not available');
         $this->assertEquals('Bürgeramt', $entity->getScopeInfo(), 'Scope Info is not available');
         $this->assertEquals('dritte Tür rechts', $entity->getScopeHint(), 'Scope hint (from hint) is not available');
         $this->assertContains('Flughafen', (string)$entity, 'Contact name not available');
+    }
+
+    public function testWithCleanedUpFormData()
+    {
+        $entity = $this->getExample();
+        $entity->save = 'submit';
+        $this->assertFalse(array_key_exists('save', $entity->withCleanedUpFormData()));
     }
 
     public function testProvider()
@@ -61,6 +68,9 @@ class ScopeTest extends EntityCommonTests
     {
         $entity = (new $this->entityclass())->getExample();
         $this->assertEquals(1, $entity->getCalculatedWorkstationCount());
+        $entity->status['queue']['workstationCount'] = 0;
+        $entity->status['queue']['ghostWorkstationCount'] = 2;
+        $this->assertEquals(2, $entity->getCalculatedWorkstationCount());
     }
 
     public function testGetWaitingTimeFromQueueList()
@@ -94,5 +104,17 @@ class ScopeTest extends EntityCommonTests
         $entity->status['queue']['lastGivenNumber'] = 501;
         $updatedEntity = $entity->updateStatusQueue($now);
         $this->assertEquals(300, $updatedEntity->toProperty()->status->queue->lastGivenNumber->get());
+    }
+
+    public function testGetDayoffList()
+    {
+        $entity = $this->getExample();
+        $entity->dayoff[] = [
+            "date" => 1447922381000,
+            "name" => "TestAsArray"
+        ];
+        $this->assertEquals(1, $entity->getDayoffList()->count());
+        $this->assertEntityList('\BO\Zmsentities\Dayoff', $entity->getDayoffList());
+        $this->assertTrue(! array_key_exists('dayoff', $entity->withLessData()));
     }
 }

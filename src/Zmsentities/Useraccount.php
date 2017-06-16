@@ -166,7 +166,7 @@ class Useraccount extends Schema\Entity
 
     public function withDepartmentList()
     {
-        $departmentList = new Collection\departmentList();
+        $departmentList = new Collection\DepartmentList();
         $entity = clone $this;
         foreach ($this->departments as $department) {
             if (! is_array($department)) {
@@ -181,7 +181,6 @@ class Useraccount extends Schema\Entity
     public function withCleanedUpFormData()
     {
         unset($this['save']);
-        unset($this['checkPassword']);
         if (isset($this['password']) && '' == $this['password']) {
             unset($this['password']);
         }

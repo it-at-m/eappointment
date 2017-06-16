@@ -4,6 +4,8 @@ namespace BO\Zmsentities\Tests;
 
 class UseraccountTest extends EntityCommonTests
 {
+    const DEFAULT_TIME = '2016-04-01 11:55:00';
+
     public $entityclass = '\BO\Zmsentities\Useraccount';
 
     public function testBasic()
@@ -41,5 +43,61 @@ class UseraccountTest extends EntityCommonTests
         $this->setExpectedException('\BO\Zmsentities\Exception\UserAccountMissingDepartment');
         $entity = (new $this->entityclass())->getExample();
         $entity->testDepartmentById(55);
+    }
+
+    public function testGetDepartmentList()
+    {
+        $entity = $this->getExample();
+        $entity->departments = $entity->getDepartmentList()->getArrayCopy();
+        $this->assertEquals(1, $entity->getDepartmentList()->count());
+        $this->assertEntityList('\BO\Zmsentities\Department', $entity->getDepartmentList());
+    }
+
+    public function testRightsLevel()
+    {
+        $entity = $this->getExample();
+        $this->assertEquals(30, $entity->getRightsLevel());
+        $this->assertFalse($entity->isSuperUser());
+    }
+
+    public function testHasEditAccess()
+    {
+        $entity = $this->getExample();
+        $this->assertTrue($entity->hasEditAccess($entity));
+    }
+
+    public function testHasEditAccessFailed()
+    {
+        $this->setExpectedException('BO\Zmsentities\Exception\UserAccountAccessRightsFailed');
+        $entity = $this->getExample();
+        $entity2 = $this->getExample();
+        unset($entity2->rights['scope']);
+        $entity2->hasEditAccess($entity);
+    }
+
+    public function testIsOveraged()
+    {
+        $now = new \DateTimeImmutable(self::DEFAULT_TIME);
+        $entity = $this->getExample();
+        $this->assertTrue($entity->isOveraged($now));
+
+        unset($entity->lastLogin);
+        $this->assertFalse($entity->isOveraged($now));
+    }
+
+    public function testWithDepartmentList()
+    {
+        $entity = $this->getExample();
+        $this->assertEquals(1, $entity->withDepartmentList()->getDepartmentList()->count());
+        $this->assertEntityList('\BO\Zmsentities\Department', $entity->getDepartmentList());
+    }
+
+    public function testWithCleanedUpFormData()
+    {
+        $entity = $this->getExample();
+        $entity->save = 'submit';
+        $entity->password = '';
+        $entity->changePassword = array();
+        $this->assertFalse(array_key_exists('save', $entity->withCleanedUpFormData()));
     }
 }

@@ -4,7 +4,6 @@ namespace BO\Zmsentities\Tests;
 
 class AppointmentTest extends EntityCommonTests
 {
-
     public $entityclass = '\BO\Zmsentities\Appointment';
 
     public $collectionclass = '\BO\Zmsentities\Collection\AppointmentList';
@@ -53,7 +52,9 @@ class AppointmentTest extends EntityCommonTests
     {
         $entity = (new $this->entityclass())->getExample();
         $entity->addSlotCount();
-        $this->assertTrue('3' == $entity->slotCount, 'SlotCount not added.');
+        $this->assertTrue(3 == $entity->slotCount, 'SlotCount not added.');
+        $entity->addSlotCount(1);
+        $this->assertTrue(1 == $entity->slotCount, 'SlotCount not added.');
     }
 
     public function testAvailability()

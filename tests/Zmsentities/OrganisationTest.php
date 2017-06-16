@@ -37,4 +37,12 @@ class OrganisationTest extends EntityCommonTests
         $this->assertTrue(96 == $organisationList[0]->departments[0]->id, 'Getting organisation by department failed');
         $this->assertTrue(123 == $organisationList->getEntity(123)['id']);
     }
+
+    public function testGetDepartmentList()
+    {
+        $entity = $this->getExample();
+        $entity->departments = $entity->getDepartmentList()->getArrayCopy();
+        $this->assertEquals(1, $entity->getDepartmentList()->count());
+        $this->assertEntityList('\BO\Zmsentities\Department', $entity->getDepartmentList());
+    }
 }
