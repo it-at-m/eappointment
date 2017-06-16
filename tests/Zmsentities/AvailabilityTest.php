@@ -11,7 +11,6 @@ use \BO\Zmsentities\Collection\AvailabilityList;
  */
 class AvailabilityTest extends EntityCommonTests
 {
-
     const DEFAULT_TIME = '2016-01-01 12:50:00'; //friday
 
     public $entityclass = '\BO\Zmsentities\Availability';
@@ -87,6 +86,13 @@ class AvailabilityTest extends EntityCommonTests
         $this->assertFalse($entity->hasDate($time->modify('+1week'), $now), 'EndDate is smaller than startDate');
     }
 
+    public function testGetAvailableSecondsPerDay()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $withCalculatedSlots = $entity->withCalculatedSlots();
+        $this->assertEquals(5346000, $withCalculatedSlots->getAvailableSecondsPerDay());
+    }
+
     public function testDayOff()
     {
         $dayOffTime = new \DateTimeImmutable(self::DEFAULT_TIME);
@@ -95,7 +101,7 @@ class AvailabilityTest extends EntityCommonTests
         $entity = new $this->entityclass();
         $entity['startDate'] = $time->getTimestamp();
         $entity['endDate'] = $time->modify("+2month")->getTimestamp();
-        $dayOff[] = new \BO\Zmsentities\Dayoff(array (
+        $dayOff[] = new \BO\Zmsentities\Dayoff(array(
             'date' => 1451649000,
             'name' => 'Neujahr'
         ));
@@ -176,9 +182,9 @@ class AvailabilityTest extends EntityCommonTests
     public function testSlotList()
     {
         $slotListResult = new \BO\Zmsentities\Collection\SlotList(
-            array (
+            array(
                 new \BO\Zmsentities\Slot(
-                    array (
+                    array(
                         'time' => '12:00',
                         'public' => 0,
                         'callcenter' => 0,
@@ -186,7 +192,7 @@ class AvailabilityTest extends EntityCommonTests
                     )
                 ),
                 new \BO\Zmsentities\Slot(
-                    array (
+                    array(
                         'time' => '13:30',
                         'public' => 0,
                         'callcenter' => 0,
@@ -194,7 +200,7 @@ class AvailabilityTest extends EntityCommonTests
                     )
                 ),
                 new \BO\Zmsentities\Slot(
-                    array (
+                    array(
                         'time' => '15:00',
                         'public' => 0,
                         'callcenter' => 0,
@@ -202,7 +208,7 @@ class AvailabilityTest extends EntityCommonTests
                     )
                 ),
                 new \BO\Zmsentities\Slot(
-                    array (
+                    array(
                         'time' => '16:30',
                         'public' => 0,
                         'callcenter' => 0,
@@ -241,7 +247,7 @@ class AvailabilityTest extends EntityCommonTests
         $entity = new $this->entityclass(
             [
                 'id' => '93181',
-                'weekday' => array (
+                'weekday' => array(
                     'monday' => '0',
                     'tuesday' => '4',
                     'wednesday' => '0',
@@ -250,15 +256,15 @@ class AvailabilityTest extends EntityCommonTests
                     'saturday' => '0',
                     'sunday' => '0'
                 ),
-                'repeat' => array (
+                'repeat' => array(
                     'afterWeeks' => '2',
                     'weekOfMonth' => '0'
                 ),
-                'bookable' => array (
+                'bookable' => array(
                     'startInDays' => '0',
                     'endInDays' => '60'
                 ),
-                'workstationCount' => array (
+                'workstationCount' => array(
                     'public' => '2',
                     'callcenter' => '2',
                     'intern' => '2'
@@ -384,7 +390,7 @@ class AvailabilityTest extends EntityCommonTests
     {
         $availability = new Availability([
             'id' => '1',
-            'weekday' => array (
+            'weekday' => array(
                 'monday' => '0',
                 'tuesday' => '4',
                 'wednesday' => '0',
@@ -393,10 +399,10 @@ class AvailabilityTest extends EntityCommonTests
                 'saturday' => '0',
                 'sunday' => '0'
             ),
-            'repeat' => array (
+            'repeat' => array(
                 'afterWeeks' => '1',
             ),
-            'workstationCount' => array (
+            'workstationCount' => array(
                 'public' => '2',
                 'callcenter' => '2',
                 'intern' => '2'
@@ -409,7 +415,7 @@ class AvailabilityTest extends EntityCommonTests
         ]);
         $availabilityOverlap = new Availability([
             'id' => '2',
-            'weekday' => array (
+            'weekday' => array(
                 'monday' => '0',
                 'tuesday' => '4',
                 'wednesday' => '0',
@@ -418,10 +424,10 @@ class AvailabilityTest extends EntityCommonTests
                 'saturday' => '0',
                 'sunday' => '0'
             ),
-            'repeat' => array (
+            'repeat' => array(
                 'afterWeeks' => '1',
             ),
-            'workstationCount' => array (
+            'workstationCount' => array(
                 'public' => '2',
                 'callcenter' => '2',
                 'intern' => '2'
@@ -434,7 +440,7 @@ class AvailabilityTest extends EntityCommonTests
         ]);
         $availabilitySlotsize = new Availability([
             'id' => '4',
-            'weekday' => array (
+            'weekday' => array(
                 'monday' => '0',
                 'tuesday' => '4',
                 'wednesday' => '0',
@@ -443,10 +449,10 @@ class AvailabilityTest extends EntityCommonTests
                 'saturday' => '0',
                 'sunday' => '0'
             ),
-            'repeat' => array (
+            'repeat' => array(
                 'afterWeeks' => '1',
             ),
-            'workstationCount' => array (
+            'workstationCount' => array(
                 'public' => '2',
                 'callcenter' => '2',
                 'intern' => '2'
@@ -459,7 +465,7 @@ class AvailabilityTest extends EntityCommonTests
         ]);
         $availabilityOverlap2 = new Availability([
             'id' => '3',
-            'weekday' => array (
+            'weekday' => array(
                 'monday' => '0',
                 'tuesday' => '4',
                 'wednesday' => '0',
@@ -468,10 +474,10 @@ class AvailabilityTest extends EntityCommonTests
                 'saturday' => '0',
                 'sunday' => '0'
             ),
-            'repeat' => array (
+            'repeat' => array(
                 'afterWeeks' => '1',
             ),
-            'workstationCount' => array (
+            'workstationCount' => array(
                 'public' => '2',
                 'callcenter' => '2',
                 'intern' => '2'
@@ -484,7 +490,7 @@ class AvailabilityTest extends EntityCommonTests
         ]);
         $availabilityEqual = new Availability([
             'id' => '3',
-            'weekday' => array (
+            'weekday' => array(
                 'monday' => '0',
                 'tuesday' => '4',
                 'wednesday' => '0',
@@ -493,10 +499,10 @@ class AvailabilityTest extends EntityCommonTests
                 'saturday' => '0',
                 'sunday' => '0'
             ),
-            'repeat' => array (
+            'repeat' => array(
                 'afterWeeks' => '1',
             ),
-            'workstationCount' => array (
+            'workstationCount' => array(
                 'public' => '2',
                 'callcenter' => '2',
                 'intern' => '2'
@@ -538,7 +544,7 @@ class AvailabilityTest extends EntityCommonTests
         return new $this->entityclass(
             [
                 'id' => '93181',
-                'weekday' => array (
+                'weekday' => array(
                     'monday' => '0',
                     'tuesday' => '0',
                     'wednesday' => '0',
@@ -547,15 +553,15 @@ class AvailabilityTest extends EntityCommonTests
                     'saturday' => '0',
                     'sunday' => '0'
                 ),
-                'repeat' => array (
+                'repeat' => array(
                     'afterWeeks' => '2',
                     'weekOfMonth' => '0'
                 ),
-                'bookable' => array (
+                'bookable' => array(
                     'startInDays' => '0',
                     'endInDays' => '60'
                 ),
-                'workstationCount' => array (
+                'workstationCount' => array(
                     'public' => '2',
                     'callcenter' => '2',
                     'intern' => '2'

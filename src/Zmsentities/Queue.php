@@ -20,15 +20,4 @@ class Queue extends Schema\Entity
             "waitingTime" => 0
         ];
     }
-
-    public function setProcess(Process $parentProcess)
-    {
-        $this->process = $parentProcess;
-        return $this;
-    }
-
-    public function getProcess()
-    {
-        return clone $this->process;
-    }
 }

@@ -80,4 +80,12 @@ class OwnerTest extends EntityCommonTests
             1 != $accessible->getFirst()->getOrganisationList()->getFirst()->getDepartmentList()->count()
         );
     }
+
+    public function testGetOrganisationList()
+    {
+        $entity = $this->getExample();
+        $entity->organisations = $entity->getOrganisationList()->getArrayCopy();
+        $this->assertEquals(1, $entity->getOrganisationList()->count());
+        $this->assertEntityList('\BO\Zmsentities\Organisation', $entity->getOrganisationList());
+    }
 }

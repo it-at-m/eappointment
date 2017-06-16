@@ -76,4 +76,73 @@ class WorkstationTest extends EntityCommonTests
             $this->assertEquals(401, $exception->getCode());
         }
     }
+
+    public function testGetUserAccount()
+    {
+        $entity = $this->getExample();
+        $entity->useraccount = $entity->getUseraccount()->getArrayCopy();
+        $this->assertEntity('\BO\Zmsentities\Useraccount', $entity->getUseraccount());
+    }
+
+    public function testGetDepartmentList()
+    {
+        $entity = $this->getExample();
+        $this->assertEntityList('\BO\Zmsentities\Department', $entity->getDepartmentList());
+        $this->assertEquals(1, $entity->getDepartmentList()->count());
+        $this->assertEquals(null, $entity->testDepartmentList());
+    }
+
+    public function testGetDepartmentListFailed()
+    {
+        $this->setExpectedException('\BO\Zmsentities\Exception\WorkstationMissingAssignedDepartments');
+        $entity = $this->getExample();
+        $entity->getUseraccount()->departments = array();
+        $entity->testDepartmentList();
+    }
+
+    public function testGetRedirect()
+    {
+        $entity = $this->getExample();
+        $this->assertEquals('workstation', $entity->getRedirect());
+    }
+
+    public function testGetName()
+    {
+        $entity = $this->getExample();
+        $this->assertEquals('3', $entity->getName());
+    }
+
+    public function testGetScope()
+    {
+        $entity = $this->getExample();
+        $this->assertEquals('1', $entity->getScopeList()->count());
+        $this->assertTrue($entity->getScope()->hasId());
+
+        $entity2 = $this->getExample();
+        unset($entity2->scope);
+        $this->assertEquals('1', $entity2->getScopeList()->count());
+        $this->assertFalse($entity2->getScope()->hasId());
+
+        $cluster = (new \BO\Zmsentities\Cluster)->getExample();
+        $entity2->queue['clusterEnabled'] = 1;
+        $this->assertEquals('2', $entity2->getScopeList($cluster)->count());
+    }
+
+    public function testMatchingProcessScopeFailed()
+    {
+        $this->setExpectedException('\BO\Zmsentities\Exception\WorkstationProcessMatchScopeFailed');
+        $entity = $this->getExample();
+        $scopeList = new \BO\Zmsentities\Collection\ScopeList();
+        $entity->testMatchingProcessScope($scopeList);
+    }
+
+    public function testMatchingProcessScope()
+    {
+        $entity = $this->getExample();
+        $entity->process = (new \BO\Zmsentities\Process)->getExample();
+        $scopeList = new \BO\Zmsentities\Collection\ScopeList();
+        $scopeList->addEntity((new \BO\Zmsentities\Scope)->getExample());
+        $entity->testMatchingProcessScope($scopeList);
+        $this->assertTrue($scopeList->hasEntity($entity->process->getScopeId()));
+    }
 }

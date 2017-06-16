@@ -94,6 +94,31 @@ class CalendarTest extends EntityCommonTests
             ->format('Y-m-d') == self::LAST_DAY, 'Last day does not match');
     }
 
+    public function testGetDayList()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $entity->days = [
+            [
+                "year" => 2015,
+                "month" => 11,
+                "day" => 19,
+            ],
+            [
+                "year" => 2015,
+                "month" => 11,
+                "day" => 20,
+            ]
+        ];
+        $this->assertEquals(2, $entity->getDayList()->count());
+    }
+
+    public function testWithFilledEmptyDays()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $this->assertEquals(1, $entity->getDayList()->count());
+        $this->assertEquals(30, $entity->withFilledEmptyDays()->getDayList()->count());
+    }
+
     public function testMonthList()
     {
         $entity = (new $this->entityclass())->getExample();
@@ -104,8 +129,8 @@ class CalendarTest extends EntityCommonTests
 
         $firstDay = explode('-', self::FIRST_DAY);
         $lastDay = explode('-', self::LAST_DAY);
-        $entity['firstDay'] = array ('day' => $lastDay[2], 'month' => $lastDay[1], 'year' => $lastDay[0]);
-        $entity['lastDay'] = array ('day' => $firstDay[2], 'month' => $firstDay[1], 'year' => $firstDay[0]);
+        $entity['firstDay'] = array('day' => $lastDay[2], 'month' => $lastDay[1], 'year' => $lastDay[0]);
+        $entity['lastDay'] = array('day' => $firstDay[2], 'month' => $firstDay[1], 'year' => $firstDay[0]);
 
         $time = \DateTime::createFromFormat('Y-m-d', self::FIRST_DAY);
         foreach ($entity->getMonthList() as $month) {

@@ -34,6 +34,20 @@ class CalldisplayTest extends EntityCommonTests
         }
     }
 
+    public function testGetScopeAndClusterList()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $entity['scopes'] = [$this->getTestScope()];
+        $cluster = $this->getTestCluster();
+        $cluster['scopes'][] = [
+            'id' => 141
+        ];
+        $entity['clusters'] = [$cluster];
+        $this->assertEquals(1, $entity->getScopeList()->count());
+        $this->assertEquals(2, $entity->getFullScopeList()->count());
+        $this->assertEquals(1, $entity->getClusterList()->count());
+    }
+
     public function testGetImageName()
     {
         $entity = (new $this->entityclass())->getExample();

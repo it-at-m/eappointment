@@ -221,10 +221,12 @@ class Entity extends \ArrayObject implements \JsonSerializable
                 $this[$key]->setResolveLevel($this->getResolveLevel() - 1);
                 $this[$key]->addData($item);
             } elseif (array_key_exists($key, $this) && is_array($this[$key])) {
+                /* is this in use?
                 if (!is_array($item)) {
                     var_dump($key);
                     var_dump($item);
                 }
+                */
                 $this[$key] = array_replace_recursive($this[$key], $item);
             } else {
                 $this[$key] = $item;

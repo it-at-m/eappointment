@@ -34,4 +34,52 @@ class MonthTest extends EntityCommonTests
         $dayList->addEntity((new \BO\Zmsentities\Day())->setDateTime($time));
         $entity->setDays($dayList);
     }
+
+    public function testGetDayList()
+    {
+        $entity = $this->getExample();
+        $dayListUpdateDayStatus = new \BO\Zmsentities\Collection\DayList(
+            [
+                [
+                    "year" => 2015,
+                    "month" => 11,
+                    "day" => 20,
+                    "status" => "bookable"
+                ]
+            ]
+        );
+        $dayListToSetResolvedDayList = new \BO\Zmsentities\Collection\DayList(
+            [
+                [
+                    "year" => 2015,
+                    "month" => 11,
+                    "day" => 19,
+                ],
+                [
+                    "year" => 2015,
+                    "month" => 11,
+                    "day" => 20
+                ]
+            ]
+        );
+        $entity->days = [
+            [
+                "year" => 2015,
+                "month" => 11,
+                "day" => 19,
+            ],
+            [
+                "year" => 2015,
+                "month" => 11,
+                "day" => 20
+            ]
+        ];
+        $this->assertEquals(2, $entity->getDayList()->count());
+
+        $entity->setDays($dayListToSetResolvedDayList);
+        $this->assertEquals('notBookable', $entity->getDayList()->getLast()->status);
+
+        $entity->setDays($dayListUpdateDayStatus);
+        $this->assertEquals('bookable', $entity->getDayList()->getLast()->status);
+    }
 }

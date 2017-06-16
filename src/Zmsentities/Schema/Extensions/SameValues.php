@@ -6,6 +6,9 @@ use League\JsonGuard;
 use League\JsonGuard\ValidationError;
 use League\JsonGuard\Pointer;
 
+/**
+ * @codeCoverageIgnore
+ */
 class SameValues implements \League\JsonGuard\FormatExtension
 {
     public function validate($value, $pointer = null)

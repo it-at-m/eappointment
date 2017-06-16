@@ -77,9 +77,10 @@ class SchemaValidation extends \Exception
         foreach ($this->validationError as $error) {
             $pointer = str_replace('/', '', $error->getPointer());
             $pointer = (strpos($pointer, 'changePassword') !== false) ? 'changePassword[]' : $pointer;
-            if (isset($this->data[$pointer]['messages']) &&
-                ! in_array($error->getMessage(), $this->data[$pointer]['messages'])
-            ) {
+            if (! isset($this->data[$pointer]['messages'])) {
+                $this->data[$pointer]['messages'] = array();
+            }
+            if (! in_array($error->getMessage(), $this->data[$pointer]['messages'])) {
                 $this->data[$pointer]['messages'][] = $error->getMessage();
             }
             $this->data[$pointer]['failed'] = 1;
