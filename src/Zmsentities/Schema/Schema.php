@@ -46,6 +46,9 @@ class Schema extends \ArrayObject
      */
     protected function toSanitizedValue($value)
     {
+        if ($value instanceof \BO\Zmsentites\Helper\NoSanitize) {
+            return $value;
+        }
         if ($value instanceof \BO\Zmsentities\Collection\JsonUnindexed) {
             $value = array_values($value->getArrayCopy());
         } elseif ($value instanceof \ArrayObject) {

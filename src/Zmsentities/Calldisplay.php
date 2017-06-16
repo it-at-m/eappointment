@@ -14,6 +14,7 @@ class Calldisplay extends Schema\Entity
             'serverTime' => (new \DateTime())->getTimestamp(),
             'clusters' => new Collection\ClusterList(),
             'scopes' => new Collection\ScopeList(),
+            'organisation' => new Organisation(),
         ];
     }
 

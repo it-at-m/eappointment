@@ -84,6 +84,6 @@ class DayoffTest extends EntityCommonTests
         foreach ($list as $dayOffData) {
             $collection->addEntity(new \BO\Zmsentities\Dayoff($dayOffData));
         }
-        return $collection->sortByTimeKey();
+        return $collection;
     }
 }

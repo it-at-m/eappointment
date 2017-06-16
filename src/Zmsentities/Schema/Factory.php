@@ -32,7 +32,7 @@ class Factory
     {
         $entityName = $this->getEntityName();
         $class = "\\BO\\Zmsentities\\$entityName";
-        return new $class($this->data);
+        return new $class(new UnflattedArray($this->data));
     }
 
     /**
