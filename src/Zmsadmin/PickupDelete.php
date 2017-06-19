@@ -30,7 +30,7 @@ class PickupDelete extends BaseController
             $process = \App::$http->readGetResult('/process/'. $processId .'/')->getEntity();
             $process->status = 'finished';
             \App::$http->readDeleteResult('/workstation/process/');
-            $archive = \App::$http->readPostResult('/process/status/finished/', $process)->getEntity();
+            $processArchived = \App::$http->readPostResult('/process/status/finished/', $process)->getEntity();
         }
 
         return \BO\Slim\Render::withHtml(
@@ -40,7 +40,7 @@ class PickupDelete extends BaseController
                 'idList' => $idList,
                 'workstation' => $workstation,
                 'process' => $process,
-                'archive' => $archive
+                'archive' => $processArchived,
             )
         );
     }
