@@ -125,9 +125,8 @@ abstract class Base
         return $entity;
     }
 
-    public function fetchList(Query\Base $query, \BO\Zmsentities\Schema\Entity $entity)
+    public function fetchList(Query\Base $query, \BO\Zmsentities\Schema\Entity $entity, $resultList = [])
     {
-        $resultList = [];
         $statement = $this->fetchStatement($query);
         while ($data = $statement->fetch(\PDO::FETCH_ASSOC)) {
             $dataEntity = clone $entity;
