@@ -25,19 +25,26 @@ class Queue extends BaseController
         $validator = $request->getAttribute('validator');
 
         $calldisplay = new Helper\Calldisplay($request);
-        $queueList = \App::$http->readPostResult('/calldisplay/queue/', $calldisplay->getEntity())->getCollection();
+        //error_log(json_encode($calldisplay->getEntity(false)));
+        $queueList = \App::$http->readPostResult('/calldisplay/queue/', $calldisplay->getEntity(false))
+            ->getCollection();
         $queueList = ($queueList) ?
             $queueList->withStatus($calldisplay::getRequestedQueueStatus($request)) :
             new \BO\Zmsentities\Collection\QueueList();
+        $lastItem = $queueList->getLast();
+        $waitingTime = 0;
+        if ($lastItem) {
+            $waitingTime = $lastItem->waitingTimeEstimate;
+        }
         return \BO\Slim\Render::withHtml(
             $response,
             'block/queue/queueTable.twig',
             array(
                 'tableSettings' => $validator->getParameter('tableLayout')->isArray()->getValue(),
-                'calldisplay' => $calldisplay->getEntity(),
+                'calldisplay' => $calldisplay->getEntity(false),
                 'queueList' => $queueList,
                 'waitingClients' => $queueList->count(),
-                'waitingTime' => $queueList->getLast()->waitingTimeEstimate
+                'waitingTime' => $waitingTime,
             )
         );
     }

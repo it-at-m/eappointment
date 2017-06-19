@@ -12,7 +12,8 @@ use \BO\Zmsentities\Calldisplay as Entity;
 
 class Calldisplay
 {
-    public $entity;
+    protected $entity;
+    protected $isEntityResolved = false;
 
     public $collections = '';
 
@@ -21,7 +22,6 @@ class Calldisplay
     public function __construct($request)
     {
         $this->entity = static::createInstance($request);
-        $this->entity = \App::$http->readPostResult('/calldisplay/', $this->entity)->getEntity();
         $this->collections = static::getCollections($request);
     }
 
@@ -38,8 +38,12 @@ class Calldisplay
         return ($status) ? explode(',', $status) : static::DEFAULT_STATUS;
     }
 
-    public function getEntity()
+    public function getEntity($resolveEntity = true)
     {
+        if (!$this->isEntityResolved && $resolveEntity) {
+            $this->entity = \App::$http->readPostResult('/calldisplay/', $this->entity)->getEntity();
+            $this->isEntityResolved = true;
+        }
         return $this->entity;
     }
 
