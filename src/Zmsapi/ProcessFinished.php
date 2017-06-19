@@ -30,17 +30,7 @@ class ProcessFinished extends BaseController
         $process = new \BO\Zmsentities\Process($input);
         $process->testValid();
         $this->testProcessData($process);
-        $hasValidCredentials = (
-            $process->hasProcessCredentials() &&
-            ('pending' == $process['status'] || 'finished' == $process['status'])
-        );
-
-        if (! $hasValidCredentials) {
-            throw new Exception\Process\ProcessInvalid();
-        }
-        $cluster = (new \BO\Zmsdb\Cluster)->readByScopeId($workstation->scope['id'], 1);
-        $workstation->process = $process;
-        $workstation->testMatchingProcessScope($workstation->getScopeList($cluster));
+        $this->testProcessInWorkstation($process, $workstation);
 
         $query = new Query();
         if ('pending' == $process['status']) {
@@ -64,12 +54,27 @@ class ProcessFinished extends BaseController
         return $response;
     }
 
-    protected function testProcessData($entity)
+    protected function testProcessInWorkstation($process, $workstation)
     {
-        $authCheck = (new Process())->readAuthKeyByProcessId($entity->id);
+        $cluster = (new \BO\Zmsdb\Cluster)->readByScopeId($workstation->scope['id'], 1);
+        $workstation->process = $process;
+        $workstation->testMatchingProcessScope($workstation->getScopeList($cluster));
+    }
+
+    protected function testProcessData($process)
+    {
+        $hasValidCredentials = (
+            $process->hasProcessCredentials() &&
+            ('pending' == $process['status'] || 'finished' == $process['status'])
+        );
+        if (! $hasValidCredentials) {
+            throw new Exception\Process\ProcessInvalid();
+        }
+
+        $authCheck = (new Process())->readAuthKeyByProcessId($process->id);
         if (! $authCheck) {
             throw new Exception\Process\ProcessNotFound();
-        } elseif ($authCheck['authKey'] != $entity->authKey && $authCheck['authName'] != $entity->authKey) {
+        } elseif ($authCheck['authKey'] != $process->authKey && $authCheck['authName'] != $process->authKey) {
             throw new Exception\Process\AuthKeyMatchFailed();
         }
     }

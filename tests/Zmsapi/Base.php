@@ -17,6 +17,7 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
     public function setUp()
     {
         \BO\Zmsdb\Connection\Select::setTransaction();
+        \BO\Zmsdb\Connection\Select::setProfiling();
     }
 
     public function tearDown()
@@ -59,5 +60,27 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
             ]);
         User::$workstation->getUseraccount()->addDepartment($department);
         return $department;
+    }
+
+    protected function dumpProfiler()
+    {
+        echo "\nProfiler:\n";
+        $profiles = \BO\Zmsdb\Connection\Select::getReadConnection()->getProfiler()->getProfiles();
+        foreach ($profiles as $profile) {
+            $this->dumpProfile($profile);
+        }
+        $profiling = \BO\Zmsdb\Connection\Select::getReadConnection()->fetchAll('SHOW PROFILES');
+        foreach ($profiling as $profile) {
+            echo $profile['Query_ID']. ' ' . $profile['Duration']. ' ' . $profile['Query'] . "\n";
+        }
+        //var_dump($profiling);
+    }
+
+    protected function dumpProfile($profile)
+    {
+        $statement = $profile['statement'];
+        $statement = preg_replace('#\s+#', ' ', $statement);
+        $statement = substr($statement, 0, 250);
+        echo round($profile['duration'] * 1000, 6) . "ms $statement \n";
     }
 }

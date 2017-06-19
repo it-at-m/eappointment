@@ -12,6 +12,15 @@ class CalldisplayQueueTest extends Base
             '__body' => '{
                 "scopes": [
                     {
+                      "id": 140
+                    },
+                    {
+                      "id": 141
+                    },
+                    {
+                      "id": 142
+                    },
+                    {
                       "id": 143
                     }
                 ],
@@ -30,6 +39,7 @@ class CalldisplayQueueTest extends Base
         ], []);
         $this->assertContains('queue.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
+        //$this->dumpProfiler();
     }
 
     public function testEmpty()

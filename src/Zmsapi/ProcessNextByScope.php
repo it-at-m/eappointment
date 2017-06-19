@@ -31,7 +31,7 @@ class ProcessNextByScope extends BaseController
         if (! $scope) {
             throw new Exception\Scope\ScopeNotFound();
         }
-        $queueList = $query->readQueueList($scope->id, $dateTime);
+        $queueList = $query->readQueueList($scope->id, $dateTime, 1);
         $process = $queueList->getNextProcess($dateTime, $exclude);
         if (! $process) {
             throw new Exception\Process\ProcessNotFound();
