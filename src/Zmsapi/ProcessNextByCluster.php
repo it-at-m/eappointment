@@ -30,7 +30,7 @@ class ProcessNextByCluster extends BaseController
         if (! $cluster) {
             throw new Exception\Cluster\ClusterNotFound();
         }
-        $queueList = $query->readQueueList($cluster->id, $dateTime);
+        $queueList = $query->readQueueList($cluster->id, $dateTime, 1);
         $process = $queueList->getNextProcess($dateTime);
         if (! $process) {
             throw new Exception\Process\ProcessNotFound();

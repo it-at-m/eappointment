@@ -17,32 +17,32 @@ class TicketprinterTest extends Base
                 "name": "Eingangsbereich links",
                 "buttons": [
                     {
-                		"type": "scope",
-                		"url": "/scope/101/",
-                		"scope": {
-                			"id": 141
-                		},
-                		"enabled": true,
-                		"name": "Bürgeramt Heerstraße"
-                	},
-                	{
-                		"type": "cluster",
-                		"url": "/cluster/110/",
-                		"cluster": {
-                			"id": 110
-                		},
-                		"enabled": true,
-                		"name": "Bürgeramt Hohenzollerndamm"
-                	},
-                	{
-                		"type": "link",
-                		"url": "http://www.berlin.de/",
-                		"scope": {
-                			"id": 110
-                		},
-                		"enabled": true,
-                		"name": "Portal berlin.de"
-                	}
+                        "type": "scope",
+                        "url": "/scope/101/",
+                        "scope": {
+                            "id": 141
+                        },
+                        "enabled": true,
+                        "name": "Bürgeramt Heerstraße"
+                    },
+                    {
+                        "type": "cluster",
+                        "url": "/cluster/110/",
+                        "cluster": {
+                            "id": 110
+                        },
+                        "enabled": true,
+                        "name": "Bürgeramt Hohenzollerndamm"
+                    },
+                    {
+                        "type": "link",
+                        "url": "http://www.berlin.de/",
+                        "scope": {
+                            "id": 110
+                        },
+                        "enabled": true,
+                        "name": "Portal berlin.de"
+                    }
                 ]
             }'
         ], []);

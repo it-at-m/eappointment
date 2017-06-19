@@ -82,6 +82,7 @@ class ProcessFinishedTest extends Base
             '__body' => '{
                 "id": 123456,
                 "authKey": "abcd",
+                "status": "finished",
                 "amendment": "Beispiel Termin"
             }'
         ], []);
@@ -96,6 +97,7 @@ class ProcessFinishedTest extends Base
             '__body' => '{
                 "id": 10029,
                 "authKey": "abcd",
+                "status": "finished",
                 "amendment": "Beispiel Termin"
             }'
         ], []);

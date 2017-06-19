@@ -27,7 +27,7 @@ class WorkstationProcess extends BaseController
     ) {
         $workstation = (new Helper\User($request, 1))->checkRights();
         $process = $workstation->process;
-        if (!$process || ! $process->hasId()) {
+        if (!$process || !$process->hasId()) {
             $input = Validator::input()->isJson()->assertValid()->getValue();
             $entity = new \BO\Zmsentities\Process($input);
             $process = (new Process)->readEntity($entity['id'], new \BO\Zmsdb\Helper\NoAuth());

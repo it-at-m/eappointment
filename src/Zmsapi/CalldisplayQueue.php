@@ -24,10 +24,10 @@ class CalldisplayQueue extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $calldisplay = (new \BO\Zmsentities\Calldisplay($input))->withOutClusterDuplicates();
-        $this->testScopeAndCluster($calldisplay);
+        $this->testScopeAndCluster($calldisplay, $resolveReferences);
 
         $queueList = new \BO\Zmsentities\Collection\QueueList();
         foreach ($calldisplay->getFullScopeList() as $scope) {
@@ -42,7 +42,9 @@ class CalldisplayQueue extends BaseController
         return $response;
     }
 
-    protected function testScopeAndCluster($calldisplay)
+    protected $scopeCache = [];
+
+    protected function testScopeAndCluster($calldisplay, $resolveReferences)
     {
         if (! $calldisplay->hasScopeList() && ! $calldisplay->hasClusterList()) {
             throw new Exception\Calldisplay\ScopeAndClusterNotFound();
@@ -54,8 +56,9 @@ class CalldisplayQueue extends BaseController
             }
         }
         foreach ($calldisplay->getScopeList() as $scope) {
-            $scope = (new \BO\Zmsdb\Scope)->readEntity($scope->id);
-            if (! $scope) {
+            $scope = (new \BO\Zmsdb\Scope)->readWithWorkstationCount($scope->id, \App::$now, $resolveReferences);
+            $this->scopeCache[$scope->id] = $scope;
+            if (! $scope->id) {
                 throw new Exception\Scope\ScopeNotFound();
             }
         }
@@ -63,7 +66,12 @@ class CalldisplayQueue extends BaseController
 
     protected function readCalculatedQueueListFromScope($scope, $resolveReferences)
     {
-        $scope = (new \BO\Zmsdb\Scope)->readWithWorkstationCount($scope->id, \App::$now, $resolveReferences);
+        if (isset($this->scopeCache[$scope->id])) {
+            $scope = $this->scopeCache[$scope->id];
+        } else {
+            $scope = (new \BO\Zmsdb\Scope)->readWithWorkstationCount($scope->id, \App::$now, $resolveReferences);
+        }
+        // TODO try to fetch only called processes
         return (new \BO\Zmsdb\Scope)
             ->readQueueListWithWaitingTime($scope, \App::$now)
             ->withPickupDestination($scope);
