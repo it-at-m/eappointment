@@ -395,7 +395,7 @@ class Process extends Schema\Entity
             $queue->number = $this->toProperty()->queue->number->get();
             $queue->arrivalTime = ($queue->arrivalTime) ? $queue->arrivalTime : $dateTime->getTimestamp();
         }
-        return $queue;
+        return $queue->setProcess($this);
     }
 
     /**
