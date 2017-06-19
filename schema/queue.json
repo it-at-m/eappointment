@@ -12,10 +12,7 @@
     },
     "required": [
         "arrivalTime",
-        "callCount",
-        "callTime",
-        "number",
-        "waitingTime"
+        "number"
     ],
     "additionalProperties": false,
     "properties": {

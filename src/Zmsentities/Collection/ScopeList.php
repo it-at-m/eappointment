@@ -1,6 +1,8 @@
 <?php
 namespace BO\Zmsentities\Collection;
 
+use \BO\Zmsentities\Helper\Sorter;
+
 class ScopeList extends Base
 {
     const ENTITY_CLASS = '\BO\Zmsentities\Scope';
