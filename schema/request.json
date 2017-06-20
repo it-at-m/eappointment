@@ -5,7 +5,8 @@
         "id": "123456",
         "link": "http://service.berlin.de/dienstleistung/120335/",
         "name": "Abmeldung einer Wohnung",
-        "source": "dldb"
+        "source": "dldb",
+        "group": "Meldewesen und Ordnung"
     },
     "required": [
         "id",

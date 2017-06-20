@@ -48,12 +48,62 @@ class QueueListTest extends EntityCommonTests
         $this->assertEquals(null, $collection->getQueuePositionByNumber(999));
     }
 
+    public function testGetNextProcess()
+    {
+        $now = new \DateTimeImmutable(self::DEFAULT_TIME);
+        $collection = new \BO\Zmsentities\Collection\ProcessList();
+        $process = (new \BO\Zmsentities\Process)->getExample();
+        $collection->addEntity($process);
+        $queueList = $collection->toQueueList($now)->withoutDublicates();
+        $this->assertEntity('\BO\Zmsentities\Process', $queueList->getNextProcess($now));
+
+        $process2 = clone $process;
+        $process2->id = 999999;
+        $process2->getFirstAppointment()->date = 1396344003;
+        $collection->addEntity($process2);
+        $queueList = $collection->toQueueList($now);
+        $nextProcess = $queueList->getNextProcess($now, '999999');
+        $this->assertEquals(123456, $nextProcess->id);
+
+        $nextProcess = $queueList->getNextProcess($now, '999999,123456');
+        $this->assertEquals(null, $nextProcess);
+    }
+
     public function testSetProcess()
     {
         $entity = $this->getExample();
         $process = (new \BO\Zmsentities\Process)->getExample();
         $entity->setProcess($process);
         $this->assertEquals(123456, $entity->getProcess()->id);
+    }
+
+    public function testToProcessList()
+    {
+        $now = new \DateTimeImmutable(self::DEFAULT_TIME);
+        $collection = new \BO\Zmsentities\Collection\ProcessList();
+        $process = (new \BO\Zmsentities\Process)->getExample();
+        $collection->addEntity($process);
+        $queueList = $collection->toQueueList($now);
+        $this->assertEntityList('\BO\Zmsentities\Queue', $queueList);
+        $processList = $queueList->toProcessList();
+        $this->assertEntityList('\BO\Zmsentities\Process', $processList);
+    }
+
+    public function testGetWaitingNumberList()
+    {
+        $now = new \DateTimeImmutable(self::DEFAULT_TIME);
+        $collection = new \BO\Zmsentities\Collection\ProcessList();
+        $process = (new \BO\Zmsentities\Process)->getExample();
+        $collection->addEntity($process);
+        $queueList = $collection->toQueueList($now);
+        $this->assertEquals('123456', $queueList->getWaitingNumberListCsv());
+    }
+
+    public function testSetProcessFailed()
+    {
+        $entity = $this->getExample();
+        $entity->process = (new \BO\Zmsentities\Process)->getExample()->getArrayCopy();
+        $this->assertEquals(null, $entity->getProcess());
     }
 
     public function testDestinationManipulation()

@@ -12,7 +12,6 @@ class DayTest extends EntityCommonTests
 
     public function testBasic()
     {
-        $time = new \DateTimeImmutable(self::DEFAULT_TIME);
         $entity = $this->getExample();
         $this->assertContains('Day bookable@2015-11-19 with', $entity->__toString(), 'day to string failed');
     }
@@ -34,7 +33,18 @@ class DayTest extends EntityCommonTests
         $this->assertTrue($collection->hasDayWithAppointments());
 
         //test hash cache
-        $collection->getDay('2016','11','18');
-        $this->assertEquals( $collection->getDay('2016','11','18'), $collection['18-11-2016']);
+        $collection->getDay('2016', '11', '18');
+        $this->assertEquals($collection->getDay('2016', '11', '18'), $collection['18-11-2016']);
+    }
+
+    public function testWithProcessListSortedByHour()
+    {
+        $entity = $this->getExample();
+        $entity['processList'] = (new \BO\Zmsentities\Collection\ProcessList)
+            ->addEntity((new \BO\Zmsentities\Process)->getExample())->toProcessListByStatusAndTime();
+        $collection = new $this->collectionclass();
+        $collection->addEntity($entity);
+        $list = $collection->toSortedByHour();
+        $this->assertEntityList('\BO\Zmsentities\Process', $list['hours'][18]['2015-11-19'][1447869171]);
     }
 }

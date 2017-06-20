@@ -13,11 +13,11 @@ class ScopeList extends Base
         return (1 == count($this) && $scope->getAlternateRedirectUrl()) ? $scope->getAlternateRedirectUrl() : null;
     }
 
-    public function withoutDublicates($scopeList)
+    public function withoutDublicates($scopeList = null)
     {
         $collection = new self();
         foreach ($this as $scope) {
-            if (! $scopeList->hasEntity($scope->id)) {
+            if (! $scopeList || ! $scopeList->hasEntity($scope->id)) {
                 $collection->addEntity(clone $scope);
             }
         }

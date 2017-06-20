@@ -108,7 +108,6 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         $queueList = $queueList->withStatus(['confirmed', 'queued'])->withSortedArrival()->getArrayCopy();
         $next = array_shift($queueList);
         $currentTime = $dateTime->getTimestamp();
-
         while ($next) {
             if (! in_array($next->number, $excludeNumbers) &&
                 (0 == $next->lastCallTime || ($next->lastCallTime + (5 * 60)) <= $currentTime)

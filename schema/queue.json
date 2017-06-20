@@ -8,7 +8,8 @@
         "lastCallTime": 0,
         "number": "123",
         "waitingTime": 2,
-        "withAppointment": false
+        "withAppointment": false,
+        "status": "confirmed"
     },
     "required": [
         "arrivalTime",
@@ -41,7 +42,10 @@
             "description": "unix timestamp of last call while client not appeared and process was not stopped"
         },
         "number": {
-            "type": "string",
+            "type": [
+                "string",
+                "number"
+            ],
             "description": "number to display on a call display"
         },
         "waitingTime": {

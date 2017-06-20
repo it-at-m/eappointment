@@ -40,7 +40,7 @@ class ProcessList extends Base
                 $timeList = new self();
                 $appointment = $process->getFirstAppointment();
                 if ($hour == $appointment->toDateTime()->format('H')) {
-                    if (! $list[$hour][intval($appointment['date'])] instanceof ProcessList) {
+                    if (! isset($list[$hour][intval($appointment['date'])])) {
                         $list[$hour][intval($appointment['date'])] = $timeList;
                     }
                     $list[$hour][intval($appointment['date'])]->addEntity(clone $process);
@@ -63,11 +63,6 @@ class ProcessList extends Base
         }
         ksort($list);
         return $list;
-    }
-
-    public function getFirstProcess()
-    {
-        return reset($this);
     }
 
     public function getScopeList()
