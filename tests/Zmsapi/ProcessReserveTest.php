@@ -11,7 +11,7 @@ class ProcessReserveTest extends Base
         $processList = new \BO\Zmsentities\Collection\ProcessList(
             json_decode($this->readFixture("GetFreeProcessList.json"))
         );
-        $process = $processList->getFirstProcess();
+        $process = $processList->getFirst();
         $response = $this->render([], [
             '__body' => json_encode($process)
         ], []);
@@ -26,7 +26,7 @@ class ProcessReserveTest extends Base
         $processList = new \BO\Zmsentities\Collection\ProcessList(
             json_decode($this->readFixture("GetFreeProcessList.json"))
         );
-        $process = $processList->getFirstProcess();
+        $process = $processList->getFirst();
         $response = $this->render([], [
             '__body' => json_encode($process),
             'slotsRequired' => 1,

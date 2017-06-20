@@ -21,18 +21,18 @@ class WorkstationUpdate extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights();
+        $currentWorkstation = (new Helper\User($request))->checkRights();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Workstation($input);
         $entity->testValid();
         Helper\User::testWorkstationAssigend($entity, $resolveReferences);
 
-        $workstation = (new Workstation)->updateEntity($entity, $resolveReferences);
-        if (! $workstation) {
-            throw new Exception\Workstation\WorkstationNotFound();
+        if ($entity->getUseraccount()->id != $currentWorkstation->getUseraccount()->id) {
+            throw new Exception\Workstation\WorkstationAccessFailed();
         }
-
+        $entity->getUseraccount()->rights = $currentWorkstation->getUseraccount()->rights;
+        $workstation = (new Workstation)->updateEntity($entity, $resolveReferences);
         $message = Response\Message::create($request);
         $message->data = $workstation;
 

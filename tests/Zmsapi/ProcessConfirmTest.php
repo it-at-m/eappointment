@@ -11,7 +11,7 @@ class ProcessConfirmTest extends Base
         $processList = new \BO\Zmsentities\Collection\ProcessList(
             json_decode($this->readFixture("GetReservedProcessList.json"))
         );
-        $process = $processList->getFirstProcess();
+        $process = $processList->getFirst();
         $response = $this->render([], [
             '__body' => json_encode($process)
         ], []);

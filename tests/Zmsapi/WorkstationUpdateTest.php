@@ -28,7 +28,7 @@ class WorkstationUpdateTest extends Base
 
         $workstation = $this->setWorkstation();
         $workstation->getUseraccount()->lastLogin = 1447926465; //19.11.2015;
-        
+
         $this->render([], ['__body' => json_encode($workstation)], []);
     }
 
@@ -44,6 +44,18 @@ class WorkstationUpdateTest extends Base
         User::$assignedWorkstation = $this->setWorkstation();
         User::$assignedWorkstation->name = self::PLACE;
 
+        $this->render([], [
+            '__body' => json_encode($workstation)
+        ], []);
+    }
+
+    public function testAccessFailed()
+    {
+        $this->setExpectedException('BO\Zmsapi\Exception\Workstation\WorkstationAccessFailed');
+        $this->expectExceptionCode(404);
+        $currentworkstation = $this->setWorkstation();
+        $workstation = clone $currentworkstation;
+        $workstation->getUseraccount()->id = 'testadmin';
         $this->render([], [
             '__body' => json_encode($workstation)
         ], []);
