@@ -28,4 +28,14 @@ class RequestTest extends EntityCommonTests
         $collection->addEntity($entity);
         $this->assertTrue($collection->hasRequests(1234), 'Request list missed request with id 1234');
     }
+
+    public function testSortedByGroup()
+    {
+        $collection = new $this->collectionclass();
+        $entity = $this->getExample();
+        $collection->addEntity($entity);
+        $groupList = $collection->toSortedByGroup();
+        $this->assertTrue(array_key_exists('Meldewesen und Ordnung', $groupList));
+        $this->assertEntityList('\BO\Zmsentities\Request', $groupList['Meldewesen und Ordnung']);
+    }
 }

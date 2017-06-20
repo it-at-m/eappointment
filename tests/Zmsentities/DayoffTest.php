@@ -39,6 +39,19 @@ class DayoffTest extends EntityCommonTests
         $this->assertTrue('Karfreitag' == reset($collection)->name, 'Dayoff list sort by time failed');
     }
 
+    public function testHasDatesInYear()
+    {
+        $collection = $this->getDayOffExampleList();
+        $this->assertTrue($collection->testDatesInYear(2016));
+    }
+
+    public function testHasDatesInYearFailed()
+    {
+        $this->setExpectedException('\BO\Zmsentities\Exception\DayoffWrongYear');
+        $collection = $this->getDayOffExampleList();
+        $collection->testDatesInYear(2017);
+    }
+
     public function testDateFormat()
     {
         $list = new $this->collectionclass([

@@ -11,6 +11,7 @@ use \BO\Zmsentities\Collection\ProcessList;
 /**
  * @SuppressWarnings(CouplingBetweenObjects)
  * @SuppressWarnings(Public)
+ * @SuppressWarnings(TooManyMethods)
  *
  */
 class ProcessTest extends EntityCommonTests
@@ -296,17 +297,34 @@ class ProcessTest extends EntityCommonTests
             count($collection) . ' found)'
         );
 
+        $entity2 = $this->getExample();
+        $entity2->getFirstAppointment()->date = 1459511423;
+        $collection->addEntity($entity2);
+
         $processListByTime = $collection->toProcessListByTime();
         $this->assertTrue(
             array_key_exists('1447869171', $processListByTime->sortByTimeKey()),
             'Failed to create process list by time'
         );
-        $this->assertTrue(123456 == $collection->getFirstProcess()->id, 'First process not found in process list');
-        $this->assertTrue(1 == count($collection->getAppointmentList()));
+        $this->assertEquals(123456, $collection->getFirst()->id, 'First process not found in process list');
+        $this->assertEquals(2, count($collection->getAppointmentList()));
 
         $queueList = $collection->toQueueList($now);
         $this->assertEquals('queued', $queueList->getFirst()->status);
         $this->assertEquals('1447869171', $queueList->getFirst()->arrivalTime);
+    }
+
+    public function testProcessListByStatusAndTime()
+    {
+        $collection = new $this->collectionclass();
+        $entity = $this->getExample();
+        $collection->addEntity($entity);
+
+        $entity2 = $this->getExample();
+        $entity2->getFirstAppointment()->date = 1459511423;
+        $collection->addEntity($entity2);
+        $list = $collection->toProcessListByStatusAndTime();
+        $this->assertEntityList('\BO\Zmsentities\Process', $list[13][1459511423]);
     }
 
     public function testScopeList()
@@ -316,6 +334,18 @@ class ProcessTest extends EntityCommonTests
         $collection->addEntity($entity);
         $scopeList = $collection->getScopeList();
         $this->assertTrue(count($scopeList) > 0);
+    }
+
+    public function testWithScopeId()
+    {
+        $collection = new $this->collectionclass();
+        $entity = $this->getExample();
+        $collection->addEntity($entity);
+        $entity2 = $this->getExample();
+        $entity2->scope['id'] = 141;
+        $collection->addEntity($entity2);
+        $this->assertEquals(1, $collection->withScopeId(123)->count());
+        $this->assertEquals(1, $collection->withOutScopeId(141)->count());
     }
 
     public function testToQueue()

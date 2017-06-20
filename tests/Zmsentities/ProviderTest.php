@@ -37,4 +37,15 @@ class ProviderTest extends EntityCommonTests
         $collection->addEntity($entity);
         $this->assertTrue($collection->hasRequest(1234), 'Provider list missed request with id 1234');
     }
+
+    public function testWithUniqueProvider()
+    {
+        $collection = new $this->collectionclass();
+        $entity = $this->getExample();
+        $collection->addEntity($entity);
+        $collection->addEntity($entity);
+        $this->assertEquals(2, $collection->count());
+        $uniqueCollection = $collection->withUniqueProvider();
+        $this->assertEquals(1, $uniqueCollection->count());
+    }
 }
