@@ -46,7 +46,7 @@ class Schema extends \ArrayObject
      */
     protected function toSanitizedValue($value)
     {
-        if ($value instanceof \BO\Zmsentites\Helper\NoSanitize) {
+        if ($value instanceof \BO\Zmsentities\Helper\NoSanitize) {
             return $value;
         }
         if ($value instanceof \BO\Zmsentities\Collection\JsonUnindexed) {
