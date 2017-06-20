@@ -22,7 +22,6 @@ class OrganisationByCluster extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $cluster = (new Cluster())->readEntity($args['id']);
         if (! $cluster) {

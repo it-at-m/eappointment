@@ -16,6 +16,14 @@ class OrganisationByClusterTest extends Base
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
+    public function testReducedDataAccess()
+    {
+        $response = $this->render(['id' => 109], [], []);
+        $this->assertContains('organisation.json', (string)$response->getBody());
+        $this->assertContains('"reducedData":true', (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
+    }
+
     public function testEmpty()
     {
         $this->setWorkstation();
