@@ -93,6 +93,20 @@ class AvailabilityTest extends EntityCommonTests
         $this->assertEquals(5346000, $withCalculatedSlots->getAvailableSecondsPerDay());
     }
 
+    public function testGetAvailableSecondsOnDateTime()
+    {
+        $time = new \DateTimeImmutable(self::DEFAULT_TIME);
+        $entity = (new $this->entityclass())->getExample();
+        $entity['startDate'] = $time->getTimestamp();
+        $entity['endDate'] = $time->modify("+2month")->getTimestamp();
+        $entity['weekday']['friday'] = 1;
+        $entity['repeat']['afterWeeks'] = 2;
+        $collection = new $this->collectionclass();
+        $collection->addEntity($entity);
+        $collection = $collection->withCalculatedSlots();
+        $this->assertEquals(5346000, $collection->getAvailableSecondsOnDateTime($time));
+    }
+
     public function testDayOff()
     {
         $dayOffTime = new \DateTimeImmutable(self::DEFAULT_TIME);
@@ -320,6 +334,7 @@ class AvailabilityTest extends EntityCommonTests
 
         $entityOH = $this->getExampleWithTypeOpeningHours($time);
         $collection->addEntity($entityOH);
+
         $this->assertTrue($collection->isOpened($time));
         $this->assertTrue($collection->isOpenedByDate($time));
 

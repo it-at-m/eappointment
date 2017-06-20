@@ -16,15 +16,15 @@ class QueueListTest extends EntityCommonTests
     {
         $now = new \DateTimeImmutable(self::DEFAULT_TIME);
 
-        $entityWithAppointment = (new $this->entityclass())->getExample();
-        $entityWithoutAppointment = (clone $entityWithAppointment);
-        $entityWithAppointment->withAppointment = true;
-        $entityWithAppointment->status = 'called';
-        $entityWithAppointment->number = '122';
+        $withAppointment = (new $this->entityclass())->getExample();
+        $withoutAppointment = (clone $withAppointment);
+        $withAppointment->withAppointment = true;
+        $withAppointment->status = 'called';
+        $withAppointment->number = '122';
 
         $collection = new $this->collectionclass();
-        $collection->addEntity($entityWithAppointment);
-        $collection->addEntity($entityWithoutAppointment);
+        $collection->addEntity($withAppointment);
+        $collection->addEntity($withoutAppointment);
         $collection->withSortedArrival();
 
         $this->assertEquals(1, $collection->withAppointment()->count());
@@ -46,6 +46,14 @@ class QueueListTest extends EntityCommonTests
 
         $this->assertEquals(null, $collection->getQueueByNumber(999));
         $this->assertEquals(null, $collection->getQueuePositionByNumber(999));
+    }
+
+    public function testSetProcess()
+    {
+        $entity = $this->getExample();
+        $process = (new \BO\Zmsentities\Process)->getExample();
+        $entity->setProcess($process);
+        $this->assertEquals(123456, $entity->getProcess()->id);
     }
 
     public function testDestinationManipulation()

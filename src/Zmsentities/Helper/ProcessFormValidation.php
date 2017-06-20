@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @package 115Mandant
+ * @package Zmsentities
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
@@ -57,19 +57,27 @@ class ProcessFormValidation
         return $collection;
     }
 
-    public static function fromParametersToProcess($process, $session = null)
+    public static function fromParametersToProcess($process)
     {
         $form = self::fromParameters($process->scope['preferences']);
-        $validate = Validator::param('form_validate')->isBool()->getValue();
-        $formData = ($validate) ? $form->getStatus(null, true) : null;
-        if (!$form->hasFailed()) {
+        $formData = self::setFormStatus($form);
+        if (isset($formData['failed']) && ! $formData['failed']) {
             $process = self::addClient($process, $formData);
             $process = self::addReminderTimestamp($process, $formData);
             $process = self::addAmendment($process, $formData);
-            if ($session && isset($formData['sendConfirmation']) && 1 == $formData['sendConfirmation']['value']) {
-                $session->set('confirmationNotification', true);
-            }
-            return $process;
+        }
+        return array(
+            'process' => $process,
+            'formdata' => $formData
+        );
+    }
+
+    protected static function setFormStatus($form)
+    {
+        $validate = Validator::param('form_validate')->isBool()->getValue();
+        $formData = ($validate) ? $form->getStatus(null, true) : null;
+        if (!$form->hasFailed()) {
+            $formData['failed'] = false;
         } elseif (null !== $formData) {
             $formData['failed'] = true;
         }
