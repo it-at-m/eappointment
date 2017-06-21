@@ -24,7 +24,7 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
      * ],
      * ]
      */
-    protected $apiCalls = array ();
+    protected $apiCalls = array();
 
     public function setUp()
     {
@@ -79,5 +79,11 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
     protected function getApiCalls()
     {
         return $this->apiCalls;
+    }
+
+    public function setApiCalls($apiCalls)
+    {
+        $this->apiCalls = $apiCalls;
+        \App::$http = $this->getApiMockup();
     }
 }
