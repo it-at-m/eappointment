@@ -26,7 +26,7 @@ class ClusterByScopeId extends BaseController
         $cluster = (new Query)->readByScopeId($args['id'], $resolveReferences);
 
         $message = Response\Message::create($request);
-        $message->data = $cluster;
+        $message->data = ($cluster) ? $cluster : array();
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message, 200);
