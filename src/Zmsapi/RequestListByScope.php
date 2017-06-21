@@ -21,8 +21,8 @@ class RequestListByScope extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
-        $scope = (new \BO\Zmsdb\Scope)->readEntity($args['id'], $resolveReferences);
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
+        $scope = (new \BO\Zmsdb\Scope)->readEntity($args['id'], $resolveReferences ? $resolveReferences : 1);
         if (! $scope) {
             throw new Exception\Scope\ScopeNotFound();
         }

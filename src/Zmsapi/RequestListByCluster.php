@@ -21,8 +21,8 @@ class RequestListByCluster extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
-        $cluster = (new \BO\Zmsdb\Cluster)->readEntity($args['id'], $resolveReferences);
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
+        $cluster = (new \BO\Zmsdb\Cluster)->readEntity($args['id'], $resolveReferences ? $resolveReferences : 2);
         if (! $cluster) {
             throw new Exception\Cluster\ClusterNotFound();
         }
