@@ -30,3 +30,6 @@ live: # init live system
 dev: # init development system
 	$(COMPOSER) update
 	npm install
+
+coverage:
+	php vendor/bin/phpunit --coverage-html public/_tests/coverage/
