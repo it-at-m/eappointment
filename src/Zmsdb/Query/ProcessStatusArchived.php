@@ -79,7 +79,7 @@ class ProcessStatusArchived extends Base implements MappingInterface
         $this->addValues([
             'StandortID' => $process->scope['id'],
             'Datum' => $process->getFirstAppointment()->toDateTime()->format('Y-m-d'),
-            'mitTermin' => $process->toQueue($now)->withAppointment,
+            'mitTermin' => ($process->toQueue($now)->withAppointment) ? 1 : 0,
             'nicht_erschienen' => ('missed' == $process->queue['status']) ? 1 : 0,
             'Timestamp' => $now->format('H:i:s'),
             'wartezeit' => $process->getWaitedSeconds(),
