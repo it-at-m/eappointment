@@ -20,12 +20,6 @@ use \Psr\Http\Message\ResponseInterface;
  \App::$slim->delete('/availability/{id:\d{1,11}}/', '\BO\Zmsadmin\AvailabilityDelete')
      ->setName("AvailabilityDelete");
 
- \App::$slim->get('/availability/day/', '\BO\Zmsadmin\Availability')
-     ->setName("availability_day");
-
- \App::$slim->get('/availability/month/', '\BO\Zmsadmin\AvailabilityMonth')
-     ->setName("availability_month");
-
  /*
   * ---------------------------------------------------------------------------
   * Calldisplay
@@ -252,8 +246,6 @@ use \Psr\Http\Message\ResponseInterface;
  */
 \App::$slim->map(['GET','POST'], '/scope/{id:\d+}/', '\BO\Zmsadmin\Scope')
     ->setName("scope");
-
-
 
 \App::$slim->get('/scope/{id:\d+}/process/{date:\d\d\d\d-\d\d-\d\d}/', '\BO\Zmsadmin\ScopeAppointmentsByDay')
     ->setName("scopeAppointmentsByDay");

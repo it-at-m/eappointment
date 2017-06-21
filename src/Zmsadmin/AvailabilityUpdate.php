@@ -26,7 +26,8 @@ class AvailabilityUpdate extends BaseController
     ) {
         $validator = $request->getAttribute('validator');
         $input = $validator->getInput()->isJson()->assertValid()->getValue();
-        $result = \App::$http->readPostResult('/availability/', $input);
+        $entity = new Availability($input);
+        $result = \App::$http->readPostResult('/availability/', $entity);
         return $result->getResponse();
     }
 }

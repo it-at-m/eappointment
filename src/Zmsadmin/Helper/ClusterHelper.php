@@ -16,10 +16,9 @@ class ClusterHelper
     public function __construct(\BO\Zmsentities\Workstation $workstation)
     {
         static::$workstation = $workstation;
-        if (1 == $workstation->queue['clusterEnabled']) {
-            static::$cluster = \App::$http
-                ->readGetResult('/scope/'. $workstation->scope['id'] .'/cluster/')->getEntity();
-        }
+        static::$cluster = \App::$http
+            ->readGetResult('/scope/'. $workstation->scope['id'] .'/cluster/')->getEntity();
+        static::$cluster = (static::$cluster->hasId()) ? static::$cluster : null;
     }
 
     public static function getEntity()
@@ -34,7 +33,7 @@ class ClusterHelper
 
     public static function getRequestList()
     {
-        if (static::$cluster) {
+        if (static::isClusterEnabled()) {
             $requestList = \App::$http
                 ->readGetResult('/cluster/'. static::$cluster->id .'/request/')
                 ->getCollection();
@@ -48,7 +47,7 @@ class ClusterHelper
 
     public static function getProcessList($selectedDate)
     {
-        if (static::$cluster) {
+        if (static::isClusterEnabled()) {
             $processList = \App::$http
                 ->readGetResult('/cluster/'. static::$cluster->id .'/process/'. $selectedDate .'/')
                 ->getCollection();
@@ -58,5 +57,10 @@ class ClusterHelper
                 ->getCollection();
         }
         return $processList;
+    }
+
+    protected static function isClusterEnabled()
+    {
+        return (static::$workstation->queue['clusterEnabled'] && static::$cluster);
     }
 }

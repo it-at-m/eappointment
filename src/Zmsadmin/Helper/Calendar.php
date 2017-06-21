@@ -33,6 +33,7 @@ class Calendar
 
     public function readMonthListByScopeList(\BO\Zmsentities\Collection\ScopeList $scopeList, $slotType, $slotsRequired)
     {
+        // TODO Berechne die Tage im Kalendar
         $this->calendar->scopes = $scopeList;
         $this->calendar->firstDay->setDateTime($this->dateTime->modify('first day of this month'));
         $this->calendar->lastDay->setDateTime($this->dateTime->modify('last day of next month'));
@@ -51,9 +52,8 @@ class Calendar
             if ($exception->template != 'BO\Zmsapi\Exception\Calendar\AppointmentsMissed') {
                 throw $exception;
             }
-            // TODO Berechne die Tage im Kalendar
         }
-    }
+    } // @codeCoverageIgnore
 
     public function readAvailableSlotsFromDayAndScopeList(
         \BO\Zmsentities\Collection\ScopeList $scopeList,
@@ -77,7 +77,7 @@ class Calendar
                 throw $exception;
             }
         }
-    }
+    } // @codeCoverageIgnore
 
     public function readWeekDayListWithProcessList(\BO\Zmsentities\Collection\ScopeList $scopeList)
     {

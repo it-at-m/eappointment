@@ -10,10 +10,6 @@ use \BO\Zmsentities\Scope;
 
 use BO\Mellon\Validator;
 
-/**
-  * Handle requests concerning services
-  *
-  */
 class CalendarWeek extends BaseController
 {
     /**
@@ -30,8 +26,7 @@ class CalendarWeek extends BaseController
         $selectedYear = Validator::value($args['year'])->isNumber()->getValue();
         $selectedWeek = Validator::value($args['weeknr'])->isNumber()->getValue();
         $calendar = new Helper\Calendar(null, $selectedWeek, $selectedYear);
-
-        $scopeList = (new Helper\ClusterHelper($workstation))->getScopeList();
+        $clusterHelper = (new Helper\ClusterHelper($workstation));
 
         return \BO\Slim\Render::withHtml(
             $response,
@@ -40,12 +35,12 @@ class CalendarWeek extends BaseController
                 'title' => 'Kalender',
                 'workstation' => $workstation,
                 'source' => $workstation->getRedirect(),
-                'cluster' => ($cluster) ? $cluster : null,
+                'cluster' => $clusterHelper->getEntity(),
                 'calendar' => $calendar,
                 'selectedYear' => $selectedYear,
                 'selectedWeek' => $selectedWeek,
                 'selectedDate' => $calendar->getDateTime()->format('Y-m-d'),
-                'dayList' => $calendar->readWeekDayListWithProcessList($scopeList)->toSortedByHour()
+                'dayList' => $calendar->readWeekDayListWithProcessList($clusterHelper->getScopeList())->toSortedByHour()
             )
         );
     }
