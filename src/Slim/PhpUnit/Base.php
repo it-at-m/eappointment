@@ -158,6 +158,9 @@ abstract class Base extends \PHPUnit_Framework_TestCase
         if (array_key_exists('__cookie', $parameters)) {
             $request = $request->withCookieParams($parameters['__cookie']);
         }
+        if (array_key_exists('__file', $parameters)) {
+            $request = $request->withUploadedFiles($parameters['__file']);
+        }
         if (array_key_exists('__header', $parameters)) {
             foreach ($parameters['__header'] as $key => $value) {
                 $request = $request->withAddedHeader($key, $value);
