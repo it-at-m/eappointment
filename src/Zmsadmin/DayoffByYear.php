@@ -9,10 +9,6 @@ namespace BO\Zmsadmin;
 use BO\Zmsentities\Collection\DayoffList as Collection;
 use BO\Mellon\Validator;
 
-/**
- * Handle requests concerning services
- *
- */
 class DayoffByYear extends BaseController
 {
 
@@ -35,11 +31,8 @@ class DayoffByYear extends BaseController
         $input = $request->getParsedBody();
         if (array_key_exists('save', (array) $input)) {
             $data = (array_key_exists('dayoff', $input)) ? $input['dayoff'] : [];
-            $collection = new Collection($data);
-            $collection = \App::$http->readPostResult(
-                '/dayoff/'. $year .'/',
-                $collection->withTimestampFromDateformat()
-            )->getCollection();
+            $collection = (new Collection($data))->withTimestampFromDateformat();
+            \App::$http->readPostResult('/dayoff/'. $year .'/', $collection);
             $updated = true;
             return \BO\Slim\Render::redirect('dayoffByYear', ['year' => $year], [
                 'confirm_success' => \App::$now->getTimeStamp()

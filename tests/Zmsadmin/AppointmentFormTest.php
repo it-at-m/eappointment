@@ -28,7 +28,7 @@ class AppointmentFormTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/request/',
-                    'response' => $this->readFixture("GET_requestlist_scope_141.json")
+                    'response' => $this->readFixture("GET_scope_141_requestlist.json")
                 ],
                 [
                     'function' => 'readPostResult',
@@ -65,7 +65,7 @@ class AppointmentFormTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/request/',
-                    'response' => $this->readFixture("GET_requestlist_scope_141.json")
+                    'response' => $this->readFixture("GET_scope_141_requestlist.json")
                 ],
                 [
                     'function' => 'readPostResult',
@@ -98,7 +98,7 @@ class AppointmentFormTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/request/',
-                    'response' => $this->readFixture("GET_requestlist_scope_141.json")
+                    'response' => $this->readFixture("GET_scope_141_requestlist.json")
                 ],
                 [
                     'function' => 'readPostResult',

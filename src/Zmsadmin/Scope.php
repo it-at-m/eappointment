@@ -43,7 +43,7 @@ class Scope extends BaseController
 
         $entityId = Validator::value($args['id'])->isNumber()->getValue();
         $entity = \App::$http->readGetResult('/scope/' . $entityId . '/', ['resolveReferences' => 1])->getEntity();
-
+        $organisation = \App::$http->readGetResult('/scope/' . $entityId . '/organisation/')->getEntity();
         $callDisplayImage = \App::$http->readGetResult('/scope/'. $entityId .'/imagedata/calldisplay/')->getEntity();
         $input = $request->getParsedBody();
         if (is_array($input) && array_key_exists('save', $input)) {
@@ -65,6 +65,7 @@ class Scope extends BaseController
                 'menuActive' => 'owner',
                 'workstation' => $workstation,
                 'scope' => $entity->getArrayCopy(),
+                'organisation' => $organisation,
                 'providerList' => array(
                     'notAssigned' => $providerNotAssigned,
                     'assigned' => $providerAssigned

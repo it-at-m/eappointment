@@ -6,22 +6,26 @@
 
 namespace BO\Zmsadmin;
 
-/**
-  * Handle requests concerning services
-  *
-  */
 class Dayoff extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render()
-    {
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
-        \BO\Slim\Render::html('page/dayoff.twig', array(
-            'title' => 'Allgemein gültige Feiertage - Jahresauswahl',
-            'workstation' => $workstation,
-            'menuActive' => 'dayoff'
-        ));
+        return \BO\Slim\Render::withHtml(
+            $response,
+            'page/dayoff.twig',
+            array(
+                'title' => 'Allgemein gültige Feiertage - Jahresauswahl',
+                'workstation' => $workstation,
+                'menuActive' => 'dayoff'
+            )
+        );
     }
 }
