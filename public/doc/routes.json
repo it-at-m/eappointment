@@ -3814,7 +3814,7 @@
 			],
 			"responses": {
 				"200": {
-					"description": "success",
+					"description": "success, might be empty",
 					"schema": {
 						"type": "object",
 						"properties": {
@@ -3826,9 +3826,6 @@
 							}
 						}
 					}
-				},
-				"404": {
-					"description": "could not find a cluster"
 				}
 			}
 		}
@@ -4379,6 +4376,12 @@
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
 				}
 			],
 			"responses": {
