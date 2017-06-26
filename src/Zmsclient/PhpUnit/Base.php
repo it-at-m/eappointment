@@ -56,7 +56,11 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
                     $function,
                     [
                         $options['url'],
-                        Argument::type('\BO\Zmsentities\Schema\Entity'),
+                        Argument::that(function ($value) {
+                            return
+                                ($value instanceof \BO\Zmsentities\Schema\Entity) ||
+                                ($value instanceof \BO\Zmsentities\Collection\Base);
+                        }),
                         $parameters
                     ]
                 );
