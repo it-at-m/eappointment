@@ -47,18 +47,10 @@ class FileUploader
         return $this;
     }
 
-    public function getEntity()
-    {
-        return $this->imageData;
-    }
-
     protected function getUploadedFile($imageName)
     {
         $files = $this->request->getUploadedFiles();
-        if (isset($files[$imageName])) {
-            return $files[$imageName];
-        }
-        return false;
+        return (isset($files[$imageName])) ? $files[$imageName] : false;
     }
 
     protected function createImage($imageName)

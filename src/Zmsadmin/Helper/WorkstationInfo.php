@@ -39,12 +39,7 @@ class WorkstationInfo
         $collection = \App::$http
             ->readGetResult('/scope/'. $scopeId . '/availability/')
             ->getCollection();
-        if ($collection) {
-            return $collection
-                ->withDateTime($dateTime)
-                ->getArrayCopy();
-        }
-        return [];
+        return ($collection) ? $collection->withDateTime($dateTime)->getArrayCopy() : [];
     }
 
     public static function getWorkstationsByScope($scopeId)
