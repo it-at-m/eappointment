@@ -11,7 +11,9 @@ class Dayoff extends Schema\Entity
     public function setTimestampFromDateformat($fromFormat = 'd.m.Y')
     {
         $dateTime = \DateTimeImmutable::createFromFormat($fromFormat, $this->date, new \DateTimeZone('UTC'));
-        $this->date = $dateTime->modify('00:00:00')->getTimestamp();
+        if ($dateTime) {
+            $this->date = $dateTime->modify('00:00:00')->getTimestamp();
+        }
         return $this;
     }
 
