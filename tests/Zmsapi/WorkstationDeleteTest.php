@@ -25,4 +25,13 @@ class WorkstationDeleteTest extends Base
         $this->expectExceptionCode(404);
         $this->render(['loginname' => 'test'], [], []);
     }
+
+    public function testHasCalledProcess()
+    {
+        $workstation = $this->setWorkstation();
+        $workstation->process = (new \BO\Zmsentities\Process)->getExample();
+        $this->expectException('\BO\Zmsapi\Exception\Workstation\WorkstationHasCalledProcess');
+        $this->expectExceptionCode(428);
+        $this->render(['loginname' => static::$loginName], [], []);
+    }
 }

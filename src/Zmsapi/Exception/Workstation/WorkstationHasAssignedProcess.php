@@ -2,9 +2,6 @@
 
 namespace BO\Zmsapi\Exception\Workstation;
 
-/**
- * example class to generate an exception
- */
 class WorkstationHasAssignedProcess extends \Exception
 {
     protected $code = 404;

@@ -22,10 +22,13 @@ class WorkstationDelete extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights();
+        $workstation = (new Helper\User($request, 1))->checkRights();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         if (! (new Useraccount)->readIsUserExisting($args['loginname'])) {
             throw new Exception\Useraccount\UseraccountNotFound();
+        }
+        if ($workstation->process->hasId()) {
+            throw new Exception\Workstation\WorkstationHasCalledProcess();
         }
 
         $message = Response\Message::create($request);
