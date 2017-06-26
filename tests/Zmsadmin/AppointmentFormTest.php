@@ -40,7 +40,6 @@ class AppointmentFormTest extends Base
         );
         $response = parent::testRendering();
         $this->assertContains('Terminvereinbarung Neu', (string)$response->getBody());
-        $this->assertContains('01.04.2016', (string)$response->getBody());
     }
 
     public function testSelectedProcess()
