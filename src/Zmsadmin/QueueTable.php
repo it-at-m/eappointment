@@ -10,6 +10,8 @@ use \BO\Zmsentities\Scope;
 
 use \BO\Zmsentities\Collection\ProcessList;
 
+use \BO\Zmsentities\Collection\QueueList;
+
 class QueueTable extends BaseController
 {
     /**
@@ -27,6 +29,12 @@ class QueueTable extends BaseController
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
         $clusterHelper = (new Helper\ClusterHelper($workstation));
         $processList = $clusterHelper->getProcessList($selectedDate);
+        $queueList = new QueueList();
+        $queueListMissed = new QueueList();
+        if ($processList) {
+            $queueList = $this->getQueueList($processList, $selectedDate, ['confirmed', 'queued', 'reserved']);
+            $queueListMissed = $this->getQueueList($processList, $selectedDate, ['missed']);
+        }
 
         return \BO\Slim\Render::withHtml(
             $response,
@@ -37,8 +45,8 @@ class QueueTable extends BaseController
                 'source' => $workstation->getRedirect(),
                 'selectedDate' => ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d'),
                 'cluster' => $clusterHelper->getEntity(),
-                'processList' => $this->getQueueList($processList, $selectedDate, ['confirmed', 'queued', 'reserved']),
-                'processListMissed' => $this->getQueueList($processList, $selectedDate, ['missed'])
+                'processList' => $queueList,
+                'processListMissed' => $queueListMissed
             )
         );
     }

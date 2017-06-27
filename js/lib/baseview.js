@@ -60,6 +60,9 @@ class BaseView extends ErrorHandler {
                         message: err.responseText,
                         callback: (exceptionButtonUrl) => {
                             destroyLightbox()
+                            if (err.responseText.includes('data-reload')) {
+                                location.href = exceptionButtonUrl;
+                            }
                             reject({'source': 'button', 'url': exceptionButtonUrl })
                         }
                     })

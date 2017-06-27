@@ -27,9 +27,9 @@ class LogoutBySuperuser extends BaseController
 
         if (array_key_exists('useraccount', $workstationToLogout) && isset($workstationToLogout['useraccount']['id'])) {
             $userAccount = \App::$http
-                ->readGetResult('/useraccount/login/'. $workstationToLogout['useraccount']['id'] .'/')->getEntity();
+                ->readGetResult('/useraccount/'. $workstationToLogout['useraccount']['id'] .'/')->getEntity();
             $workstation->getUseraccount()->hasEditAccess($userAccount);
-            \App::$http->readDeleteResult('/workstation/'. $workstationToLogout['useraccount']['id'] .'/');
+            \App::$http->readDeleteResult('/workstation/login/'. $workstationToLogout['useraccount']['id'] .'/');
         }
 
         $departmentId = Validator::value($args['id'])->isNumber()->getValue();
