@@ -31,6 +31,11 @@ class ClusterTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
+                    'url' => '/cluster/109/organisation/',
+                    'response' => $this->readFixture("GET_organisation_71_resolved3.json")
+                ],
+                [
+                    'function' => 'readGetResult',
                     'url' => '/department/74/',
                     'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_department_74.json")
@@ -64,6 +69,11 @@ class ClusterTest extends Base
                     'url' => '/cluster/109/',
                     'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_cluster_109.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/cluster/109/organisation/',
+                    'response' => $this->readFixture("GET_organisation_71_resolved3.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -131,6 +141,11 @@ class ClusterTest extends Base
                     'url' => '/cluster/109/',
                     'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_cluster_109.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/cluster/109/organisation/',
+                    'response' => $this->readFixture("GET_organisation_71_resolved3.json")
                 ],
                 [
                     'function' => 'readGetResult',
