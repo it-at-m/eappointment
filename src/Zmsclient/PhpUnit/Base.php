@@ -65,13 +65,17 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
                     ]
                 );
             }
-            $function->shouldBeCalled()
-                ->willReturn(
-                    new \BO\Zmsclient\Result(
-                        $this->getResponse($options['response'], 200),
-                        static::createBasicRequest()
-                    )
-                );
+            if (isset($options['exception'])) {
+                $function->will(new \Prophecy\Promise\ThrowPromise($options['exception']));
+            } elseif (isset($options['response'])) {
+                $function->shouldBeCalled()
+                    ->willReturn(
+                        new \BO\Zmsclient\Result(
+                            $this->getResponse($options['response'], 200),
+                            static::createBasicRequest()
+                        )
+                    );
+            }
         }
         $api = $mock->reveal();
         return $api;
