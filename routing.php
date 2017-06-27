@@ -105,16 +105,6 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/workstation/quicklogin/', '\BO\Zmsadmin\QuickLogin')
     ->setName("quickLogin");
 
-
-/*
- * ---------------------------------------------------------------------------
- * Links
- * -------------------------------------------------------------------------
- */
-\App::$slim->get('/links/', '\BO\Zmsadmin\Links')
-    ->setName("links");
-
-
 /*
  * ---------------------------------------------------------------------------
  * Logout
