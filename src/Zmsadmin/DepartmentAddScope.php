@@ -41,12 +41,15 @@ class DepartmentAddScope extends BaseController
         $departmentId = Validator::value($args['id'])->isNumber()->getValue();
         $department = \App::$http
             ->readGetResult('/department/'. $departmentId .'/', ['resolveReferences' => 2])->getEntity();
+        $organisation = \App::$http->readGetResult('/department/' . $departmentId . '/organisation/')->getEntity();
         $input = $request->getParsedBody();
+
         if (is_array($input) && array_key_exists('save', $input)) {
             $entity = (new Entity($input))->withCleanedUpFormData();
             $entity->hint = implode(' | ', $input['hint']);
             $entity = \App::$http->readPostResult('/department/'. $department->id .'/scope/', $entity)
                 ->getEntity();
+            (new Helper\FileUploader($request, 'uploadCallDisplayImage'))->writeUploadToScope($entity->id);
             return \BO\Slim\Render::redirect(
                 'scope',
                 array(
@@ -63,6 +66,8 @@ class DepartmentAddScope extends BaseController
             'action' => 'add',
             'menuActive' => 'owner',
             'workstation' => $workstation,
+            'organisation' => $organisation,
+            'department' => $department,
             'providerList' => array(
                 'notAssigned' => $providerNotAssigned,
                 'assigned' => $providerAssigned

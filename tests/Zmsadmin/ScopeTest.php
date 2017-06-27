@@ -42,6 +42,11 @@ class ScopeTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
+                    'url' => '/scope/141/department/',
+                    'response' => $this->readFixture("GET_department_74.json")
+                ],
+                [
+                    'function' => 'readGetResult',
                     'url' => '/scope/141/organisation/',
                     'response' => $this->readFixture("GET_organisation_71_resolved3.json")
                 ],
@@ -53,7 +58,7 @@ class ScopeTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('Charlottenburg-Wilmersdorf - Bürgeramt Heerstraße', (string)$response->getBody());
+        $this->assertContains('Bürgeramt Heerstraße', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -85,6 +90,11 @@ class ScopeTest extends Base
                     'url' => '/scope/141/',
                     'parameters' => ['resolveReferences' => 1],
                     'response' => $this->readFixture("GET_scope_141.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/department/',
+                    'response' => $this->readFixture("GET_department_74.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -166,6 +176,11 @@ class ScopeTest extends Base
                     'url' => '/scope/141/',
                     'parameters' => ['resolveReferences' => 1],
                     'response' => $this->readFixture("GET_scope_141.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/department/',
+                    'response' => $this->readFixture("GET_department_74.json")
                 ],
                 [
                     'function' => 'readGetResult',

@@ -27,12 +27,15 @@ class DepartmentAddCluster extends BaseController
         $departmentId = Validator::value($args['departmentId'])->isNumber()->getValue();
         $department = \App::$http
             ->readGetResult('/department/'. $departmentId .'/', ['resolveReferences' => 2])->getEntity();
+        $organisation = \App::$http->readGetResult('/department/' . $departmentId . '/organisation/')->getEntity();
         $input = $request->getParsedBody();
 
         if (is_array($input) && array_key_exists('save', $input)) {
             $entity = (new Entity($input))->withCleanedUpFormData();
-            $entity = \App::$http->readPostResult('/department/'. $department->id .'/cluster/', $entity)
+            $entity = \App::$http
+                ->readPostResult('/department/'. $department->id .'/cluster/', $entity)
                 ->getEntity();
+            (new Helper\FileUploader($request, 'uploadCallDisplayImage'))->writeUploadToCluster($entity->id);
             return \BO\Slim\Render::redirect(
                 'cluster',
                 array(
@@ -50,7 +53,9 @@ class DepartmentAddCluster extends BaseController
             'action' => 'add',
             'menuActive' => 'owner',
             'workstation' => $workstation,
-            'scopeList' => $department->getScopeList()->withUniqueScopes()
+            'scopeList' => $department->getScopeList()->withUniqueScopes(),
+            'organisation' => $organisation,
+            'department' => $department
         ));
     }
 }

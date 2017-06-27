@@ -63,9 +63,6 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->map(['GET', 'POST'], '/dayoff/{year:\d+}/', '\BO\Zmsadmin\DayoffByYear')
     ->setName("dayoffByYear");
 
-\App::$slim->get('/dayoff/{year:\d+}/{id:\d+}/', '\BO\Zmsadmin\DayoffEdit')
-    ->setName("dayoffEdit");
-
 
 /*
  * ---------------------------------------------------------------------------
