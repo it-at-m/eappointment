@@ -27,7 +27,7 @@ class WorkstationDelete extends BaseController
         if (! (new Useraccount)->readIsUserExisting($args['loginname'])) {
             throw new Exception\Useraccount\UseraccountNotFound();
         }
-        if ($workstation->process->hasId()) {
+        if ($workstation->process && $workstation->process->hasId()) {
             throw new Exception\Workstation\WorkstationHasCalledProcess();
         }
 
