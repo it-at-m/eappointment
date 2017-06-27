@@ -24,7 +24,7 @@ class View extends BaseView {
     load() {
         this.cleanInstance();
         const url = `${this.includeUrl}/workstation/process/callbutton/`
-        return this.loadContent(url)
+        return this.loadContent(url).catch(err => this.loadErrorCallback(err.source, err.url));
     }
 
     loadClientNext() {
