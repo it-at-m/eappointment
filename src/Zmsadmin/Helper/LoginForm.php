@@ -18,7 +18,6 @@ class LoginForm
     public static function fromLoginParameters()
     {
         $collection = array();
-
         // loginName
         $collection['loginName'] = Validator::param('loginName')->isString()
             ->isBiggerThan(2, "Es muss ein aussagekräftiger Name eingegeben werden")
