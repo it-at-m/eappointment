@@ -29,7 +29,7 @@ class DepartmentByScopeId extends BaseController
 
         $message = Response\Message::create($request);
         if ((new Helper\User($request))->hasRights()) {
-            (new Helper\User($request))->checkRights('department');
+            (new Helper\User($request))->checkRights('basic');
         } else {
             $department = $department->withLessData();
             $message->meta->reducedData = true;
