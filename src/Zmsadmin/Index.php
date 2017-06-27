@@ -9,10 +9,6 @@ namespace BO\Zmsadmin;
 use \BO\Zmsadmin\Helper\LoginForm;
 use \BO\Mellon\Validator;
 
-/**
-  * Handle requests concerning services
-  *
-  */
 class Index extends BaseController
 {
     /**
@@ -34,8 +30,7 @@ class Index extends BaseController
                 'password' => $loginData['password']['value']
             ));
             try {
-                $workstation = \App::$http
-                    ->readPostResult('/workstation/login/', $userAccount)->getEntity();
+                $workstation = \App::$http->readPostResult('/workstation/login/', $userAccount)->getEntity();
             } catch (\BO\Zmsclient\Exception $exception) {
                 if ($exception->template == 'BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn') {
                     \BO\Zmsclient\Auth::setKey($exception->data['authkey']);
