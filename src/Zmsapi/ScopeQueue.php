@@ -39,7 +39,7 @@ class ScopeQueue extends BaseController
 
         $message = Response\Message::create($request);
         if ((new Helper\User($request))->hasRights()) {
-            (new Helper\User($request))->checkRights('scope');
+            (new Helper\User($request))->checkRights('basic');
         } else {
             $queueList = $queueList->withLessData();
             $message->meta->reducedData = true;

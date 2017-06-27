@@ -28,7 +28,7 @@ class ScopeGet extends BaseController
             throw new Exception\Scope\ScopeNotFound();
         }
         if ((new Helper\User($request))->hasRights()) {
-            (new Helper\User($request))->checkRights('scope');
+            (new Helper\User($request))->checkRights('basic');
         } else {
             $scope = $scope->withLessData();
             $message->meta->reducedData = true;
