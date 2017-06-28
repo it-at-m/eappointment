@@ -25,12 +25,13 @@ class Mail extends BaseController
         $selectedProcessId = Validator::param('selectedprocess')->isNumber()->getValue();
         $dialog = Validator::param('dialog')->isNumber()->getValue();
         $success = Validator::param('result')->isString()->getValue();
-        if ($selectedProcessId) {
-            $process = \App::$http->readGetResult('/process/'. $selectedProcessId .'/')->getEntity();
-        }
         $department = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/department/')->getEntity();
         $formResponse = null;
         $input = $request->getParsedBody();
+        $process = ($selectedProcessId) ?
+            \App::$http->readGetResult('/process/'. $selectedProcessId .'/')->getEntity() :
+            null;
+        
         if (array_key_exists('submit', (array)$input) && 'form' == $input['submit']) {
             $formResponse = $this->writeValidatedMail($process, $department);
             if ($formResponse instanceof Entity) {
@@ -46,7 +47,7 @@ class Mail extends BaseController
             }
         }
 
-        \BO\Slim\Render::withHtml(
+        return \BO\Slim\Render::withHtml(
             $response,
             'page/mail.twig',
             array(

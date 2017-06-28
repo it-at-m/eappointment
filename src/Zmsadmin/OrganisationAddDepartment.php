@@ -22,6 +22,7 @@ class OrganisationAddDepartment extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $input = $request->getParsedBody();
         $organisationId = Validator::value($args['id'])->isNumber()->getValue();
+        $organisation = \App::$http->readGetResult('/organisation/' . $organisationId . '/')->getEntity();
         if (is_array($input) && array_key_exists('save', $input)) {
             $input = $this->cleanupLinks($input);
             $entity = (new Entity($input))->withCleanedUpFormData();
@@ -46,7 +47,8 @@ class OrganisationAddDepartment extends BaseController
                 'title' => 'Standort',
                 'action' => 'add',
                 'menuActive' => 'owner',
-                'workstation' => $workstation
+                'workstation' => $workstation,
+                'organisation' => $organisation
             )
         );
     }
