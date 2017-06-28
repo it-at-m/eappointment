@@ -31,12 +31,14 @@ class Notification extends BaseController
         $dialog = Validator::param('dialog')->isNumber()->getValue();
         $success = Validator::param('result')->isString()->getValue();
         $sendStatus = Validator::param('status')->isString()->isBiggerThan(2)->getValue();
-
-        $process = \App::$http->readGetResult('/process/'. $selectedProcessId .'/')->getEntity();
         $department = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/department/')->getEntity();
         $config = \App::$http->readGetResult('/config/')->getEntity();
-
+        $formResponse = null;
         $input = $request->getParsedBody();
+        $process = ($selectedProcessId) ?
+            \App::$http->readGetResult('/process/'. $selectedProcessId .'/')->getEntity() :
+            null;
+
         if (array_key_exists('submit', (array)$input) && 'form' == $input['submit']) {
             $formResponse = $this->writeValidatedNotification($process, $config, $department, $sendStatus);
             if ($formResponse instanceof Entity) {
@@ -52,7 +54,7 @@ class Notification extends BaseController
             }
         }
 
-        \BO\Slim\Render::withHtml(
+        return \BO\Slim\Render::withHtml(
             $response,
             'page/notification.twig',
             array(
@@ -80,7 +82,7 @@ class Notification extends BaseController
                 $process->status = $sendStatus;
                 $notification = (new Entity)->toResolvedEntity($process, $config, $department);
             } else {
-                $notification = (new Entity)->toCustomMessageEntity($process, $collection->getValues());
+                $notification = (new Entity)->toCustomMessageEntity($process, $collection->getValues(), $department);
             }
             $notification = \App::$http->readPostResult('/notification/', $notification)->getEntity();
             return $notification;
