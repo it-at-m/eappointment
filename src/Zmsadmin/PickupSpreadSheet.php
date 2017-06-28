@@ -45,8 +45,14 @@ class PickupSpreadSheet extends BaseController
         ];
         $writer = new XLSXWriter();
 
-        $writer->writeSheetRow($xlsSheetTitle, ['Abholer']);
-        $writer->writeSheetRow($xlsSheetTitle, [$department->name .' - '. $clusterInfo.$providerName]);
+        $writer->writeSheetRow($xlsSheetTitle, [
+            'Abholer',
+            '','','','','','','',''
+        ]);
+        $writer->writeSheetRow($xlsSheetTitle, [
+            $department->name .' - '. $clusterInfo.$providerName,
+            '','','','','','','',''
+        ]);
         $writer->writeSheetRow($xlsSheetTitle, $xlsHeaders);
 
         $rowCount = 1;

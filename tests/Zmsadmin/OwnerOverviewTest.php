@@ -40,8 +40,7 @@ class OwnerOverviewTest extends Base
         $this->expectException('\BO\Zmsclient\Exception');
 
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\Zmsentities\Exception\UserAccountMissingRights';
-        $exception->data = json_decode($this->readFixture("GET_Workstation_Resolved2.json"), 1)['data'];
+        $exception->template = '\BO\Zmsentities\Exception\UserAccountMissingRights';
         $this->setApiCalls(
             [
                 [
