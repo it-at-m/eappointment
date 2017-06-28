@@ -30,11 +30,12 @@ class NotificationTest extends EntityCommonTests
     {
         $entity = (new $this->entityclass())->getExample();
         $process = (new \BO\Zmsentities\Process())->getExample();
+        $department = (new \BO\Zmsentities\Department())->getExample();
         $formCollection = array(
             'message' => \BO\Mellon\Validator::value('Das ist eine Testnachricht')->isString()->isBiggerThan(2)
         );
         $formCollection = \BO\Mellon\Validator::collection($formCollection);
-        $entity = $entity->toCustomMessageEntity($process, $formCollection->getValues());
+        $entity = $entity->toCustomMessageEntity($process, $formCollection->getValues(), $department);
         $this->assertEquals('Das ist eine Testnachricht', $entity->message);
     }
 

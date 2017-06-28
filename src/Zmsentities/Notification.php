@@ -69,10 +69,13 @@ class Notification extends Schema\Entity
         $entity->message = Helper\Messaging::getNotificationContent($process, $config);
         $entity->createIP = $process->createIP;
         $entity->department = $department;
+        if (! isset($entity['client'])) {
+            $entity['client'] = $entity->getFirstClient();
+        }
         return $entity;
     }
 
-    public function toCustomMessageEntity(Process $process, $collection)
+    public function toCustomMessageEntity(Process $process, $collection, Department $department)
     {
         $entity = new self();
         if (array_key_exists('message', $collection) && '' != $collection['message']->getValue()) {
@@ -80,6 +83,10 @@ class Notification extends Schema\Entity
         }
         $entity->process = $process;
         $entity->createIP = $process->createIP;
+        $entity->department = $department;
+        if (! isset($entity['client'])) {
+            $entity['client'] = $entity->getFirstClient();
+        }
         return $entity;
     }
 
