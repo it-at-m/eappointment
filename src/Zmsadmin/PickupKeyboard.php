@@ -20,7 +20,7 @@ class PickupKeyboard extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $department = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/department/')->getEntity();
 
-        \BO\Slim\Render::withHtml(
+        return \BO\Slim\Render::withHtml(
             $response,
             'page/pickupKeyboard.twig',
             array(
