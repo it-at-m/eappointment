@@ -40,6 +40,7 @@ class ProcessPickup extends BaseController
             $process = ProcessStatusQueued::init()
                 ->readByQueueNumberAndScope($entity['queue']['number'], $workstation->scope['id']);
             if (!$process->id) {
+                $workstation = (new \BO\Zmsdb\Workstation)->readResolvedReferences($workstation, 1);
                 $process = (new Query())->writeNewPickup($workstation->scope, \App::$now, $entity['queue']['number']);
             }
         } else {
