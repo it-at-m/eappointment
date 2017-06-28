@@ -47,7 +47,7 @@ class OwnerOverviewTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 1],
-                    'response' => $this->readFixture("GET_Workstation_basic.json")
+                    'response' => $this->readFixture("GET_workstation_basic.json")
                 ],
                 [
                     'function' => 'readGetResult',
