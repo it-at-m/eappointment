@@ -18,12 +18,8 @@ class OwnerOverview extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
-        $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences'=>4))->getCollection();
+        $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences' => 4))->getCollection();
         $organisationList = $ownerList->getOrganisationsByOwnerId(23);
-
-        if (!count($ownerList)) {
-            return \BO\Slim\Render::withHtml($response, 'page/404.twig', array());
-        }
 
         return \BO\Slim\Render::withHtml(
 
