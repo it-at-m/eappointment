@@ -19,14 +19,14 @@ class PickupHandheld extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $input = $request->getParsedBody();
-        if (is_array($input) && array_key_exists('selectedprocess', $input)) {
-            $selectedProcess = $this->readPickupProcess($input['selectedprocess']);
-        }
+        $selectedProcess = (is_array($input) && array_key_exists('selectedprocess', $input)) ?
+            $this->readPickupProcess($input['selectedprocess']) :
+            null;
         $processList = \App::$http->readGetResult('/workstation/process/pickup/', ['resolveReferences' => 1])
             ->getCollection();
         $department = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/department/')->getEntity();
 
-        \BO\Slim\Render::withHtml(
+        return \BO\Slim\Render::withHtml(
             $response,
             'page/pickupHandheld.twig',
             array(
@@ -56,14 +56,5 @@ class PickupHandheld extends BaseController
             }
         }
         return $process;
-        /*
-        if ($process->hasId()) {
-            return \BO\Slim\Render::redirect(
-                'pickup_handheld',
-                [],
-                ['selectedprocess' => $process->id]
-            );
-        }
-        */
     }
 }

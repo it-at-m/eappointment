@@ -23,7 +23,7 @@ class View extends BaseView {
     }
 
     loadDirectCall() {
-        const processId = this.$main.filter('[data-selectedprocess]').data('selectedprocess');
+        const processId = this.$main.find('[data-selectedprocess]').data('selectedprocess');
         if (processId) {
             this.ButtonAction.pickupDirect(processId).catch(err => this.loadErrorCallback(err)).then((response) => {
                 this.loadMessage(response, this.onPickupCallProcess);
