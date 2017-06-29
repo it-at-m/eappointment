@@ -77,7 +77,7 @@ class TwigExceptionHandler
         }
         $response = null;
         $responsedata = '';
-        if (isset($exception->request)) {
+        if (\App::DEBUG && isset($exception->request)) {
             $request = $exception->request;
         }
         if (isset($exception->response)) {

@@ -21,6 +21,11 @@ class Application
     const IDENTIFIER = 'unnamed slim project';
 
     /**
+     * Flag to enable debugging mode for application
+     */
+    const DEBUG = false;
+
+    /**
      * Settings for region
      */
     const CHARSET = 'UTF-8';
