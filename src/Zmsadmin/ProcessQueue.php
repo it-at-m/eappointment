@@ -13,7 +13,7 @@ use BO\Slim\Render;
 use BO\Zmsentities\Helper\ProcessFormValidation as FormValidation;
 
 /**
- * Queue a process
+ * Queue a process from appointment formular without appointment
  */
 class ProcessQueue extends BaseController
 {
@@ -28,48 +28,71 @@ class ProcessQueue extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-
         $validator = $request->getAttribute('validator');
         $selectedDate = Validator::value($args['date'])->isString()->getValue();
-        $dateTime = \DateTime::createFromFormat('Y-m-d H:i', $selectedDate .' 00:00');
-        $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
-        $isPrint = $validator->getParameter('print')->isNumber()->getValue();
+        $dateTime = ($selectedDate) ? \DateTime::createFromFormat('Y-m-d H:i', $selectedDate .' 00:00') : \App::$now;
 
-        if ($selectedProcessId && $isPrint) {
-            $selectedProcess = \App::$http
-                ->readGetResult('/process/'. $selectedProcessId .'/')->getEntity();
+        $process = $this->readSelectedProcessWithWaitingnumber($validator);
+        if ($process instanceof \BO\Zmsentities\Process) {
             return \BO\Slim\Render::withHtml(
                 $response,
                 'page/printWaitingNumber.twig',
                 array(
                     'title' => 'Wartenummer drucken',
-                    'process' => $selectedProcess
+                    'process' => $process,
+                    'currentDate' => $dateTime
                 )
             );
         }
 
-        $input = $request->getParsedBody();
-        $scope = new \BO\Zmsentities\Scope($workstation->scope);
+        $result = $this->readNewProcessWithoutAppointment(
+            $response,
+            $request->getParsedBody(),
+            $workstation->scope,
+            $dateTime
+        );
+        if ($result instanceof \BO\Zmsentities\Process) {
+            return \BO\Slim\Render::withHtml(
+                $response,
+                'block/appointment/waitingnumber.twig',
+                array(
+                    'process' => $result,
+                    'selectedDate' => $selectedDate
+                )
+            );
+        }
+        return $result;
+    }
+
+    protected function readSelectedProcessWithWaitingnumber($validator)
+    {
+        $result = null;
+        $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
+        $isPrint = $validator->getParameter('print')->isNumber()->getValue();
+        if ($selectedProcessId && $isPrint) {
+            $result = \App::$http->readGetResult('/process/'. $selectedProcessId .'/')->getEntity();
+        }
+        return $result;
+    }
+
+    protected function readNewProcessWithoutAppointment($response, $input, $scope, $dateTime)
+    {
+        $result = null;
+        $scope = new \BO\Zmsentities\Scope($scope);
         $process = (new \BO\Zmsentities\Process)->createFromScope($scope, $dateTime);
         if (is_array($input)) {
             $validationList = FormValidation::fromAdminParameters($scope['preferences']);
             if ($validationList->hasFailed()) {
-                return \BO\Slim\Render::withJson(
+                $result = \BO\Slim\Render::withJson(
                     $response,
                     $validationList->getStatus(),
                     428
                 );
+            } else {
+                $process->withUpdatedData($validationList->getStatus(), $input, $scope, $dateTime);
+                $result = Helper\AppointmentFormHelper::writeQueuedProcess($validationList->getStatus(), $process);
             }
-            $process->withUpdatedData($validationList->getStatus(), $input, $scope, $dateTime);
-            $process = Helper\AppointmentFormHelper::writeQueuedProcess($validationList->getStatus(), $process);
         }
-        return \BO\Slim\Render::withHtml(
-            $response,
-            'block/appointment/waitingnumber.twig',
-            array(
-                'process' => $process,
-                'selectedDate' => $selectedDate
-            )
-        );
+        return $result;
     }
 }
