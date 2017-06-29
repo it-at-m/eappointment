@@ -70,7 +70,7 @@ class ScopeAppointmentsByDayXlsExport extends BaseController
                 $queueItem->authKey,
                 $client['telephone'],
                 $client['email'],
-                $request['name']
+                (isset($request['name'])) ? $request['name'] : ''
             ];
 
             $writer->writeSheetRow($xlsSheetTitle, $row);

@@ -23,12 +23,8 @@ class Profile extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $confirm_success = $request->getAttribute('validator')->getParameter('confirm_success')->isString()->getValue();
         $entity = new Entity($workstation->useraccount);
-
-        if (! $entity->hasId()) {
-            return Helper\Render::withHtml($response, 'page/404.twig', array());
-        }
-
         $input = $request->getParsedBody();
+
         if (is_array($input) && array_key_exists('changePassword', $input)) {
             $newEntity = (new Entity($input))->withCleanedUpFormData();
             $entity = \App::$http->readPostResult('/workstation/password/', $newEntity)
