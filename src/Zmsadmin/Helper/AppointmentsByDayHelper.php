@@ -36,7 +36,6 @@ class AppointmentsByDayHelper
                    ->toQueueList($selectedDateTime)
                    ->withStatus(array('confirmed', 'queued', 'reserved'))
                    ->withSortedArrival();
-
         return $queueList;
     }
 }

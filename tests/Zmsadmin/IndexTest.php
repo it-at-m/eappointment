@@ -44,7 +44,7 @@ class IndexTest extends Base
         $exception = new \BO\Zmsclient\Exception();
         $exception->template = 'BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn';
         $exception->data = json_decode($this->readFixture("GET_Workstation_Resolved2.json"), 1)['data'];
-        
+
         $this->setApiCalls(
             [
                 [
@@ -54,8 +54,8 @@ class IndexTest extends Base
                 ]
             ]
         );
-
         $this->render($this->arguments, $this->parameters, [], 'POST');
+        $this->assertEquals('8520c285985b5bd209a0110442dc4e45', \BO\Zmsclient\Auth::getKey());
     }
 
     public function testLoginValidationError()
