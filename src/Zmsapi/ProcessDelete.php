@@ -32,9 +32,12 @@ class ProcessDelete extends BaseController
             $mail = (new \BO\Zmsentities\Mail())->toResolvedEntity($process, $config, $initiator);
             (new Mail())->writeInQueueWithAdmin($mail);
         }
-
+        $processDeleted = (new Process)->deleteEntity($args['id'], $args['authKey']);
+        if (! $processDeleted || ! $processDeleted->hasId()) {
+            throw new Exception\Process\ProcessDeleteFailed();
+        }
         $message = Response\Message::create($request);
-        $message->data = (new Process)->deleteEntity($args['id'], $args['authKey']);
+        $message->data = $processDeleted;
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
