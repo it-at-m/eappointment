@@ -23,19 +23,16 @@ class TicketprinterConfig extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
-        $scopeId = $workstation['scope']['id'];
-        $entityId = Validator::value($scopeId)->isNumber()->getValue();
-
+        $scopeId = Validator::value($workstation['scope']['id'])->isNumber()->getValue();
         $config = \App::$http->readGetResult('/config/')->getEntity();
-
-        $entity = \App::$http->readGetResult(
-            '/scope/'. $entityId .'/organisation/',
+        $organisation = \App::$http->readGetResult(
+            '/scope/'. $scopeId .'/organisation/',
             ['resolveReferences' => 3]
         )->getEntity();
 
         $departments = new DepartmentList();
 
-        foreach ($entity->departments as $departmentData) {
+        foreach ($organisation->departments as $departmentData) {
             $department = (new Department($departmentData))->withCompleteScopeList();
             $departments->addEntity($department);
         }
@@ -46,7 +43,7 @@ class TicketprinterConfig extends BaseController
             array(
                 'title' => 'Anmeldung an Warteschlange',
                 'config' => $config->getArrayCopy(),
-                'organisation' => $entity->getArrayCopy(),
+                'organisation' => $organisation->getArrayCopy(),
                 'departments' => $departments->getArrayCopy(),
                 'workstation' => $workstation,
                 'menuActive' => 'ticketprinter'

@@ -8,13 +8,10 @@ namespace BO\Zmsadmin;
 
 use BO\Mellon\Validator;
 
-/**
- * Handle requests concerning services
- *
- */
 class ScopeEmergencyResponse extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
     public function readResponse(
@@ -24,7 +21,7 @@ class ScopeEmergencyResponse extends BaseController
     ) {
         $entityId = Validator::value($args['id'])->isNumber()->getValue();
         $url = sprintf('/scope/%d/emergency/respond/', $entityId);
-        $result = \App::$http->readPostResult($url);
+        $result = \App::$http->readPostResult($url, new \BO\Zmsentities\Scope());
         return $result->getResponse();
     }
 }

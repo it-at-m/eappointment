@@ -9,23 +9,29 @@ namespace BO\Zmsadmin;
 use BO\Zmsentities\Availability;
 use BO\Zmsentities\Collection\AvailabilityList;
 
-/**
-  * Handle requests concerning services
-  *
-  */
 class ScopeAvailabilityDay extends BaseController
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render($scope_id, $dateString)
-    {
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-        $scope = \App::$http->readGetResult('/scope/' . intval($scope_id) . '/')->getEntity();
-        $data = static::getAvailabilityData($scope_id, $dateString);
+        $scope = \App::$http->readGetResult('/scope/' . intval($args['id']) . '/')->getEntity();
+        $data = static::getAvailabilityData($scope->id, $args['date']);
         $data['workstation'] = $workstation;
         $data['scope'] = $scope;
-        \BO\Slim\Render::html('page/availabilityday.twig', $data);
+        $data['title'] = 'Behörden und Standorte - Öffnungszeiten';
+        $data['menuActive'] = 'owner';
+        return \BO\Slim\Render::withHtml(
+            $response,
+            'page/availabilityday.twig',
+            $data
+        );
     }
 
     protected static function getAvailabilityData($scope_id, $dateString)
@@ -37,11 +43,8 @@ class ScopeAvailabilityDay extends BaseController
             ->withDateTime($dateTime);
         $processList = \App::$http
             ->readGetResult('/scope/' . intval($scope_id) . '/process/' . $dateTime->format('Y-m-d') . '/')
-            ->getCollection()
-            ;
-        if (!$processList) {
-            $processList = new \BO\Zmsentities\Collection\ProcessList();
-        }
+            ->getCollection();
+        $processList = ($processList) ? $processList : new \BO\Zmsentities\Collection\ProcessList();
         $conflicts = $availabilityList->getConflicts();
         if ($processList) {
             $conflicts->addList($processList->withOutAvailability($availabilityList));

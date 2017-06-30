@@ -1,0 +1,72 @@
+<?php
+
+namespace BO\Zmsadmin\Tests;
+
+class TicketprinterStatusByScopeTest extends Base
+{
+    protected $arguments = [
+        'id' => 141
+    ];
+
+    protected $parameters = [
+        'kioskausgabe' => 1,
+        'hinweis' => 'Wartenummernausgabe geschlossen',
+        'save' => 'save'
+    ];
+
+    protected $classname = "TicketprinterStatusByScope";
+
+    public function testRendering()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/',
+                    'response' => $this->readFixture("GET_scope_141.json")
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, $this->parameters, []);
+        $this->assertContains(
+            'Wartenummernausgabe am Kiosk - Bürgeramt Heerstraße',
+            (string)$response->getBody()
+        );
+        $this->assertContains('freigeben', (string)$response->getBody());
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    public function testRenderingSave()
+    {
+        \App::$now = new \DateTime('2016-04-01 11:55:00', new \DateTimeZone('Europe/Berlin'));
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/',
+                    'response' => $this->readFixture("GET_scope_141.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/scope/141/',
+                    'response' => $this->readFixture("GET_scope_141_ticketprinter_disabled.json")
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, $this->parameters, [], 'POST');
+        $this->assertRedirect($response, '/scope/141/ticketprinter/?confirm_success=1459504500');
+        $this->assertEquals(302, $response->getStatusCode());
+    }
+}

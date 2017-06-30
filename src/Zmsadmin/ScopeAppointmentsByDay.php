@@ -12,14 +12,11 @@ use BO\Mellon\Validator;
 
 use Helper\AppointmentsByDayHelper;
 
-/**
- * Handle requests concerning services
- */
 class ScopeAppointmentsByDay extends BaseController
 {
 
     /**
-     *
+     * @SuppressWarnings(Param)
      * @return String
      */
     public function readResponse(

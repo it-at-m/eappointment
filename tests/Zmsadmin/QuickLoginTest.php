@@ -38,6 +38,30 @@ class QuickLoginTest extends Base
         $this->assertEquals(302, $response->getStatusCode());
     }
 
+    public function testLoginWithEnablingClusterWithAppointmentsOnly()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/workstation/testadmin/',
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/workstation/',
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ]
+            ]
+        );
+        $parameters = $this->parameters;
+        $parameters['scope'] = 'cluster';
+        $parameters['appointmentsOnly'] = 1;
+        $response = $this->render($this->arguments, $parameters, []);
+        $this->assertRedirect($response, '/workstation/');
+        $this->assertEquals(302, $response->getStatusCode());
+    }
+
     public function testRenderingLoginFailed()
     {
         $this->expectException('\BO\Zmsentities\Exception\QuickLoginFailed');

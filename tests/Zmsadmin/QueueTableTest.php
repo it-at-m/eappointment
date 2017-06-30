@@ -43,4 +43,36 @@ class QueueTableTest extends Base
         $this->assertContains('queue-table', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
+
+    public function testRenderingWithClusterEnabled()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_Workstation_clusterEnabled.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/department/',
+                    'response' => $this->readFixture("GET_department_74.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/cluster/',
+                    'response' => $this->readFixture("GET_cluster_109.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/cluster/109/process/2016-04-01/',
+                    'response' => $this->readFixture("GET_processList_cluster_109.json")
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, $this->parameters, []);
+        $this->assertContains('queue-table', (string)$response->getBody());
+        $this->assertEquals(200, $response->getStatusCode());
+    }
 }

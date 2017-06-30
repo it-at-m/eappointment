@@ -9,19 +9,21 @@ namespace BO\Zmsadmin;
 use BO\Zmsentities\Availability;
 use BO\Zmsentities\Collection\AvailabilityList;
 
-/**
-  * Handle requests concerning services
-  *
-  */
 class ScopeAvailabilityDayConflicts extends ScopeAvailabilityDay
 {
     /**
+     * @SuppressWarnings(Param)
      * @return String
      */
-    public static function render($scope_id, $dateString)
-    {
-        $data = static::getAvailabilityData($scope_id, $dateString);
-        \BO\Slim\Render::lastModified(0, 0);
-        \BO\Slim\Render::json($data);
+    public function readResponse(
+        \Psr\Http\Message\RequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
+        array $args
+    ) {
+        $data = static::getAvailabilityData($args['id'], $args['date']);
+        return \BO\Slim\Render::withJson(
+            $response,
+            $data
+        );
     }
 }

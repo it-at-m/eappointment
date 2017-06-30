@@ -30,7 +30,7 @@ class UseraccountEdit extends BaseController
         $userAccount = \App::$http->readGetResult('/useraccount/'. $userAccountName .'/')->getEntity();
         $workstation->getUseraccount()->hasEditAccess($userAccount);
 
-        $ownerList = \App::$http->readGetResult('/owner/')->getCollection();
+        $ownerList = \App::$http->readGetResult('/owner/', ['resolveReferences' => 2])->getCollection();
 
         if (null === $userAccount || !$userAccount->hasId()) {
             return \BO\Slim\Render::withHtml($response, 'page/404.twig', array());
