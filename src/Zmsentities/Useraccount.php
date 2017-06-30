@@ -169,7 +169,7 @@ class Useraccount extends Schema\Entity
         $departmentList = new Collection\DepartmentList();
         $entity = clone $this;
         foreach ($this->departments as $department) {
-            if (! is_array($department)) {
+            if (! is_array($department) && ! $department instanceof Department) {
                 $department = new Department(array('id' => $department));
             }
             $departmentList->addEntity($department);
