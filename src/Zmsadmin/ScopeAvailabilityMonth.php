@@ -28,11 +28,7 @@ class ScopeAvailabilityMonth extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
-        if (isset($args['date'])) {
-            $dateTime = new \BO\Zmsentities\Helper\DateTime($args['date']);
-        } else {
-            $dateTime = \App::$now;
-        }
+        $dateTime = (isset($args['date'])) ? new \BO\Zmsentities\Helper\DateTime($args['date']) : \App::$now;
         $scopeId = Validator::value($args['id'])->isNumber()->getValue();
         $scope = \App::$http->readGetResult('/scope/'. $scopeId .'/', ['resolveReferences' => 1])->getEntity();
         $availabilityList = \App::$http->readGetResult(
@@ -66,7 +62,8 @@ class ScopeAvailabilityMonth extends BaseController
                 'timestamp' => $dateTime->getTimeStamp(),
                 'month' => $month,
                 'scope' => $scope,
-                'menuActive' => 'availability',
+                'menuActive' => 'owner',
+                'title' => 'Behörden und Standorte - Öffnungszeiten',
                 //'maxWorkstationCount' => $availabilityList->getMaxWorkstationCount(),
                 'today' => $dateTime->format('Y-m-d'),
                 'workstation' => $workstation,

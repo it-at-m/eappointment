@@ -10,13 +10,10 @@ use BO\Zmsentities\Useraccount as Entity;
 use BO\Mellon\Validator;
 use \BO\Zmsadmin\Helper\UseraccountForm;
 
-/**
-  * Handle requests concerning services
-  *
-  */
 class UseraccountAdd extends BaseController
 {
     /**
+     * @SuppressWarnings(unused)
      * @return String
      */
     public function readResponse(
@@ -26,21 +23,20 @@ class UseraccountAdd extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $input = $request->getParsedBody();
-        $ownerList = \App::$http->readGetResult('/owner/')->getCollection();
+        $ownerList = \App::$http->readGetResult('/owner/', ['resolveReferences' => 2])->getCollection();
         $formData = null;
 
         if (is_array($input) && array_key_exists('save', $input)) {
             $form = UseraccountForm::fromAddParameters();
             $formData = $form->getStatus();
             if ($formData && ! $form->hasFailed()) {
-                $entity = new Entity($input);
-                $entity = $entity->withDepartmentList()->withCleanedUpFormData();
+                $input['password'] = $input['changePassword'][0];
+                $entity = (new Entity($input))->withCleanedUpFormData();
+                $entity = $entity->withDepartmentList();
                 $entity = \App::$http->readPostResult('/useraccount/', $entity)->getEntity();
                 return \BO\Slim\Render::redirect(
                     'useraccount',
-                    array(
-                        'loginname' => $entity->id
-                    ),
+                    array(),
                     array(
                         'success' => 'useraccount_created'
                     )
@@ -53,7 +49,8 @@ class UseraccountAdd extends BaseController
             'workstation' => $workstation,
             'formdata' => $formData,
             'action' => 'add',
-            'title' => 'Nutzer: Einrichtung und Administration','menuActive' => 'useraccount'
+            'title' => 'Nutzer: Einrichtung und Administration',
+            'menuActive' => 'useraccount'
         ));
     }
 }

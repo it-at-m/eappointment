@@ -42,6 +42,38 @@ class AppointmentFormTest extends Base
         $this->assertContains('Terminvereinbarung Neu', (string)$response->getBody());
     }
 
+    public function testRenderingClusterEnabled()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_clusterEnabled.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/cluster/',
+                    'response' => $this->readFixture("GET_cluster_109.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/cluster/109/request/',
+                    'response' => $this->readFixture("GET_cluster_109_requestlist.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/process/status/free/',
+                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0],
+                    'response' => $this->readFixture("GET_freeprocesslist_empty.json")
+                ]
+            ]
+        );
+        $response = parent::testRendering();
+        $this->assertContains('Terminvereinbarung Neu', (string)$response->getBody());
+    }
+
     public function testSelectedProcess()
     {
         $this->setApiCalls(

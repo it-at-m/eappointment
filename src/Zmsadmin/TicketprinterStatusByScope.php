@@ -12,17 +12,6 @@ use BO\Mellon\Validator;
 class TicketprinterStatusByScope extends BaseController
 {
     /**
-     * @return String
-     */
-    public static function render()
-    {
-        \BO\Slim\Render::html('page/ticketprinterStatus.twig', array(
-            'title' => 'Wartenummernausgabe am Kiosk',
-            'menuActive' => 'ticketprinterStatus'
-        ));
-    }
-
-    /**
      *
      * @return String
      */
@@ -34,22 +23,22 @@ class TicketprinterStatusByScope extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $confirm_success = $request->getAttribute('validator')->getParameter('confirm_success')->isString()->getValue();
 
-        $entityId = Validator::value($args['id'])->isNumber()->getValue();
-        $entity = \App::$http->readGetResult('/scope/' . $entityId . '/')->getEntity();
+        $scopeId = Validator::value($args['id'])->isNumber()->getValue();
+        $scope = \App::$http->readGetResult('/scope/' . $scopeId . '/')->getEntity();
 
         $input = $request->getParsedBody();
         if (is_array($input) && array_key_exists('save', $input)) {
-            $entity->status['ticketprinter']['deactivated'] = $input['kioskausgabe'];
+            $scope->status['ticketprinter']['deactivated'] = $input['kioskausgabe'];
             $workstation->scope['status']['ticketprinter']['deactivated'] = $input['kioskausgabe'];
             if ($input['hinweis']) {
-                if (!$entity->preferences['ticketprinter']) {
-                    $entity->preferences['ticketprinter'] = [];
+                if (! isset($scope->preferences['ticketprinter'])) {
+                    $scope->preferences['ticketprinter'] = [];
                 }
             }
-            $entity->preferences['ticketprinter']['deactivatedText'] = $input['hinweis'];
-            $entity = \App::$http->readPostResult('/scope/' . $entity->id . '/', $entity)
+            $scope->preferences['ticketprinter']['deactivatedText'] = $input['hinweis'];
+            $scope = \App::$http->readPostResult('/scope/' . $scope->id . '/', $scope)
                     ->getEntity();
-            return \BO\Slim\Render::redirect('ticketprinterStatusByScope', ['id' => $entityId], [
+            return \BO\Slim\Render::redirect('ticketprinterStatusByScope', ['id' => $scopeId], [
                 'confirm_success' => \App::$now->getTimeStamp()
             ]);
         }
@@ -58,11 +47,10 @@ class TicketprinterStatusByScope extends BaseController
             $response,
             'page/ticketprinterStatus.twig',
             array(
-                'title' => 'Standort',
                 'title' => 'Wartenummernausgabe am Kiosk',
                 'menuActive' => 'ticketprinterStatus',
                 'workstation' => $workstation,
-                'scope' => $entity->getArrayCopy(),
+                'scope' => $scope->getArrayCopy(),
                 'confirm_success' => $confirm_success,
             )
         );

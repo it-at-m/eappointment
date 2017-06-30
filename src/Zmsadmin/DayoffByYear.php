@@ -39,7 +39,6 @@ class DayoffByYear extends BaseController
             ]);
         }
 
-        $response = \BO\Slim\Render::withLastModified($response, time(), '0');
         return \BO\Slim\Render::withHtml(
             $response,
             'page/dayoffByYear.twig',
