@@ -25,18 +25,15 @@ class UseraccountForm
             ->isSmallerThan(40, "Der Nutzername sollte 40 Zeichen nicht überschreiten");
 
         // password
-        if (Validator::param('password')->isString()->getValue() ||
-            Validator::param('password_check')->isString()->getValue()
-        ) {
-            $collection['password'] = Validator::param('password')->isString()
-                ->isBiggerThan(2, "Es muss ein Passwort eingegeben werden")
-                ->isSmallerThan(40, "Das Passwort sollte 40 Zeichen nicht überschreiten");
+        $passwords = Validator::param('changePassword')->isArray()->getValue();
 
-            $collection['password_check'] = Validator::param('password_check')->isString();
+        $collection['password'] = Validator::value($passwords[0])->isString()
+            ->isBiggerThan(7, "Es muss ein Passwort mit mindestens 8 Zeichen eingegeben werden");
+        $collection['password_check'] = Validator::value($passwords[1])->isString()
+            ->isBiggerThan(7, "Das Passwort muss wiederholt werden");
 
-            if ($collection['password']->getValue() !== $collection['password_check']->getValue()) {
-                $collection['password_check']->setFailure('Die Passwörter müssen identisch sein');
-            }
+        if ($collection['password']->getValue() !== $collection['password_check']->getValue()) {
+            $collection['password_check']->setFailure('Die Passwörter müssen identisch sein');
         }
 
         // assigend departments
