@@ -28,14 +28,22 @@ use \Psr\Http\Message\ResponseInterface;
  \App::$slim->get('/calldisplay/', '\BO\Zmsadmin\Calldisplay')
      ->setName("calldisplay");
 
-
  /*
   * ---------------------------------------------------------------------------
-  * Calendar stuff
+  * Calendar
   * -------------------------------------------------------------------------
   */
  \App::$slim->get('/calendar/{year:\d\d\d\d}/{weeknr:\d{1,2}}/', '\BO\Zmsadmin\CalendarWeek')
      ->setName("calendar_week");
+
+
+ /*
+  * ---------------------------------------------------------------------------
+  * Config
+  * -------------------------------------------------------------------------
+  */
+ \App::$slim->get('/config/', '\BO\Zmsadmin\ConfigInfo')
+     ->setName("configinfo");
 
 
  /*
