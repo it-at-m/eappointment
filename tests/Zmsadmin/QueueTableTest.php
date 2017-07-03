@@ -67,7 +67,7 @@ class QueueTableTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/cluster/109/process/2016-04-01/',
-                    'response' => $this->readFixture("GET_processList_cluster_109.json")
+                    'response' => $this->readFixture("GET_processlist_cluster_109.json")
                 ]
             ]
         );

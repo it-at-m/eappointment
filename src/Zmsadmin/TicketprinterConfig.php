@@ -8,7 +8,7 @@ namespace BO\Zmsadmin;
 
 use BO\Mellon\Validator;
 
-use BO\Zmsentities\Department;
+use BO\Zmsentities\Department as DepartmentEntity;
 use BO\Zmsentities\Collection\DepartmentList;
 
 class TicketprinterConfig extends BaseController
@@ -33,7 +33,7 @@ class TicketprinterConfig extends BaseController
         $departments = new DepartmentList();
 
         foreach ($organisation->departments as $departmentData) {
-            $department = (new Department($departmentData))->withCompleteScopeList();
+            $department = (new DepartmentEntity($departmentData))->withCompleteScopeList();
             $departments->addEntity($department);
         }
 
