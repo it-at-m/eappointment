@@ -66,6 +66,7 @@ class Process extends Base implements Interfaces\ResolveReferences
             $newQueueNumber = (new Scope())->readWaitingNumberUpdated($scope->id, $dateTime);
         }
         $process->addQueue($newQueueNumber, $dateTime);
+        Log::writeLogEntry("CREATE (Process::writeNewPickup) $process ", $process->id);
         return $this->writeNewProcess($process, $dateTime);
     }
 
