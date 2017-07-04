@@ -108,7 +108,7 @@ class WorkstationSelectTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 3],
-                    'response' => $this->readFixture("GET_Workstation_resolved2.json")
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ]
             ]
         );
