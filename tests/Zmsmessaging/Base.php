@@ -29,10 +29,8 @@ abstract class Base extends \BO\Zmsmessaging\PhpUnit\Base
 
     protected function getRequest($method = "GET", $uri = '')
     {
-        $request = new \BO\Zmsclient\Psr7\Request();
-        return $request
-            ->withMethod($method)
-            ->withUri(new \BO\Zmsclient\Psr7\Uri($uri));
+        $request = new \BO\Zmsclient\Psr7\Request($method, new \BO\Zmsclient\Psr7\Uri($uri));
+        return $request;
     }
 
     public function readFixture($filename)

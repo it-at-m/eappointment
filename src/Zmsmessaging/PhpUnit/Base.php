@@ -24,7 +24,7 @@ abstract class Base extends \PHPUnit_Framework_TestCase
      * ],
      * ]
      */
-    protected $apiCalls = array ();
+    protected $apiCalls = array();
 
     public function setUp()
     {
@@ -54,18 +54,26 @@ abstract class Base extends \PHPUnit_Framework_TestCase
                     $function,
                     [
                         $options['url'],
-                        Argument::type('\BO\Zmsentities\Schema\Entity'),
+                        Argument::that(function ($value) {
+                            return
+                                ($value instanceof \BO\Zmsentities\Schema\Entity) ||
+                                ($value instanceof \BO\Zmsentities\Collection\Base);
+                        }),
                         $parameters
                     ]
                 );
             }
-            $function->shouldBeCalled()
-                ->willReturn(
-                    new \BO\Zmsclient\Result(
-                        $this->getResponse($options['response'], 200),
-                        $this->getRequest()
-                    )
-                );
+            if (isset($options['exception'])) {
+                $function->will(new \Prophecy\Promise\ThrowPromise($options['exception']));
+            } elseif (isset($options['response'])) {
+                $function->shouldBeCalled()
+                    ->willReturn(
+                        new \BO\Zmsclient\Result(
+                            $this->getResponse($options['response'], 200),
+                            $this->getRequest()
+                        )
+                    );
+            }
         }
         $api = $mock->reveal();
         return $api;
@@ -77,5 +85,11 @@ abstract class Base extends \PHPUnit_Framework_TestCase
     protected function getApiCalls()
     {
         return $this->apiCalls;
+    }
+
+    public function setApiCalls($apiCalls)
+    {
+        $this->apiCalls = $apiCalls;
+        \App::$http = $this->getApiMockup();
     }
 }
