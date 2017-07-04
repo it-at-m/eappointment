@@ -4,6 +4,7 @@ namespace BO\Zmsdb\Tests;
 
 use \BO\Zmsdb\Cluster as Query;
 use \BO\Zmsentities\Cluster as Entity;
+use \BO\Zmsdb\ProcessStatusFree;
 
 class ClusterTest extends Base
 {
@@ -45,6 +46,15 @@ class ClusterTest extends Base
     }
 
     public function testReadQueueList()
+    {
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $query = new Query();
+        $queueList = $query->readQueueList(110, $now);
+        $this->assertEntityList("\\BO\\Zmsentities\\Queue", $queueList);
+        $this->assertEquals(105, $queueList->count());
+    }
+
+    public function testReadQueueListWithCalledProcess()
     {
         $now = new \DateTimeImmutable("2016-04-01 11:55");
         $query = new Query();
