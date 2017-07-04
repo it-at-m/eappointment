@@ -6,12 +6,12 @@ use \BO\Mellon\Validator;
 
 class SendNotificationTest extends Base
 {
-    protected function getApiCalls()
+    public function testSendNotificationQueue()
     {
-        return [
+        $this->setApiCalls([
             [
                 'function' => 'readPostResult',
-                'url' => '/workstation/_system_messenger/',
+                'url' => '/workstation/login/',
                 'response' => $this->readFixture("GET_workstation.json")
             ],
             [
@@ -29,11 +29,7 @@ class SendNotificationTest extends Base
                 'url' => '/workstation/_system_messenger/',
                 'response' => $this->readFixture("GET_mail.json")
             ]
-        ];
-    }
-
-    public function testSendNotificationQueue()
-    {
+        ]);
         \App::$messaging = new \BO\Zmsmessaging\Notification();
         $resultList = \App::$messaging->initQueueTransmission();
         foreach ($resultList as $notification) {

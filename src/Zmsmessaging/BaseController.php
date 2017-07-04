@@ -30,7 +30,9 @@ class BaseController
             $workstation = new \BO\Zmsentities\Workstation($exception->data);
         }
 
-        \BO\Zmsclient\Auth::setKey($workstation->authkey);
+        if (array_key_exists('authkey', $workstation)) {
+            \BO\Zmsclient\Auth::setKey($workstation->authkey);
+        }
         $workstation = \App::$http->readPostResult('/workstation/', $workstation)->getEntity();
         return $workstation;
     }
@@ -43,13 +45,14 @@ class BaseController
     protected function sendMailer($mailer = null, $action = false)
     {
         if (false !== $action) {
+            // @codeCoverageIgnoreStart
             if (null !== $mailer) {
                 if (! $mailer->Send()) {
                     \App::$log->debug('Zmsmessaging Failed', [$mailer->ErrorInfo]);
                 }
             }
+            // @codeCoverageIgnoreEnd
         }
-        // @codeCoverageIgnoreEnd
         return $mailer;
     }
 

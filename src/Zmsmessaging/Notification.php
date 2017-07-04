@@ -64,14 +64,15 @@ class Notification extends BaseController
     {
         try {
             $mailer = $this->readMailer($entity);
+        // @codeCoverageIgnoreStart
         } catch (phpmailerException $exception) {
-            // @codeCoverageIgnoreStart
             \App::$log->debug('Zmsmessaging PHPMailer', [$exception]);
             return $exception->getMessage();
         } catch (Exception $exception) {
             \App::$log->debug('Zmsmessaging', [$exception]);
             return $exception->getMessage();
         }
+        // @codeCoverageIgnoreEnd
         return $mailer;
     }
 
