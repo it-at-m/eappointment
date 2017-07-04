@@ -11,13 +11,6 @@ class Queue extends Process implements MappingInterface
 {
     const ALIAS = 'process';
 
-    public function addJoin()
-    {
-        return [
-        ];
-    }
-
-
     public function getEntityMapping()
     {
         $status_expression = self::expression(
