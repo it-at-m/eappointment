@@ -80,6 +80,7 @@ class ProcessTest extends Base
         $now = new \DateTimeImmutable("2016-04-01 11:55");
         $query = new ProcessStatusFree();
         $input = $this->getTestProcessEntity();
+        $input->queue['callTime'] = 0;
         $process = $query->writeEntityReserved($input, $now);
         $process->amendment = 'Test amendment';
         $process->clients[] = new \BO\Zmsentities\Client(['familyName' => 'Unbekannt']);
@@ -298,7 +299,7 @@ class ProcessTest extends Base
     /**
      * @SuppressWarnings(ExcessiveMethodLength)
      */
-    protected function getTestProcessEntity()
+    public function getTestProcessEntity()
     {
         // https://localhost/terminvereinbarung/termin/time/1464339600/151/
         $input = new Entity(array(
@@ -438,8 +439,8 @@ class ProcessTest extends Base
             "queue"=>[
                 "withAppointment" => 1,
                 "arrivalTime" =>"1464339600",
-                "callCount" =>"0",
-                "callTime" => "0",
+                "callCount" =>"1459511700",
+                "callTime" => "1459511700",
                 "lastCallTime" => "0",
                 "number" =>"0",
                 "waitingTime" => 60,
