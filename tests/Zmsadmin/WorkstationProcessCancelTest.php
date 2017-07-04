@@ -37,7 +37,7 @@ class WorkstationProcessCancelTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 2],
-                    'response' => $this->readFixture("GET_Workstation_with_process.json")
+                    'response' => $this->readFixture("GET_workstation_with_process.json")
                 ],
                 [
                     'function' => 'readDeleteResult',
