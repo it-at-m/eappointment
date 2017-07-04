@@ -63,6 +63,7 @@ class NotificationTest extends EntityCommonTests
     public function testToResolvedEntity()
     {
         $entity = (new $this->entityclass())->getExample();
+        unset($entity['client']);
         $process = (new \BO\Zmsentities\Process())->getExample();
         $process['queue']['withAppointment'] = 0;
         $config = (new \BO\Zmsentities\Config())->getExample();

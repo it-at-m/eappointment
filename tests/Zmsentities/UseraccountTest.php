@@ -92,6 +92,19 @@ class UseraccountTest extends EntityCommonTests
         $this->assertEntityList('\BO\Zmsentities\Department', $entity->getDepartmentList());
     }
 
+    public function testWithDepartmentListIds()
+    {
+        $entity = $this->getExample();
+        unset($entity->departments);
+        $entity->departments = array(
+            '141',
+            '143'
+        );
+        $entity = $entity->withDepartmentList();
+        $this->assertEquals(2, $entity->getDepartmentList()->count());
+        $this->assertEntityList('\BO\Zmsentities\Department', $entity->getDepartmentList());
+    }
+
     public function testWithCleanedUpFormData()
     {
         $entity = $this->getExample();
