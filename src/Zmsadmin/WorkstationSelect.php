@@ -9,10 +9,6 @@ namespace BO\Zmsadmin;
 use \BO\Zmsadmin\Helper\LoginForm;
 use \BO\Mellon\Validator;
 
-/**
-  * Handle requests concerning services
-  *
-  */
 class WorkstationSelect extends BaseController
 {
     /**
@@ -37,9 +33,9 @@ class WorkstationSelect extends BaseController
             $formData = $form->getStatus();
             $selectedDate = Validator::param('selectedDate')->isString()->getValue();
             $queryParams = ($selectedDate) ? array('date' => $selectedDate) : array();
-            $isUpdated = LoginForm::writeWorkstationUpdate($form, $workstation);
             $redirect = (array_key_exists('redirect', $input)) ? $input['redirect'] : null;
-            if (! $form->hasFailed() && $isUpdated) {
+            if (! $form->hasFailed()) {
+                LoginForm::writeWorkstationUpdate($form, $workstation);
                 return \BO\Slim\Render::redirect(
                     ($redirect) ? $redirect : $workstation->getRedirect(),
                     array(),

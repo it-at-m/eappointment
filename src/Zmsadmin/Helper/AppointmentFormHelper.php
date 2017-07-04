@@ -15,9 +15,6 @@ class AppointmentFormHelper
     {
         $process = \App::$http
             ->readPostResult('/process/status/reserved/', $process, ['slotType' => 'intern'])->getEntity();
-        if ('reserved' == $process->status) {
-            return $process;
-        }
         return $process;
     }
 
@@ -66,7 +63,6 @@ class AppointmentFormHelper
 
     protected static function updateMailAndNotificationCount($formData, Entity $process)
     {
-        //static::removeMailAndNotifictionDublicates($formData, $process);
         $client = $process->getFirstClient();
         if (array_key_exists('sendMailConfirmation', $formData) &&
             1 == $formData['sendMailConfirmation']['value'] &&
@@ -84,20 +80,6 @@ class AppointmentFormHelper
                 '/process/'. $process->id .'/'. $process->authKey .'/confirmation/notification/',
                 $process
             );
-        }
-    }
-
-    protected static function removeMailAndNotifictionDublicates($formData, Entity $process)
-    {
-        if (! array_key_exists('sendMailConfirmation', $formData) && 0 == $formData['sendMailConfirmation']['value']
-        ) {
-            \App::$http->readDeleteResult('/process/'. $process->id .'/mail/assigned/delete/');
-        }
-        if (! array_key_exists('sendConfirmation', $formData) && 0 == $formData['sendConfirmation']['value']
-        ) {
-            \App::$http->readDeleteResult('/process/'. $process->id .'/notification/assigned/delete/');
-            $process = \App::$http
-                ->readPostResult('/process/'. $process->id .'/'. $process->authKey .'/', $process)->getEntity();
         }
     }
 }

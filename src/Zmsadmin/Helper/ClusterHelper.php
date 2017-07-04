@@ -57,6 +57,23 @@ class ClusterHelper
         return $processList;
     }
 
+    public static function getNextProcess($excludedIds)
+    {
+        if (static::isClusterEnabled()) {
+            $process = \App::$http
+                ->readGetResult('/cluster/'. static::$cluster['id'] .'/queue/next/', ['exclude' => $excludedIds])
+                ->getEntity();
+        } else {
+            $process = \App::$http
+                ->readGetResult(
+                    '/scope/'. static::$workstation->scope['id'] .'/queue/next/',
+                    ['exclude' => $excludedIds]
+                )
+                ->getEntity();
+        }
+        return $process;
+    }
+
     protected static function isClusterEnabled()
     {
         return (static::$workstation->queue['clusterEnabled'] && static::$cluster);

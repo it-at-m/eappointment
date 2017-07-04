@@ -8,10 +8,6 @@ namespace BO\Zmsadmin;
 
 use \BO\Mellon\Validator;
 
-/**
-  * Handle requests concerning services
-  *
-  */
 class WorkstationProcessCalled extends BaseController
 {
     /**

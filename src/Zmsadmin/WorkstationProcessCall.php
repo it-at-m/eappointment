@@ -27,11 +27,7 @@ class WorkstationProcessCall extends BaseController
             return \BO\Slim\Render::redirect(
                 'workstationProcessPreCall',
                 array(
-                    'id' => $process->id,
-                    'authkey' => $process->authKey
-                ),
-                array(
-                    'exclude' => $excludedIds
+                    'id' => $process->id
                 )
             );
         }
@@ -39,9 +35,6 @@ class WorkstationProcessCall extends BaseController
             'workstationProcessCalled',
             array(
                 'id' => $process->id
-            ),
-            array(
-                'exclude' => $excludedIds
             )
         );
     }

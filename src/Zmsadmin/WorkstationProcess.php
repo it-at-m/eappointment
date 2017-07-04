@@ -21,7 +21,7 @@ class WorkstationProcess extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 3])->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $workstationInfo = Helper\WorkstationInfo::getInfoBoxData($workstation);
         $template = ($workstation->process->hasId()) ? 'info' : 'next';
         return \BO\Slim\Render::withHtml(
