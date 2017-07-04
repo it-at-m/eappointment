@@ -165,7 +165,7 @@ class ClusterTest extends Base
                 ]
             ]
         );
-        $response = $this->render($this->arguments, [
+        $this->render($this->arguments, [
             'name' => 'Bürgeramt Heerstraße',
             'hint' => '',
             'callDisplayText' => '',
