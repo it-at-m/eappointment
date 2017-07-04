@@ -15,9 +15,11 @@ class TwigExceptionHandler extends \BO\Slim\TwigExceptionHandler
     ) {
         $ticketprinterHash = \BO\Zmsclient\Ticketprinter::getHash();
         if ($ticketprinterHash) {
+            // @codeCoverageIgnoreStart
             $exception->templatedata = [
                 'hash' => $ticketprinterHash,
             ];
+            // @codeCoverageIgnoreEnd
         }
         return parent::withHtml($request, $response, $exception, $status);
     }
