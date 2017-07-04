@@ -38,7 +38,7 @@ class ProcessReserveTest extends Base
                 [
                     'function' => 'readPostResult',
                     'url' => '/process/status/confirmed/',
-                    'response' => $this->readFixture("GET_process_100005_95a3_reserved.json")
+                    'response' => $this->readFixture("GET_process_100005_95a3_confirmed.json")
                 ]
             ]
         );

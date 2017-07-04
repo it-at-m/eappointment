@@ -15,7 +15,6 @@ use \Psr\Http\Message\ResponseInterface;
  */
 abstract class BaseController extends \BO\Slim\Controller
 {
-
     protected $workstation;
 
     public function __construct(\Interop\Container\ContainerInterface $containerInterface)
@@ -29,6 +28,10 @@ abstract class BaseController extends \BO\Slim\Controller
         return $this->readResponse($request, $noCacheResponse, $args);
     }
 
+    /**
+     * @codeCoverageIgnore
+     *
+     */
     public function readResponse(RequestInterface $request, ResponseInterface $response, array $args)
     {
         return parent::__invoke($request, $response, $args);

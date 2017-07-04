@@ -8,10 +8,6 @@ namespace BO\Zmsadmin;
 
 use \BO\Mellon\Validator;
 
-/**
-  * Handle requests concerning services
-  *
-  */
 class WorkstationProcessPreCall extends BaseController
 {
     /**
@@ -24,13 +20,11 @@ class WorkstationProcessPreCall extends BaseController
     ) {
         $validator = $request->getAttribute('validator');
 
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 3])->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        $workstation->testDepartmentList();
         $workstationInfo = Helper\WorkstationInfo::getInfoBoxData($workstation);
         $processId = Validator::value($args['id'])->isNumber()->getValue();
-        $authKey = Validator::value($args['authkey'])->isString()->getValue();
-        $workstation->testDepartmentList();
-
-        $process = \App::$http->readGetResult('/process/'. $processId .'/'. $authKey . '/')->getEntity();
+        $process = \App::$http->readGetResult('/process/'. $processId .'/')->getEntity();
 
         $excludedIds = $validator->getParameter('exclude')->isString()->getValue();
         if ($excludedIds) {

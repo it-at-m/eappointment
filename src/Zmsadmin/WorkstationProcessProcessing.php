@@ -6,10 +6,6 @@
 
 namespace BO\Zmsadmin;
 
-/**
-  * Handle requests concerning services
-  *
-  */
 class WorkstationProcessProcessing extends BaseController
 {
     /**
@@ -21,8 +17,7 @@ class WorkstationProcessProcessing extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-        $workstationInfo = Helper\WorkstationInfo::getInfoBoxData($workstation);
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $workstation->process->status = 'processing';
         $workstation->process = \App::$http->readPostResult(
             '/process/'. $workstation->process->id .'/'. $workstation->process->authKey .'/',
@@ -33,8 +28,7 @@ class WorkstationProcessProcessing extends BaseController
             $response,
             'block/process/info.twig',
             array(
-                'workstation' => $workstation,
-                'workstationInfo' => $workstationInfo
+                'workstation' => $workstation
             )
         );
     }

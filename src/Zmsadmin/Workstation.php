@@ -21,6 +21,14 @@ class Workstation extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        if (! $workstation->hasId()) {
+            return \BO\Slim\Render::redirect(
+                'index',
+                array(
+                    'error' => 'login_failed'
+                )
+            );
+        }
         $provider = \App::$http->readGetResult(
             '/provider/dldb/'. $workstation->getProviderOfGivenScope() .'/'
         )->getEntity();
@@ -33,15 +41,6 @@ class Workstation extends BaseController
         $selectedTime = ($selectedTime) ? $selectedTime : null;
         $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
         $calledProcessId = $validator->getParameter('calledprocess')->isNumber()->getValue();
-
-        if (!$workstation->hasId()) {
-            return \BO\Slim\Render::redirect(
-                'index',
-                array(
-                    'error' => 'login_failed'
-                )
-            );
-        }
 
         return \BO\Slim\Render::withHtml(
             $response,

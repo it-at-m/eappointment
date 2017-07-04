@@ -29,13 +29,9 @@ class UseraccountEdit extends BaseController
         $confirm_success = $request->getAttribute('validator')->getParameter('confirm_success')->isString()->getValue();
         $userAccount = \App::$http->readGetResult('/useraccount/'. $userAccountName .'/')->getEntity();
         $workstation->getUseraccount()->hasEditAccess($userAccount);
-
         $ownerList = \App::$http->readGetResult('/owner/', ['resolveReferences' => 2])->getCollection();
 
-        if (null === $userAccount || !$userAccount->hasId()) {
-            return \BO\Slim\Render::withHtml($response, 'page/404.twig', array());
-        }
-
+        $formData = null;
         $input = $request->getParsedBody();
         if (is_array($input) && array_key_exists('save', $input)) {
             $form = UseraccountForm::fromAddParameters();

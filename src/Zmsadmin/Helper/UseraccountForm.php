@@ -39,8 +39,11 @@ class UseraccountForm
         // assigend departments
         $collection['departments'] = Validator::param('departments')
             ->isArray('Es muss mindestens eine Behörde oder systemübergreifend ausgewählt werden');
-        if (0 == $collection['departments']->isArray()->getValue()[0]) {
-            if (! Validator::param('rights')->isArray()->getValue()['superuser']) {
+        if (! Validator::param('departments')->isDeclared()->hasFailed() &&
+            0 == $collection['departments']->getValue()[0]['id']
+        ) {
+            $userRights = Validator::param('rights')->isArray()->getValue();
+            if (! isset($userRights['superuser']) || ! $userRights['superuser']) {
                 $collection['departments']
                     ->setFailure('Für "systemübergreifend" muss die Superuser-Berechtigung ausgewählt werden');
             }
