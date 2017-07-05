@@ -273,4 +273,24 @@ class Entity extends \ArrayObject implements \JsonSerializable
         $this->resolveLevel = $resolveLevel;
         return $this;
     }
+
+    /**
+     * @param Int $resolveLevel
+     * @return self
+     */
+    public function withResolveLevel($resolveLevel)
+    {
+        $entity = clone $this;
+        if ($resolveLevel >= 0) {
+            foreach ($entity as $key => $value) {
+                if ($value instanceof Entity) {
+                    $entity[$key] = $value->withResolveLevel($resolveLevel - 1);
+                }
+            }
+            $entity->setResolveLevel($resolveLevel);
+            return $entity;
+        } else {
+            return null;
+        }
+    }
 }

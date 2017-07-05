@@ -65,6 +65,19 @@ class SchemaTest extends Base
         $this->assertTrue($jsonSerialize == $entity->jsonSerialize(), "Schema Helper jsonSerialize does not match");
     }
 
+    public function testResolveLevel()
+    {
+        $entity = new \BO\Zmsentities\Process([
+            'scope' => new \BO\Zmsentities\Scope(['id' => 1234]),
+        ]);
+        $entity->setResolveLevel(1);
+        $this->assertTrue($entity->scope['id'] == 1234, "Scope should be present at resolveLevel=1");
+        $this->assertEquals(1, $entity->getResolveLevel());
+        $entity = $entity->withResolveLevel(0);
+        $this->assertFalse($entity->scope['id'] == 1234, "Scope should not be present at resolveLevel=0");
+        $this->assertEquals(0, $entity->getResolveLevel());
+    }
+
     protected function getTestEntityMapping()
     {
         return [

@@ -178,4 +178,17 @@ class Base extends \ArrayObject
         $this->resolveLevel = $resolveLevel;
         return $this;
     }
+
+    /**
+     * @param Int $resolveLevel
+     * @return self
+     */
+    public function withResolveLevel($resolveLevel)
+    {
+        $collection = new self();
+        foreach ($this as $entity) {
+            $collection[] = $entity->withResolveLevel($resolveLevel);
+        }
+        return $collection;
+    }
 }
