@@ -74,7 +74,7 @@ class SchemaTest extends Base
         $this->assertTrue($entity->scope['id'] == 1234, "Scope should be present at resolveLevel=1");
         $this->assertEquals(1, $entity->getResolveLevel());
         $entity = $entity->withResolveLevel(0);
-        $this->assertFalse($entity->scope['id'] == 1234, "Scope should not be present at resolveLevel=0");
+        $this->assertFalse(isset($entity->scope['id']), "Scope should not be present at resolveLevel=0");
         $this->assertEquals(0, $entity->getResolveLevel());
     }
 

@@ -185,9 +185,12 @@ class Base extends \ArrayObject
      */
     public function withResolveLevel($resolveLevel)
     {
-        $collection = new self();
+        $collection = new static();
         foreach ($this as $entity) {
-            $collection[] = $entity->withResolveLevel($resolveLevel);
+            $reduced = $entity->withResolveLevel($resolveLevel);
+            if (null !== $reduced) {
+                $collection[] = $reduced;
+            }
         }
         return $collection;
     }

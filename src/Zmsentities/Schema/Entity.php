@@ -20,6 +20,11 @@ class Entity extends \ArrayObject implements \JsonSerializable
     public static $schema = null;
 
     /**
+     * @var String $schema Filename of JSON-Schema file
+     */
+    public static $schemaRefPrefix = '';
+
+    /**
      * @var ArrayObject $jsonSchema JSON-Schema definition to validate data
      */
     protected $jsonSchema = null;
@@ -275,22 +280,43 @@ class Entity extends \ArrayObject implements \JsonSerializable
     }
 
     /**
+     * Set a very strict resolveLevel to reduce data
+     *
      * @param Int $resolveLevel
      * @return self
      */
     public function withResolveLevel($resolveLevel)
     {
-        $entity = clone $this;
         if ($resolveLevel >= 0) {
+            $entity = clone $this;
             foreach ($entity as $key => $value) {
-                if ($value instanceof Entity) {
+                if ($value instanceof Entity || $value instanceof \BO\Zmsentities\Collection\Base) {
                     $entity[$key] = $value->withResolveLevel($resolveLevel - 1);
+                } else {
+                    $entity[$key] = $value;
                 }
             }
             $entity->setResolveLevel($resolveLevel);
             return $entity;
         } else {
-            return null;
+            return $this->withReference();
+        }
+    }
+
+    /**
+     * Replace data with a jsonSchema Reference
+     *
+     * @param Array $additionalData
+     * @return self
+     */
+    public function withReference($additionalData = [])
+    {
+        if (isset($this[$this::PRIMARY])) {
+            $additionalData['$ref'] =
+                $this::$schemaRefPrefix . $this->getEntityName() . '/' . $this[$this::PRIMARY] . '/';
+            return $additionalData;
+        } else {
+            return $this->withResolveLevel(0);
         }
     }
 }

@@ -35,6 +35,11 @@ class Queue extends Schema\Entity implements Helper\NoSanitize
         return null;
     }
 
+    public function withReference()
+    {
+        return clone $this;
+    }
+
     /**
      * Keep empty, no sub-instances
      * ATTENTION: Keep highly optimized, time critical function
