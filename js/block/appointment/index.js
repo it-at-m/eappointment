@@ -158,11 +158,13 @@ class View extends BaseView {
         new MessageHandler(lightboxContentElement, {
             message: response,
             callback: (buttonAction, buttonUrl) => {
-                if (buttonAction)
+                if (buttonAction) {
                     this.ButtonAction[buttonAction]()
-                else if (buttonUrl)
+                } else if (buttonUrl) {
                     this.loadByCallbackUrl(buttonUrl);
-                destroyLightbox()
+                }
+                callback();
+                destroyLightbox();
                 this.cleanReload();
             }})
     }
