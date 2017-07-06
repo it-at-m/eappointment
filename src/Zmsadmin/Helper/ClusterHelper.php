@@ -47,11 +47,17 @@ class ClusterHelper
     {
         if (static::isClusterEnabled()) {
             $processList = \App::$http
-                ->readGetResult('/cluster/'. static::$cluster->id .'/process/'. $selectedDate .'/')
+                ->readGetResult(
+                    '/cluster/'. static::$cluster->id .'/process/'. $selectedDate .'/',
+                    ['resolveReferences' => 0]
+                )
                 ->getCollection();
         } else {
             $processList = \App::$http
-                ->readGetResult('/scope/'. static::$workstation->scope['id'] .'/process/'. $selectedDate .'/')
+                ->readGetResult(
+                    '/scope/'. static::$workstation->scope['id'] .'/process/'. $selectedDate .'/',
+                    ['resolveReferences' => 0]
+                )
                 ->getCollection();
         }
         return $processList;

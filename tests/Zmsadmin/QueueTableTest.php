@@ -35,6 +35,7 @@ class QueueTableTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/process/2016-04-01/',
+                    'parameters' => ['resolveReferences' => 0],
                     'response' => $this->readFixture("GET_processList_141_20160401.json")
                 ]
             ]
@@ -67,6 +68,7 @@ class QueueTableTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/cluster/109/process/2016-04-01/',
+                    'parameters' => ['resolveReferences' => 0],
                     'response' => $this->readFixture("GET_processlist_cluster_109.json")
                 ]
             ]
