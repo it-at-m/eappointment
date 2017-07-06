@@ -26,14 +26,14 @@ class ProcessListByScopeAndDate extends BaseController
         $dateTime = new \BO\Zmsentities\Helper\DateTime($args['date']);
 
         $query = new Query();
-        $scope = $query->readEntity($args['id'], $resolveReferences);
+        $scope = $query->readEntity($args['id'], 0);
         if (! $scope) {
             throw new Exception\Scope\ScopeNotFound();
         }
         $queueList = $query->readQueueList($scope->id, $dateTime, $resolveReferences ? $resolveReferences : 1);
 
         $message = Response\Message::create($request);
-        $message->data = $queueList->toProcessList();
+        $message->data = $queueList->toProcessList()->withResolveLevel($resolveReferences);
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message, 200);

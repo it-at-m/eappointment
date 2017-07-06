@@ -26,7 +26,7 @@ class ProcessListByClusterAndDate extends BaseController
         $dateTime = new \BO\Zmsentities\Helper\DateTime($args['date']);
 
         $query = new Query();
-        $cluster = $query->readEntity($args['id'], $resolveReferences);
+        $cluster = $query->readEntity($args['id'], 0);
         if (! $cluster) {
             throw new Exception\Cluster\ClusterNotFound();
         }
@@ -34,7 +34,7 @@ class ProcessListByClusterAndDate extends BaseController
         $queueList = $query->readQueueList($cluster->id, $dateTime, $resolveReferences ? $resolveReferences : 1);
 
         $message = Response\Message::create($request);
-        $message->data = $queueList->toProcessList();
+        $message->data = $queueList->toProcessList()->withResolveLevel($resolveReferences);
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message, 200);
