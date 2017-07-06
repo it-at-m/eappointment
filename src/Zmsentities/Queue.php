@@ -35,7 +35,7 @@ class Queue extends Schema\Entity implements Helper\NoSanitize
         return null;
     }
 
-    public function withReference()
+    public function withReference($additionalData = [])
     {
         return clone $this;
     }
