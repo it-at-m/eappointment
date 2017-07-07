@@ -52,7 +52,11 @@ class Scope extends BaseController
             $entity->hint = implode(' | ', $input['hint']);
             $entity->id = $entityId;
             $entity = \App::$http->readPostResult('/scope/' . $entity->id . '/', $entity)->getEntity();
-            (new Helper\FileUploader($request, 'uploadCallDisplayImage'))->writeUploadToScope($entityId);
+            if (isset($input['removeImage']) && $input['removeImage']) {
+                \App::$http->readDeleteResult('/scope/'. $entityId .'/imagedata/calldisplay/');
+            } else {
+                (new Helper\FileUploader($request, 'uploadCallDisplayImage'))->writeUploadToScope($entityId);
+            }
             return \BO\Slim\Render::redirect('scope', ['id' => $entityId], [
                 'confirm_success' => \App::$now->getTimeStamp()
             ]);
