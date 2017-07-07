@@ -18,7 +18,7 @@ class MessageList extends \ArrayObject
     {
         $string = "Validation failed: ";
         foreach ($this as $message) {
-            $string .= (string)$message . " ";
+            $string .= (string)$message . "\n";
         }
         return $string;
     }

@@ -65,6 +65,23 @@ class Valid extends \BO\Mellon\Parameter
         return $this;
     }
 
+    protected function setFailureMessage($message)
+    {
+        if (null === $this->messages) {
+            $this->messages = new Failure\MessageList();
+        }
+        if ($message instanceof Failure\MessageList) {
+            foreach ($message as $item) {
+                $this->messages[] = $item;
+            }
+        } elseif ($message instanceof Failure\Message) {
+            $this->messages[] = $message;
+        } else {
+            $this->messages[] = new Failure\Message($message);
+        }
+        return $this;
+    }
+
     /**
      * DEPRECATED - Set state to failed and add a message
      *
@@ -74,12 +91,7 @@ class Valid extends \BO\Mellon\Parameter
      */
     protected function failure($message)
     {
-        $this->failed = true;
-        if (null === $this->messages) {
-            $this->messages = new Failure\MessageList();
-        }
-        $this->messages[] = new Failure\Message($message);
-        return $this;
+        return $this->setFailure($message);
     }
 
     /**
@@ -91,7 +103,8 @@ class Valid extends \BO\Mellon\Parameter
      */
     public function setFailure($message)
     {
-        return $this->failure($message);
+        $this->failed = true;
+        return $this->setFailureMessage($message);
     }
 
     /**
