@@ -4354,6 +4354,35 @@
 					"description": "Could not find given scope"
 				}
 			}
+		},
+		"delete": {
+			"summary": "Delete calldisplay image by scope",
+			"tags": [
+				"scope"
+			],
+			"parameters": [
+				{
+					"name": "id",
+					"description": "scope number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success"
+				},
+				"404": {
+					"description": "scope id does not exists"
+				}
+			}
 		}
 	},
 	"/scope/{id}/organisation/": {

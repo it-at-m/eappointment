@@ -3470,6 +3470,33 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/scope/{id}/imagedata/calldisplay/":
+ *      delete:
+ *          summary: Delete calldisplay image by scope
+ *          tags:
+ *              - scope
+ *          parameters:
+ *              -   name: id
+ *                  description: scope number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *              404:
+ *                  description: "scope id does not exists"
+ */
+\App::$slim->delete('/scope/{id:\d{1,4}}/imagedata/calldisplay/',
+    '\BO\Zmsapi\ScopeCalldisplayImageDataDelete')
+    ->setName("ScopeCalldisplayImageDataDelete");
+
+/**
+ *  @swagger
  *  "/scope/{id}/organisation/":
  *      get:
  *          summary: Get an organisation by scopeId.
