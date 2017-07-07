@@ -258,6 +258,9 @@ class Entity extends \ArrayObject implements \JsonSerializable
     {
         $entity = clone $this;
         unset($entity['save']);
+        if (isset($entity['removeImage'])) {
+            unset($entity['removeImage']);
+        }
         return $entity;
     }
 
