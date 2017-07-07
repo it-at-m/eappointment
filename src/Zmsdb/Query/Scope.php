@@ -79,6 +79,15 @@ class Scope extends Base implements MappingInterface
         ';
     }
 
+    public function getQueryDeleteImage()
+    {
+        return '
+            DELETE FROM `imagedata`
+            WHERE
+                `imagename` LIKE :imagename
+        ';
+    }
+
     public function addJoin()
     {
         $this->leftJoin(

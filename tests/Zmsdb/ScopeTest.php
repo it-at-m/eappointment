@@ -166,6 +166,10 @@ class ScopeTest extends Base
         $readImage = $query->readImageData($scope->id);
         $this->assertEquals($writeImage->content, $readImage->content);
         $this->assertContains('data:image/image/jpeg;base64', $readImage->content);
+
+        $query->deleteImage($scope->id);
+        $readImage = $query->readImageData($scope->id);
+        $this->assertFalse($readImage->content);
     }
 
     protected function getTestEntity()

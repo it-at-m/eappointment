@@ -400,6 +400,26 @@ class Scope extends Base
     }
 
     /**
+     * delete image data for call display image
+     *
+     * @param
+     *         scopeId
+     *
+     * @return Status
+     */
+    public function deleteImage($scopeId)
+    {
+        $imageName = 's_'. $scopeId .'_bild';
+        $statement = $this
+            ->getWriter()
+            ->prepare((new Query\Scope(Query\Base::DELETE))->getQueryDeleteImage());
+        $result = $statement->execute(array(
+            'imagename' => "$imageName%"
+        ));
+        return $result;
+    }
+
+    /**
      * remove a scope
      *
      * @param
