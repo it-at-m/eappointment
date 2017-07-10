@@ -38,7 +38,12 @@ class Cluster extends BaseController
             $entity = (new Entity($input))->withCleanedUpFormData();
             $entity->id = $entityId;
             $entity = \App::$http->readPostResult('/cluster/' . $entity->id . '/', $entity)->getEntity();
-            (new Helper\FileUploader($request, 'uploadCallDisplayImage'))->writeUploadToCluster($entityId);
+            if (isset($input['removeImage']) && $input['removeImage']) {
+                \App::$http->readDeleteResult('/cluster/'. $entityId .'/imagedata/calldisplay/');
+            } else {
+                (new Helper\FileUploader($request, 'uploadCallDisplayImage'))->writeUploadToCluster($entityId);
+            }
+
             return \BO\Slim\Render::redirect('cluster', [
                 'clusterId' => $entityId,
                 'departmentId' => $departmentId,

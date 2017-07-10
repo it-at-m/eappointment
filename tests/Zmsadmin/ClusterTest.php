@@ -187,4 +187,67 @@ class ClusterTest extends Base
             )
         ], [], 'POST');
     }
+
+    public function testSaveWithDeleteImage()
+    {
+        \App::$now = new \DateTime('2016-04-01 11:55:00', new \DateTimeZone('Europe/Berlin'));
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/cluster/109/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_cluster_109.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/cluster/109/organisation/',
+                    'response' => $this->readFixture("GET_organisation_71_resolved3.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/department/74/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_department_74.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/cluster/109/imagedata/calldisplay/',
+                    'response' => $this->readFixture("GET_imagedata_empty.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/cluster/109/',
+                    'response' => $this->readFixture("GET_cluster_109.json")
+                ],
+                [
+                    'function' => 'readDeleteResult',
+                    'url' => '/cluster/109/imagedata/calldisplay/',
+                    'response' => $this->readFixture("GET_imagedata.json")
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, [
+            'name' => 'Bürgeramt Heerstraße',
+            'hint' => '',
+            'callDisplayText' => '',
+            'uploadCallDisplayImage' => 'baer.png',
+            'scopes' =>
+            array(
+                array(
+                    'id' => '141',
+                ),
+            ),
+            'save' => 'save',
+            'removeImage' => 1
+        ], [], 'POST');
+        $this->assertRedirect($response, '/department/74/cluster/109/?confirm_success=1459504500');
+        $this->assertEquals(302, $response->getStatusCode());
+    }
 }
