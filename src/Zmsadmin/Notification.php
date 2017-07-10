@@ -67,7 +67,7 @@ class Notification extends BaseController
             'page/notification.twig',
             array(
                 'title' => 'SMS-Versand',
-                'menuActive' => $workstation->getRedirect(),
+                'menuActive' => $workstation->getVariantName(),
                 'workstation' => $workstation,
                 'department' => $department,
                 'process' => $process,
@@ -75,7 +75,7 @@ class Notification extends BaseController
                 'result' => $success,
                 'form' => $formResponse,
                 'source' => $source,
-                'redirect' => $workstation->getRedirect()
+                'redirect' => $workstation->getVariantName()
             )
         );
     }

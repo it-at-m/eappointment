@@ -52,14 +52,14 @@ class Mail extends BaseController
             'page/mail.twig',
             array(
                 'title' => 'eMail-Versand',
-                'menuActive' => $workstation->getRedirect(),
+                'menuActive' => $workstation->getVariantName(),
                 'workstation' => $workstation,
                 'department' => $department,
                 'process' => $process,
                 'dialog' => $dialog,
                 'result' => $success,
                 'form' => $formResponse,
-                'redirect' => $workstation->getRedirect()
+                'redirect' => $workstation->getVariantName()
             )
         );
     }
