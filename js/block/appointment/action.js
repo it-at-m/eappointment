@@ -116,10 +116,14 @@ class View extends BaseView {
         ev.preventDefault();
         ev.stopPropagation();
         const selectedProcessId = $(ev.target).data('process');
-        const url = `${this.includeUrl}/notification/send/`;
+        const url = `${this.includeUrl}/notification/`;
         const ok = confirm('Möchten Sie dem Kunden per SMS mitteilen, dass er/sie bald an der Reihe ist, dann klicken Sie auf OK.')
         if (ok) {
-            return this.loadCall(url, 'POST', { 'selectedProcess': selectedProcessId, 'status': 'queued' });
+            return this.loadCall(url, 'POST', {
+                'selectedprocess': selectedProcessId,
+                'status': 'queued',
+                'submit': 'reminder'
+            });
         }
         return Promise.resolve(false);
     }

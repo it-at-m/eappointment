@@ -31,27 +31,35 @@ class Notification extends BaseController
         $dialog = Validator::param('dialog')->isNumber()->getValue();
         $success = Validator::param('result')->isString()->getValue();
         $sendStatus = Validator::param('status')->isString()->isBiggerThan(2)->getValue();
+        $source = Validator::param('source')->isString()->getValue();
+
         $department = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/department/')->getEntity();
         $config = \App::$http->readGetResult('/config/')->getEntity();
-        $formResponse = null;
         $input = $request->getParsedBody();
         $process = ($selectedProcessId) ?
             \App::$http->readGetResult('/process/'. $selectedProcessId .'/')->getEntity() :
             null;
 
-        if (array_key_exists('submit', (array)$input) && 'form' == $input['submit']) {
-            $formResponse = $this->writeValidatedNotification($process, $config, $department, $sendStatus);
-            if ($formResponse instanceof Entity) {
-                return \BO\Slim\Render::redirect(
-                    'notification',
-                    [],
-                    [
-                        'selectedprocess' => $process->id,
-                        'dialog' => $dialog,
-                        'result' => ('form' == $input['submit'] && $formResponse->hasId()) ? 'success' : 'error'
-                    ]
-                );
-            }
+        $result = null;
+
+        if (array_key_exists('submit', (array)$input) && 'reminder' == $input['submit']) {
+            $process->status = $sendStatus;
+            $result = $this->getReminderNotification($process, $config, $department);
+        } elseif (array_key_exists('submit', (array)$input) && 'form' == $input['submit']) {
+            $result = $this->getCustomNotification($process, $department);
+        }
+
+        if ($result instanceof Entity) {
+            return \BO\Slim\Render::redirect(
+                'notification',
+                [],
+                [
+                    'selectedprocess' => $process->id,
+                    'dialog' => $dialog,
+                    'result' => ($result->hasId()) ? 'success' : 'error',
+                    'source' => $input['submit']
+                ]
+            );
         }
 
         return \BO\Slim\Render::withHtml(
@@ -65,28 +73,34 @@ class Notification extends BaseController
                 'process' => $process,
                 'dialog' => $dialog,
                 'result' => $success,
-                'form' => $formResponse,
-                'source' => $workstation->getRedirect()
+                'form' => $result,
+                'source' => $source,
+                'redirect' => $workstation->getRedirect()
             )
         );
     }
 
-    private function writeValidatedNotification($process, $config, $department, $sendStatus = null)
+    protected function getReminderNotification($process, $config, $department)
+    {
+        $notification = (new Entity)->toResolvedEntity($process, $config, $department);
+        return $this->writeNotification($notification);
+    }
+
+    protected function getCustomNotification($process, $department)
     {
         $collection = array();
         $collection['message'] = Validator::param('message')->isString()
             ->isBiggerThan(2, "Es muss eine aussagekräftige Nachricht eingegeben werden");
         $collection = Validator::collection($collection);
         if (! $collection->hasFailed()) {
-            if ($sendStatus) {
-                $process->status = $sendStatus;
-                $notification = (new Entity)->toResolvedEntity($process, $config, $department);
-            } else {
-                $notification = (new Entity)->toCustomMessageEntity($process, $collection->getValues(), $department);
-            }
-            $notification = \App::$http->readPostResult('/notification/', $notification)->getEntity();
-            return $notification;
+            $notification = (new Entity)->toCustomMessageEntity($process, $collection->getValues(), $department);
+            return $this->writeNotification($notification);
         }
         return $collection->getStatus();
+    }
+
+    private function writeNotification($notification)
+    {
+        return \App::$http->readPostResult('/notification/', $notification)->getEntity();
     }
 }
