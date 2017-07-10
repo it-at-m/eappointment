@@ -20,7 +20,7 @@ class WorkstationProcessPreCall extends BaseController
     ) {
         $validator = $request->getAttribute('validator');
 
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $workstation->testDepartmentList();
         $workstationInfo = Helper\WorkstationInfo::getInfoBoxData($workstation);
         $processId = Validator::value($args['id'])->isNumber()->getValue();

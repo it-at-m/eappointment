@@ -18,7 +18,7 @@ class View extends BaseView {
     }
 
     toggleClientNames(ev) {
-        var $target = $(event.target);
+        var $target = $(ev.target);
         if ($target.prop('checked')) {
             this.$main.find('.calendar-weektable_calendar .familyName').each((index, item) => {
                 $(item).show()
