@@ -1,3 +1,4 @@
+import window from "window"
 import $ from "jquery";
 import ErrorHandler from './errorHandler';
 import ExceptionHandler from './exceptionHandler';
@@ -61,7 +62,7 @@ class BaseView extends ErrorHandler {
                         callback: (exceptionButtonUrl) => {
                             destroyLightbox()
                             if (err.responseText.includes('data-reload')) {
-                                location.href = exceptionButtonUrl;
+                                window.location.href = exceptionButtonUrl;
                             }
                             reject({'source': 'button', 'url': exceptionButtonUrl })
                         }
