@@ -127,6 +127,10 @@ class ClusterTest extends Base
         $readImage = $query->readImageData($cluster->id);
         $this->assertEquals($writeImage->content, $readImage->content);
         $this->assertContains('data:image/image/jpeg;base64', $readImage->content);
+
+        $query->deleteImage($cluster->id);
+        $readImage = $query->readImageData($cluster->id);
+        $this->assertFalse($readImage->content);
     }
 
     protected function getTestEntity()
