@@ -49,7 +49,10 @@ class NotificationTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, [], 'POST');
-        $this->assertRedirect($response, '/notification/?selectedprocess='. $this->selectedProcess .'&result=success');
+        $this->assertRedirect(
+            $response,
+            '/notification/?selectedprocess='. $this->selectedProcess .'&result=success&source=form'
+        );
         $this->assertEquals(302, $response->getStatusCode());
     }
 
@@ -120,12 +123,12 @@ class NotificationTest extends Base
         $response = $this->render($this->arguments, $parameters, [], 'POST');
         $this->assertRedirect(
             $response,
-            '/notification/?selectedprocess='. $this->selectedProcess .'&dialog=1&result=success'
+            '/notification/?selectedprocess='. $this->selectedProcess .'&dialog=1&result=success&source=form'
         );
         $this->assertEquals(302, $response->getStatusCode());
     }
 
-    public function testRenderingWithStatus()
+    public function testRenderingReminder()
     {
         $this->setApiCalls(
             [
@@ -157,9 +160,12 @@ class NotificationTest extends Base
                 ]
             ]
         );
-        $parameters = array_merge(['status' => 'queued'], $this->parameters);
+        $parameters = array_merge($this->parameters, ['status' => 'queued', 'submit' => 'reminder']);
         $response = $this->render($this->arguments, $parameters, [], 'POST');
-        $this->assertRedirect($response, '/notification/?selectedprocess='. $this->selectedProcess .'&result=success');
+        $this->assertRedirect(
+            $response,
+            '/notification/?selectedprocess='. $this->selectedProcess .'&result=success&source=reminder'
+        );
         $this->assertEquals(302, $response->getStatusCode());
     }
 
