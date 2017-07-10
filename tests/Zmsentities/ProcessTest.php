@@ -485,6 +485,13 @@ class ProcessTest extends EntityCommonTests
         );
     }
 
+    public function testWithReference()
+    {
+        $entity = $this->getExample();
+        $entity = $entity->withResolveLevel(0);
+        $this->assertTrue(array_key_exists('$ref', $entity->requests->getFirst()));
+    }
+
     //check if necessary
     /*
     public function testReduceWithinTime()

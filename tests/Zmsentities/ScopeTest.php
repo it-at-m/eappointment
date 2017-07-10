@@ -28,6 +28,7 @@ class ScopeTest extends EntityCommonTests
     public function testWithCleanedUpFormData()
     {
         $entity = $this->getExample();
+        $entity->removeImage = 1;
         $entity->save = 'submit';
         $this->assertFalse(array_key_exists('save', $entity->withCleanedUpFormData()));
     }

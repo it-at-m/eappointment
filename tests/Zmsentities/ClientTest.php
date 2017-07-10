@@ -14,5 +14,8 @@ class ClientTest extends EntityCommonTests
         $this->assertFalse($entity->hasSurveyAccepted(), 'client should have survey not accepted');
         $this->assertTrue(0 == $entity->getEmailSendCount(), 'client emailSendCount should be 0');
         $this->assertTrue(0 == $entity->getNotificationsSendCount(), 'client notificationsSendCount should be 0');
+
+        $entity = $entity->withResolveLevel(0);
+        $this->assertEquals(0, $entity->getResolveLevel(), 'client has unexpected references');
     }
 }
