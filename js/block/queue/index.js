@@ -4,6 +4,7 @@ import { lightbox } from '../../lib/utils'
 import ButtonActionHandler from "../appointment/action"
 import ProcessNext from "../process/next"
 import MessageHandler from '../../lib/messageHandler';
+import DialogHandler from '../../lib/dialogHandler';
 
 class View extends BaseView {
 
@@ -65,6 +66,24 @@ class View extends BaseView {
         }
     }
 
+    loadDialog (response, callback) {
+        const { lightboxContentElement, destroyLightbox } = lightbox(this.$main, () => {callback()})
+        new DialogHandler(lightboxContentElement, {
+            response: response,
+            callback: (message) => {
+                if (message) {
+                    if ($(message).find('.dialog form').length > 0) {
+                        this.loadDialog(message, callback);
+                    }
+                    else {
+                        this.loadMessage(message, callback);
+                    }
+                }
+                destroyLightbox();
+            }
+        })
+    }
+
     loadByCallbackUrl(url) {
         this.loadPromise = this.loadContent(url).catch(err => this.loadErrorCallback(err));
         return this.loadPromise;
@@ -111,9 +130,15 @@ class View extends BaseView {
             this.ButtonAction.sendNotificationReminder(ev).catch(err => this.loadErrorCallback(err)).then((response) => {
                 this.loadMessage(response, this.load);
             });
-        }).on('click', 'a.process-requeued', (ev) => {
-            this.ButtonAction.reset(ev).catch(err => this.loadErrorCallback(err)).then((response) => {
-                this.loadMessage(response, this.load);
+        }).on('click', '.process-custom-mail-send', (ev) => {
+            const url = `${this.includeUrl}/mail/`;
+            this.ButtonAction.sendMail(ev, url).catch(err => this.loadErrorCallback(err)).then((response) => {
+                this.loadDialog(response, this.load);
+            });
+        }).on('click', '.process-custom-notification-send', (ev) => {
+            const url = `${this.includeUrl}/notification/`;
+            this.ButtonAction.sendNotification(ev, url).catch(err => this.loadErrorCallback(err)).then((response) => {
+                this.loadDialog(response, this.load);
             });
         })
     }

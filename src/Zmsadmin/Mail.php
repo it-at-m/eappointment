@@ -31,7 +31,7 @@ class Mail extends BaseController
         $process = ($selectedProcessId) ?
             \App::$http->readGetResult('/process/'. $selectedProcessId .'/')->getEntity() :
             null;
-        
+
         if (array_key_exists('submit', (array)$input) && 'form' == $input['submit']) {
             $formResponse = $this->writeValidatedMail($process, $department);
             if ($formResponse instanceof Entity) {
@@ -59,7 +59,7 @@ class Mail extends BaseController
                 'dialog' => $dialog,
                 'result' => $success,
                 'form' => $formResponse,
-                'source' => $workstation->getRedirect()
+                'redirect' => $workstation->getRedirect()
             )
         );
     }

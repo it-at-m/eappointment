@@ -40,23 +40,23 @@ class Notification extends BaseController
             \App::$http->readGetResult('/process/'. $selectedProcessId .'/')->getEntity() :
             null;
 
-        $result = null;
+        $formResponse = null;
 
         if (array_key_exists('submit', (array)$input) && 'reminder' == $input['submit']) {
             $process->status = $sendStatus;
-            $result = $this->getReminderNotification($process, $config, $department);
+            $formResponse = $this->getReminderNotification($process, $config, $department);
         } elseif (array_key_exists('submit', (array)$input) && 'form' == $input['submit']) {
-            $result = $this->getCustomNotification($process, $department);
+            $formResponse = $this->getCustomNotification($process, $department);
         }
 
-        if ($result instanceof Entity) {
+        if ($formResponse instanceof Entity) {
             return \BO\Slim\Render::redirect(
                 'notification',
                 [],
                 [
                     'selectedprocess' => $process->id,
                     'dialog' => $dialog,
-                    'result' => ($result->hasId()) ? 'success' : 'error',
+                    'result' => ($formResponse->hasId()) ? 'success' : 'error',
                     'source' => $input['submit']
                 ]
             );
@@ -73,7 +73,7 @@ class Notification extends BaseController
                 'process' => $process,
                 'dialog' => $dialog,
                 'result' => $success,
-                'form' => $result,
+                'form' => $formResponse,
                 'source' => $source,
                 'redirect' => $workstation->getRedirect()
             )
