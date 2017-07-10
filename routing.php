@@ -697,6 +697,32 @@ use \Psr\Http\Message\ResponseInterface;
     '\BO\Zmsapi\ClusterCalldisplayImageDataUpdate')
     ->setName("ClusterCalldisplayImageDataUpdate");
 
+/**
+ *  @swagger
+ *  "/cluster/{id}/imagedata/calldisplay/":
+ *      delete:
+ *          summary: Delete calldisplay image by cluster
+ *          tags:
+ *              - scope
+ *          parameters:
+ *              -   name: id
+ *                  description: cluster number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *              404:
+ *                  description: "cluster id does not exists"
+ */
+\App::$slim->delete('/cluster/{id:\d{1,4}}/imagedata/calldisplay/',
+    '\BO\Zmsapi\ClusterCalldisplayImageDataDelete')
+    ->setName("ClusterCalldisplayImageDataDelete");
 
 /**
  *  @swagger
