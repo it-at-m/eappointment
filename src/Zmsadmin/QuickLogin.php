@@ -34,7 +34,7 @@ class QuickLogin extends BaseController
 
         try {
             $workstation = \App::$http
-                ->readPostResult('/workstation/'. $userAccount->id .'/', $userAccount)->getEntity();
+                ->readPostResult('/workstation/login/', $userAccount)->getEntity();
         } catch (\BO\Zmsclient\Exception $exception) {
             //ignore double login exception on quick login
             if ($exception->template == 'BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn') {
@@ -47,6 +47,7 @@ class QuickLogin extends BaseController
         $workstation->hint = $loginData['hint']['value'];
         $workstation->name = $loginData['workstation']['value'];
         $workstation = \App::$http->readPostResult('/workstation/', $workstation)->getEntity();
-        return $response->withRedirect($loginData['redirectUrl']['value']);
+        $basePath = $request->getUri()->getBasePath();
+        return $response->withRedirect($basePath .'/'. trim($loginData['redirectUrl']['value'], "/"));
     }
 }
