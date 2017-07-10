@@ -29,7 +29,7 @@ class WorkstationProcessFinished extends BaseController
             $process = \App::$http->readPostResult('/process/status/finished/', $process)->getEntity();
             $workstation = \App::$http->readDeleteResult('/workstation/process/')->getEntity();
             return \BO\Slim\Render::redirect(
-                $workstation->getRedirect(),
+                $workstation->getVariantName(),
                 array(),
                 array()
             );
@@ -46,7 +46,7 @@ class WorkstationProcessFinished extends BaseController
                 $process = \App::$http->readPostResult('/process/status/finished/', $process)->getEntity();
                 $workstation = \App::$http->readDeleteResult('/workstation/process/')->getEntity();
                 return \BO\Slim\Render::redirect(
-                    $workstation->getRedirect(),
+                    $workstation->getVariantName(),
                     array(),
                     array()
                 );

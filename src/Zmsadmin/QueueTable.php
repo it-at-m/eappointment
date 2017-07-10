@@ -42,7 +42,7 @@ class QueueTable extends BaseController
             array(
                 'workstation' => $workstation->getArrayCopy(),
                 'department' => $department,
-                'source' => $workstation->getRedirect(),
+                'source' => $workstation->getVariantName(),
                 'selectedDate' => ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d'),
                 'cluster' => $clusterHelper->getEntity(),
                 'processList' => $queueList,

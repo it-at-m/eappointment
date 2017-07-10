@@ -34,7 +34,7 @@ class CalendarWeek extends BaseController
             array(
                 'title' => 'Kalender',
                 'workstation' => $workstation,
-                'source' => $workstation->getRedirect(),
+                'source' => $workstation->getVariantName(),
                 'cluster' => $clusterHelper->getEntity(),
                 'calendar' => $calendar,
                 'selectedYear' => $selectedYear,

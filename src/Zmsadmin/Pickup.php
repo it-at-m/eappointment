@@ -30,7 +30,7 @@ class Pickup extends BaseController
               'menuActive' => 'pickup',
               'workstation' => $workstation->getArrayCopy(),
               'department' => $department,
-              'source' => $workstation->getRedirect(),
+              'source' => $workstation->getVariantName(),
               'cluster' => (new Helper\ClusterHelper($workstation))->getEntity(),
               'processList' => $processList
             )
