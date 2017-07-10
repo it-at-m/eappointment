@@ -22,11 +22,18 @@ class WorkstationProcessFinished extends BaseController
 
         $statisticEnabled = $workstation->getScope()->getPreference('queue', 'statisticsEnabled');
         $isDefaultPickup = $workstation->getScope()->getPreference('pickup', 'isDefault');
-
         $workstation->process['status'] = (! $statisticEnabled && $isDefaultPickup) ? 'pending' : 'finished';
         $process = clone $workstation->process;
 
-        if ($statisticEnabled) {
+        if (! $statisticEnabled && ! $isDefaultPickup) {
+            $process = \App::$http->readPostResult('/process/status/finished/', $process)->getEntity();
+            $workstation = \App::$http->readDeleteResult('/workstation/process/')->getEntity();
+            return \BO\Slim\Render::redirect(
+                $workstation->getRedirect(),
+                array(),
+                array()
+            );
+        } else {
             $input = $request->getParsedBody();
             if (is_array($input) && array_key_exists('id', $input['process'])) {
                 $process->addData($input['process']);
@@ -44,14 +51,6 @@ class WorkstationProcessFinished extends BaseController
                     array()
                 );
             }
-        } else {
-            $process = \App::$http->readPostResult('/process/status/finished/', $process)->getEntity();
-            $workstation = \App::$http->readDeleteResult('/workstation/process/')->getEntity();
-            return \BO\Slim\Render::redirect(
-                $workstation->getRedirect(),
-                array(),
-                array()
-            );
         }
 
         return \BO\Slim\Render::withHtml(
@@ -62,7 +61,9 @@ class WorkstationProcessFinished extends BaseController
                 'workstation' => $workstation,
                 'pickupList' => $workstation->getScopeList(),
                 'requestList' => $requestList->toSortedByGroup(),
-                'menuActive' => 'workstation'
+                'menuActive' => 'workstation',
+                'statisticEnabled' => $statisticEnabled,
+                'isDefaultPickup' => $isDefaultPickup
             )
         );
     }

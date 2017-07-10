@@ -58,7 +58,8 @@ class View extends BaseView {
     }
 
     toggleButtons() {
-        if (this.checkCheckboxes() || this.checkInputCounter()) {
+        const statisticEnabled = this.$.find('[data-statistic-enabled]').data('statistic-enabled');
+        if (! statisticEnabled || this.checkCheckboxes() || this.checkInputCounter()) {
             $('.client-processed form').find('button:submit').each((index, button) => {
                 $(button).prop('disabled', false);
             })

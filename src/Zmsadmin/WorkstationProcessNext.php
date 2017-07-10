@@ -22,7 +22,6 @@ class WorkstationProcessNext extends BaseController
         $excludedIds = $validator->getParameter('exclude')->isString()->getValue();
         $excludedIds = ($excludedIds) ? $excludedIds : '';
         $process = (new Helper\ClusterHelper($workstation))->getNextProcess($excludedIds);
-
         if ($process->toProperty()->amendment->get()) {
             return \BO\Slim\Render::redirect(
                 'workstationProcessPreCall',
