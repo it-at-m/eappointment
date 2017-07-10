@@ -23,7 +23,7 @@ class QuickLoginTest extends Base
             [
                 [
                     'function' => 'readPostResult',
-                    'url' => '/workstation/testadmin/',
+                    'url' => '/workstation/login/',
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
@@ -34,7 +34,7 @@ class QuickLoginTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertRedirect($response, '/workstation/');
+        $this->assertRedirect($response, '/workstation');
         $this->assertEquals(302, $response->getStatusCode());
     }
 
@@ -44,7 +44,7 @@ class QuickLoginTest extends Base
             [
                 [
                     'function' => 'readPostResult',
-                    'url' => '/workstation/testadmin/',
+                    'url' => '/workstation/login/',
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
@@ -58,7 +58,7 @@ class QuickLoginTest extends Base
         $parameters['scope'] = 'cluster';
         $parameters['appointmentsOnly'] = 1;
         $response = $this->render($this->arguments, $parameters, []);
-        $this->assertRedirect($response, '/workstation/');
+        $this->assertRedirect($response, '/workstation');
         $this->assertEquals(302, $response->getStatusCode());
     }
 
@@ -80,7 +80,7 @@ class QuickLoginTest extends Base
             [
                 [
                     'function' => 'readPostResult',
-                    'url' => '/workstation/testadmin/',
+                    'url' => '/workstation/login/',
                     'exception' => $exception
                 ],
                 [
@@ -91,7 +91,7 @@ class QuickLoginTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertRedirect($response, '/workstation/');
+        $this->assertRedirect($response, '/workstation');
         $this->assertEquals(302, $response->getStatusCode());
         $this->assertEquals('8520c285985b5bd209a0110442dc4e45', \BO\Zmsclient\Auth::getKey());
     }
