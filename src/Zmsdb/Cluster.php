@@ -235,7 +235,7 @@ class Cluster extends Base
      */
     public function writeImageData($clusterId, \BO\Zmsentities\Mimepart $entity)
     {
-        $imageName = 'c_'. $clusterId .'_bild.'. $entity->mime;
+        $imageName = 'c_'. $clusterId .'_bild.'. $entity->getExtension();
         $statement = $this->getWriter()->prepare((new Query\Scope(Query\Base::REPLACE))->getQueryWriteImageData());
         $statement->execute(array(
             'imagename' => $imageName,
@@ -262,6 +262,26 @@ class Cluster extends Base
             ['imagename' => "$imageName%"]
         );
         return $imageData;
+    }
+
+    /**
+     * delete image data for calldisplay image
+     *
+     * @param
+     *         clusterId
+     *
+     * @return Status
+     */
+    public function deleteImage($clusterId)
+    {
+        $imageName = 'c_'. $clusterId .'_bild';
+        $statement = $this
+            ->getWriter()
+            ->prepare((new Query\Scope(Query\Base::DELETE))->getQueryDeleteImage());
+        $result = $statement->execute(array(
+            'imagename' => "$imageName%"
+        ));
+        return $result;
     }
 
     /**

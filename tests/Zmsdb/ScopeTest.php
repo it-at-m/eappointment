@@ -139,7 +139,6 @@ class ScopeTest extends Base
         $entity->status['queue']['ghostWorkstationCount'] = 4;
         $now = new \DateTimeImmutable("2016-04-01 11:55");
         $query->updateGhostWorkstationCount($entity, $now);
-        $entityUpdated = $query->readEntity(146, 1);
         $this->assertEquals(4, $entity->status['queue']['ghostWorkstationCount']);
     }
 

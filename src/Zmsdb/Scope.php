@@ -369,7 +369,7 @@ class Scope extends Base
     public function writeImageData($scopeId, \BO\Zmsentities\Mimepart $entity)
     {
         if ($entity->mime && $entity->content) {
-            $imageName = 's_'. $scopeId .'_bild.'. preg_replace('#^.*/#', '', $entity->mime);
+            $imageName = 's_'. $scopeId .'_bild.'. $entity->getExtension();
             $statement = $this->getWriter()->prepare((new Query\Scope(Query\Base::REPLACE))->getQueryWriteImageData());
             $statement->execute(array(
                 'imagename' => $imageName,
