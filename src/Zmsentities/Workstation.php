@@ -93,7 +93,7 @@ class Workstation extends Schema\Entity
         return (isset($this->authkey)) ? true : false;
     }
 
-    public function getRedirect()
+    public function getVariantName()
     {
         return (0 == $this->name) ? 'counter' : 'workstation';
     }

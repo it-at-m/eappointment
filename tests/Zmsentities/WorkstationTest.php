@@ -100,10 +100,10 @@ class WorkstationTest extends EntityCommonTests
         $entity->testDepartmentList();
     }
 
-    public function testGetRedirect()
+    public function testGetVariantName()
     {
         $entity = $this->getExample();
-        $this->assertEquals('workstation', $entity->getRedirect());
+        $this->assertEquals('workstation', $entity->getVariantName());
     }
 
     public function testGetName()
