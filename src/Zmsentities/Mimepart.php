@@ -40,4 +40,9 @@ class Mimepart extends Schema\Entity
     {
         return ($this->isBase64Encoded()) ? \base64_decode($this->content) : $this->content;
     }
+
+    public function getExtension()
+    {
+        return preg_replace('#^.*/#', '', $this->mime);
+    }
 }
