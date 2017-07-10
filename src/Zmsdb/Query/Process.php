@@ -493,7 +493,8 @@ class Process extends Base implements MappingInterface
     protected function readWaitingTime($data, $process)
     {
         if ($process['status'] == 'processing') {
-            $data['wartezeit'] = ($process->queue['callTime'] - $process->queue['arrivalTime']) / 60;
+            $wartezeit = round(($process->queue['callTime'] - $process->queue['arrivalTime']) / 60, 0);
+            $data['wartezeit'] = $wartezeit > 0 ? $wartezeit : 0;
         }
         return $data;
     }
