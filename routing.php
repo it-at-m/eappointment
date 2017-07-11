@@ -4361,12 +4361,12 @@ use \Psr\Http\Message\ResponseInterface;
  *              - workstation
  *              - process
  *          parameters:
- *              -   name: workstation
- *                  description: workstation with process data to update
+ *              -   name: process
+ *                  description: process data to update
  *                  required: true
  *                  in: body
  *                  schema:
- *                      $ref: "schema/workstation.json"
+ *                      $ref: "schema/process.json"
  *          responses:
  *              200:
  *                  description: "success"
