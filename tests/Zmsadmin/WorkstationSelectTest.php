@@ -144,7 +144,7 @@ class WorkstationSelectTest extends Base
             'appointmentsOnly' => 1,
             'scope' => 'cluster'
         ], [], 'POST');
-        $this->assertRedirect($response, '/counter/');
+        $this->assertRedirect($response, '/workstation/');
         $this->assertEquals(302, $response->getStatusCode());
     }
 }

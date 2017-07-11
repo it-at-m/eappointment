@@ -11,6 +11,7 @@ class View extends BaseView {
     constructor (element, options) {
         super(element, options);
         this.ButtonAction = new ButtonActionHandler(element, options);
+        this.source = options.source;
         this.selectedDate = options.selectedDate;
         this.includeUrl = options.includeUrl || "";
         this.onDatePick = options.onDatePick || (() => {});
@@ -110,6 +111,10 @@ class View extends BaseView {
 
         })*/.on('click', 'a.process-edit', (ev) => {
             this.onEditProcess($(ev.target).data('id'))
+        }).on('click', 'a.process-reset', (ev) => {
+            this.ButtonAction.reset(ev).catch(err => this.loadErrorCallback(err)).then((response) => {
+                this.loadMessage(response, this.onDeleteProcess);
+            });
         }).on('click', 'a.process-delete', (ev) => {
             this.ButtonAction.delete(ev).catch(err => this.loadErrorCallback(err)).then((response) => {
                 this.loadMessage(response, this.onDeleteProcess);
