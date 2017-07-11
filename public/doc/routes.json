@@ -838,6 +838,35 @@
 					"description": "Could not find given cluster"
 				}
 			}
+		},
+		"delete": {
+			"summary": "Delete calldisplay image by cluster",
+			"tags": [
+				"scope"
+			],
+			"parameters": [
+				{
+					"name": "id",
+					"description": "cluster number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success"
+				},
+				"404": {
+					"description": "cluster id does not exists"
+				}
+			}
 		}
 	},
 	"/cluster/{id}/organisation/": {
@@ -2384,6 +2413,12 @@
 					"schema": {
 						"$ref": "schema/process.json"
 					}
+				},
+				{
+					"name": "initiator",
+					"description": "Identifies the user initiating the request for logging purposes",
+					"in": "query",
+					"type": "string"
 				}
 			],
 			"responses": {
@@ -2430,6 +2465,12 @@
 					"description": "authentication key",
 					"in": "path",
 					"required": true,
+					"type": "string"
+				},
+				{
+					"name": "initiator",
+					"description": "Identifies the user initiating the request for logging purposes",
+					"in": "query",
 					"type": "string"
 				}
 			],
@@ -4196,6 +4237,18 @@
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
+				},
+				{
+					"name": "date",
+					"description": "selected date string",
+					"in": "query",
+					"type": "string"
+				},
+				{
+					"name": "exclude",
+					"description": "exluded process numbers as csv string",
+					"in": "query",
+					"type": "string"
 				}
 			],
 			"responses": {
@@ -5314,12 +5367,12 @@
 			],
 			"parameters": [
 				{
-					"name": "workstation",
-					"description": "workstation with process data to update",
+					"name": "process",
+					"description": "process data to update",
 					"required": true,
 					"in": "body",
 					"schema": {
-						"$ref": "schema/workstation.json"
+						"$ref": "schema/process.json"
 					}
 				}
 			],
