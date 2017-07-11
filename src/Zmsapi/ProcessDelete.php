@@ -27,7 +27,8 @@ class ProcessDelete extends BaseController
         $process = (new Process)->readEntity($args['id'], $args['authKey'], 1);
         $process->status = 'deleted';
         if ($process->hasScopeAdmin()) {
-            $initiator = Validator::param('initiator')->isString()->getValue();
+            $authority = $request->getUri()->getAuthority();
+            $initiator = Validator::param('initiator')->isString()->setDefault("$authority API-User")->getValue();
             $config = (new Config())->readEntity();
             $mail = (new \BO\Zmsentities\Mail())->toResolvedEntity($process, $config, $initiator);
             (new Mail())->writeInQueueWithAdmin($mail);

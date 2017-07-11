@@ -29,8 +29,8 @@ class ProcessUpdate extends BaseController
         $entity->testValid();
         $this->testProcessData($entity);
         $process = (new Process)->readEntity($args['id'], $args['authKey'], 1);
-        if ($process->hasScopeAdmin()) {
-            $initiator = Validator::param('initiator')->isString()->getValue();
+        $initiator = Validator::param('initiator')->isString()->getValue();
+        if ($initiator && $process->hasScopeAdmin()) {
             $config = (new Config())->readEntity();
             $process->status = 'updated';
             $mail = (new \BO\Zmsentities\Mail())->toResolvedEntity($process, $config, $initiator);
