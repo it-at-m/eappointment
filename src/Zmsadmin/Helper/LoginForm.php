@@ -83,22 +83,21 @@ class LoginForm
     {
         $formData = $data->getValues();
         if (isset($workstation->useraccount)) {
-            $workstation->name = '';
-            if ($formData['workstation']->getValue()) {
+            if (isset($formData['workstation']) && $formData['workstation']->getValue()) {
                 $workstation->name = $formData['workstation']->getValue();
             }
-            if ($formData['hint']->getValue()) {
+            if (isset($formData['hint']) && $formData['hint']->getValue()) {
                 $workstation->hint = $formData['hint']->getValue();
             }
-            if ('cluster' === $formData['scope']->getValue()) {
+            if (isset($formData['scope']) && 'cluster' === $formData['scope']->getValue()) {
                 $workstation->queue['clusterEnabled'] = 1;
-            } else {
+            } elseif (isset($formData['scope'])) {
                 $workstation->queue['clusterEnabled'] = 0;
                 $workstation->scope = new \BO\Zmsentities\Scope([
                     'id' => $formData['scope']->getValue(),
                 ]);
             }
-            if (isset($formData['appointmentsOnly']) && $formData['appointmentsOnly']) {
+            if (isset($formData['appointmentsOnly']) && $formData['appointmentsOnly']->getValue()) {
                 $workstation->queue['appointmentsOnly'] = $formData['appointmentsOnly']->getValue();
             } else {
                 $workstation->queue['appointmentsOnly'] = 0;

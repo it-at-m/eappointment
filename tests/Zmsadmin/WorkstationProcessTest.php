@@ -19,27 +19,6 @@ class WorkstationProcessTest extends Base
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 1],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/',
-                    'response' => $this->readFixture("GET_scope_141.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/queue/',
-                    'response' => $this->readFixture("GET_scope_141_queuelist.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/availability/',
-                    'response' => $this->readFixture("GET_scope_141_availability.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/workstation/',
-                    'parameters' => ['resolveReferences' => 1],
-                    'response' => $this->readFixture("GET_scope_141_workstationlist.json")
                 ]
             ]
         );
@@ -96,22 +75,6 @@ class WorkstationProcessTest extends Base
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 1],
                     'response' => $this->readFixture("GET_Workstation_clusterEnabled.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/cluster/',
-                    'response' => $this->readFixture("GET_cluster_109.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/cluster/109/queue/',
-                    'response' => $this->readFixture("GET_cluster_109_queuelist.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/cluster/109/workstation/',
-                    'parameters' => ['resolveReferences' => 1],
-                    'response' => $this->readFixture("GET_cluster_109_workstationlist.json")
                 ]
             ]
         );
