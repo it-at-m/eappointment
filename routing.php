@@ -2030,6 +2030,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                  in: body
  *                  schema:
  *                      $ref: "schema/process.json"
+ *              -   name: initiator
+ *                  description: "Identifies the user initiating the request for logging purposes"
+ *                  in: query
+ *                  type: string
  *          responses:
  *              200:
  *                  description: "success, there might be changes on the object or added information. Use the response for further action with the process"
@@ -2252,6 +2256,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                  description: authentication key
  *                  in: path
  *                  required: true
+ *                  type: string
+ *              -   name: initiator
+ *                  description: "Identifies the user initiating the request for logging purposes"
+ *                  in: query
  *                  type: string
  *          responses:
  *              200:
@@ -4511,7 +4519,7 @@ use \Psr\Http\Message\ResponseInterface;
                 "PHP Fatal Exception: "
                 . " in " . $exception->getFile() . " +" . $exception->getLine()
                 . " -> " . $exception->getMessage()
-                . " | Trace: ". substr($exception->getTraceAsString(), 0, 500)
+                . " | Trace: ". substr($exception->getTraceAsString(), 0, 1024)
             );
         }
         return \BO\Slim\Render::withJson($response, $message, $status);
