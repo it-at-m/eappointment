@@ -22,16 +22,16 @@ class ValidDate extends Valid
     public function isDate($format = 'U', $message = 'no valid date')
     {
         $this->validated = true;
-        if (null !== $this->value) {
+        if ($this->value) {
             $selectedDate = \DateTime::createFromFormat($format, $this->value);
             //$selectedDate->setTimezone(new \DateTimeZone(\App::TIMEZONE));
-            $isDate = (bool)strtotime($selectedDate->format('Y-m-d'));
+            $isDate = $selectedDate->getTimestamp() > 0;
             if (false === $isDate) {
                 $this->setFailure($message);
             }
         } else {
             $this->setFailure($message);
         }
-        return $this->validate($message, FILTER_VALIDATE_INT);
+        return $this;
     }
 }
