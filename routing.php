@@ -3365,6 +3365,14 @@ use \Psr\Http\Message\ResponseInterface;
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
+ *              -   name: date
+ *                  description: "selected date string"
+ *                  in: query
+ *                  type: string
+ *              -   name: exclude
+ *                  description: "exluded process numbers as csv string"
+ *                  in: query
+ *                  type: string
  *          responses:
  *              200:
  *                  description: get a process

@@ -32,8 +32,8 @@ class ProcessNextByCluster extends BaseController
         }
         $queueList = $query->readQueueList($cluster->id, $dateTime, 1);
         $process = $queueList->getNextProcess($dateTime);
-        if (! $process) {
-            throw new Exception\Process\ProcessNotFound();
+        if (! $process || $process->getFirstAppointment()->date > $dateTime->getTimestamp()) {
+            throw new Exception\Process\ProcessNotFoundInQueue();
         }
 
         $message = Response\Message::create($request);
