@@ -38,7 +38,6 @@ class Process extends Base implements MappingInterface
                 FROM_UNIXTIME(process.IPTimeStamp,'%d-%m-%Y %H:%i'),' | ',
                 IFNULL(process.Anmerkung,'')
             ),
-            process.StandortID = 0,
             process.Name = '(abgesagt)',
             process.IPadresse = '',
             process.IPTimeStamp = FLOOR(UNIX_TIMESTAMP()) + (s.loeschdauer * 60),
