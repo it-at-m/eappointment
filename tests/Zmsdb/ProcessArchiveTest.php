@@ -24,7 +24,7 @@ class ProcessArchiveTest extends Base
         $archivedRead = $queryArchived->readArchivedEntity($archivedWrite->archiveId, 1);
         $this->assertEquals($archivedWrite->archiveId, $archivedRead->archiveId);
         $this->assertEquals('archived', $archivedRead->status);
-        $this->assertEquals('600', $archivedRead->waitingTime);
+        $this->assertEquals('10', $archivedRead->waitingTime);
 
         $archivedRead = $queryArchived->readArchivedEntity(null);
         $this->assertEquals(null, $archivedRead);

@@ -82,7 +82,7 @@ class ProcessStatusArchived extends Base implements MappingInterface
             'mitTermin' => ($process->toQueue($now)->withAppointment) ? 1 : 0,
             'nicht_erschienen' => ('missed' == $process->queue['status']) ? 1 : 0,
             'Timestamp' => $now->format('H:i:s'),
-            'wartezeit' => $process->getWaitedSeconds(),
+            'wartezeit' => ($process->getWaitedSeconds() > 0) ? round($process->getWaitedSeconds() / 60, 0): 0,
             'AnzahlPersonen' => $process->getClients()->count()
         ]);
     }
