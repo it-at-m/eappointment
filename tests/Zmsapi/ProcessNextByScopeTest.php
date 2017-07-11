@@ -34,7 +34,7 @@ class ProcessNextByScopeTest extends Base
     public function testProcessNotFound()
     {
         $this->setWorkstation();
-        $this->expectException('\BO\Zmsapi\Exception\Process\ProcessNotFound');
+        $this->expectException('\BO\Zmsapi\Exception\Process\ProcessNotFoundInQueue');
         $this->expectExceptionCode(404);
         $this->render(['id' => 141], ['date' => '2015-04-01'], []);
     }
