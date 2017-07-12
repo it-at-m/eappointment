@@ -123,6 +123,22 @@ class Valid extends \BO\Mellon\Parameter
     }
 
     /**
+     * Require a value
+     * ATTENTION: Does not allow "0" (zero) as value
+     *
+     * @param String $message error message in case of failure
+     *
+     * @return self
+     */
+    public function isRequired($message = 'value is not declared')
+    {
+        if (!$this->value) {
+            $this->setFailure($message);
+        }
+        return $this;
+    }
+
+    /**
      * Get the validated value or the default value
      *
      * @return Mixed
