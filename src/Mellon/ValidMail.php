@@ -22,21 +22,22 @@ class ValidMail extends \BO\Mellon\ValidString
     public function isMail($message = 'no valid email')
     {
         $this->isString($message);
-        $this->validate($message, FILTER_SANITIZE_EMAIL);
-        return $this->validate($message, FILTER_VALIDATE_EMAIL);
+        if ($this->value) {
+            $this->validate($message, FILTER_SANITIZE_EMAIL);
+            return $this->validate($message, FILTER_VALIDATE_EMAIL);
+        }
+        return $this;
     }
 
     public function hasMX($message = 'no valid DNS entry of type MX found')
     {
         $this->validated = true;
-        if (null !== $this->value) {
+        if ($this->value) {
             $domain = substr($this->value, strpos($this->value, '@') + 1);
             $hasMX = checkdnsrr($domain, 'MX');
             if (false === $hasMX) {
                 $this->setFailure($message);
             }
-        } else {
-            $this->setFailure($message);
         }
         return $this;
     }

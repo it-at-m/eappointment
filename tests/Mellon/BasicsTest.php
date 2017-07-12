@@ -31,7 +31,14 @@ class BasicsTest extends \PHPUnit_Framework_TestCase
         );
         $valid->setDefault('456');
         $this->assertEquals('456', $valid->getValue(), "Unvalidated parameters should return the default value");
+    }
 
+    public function testRequired()
+    {
+        $valid = Validator::value('abc')->isRequired("Value abc should not fail");
+        $this->assertFalse($valid->hasFailed(), $valid->getMessages());
+        $valid = Validator::value('')->isRequired("Empty value should fail");
+        $this->assertTrue($valid->hasFailed(), $valid->getMessages());
     }
 
     public function testStdin()
