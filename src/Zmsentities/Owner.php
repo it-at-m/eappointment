@@ -2,7 +2,7 @@
 
 namespace BO\Zmsentities;
 
-class Owner extends Schema\Entity
+class Owner extends Schema\Entity implements Useraccount\AccessInterface
 {
     const PRIMARY = 'id';
 

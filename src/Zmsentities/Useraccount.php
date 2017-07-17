@@ -96,7 +96,11 @@ class Useraccount extends Schema\Entity
     public function hasRights(array $requiredRights)
     {
         foreach ($requiredRights as $required) {
-            if (! $this->toProperty()->rights->$required->get()) {
+            if ($required instanceof Useraccount\RightsInterface) {
+                if (!$required->validateUseraccount($this)) {
+                    return false;
+                }
+            } elseif (! $this->toProperty()->rights->$required->get()) {
                 return false;
             }
         }

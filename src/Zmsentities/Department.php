@@ -2,7 +2,7 @@
 
 namespace BO\Zmsentities;
 
-class Department extends Schema\Entity
+class Department extends Schema\Entity implements Useraccount\AccessInterface
 {
     const PRIMARY = 'id';
 
