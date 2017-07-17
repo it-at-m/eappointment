@@ -294,6 +294,8 @@
                         "maxNumberContingent": {
                             "type": "number",
                             "description": "contingent of given waiting numbers for ticket printer per day",
+                            "minimum": 5,
+                            "maximum": 999,
                             "default": 999
                         },
                         "publishWaitingTimeEnabled": {
