@@ -105,6 +105,19 @@ class UseraccountTest extends EntityCommonTests
         $this->assertEntityList('\BO\Zmsentities\Department', $entity->getDepartmentList());
     }
 
+    public function testRightChecks()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $department = (new \BO\Zmsentities\Department())->getExample();
+        $this->assertFalse($entity->hasRights([
+            new \BO\Zmsentities\Useraccount\EntityAccess($department)
+        ]), "User rights should not validate");
+        $entity->addDepartment($department);
+        $this->assertTrue($entity->hasRights([
+            new \BO\Zmsentities\Useraccount\EntityAccess($department)
+        ]), "User rights should validate");
+    }
+
     public function testWithCleanedUpFormData()
     {
         $entity = $this->getExample();
