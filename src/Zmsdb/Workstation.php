@@ -186,6 +186,8 @@ class Workstation extends Base
         $query->addConditionProcessId($process->id);
         $query->addValues(['NutzerID' => $workstationId]);
         $this->writeItem($query);
+        $checksum = sha1($process->id . '-' . $workstationId);
+        Log::writeLogEntry("UPDATE (Workstation::writeAssignedProcess) $checksum ", $process->id);
         return $process;
     }
 
@@ -211,8 +213,8 @@ class Workstation extends Base
                 'nicht_erschienen' => ('missed' == $process->status) ? 1 : 0
             ]
         );
+        Log::writeLogEntry("UPDATE (Workstation::writeRemovedProcess)", $process->id);
         return $this->writeItem($query);
-        //Log::writeLogEntry("UPDATE (Process::writeRemovedWorkstation $workstation->id) $process ", $process->id);
     }
 
 
