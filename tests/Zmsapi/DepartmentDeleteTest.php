@@ -10,7 +10,10 @@ class DepartmentDeleteTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('department');
+        $this->setWorkstation()->getUseraccount()->setRights('department')
+            ->addDepartment([
+                'id' => 999
+            ]);
         $response = $this->render(['id' => 999], [], []); //Test Department
         $this->assertContains('department.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
@@ -18,7 +21,10 @@ class DepartmentDeleteTest extends Base
 
     public function testHasChildren()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('department');
+        $this->setWorkstation()->getUseraccount()->setRights('department')
+            ->addDepartment([
+                'id' => 74
+            ]);
         $this->expectException('\BO\Zmsdb\Exception\Department\ScopeListNotEmpty');
         $this->expectExceptionCode(428);
         $this->render(['id' => 74], [], []);
@@ -27,8 +33,17 @@ class DepartmentDeleteTest extends Base
     public function testNotFound()
     {
         $this->setWorkstation()->getUseraccount()->setRights('department');
-        $this->expectException('\BO\Zmsapi\Exception\Department\DepartmentNotFound');
-        $this->expectExceptionCode(404);
+        // The rights check does not know, if the department is missed because of rights or by lack of data
+        $this->expectException('BO\Zmsentities\Exception\UserAccountMissingDepartment');
+        $this->expectExceptionCode(403);
         $this->render(['id' => 9999], [], []);
+    }
+
+    public function testNoRights()
+    {
+        $this->setWorkstation()->getUseraccount()->setRights('department');
+        $this->expectException('BO\Zmsentities\Exception\UserAccountMissingDepartment');
+        $this->expectExceptionCode(403);
+        $this->render(['id' => 999], [], []); //Test Department
     }
 }

@@ -20,7 +20,6 @@ class OwnerUpdate extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('superuser');
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Owner($input);
         $entity->testValid();
@@ -28,6 +27,9 @@ class OwnerUpdate extends BaseController
         if (! $owner->hasId()) {
             throw new Exception\Owner\OwnerNotFound();
         }
+        (new Helper\User($request, 2))->checkRights(
+            new \BO\Zmsentities\Useraccount\EntityAccess($owner)
+        );
 
         $message = Response\Message::create($request);
         $message->data = (new Query)->updateEntity($owner->id, $entity);

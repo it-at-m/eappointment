@@ -19,11 +19,14 @@ class ScopeDelete extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('scope');
         $scope = (new Scope)->readEntity($args['id'], 0);
         if (! $scope) {
             throw new Exception\Scope\ScopeNotFound();
         }
+        (new Helper\User($request, 2))->checkRights(
+            'scope',
+            new \BO\Zmsentities\Useraccount\EntityAccess($scope)
+        );
         $message = Response\Message::create($request);
         $message->data = (new Scope)->deleteEntity($scope->id);
 

@@ -8,7 +8,10 @@ class DepartmentAddScopeTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('department');
+        $this->setWorkstation()->getUseraccount()->setRights('department')
+            ->addDepartment([
+                'id' => 72
+            ]);
         $response = $this->render(['id' => 72], [
             '__body' => '{
                   "shortName": "Test Scope",
@@ -24,8 +27,26 @@ class DepartmentAddScopeTest extends Base
 
     public function testUnvalidScope()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('department');
+        $this->setWorkstation()->getUseraccount()->setRights('department')
+            ->addDepartment([
+                'id' => 72
+            ]);
         $this->setExpectedException('\BO\Mellon\Failure\Exception');
-        $this->render([], [], []);
+        $this->render(['id' => 72], [], []);
+    }
+
+    public function testNoRights()
+    {
+        $this->setWorkstation()->getUseraccount()->setRights('department');
+        $this->expectException('BO\Zmsentities\Exception\UserAccountMissingDepartment');
+        $this->expectExceptionCode(403);
+        $this->render(['id' => 72], [
+            '__body' => '{
+                  "shortName": "Test Scope",
+                  "provider": {
+                      "id": 122217
+                  }
+              }'
+        ], []);
     }
 }

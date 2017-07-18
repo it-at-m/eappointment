@@ -21,7 +21,8 @@ class DepartmentAddCluster extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights();
+        (new Helper\User($request, 2))->checkRights('department');
+        Helper\User::checkDepartment($args['id']);
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $cluster = new \BO\Zmsentities\Cluster($input);
         $cluster->testValid();

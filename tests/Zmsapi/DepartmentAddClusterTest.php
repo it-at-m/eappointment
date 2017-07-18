@@ -8,7 +8,10 @@ class DepartmentAddClusterTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation();
+        $this->setWorkstation()->getUseraccount()->setRights('department')
+            ->addDepartment([
+                'id' => 72
+            ]);
         $response = $this->render(['id' => 72], [
             '__body' => '{
                 "name": "Bürgeramt Test",
@@ -23,8 +26,26 @@ class DepartmentAddClusterTest extends Base
 
     public function testUnvalidCluster()
     {
-        $this->setWorkstation();
+        $this->setWorkstation()->getUseraccount()->setRights('department')
+            ->addDepartment([
+                'id' => 72
+            ]);
         $this->setExpectedException('\BO\Mellon\Failure\Exception');
-        $this->render([], [], []);
+        $this->render(['id' => 72], [], []);
+    }
+
+    public function testNoRights()
+    {
+        $this->setWorkstation()->getUseraccount()->setRights('department');
+        $this->expectException('BO\Zmsentities\Exception\UserAccountMissingDepartment');
+        $this->expectExceptionCode(403);
+        $this->render(['id' => 72], [
+            '__body' => '{
+                "name": "Bürgeramt Test",
+                "hint": "",
+                "shortNameEnabled": true,
+                "callDisplayText": ""
+            }'
+        ], []);
     }
 }

@@ -36,7 +36,7 @@ class OwnerUpdateTest extends Base
         $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
         $this->expectExceptionCode(400);
         $this->render(["id" => 99], [
-            '__body' => '{}'
+            '__body' => '{"extraField":0}'
         ], []);
     }
 

@@ -93,11 +93,26 @@ class User
         if (! $userAccount->hasId()) {
             throw new \BO\Zmsentities\Exception\UseraccountMissingLogin();
         }
-        if (! $userAccount->isSuperUser()) {
+        if ($userAccount->rights['organisation']) {
+            $department = self::testReadDepartmentByOrganisation($departmentId, $userAccount);
+        } elseif (! $userAccount->isSuperUser()) {
             $department = $userAccount->testDepartmentById($departmentId);
         } else {
             $department = (new \BO\Zmsdb\Department())->readEntity($departmentId);
         }
+        if (! $department) {
+            throw new \BO\Zmsentities\Exception\UserAccountMissingDepartment(
+                "No access to department " . htmlspecialchars($departmentId)
+            );
+        }
+        return $department;
+    }
+
+    protected static function testReadDepartmentByOrganisation($departmentId, $userAccount)
+    {
+        $organisation = (new \BO\Zmsdb\Organisation())->readByDepartmentId($departmentId, 1);
+        $organisation->departments = $organisation->getDepartmentList()->withAccess($userAccount);
+        $department = $organisation->departments->getEntity($departmentId);
         return $department;
     }
 

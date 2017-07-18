@@ -20,12 +20,9 @@ class DepartmentDelete extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('department');
         $query = new Query();
-        $department = $query->readEntity($args['id']);
-        if (! $department) {
-            throw new Exception\Department\DepartmentNotFound();
-        }
+        (new Helper\User($request, 2))->checkRights('department');
+        $department = Helper\User::checkDepartment($args['id']);
         $query->deleteEntity($department->id);
 
         $message = Response\Message::create($request);

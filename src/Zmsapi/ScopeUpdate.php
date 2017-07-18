@@ -21,8 +21,6 @@ class ScopeUpdate extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('scope');
-
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Scope($input);
         $entity->testValid();
@@ -30,6 +28,10 @@ class ScopeUpdate extends BaseController
         if (! $scope) {
             throw new Exception\Scope\ScopeNotFound();
         }
+        (new Helper\User($request, 2))->checkRights(
+            'scope',
+            new \BO\Zmsentities\Useraccount\EntityAccess($scope)
+        );
 
         $message = Response\Message::create($request);
         $message->data = (new Scope)->updateEntity($scope->id, $entity);

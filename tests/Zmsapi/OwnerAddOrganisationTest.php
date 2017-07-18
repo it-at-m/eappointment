@@ -24,8 +24,8 @@ class OwnerAddOrganisationTest extends Base
         $this->setWorkstation()->getUseraccount()->setRights('superuser');
         $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
         $this->expectExceptionCode(400);
-        $this->render([], [
-            '__body' => '{}'
+        $this->render(['id' => 23], [
+            '__body' => '{"extraField": 0}'
         ], []);
     }
 }

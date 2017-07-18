@@ -21,7 +21,7 @@ class OwnerGet extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = new Helper\User($request);
+        $workstation = new Helper\User($request, 2);
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $owner = (new Query())->readEntity($args['id'], $resolveReferences);
         if (! $owner->hasId()) {
@@ -31,7 +31,9 @@ class OwnerGet extends BaseController
         $message = Response\Message::create($request);
 
         if ($workstation->hasRights()) {
-            $workstation->checkRights('superuser');
+            $workstation->checkRights(
+                new \BO\Zmsentities\Useraccount\EntityAccess($owner)
+            );
         } else {
             $owner = $owner->withLessData();
             $message->meta->reducedData = true;

@@ -21,7 +21,10 @@ class OwnerAddOrganisation extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('superuser');
+        $owner = (new \BO\Zmsdb\Owner)->readEntity($args['id'], 2);
+        (new Helper\User($request, 2))->checkRights(
+            new \BO\Zmsentities\Useraccount\EntityAccess($owner)
+        );
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $organisation = new \BO\Zmsentities\Organisation($input);
         $organisation->testValid();

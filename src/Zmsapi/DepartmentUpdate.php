@@ -20,10 +20,10 @@ class DepartmentUpdate extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('department');
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Department($input);
-        $department = (new Query())->readEntity($args['id']);
+        (new Helper\User($request, 2))->checkRights('department');
+        $department = Helper\User::checkDepartment($args['id']);
         if (! $department) {
             throw new Exception\Department\DepartmentNotFound();
         }

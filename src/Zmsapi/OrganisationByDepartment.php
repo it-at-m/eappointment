@@ -21,18 +21,20 @@ class OrganisationByDepartment extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = (new Helper\User($request))->checkRights('useraccount');
+        (new Helper\User($request))->checkRights('basic');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
-        $department = Helper\User::checkDepartment($args['id']);
-        if (! $department) {
+
+        $organisation = (new Organisation())->readByDepartmentId(
+            $args['id'],
+            ($resolveReferences > 0) ? $resolveReferences : 1
+        );
+        if (! $organisation || ! $organisation->departments->getEntity($args['id'])) {
             throw new Exception\Department\DepartmentNotFound();
         }
 
-        $organisation = (new Organisation())->readByDepartmentId($department->id, $resolveReferences);
-        $organisation->departments = $organisation->getDepartmentList()->withAccess($workstation->getUseraccount());
 
         $message = Response\Message::create($request);
-        $message->data = $organisation;
+        $message->data = $organisation->withResolveLevel($resolveReferences);
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());

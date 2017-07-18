@@ -15,7 +15,9 @@ class ScopeCalldisplayImageDataUpdateTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation()->getUserAccount()->setRights('scope');
+        $department = (new \BO\Zmsentities\Department());
+        $department->scopes[] = new \BO\Zmsentities\Scope(['id' => self::SCOPE_ID]);
+        $this->setWorkstation()->getUserAccount()->setRights('scope')->addDepartment($department);
         $response = $this->render(['id' => self::SCOPE_ID], [
             '__body' => $this->readFixture("GetBase64Image.json")
         ], []);
