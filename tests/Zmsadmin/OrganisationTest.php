@@ -25,6 +25,7 @@ class OrganisationTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/organisation/71/',
+                    'parameters' => ['resolveReferences' => 1],
                     'response' => $this->readFixture("GET_organisation_71_resolved3.json")
                 ]
             ]
@@ -49,6 +50,7 @@ class OrganisationTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/organisation/71/',
+                    'parameters' => ['resolveReferences' => 1],
                     'response' => $this->readFixture("GET_organisation_71_resolved3.json")
                 ],
                 [
