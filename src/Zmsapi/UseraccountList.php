@@ -21,11 +21,17 @@ class UseraccountList extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        $validator = $request->getAttribute('validator');
         (new Helper\User($request))->checkRights('useraccount');
-        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
+        $resolveReferences = $validator->getParameter('resolveReferences')->isNumber()->setDefault(0)->getValue();
+        $rightRestriction = $validator->getParameter('right')->isString()->getValue();
 
+        $useraccountList = (new Useraccount)->readList($resolveReferences);
+        if ($rightRestriction) {
+            $useraccountList = $useraccountList->withRights([$rightRestriction]);
+        }
         $message = Response\Message::create($request);
-        $message->data = (new Useraccount)->readList($resolveReferences);
+        $message->data = $useraccountList;
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), 200);
