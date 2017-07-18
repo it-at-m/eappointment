@@ -27,7 +27,10 @@ class Organisation extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $confirm_success = $request->getAttribute('validator')->getParameter('confirm_success')->isString()->getValue();
         $entityId = Validator::value($args['id'])->isNumber()->getValue();
-        $entity = \App::$http->readGetResult('/organisation/'. $entityId .'/')->getEntity();
+        $entity = \App::$http->readGetResult(
+            '/organisation/'. $entityId .'/',
+            ['resolveReferences' => 1]
+        )->getEntity();
 
         $input = $request->getParsedBody();
         if (array_key_exists('save', (array) $input)) {
