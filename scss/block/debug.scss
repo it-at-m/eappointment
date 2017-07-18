@@ -3,4 +3,10 @@
 	line-height: 		$alert-line-height;
 	color:				$black;
 	margin-left:		20px;
+    position:           fixed;
+    left:               1024px;
+    top:                8em;
+    width:              800px;
+    height:             800px;
+    overflow:           auto;
 }
