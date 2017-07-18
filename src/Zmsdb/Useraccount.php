@@ -36,10 +36,8 @@ class Useraccount extends Base
 
     public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $useraccount, $resolveReferences)
     {
-        if (0 < $resolveReferences) {
-            if ($useraccount->toProperty()->id->get()) {
-                $useraccount->departments = $this->readAssignedDepartmentList($useraccount, $resolveReferences);
-            }
+        if (0 < $resolveReferences && $useraccount->toProperty()->id->get()) {
+            $useraccount->departments = $this->readAssignedDepartmentList($useraccount, $resolveReferences);
         }
         return $useraccount;
     }
@@ -61,10 +59,7 @@ class Useraccount extends Base
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
             foreach ($result as $entity) {
-                if ($entity instanceof Entity) {
-                    $entity->departments = $this->readAssignedDepartmentList($entity, $resolveReferences);
-                    $collection->addEntity($entity);
-                }
+                $collection->addEntity($this->readResolvedReferences($entity, $resolveReferences));
             }
         }
         return $collection;
