@@ -4,6 +4,8 @@ namespace BO\Zmsentities\Helper;
 
 /**
  * Special Class to manage rights by level for old db
+ *
+ * @todo Remove this class, keep no contraint on old DB schema in zmsentities
  */
 class RightsLevelManager
 {

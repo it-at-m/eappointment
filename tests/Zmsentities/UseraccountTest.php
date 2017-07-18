@@ -105,16 +105,30 @@ class UseraccountTest extends EntityCommonTests
         $this->assertEntityList('\BO\Zmsentities\Department', $entity->getDepartmentList());
     }
 
+    public function testHasScopes()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $department = (new \BO\Zmsentities\Department())->getExample();
+        $entity->addDepartment($department);
+        $this->assertTrue($entity->hasScope(123), "Department should have scope 123");
+        $this->assertFalse($entity->hasScope(456), "Department should not have scope 456");
+    }
+
     public function testRightChecks()
     {
         $entity = (new $this->entityclass())->getExample();
         $department = (new \BO\Zmsentities\Department())->getExample();
+        $scope = new \BO\Zmsentities\Scope(['id' => 123]);
         $this->assertFalse($entity->hasRights([
             new \BO\Zmsentities\Useraccount\EntityAccess($department)
-        ]), "User rights should not validate");
+        ]), "User rights should not validate for department");
+        $this->assertFalse($entity->hasRights([
+            new \BO\Zmsentities\Useraccount\EntityAccess($scope)
+        ]), "User rights should not validate for scope");
         $entity->addDepartment($department);
         $this->assertTrue($entity->hasRights([
-            new \BO\Zmsentities\Useraccount\EntityAccess($department)
+            new \BO\Zmsentities\Useraccount\EntityAccess($department),
+            new \BO\Zmsentities\Useraccount\EntityAccess($scope)
         ]), "User rights should validate");
     }
 

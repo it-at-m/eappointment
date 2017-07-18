@@ -15,4 +15,9 @@ class EntityAccess implements RightsInterface
     {
         return $this->entity->hasAccess($useraccount);
     }
+
+    public function __toString()
+    {
+        return "EntityAccess(" . $this->entity->getEntityName() . "#" . $this->entity->getId() . ")";
+    }
 }

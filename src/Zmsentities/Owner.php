@@ -12,6 +12,7 @@ class Owner extends Schema\Entity implements Useraccount\AccessInterface
     {
         return [
             'organisations' => new Collection\OrganisationList(),
+            'name' => '',
             ];
     }
 

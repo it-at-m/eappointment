@@ -1,7 +1,7 @@
 <?php
 namespace BO\Zmsentities;
 
-class Scope extends Schema\Entity
+class Scope extends Schema\Entity implements Useraccount\AccessInterface
 {
     const PRIMARY = 'id';
 
@@ -132,6 +132,11 @@ class Scope extends Schema\Entity
         }
         $this->setStatusQueue('lastGivenNumberTimestamp', $dateTime->getTimestamp());
         return $this;
+    }
+
+    public function hasAccess(Useraccount $useraccount)
+    {
+        return $useraccount->hasScope($this->id);
     }
 
     /**

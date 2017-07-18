@@ -34,7 +34,7 @@ class OwnerTest extends EntityCommonTests
         );
 
         $organisationList = $collection->getOrganisationsByOwnerId(7);
-        $this->assertTrue(456 == $organisationList[0]->id, 'Getting organisation by owner failed');
+        $this->assertTrue(456 == $organisationList->getFirst()->id, 'Getting organisation by owner failed');
 
         $organisationList = $collection->toDepartmentListByOrganisationName();
         $this->assertTrue(

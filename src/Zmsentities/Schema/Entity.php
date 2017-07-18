@@ -227,8 +227,13 @@ class Entity extends \ArrayObject implements \JsonSerializable
 
     public function hasId()
     {
+        return (false !== $this->getId()) ? true : false;
+    }
+
+    public function getId()
+    {
         $idName = $this::PRIMARY;
-        return (array_key_exists($idName, $this) && $this[$idName]) ? true : false;
+        return (array_key_exists($idName, $this) && $this[$idName]) ? $this[$idName] : false;
     }
 
     /**

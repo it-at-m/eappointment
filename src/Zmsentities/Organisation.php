@@ -12,6 +12,7 @@ class Organisation extends Schema\Entity implements Useraccount\AccessInterface
     {
         return [
             'departments' => new Collection\DepartmentList(),
+            'name' => '',
         ];
     }
 
