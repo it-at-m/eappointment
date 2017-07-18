@@ -8,7 +8,9 @@ class ScopeUpdateTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('scope');
+        $department = (new \BO\Zmsentities\Department());
+        $department->scopes[] = new \BO\Zmsentities\Scope(['id' => 141]);
+        $this->setWorkstation()->getUserAccount()->setRights('scope')->addDepartment($department);
         $response = $this->render(['id' => 141], [
             '__body' => $this->readFixture('GetScope_lessData.json')
         ], []);
@@ -39,6 +41,15 @@ class ScopeUpdateTest extends Base
         $this->expectException('\BO\Zmsapi\Exception\Scope\ScopeNotFound');
         $this->expectExceptionCode(404);
         $this->render(['id' => 999], [
+            '__body' => $this->readFixture('GetScope_lessData.json')
+        ], []);
+    }
+
+    public function testNoRights()
+    {
+        $this->setWorkstation();
+        $this->setExpectedException('BO\Zmsentities\Exception\UserAccountMissingRights');
+        $this->render(['id' => 141], [
             '__body' => $this->readFixture('GetScope_lessData.json')
         ], []);
     }

@@ -8,7 +8,10 @@ class OrganisationAddDepartmentTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('organisation');
+        $this->setWorkstation()->getUseraccount()->setRights('organisation')
+            ->addDepartment([
+                'id' => 74
+            ]);
         $response = $this->render(['id' => 71], [
             '__body' => '{
                   "name": "Test Department"
@@ -21,8 +24,11 @@ class OrganisationAddDepartmentTest extends Base
 
     public function testUnvalidDepartment()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('organisation');
+        $this->setWorkstation()->getUseraccount()->setRights('organisation')
+            ->addDepartment([
+                'id' => 74
+            ]);
         $this->expectException('\BO\Mellon\Failure\Exception');
-        $this->render([], [], []);
+        $this->render(['id' => 71], [], []);
     }
 }

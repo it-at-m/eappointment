@@ -24,12 +24,15 @@ class OrganisationDelete extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('superuser');
         $query = new Query();
-        $organisation = $query->readEntity($args['id']);
+        $organisation = $query->readEntity($args['id'], 1);
         if (! $organisation) {
             throw new Exception\Organisation\OrganisationNotFound();
         }
+        (new Helper\User($request, 2))->checkRights(
+            'organisation',
+            new \BO\Zmsentities\Useraccount\EntityAccess($organisation)
+        );
         $query->deleteEntity($organisation->id);
 
         $message = Response\Message::create($request);

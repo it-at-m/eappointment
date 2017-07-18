@@ -21,7 +21,7 @@ class OwnerList extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = (new Helper\User($request))->checkRights('superuser');
+        $workstation = (new Helper\User($request, 2))->checkRights();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
 
         $ownerList = (new Query())->readList($resolveReferences);

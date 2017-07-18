@@ -19,10 +19,8 @@ class DepartmentListTest extends Base
 
     public function testMissingRights()
     {
-        $this->setWorkstation();
-        User::$workstation->useraccount->setRights('basic');
-        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingRights');
-        $this->expectExceptionCode(403);
+        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingLogin');
+        $this->expectExceptionCode(401);
         $this->render([], [], []);
     }
 }

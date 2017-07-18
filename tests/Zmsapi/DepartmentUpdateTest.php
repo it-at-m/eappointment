@@ -10,7 +10,10 @@ class DepartmentUpdateTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('department');
+        $this->setWorkstation()->getUseraccount()->setRights('department')
+            ->addDepartment([
+                'id' => 999
+            ]);
         $response = $this->render(["id"=> 999], [
             '__body' => '{
                   "id": 999,
@@ -31,12 +34,28 @@ class DepartmentUpdateTest extends Base
 
     public function testNotFound()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('department');
-        $this->expectException('\BO\Zmsapi\Exception\Department\DepartmentNotFound');
-        $this->expectExceptionCode(404);
+        $this->setWorkstation()->getUseraccount()->setRights('department')
+            ->addDepartment([
+                'id' => 999
+            ]);
+        $this->expectException('BO\Zmsentities\Exception\UserAccountMissingDepartment');
+        $this->expectExceptionCode(403);
         $this->render(["id"=> 1], [
             '__body' => '{
                   "id": 9999
+              }'
+        ], []);
+    }
+
+    public function testNoRights()
+    {
+        $this->setWorkstation()->getUseraccount()->setRights('department');
+        $this->expectException('BO\Zmsentities\Exception\UserAccountMissingDepartment');
+        $this->expectExceptionCode(403);
+        $this->render(["id"=> 999], [
+            '__body' => '{
+                  "id": 999,
+                  "name": "Test Department Update"
               }'
         ], []);
     }

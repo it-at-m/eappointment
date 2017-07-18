@@ -26,6 +26,10 @@ class ScopeWithWorkstationCount extends BaseController
         if (! $scope->hasId()) {
             throw new Exception\Scope\ScopeNotFound();
         }
+        (new Helper\User($request, 2))->checkRights(
+            'scope',
+            new \BO\Zmsentities\Useraccount\EntityAccess($scope)
+        );
 
         $message = Response\Message::create($request);
         $message->data = $scope;

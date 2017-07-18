@@ -15,12 +15,10 @@ class OrganisationByDepartmentTest extends Base
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
-    public function testDepartmentNotAssigned()
+    public function testNoRights()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('useraccount');
-        $this->setDepartment(72);
-        $this->setExpectedException('BO\Zmsentities\Exception\UserAccountMissingDepartment');
-        $this->expectExceptionCode(403);
+        $this->setExpectedException('BO\Zmsentities\Exception\UserAccountMissingLogin');
+        $this->expectExceptionCode(401);
         $this->render(['id' => 9999], [], []);
     }
 

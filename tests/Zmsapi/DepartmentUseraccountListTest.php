@@ -27,8 +27,8 @@ class DepartmentUseraccountListTest extends Base
     public function testDepartmentNotFound()
     {
         $this->setWorkstation()->getUseraccount()->setRights('superuser', 'useraccount');
-        $this->setExpectedException('BO\Zmsapi\Exception\Department\DepartmentNotFound');
-        $this->expectExceptionCode(404);
+        $this->expectException('BO\Zmsentities\Exception\UserAccountMissingDepartment');
+        $this->expectExceptionCode(403);
         $this->render(['id' => 9999], [], []);
     }
 }

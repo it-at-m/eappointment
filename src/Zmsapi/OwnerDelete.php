@@ -24,12 +24,14 @@ class OwnerDelete extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('superuser');
         $query = new Query();
-        $owner = $query->readEntity($args['id']);
+        $owner = $query->readEntity($args['id'], 2);
         if (! $owner->hasId()) {
             throw new Exception\Owner\OwnerNotFound();
         }
+        (new Helper\User($request, 2))->checkRights(
+            new \BO\Zmsentities\Useraccount\EntityAccess($owner)
+        );
         $query->deleteEntity($owner->id);
 
         $message = Response\Message::create($request);

@@ -15,7 +15,9 @@ class ScopeCalldisplayImageDataDeleteTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation()->getUserAccount()->setRights('scope');
+        $department = (new \BO\Zmsentities\Department());
+        $department->scopes[] = new \BO\Zmsentities\Scope(['id' => self::SCOPE_ID]);
+        $this->setWorkstation()->getUserAccount()->setRights('scope')->addDepartment($department);
         $response = $this->render(['id' => self::SCOPE_ID], [], []);
         $this->assertContains('"data":true', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
@@ -23,7 +25,7 @@ class ScopeCalldisplayImageDataDeleteTest extends Base
 
     public function testNoRights()
     {
-        $this->setWorkstation();
+        $this->setWorkstation()->getUserAccount()->setRights('scope');
         $this->setExpectedException('BO\Zmsentities\Exception\UserAccountMissingRights');
         $this->render(['id' => self::SCOPE_ID], [
             '__body' => '',

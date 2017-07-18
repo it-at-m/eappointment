@@ -15,7 +15,10 @@ class OrganisationUpdateTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('organisation');
+        $this->setWorkstation()->getUseraccount()->setRights('organisation')
+            ->addDepartment([
+                'id' => 55
+            ]);
         $response = $this->render(['id' => 54], [
             '__body' => $this->readFixture("GetOrganisation.json")
         ], []);
@@ -46,7 +49,7 @@ class OrganisationUpdateTest extends Base
         $this->expectException('BO\Zmsentities\Exception\UserAccountMissingRights');
         $this->expectExceptionCode(403);
         $this->render(["id" => 54], [
-            '__body' => '',
+            '__body' => $this->readFixture("GetOrganisation.json")
         ], []);
     }
 }

@@ -21,7 +21,7 @@ class DepartmentList extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('department');
+        (new Helper\User($request))->checkRights('basic');
 
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $departmentList = (new Query)->readList($resolveReferences);

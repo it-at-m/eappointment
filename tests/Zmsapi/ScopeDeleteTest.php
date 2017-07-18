@@ -8,7 +8,9 @@ class ScopeDeleteTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation()->getUseraccount()->setRights('scope');
+        $department = (new \BO\Zmsentities\Department());
+        $department->scopes[] = new \BO\Zmsentities\Scope(['id' => 615]);
+        $this->setWorkstation()->getUserAccount()->setRights('scope')->addDepartment($department);
         $response = $this->render(['id' => 615], [], []); //Ordnungsamt Charlottenburg
         $this->assertContains('Ordnungsamt Charlottenburg-Wilmersdorf ', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
@@ -27,5 +29,12 @@ class ScopeDeleteTest extends Base
         $this->expectException('\BO\Zmsapi\Exception\Scope\ScopeNotFound');
         $this->expectExceptionCode(404);
         $this->render(['id' => 999], [], []);
+    }
+
+    public function testNoRights()
+    {
+        $this->setWorkstation();
+        $this->setExpectedException('BO\Zmsentities\Exception\UserAccountMissingRights');
+        $this->render(['id' => 615], [], []); //Ordnungsamt Charlottenburg
     }
 }
