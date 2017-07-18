@@ -1205,6 +1205,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
  *                  in: query
  *                  type: integer
+ *              -   name: right
+ *                  description: "Only fetch users with the given right like 'superuser'"
+ *                  in: query
+ *                  type: string
  *          responses:
  *              200:
  *                  description: "success"

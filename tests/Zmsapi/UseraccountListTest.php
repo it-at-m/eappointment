@@ -14,6 +14,16 @@ class UseraccountListTest extends Base
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
+    public function testRights()
+    {
+        $this->setWorkstation()->getUseraccount()->setRights('useraccount');
+        $response = $this->render([], ['right' => 'superuser'], []);
+        $this->assertContains('useraccount.json', (string)$response->getBody());
+        $this->assertNotContains('"superuser":"0"', (string)$response->getBody());
+        $this->assertContains('"superuser":"1"', (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
+    }
+
     public function testMissingLogin()
     {
         $this->setExpectedException('BO\Zmsentities\Exception\UserAccountMissingLogin');
