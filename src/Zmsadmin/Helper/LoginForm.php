@@ -79,6 +79,11 @@ class LoginForm
         return $collection;
     }
 
+    /**
+     * @SuppressWarnings(Cyclo)
+     * @SuppressWarnings(NPath)
+     * @todo Refactor for less complexity
+     */
     public static function writeWorkstationUpdate($data, $workstation)
     {
         $formData = $data->getValues();

@@ -64,7 +64,7 @@ class UseraccountEdit extends BaseController
                 'userAccount' => $userAccount,
                 'confirm_success' => $confirm_success,
                 'formdata' => $formData,
-                'ownerList' => $ownerList->toDepartmentListByOrganisationName(),
+                'ownerList' => $ownerList ? $ownerList->toDepartmentListByOrganisationName() : [],
                 'workstation' => $workstation,
                 'title' => 'Nutzer: Einrichtung und Administration','menuActive' => 'useraccount'
             )
