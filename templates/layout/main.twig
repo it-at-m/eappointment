@@ -1,6 +1,7 @@
 {% use "block/default/head.twig" %}
 {% use "block/default/devhint.twig" %}
 {% use "block/header/pageheader.twig" %}
+{% use "block/ticketprinterhash.twig" %}
 
 <!doctype html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="{{ currentLang() }}" lang="{{ currentLang() }}">
@@ -20,6 +21,10 @@
                     {% endblock %}
                 </div>
             </div>
+
+            {% block ticketprinterhash %}
+            	{{ parent() }}
+            {% endblock %}
 
             <script type="text/javascript" src="{{ includeUrl() }}/_js/index.js"></script>
             <script type="text/javascript">window.bo.zmsticketprinter.includepath="{{ includeUrl() }}"</script>

@@ -332,7 +332,21 @@
     font-size: 14px;
     line-height: 18px;
     color: #000000;
-    margin-left: 20px; }
+    margin-left: 20px;
+    position: fixed;
+    left: 1024px;
+    top: 8em;
+    width: 800px;
+    height: 800px;
+    overflow: auto; }
+  .ticketprinterhash {
+    position: absolute;
+    left: 36px;
+    top: 740px;
+    z-index: 0;
+    color: #a5bad6;
+    font-size: 0.4em;
+    font-weight: normal; }
   .wartenummern .smshinweis {
     left: 160px;
     position: absolute;
