@@ -19,8 +19,6 @@ class OwnerOverview extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences' => 4))->getCollection();
-        $organisationList = $ownerList->getOrganisationsByOwnerId(23);
-
         return \BO\Slim\Render::withHtml(
 
             $response,
@@ -29,8 +27,7 @@ class OwnerOverview extends BaseController
                 'title' => 'Behörden und Standorte',
                 'menuActive' => 'owner',
                 'workstation' => $workstation,
-                'owner' => current($ownerList),
-                'itemList' => $organisationList->sortByName(),
+                'ownerList' => $ownerList,
             )
         );
     }

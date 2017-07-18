@@ -20,25 +20,37 @@ class Useraccount extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         if ($workstation->hasSuperUseraccount()) {
             $department = new \BO\Zmsentities\Department([
                 'name' => 'Systemweite Nutzer'
                 ]);
-            $userAccountList = \App::$http->readGetResult("/useraccount/")
+            $userAccountList = \App::$http->readGetResult(
+                "/useraccount/",
+                [
+                    "resolveReferences" => 0,
+                    "right" => "superuser",
+                ]
+            )
                 ->getCollection()
-                ->withRights(['superuser']);
-            $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences'=>4))->getCollection();
+                ;
+            $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences' => 2))->getCollection();
             $organisationList = $ownerList->getOrganisationsByOwnerId(23);
         } else {
+            $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
             $department = $workstation->getUseraccount()->getDepartmentList()->getFirst();
             $departmentId = $department->id;
             $userAccountList = \App::$http->readGetResult("/department/$departmentId/useraccount/")->getCollection();
-            $organisation = \App::$http->readGetResult(
-                "/department/$departmentId/organisation/",
-                array('resolveReferences'=>1)
-            )->getEntity();
-            $organisationList = new \BO\Zmsentities\Collection\OrganisationList([$organisation]);
+            $organisationList = new \BO\Zmsentities\Collection\OrganisationList();
+            foreach ($workstation->useraccount->departments as $accountDepartment) {
+                if (!$organisationList->getByDepartmentId($accountDepartment->id)->count()) {
+                    $organisation = \App::$http->readGetResult(
+                        "/department/" . $accountDepartment->id . "/organisation/",
+                        array('resolveReferences'=>1)
+                    )->getEntity();
+                    $organisationList->addEntity($organisation);
+                }
+            }
         }
 
         return \BO\Slim\Render::withHtml(

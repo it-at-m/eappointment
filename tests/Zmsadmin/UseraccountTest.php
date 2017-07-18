@@ -17,18 +17,19 @@ class UseraccountTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
+                    'parameters' => ['resolveReferences' => 1],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/useraccount/',
+                    'parameters' => ['resolveReferences' => 0, 'right' => 'superuser'],
                     'response' => $this->readFixture("GET_useraccountlist_superuser.json")
                 ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/owner/',
-                    'parameters' => ['resolveReferences' => 4],
+                    'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_ownerlist.json")
                 ]
             ]
@@ -43,6 +44,12 @@ class UseraccountTest extends Base
     {
         $this->setApiCalls(
             [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_workstation_with_process.json")
+                ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
