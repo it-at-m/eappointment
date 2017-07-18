@@ -85,7 +85,8 @@ class Http
         if (self::$logEnabled) {
             self::$log[] = $request;
             self::$log[] = $response;
-            self::$log[] = "Response time in s: " . round(microtime(true) - $startTime, 3);
+            $responseSizeKb = round(strlen($response) / 1024);
+            self::$log[] = "Response ($responseSizeKb kb) time in s: " . round(microtime(true) - $startTime, 3);
         }
         return $response;
     }
