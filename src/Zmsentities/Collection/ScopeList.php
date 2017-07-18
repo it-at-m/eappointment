@@ -66,9 +66,11 @@ class ScopeList extends Base
     public function sortByName()
     {
         $this->uasort(function ($a, $b) {
+            $nameA = (isset($a->provider['name'])) ? $a->provider['name'] : $a->shortName;
+            $nameB = (isset($b->provider['name'])) ? $b->provider['name'] : $b->shortName;
             return strcmp(
-                Sorter::toSortableString(ucfirst($a->provider['name'])),
-                Sorter::toSortableString(ucfirst($b->provider['name']))
+                Sorter::toSortableString(ucfirst($nameA)),
+                Sorter::toSortableString(ucfirst($nameB))
             );
         });
         return $this;
