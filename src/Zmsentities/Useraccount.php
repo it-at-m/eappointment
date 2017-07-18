@@ -77,6 +77,14 @@ class Useraccount extends Schema\Entity
         return $this->getDepartment($departmentId)->hasId();
     }
 
+    public function hasScope($scopeId)
+    {
+        return $this->getDepartmentList()->getUniqueScopeList()->hasEntity($scopeId);
+    }
+
+    /**
+     * @todo Remove this function, keep no contraint on old DB schema in zmsentities
+     */
     public function getRightsLevel()
     {
         return Helper\RightsLevelManager::getLevel($this->rights);
@@ -95,6 +103,9 @@ class Useraccount extends Schema\Entity
 
     public function hasRights(array $requiredRights)
     {
+        if ($this->isSuperUser()) {
+            return true;
+        }
         foreach ($requiredRights as $required) {
             if ($required instanceof Useraccount\RightsInterface) {
                 if (!$required->validateUseraccount($this)) {
@@ -107,6 +118,9 @@ class Useraccount extends Schema\Entity
         return true;
     }
 
+    /**
+     * @todo Remove this function, keep no contraint on old DB schema in zmsentities
+     */
     public function hasEditAccess(Useraccount $userAccount)
     {
         //get required matching access rights (like superuser, organisation, department, scope) from given useraccount

@@ -37,6 +37,7 @@ class OwnerList extends Base
         foreach ($this as $owner) {
             $owner = clone $owner;
             $owner->organisations = $owner->getOrganisationList()->withAccess($useraccount);
+            $owner->organisations->sortByName();
             if ($owner->hasAccess($useraccount)) {
                 $list[] = $owner;
             }

@@ -15,6 +15,7 @@ class Department extends Schema\Entity implements Useraccount\AccessInterface
             'scopes' => new Collection\ScopeList(),
             'links' => new Collection\LinkList(),
             'dayoff' => new Collection\DayoffList(),
+            'name' => '',
         ];
     }
 

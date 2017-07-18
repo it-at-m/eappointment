@@ -54,9 +54,26 @@ class DepartmentList extends Base implements JsonUnindexed
         $list = new static();
         foreach ($this as $department) {
             if ($department->hasAccess($useraccount)) {
+                if ($useraccount->rights['organisation']) {
+                    return clone $this;
+                }
                 $list[] = clone $department;
             }
         }
         return $list;
+    }
+
+    public function sortByName()
+    {
+        parent::sortByName();
+        foreach ($this as $department) {
+            if (isset($department->clusters) && $department->clusters instanceof ClusterList) {
+                $department->clusters->sortByName();
+            }
+            if (isset($department->scopes) && $department->scopes instanceof ScopeList) {
+                $department->scopes->sortByName();
+            }
+        }
+        return $this;
     }
 }

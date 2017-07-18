@@ -29,4 +29,15 @@ class OrganisationList extends Base
         }
         return $list;
     }
+
+    public function sortByName()
+    {
+        parent::sortByName();
+        foreach ($this as $organisation) {
+            if ($organisation->departments instanceof DepartmentList) {
+                $organisation->departments->sortByName();
+            }
+        }
+        return $this;
+    }
 }

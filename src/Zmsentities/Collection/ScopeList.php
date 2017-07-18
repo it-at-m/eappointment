@@ -62,4 +62,15 @@ class ScopeList extends Base
         });
         return $this;
     }
+
+    public function sortByName()
+    {
+        $this->uasort(function ($a, $b) {
+            return strcmp(
+                Sorter::toSortableString(ucfirst($a->provider['name'])),
+                Sorter::toSortableString(ucfirst($b->provider['name']))
+            );
+        });
+        return $this;
+    }
 }
