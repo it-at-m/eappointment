@@ -4,7 +4,7 @@
 	{% else %}
 	    <div class="aufrufanzeigeplatz">
 	{% endif %}
-	{% if queue.destinationHint %}
+	{% if queue.destinationHint and queue.destination != queue.destinationHint %}
 	<span class="terminkundenanzeige">{{ queue.destinationHint | raw }}</span><br/>
 	{% endif %}
 
