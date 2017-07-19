@@ -115,6 +115,12 @@ class Scope extends Base implements MappingInterface
             '=',
             'scopesms.BehoerdenID'
         );
+        $this->leftJoin(
+            new Alias('email', 'scopemail'),
+            'scopedepartment.BehoerdenID',
+            '=',
+            'scopemail.BehoerdenID'
+        );
     }
 
     //Todo: now() Parameter to enable query cache
@@ -139,6 +145,7 @@ class Scope extends Base implements MappingInterface
             'preferences__client__alternateAppointmentUrl' => 'scope.qtv_url',
             'preferences__client__amendmentActivated' => 'scope.anmerkungPflichtfeld',
             'preferences__client__amendmentLabel' => 'scope.anmerkungLabel',
+            'preferences__client__emailFrom' => 'scopemail.absenderadresse',
             'preferences__client__emailRequired' => 'scope.emailPflichtfeld',
             'preferences__client__telephoneActivated' => 'scope.telefonaktiviert',
             'preferences__client__telephoneRequired' => 'scope.telefonPflichtfeld',
