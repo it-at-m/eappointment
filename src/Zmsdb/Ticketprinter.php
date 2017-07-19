@@ -89,8 +89,8 @@ class Ticketprinter extends Base
         foreach ($ticketprinter->buttons as $key => $button) {
             if ('scope' == $button['type']) {
                 $query = new Scope();
-                $scope = $query->readEntity($button['scope']['id']);
-                if (! $scope) {
+                $scope = $query->readWithWorkstationCount($button['scope']['id'], $now);
+                if (! $scope->hasId()) {
                     throw new Exception\Ticketprinter\UnvalidButtonList();
                 }
                 $ticketprinter->buttons[$key]['scope'] = $scope;
