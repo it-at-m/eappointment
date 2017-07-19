@@ -31,11 +31,6 @@ class TicketprinterByScopeTest extends Base
             ],
             [
                 'function' => 'readGetResult',
-                'url' => '/scope/312/workstationcount/',
-                'response' => $this->readFixture("GET_scope_312.json"),
-            ],
-            [
-                'function' => 'readGetResult',
                 'url' => '/scope/312/department/',
                 'response' => $this->readFixture("GET_department_127.json"),
             ],
