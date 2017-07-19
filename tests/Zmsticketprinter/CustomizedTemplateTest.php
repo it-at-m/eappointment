@@ -31,11 +31,6 @@ class CustomizedTemplateTest extends Base
             ],
             [
                 'function' => 'readGetResult',
-                'url' => '/scope/615/workstationcount/',
-                'response' => $this->readFixture("GET_scope_615.json"),
-            ],
-            [
-                'function' => 'readGetResult',
                 'url' => '/scope/615/department/',
                 'response' => $this->readFixture("GET_department_127.json"),
             ],

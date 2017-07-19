@@ -24,11 +24,10 @@ class TicketprinterByScope extends BaseController
         $ticketprinterHelper = (new Helper\Ticketprinter($args, $request));
         $ticketprinter = $ticketprinterHelper->getEntity();
         $scope = $ticketprinter->getScopeList()->getFirst();
-        $scope = \App::$http->readGetResult('/scope/'. $scope->id . '/workstationcount/')->getEntity();
+
         $department = \App::$http->readGetResult('/scope/'. $scope->id . '/department/')->getEntity();
         $queueList = \App::$http->readGetResult('/scope/'. $scope->id . '/queue/')->getCollection();
         $estimatedData = ($queueList) ? $scope->getWaitingTimeFromQueueList($queueList, \App::$now) : null;
-
         $organisation = $ticketprinterHelper::$organisation;
 
         $template = Helper\TemplateFinder::getCustomizedTemplate($ticketprinter, $organisation);
