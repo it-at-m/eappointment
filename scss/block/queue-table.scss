@@ -46,6 +46,21 @@ $queueMissedColor:              $red !default;
             padding-right:      0;
             width:              0.4em;
         }
+
+        .queue-table-amendment-time {
+            font-size: 0.8em;
+            color: #999;
+            &:before {
+                content: '(';
+            }
+            &:after {
+                content: ')';
+            }
+            position: relative;
+            top: 1.5em;
+            margin-top: -1.5em;
+        }
+
         tr.past {
             .queue-status {
                 background-color:       $queuePastColor;
