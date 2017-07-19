@@ -201,6 +201,11 @@
                             "description": "true if an amendment is activated",
                             "default": false
                         },
+                        "emailFrom": {
+                            "type": "string",
+                            "description": "Mail address for sending mails to clients",
+                            "default": ""
+                        },
                         "emailRequired": {
                             "type": [
                                 "boolean",
