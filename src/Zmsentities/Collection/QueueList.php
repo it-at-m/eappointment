@@ -14,6 +14,9 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
 
     public function withEstimatedWaitingTime($processTimeAverage, $workstationCount, \DateTimeInterface $dateTime)
     {
+        if ($processTimeAverage <= 0) {
+            throw new \Exception("QueueList::withEstimatedWaitingTime() requires processTimeAverage");
+        }
         $queueWithWaitingTime = new self();
         $listWithAppointment = $this->withAppointment()->withSortedArrival()->getArrayCopy();
         $listNoAppointment = $this->withOutAppointment()->withSortedArrival()->getArrayCopy();
