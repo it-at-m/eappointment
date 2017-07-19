@@ -270,7 +270,9 @@ class Scope extends Base
             ->addConditionScopeId($scopeId)
             ->addResolvedReferences($resolveReferences)
             ->addSelectWorkstationCount($dateTime);
-        return $this->fetchOne($query, new Entity());
+        $scope = $this->fetchOne($query, new Entity());
+        $scope = $this->readResolvedReferences($scope, $resolveReferences);
+        return $scope;
     }
 
     public function readQueueListWithWaitingTime($scope, $dateTime, $resolveReferences = 0)
