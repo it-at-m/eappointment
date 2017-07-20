@@ -27,6 +27,12 @@ class Profiler
         return $profile;
     }
 
+    public static function addMemoryPeak($message = 'Mem')
+    {
+        $memoryKb = round(memory_get_peak_usage() / 1024, 0);
+        static::add("$message " . $memoryKb . "kb");
+    }
+
     public static function getList()
     {
         return implode(";", static::$profileList);
@@ -45,7 +51,7 @@ class Profiler
     {
         return round(($this->instanceMicrotime - static::$startupMicrotime), 3);
     }
-    
+
     public function getMilliSeconds()
     {
         return $this->getSeconds() * 1000;
