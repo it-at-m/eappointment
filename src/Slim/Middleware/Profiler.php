@@ -21,6 +21,7 @@ class Profiler
         }
         //\BO\Slim\Profiler::add("Response");
         if (\App::DEBUG) {
+            \BO\Slim\Profiler::addMemoryPeak();
             $response = $response->withAddedHeader('X-Profiling', \BO\Slim\Profiler::getList());
         }
         return $response;
