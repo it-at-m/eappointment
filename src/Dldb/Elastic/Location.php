@@ -214,4 +214,48 @@ class Location extends Base
             ->fromAuthority()
             ->fromLocationResults($resultList);
     }
+
+    public function fetchGeoJson($category = null)
+    {
+
+        $query = new \Elastica\Query();
+        $query->setSource(['id', 'name', 'address.*', 'geo.*', 'meta.*', 'category.*']);
+
+        $filter =  new \Elastica\Query\MatchAll();
+
+        if (!empty($category)) {
+            $filter = new \Elastica\Query\BoolQuery();
+            $termFilter = new \Elastica\Query\Term(['category.identifier' => $category]);
+            $filter->addMust($termFilter);
+            $geoJson['category'] = $category;
+        }
+        $query->setQuery($filter);
+        $query->addSort(['office' => ['order' => 'asc']]);
+        $query->addSort(['name' => ['order' => 'asc']]);
+        $resultList = $this->access()
+            ->getIndex()
+            ->getType('location')
+            ->search($query, 1000)
+        ;
+        
+        $geoJson = [];
+
+        foreach ($resultList as $result) {
+            $location = new Entity($result->getData());
+            if (empty($location['category']['identifier'])) {
+                continue;
+            }
+            if (!isset($geoJson[$location['category']['identifier']])) {
+                $geoJson[$location['category']['identifier']] = [
+                    'name' => $location['category']['name'],
+                    'type' => 'cluster',
+                    'active' => !empty($category) && $category == $location['category']['identifier'] ? TRUE : (!empty($category) && $category != $location['category']['identifier'] ? FALSE : TRUE),
+                    'data' => ['type' => 'FeatureCollection', 'features' => []]
+                ];
+            }
+            $geoJson[$location['category']['identifier']]['data']['features'][] = $location->getGeoJson();
+        }
+
+        return $geoJson;
+    }
 }
