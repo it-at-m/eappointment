@@ -26,7 +26,8 @@ class Authority extends Base
         $query = \Elastica\Query::create($boolquery);
         $limit = 1000;
         $filter = null;
-        if (count($servicelist)) {
+
+        if ($servicelist && count($servicelist)) {
             $filter = new \Elastica\Filter\Terms('services.service', $servicelist);
             $filter->setExecution('and');
             $query->setPostFilter($filter);

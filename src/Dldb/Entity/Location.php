@@ -103,4 +103,27 @@ class Location extends Base
             return count($serviceList) > 0 && count($servicecount) == count($serviceList);
         }
     }
+
+    /**
+     * return geoJson
+     *
+     *
+     * @return string
+     */
+    public function getGeoJson() 
+    {
+        return [
+            'type' => 'Feature',
+            'id' => $this['id'],
+            'properties' => [
+                'name' => $this['name'],
+                'description' => '<p><strong>' . $this['name'] . '</strong></p><p>' . $this['address']['street'] . ' ' . $this['address']['house_number'] . ', ' . $this['address']['postal_code'] . ' ' . $this['address']['city'] . '<br /><a href="' . $this['meta']['url'] . '" class="gmap-marker-link">Zum Standort</a>',
+                'categoryIdentifier' => $this['category']['identifier'],
+            ],
+            'geometry' => [
+                'type' => 'Point',
+                'coordinates' => [$this['geo']['lon'], $this['geo']['lat']],
+            ]
+        ];
+    }
 }
