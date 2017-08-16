@@ -15,6 +15,9 @@ export const getStateFromProps = props => {
 
 export const mergeAvailabilityListIntoState = (state, list) => list.reduce(updateAvailabilityInState, state)
 
+/**
+ * Compare two availabilities if they are the same using ID
+ */
 const equalIds = (a, b) => {
     return (a.id && b.id && a.id === b.id) || (a.tempId && b.tempId && a.tempId === b.tempId)
 }

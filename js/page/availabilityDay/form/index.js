@@ -51,9 +51,9 @@ const getFormValuesFromData = data => {
 
     const repeat = (repeat => {
         if (repeat.afterWeeks > 0) {
-            return repeat.afterWeeks
+            return -repeat.afterWeeks
         } else if (repeat.weekOfMonth > 0) {
-            return -repeat.weekOfMonth
+            return repeat.weekOfMonth
         } else {
             return 0
         }
@@ -92,8 +92,8 @@ const getDataValuesFromForm = (form, scope) => {
             return Object.assign({}, carry, {[current]: 1})
         }, {}),
         repeat: {
-            weekOfMonth: form.repeat < 0 ? -form.repeat : 0,
-            afterWeeks: form.repeat > 0 ? form.repeat : 0
+            weekOfMonth: form.repeat > 0 ? form.repeat : 0,
+            afterWeeks: form.repeat < 0 ? -form.repeat : 0
         }
     })
 }
@@ -150,6 +150,18 @@ class AvailabilityForm extends Component {
             }
         }
 
+        const onPublish = (ev) => {
+            ev.preventDefault()
+            const validationResult = validate(data)
+
+            if (!data.__modified || validationResult.valid) {
+                this.props.onPublish(getDataValuesFromForm(data, this.props.data.scope))
+            } else {
+                console.log('errors', validationResult.errors)
+                this.setState({ errors: validationResult.errors })
+            }
+        }
+
         const onDelete = ev => {
             ev.preventDefault()
             this.props.onDelete(getDataValuesFromForm(data, this.props.data.scope))
@@ -172,7 +184,7 @@ class AvailabilityForm extends Component {
 
         return <Board title={this.props.title || "Öffnungszeit bearbeiten"}
                    headerRight={<HeaderButtons {...{ onCopy, onException, onEditInFuture}} />}
-                   body={renderBody(data, errors, onChange, onSave, onDelete)}
+                   body={renderBody(data, errors, onChange, onSave, onPublish, onDelete)}
                    footer=""
                    className="availability-form" />
     }
@@ -181,6 +193,7 @@ class AvailabilityForm extends Component {
 AvailabilityForm.defaultProps = {
     data: {},
     onSave: () => {},
+    onPublish: () => {},
     onChange: () => {},
     onDelete: () => {},
     onCopy: () => {},
@@ -192,6 +205,7 @@ AvailabilityForm.propTypes = {
     data: PropTypes.object,
     title: PropTypes.string,
     onSave: PropTypes.func,
+    onPublish: PropTypes.func,
     onDelete: PropTypes.func,
     onChange: PropTypes.func,
     onCopy: PropTypes.func,

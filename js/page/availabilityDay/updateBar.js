@@ -21,7 +21,7 @@ const UpdateBar = (props) => {
             </div>
             <div className="lineup_actor lineup_actor--right">
                 <p>
-                    <button className="button-save" onClick={onSave}>Änderungen speichern</button>
+                    <button className="button-save" onClick={onSave}>Alle Änderungen aktivieren</button>
                 </p>
             </div>
         </div>

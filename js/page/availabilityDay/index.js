@@ -55,14 +55,24 @@ class AvailabilityPage extends Component {
     }
 
     onUpdateAvailability(availability) {
+        let state = {};
         if (availability.__modified) {
-            this.setState(Object.assign({}, updateAvailabilityInState(this.state, availability), {
+            state = Object.assign(state, updateAvailabilityInState(this.state, availability), {
                 selectedAvailability: null
-            }))
+            })
         } else {
-            this.setState({ selectedAvailability: null })
+            state = { selectedAvailability: null }
         }
+        this.setState(state);
         $('body').scrollTop(0);
+        return state;
+    }
+
+    onPublishAvailability(availability) {
+        console.log("Add availability to state");
+        const state = this.onUpdateAvailability(availability);
+        console.log("Now save state");
+        this.onSaveUpdates(state);
     }
 
     refreshData() {
@@ -88,9 +98,10 @@ class AvailabilityPage extends Component {
         })
     }
 
-    onSaveUpdates() {
+    onSaveUpdates(stateParam) {
 
-        const sendData = this.state.availabilitylist.map(availability => {
+        const state = stateParam ? stateParam : this.state
+        const sendData = state.availabilitylist.map(availability => {
             const sendAvailability = Object.assign({}, availability)
             if (availability.tempId) {
                 delete sendAvailability.tempId
@@ -288,6 +299,7 @@ class AvailabilityPage extends Component {
             return <AvailabilityForm data={this.state.selectedAvailability}
                        title={this.state.formTitle}
                        onSave={this.onUpdateAvailability.bind(this)}
+                       onPublish={this.onPublishAvailability.bind(this)}
                        onDelete={this.onDeleteAvailability.bind(this)}
                        onCopy={this.onCopyAvailability.bind(this)}
                        onException={this.onCreateExceptionForAvailability.bind(this)}
