@@ -5,7 +5,7 @@ import Errors from './errors'
 const { Label, FormGroup, Controls, Description } = Inputs
 import {range} from '../../../lib/utils'
 
-const renderBody = (data, errors, onChange, onSave, onDelete) => {
+const renderBody = (data, errors, onChange, onSave, onPublish, onDelete) => {
     return (
         <div>
             <Errors {...{ errors }}/>
@@ -15,7 +15,9 @@ const renderBody = (data, errors, onChange, onSave, onDelete) => {
                         <Label>Anmerkung</Label>
                         <Controls>
                             <Inputs.Text name="description" value={data.description} {...{onChange}} />
-                            <Description>(optionale Angabe zur Kennzeichnung des Termins)</Description>
+                            <Description>(optionale Angabe zur Kennzeichnung des Termins)
+                                {data.id ? " Die ID der Öffnungszeit ist " + data.id : " Die Öffnungszeit hat noch keine ID"}
+                            </Description>
                         </Controls>
                     </FormGroup>
                     <FormGroup>
@@ -48,7 +50,7 @@ const renderBody = (data, errors, onChange, onSave, onDelete) => {
                                     {value: "2", name: "jede 2. Woche im Monat"},
                                     {value: "3", name: "jede 3. Woche im Monat"},
                                     {value: "4", name: "jede 4. Woche im Monat"},
-                                    {value: "5", name: "jede 5. Woche im Monat"}
+                                    {value: "5", name: "jede letzte Woche im Monat"}
                                 ]} />
                         </Controls>
                     </FormGroup>
@@ -130,7 +132,7 @@ const renderBody = (data, errors, onChange, onSave, onDelete) => {
                                     {...{ onChange }}
                                 />
                                 Tage im voraus
-                                <Description>(0 = Einstellungen vom Standort übernehmen)</Description>
+                                <Description>(Keine Eingabe = Einstellungen vom Standort übernehmen)</Description>
                             </Controls>
                         </FormGroup>
                 </fieldset>
@@ -185,10 +187,15 @@ const renderBody = (data, errors, onChange, onSave, onDelete) => {
                 <div className="form-actions">
                     <button className="button-delete" type="delete" value="delete" onClick={onDelete}>Löschen</button>
                     <div className="right">
-                        <button className={data.__modified ? "button-save" : "btn"}
+                        <button className={data.__modified ? "button-new btn--b3igicon" : "btn"}
                             type="save"
                             value="save"
-                            onClick={onSave}>{data.__modified? "Änderungen hinzufügen" : "Schließen"}</button>
+                            onClick={onSave}>{data.__modified? "+ merken und später aktivieren" : "Schließen"}</button>
+                        {data.__modified ?
+                        <button className="button-save"
+                            type="save"
+                            value="publish"
+                            onClick={onPublish}>Alle Änderungen aktivieren</button> : null }
                     </div>
                 </div>
             </form>
