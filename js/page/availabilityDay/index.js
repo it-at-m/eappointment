@@ -69,9 +69,7 @@ class AvailabilityPage extends Component {
     }
 
     onPublishAvailability(availability) {
-        console.log("Add availability to state");
         const state = this.onUpdateAvailability(availability);
-        console.log("Now save state");
         this.onSaveUpdates(state);
     }
 
@@ -321,8 +319,6 @@ class AvailabilityPage extends Component {
     }
 
     render() {
-        console.log('AvailabilityPage Props', this.props)
-        console.log('AvailabilityPage State', this.state)
         return (
             <PageLayout
                 timeTable={this.renderTimeTable()}

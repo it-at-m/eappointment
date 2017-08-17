@@ -21,7 +21,9 @@ const renderConflicts = (conflicts, onSelect) => {
 
             const onClick = ev => {
                 ev.preventDefault()
-                onSelect(conflict.availability.id)
+                const appointment = conflict.appointments[0]
+                const availability = appointment.availability || {}
+                onSelect(availability.id)
             }
 
             return (
