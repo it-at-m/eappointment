@@ -7,8 +7,8 @@ export * from './date'
 
 const noOp = () => {}
 
-export const Text = ({name, value, onChange = noOp, attributes = {}}) => {
-    const widthClassName = attributes.width ? `input--size-${attributes.width}` : ''
+export const Text = ({name, value, onChange = noOp, width = false, attributes = {}}) => {
+    const widthClassName = width ? `input--size-${width}` : ''
     const className = `form-input ${attributes.className || ''} ${widthClassName}`
 
     const onInput = (ev) => onChange(name, ev.target.value)

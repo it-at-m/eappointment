@@ -96,20 +96,14 @@ const renderBody = (data, errors, onChange, onSave, onPublish, onDelete) => {
                             <Controls>
                                 <Inputs.Text name="slotTimeInMinutes"
                                     value={data.slotTimeInMinutes}
+                                    width="1"
                                     attributes={{maxLength: 3}}
-                                    {...{ onChange }}/> min.
-                                <Description>(Abstand zweier aufeinander folgender Termine)</Description>
-                            </Controls>
-                        </FormGroup>
-
-                        <FormGroup>
-                            <Label></Label>
-                            <Controls>
+                                    {...{ onChange }}/>
+                                Minuten Abstand zweier aufeinander folgender Termine
                                 <Label>
-                                    <Inputs.Checkbox name="multipleSlotAllowed"
-                                        checked={Boolean(parseInt(data.multipleSlotAllowed))} {...{ onChange }} />
-                            Die Dienstleistungen dürfen mehr als einen Zeitschlitz beanspruchen
-                                    <Description>(wie in der Dienstleistungsdatenbank konfiguriert)</Description>
+                                    Die Dienstleistungen dürfen mehr als einen Zeitschlitz beanspruchen:&nbsp;
+                                    <Inputs.Checkbox name="multipleSlotsAllowed"
+                                        checked={true == data.multipleSlotsAllowed} {...{ onChange }} />
                                 </Label>
                             </Controls>
                         </FormGroup>
@@ -117,20 +111,20 @@ const renderBody = (data, errors, onChange, onSave, onPublish, onDelete) => {
                         <FormGroup>
                             <Label>Buchbar:</Label>
                             <Controls>
-                                von
+                                von&nbsp;
                                 <Inputs.Text name="open_from"
                                     width="1"
                                     value={data.open_from}
                                     attributes={{placeholder: data.scope.preferences.appointment.startInDaysDefault}}
                                     {...{ onChange }}
                                 />
-                                bis
+                                &nbsp;bis&nbsp;
                                 <Inputs.Text name="open_to"
                                     width="1"
                                     value={data.open_to}
                                     attributes={{placeholder: data.scope.preferences.appointment.endInDaysDefault}}
                                     {...{ onChange }}
-                                />
+                                />&nbsp;
                                 Tage im voraus
                                 <Description>(Keine Eingabe = Einstellungen vom Standort übernehmen)</Description>
                             </Controls>
