@@ -142,10 +142,15 @@ const renderBody = (data, errors, onChange, onSave, onPublish, onDelete) => {
                     <FormGroup>
                         <Label>Insgesamt</Label>
                         <Controls>
-                            <Inputs.Text name="workstationCount_intern"
+                            <Inputs.Select name="workstationCount_intern"
                                 value={data.workstationCount_intern}
                                 {...{ onChange }}
-                                attributes={{maxLength: "2", width: "1"}} />
+                                options={range(0, 50).map(n => {
+                                        return {
+                                            value: `${n}`,
+                                            name: `${n}`
+                                        }
+                                    })}/>
                         </Controls>
                     </FormGroup>
 

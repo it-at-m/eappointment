@@ -23,7 +23,7 @@ export const Select = ({name, options = [], groups = [], value, onChange = noOp,
     const onSelect = ev => onChange(name, ev.target.value)
 
     return (
-        <select onChange={onSelect} {...{ name}} defaultValue={value} {...attributes}>
+        <select onChange={onSelect} {...{ name}} value={value} {...attributes}>
             {renderGroups(groups)}
             {renderOptions(options)}
         </select>

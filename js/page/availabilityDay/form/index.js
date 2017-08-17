@@ -41,11 +41,11 @@ const getFirstLevelValues = data => {
 const getFormValuesFromData = data => {
     const workstations = Object.assign({}, data.workstationCount)
 
-    if (workstations.callcenter > workstations.intern) {
+    if (parseInt(workstations.callcenter, 10) > parseInt(workstations.intern, 10)) {
         workstations.callcenter = workstations.intern
     }
 
-    if (workstations.public > workstations.callcenter) {
+    if (parseInt(workstations.public, 10) > parseInt(workstations.callcenter, 10)) {
         workstations.public = workstations.callcenter
     }
 
@@ -99,7 +99,14 @@ const getDataValuesFromForm = (form, scope) => {
 }
 
 const cleanupFormData = data => {
+    let internCount = parseInt(data.workstationCount_intern, 10);
+    let callcenterCount = parseInt(data.workstationCount_callcenter, 10);
+    callcenterCount = (callcenterCount > internCount) ? internCount : callcenterCount;
+    let publicCount = parseInt(data.workstationCount_public, 10);
+    publicCount = (publicCount > callcenterCount) ? callcenterCount : publicCount;
     return Object.assign({}, data, {
+        workstationCount_callcenter: callcenterCount,
+        workstationCount_public: publicCount,
         open_from: (data.open_from === "0" || data.open_from === data.openFromDefault) ? "" : data.open_from,
         open_to: (data.open_to === "0" || data.open_to === data.openToDefault) ? "" : data.open_to
     })
