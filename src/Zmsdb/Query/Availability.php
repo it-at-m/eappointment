@@ -180,10 +180,10 @@ class Availability extends Base implements MappingInterface
             $data['Terminanfangszeit'] = $entity->startTime;
             $data['Terminendzeit'] = $entity->endTime;
         }
-        $data['allexWochen'] = (isset($entity->repeat['afterWeeks'])) ? 1 : 0;
-        $data['jedexteWoche'] = (isset($entity->repeat['weekOfMonth'])) ? 1 : 0;
+        $data['allexWochen'] = $entity->repeat['afterWeeks'];
+        $data['jedexteWoche'] = $entity->repeat['weekOfMonth'];
         $data['Timeslot'] = gmdate("H:i", $entity->slotTimeInMinutes * 60);
-        ;
+        $data['erlaubemehrfachslots'] = $entity->multipleSlotsAllowed ? 1 : 0;
         $wochentagBinaryCoded = 0;
         $binaryCodes = [
             'sunday' => 1,
