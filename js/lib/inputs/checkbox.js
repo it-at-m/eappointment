@@ -6,7 +6,7 @@ const noOp = () => {}
 export const Checkbox = ({name, value, checked = false, onChange = noOp, attributes = {}}) => {
     const onInput = () => {
         //ev.preventDefault()
-        onChange(!checked)
+        onChange(name, !checked)
     }
 
     if (checked) {
