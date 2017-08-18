@@ -1,5 +1,5 @@
+/* global require */
 var gulp = require('gulp');
-var fs   = require('fs');
 var gutil = require('gulp-util');
 var sourcemaps = require('gulp-sourcemaps');
 var uglify = require('gulp-uglify');
@@ -9,17 +9,24 @@ var buffer = require('vinyl-buffer');
 var notifier = require('node-notifier');
 var crypto = require('crypto');
 var bundler = require('../browserify.js');
+var vendorlist = require('../vendorlist.js');
+var eventstream = require('event-stream');
+var rename = require('gulp-rename');
 
-gulp.task('js', ['lint'], function (cb) {
-    bundler.bundle()
-           .on('error', function (message) {
-               gutil.log('[browserify] ' +  gutil.colors.red(message));
-               notifier.notify({
-                   "title": "zmsbot-Build-Error",
-                   "message" : "Error: " + message
-               });
-           })
-           .pipe(source('index.js'))
+gulp.task('js', ['lint'], function () {
+    var streams = ['./js/index.js', './js/reactcomponents.js'].map(function(filename) {
+        return bundler(filename)
+            .external(vendorlist)
+            .bundle()
+            .on('error', function (message) {
+                gutil.log('[browserify] ' +  gutil.colors.red(message));
+                notifier.notify({
+                    "title": "zmsbot-Build-Error",
+                    "message" : "Error: " + message
+                });
+            })
+           .pipe(source(filename))
+           .pipe(rename({dirname:''}))
            .pipe(buffer())
            .pipe(plumber())
            .pipe(sourcemaps.init({
@@ -38,5 +45,7 @@ gulp.task('js', ['lint'], function (cb) {
                'debug': true
            }))
            .pipe(gulp.dest('./public/_js/'))
-           .on('end', cb);
+           //.on('end', cb)
+    })
+    return eventstream.merge.apply(null, streams)
 });
