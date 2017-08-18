@@ -14,9 +14,9 @@ import 'moment/locale/de';
 import FormView from "./element/form";
 import EmergencyView from './block/emergency'
 import DepartmentLinksView from './block/department/links'
-import DepartmentDaysOffView from './block/department/daysOff'
-import TicketPrinterConfigView from './block/ticketprinter/config'
-import CallDisplayConfigView from './block/calldisplay/config'
+//import DepartmentDaysOffView from './block/department/daysOff'
+//import TicketPrinterConfigView from './block/ticketprinter/config'
+//import CallDisplayConfigView from './block/calldisplay/config'
 import CounterView from './page/counter'
 import WorkstationView from './page/workstation'
 import PickupView from './page/pickup'
@@ -25,11 +25,11 @@ import StatisticView from './page/statistic'
 import PickupKeyboardHandheldView from "./block/pickup/keyboard-handheld"
 
 import ScopeSelectView from './block/scopeselectform'
-import AvailabilityDayPage from './page/availabilityDay'
+//import AvailabilityDayPage from './page/availabilityDay'
 import WeekCalendarPage from './page/weekCalendar'
 import printScopeAppointmentsByDay from './page/scopeAppointmentsByDay/print'
 import printWaitingNumber from './page/waitingnumber/print'
-import bindReact from './lib/bindReact.js'
+//import bindReact from './lib/bindReact.js'
 import { getDataAttributes } from './lib/utils'
 
 import preventFormResubmit from './element/form/preventFormResubmit'
@@ -98,7 +98,7 @@ console.log("Welcome to the ZMS admin interface...");
 
 
 // hook up react components
-bindReact('.availabilityDayRoot', AvailabilityDayPage)
-bindReact('[data-department-daysoff]', DepartmentDaysOffView)
-bindReact('[data-ticketprinter-config]', TicketPrinterConfigView)
-bindReact('[data-calldisplay-config]', CallDisplayConfigView)
+//bindReact('.availabilityDayRoot', AvailabilityDayPage)
+//bindReact('[data-department-daysoff]', DepartmentDaysOffView)
+//bindReact('[data-ticketprinter-config]', TicketPrinterConfigView)
+//bindReact('[data-calldisplay-config]', CallDisplayConfigView)

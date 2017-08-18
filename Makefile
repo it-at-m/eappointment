@@ -7,7 +7,7 @@ help:
 
 now: # Dummy target
 
-build: css js # Build javascript and css
+build: css vendorjs js # Build javascript and css
 
 css: now
 	node_modules/.bin/gulp scss
@@ -17,6 +17,9 @@ css-print: now
 
 js: now
 	node_modules/.bin/gulp js
+
+vendorjs: now
+	node_modules/.bin/gulp vendor
 
 fix: # run code fixing
 	php vendor/bin/phpcbf --standard=psr2 src/
