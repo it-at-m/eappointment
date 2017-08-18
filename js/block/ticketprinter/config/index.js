@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react'
 
 import * as Inputs from '../../../lib/inputs'
-const { Description, FormGroup, Label, Controls } = Inputs
+const { Description, FormGroup, Label, Controls, Select } = Inputs
 
 const readPropsCluster = cluster => {
     const { name, id } = cluster
@@ -43,6 +43,7 @@ class TicketPrinterConfigView extends Component {
             }),
             generatedUrl: "",
             homeUrl: "",
+            template: "default",
             ticketPrinterName: ""
         }
     }
@@ -63,6 +64,10 @@ class TicketPrinterConfigView extends Component {
 
         if (this.state.homeUrl) {
             parameters.push(`ticketprinter[home]=${this.state.homeUrl}`)
+        }
+
+        if (this.state.template !== 'default') {
+            parameters.push(`template=${this.state.template}`)
         }
 
         return `${baseUrl}?${parameters.join('&')}`
@@ -172,6 +177,12 @@ class TicketPrinterConfigView extends Component {
             this.setState({homeUrl: value})
         }
 
+        const onTemplateStatusChange = (_, value) => {
+            this.setState({
+                template: value
+            })
+        }
+
         const generatedUrl = this.buildUrl()
 
         return (
@@ -189,6 +200,20 @@ class TicketPrinterConfigView extends Component {
                         <Controls>
                             <Inputs.Text onChange={onHomeChange}/>
                             <Description>Tragen Sie eine alternative URL ein, wenn nach der Ausgabe einer Wartenummer eine alternative Startseite aufgerufen werden soll</Description>
+                        </Controls>
+                    </FormGroup>
+                    <FormGroup>
+                        <Label>Layout</Label>
+                        <Controls>
+                            <Select
+                                options={[
+                                    {name: 'Standard', value: 'default'},
+                                    {name: 'Mit wartenden Kunden', value: 'wait'},
+                                    {name: 'Mit voraussichtlicher Wartezeit', value: 'time'},
+                                    {name: 'Mit wartenden Kunden und voraussichtlicher Wartezeit', value: 'timewait'}
+                                ]}
+                                value={this.state.template}
+                                onChange={onTemplateStatusChange} />
                         </Controls>
                     </FormGroup>
                     <FormGroup>
