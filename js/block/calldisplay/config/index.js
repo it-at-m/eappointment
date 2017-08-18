@@ -28,7 +28,7 @@ class CallDisplayConfigView extends Component {
     constructor(props) {
         super(props)
 
-        console.log('CallDisplayConfigView::constructor', props)
+        //console.log('CallDisplayConfigView::constructor', props)
 
         this.state = {
             selectedItems: [],
@@ -41,7 +41,8 @@ class CallDisplayConfigView extends Component {
                     scopes: scopes.map(readPropsScope)
                 }
             }),
-            queueStatus: 'called',
+            queueStatus: 'all',
+            template: 'default',
             generatedUrl: ""
         }
     }
@@ -74,6 +75,10 @@ class CallDisplayConfigView extends Component {
 
         if (this.state.queueStatus !== 'all') {
             parameters.push(`queue[status]=${this.state.queueStatus}`)
+        }
+
+        if (this.state.template !== 'default') {
+            parameters.push(`template=${this.state.template}`)
         }
 
         return `${baseUrl}?${parameters.join('&')}`
@@ -170,6 +175,12 @@ class CallDisplayConfigView extends Component {
             })
         }
 
+        const onTemplateStatusChange = (_, value) => {
+            this.setState({
+                template: value
+            })
+        }
+
         return (
             <form className="form-group calldisplay-config">
                 {this.state.departments.map(this.renderDepartment.bind(this))}
@@ -181,6 +192,21 @@ class CallDisplayConfigView extends Component {
                                 options={[{name: 'Alle', value: 'all'}, {name: "Nur Abholer", value: 'pickup'}, {name: "Spontan- und Terminkunden", value: 'called'}]}
                                 value={this.state.queueStatus}
                                 onChange={onQueueStatusChange} />
+                        </Controls>
+                    </FormGroup>
+                    <FormGroup>
+                        <Label>Layout</Label>
+                        <Controls>
+                            <Select
+                                options={[
+                                    {name: 'Uhrzeit, 5-10 Aufrufe', value: 'default'},
+                                    {name: 'Uhrzeit, 5 Aufrufe', value: 'clock5'},
+                                    {name: 'Uhrzeit, Anzahl Wartende, 5-10 Aufrufe', value: 'clocknr'},
+                                    {name: 'Uhrzeit, Anzahl Wartende, Wartezeit, 5-10 Aufrufe', value: 'clocknrwait'},
+                                    {name: '15 Aufrufe', value: 'raw15'}
+                                ]}
+                                value={this.state.template}
+                                onChange={onTemplateStatusChange} />
                         </Controls>
                     </FormGroup>
                     <FormGroup>
