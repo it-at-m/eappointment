@@ -69,20 +69,20 @@ class TemplateFinder
             } elseif ($ticketprinter->getClusterList()->getFirst()) {
                 $entity = $ticketprinter->getClusterList()->getFirst();
             }
-            $template = self::getExistingTemplate($entity);
+            $template = $this->getExistingTemplate($entity);
         }
         //look for customized template in clusterlist, overwrite template before
         foreach ($ticketprinter->getClusterList() as $entity) {
-            if (self::getExistingTemplate($entity)) {
-                $template = self::getExistingTemplate($entity);
+            if ($this->getExistingTemplate($entity)) {
+                $template = $this->getExistingTemplate($entity);
                 break;
             }
         }
         //look for customized template in departmentlist, overwrite template before
         foreach ($organisation->departments as $departmentData) {
             $entity = new \BO\Zmsentities\Department($departmentData);
-            if (self::getExistingTemplate($entity)) {
-                $template = self::getExistingTemplate($entity);
+            if ($this->getExistingTemplate($entity)) {
+                $template = $this->getExistingTemplate($entity);
                 break;
             }
         }
