@@ -341,12 +341,16 @@
     overflow: auto; }
   .ticketprinterhash {
     position: absolute;
-    left: 36px;
-    top: 740px;
+    left: 1010px;
+    top: 720px;
+    width: 500px;
     z-index: 0;
     color: #a5bad6;
+    color: white;
     font-size: 0.4em;
-    font-weight: normal; }
+    font-weight: normal;
+    transform: rotate(270deg);
+    transform-origin: left; }
   .wartenummern .smshinweis {
     left: 160px;
     position: absolute;

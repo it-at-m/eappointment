@@ -6,21 +6,18 @@
 {% use "block/content/IntroText.twig" %}
 
 {% block pageid %}index{% endblock %}
+{% block pagetype %}customized{% endblock %}
 {% block content %}
 
 	{% if buttonDisplay == "button_single" %}
-    	{% if waitingClients >= 0 %}
-    	<div class="werbeblock_oben">
-    		{{ block("estimatedWaitingClients") }}
-    		{{ block("estimatedWaitingTime") }}
-    	</div>
-    	{% endif %}
-	    {% set buttonLabelPrefix = "Wartenummer für " %}
+	<div class="werbeblock_oben">
+	</div>
+	{% set buttonLabelPrefix = "Wartenummer für " %}
 	{% else %}
-	    {{ block("IntroMultiButtonText") }}
+	{{ block("IntroMultiButtonText") }}
 	{% endif %}
 
-	{{ block(buttonDisplay) }}
+    {{ block(buttonDisplay) }}
 
 	{% if
 	    waitingTime > (scope.preferences.ticketprinter.notificationsDelay)|round() and
@@ -30,3 +27,5 @@
 	{{ block("button_append_notification") }}
 	{% endif %}
 {% endblock %}
+
+

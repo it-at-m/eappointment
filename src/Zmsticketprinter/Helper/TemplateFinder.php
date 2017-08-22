@@ -10,16 +10,55 @@ namespace BO\Zmsticketprinter\Helper;
 
 class TemplateFinder
 {
-    const DEFAULT_TEMPLATE = '/page/buttonDisplay_default.twig';
+    protected $defaultTemplate;
+    protected $subPath;
 
-    const SUBPATH = '/page/customized';
+    protected $template;
+
+    public function __construct($defaultTemplate = "default", $subPath = '/page/customized')
+    {
+        $this->subPath = $subPath;
+        $this->template = $subPath . '/' . $defaultTemplate . '.twig';
+        if ($this->isTemplateReadable($this->template)) {
+            $this->defaultTemplate = $defaultTemplate;
+        } else {
+            throw new \BO\Zmsticketprinter\Exception\TemplateNotFound("Could not find template $this->template");
+        }
+    }
+
+    public function getTemplate()
+    {
+        return $this->template;
+    }
 
     /**
      * get a customized Template if it exists, otherwise return default
      * department preferred before cluster
      *
      **/
-    public static function getCustomizedTemplate($ticketprinter, $organisation)
+    public function setCustomizedTemplate($ticketprinter, $organisation)
+    {
+        $template = null;
+        if ($this->defaultTemplate == 'default') {
+            $template = $this->getTemplateBySettings($ticketprinter, $organisation);
+        }
+        $this->template = ($template) ? $template : $this->template;
+        return $this;
+    }
+
+    public function getButtonTemplateType($ticketprinter)
+    {
+        if (1 == count($ticketprinter->buttons)) {
+            $buttonDisplay = 'button_single';
+        } elseif (2 == count($ticketprinter->buttons)) {
+            $buttonDisplay = 'button_multi_deep';
+        } else {
+            $buttonDisplay = 'button_multi';
+        }
+        return $buttonDisplay;
+    }
+
+    protected function getTemplateBySettings($ticketprinter, $organisation)
     {
         $template = null;
         //look for customized templates by single scope or single cluster
@@ -47,38 +86,28 @@ class TemplateFinder
                 break;
             }
         }
-        return ($template) ? $template : self::DEFAULT_TEMPLATE;
+        return $template;
     }
 
-    public static function getButtonTemplateType($ticketprinter)
+    protected function getExistingTemplate(\BO\Zmsentities\Schema\Entity $entity)
     {
-        if (1 == count($ticketprinter->buttons)) {
-            $buttonDisplay = 'button_single';
-        } elseif (2 == count($ticketprinter->buttons)) {
-            $buttonDisplay = 'button_multi_deep';
-        } else {
-            $buttonDisplay = 'button_multi';
-        }
-        return $buttonDisplay;
-    }
-
-    protected static function getExistingTemplate(\BO\Zmsentities\Schema\Entity $entity)
-    {
-        if ($entity->hasId() &&
-            file_exists(
-                self::getTemplatePath(). '/buttonDisplay_'. $entity->getEntityName() .'_'. $entity->id .'.twig'
-            )
-        ) {
-            return self::SUBPATH .'/buttonDisplay_'. $entity->getEntityName() .'_'. $entity->id .'.twig';
+        $path = $this->subPath .'/buttonDisplay_'. $entity->getEntityName() .'_'. $entity->id .'.twig';
+        if ($entity->hasId() && $this->isTemplateReadable($path)) {
+            return $path;
         }
         return null;
+    }
+
+    protected function isTemplateReadable($path)
+    {
+        return is_readable($this->getTemplatePath() . $path);
     }
 
     /**
      * @todo check against ISO definition
      */
-    protected static function getTemplatePath()
+    protected function getTemplatePath()
     {
-        return realpath(__DIR__) .'/../../../templates'. self::SUBPATH;
+        return realpath(__DIR__) .'/../../../templates';
     }
 }
