@@ -10,68 +10,88 @@ namespace BO\Zmscalldisplay\Helper;
 
 class TemplateFinder
 {
-    const DEFAULT_TEMPLATE = '/page/calldisplay.twig';
+    protected $defaultTemplate;
+    protected $subPath;
 
-    const SUBPATH = '/page/customized';
+    protected $template;
+
+    public function __construct($defaultTemplate = "default", $subPath = '/page/customized')
+    {
+        $this->subPath = $subPath;
+        $this->template = $subPath . '/' . $defaultTemplate . '.twig';
+        if ($this->isTemplateReadable($this->template)) {
+            $this->defaultTemplate = $defaultTemplate;
+        } else {
+            throw new \BO\Zmscalldisplay\Exception\TemplateNotFound("Could not find template $this->template");
+        }
+    }
+
+    public function getTemplate()
+    {
+        return $this->template;
+    }
 
     /**
      * get a customized Template if it exists, otherwise return default
      * department preferred before cluster
      *
      **/
-    public static function getCustomizedTemplate($calldisplay)
+    public function setCustomizedTemplate($calldisplay)
+    {
+        $template = null;
+        if ($this->defaultTemplate == 'default') {
+            $template = $this->getTemplateBySettings($calldisplay);
+        }
+        $this->template = ($template) ? $template : $this->template;
+        return $this;
+    }
+
+    protected function getTemplateBySettings($calldisplay)
     {
         $template = null;
         //look for customized templates by single scope or single cluster
         if ($calldisplay->getScopeList()->getFirst()) {
             $entity = new \BO\Zmsentities\Scope($calldisplay->getScopeList()->getFirst());
-            $template = self::getExistingTemplate($entity);
+            $template = $this->getExistingTemplate($entity);
         }
         //look for customized template in clusterlist, overwrite template before
         foreach ($calldisplay->getClusterList() as $entity) {
             $entity = new \BO\Zmsentities\Cluster($entity);
-            if (self::getExistingTemplate($entity)) {
-                $template = self::getExistingTemplate($entity);
+            if ($this->getExistingTemplate($entity)) {
+                $template = $this->getExistingTemplate($entity);
                 break;
             }
         }
         //look for customized template in departmentlist, overwrite template before
         foreach ($calldisplay->organisation['departments'] as $departmentData) {
             $entity = new \BO\Zmsentities\Department($departmentData);
-            if (self::getExistingTemplate($entity)) {
-                $template = self::getExistingTemplate($entity);
+            if ($this->getExistingTemplate($entity)) {
+                $template = $this->getExistingTemplate($entity);
                 break;
             }
         }
-        // @codeCoverageIgnoreStart
-        // not in use in the moment
-        //look for customized template by organisation, overwrite template before
-        $organisation = new \BO\Zmsentities\Organisation($calldisplay->organisation);
-        if (self::getExistingTemplate($organisation)) {
-            $template = self::getExistingTemplate($organisation);
-        }
-        // @codeCoverageIgnoreEnd
-
-        return ($template) ? $template : self::DEFAULT_TEMPLATE;
+        return $template;
     }
 
-    protected static function getExistingTemplate(\BO\Zmsentities\Schema\Entity $entity)
+    protected function getExistingTemplate(\BO\Zmsentities\Schema\Entity $entity)
     {
-        if ($entity->hasId() &&
-            file_exists(
-                self::getTemplatePath(). '/calldisplay_'. $entity->getEntityName() .'_'. $entity->id .'.twig'
-            )
-        ) {
-            return self::SUBPATH .'/calldisplay_'. $entity->getEntityName() .'_'. $entity->id .'.twig';
+        $path = $this->subPath .'/calldisplay_'. $entity->getEntityName() .'_'. $entity->id .'.twig';
+        if ($entity->hasId() && $this->isTemplateReadable($path)) {
+            return $path;
         }
         return null;
+    }
+
+    protected function isTemplateReadable($path)
+    {
+        return is_readable($this->getTemplatePath() . $path);
     }
 
     /**
      * @todo check against ISO definition
      */
-    protected static function getTemplatePath()
+    protected function getTemplatePath()
     {
-        return realpath(__DIR__) .'/../../../templates'. self::SUBPATH;
+        return realpath(__DIR__) .'/../../../templates';
     }
 }
