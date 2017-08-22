@@ -4,7 +4,6 @@
  **/
 
 namespace BO\Mellon;
-use \DateTime;
 
 /**
   * Validation of Strings
@@ -93,25 +92,5 @@ class ValidString extends Valid
             $this->setFailure($message);
         }
         return $this;
-    }
-
-    public function isLanternValidDate($date, $format = 'dd.mm.Y', $message = 'Bitte das Datum in tt.mm.jjjj Format angeben.')
-    {
-        $d = DateTime::createFromFormat($format, $date);
-        if ($d && $d->format($format) == $date) {
-            $this->setFailure($message);
-        }
-        return $this; 
-
-    }
-
-    public function isOverEighteen($birthday)
-    {
-        $age_limit = new DateTime('-18 years');
-        $b = DateTime::createFromFormat('d.m.Y', $birthday);
-        if ($b > $age_limit) {
-             return false;
-        }
-        return true;
     }
 }
