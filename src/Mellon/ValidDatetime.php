@@ -4,13 +4,14 @@
  **/
 
 namespace BO\Mellon;
+
 use \DateTimeImmutable;
 use \DateTime;
 
 class ValidDatetime extends Valid
 {
     protected $dateTime;
-     
+
     public function isDatetime($message = 'Please enter a valid date', $format = false)
     {
         $this->validated = true;
@@ -19,14 +20,17 @@ class ValidDatetime extends Valid
             if ($format) {
                 $dateTime = DateTime::createFromFormat($format, $date);
             } else {
-                    $dateTime = date_create($date);   
+                    $dateTime = date_create($date);
             }
             if (false === $dateTime) {
                     return $this->setFailure($message);
             }
-            $this->dateTime = DateTimeImmutable::createFromFormat('Y-m-d\TH:i:s.uP', $dateTime->format('Y-m-d\TH:i:s.uP'));
+            $this->dateTime = DateTimeImmutable::createFromFormat(
+                'Y-m-d\TH:i:s.uP',
+                $dateTime->format('Y-m-d\TH:i:s.uP')
+            );
         }
-        return $this; 
+        return $this;
     }
 
     public function isOldEnough($years = 18, $message = 'Minimum age of 18 years is required')
