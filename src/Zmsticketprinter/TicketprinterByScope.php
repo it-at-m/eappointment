@@ -21,6 +21,11 @@ class TicketprinterByScope extends BaseController
     ) {
         Helper\HomeUrl::create($request);
 
+        $validator = $request->getAttribute('validator');
+        $defaultTemplate = $validator->getParameter("template")
+            ->isPath()
+            ->setDefault('default')
+            ->getValue();
         $ticketprinterHelper = (new Helper\Ticketprinter($args, $request));
         $ticketprinter = $ticketprinterHelper->getEntity();
         $scope = $ticketprinter->getScopeList()->getFirst();
@@ -30,11 +35,12 @@ class TicketprinterByScope extends BaseController
         $estimatedData = ($queueList) ? $scope->getWaitingTimeFromQueueList($queueList, \App::$now) : null;
         $organisation = $ticketprinterHelper::$organisation;
 
-        $template = Helper\TemplateFinder::getCustomizedTemplate($ticketprinter, $organisation);
+        $template = (new Helper\TemplateFinder($defaultTemplate))
+            ->setCustomizedTemplate($ticketprinter, $organisation);
 
         return \BO\Slim\Render::withHtml(
             $response,
-            $template,
+            $template->getTemplate(),
             array(
                 'debug' => \App::DEBUG,
                 'title' => 'Wartennumer ziehen',
@@ -45,7 +51,7 @@ class TicketprinterByScope extends BaseController
                 'scope' => $scope,
                 'waitingClients' => $estimatedData['amountBefore'],
                 'waitingTime' => $estimatedData['waitingTimeEstimate'],
-                'buttonDisplay' => Helper\TemplateFinder::getButtonTemplateType($ticketprinter)
+                'buttonDisplay' => $template->getButtonTemplateType($ticketprinter),
             )
         );
     }

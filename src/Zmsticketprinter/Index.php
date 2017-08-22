@@ -20,6 +20,10 @@ class Index extends BaseController
         array $args
     ) {
         Helper\HomeUrl::create($request);
+        $validator = $request->getAttribute('validator');
+        $defaultTemplate = $validator->getParameter("template")
+            ->isPath()
+            ->setDefault('default');
         $ticketprinterHelper = (new Helper\Ticketprinter($args, $request));
         $ticketprinter = $ticketprinterHelper->getEntity();
         $ticketprinter->testValid();
@@ -29,22 +33,23 @@ class Index extends BaseController
             return \BO\Slim\Render::redirect(
                 'TicketprinterByScope',
                 array(
-                     'scopeId' => $ticketprinter->buttons[0]['scope']['id']
-                 ),
-                array()
+                    'scopeId' => $ticketprinter->buttons[0]['scope']['id']
+                ),
+                ($defaultTemplate->getValue() == 'default')? [] : ['template' => $defaultTemplate->getValue()]
             );
         }
-        $template = Helper\TemplateFinder::getCustomizedTemplate($ticketprinter, $organisation);
-        
+        $template = (new Helper\TemplateFinder($defaultTemplate->getValue()))
+            ->setCustomizedTemplate($ticketprinter, $organisation);
+
         return \BO\Slim\Render::withHtml(
             $response,
-            $template,
+            $template->getTemplate(),
             array(
                 'debug' => \App::DEBUG,
                 'title' => 'Wartennumer ziehen',
                 'ticketprinter' => $ticketprinter,
                 'organisation' => $organisation,
-                'buttonDisplay' => Helper\TemplateFinder::getButtonTemplateType($ticketprinter)
+                'buttonDisplay' => $template->getButtonTemplateType($ticketprinter),
             )
         );
     }
