@@ -22,13 +22,18 @@ class Index extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        $validator = $request->getAttribute('validator');
+        $defaultTemplate = $validator->getParameter("template")
+            ->isPath()
+            ->setDefault('default')
+            ->getValue();
         $calldisplayHelper = (new Helper\Calldisplay($request));
         $calldisplay = $calldisplayHelper->getEntity();
 
-        $template = Helper\TemplateFinder::getCustomizedTemplate($calldisplay);
+        $template = (new Helper\TemplateFinder($defaultTemplate))->setCustomizedTemplate($calldisplay);
         return \BO\Slim\Render::withHtml(
             $response,
-            $template,
+            $template->getTemplate(),
             array(
                 'debug' => \App::DEBUG,
                 'queueStatusRequested' => implode(',', $calldisplayHelper::getRequestedQueueStatus($request)),

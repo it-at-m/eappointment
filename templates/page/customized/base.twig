@@ -8,11 +8,19 @@
 {% block pageid %}customized{% endblock %}
 
 {% block content %}
-<div class="aufrufanzeige_leftcol">
-	{{ block("clock") }}
-	{{ block("estimatedWaitingClients") }}
-	{{ block("estimatedWaitingTime") }}
-</div>
+    {% if not skipAll %}
+        <div class="aufrufanzeige_leftcol">
+            {% if not skipClock %}
+                {{ block("clock") }}
+            {% endif %}
+            {% if not skipClients %}
+                {{ block("estimatedWaitingClients") }}
+            {% endif %}
+            {% if not skipTime %}
+                {{ block("estimatedWaitingTime") }}
+            {% endif %}
+        </div>
+    {% endif %}
 <div class="aufrufanzeige_main">
 	{% include "block/default/importContainer.twig" with {"tableLayout": tableLayout} %}
 </div>
