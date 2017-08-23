@@ -199,11 +199,11 @@ class CallDisplayConfigView extends Component {
                         <Controls>
                             <Select
                                 options={[
-                                    {name: 'Uhrzeit, 5-10 Aufrufe', value: 'default'},
-                                    {name: 'Uhrzeit, 5 Aufrufe', value: 'clock5'},
-                                    {name: 'Uhrzeit, Anzahl Wartende, 5-10 Aufrufe', value: 'clocknr'},
-                                    {name: 'Uhrzeit, Anzahl Wartende, Wartezeit, 5-10 Aufrufe', value: 'clocknrwait'},
-                                    {name: '15 Aufrufe', value: 'raw15'}
+                                    {name: 'Uhrzeit, 6-12 Aufrufe', value: 'default'},
+                                    {name: 'Uhrzeit, 6 Aufrufe', value: 'clock5'},
+                                    {name: 'Uhrzeit, Anzahl Wartende, 6-12 Aufrufe', value: 'clocknr'},
+                                    {name: 'Uhrzeit, Anzahl Wartende, Wartezeit, 6-12 Aufrufe', value: 'clocknrwait'},
+                                    {name: '6-18 Aufrufe', value: 'raw18'}
                                 ]}
                                 value={this.state.template}
                                 onChange={onTemplateStatusChange} />
