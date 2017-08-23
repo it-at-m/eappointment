@@ -21,7 +21,7 @@
             {% endif %}
         </div>
     {% endif %}
-<div class="aufrufanzeige_main">
+<div class="aufrufanzeige_main{% if skipAll %} aufrufanzeige_full{% endif %}">
 	{% include "block/default/importContainer.twig" with {"tableLayout": tableLayout} %}
 </div>
 
