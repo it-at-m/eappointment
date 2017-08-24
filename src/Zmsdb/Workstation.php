@@ -150,6 +150,13 @@ class Workstation extends Base
             if ($result) {
                 $workstation = $this->readEntity($loginName, $resolveReferences);
                 $workstation->authkey = $authKey;
+                $query = Query\Workstation::QUERY_PROCESS_RESET;
+                $statement = $this->getWriter()->prepare($query);
+                $statement->execute(
+                    array(
+                        $workstation->id
+                    )
+                );
             }
         } else {
             throw new Exception\Useraccount\InvalidCredentials();
