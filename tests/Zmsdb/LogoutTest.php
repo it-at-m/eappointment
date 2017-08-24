@@ -23,6 +23,5 @@ class LogoutTest extends Base
         $workstation = $query->writeEntityLogoutByName($userAccount->id, 2);
         $this->assertEntity("\\BO\\Zmsentities\\Workstation", $workstation);
         $this->assertEquals(false, $workstation->hasAuthKey());
-        $this->assertEquals($now->format('Y-m-d'), date('Y-m-d', $workstation->useraccount['lastLogin']));
     }
 }
