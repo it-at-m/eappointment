@@ -20,10 +20,22 @@ class Workstation extends Base implements MappingInterface
             `SessionID`=?,
             `Datum`=?,
             `Arbeitsplatznr`="",
+            `aufrufzusatz`="",
+            `BehoerdenID`=0,
             `StandortID`=0
         WHERE
             `Name`=? AND
             `Passworthash` = ?
+    ';
+
+    const QUERY_PROCESS_RESET = '
+        UPDATE
+            '. Process::TABLE .'
+        SET
+            `NutzerID` = 0,
+            `aufrufzeit` = "00:00:00"
+        WHERE
+            `NutzerID` = ?
     ';
 
     const QUERY_LOGOUT = '
@@ -36,7 +48,7 @@ class Workstation extends Base implements MappingInterface
             `Arbeitsplatznr`="",
             `aufrufzusatz`=""
         WHERE
-            `Name`=?
+            `Name`= ?
     ';
 
     const QUERY_LOGGEDIN_CHECK = '
