@@ -35,6 +35,8 @@ class Index extends BaseController
                 if ($exception->template == 'BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn') {
                     \BO\Zmsclient\Auth::setKey($exception->data['authkey']);
                     throw $exception;
+                } elseif ($exception->template == 'BO\Zmsapi\Exception\Useraccount\AuthKeyFound') {
+                    throw $exception;
                 }
             }
             if (array_key_exists('authkey', $workstation)) {
