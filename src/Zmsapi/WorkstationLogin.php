@@ -11,6 +11,9 @@ use \BO\Mellon\Validator;
 use \BO\Zmsdb\Workstation;
 use \BO\Zmsdb\Useraccount;
 
+/**
+ * @SuppressWarnings(Coupling)
+ */
 class WorkstationLogin extends BaseController
 {
     /**
@@ -27,6 +30,13 @@ class WorkstationLogin extends BaseController
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $useraccount = new \BO\Zmsentities\Useraccount($input);
         $useraccount->testValid();
+
+        $workstation = (new Helper\User($request, $resolveReferences))->readWorkstation();
+        if ($workstation->hasId()) {
+            $exception = new \BO\Zmsapi\Exception\Useraccount\AuthKeyFound();
+            $exception->data = $workstation;
+            throw $exception;
+        }
 
         if (! (new Useraccount)->readIsUserExisting($useraccount->id) || 0 == count($input)) {
             throw new Exception\Useraccount\UseraccountNotFound();
