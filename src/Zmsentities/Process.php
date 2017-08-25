@@ -350,7 +350,9 @@ class Process extends Schema\Entity
             if ($appointment->toProperty()->scope->isAvailable()) {
                 $scopeId = $appointment['scope']['id'];
                 unset($appointment['scope']);
-                $appointment['scope'] = ['id' => $scopeId];
+                if ($scopeId != $entity->toProperty()->scope->id->get()) {
+                    $appointment['scope'] = ['id' => $scopeId];
+                }
             }
             if ($appointment->toProperty()->availability->isAvailable()) {
                 unset($appointment['availability']);
@@ -361,6 +363,34 @@ class Process extends Schema\Entity
         if ($entity->toProperty()->scope->status->isAvailable()) {
             unset($entity['scope']['status']);
         }
+        if ($entity->status == 'free') {
+            // delete keys
+            foreach ([
+                'authKey',
+                'queue',
+                'requests',
+            ] as $key) {
+                if ($entity->toProperty()->$key->isAvailable()) {
+                    unset($entity[$key]);
+                }
+            }
+            // delete if empty
+            foreach ([
+                'amendment',
+                'id',
+                'authKey',
+                'archiveId',
+                'reminderTimestamp',
+            ] as $key) {
+                if ($entity->toProperty()->$key->isAvailable() && !$entity[$key]) {
+                    unset($entity[$key]);
+                }
+            }
+            if ($entity->toProperty()->scope->provider->data->isAvailable()) {
+                unset($entity['scope']['provider']['data']);
+            }
+        }
+
         if ($entity->toProperty()->scope->dayoff->isAvailable()) {
             unset($entity['scope']['dayoff']);
         }
