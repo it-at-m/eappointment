@@ -29,13 +29,13 @@ class ProcessFree extends BaseController
             $slotType = 'public';
         }
 
-        $input = Validator::input()->isJson()->assertValid()->getValue();
-        $query = new Query();
-        $entity = new \BO\Zmsentities\Calendar($input);
-        $processList = $query->readFreeProcesses($entity, \App::getNow(), $slotType, $slotsRequired);
-
+        $calendarData = Validator::input()->isJson()->assertValid()->getValue();
+        $calendar = new \BO\Zmsentities\Calendar($calendarData);
         $message = Response\Message::create($request);
-        $message->data = $processList->withLessData();
+        $message->data = (new Query())
+            ->readFreeProcesses($calendar, \App::getNow(), $slotType, $slotsRequired)
+            ->withLessData()
+        ;
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message, 200);
