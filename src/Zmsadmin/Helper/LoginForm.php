@@ -54,15 +54,17 @@ class LoginForm
                 ->isNumber();
         }
 
-
         // workstation
-        $collection['workstation'] = Validator::param('workstation')
-             ->isString('Bitte wählen Sie einen Arbeitsplatz oder den Tresen aus')
-             ->isSmallerThan(5, "Die Arbeitsplatz-Bezeichnung sollte 5 Zeichen nicht überschreiten");
-
-         // hint
-         $collection['hint'] = Validator::param('hint')
-              ->isString();
+        if (! Validator::param('workstation')->isDeclared()->hasFailed()) {
+            $collection['workstation'] = Validator::param('workstation')
+                 ->isString('Bitte wählen Sie einen Arbeitsplatz oder den Tresen aus')
+                 ->isSmallerThan(5, "Die Arbeitsplatz-Bezeichnung sollte 5 Zeichen nicht überschreiten");
+        }
+        // hint
+        if (! Validator::param('hint')->isDeclared()->hasFailed()) {
+            $collection['hint'] = Validator::param('hint')
+                ->isString();
+        }
 
         // return validated collection
         $collection = Validator::collection($collection);
@@ -79,35 +81,14 @@ class LoginForm
         return $collection;
     }
 
-    /**
-     * @SuppressWarnings(Cyclo)
-     * @SuppressWarnings(NPath)
-     * @todo Refactor for less complexity
-     */
     public static function writeWorkstationUpdate($data, $workstation)
     {
-        $formData = $data->getValues();
         if (isset($workstation->useraccount)) {
-            if (isset($formData['workstation']) && $formData['workstation']->getValue()) {
-                $workstation->name = $formData['workstation']->getValue();
-            }
-            if (isset($formData['hint']) && $formData['hint']->getValue()) {
-                $workstation->hint = $formData['hint']->getValue();
-            }
-            if (isset($formData['scope']) && 'cluster' === $formData['scope']->getValue()) {
-                $workstation->queue['clusterEnabled'] = 1;
-            } elseif (isset($formData['scope'])) {
-                $workstation->queue['clusterEnabled'] = 0;
-                $workstation->scope = new \BO\Zmsentities\Scope([
-                    'id' => $formData['scope']->getValue(),
-                ]);
-            }
-            if (isset($formData['appointmentsOnly']) && $formData['appointmentsOnly']->getValue()) {
-                $workstation->queue['appointmentsOnly'] = $formData['appointmentsOnly']->getValue();
-            } else {
-                $workstation->queue['appointmentsOnly'] = 0;
-            }
-
+            $formData = $data->getValues();
+            $workstation->setValidatedName($formData);
+            $workstation->setValidatedHint($formData);
+            $workstation->setValidatedScope($formData);
+            $workstation->setValidatedAppointmentsOnly($formData);
             unset($workstation->useraccount['departments']);
             $result = \App::$http->readPostResult('/workstation/', $workstation)->getEntity();
         }
