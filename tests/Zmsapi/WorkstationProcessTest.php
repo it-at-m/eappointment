@@ -71,16 +71,4 @@ class WorkstationProcessTest extends Base
             }'
         ], []);
     }
-
-    public function testProcessNotFoundInQueue()
-    {
-        $this->setWorkstation();
-        $this->expectException('\BO\Zmsapi\Exception\Process\ProcessNotFoundInQueue');
-        $this->expectExceptionCode(404);
-        $this->render([], [
-            '__body' => '{
-                "id": 10029
-            }'
-        ], []);
-    }
 }

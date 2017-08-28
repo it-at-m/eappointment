@@ -49,16 +49,11 @@ class WorkstationProcess extends BaseController
 
     protected function testProcess($process)
     {
-        $selectedDate = Validator::param('date')->isString()->getValue();
-        $dateTime = ($selectedDate) ? new DateTime($selectedDate) : \App::$now;
         if (! $process->hasId()) {
             throw new Exception\Process\ProcessNotFound();
         }
         if ('called' == $process->status || 'processing' == $process->status) {
             throw new Exception\Process\ProcessAlreadyCalled();
-        }
-        if ($process->getFirstAppointment()->date > $dateTime->getTimestamp()) {
-            throw new Exception\Process\ProcessNotFoundInQueue();
         }
         $process->testValid();
     }
