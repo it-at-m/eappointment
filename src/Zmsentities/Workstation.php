@@ -133,4 +133,35 @@ class Workstation extends Schema\Entity
             throw new Exception\WorkstationProcessMatchScopeFailed();
         }
     }
+
+    public function setValidatedName(\BO\Mellon\Parameter $name = null)
+    {
+        $this->name = ($name) ? $name->getValue() : '';
+        return $this;
+    }
+
+    public function setValidatedHint(\BO\Mellon\Parameter $hint = null)
+    {
+        $this->hint = ($hint) ? $hint->getValue() : '';
+        return $this;
+    }
+
+    public function setValidatedScope(\BO\Mellon\Parameter $scope = null)
+    {
+        if ($scope && 'cluster' === $scope->getValue()) {
+            $this->queue['clusterEnabled'] = 1;
+        } elseif ($scope) {
+            $this->queue['clusterEnabled'] = 0;
+            $this->scope = new Scope([
+                'id' => $scope->getValue(),
+            ]);
+        }
+        return $this;
+    }
+
+    public function setValidatedAppointmentsOnly(\BO\Mellon\Parameter $appointmentsOnly = null)
+    {
+        $this->queue['appointmentsOnly'] = ($appointmentsOnly) ? $appointmentsOnly->getValue() : 0;
+        return $this;
+    }
 }
