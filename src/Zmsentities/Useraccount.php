@@ -133,9 +133,9 @@ class Useraccount extends Schema\Entity
         return true;
     }
 
-    public function testRights(array $requiredRights)
+    public function testRights(array $requiredRights, \DateTimeInterface $dateTime)
     {
-        if ($this->hasId()) {
+        if ($this->hasId() && false === $this->isOveraged($dateTime)) {
             if (!$this->hasRights($requiredRights)) {
                 throw new Exception\UserAccountMissingRights(
                     "Missing rights " . htmlspecialchars(implode(',', $requiredRights))
