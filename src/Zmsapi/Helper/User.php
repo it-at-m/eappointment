@@ -77,7 +77,7 @@ class User
     {
         $workstation = static::readWorkstation();
         if (\App::RIGHTSCHECK_ENABLED) {
-            $workstation->getUseraccount()->testRights(func_get_args(), \App::$now);
+            $workstation->getUseraccount()->testRights(func_get_args());
         }
         return $workstation;
     }
