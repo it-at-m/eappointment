@@ -134,34 +134,44 @@ class Workstation extends Schema\Entity
         }
     }
 
-    public function setValidatedName(\BO\Mellon\Parameter $name = null)
+    public function setValidatedName(array $formData)
     {
-        $this->name = ($name) ? $name->getValue() : '';
+        if (isset($formData['workstation']) && $formData['workstation']->getValue()) {
+            $this->name = $formData['workstation']->getValue();
+        } elseif (isset($formData['workstation']) && ! $formData['workstation']->getValue()) {
+            $this->name = '';
+        }
         return $this;
     }
 
-    public function setValidatedHint(\BO\Mellon\Parameter $hint = null)
+    public function setValidatedHint(array $formData)
     {
-        $this->hint = ($hint) ? $hint->getValue() : '';
+        if (isset($formData['hint']) && $formData['hint']->getValue()) {
+            $this->hint = $formData['hint']->getValue();
+        } elseif (isset($formData['hint']) && ! $formData['hint']->getValue()) {
+            $this->hint = '';
+        }
         return $this;
     }
 
-    public function setValidatedScope(\BO\Mellon\Parameter $scope = null)
+    public function setValidatedScope(array $formData)
     {
-        if ($scope && 'cluster' === $scope->getValue()) {
+        if (isset($formData['scope']) && 'cluster' === $formData['scope']->getValue()) {
             $this->queue['clusterEnabled'] = 1;
-        } elseif ($scope) {
+        } elseif (isset($formData['scope'])) {
             $this->queue['clusterEnabled'] = 0;
             $this->scope = new Scope([
-                'id' => $scope->getValue(),
+                'id' => $formData['scope']->getValue(),
             ]);
         }
         return $this;
     }
 
-    public function setValidatedAppointmentsOnly(\BO\Mellon\Parameter $appointmentsOnly = null)
+    public function setValidatedAppointmentsOnly(array $formData)
     {
-        $this->queue['appointmentsOnly'] = ($appointmentsOnly) ? $appointmentsOnly->getValue() : 0;
+        $this->queue['appointmentsOnly'] = (isset($formData['appointmentsOnly'])) ?
+            $formData['appointmentsOnly']->getValue() :
+            0;
         return $this;
     }
 }
