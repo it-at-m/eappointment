@@ -2,6 +2,10 @@
 
 namespace BO\Zmsentities;
 
+/**
+ * @SuppressWarnings(Complexity)
+ *
+ */
 class Workstation extends Schema\Entity
 {
     const PRIMARY = 'id';
