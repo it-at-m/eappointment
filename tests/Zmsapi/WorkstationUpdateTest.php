@@ -21,6 +21,17 @@ class WorkstationUpdateTest extends Base
 
     const LASTLOGIN = 1459504500; //1.4.2016 11:55
 
+    public function testOveragedLogin()
+    {
+        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingLogin');
+        $this->expectExceptionCode(401);
+
+        $workstation = $this->setWorkstation();
+        $workstation->getUseraccount()->lastLogin = 1447926465; //19.11.2015;
+
+        $this->render([], ['__body' => json_encode($workstation)], []);
+    }
+
     public function testAssignedWorkstationExists()
     {
         $this->expectException('\BO\Zmsapi\Exception\Workstation\WorkstationAlreadyAssigned');
