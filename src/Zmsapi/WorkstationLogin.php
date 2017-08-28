@@ -32,7 +32,7 @@ class WorkstationLogin extends BaseController
         $useraccount->testValid();
 
         $workstation = (new Helper\User($request, $resolveReferences))->readWorkstation();
-        if ($workstation->hasId()) {
+        if ($workstation->hasId() && ! $workstation->getUseraccount()->isOveraged(\App::$now)) {
             $exception = new \BO\Zmsapi\Exception\Useraccount\AuthKeyFound();
             $exception->data = $workstation;
             throw $exception;
