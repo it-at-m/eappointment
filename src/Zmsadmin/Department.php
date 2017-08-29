@@ -63,6 +63,10 @@ class Department extends BaseController
             return !($link['name'] === '' && $link['url'] == '');
         });
 
+        foreach ($input['links'] as $index => $link) {
+            $input['links'][$index]['target'] = ($link['target']) ? 1 : 0;
+        }
+
         return $input;
     }
 }
