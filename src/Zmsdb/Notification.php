@@ -95,7 +95,7 @@ class Notification extends Base
 
     public function writeInCalculationTable(\BO\Zmsentities\Schema\Entity $notification)
     {
-        $amount = ceil((strlen($notification->message)) / 160);
+        $amount = ceil((mb_strlen(trim($notification->message))) / 160);
         $scopeId = $notification->process['scope']['id'];
         $client = $notification->process->getClients()->getFirst();
         $telephone = substr(preg_replace('/\s+/', '', $client->telephone), 0, 10);
