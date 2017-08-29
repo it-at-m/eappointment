@@ -1,76 +1,116 @@
-import BaseView from '../../../lib/baseview'
-import $ from 'jquery'
+import React, { Component, PropTypes } from 'react'
 
-const newIndex = (() => {
-    let index = 0
+import * as Inputs from '../../../lib/inputs'
 
-    return () => {
-        index += 1
-        return `new_${index}`
-    }
-})()
+const renderLink = (link, index, onChange, onDeleteClick) => {
+    const formName = `links[${index}]`
 
-const cloneEmptyLink = (link) => {
-    const newLink = link.clone()
-    newLink.find('input[name=target]').val('').attr('checked', false)
+    const onChangeName = (_, value) => onChange(index, 'name', value)
+    const onChangeUrl = (_, value) => onChange(index, 'url', value)
+    const onChangeTarget = (_, value) => onChange(index, 'target', value)
 
-    return newLink
+    return (
+        <div className="link-item">
+            <div className="link-item__name">
+                <Inputs.Text
+                    name={`${formName}[name]`}
+                    placeholder="Name"
+                    value={link.name}
+                    onChange={onChangeName}
+                />
+            </div>
+            <div className="link-item__url">
+                <Inputs.Text
+                    name={`${formName}[url]`}
+                    placeholder="URL"
+                    value={link.url}
+                    onChange={onChangeUrl}
+                />
+            </div>
+            <div className="link-item__target">
+                <label class="checkbox-label">
+                    <Inputs.Checkbox
+                        name={`${formName}[target]`}
+                        key="In neuem Fenster öffnen"
+                        onChange={onChangeTarget}
+                        value={link.target}
+                        checked={1 == link.target}
+                    />
+                    In neuem Fenster öffnen
+                </label>
+            </div>
+            <div className="link-item__delete">
+                <label className="checkboxdeselect link__delete-button">
+                    <input type="checkbox" checked={true} onClick={() => onDeleteClick(index)} /><span>Löschen</span>
+                </label>
+            </div>
+        </div>
+    )
 }
 
-const cloneToNewLink = (link) => {
-    const newLink = link.clone()
-    const index = newIndex()
-    newLink.attr('data-index', index)
-    newLink.find('[data-delete-button]').attr('data-index', index).find('input').attr('checked', true)
-    return newLink
+class LinksView extends Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            links: props.links.length > 0 ? props.links : [{ name: '', url: '', target: 0}]
+        }
+    }
+
+    changeItemField(index, field, value) {
+        //console.log('change item field', index, field, value)
+        this.setState({
+            links: this.state.links.map((link, linkIndex) => {
+                return index === linkIndex ? Object.assign({}, link, { [field]: value }) : link
+            })
+        })
+    }
+
+    addNewItem() {
+        this.setState({
+            links: this.state.links.concat([{ name: '', url: '', target: 0 }])
+        })
+    }
+
+    deleteItem(deleteIndex) {
+        this.setState({
+            links: this.state.links.filter( (link, index) => {
+                return index !== deleteIndex
+            })
+        })
+    }
+
+    render() {
+        console.log('LinksView::render', this.state)
+
+        const onNewClick = ev => {
+            ev.preventDefault()
+            this.addNewItem()
+        }
+
+        const onDeleteClick = index => {
+            this.deleteItem(index)
+        }
+
+        const onChange = (index, field, value) => {
+            this.changeItemField(index, field, value)
+        }
+
+        return (
+            <div className="form-group links">
+                <label className="label">Links:</label>
+                <div className="controls">
+                    <div className="department-links__list">
+                    {this.state.links.map((link, index) => renderLink(link, index, onChange, onDeleteClick))}
+                    </div>
+                    <button className="button-default" onClick={onNewClick} >Neuer Link</button>
+                </div>
+            </div>
+        )
+    }
 }
 
-class View extends BaseView {
-    constructor (element, options) {
-        super(element)
-        this.bindPublicMethods('handleDeleteClick',
-                               'handleNewClick',
-                               'bindClickEvents')
-        this.$linkList = this.$.find('[data-link-list]').first()
-        this.bindClickEvents()
-        this.clonedLink = cloneEmptyLink(this.$linkList.find('[data-last]').first())
-        console.log('DepartmentLinksView', this, options)
-    }
-
-    bindClickEvents() {
-        this.$.find('[data-delete-button]').on('click', this.handleDeleteClick)
-        this.$.find('[data-new-button]').on('click', this.handleNewClick)
-    }
-
-    unbindClickEvents() {
-        this.$.find('[data-delete-button]').off('click', this.handleDeleteClick)
-        this.$.find('[data-new-button]').off('click', this.handleNewClick)
-    }
-
-    resetLastLink() {
-        this.$linkList.find('[data-link-entry]').attr('data-last', false).last().attr('data-last', true)
-    }
-
-    handleDeleteClick(ev) {
-        ev.preventDefault()
-        this.unbindClickEvents()
-        const button = $(ev.target)
-        const index = button.attr('data-index')
-        const link = this.$.find(`[data-link-entry][data-index=${index}]`)
-        link.remove()
-        this.resetLastLink()
-        this.bindClickEvents()
-    }
-
-    handleNewClick(ev) {
-        ev.preventDefault()
-        this.unbindClickEvents()
-        const newLink = cloneToNewLink(this.clonedLink)
-        this.$linkList.append(newLink)
-        this.resetLastLink()
-        this.bindClickEvents()
-    }
+LinksView.propTypes = {
+    links: PropTypes.array
 }
 
-export default View;
-
+export default LinksView
