@@ -19,23 +19,6 @@ class UseraccountForm
     {
         $collection = array();
 
-        // loginName
-        $collection['id'] = Validator::param('id')->isString()
-            ->isBiggerThan(2, "Es muss ein aussagekräftiger Nutzername eingegeben werden")
-            ->isSmallerThan(40, "Der Nutzername sollte 40 Zeichen nicht überschreiten");
-
-        // password
-        $passwords = Validator::param('changePassword')->isArray()->getValue();
-
-        $collection['password'] = Validator::value($passwords[0])->isString()
-            ->isBiggerThan(7, "Es muss ein Passwort mit mindestens 8 Zeichen eingegeben werden");
-        $collection['password_check'] = Validator::value($passwords[1])->isString()
-            ->isBiggerThan(7, "Das Passwort muss wiederholt werden");
-
-        if ($collection['password']->getValue() !== $collection['password_check']->getValue()) {
-            $collection['password_check']->setFailure('Die Passwörter müssen identisch sein');
-        }
-
         // assigend departments
         $collection['departments'] = Validator::param('departments')
             ->isArray('Es muss mindestens eine Behörde oder systemübergreifend ausgewählt werden');

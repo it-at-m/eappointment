@@ -40,7 +40,7 @@ class UseraccountEdit extends BaseController
                 $entity = new Entity($input);
                 $entity = $entity->withDepartmentList()->withCleanedUpFormData();
                 $entity->id = $userAccountName;
-                if (array_key_exists('changePassword', $input)) {
+                if (array_key_exists('changePassword', $input) && !empty($input['changePassword'])) {
                     \App::$http->readPostResult('/workstation/password/', $entity);
                 }
                 $entity = \App::$http->readPostResult(
