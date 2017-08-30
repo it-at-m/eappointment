@@ -100,6 +100,11 @@ class UseraccountEditTest extends Base
     // passwords not equal
     public function testRenderingSaveFailedValidation()
     {
+        $this->expectException('\BO\Zmsclient\Exception');
+        $exception = new \BO\Zmsclient\Exception();
+        $exception->template = 'BO\Zmsentities\Exception\Schemavalidation';
+        $exception->data = json_decode($this->readFixture("GET_useraccount_testuser.json"), 1)['data'];
+
         \App::$now = new \DateTime('2016-04-01 11:55:00', new \DateTimeZone('Europe/Berlin'));
         $this->setApiCalls(
             [
@@ -119,10 +124,15 @@ class UseraccountEditTest extends Base
                     'url' => '/owner/',
                     'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_owner.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/workstation/password/',
+                    'exception' => $exception
                 ]
             ]
         );
-        $response = $this->render($this->arguments, [
+        $this->render($this->arguments, [
             'id' => 'unittest',
             'changePassword' => array(
                 'passwort',
@@ -140,9 +150,6 @@ class UseraccountEditTest extends Base
             ),
             'save' => 'save'
         ], [], 'POST');
-        $this->assertContains('has-error', (string)$response->getBody());
-        $this->assertContains('Die Passwörter müssen identisch sein', (string)$response->getBody());
-        $this->assertEquals(200, $response->getStatusCode());
     }
 
     // no department selected
