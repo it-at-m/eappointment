@@ -40,10 +40,14 @@ class UseraccountEdit extends BaseController
                 $entity = new Entity($input);
                 $entity = $entity->withDepartmentList()->withCleanedUpFormData();
                 $entity->id = $userAccountName;
+                if (array_key_exists('changePassword', $input)) {
+                    \App::$http->readPostResult('/workstation/password/', $entity);
+                }
                 $entity = \App::$http->readPostResult(
                     '/useraccount/'. $userAccount->id .'/',
                     $entity
                 )->getEntity();
+
                 return \BO\Slim\Render::redirect(
                     'useraccountEdit',
                     array(

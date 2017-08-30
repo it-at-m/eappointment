@@ -65,6 +65,11 @@ class UseraccountEditTest extends Base
                 ],
                 [
                     'function' => 'readPostResult',
+                    'url' => '/workstation/password/',
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readPostResult',
                     'url' => '/useraccount/testuser/',
                     'response' => $this->readFixture("GET_useraccount_testuser.json")
                 ]
