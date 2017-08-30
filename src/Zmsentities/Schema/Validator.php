@@ -44,8 +44,11 @@ class Validator extends \League\JsonGuard\Validator
         $pointer = $this->getOriginPointer($error);
         foreach ($error->getConstraints() as $constrain => $value) {
             $value = $value;
-            if (array_key_exists('locale', $this->schemaArray->properties->{$pointer})) {
-                $message = $this->schemaArray->properties->{$pointer}->locale->{$this->locale}->messages->{$constrain};
+            if (array_key_exists($pointer, $this->schemaArray->properties)) {
+                if (array_key_exists('locale', $this->schemaArray->properties->{$pointer})) {
+                    $message =
+                        $this->schemaArray->properties->{$pointer}->locale->{$this->locale}->messages->{$constrain};
+                }
             }
         }
         return ($message) ? $message : $error->getMessage();
@@ -53,15 +56,18 @@ class Validator extends \League\JsonGuard\Validator
 
     public function getOriginPointer($error)
     {
-        return explode('/', $error->getPointer())[1];
+        $pointer = explode('/', $error->getPointer());
+        return (isset($pointer[1])) ? $pointer[1] : $pointer[0];
     }
 
     public function getTranslatedPointer($error)
     {
         $pointerTranslated = null;
         $pointer = $this->getOriginPointer($error);
-        if (array_key_exists('locale', $this->schemaArray->properties->{$pointer})) {
-            $pointerTranslated = $this->schemaArray->properties->{$pointer}->locale->{$this->locale}->pointer;
+        if (array_key_exists($pointer, $this->schemaArray->properties)) {
+            if (array_key_exists('locale', $this->schemaArray->properties->{$pointer})) {
+                $pointerTranslated = $this->schemaArray->properties->{$pointer}->locale->{$this->locale}->pointer;
+            }
         }
         return ($pointerTranslated) ? $pointerTranslated : $pointer;
     }
