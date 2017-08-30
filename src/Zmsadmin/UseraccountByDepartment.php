@@ -38,7 +38,7 @@ class UseraccountByDepartment extends BaseController
                 'workstation' => $workstation,
                 'department' => $department,
                 'workstationList' => $workstationList,
-                'userAccountList' => $userAccountList,
+                'userAccountList' => $userAccountList->sortByCustomStringKey('id'),
                 'organisationList' => $organisationList,
             )
         );
