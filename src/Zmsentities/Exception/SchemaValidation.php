@@ -75,8 +75,7 @@ class SchemaValidation extends \Exception
     public function setData()
     {
         foreach ($this->validationError as $error) {
-            $pointer = str_replace('/', '', $error->getPointer());
-            $pointer = (strpos($pointer, 'changePassword') !== false) ? 'changePassword[]' : $pointer;
+            $pointer = $error->getPointer();
             if (! isset($this->data[$pointer]['messages'])) {
                 $this->data[$pointer]['messages'] = array();
             }
