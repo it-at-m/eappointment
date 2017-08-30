@@ -6,5 +6,7 @@ set -a
 [ -e /etc/sysconfig/zms ] && source /etc/sysconfig/zms
 set +a
 
-$BIN/dldbget -o $EXPORT
-$BIN/updateDldbData --commit
+if [[ $ZMS_CRONROOT =~ ^1|on|true|yes$ ]]; then
+    $BIN/dldbget -o $EXPORT
+    $BIN/updateDldbData --commit
+fi
