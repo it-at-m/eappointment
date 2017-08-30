@@ -54,6 +54,17 @@ class Base extends \ArrayObject
         return $this;
     }
 
+    public function sortByCustomStringKey($key)
+    {
+        $this->uasort(function ($a, $b) use ($key) {
+            return strcmp(
+                Sorter::toSortableString(ucfirst($a[$key])),
+                Sorter::toSortableString(ucfirst($b[$key]))
+            );
+        });
+        return $this;
+    }
+
     public function __clone()
     {
         foreach ($this as $key => $property) {
