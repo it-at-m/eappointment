@@ -38,13 +38,23 @@
             "type": "array",
             "items": {
                 "type": "string",
-                "minLength": 8,
+                "minLength": 6,
                 "maxLength": 40
             },
             "description": "this field is only used on changing the password",
             "format": "sameValues",
             "maxItems": 2,
-            "minItems": 2
+            "minItems": 2,
+            "locale": {
+                "de_DE": {
+                    "pointer": "Passwortwiederholung",
+                    "messages": {
+                        "min_length": "Die Länge des Passwortes muss mindestens 6 Zeichen betragen",
+                        "max_length": "Die Länge des Passwortes darf maximal 40 Zeichen betragen",
+                        "is_equal": "Die beiden Passwörter müssen identisch sein"
+                    }
+                }
+            }
         },
         "rights": {
             "type": "object",

@@ -79,14 +79,14 @@ class Entity extends \ArrayObject implements \JsonSerializable
     /**
      * This method is private, because the used library should not be used outside of this class!
      */
-    private function getValidator()
+    private function getValidator($locale = 'de_DE')
     {
         $jsonSchema = self::readJsonSchema();
         $data = new Schema($this);
         if (array_key_exists('$schema', $data)) {
             unset($data['$schema']);
         }
-        $validator = new Validator($data->toJsonObject(), $jsonSchema->toJsonObject());
+        $validator = new Validator($data->toJsonObject(), $jsonSchema->toJsonObject(), $locale);
         return $validator;
     }
 
@@ -107,9 +107,9 @@ class Entity extends \ArrayObject implements \JsonSerializable
      * @throws \BO\Zmsentities\Expcetion\SchemaValidation
      * @return Boolean
      */
-    public function testValid()
+    public function testValid($locale = 'de_DE')
     {
-        $validator = $this->getValidator();
+        $validator = $this->getValidator($locale);
         $validator = $this->registerExtensions($validator);
         if (!$validator->isValid()) {
             $exception = new \BO\Zmsentities\Exception\SchemaValidation();
