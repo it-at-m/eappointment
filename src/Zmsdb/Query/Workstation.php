@@ -164,7 +164,9 @@ class Workstation extends Base implements MappingInterface
 
         $data['Kalenderansicht'] = $entity->getQueuePreference('appointmentsOnly', true);
         $data['clusteransicht'] = $entity->getQueuePreference('clusterEnabled', true);
-        $data['StandortID'] = $entity->scope['id'];
+        if (isset($entity->scope['id'])) {
+            $data['StandortID'] = $entity->scope['id'];
+        }
         $data['Arbeitsplatznr'] = $entity->name;
 
         $data = array_filter($data, function ($value) {
