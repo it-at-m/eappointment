@@ -72,4 +72,28 @@ class Schema extends \ArrayObject
             || (is_array($item) && count($item) == 0)
         );
     }
+
+    public function toProperty()
+    {
+        return new \BO\Zmsentities\Helper\Property($this);
+    }
+
+    /**
+     * Uses a path like '/changePassword/0' to fetch property settings
+     */
+    public function getPropertyByPath($path)
+    {
+        $pointerList = explode('/', trim($path, '/ '));
+        $property = $this->toProperty()->properties;
+        foreach ($pointerList as $pointer) {
+            if ($property->type->get() == 'array') {
+                $property = $property['items'];
+            } elseif ($property->type->get() == 'object') {
+                $property = $property->properties[$pointer];
+            } else {
+                $property = $property[$pointer];
+            }
+        }
+        return $property->get([]);
+    }
 }
