@@ -118,8 +118,10 @@ class Request extends Base
                         $scope->getProviderId(),
                         $resolveReferences - 1
                     )->getArrayCopy();
-                $intersectList = (count($intersectList)) ?
-                    array_values(array_intersect($intersectList, $requestsByProvider)) : $requestsByProvider;
+                if (count($requestsByProvider)) {
+                    $intersectList = (count($intersectList)) ?
+                        array_values(array_intersect($intersectList, $requestsByProvider)) : $requestsByProvider;
+                }
             }
         }
         $requestList = new Collection($intersectList);
