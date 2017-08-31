@@ -1,9 +1,10 @@
 {% extends "exception/bo/layout.twig" %}
+{% block title %}
+    ZMS Ticketprinter - Wartenummernausgabe geschlossen!
+{% endblock %}
+{% block adressangabe %}
+    Wartenummernausgabe geschlossen!
+{% endblock %}
 {% block content %}
-    <div class="alert alert-error noprint textile">
-	    <h1>Wartenummernausgabe geschlossen!</h1>
-	</div>
-    <br />
-    <br />
     {{ exception.originalMessage }}
 {% endblock %}
