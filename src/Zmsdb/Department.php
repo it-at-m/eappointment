@@ -314,8 +314,8 @@ class Department extends Base
         $query = Query\Department::QUERY_MAIL_UPDATE;
         return $this->getWriter()
             ->fetchAffected($query, array(
-            $email,
-            $departmentId
+            'email' => $email,
+            'departmentId' => $departmentId
             ));
     }
 
@@ -336,11 +336,11 @@ class Department extends Base
             ->fetchAffected(
                 $query,
                 array(
-                (isset($preferences['enabled'])) ? 1 : 0,
-                $preferences['identification'],
-                (isset($preferences['sendConfirmationEnabled'])) ? 1 : 0,
-                (isset($preferences['sendReminderEnabled'])) ? 1 : 0,
-                $departmentId
+                'enabled' => (isset($preferences['enabled'])) ? 1 : 0,
+                'identification' => $preferences['identification'],
+                'sendConfirmationEnabled' => (isset($preferences['sendConfirmationEnabled'])) ? 1 : 0,
+                'sendReminderEnabled' => (isset($preferences['sendReminderEnabled'])) ? 1 : 0,
+                'departmentId' => $departmentId
                 )
             );
     }

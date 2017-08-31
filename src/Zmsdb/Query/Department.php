@@ -12,24 +12,29 @@ class Department extends Base implements MappingInterface
     const TABLE = 'behoerde';
 
     const QUERY_MAIL_UPDATE = '
-        UPDATE
+        SET @tempEmailID = (SELECT emailID from email WHERE BehoerdenID=:departmentId);
+        REPLACE INTO
             email
         SET
-            absenderadresse=?
-        WHERE
-            BehoerdenID=?
+            emailID=@tempEmailID,
+            BehoerdenID=:departmentId,
+            absenderadresse=:email,
+            serveradresse="localhost"
     ';
 
     const QUERY_NOTIFICATIONS_UPDATE = '
-        UPDATE
-            sms
-        SET
-            enabled=?,
-            Absender=?,
-            internetbestaetigung=?,
-            interneterinnerung=?
-        WHERE
-            BehoerdenID=?
+
+    SET @tempSMSId = (SELECT smsID from sms WHERE BehoerdenID=:departmentId);
+    REPLACE INTO
+        sms
+    SET
+        smsID=@tempSMSId,
+        BehoerdenID=:departmentId,
+        enabled=:enabled,
+        Absender=:identification,
+        internetbestaetigung=:sendConfirmationEnabled,
+        interneterinnerung=:sendReminderEnabled
+
     ';
 
     const QUERY_MAIL_INSERT = '
