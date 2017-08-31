@@ -8,6 +8,7 @@ import ExceptionHandler from '../../lib/exceptionHandler'
 import MessageHandler from '../../lib/messageHandler';
 import ButtonActionHandler from "./action"
 import RequestListAction from "./requests"
+import maxChars from '../../element/form/maxChars'
 
 class View extends BaseView {
 
@@ -29,6 +30,9 @@ class View extends BaseView {
         $.ajaxSetup({ cache: false });
         this.load().then(() => {
             this.bindEvents();
+            $('textarea.maxchars').each(function() {
+                maxChars(this);
+            })
         });
     }
 

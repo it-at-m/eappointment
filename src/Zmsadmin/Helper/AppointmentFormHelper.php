@@ -63,10 +63,11 @@ class AppointmentFormHelper
 
     protected static function updateMailAndNotificationCount($formData, Entity $process)
     {
-        $client = $process->getFirstClient();
+        //$client = $process->getFirstClient();
         if (array_key_exists('sendMailConfirmation', $formData) &&
-            1 == $formData['sendMailConfirmation']['value'] &&
+            1 == $formData['sendMailConfirmation']['value'] /*&&
             $client->getEmailSendCount() == 0
+            */ #31526 - allow new confirmation mail on counter or workstation changes
         ) {
             \App::$http->readPostResult(
                 '/process/'. $process->id .'/'. $process->authKey .'/confirmation/mail/',
@@ -74,8 +75,10 @@ class AppointmentFormHelper
             );
         }
         if (array_key_exists('sendConfirmation', $formData) &&
-            1 == $formData['sendConfirmation']['value'] &&
-            $client->getNotificationsSendCount() == 0) {
+            1 == $formData['sendConfirmation']['value'] /*&&
+            $client->getNotificationsSendCount() == 0
+            */ #31526 - allow new confirmation mail on counter or workstation changes
+        ) {
             \App::$http->readPostResult(
                 '/process/'. $process->id .'/'. $process->authKey .'/confirmation/notification/',
                 $process
