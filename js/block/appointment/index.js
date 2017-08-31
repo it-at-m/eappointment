@@ -46,7 +46,7 @@ class View extends BaseView {
     }
 
     loadNew () {
-        const url = `${this.includeUrl}/appointmentForm/?selectedprocess=${this.selectedProcess}&new=1`
+        const url = `${this.includeUrl}/appointmentForm/?selectedprocess=${this.selectedProcess}&new=1&selecteddate=${this.selectedDate}`
         this.loadPromise = this.loadContent(url).then(() => {
             this.loadRequestList();
             this.loadFreeProcessList();
