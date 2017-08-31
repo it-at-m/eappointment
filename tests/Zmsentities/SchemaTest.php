@@ -45,19 +45,6 @@ class SchemaTest extends Base
         $this->assertTrue(0 == count($entity), 'Schema Helper getExample from entity without example failed');
     }
 
-    public function testTestValid()
-    {
-        $entity = new \BO\Zmsentities\Useraccount();
-        $entity->id= 123;
-        $entity->changePassword= array('test', 'testfailed');
-        try {
-            $entity->testValid();
-            $this->fail("Expected exception SchemaValidation not thrown");
-        } catch (\BO\Zmsentities\Exception\SchemaValidation $exception) {
-            $this->assertEquals(400, $exception->getCode());
-        }
-    }
-
     public function testJsonSerialize()
     {
         $entity = new \BO\Zmsentities\Department();

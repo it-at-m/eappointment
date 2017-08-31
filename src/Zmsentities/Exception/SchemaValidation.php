@@ -53,13 +53,13 @@ class SchemaValidation extends \Exception
         "INVALID_STRING_MATCHING"          => "INVALID_STRING_MATCHING"
     ];
 
-    protected $validationError = null;
+    protected $validationErrorList = [];
 
     protected $schemaName = '';
 
-    public function setValidationError(array $validationError)
+    public function setValidationError(array $validationErrorList)
     {
-        $this->validationError = $validationError;
+        $this->validationErrorList = $validationErrorList;
         $this->setMessages();
         $this->setData();
         return $this;
@@ -74,7 +74,7 @@ class SchemaValidation extends \Exception
 
     public function setData()
     {
-        foreach ($this->validationError as $error) {
+        foreach ($this->validationErrorList as $error) {
             $pointer = $error->getPointer();
             if (! isset($this->data[$pointer]['messages'])) {
                 $this->data[$pointer]['messages'] = array();
@@ -86,10 +86,15 @@ class SchemaValidation extends \Exception
         }
     }
 
+    public function getValidationErrorList()
+    {
+        return $this->validationErrorList;
+    }
+
     public function setMessages()
     {
         $messages = [];
-        foreach ($this->validationError as $error) {
+        foreach ($this->validationErrorList as $error) {
             $messages[] = $this->getErrorMessage($error);
         }
         $this->message = implode("\n", $messages);
