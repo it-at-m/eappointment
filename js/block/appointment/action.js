@@ -37,12 +37,13 @@ class View extends BaseView {
 
     delete (ev) {
         console.log("Delete Button clicked", ev);
+        let initiator = (this.source == "counter") ? "Tresen" : "Arbeitsplatz";
         ev.preventDefault();
         ev.stopPropagation();
         const id  = $(ev.target).data('id')
         const name  = $(ev.target).data('name')
         const ok = confirm('Wenn Sie den Kunden Nr. '+ id +' '+ name +' löschen wollen, klicken Sie auf OK. Der Kunde wird darüber per eMail und/oder SMS informiert.)')
-        const url = `${this.includeUrl}/process/${id}/delete/?initiator=backend-${this.source}`;
+        const url = `${this.includeUrl}/process/${id}/delete/?initiator=${initiator}`;
         if (ok) {
             return this.loadCall(url, 'DELETE');
         }
@@ -107,8 +108,9 @@ class View extends BaseView {
 
     save (ev) {
         console.log("Save Button clicked", ev);
+        let initiator = (this.source == "counter") ? "Tresen" : "Arbeitsplatz";
         const sendData = this.$main.find('form').serialize();
-        const url = `${this.includeUrl}/process/${this.selectedProcess}/save/?initiator=backend-${this.source}`;
+        const url = `${this.includeUrl}/process/${this.selectedProcess}/save/?initiator=${initiator}`;
         return this.loadCall(url, 'POST', sendData);
     }
 
