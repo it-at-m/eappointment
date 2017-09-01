@@ -23,7 +23,7 @@ watch:
 	node_modules/.bin/gulp watch
 	
 live: # init live system
-	$(COMPOSER) update --no-dev
+	$(COMPOSER) install --no-dev --prefer-dist
 
 dev: # init development system
 	$(COMPOSER) update
