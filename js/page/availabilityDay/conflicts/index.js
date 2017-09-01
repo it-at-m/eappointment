@@ -5,13 +5,13 @@ import moment from 'moment'
 const renderLink = (conflict, onClick) => {
     const appointment = conflict.appointments[0]
     const availability = appointment.availability || {}
-    const startTime = moment(appointment.date, 'X').format('YYYY-MM-DD HH:mm')
+    const startTime = moment(appointment.date, 'X').format('DD.MM.YYYY HH:mm')
     const slotTime = availability.slotTimeInMinutes || 0
     const endTime = moment(appointment.date + slotTime * 60 * appointment.slotCount, 'X').format('HH:mm')
     if (availability.id) {
-        return <a href="#" onClick={onClick}><strong>{startTime} - {endTime}</strong></a>
+        return <a href="#" onClick={onClick}><strong>{startTime} - {endTime} Uhr</strong></a>
     } else {
-        return <span><strong>{startTime}</strong></span>
+        return <span><strong>{startTime} Uhr</strong></span>
     }
 }
 
