@@ -17,7 +17,7 @@ dev: # init development system
 	npm install
 
 live: # init live system, delete unnecessary libs
-	$(COMPOSER) install --no-dev
+	$(COMPOSER) install --no-dev --prefer-dist
 
 watch: # Build CSS, JS and Swagger docs on changes
 	./node_modules/.bin/gulp watch
