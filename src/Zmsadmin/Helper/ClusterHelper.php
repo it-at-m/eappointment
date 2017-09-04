@@ -84,9 +84,13 @@ class ClusterHelper
     {
         $scope = static::$workstation->scope;
         if (static::isClusterEnabled()) {
-            $scope = \App::$http
-                ->readGetResult('/scope/prefered/cluster/'. static::$cluster['id'] .'/', ['resolveReferences' => 0])
-                ->getEntity();
+            try {
+                $scope = \App::$http
+                    ->readGetResult('/scope/prefered/cluster/'. static::$cluster['id'] .'/', ['resolveReferences' => 0])
+                    ->getEntity();
+            } catch (\BO\Zmsclient\Exception $exception) {
+                //
+            }
         }
         return $scope;
     }

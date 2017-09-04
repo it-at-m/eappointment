@@ -31,7 +31,7 @@ class AppointmentForm extends BaseController
         $freeProcessList = Helper\AppointmentFormHelper::readFreeProcessList($request, $workstation);
 
         $scope = (new Helper\ClusterHelper($workstation))->getPreferedScopeByCluster();
-
+        
         return \BO\Slim\Render::withHtml(
             $response,
             'block/appointment/form.twig',
