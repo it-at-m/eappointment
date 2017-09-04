@@ -34,6 +34,28 @@ class WorkstationProcessCallTest extends Base
         $this->assertEquals(302, $response->getStatusCode());
     }
 
+    public function testRenderingDirectCall()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/194104/',
+                    'response' => $this->readFixture("GET_process_194104_2b88_notification.json")
+                ]
+            ]
+        );
+        $response = $this->render(['id' => 194104], ['direct' => 1], []);
+        $this->assertRedirect($response, '/workstation/process/194104/called/');
+        $this->assertEquals(302, $response->getStatusCode());
+    }
+
     public function testRenderingPreCallRedirect()
     {
         $this->setApiCalls(
