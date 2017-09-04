@@ -21,9 +21,10 @@ class WorkstationProcessCall extends BaseController
     ) {
         \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $processId = Validator::value($args['id'])->isNumber()->getValue();
+        $validator = $request->getAttribute('validator');
+        $isDirectCall = $validator->getParameter('direct')->isNumber()->getValue();
         $process = \App::$http->readGetResult('/process/'. $processId .'/')->getEntity();
-
-        if ($process->toProperty()->amendment->get()) {
+        if ($process->toProperty()->amendment->get() && ! $isDirectCall) {
             return \BO\Slim\Render::redirect(
                 'workstationProcessPreCall',
                 array(

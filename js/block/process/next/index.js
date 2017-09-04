@@ -37,7 +37,7 @@ class View extends BaseView {
     loadCall() {
         this.cleanInstance();
         this.setTimeSinceCall();
-        const url = `${this.includeUrl}/workstation/call/${this.processId}/`
+        const url = `${this.includeUrl}/workstation/call/${this.processId}/?direct=1`
         return this.loadContent(url).catch(err => this.loadErrorCallback(err.source, err.url));
     }
 
