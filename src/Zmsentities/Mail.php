@@ -120,7 +120,7 @@ class Mail extends Schema\Entity
             'content' => Helper\Messaging::getPlainText($content),
             'base64' => false
         ));
-        if ($icsRequired) {
+        if ($icsRequired and $process->getAppointments()->getFirst()->hasTime()) {
             $entity->multipart[] = new Mimepart(array(
                 'mime' => 'text/calendar',
                 'content' => Helper\Messaging::getMailIcs($process, $config)->getContent(),
