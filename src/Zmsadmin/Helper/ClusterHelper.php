@@ -80,6 +80,17 @@ class ClusterHelper
         return $process;
     }
 
+    public static function getPreferedScopeByCluster()
+    {
+        $scope = static::$workstation->scope;
+        if (static::isClusterEnabled()) {
+            $scope = \App::$http
+                ->readGetResult('/scope/prefered/cluster/'. static::$cluster['id'] .'/', ['resolveReferences' => 0])
+                ->getEntity();
+        }
+        return $scope;
+    }
+
     protected static function isClusterEnabled()
     {
         return (static::$workstation->queue['clusterEnabled'] && static::$cluster);

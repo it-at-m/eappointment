@@ -36,6 +36,11 @@ class ProcessReserveTest extends Base
                     'response' => $this->readFixture("GET_process_100005_95a3_reserved.json")
                 ],
                 [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/cluster/',
+                    'response' => $this->readFixture("GET_cluster_109.json")
+                ],
+                [
                     'function' => 'readPostResult',
                     'url' => '/process/status/confirmed/',
                     'response' => $this->readFixture("GET_process_100005_95a3_confirmed.json")
@@ -56,6 +61,11 @@ class ProcessReserveTest extends Base
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/cluster/',
+                    'response' => $this->readFixture("GET_cluster_109.json")
                 ]
             ]
         );
