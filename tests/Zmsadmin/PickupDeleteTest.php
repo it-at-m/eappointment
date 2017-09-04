@@ -41,11 +41,6 @@ class PickupDeleteTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/process/status/finished/',
                     'response' => $this->readFixture("GET_process_82252_12a2.json")
-                ],
-                [
-                    'function' => 'readPostResult',
-                    'url' => '/process/status/finished/',
-                    'response' => $this->readFixture("GET_process_194104_2b88_notification.json")
                 ]
             ]
         );

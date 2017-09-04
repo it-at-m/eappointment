@@ -33,8 +33,8 @@ class ProcessSave extends BaseController
         $initiator = Validator::param('initiator')->isString()->getValue();
         $process = \App::$http->readGetResult('/process/'. $processId .'/')->getEntity();
         $input = $request->getParsedBody();
-
-        $validationList = FormValidation::fromAdminParameters($workstation->scope['preferences']);
+        $scope = (new Helper\ClusterHelper($workstation))->getPreferedScopeByCluster();
+        $validationList = FormValidation::fromAdminParameters($scope['preferences']);
         if ($validationList->hasFailed()) {
             return \BO\Slim\Render::withJson(
                 $response,
@@ -43,7 +43,7 @@ class ProcessSave extends BaseController
             );
         }
         $dateTime = (new \DateTimeImmutable())->setTimestamp($process->getFirstAppointment()->date);
-        $process->withUpdatedData($validationList->getStatus(), $input, $workstation->scope, $dateTime);
+        $process->withUpdatedData($validationList->getStatus(), $input, $scope, $dateTime);
         $process = Helper\AppointmentFormHelper::writeUpdatedProcess(
             $validationList->getStatus(),
             $process,

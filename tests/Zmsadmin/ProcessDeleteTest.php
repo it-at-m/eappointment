@@ -60,6 +60,56 @@ class ProcessDeleteTest extends Base
         $this->assertEquals(200, $response->getStatusCode());
     }
 
+    public function testDeleteWithoutAppointment()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_Workstation_clusterEnabled.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/100632/',
+                    'response' => $this->readFixture("GET_process_spontankunde.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/cluster/',
+                    'response' => $this->readFixture("GET_cluster_109.json")
+                ],
+                [
+                    'function' => 'readDeleteResult',
+                    'url' => '/process/100632/ec58/',
+                    'parameters' => ['initiator' => 'admin'],
+                    'response' => $this->readFixture("GET_process_spontankunde.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/process/100632/ec58/delete/mail/',
+                    'response' => $this->readFixture("POST_mail.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/process/100632/ec58/delete/notification/',
+                    'response' => $this->readFixture("POST_notification.json")
+                ]
+            ]
+        );
+        $response = $this->render(
+            ['id' => '100632'],
+            $this->parameters,
+            []
+        );
+        $this->assertContains(
+            'erfolgreich entfernt',
+            (string)$response->getBody()
+        );
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
     public function testDeleteFailed()
     {
         $this->expectException('\BO\Zmsclient\Exception');

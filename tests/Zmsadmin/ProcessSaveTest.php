@@ -33,6 +33,11 @@ class ProcessSaveTest extends Base
                     'response' => $this->readFixture("GET_process_82252_12a2.json")
                 ],
                 [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/cluster/',
+                    'response' => $this->readFixture("GET_cluster_109.json")
+                ],
+                [
                     'function' => 'readPostResult',
                     'url' => '/process/82252/12a2/',
                     'parameters' => ['initiator' => null],
@@ -59,6 +64,11 @@ class ProcessSaveTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/process/82252/',
                     'response' => $this->readFixture("GET_process_82252_12a2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/cluster/',
+                    'response' => $this->readFixture("GET_cluster_109.json")
                 ]
             ]
         );

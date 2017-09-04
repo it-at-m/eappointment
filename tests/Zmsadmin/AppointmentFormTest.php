@@ -59,19 +59,30 @@ class AppointmentFormTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
+                    'url' => '/scope/prefered/cluster/109/',
+                    'parameters' => ['resolveReferences' => 0],
+                    'response' => $this->readFixture("GET_scope_141.json")
+                ],
+                [
+                    'function' => 'readGetResult',
                     'url' => '/cluster/109/request/',
                     'response' => $this->readFixture("GET_cluster_109_requestlist.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/100044/',
+                    'response' => $this->readFixture("GET_process_100044_57c2.json")
                 ],
                 [
                     'function' => 'readPostResult',
                     'url' => '/process/status/free/',
                     'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0],
-                    'response' => $this->readFixture("GET_freeprocesslist_empty.json")
+                    'response' => $this->readFixture("GET_freeprocesslist_20160527.json")
                 ]
             ]
         );
-        $response = parent::testRendering();
-        $this->assertContains('Terminvereinbarung Neu', (string)$response->getBody());
+        $response = $this->render([], ['selectedprocess' => 100044]);
+        $this->assertContains('Terminvereinbarung Aktualisieren', (string)$response->getBody());
     }
 
     public function testSelectedProcess()
