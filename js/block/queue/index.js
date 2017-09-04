@@ -96,20 +96,16 @@ class View extends BaseView {
             ev.stopPropagation();
             this.load();
         }).on('change', '.queue-table .switchcluster select', (ev) => {
+            let loc = window.location;
+            let pathName = loc.pathname.substring(0, loc.pathname.lastIndexOf('/')).split('/').pop();
+            $('.sourceSwitchCluster').val(pathName);
             $(ev.target).closest('form').submit();
         }).on('change', '.queue-table .appointmentsOnly input', (ev) => {
+            let loc = window.location;
+            let pathName = loc.pathname.substring(0, loc.pathname.lastIndexOf('/')).split('/').pop();
+            $('.sourceAppointmentsOnly').val(pathName);
             $(ev.target).closest('form').submit();
-        })/*.on('click', '.queue-table .callnextclient a', (ev) => {
-
-            ev.preventDefault();
-            ev.stopPropagation();
-            new ProcessNext($.find('[data-client-next]'), {
-                    'processId': $(ev.target).data('process'),
-                    'includeUrl': this.includeUrl,
-                    'onNextProcess': this.onNextProcess
-            }).loadCall().catch(err => this.loadErrorCallback(err));
-
-        })*/.on('click', 'a.process-edit', (ev) => {
+        }).on('click', 'a.process-edit', (ev) => {
             this.onEditProcess($(ev.target).data('id'))
         }).on('click', 'a.process-reset', (ev) => {
             this.ButtonAction.reset(ev).catch(err => this.loadErrorCallback(err)).then((response) => {
