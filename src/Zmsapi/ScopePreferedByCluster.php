@@ -28,7 +28,6 @@ class ScopePreferedByCluster extends BaseController
         if (! $cluster) {
             throw new Exception\Cluster\ClusterNotFound();
         }
-
         $scope = (new Cluster())->readScopeWithShortestWaitingTime($cluster->id, \App::$now);
         $scope = (new Scope())->readResolvedReferences($scope, $resolveReferences);
 
