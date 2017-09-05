@@ -53,7 +53,7 @@ definitions:
     $ref: "schema/log.json"
   mail:
     $ref: "schema/mail.json"
-  mimemart:
+  mimepart:
     $ref: "schema/mimepart.json"
   metaresult:
     $ref: "schema/metaresult.json"
