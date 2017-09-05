@@ -44,6 +44,7 @@ class ScopeAppointmentsByDayXlsExport extends BaseController
         $xlsSheetTitle = \DateTimeImmutable::createFromFormat('Y-m-d', $selectedDate)->format('d.m.Y');
 
         $xlsHeaders = [
+            'Lfd. Nummer' => 'integer',
             'Uhrzeit' => 'string',
             'Nr.' => 'integer',
             'Name' => 'string',
@@ -51,12 +52,13 @@ class ScopeAppointmentsByDayXlsExport extends BaseController
             'Telefon' => 'string',
             'Email' => 'string',
             'Dienstleistung' => 'string',
+            'Anmerkungen' => 'string'
         ];
         $writer = new XLSXWriter();
 
         $writer->writeSheetHeader($xlsSheetTitle, $xlsHeaders);
 
-        foreach ($queueList->toProcessList()->getArrayCopy() as $queueItem) {
+        foreach ($queueList->toProcessList()->getArrayCopy() as $key => $queueItem) {
             $client = count($queueItem->clients) > 0 ? $queueItem->clients[0] : [];
             $request = count($queueItem->requests) > 0 ? $queueItem->requests[0] : [];
 
@@ -64,13 +66,15 @@ class ScopeAppointmentsByDayXlsExport extends BaseController
             $date->setTimezone(\App::$now->getTimezone());
 
             $row = [
+                $key + 1,
                 $date->format('H:i:s'),
                 $queueItem->queue['number'],
                 $client['familyName'],
                 $queueItem->authKey,
                 $client['telephone'],
                 $client['email'],
-                (isset($request['name'])) ? $request['name'] : ''
+                (isset($request['name'])) ? $request['name'] : '',
+                $queueItem->amendment
             ];
 
             $writer->writeSheetRow($xlsSheetTitle, $row);
