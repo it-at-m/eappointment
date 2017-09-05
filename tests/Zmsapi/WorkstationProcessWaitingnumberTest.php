@@ -8,9 +8,9 @@ class WorkstationProcessWaitingnumberTest extends Base
 {
     protected $classname = "WorkstationProcessWaitingnumber";
 
-    const PROCESS_ID = 10030;
+    const PROCESS_ID = 10255;
 
-    const AUTHKEY = '1c56';
+    const AUTHKEY = '29ed';
 
     public function testRendering()
     {
@@ -20,7 +20,8 @@ class WorkstationProcessWaitingnumberTest extends Base
         $response = $this->render([], [
             '__body' => '{
                 "id": '. self::PROCESS_ID .',
-                "authKey": "'. self::AUTHKEY .'"
+                "authKey": "'. self::AUTHKEY .'",
+                "scope": {"id": 146}
             }'
         ], []);
         $this->assertContains('process.json', (string)$response->getBody());
@@ -34,26 +35,6 @@ class WorkstationProcessWaitingnumberTest extends Base
         $workstation->queue['clusterEnabled'] = 1;
         $workstation->scope['id'] = 146; //ghostworkstation count 3
         $this->setExpectedException('\BO\Mellon\Failure\Exception');
-        $this->render([], [], []);
-    }
-
-    public function testScopeNotFound()
-    {
-        $this->setWorkstation();
-        User::$workstation->queue['clusterEnabled'] = 1;
-        User::$workstation->scope['id'] = 999;
-        $this->expectException('\BO\Zmsapi\Exception\Scope\ScopeNotFound');
-        $this->expectExceptionCode(404);
-        $this->render([], [], []);
-    }
-
-    public function testClusterNotFound()
-    {
-        $this->setWorkstation();
-        User::$workstation->scope['id'] = 143; //no existing cluster for Bürgeramt Rathaus Mitte in Test
-        User::$workstation->queue['clusterEnabled'] = 1;
-        $this->expectException('\BO\Zmsapi\Exception\Cluster\ClusterNotFound');
-        $this->expectExceptionCode(404);
         $this->render([], [], []);
     }
 
