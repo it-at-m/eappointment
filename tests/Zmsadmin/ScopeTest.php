@@ -64,7 +64,7 @@ class ScopeTest extends Base
 
     public function testSaveWithUploadImage()
     {
-        \App::$now = new \DateTime('2016-04-01 11:55:00', new \DateTimeZone('Europe/Berlin'));
+        \App::$now = new \DateTimeImmutable('2016-04-01 11:55:00', new \DateTimeZone('Europe/Berlin'));
         $this->setApiCalls(
             [
                 [
@@ -150,7 +150,7 @@ class ScopeTest extends Base
     {
         $this->expectException('\Exception');
         $this->expectExceptionMessage('Wrong Mediatype given, use gif, jpg or png');
-        \App::$now = new \DateTime('2016-04-01 11:55:00', new \DateTimeZone('Europe/Berlin'));
+        \App::$now = new \DateTimeImmutable('2016-04-01 11:55:00', new \DateTimeZone('Europe/Berlin'));
         $this->setApiCalls(
             [
                 [
@@ -227,7 +227,7 @@ class ScopeTest extends Base
 
     public function testSaveWithDeleteImage()
     {
-        \App::$now = new \DateTime('2016-04-01 11:55:00', new \DateTimeZone('Europe/Berlin'));
+        \App::$now = new \DateTimeImmutable('2016-04-01 11:55:00', new \DateTimeZone('Europe/Berlin'));
         $this->setApiCalls(
             [
                 [

@@ -38,11 +38,21 @@ class AppointmentFormHelper
         return $process;
     }
 
-    public static function writeQueuedProcess($formData, Entity $process)
+    public static function writeQueuedProcess($input, Entity $process)
     {
         $process = \App::$http->readPostResult('/workstation/process/waitingnumber/', $process)->getEntity();
-        if ('queued' == $process->status) {
-            static::updateMailAndNotificationCount($formData, $process);
+        $client = $process->getFirstClient();
+        if ($client->hasEmail() && isset($input['sendMailConfirmation'])) {
+            \App::$http->readPostResult(
+                '/process/'. $process->id .'/'. $process->authKey .'/confirmation/mail/',
+                $process
+            );
+        }
+        if ($client->hasTelephone() && isset($input['sendConfirmation'])) {
+            \App::$http->readPostResult(
+                '/process/'. $process->id .'/'. $process->authKey .'/confirmation/notification/',
+                $process
+            );
         }
         return $process;
     }

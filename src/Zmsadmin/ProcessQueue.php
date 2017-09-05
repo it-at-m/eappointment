@@ -30,7 +30,9 @@ class ProcessQueue extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $validator = $request->getAttribute('validator');
         $selectedDate = Validator::value($args['date'])->isString()->getValue();
-        $dateTime = ($selectedDate) ? \DateTime::createFromFormat('Y-m-d H:i', $selectedDate .' 00:00') : \App::$now;
+        $dateTime = ($selectedDate) ?
+            \DateTimeImmutable::createFromFormat('Y-m-d H:i', $selectedDate .' 00:00') :
+            \App::$now;
 
         $process = $this->readSelectedProcessWithWaitingnumber($validator);
         if ($process instanceof \BO\Zmsentities\Process) {
@@ -46,9 +48,8 @@ class ProcessQueue extends BaseController
         }
 
         $result = $this->readNewProcessWithoutAppointment(
-            $response,
             $request->getParsedBody(),
-            $workstation->scope,
+            $workstation,
             $dateTime
         );
         if ($result instanceof \BO\Zmsentities\Process) {
@@ -75,24 +76,22 @@ class ProcessQueue extends BaseController
         return $result;
     }
 
-    protected function readNewProcessWithoutAppointment($response, $input, $scope, $dateTime)
+    protected function readNewProcessWithoutAppointment($input, $workstation, \DateTimeImmutable $dateTime)
     {
         $result = null;
-        $scope = new \BO\Zmsentities\Scope($scope);
-        $process = (new \BO\Zmsentities\Process)->createFromScope($scope, $dateTime);
-        if (is_array($input)) {
-            $validationList = FormValidation::fromAdminParameters($scope['preferences']);
-            if ($validationList->hasFailed()) {
-                $result = \BO\Slim\Render::withJson(
-                    $response,
-                    $validationList->getStatus(),
-                    428
-                );
-            } else {
-                $process->withUpdatedData($validationList->getStatus(), $input, $scope, $dateTime);
-                $result = Helper\AppointmentFormHelper::writeQueuedProcess($validationList->getStatus(), $process);
-            }
-        }
+        $process = new \BO\Zmsentities\Process();
+        $scope = (new Helper\ClusterHelper($workstation))->getPreferedScopeByCluster();
+        $isOpened = \App::$http
+            ->readGetResult('/scope/'. $scope->id .'/availability/')
+            ->getCollection()
+            ->isOpened(\App::$now);
+        $notice = (! $isOpened) ? 'Außerhalb der Öffnungszeiten gebucht! ' : '';
+        $process = $process->createFromScope($scope, $dateTime);
+        $process->updateRequests('dldb', implode(',', $input['requests']));
+        $process->addClientFromForm($input);
+        $process->addReminderTimestamp($input, $dateTime);
+        $process->addAmendment($input, $notice);
+        $result = Helper\AppointmentFormHelper::writeQueuedProcess($input, $process);
         return $result;
     }
 }
