@@ -17,3 +17,8 @@ then
     cp $ROOT/config.example.php $ROOT/config.php
 fi
 test -d $ROOT/cache && chmod -fR a+rwX $ROOT/cache || echo "Could not chmod cache files"
+
+
+#VERSION=`git symbolic-ref -q --short HEAD || git describe --tags --exact-match`
+VERSION=`git describe --abbrev=0 --tags`
+echo $VERSION > $ROOT/VERSION

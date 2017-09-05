@@ -25,6 +25,7 @@ class StatusGet extends BaseController
         $status['version']['major'] = \App::VERSION_MAJOR;
         $status['version']['minor'] = \App::VERSION_MINOR;
         $status['version']['patch'] = \App::VERSION_PATCH;
+        $status['version'] = Helper\Version::getArray();
 
         $message = Response\Message::create($request);
         $message->data = $status;

@@ -64,7 +64,8 @@ class Message implements \JsonSerializable
     public function setUpdatedMetaData()
     {
         $this->meta->generated = date('c');
-        $this->meta->server = \App::IDENTIFIER;
+        $version = \BO\Zmsapi\Helper\Version::getString();
+        $this->meta->server = \App::IDENTIFIER . ' (' . $version . ')';
         if ($this->data !== null && $this->statuscode == 200 && !$this->hasData()) {
             $this->statuscode = 404;
             $this->meta->error = true;
