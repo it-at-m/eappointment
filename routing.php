@@ -28,7 +28,6 @@ use \Psr\Http\Message\ResponseInterface;
  *          summary: Get an availability by id
  *          tags:
  *              - availability
- *          x-since: 2.4.0
  *          parameters:
  *              -   name: id
  *                  description: availability number
@@ -402,6 +401,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/cluster/{id}/queue/next/":
  *      get:
  *          summary: Get the next process in queue by cluster id
+ *          x-since: 2.11
  *          tags:
  *              - cluster
  *              - process
@@ -412,6 +412,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
+ *                  x-since: 2.12
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -449,6 +450,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
+ *                  x-since: 2.12
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -480,6 +482,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/cluster/{id}/request/":
  *      get:
  *          summary: Get a list of requests by cluster ID
+ *          x-since: 2.11
  *          tags:
  *              - request
  *          parameters:
@@ -489,6 +492,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
+ *                  x-since: 2.12
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -518,6 +522,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/cluster/{id}/workstation/":
  *      get:
  *          summary: Get a list of today logged in workstations by cluster ID
+ *          x-since: 2.11
  *          tags:
  *              - cluster
  *              - workstation
@@ -528,6 +533,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
+ *                  x-since: 2.12
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -557,6 +563,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/cluster/{id}/waitingnumber/{hash}/":
  *      get:
  *          summary: Get a waitingNumber according to scope preferences in cluster
+ *          x-since: 2.08
  *          tags:
  *              - cluster
  *              - process
@@ -599,6 +606,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/cluster/{id}/workstationcount/":
  *      get:
  *          summary: Get a cluster with calculated workstation count on its scopes.
+ *          x-since: 2.11
  *          description: Calculating the workstation count requires performance, thus this is an extra api query
  *          tags:
  *              - cluster
@@ -609,6 +617,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
+ *                  x-since: 2.12
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -634,6 +643,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/cluster/{id}/imagedata/calldisplay/":
  *      get:
  *          summary: get image data by cluster id for calldisplay image
+ *          x-since: 2.10
  *          tags:
  *              - cluster
  *              - mimepart
@@ -665,6 +675,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/cluster/{id}/imagedata/calldisplay/":
  *      post:
  *          summary: upload and get image data by cluster id for calldisplay image
+ *          x-since: 2.10
  *          tags:
  *              - cluster
  *              - mimepart
@@ -702,6 +713,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/cluster/{id}/imagedata/calldisplay/":
  *      delete:
  *          summary: Delete calldisplay image by cluster
+ *          x-since: 2.10
  *          tags:
  *              - scope
  *          parameters:
@@ -711,6 +723,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
+ *                  x-since: 2.12
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -729,6 +742,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/cluster/{id}/organisation/":
  *      get:
  *          summary: Get an organisation by clusterId.
+ *          x-since: 2.10
  *          tags:
  *              - cluster
  *              - organisation
@@ -764,6 +778,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/cluster/{id}/process/{date}/":
  *      get:
  *          summary: Get a list of processes by cluster and date
+ *          x-since: 2.11
  *          tags:
  *              - cluster
  *              - process
@@ -945,6 +960,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                              items:
  *                                  $ref: "schema/department.json"
  *              403:
+ *                  x-since: 2.12
  *                  description: "missing or wrong access rights"
  */
 \App::$slim->get('/department/',
@@ -1052,6 +1068,7 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "department id does not exists"
  *              428:
+ *                  x-since: 2.12
  *                  description: "department has still assigned scopes or clusters"
  */
 \App::$slim->delete('/department/{id:\d{1,11}}/',
@@ -1104,6 +1121,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/department/{id}/cluster/":
  *      post:
  *          summary: Add a new cluster
+ *          x-since: 2.10
  *          tags:
  *              - department
  *              - cluster
@@ -1175,8 +1193,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                              items:
  *                                  $ref: "schema/organisation.json"
  *              403:
+ *                  x-since: 2.12
  *                  description: "department is not assigned to logged in useraccount"
  *              404:
+ *                  x-since: 2.12
  *                  description: "department does not exist"
  */
 \App::$slim->get('/department/{id:\d{1,11}}/organisation/',
@@ -1188,6 +1208,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/department/{id}/useraccount/":
  *      get:
  *          summary: Get a list of useraccounts for a department
+ *          x-since: 2.10
  *          tags:
  *              - department
  *              - useraccount
@@ -1218,8 +1239,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                              items:
  *                                  $ref: "schema/useraccount.json"
  *              403:
+ *                  x-since: 2.12
  *                  description: "department is not assigned to logged in useraccount"
  *              404:
+ *                  x-since: 2.12
  *                  description: "department does not exist"
  */
 \App::$slim->get('/department/{id:\d{1,11}}/useraccount/',
@@ -1231,6 +1254,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/department/{id}/workstation/":
  *      get:
  *          summary: Get a list of workstations for a department
+ *          x-since: 2.11
  *          tags:
  *              - department
  *              - workstation
@@ -1261,8 +1285,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                              items:
  *                                  $ref: "schema/workstation.json"
  *              403:
+ *                  x-since: 2.12
  *                  description: "department is not assigned to logged in useraccount"
  *              404:
+ *                  x-since: 2.12
  *                  description: "department does not exist"
  */
 \App::$slim->get('/department/{id:\d{1,11}}/workstation/',
@@ -1274,6 +1300,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/log/process/{id}/":
  *      get:
  *          summary: Get a list of log entries for a process
+ *          x-since: 2.11
  *          tags:
  *              - process
  *              - log
@@ -1309,6 +1336,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/mails/":
  *      get:
  *          summary: get a list of mails in the send queue
+ *          x-since: 2.11
  *          tags:
  *              - mail
  *          parameters:
@@ -1599,6 +1627,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                          data:
  *                              $ref: "schema/owner.json"
  *              400:
+ *                  x-since: 2.12
  *                  description: "Invalid input"
  *              404:
  *                  description: "owner id does not exists"
@@ -1675,6 +1704,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/owner/{id}/organisation/":
  *      post:
  *          summary: Add a new organisation
+ *          x-since: 2.11
  *          tags:
  *              - owner
  *              - organisation
@@ -1705,6 +1735,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                          data:
  *                              $ref: "schema/organisation.json"
  *              400:
+ *                  x-since: 2.12
  *                  description: "Invalid input"
  */
 \App::$slim->post('/owner/{id:\d{1,11}}/organisation/',
@@ -2031,6 +2062,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  schema:
  *                      $ref: "schema/process.json"
  *              -   name: initiator
+ *                  x-since: 2.13
  *                  description: "Identifies the user initiating the request for logging purposes"
  *                  in: query
  *                  type: string
@@ -2106,6 +2138,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/process/{id}/{authKey}/delete/mail/":
  *      post:
  *          summary: send mail on delete process. Depending on config, if no mail is send, an empty mail is returned.
+ *          x-since: 2.08
  *          tags:
  *              - process
  *              - mail
@@ -2198,6 +2231,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/process/{id}/{authKey}/delete/notification/":
  *      post:
  *          summary: send notification on delete process. Depending on config, if no mail is send, an empty mail is returned.
+ *          x-since: 2.11
  *          tags:
  *              - process
  *              - notification
@@ -2258,6 +2292,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: string
  *              -   name: initiator
+ *                  x-since: 2.13
  *                  description: "Identifies the user initiating the request for logging purposes"
  *                  in: query
  *                  type: string
@@ -2285,6 +2320,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/process/search/":
  *      get:
  *          summary: Get a list of search results for processes
+ *          x-since: 2.11
  *          tags:
  *              - process
  *          parameters:
@@ -2451,6 +2487,7 @@ use \Psr\Http\Message\ResponseInterface;
  *              403:
  *                  description: "authkey does not match"
  *              404:
+ *                  x-since: 2.12
  *                  description: "given process is not reserved anymore"
  */
 \App::$slim->post('/process/status/confirmed/',
@@ -2462,6 +2499,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/process/status/finished/":
  *      post:
  *          summary: set process to finished or pending status. (other status settings are not allowed)
+ *          x-since: 2.12
  *          tags:
  *              - process
  *          parameters:
@@ -2501,6 +2539,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/process/status/pickup/":
  *      post:
  *          summary: Find or create a process to be used to pickup documents.
+ *          x-since: 2.11
  *          description: Only process.queue.number is a necessary input. But it is possible to create a full process with a given waiting number. If the process already exists, an update is only performed, if process.id and process.authkey matches. Information about the scope are taken from the workstation fetches by X-Authkey
  *          tags:
  *              - process
@@ -2541,6 +2580,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/process/status/queued/":
  *      post:
  *          summary: set process back to queued status.
+ *          x-since: 2.12
  *          tags:
  *              - process
  *          parameters:
@@ -2580,6 +2620,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/process/{id}/":
  *      get:
  *          summary: Get a process (access restricted by X-Authkey)
+ *          x-since: 2.12
  *          tags:
  *              - process
  *              - workstation
@@ -2660,6 +2701,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/provider/{source}/{id}/scopes/":
  *      get:
  *          summary: Get a list of scope by provider ID
+ *          x-since: 2.10
  *          tags:
  *              - provider
  *              - scope
@@ -2866,6 +2908,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/scope/{id}/request/":
  *      get:
  *          summary: Get a list of requests by scope ID
+ *          x-since: 2.11
  *          tags:
  *              - request
  *          parameters:
@@ -2900,6 +2943,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/scope/{id}/workstation/":
  *      get:
  *          summary: Get a list of today logged in workstations by scope ID
+ *          x-since: 2.11
  *          tags:
  *              - scope
  *              - workstation
@@ -3008,6 +3052,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/scope/{id}/department/":
  *      get:
  *          summary: Get a department for a scope
+ *          x-since: 2.10
  *          tags:
  *              - scope
  *              - department
@@ -3047,6 +3092,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/scope/{id}/cluster/":
  *      get:
  *          summary: Get a cluster for a scope
+ *          x-since: 2.11
  *          tags:
  *              - scope
  *              - cluster
@@ -3125,6 +3171,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/scope/prefered/cluster/{id}/":
  *      get:
  *          summary: Get the prefered scope with shortest Waitingtime by cluster ID
+ *          x-since: 2.13
  *          tags:
  *              - scope
  *              - cluster
@@ -3166,6 +3213,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/scope/{id}/availability/":
  *      get:
  *          summary: Get a list of availability entries
+ *          x-since: 2.11
  *          tags:
  *              - scope
  *              - availability
@@ -3207,6 +3255,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/scope/{id}/process/{date}/":
  *      get:
  *          summary: Get a list of processes by scope and date
+ *          x-since: 2.11
  *          tags:
  *              - scope
  *              - process
@@ -3253,6 +3302,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/scope/{id}/process/{status}/":
  *      get:
  *          summary: Get a list of processes by scope and status (pending for example)
+ *          x-since: 2.12
  *          tags:
  *              - scope
  *              - process
@@ -3299,6 +3349,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/scope/{id}/emergency/":
  *      post:
  *          summary: Trigger an emergency
+ *          x-since: 2.10
  *          tags:
  *              - scope
  *          parameters:
@@ -3333,6 +3384,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/scope/{id}/emergency/":
  *      delete:
  *          summary: Cancel an emergency
+ *          x-since: 2.10
  *          tags:
  *              - scope
  *          parameters:
@@ -3367,6 +3419,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/scope/{id}/emergency/respond/":
  *      post:
  *          summary: Respond to an emergency
+ *          x-since: 2.10
  *          tags:
  *              - scope
  *          parameters:
@@ -3401,6 +3454,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/scope/{id}/queue/next/":
  *      get:
  *          summary: Get the next process in queue by scope id
+ *          x-since: 2.11
  *          tags:
  *              - scope
  *              - process
@@ -3411,14 +3465,17 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
+ *                  x-since: 2.12
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
  *              -   name: date
+ *                  x-since: 2.13
  *                  description: "selected date string"
  *                  in: query
  *                  type: string
  *              -   name: exclude
+ *                  x-since: 2.13
  *                  description: "exluded process numbers as csv string"
  *                  in: query
  *                  type: string
@@ -3446,6 +3503,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/scope/{id}/queue/{number}/":
  *      get:
  *          summary: Get a process by queue number and scope id
+ *          x-since: 2.10
  *          tags:
  *              - scope
  *              - process
@@ -3456,6 +3514,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
+ *                  x-since: 2.12
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -3488,6 +3547,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/scope/{id}/imagedata/calldisplay/":
  *      get:
  *          summary: get image data by scope id for calldisplay image
+ *          x-since: 2.10
  *          tags:
  *              - scope
  *              - mimepart
@@ -3519,6 +3579,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/scope/{id}/imagedata/calldisplay/":
  *      post:
  *          summary: upload and get image data by scope id for calldisplay image
+ *          x-since: 2.10
  *          tags:
  *              - scope
  *              - mimepart
@@ -3632,10 +3693,12 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
+ *                  x-since: 2.12
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
  *              -   name: resolveReferences
+ *                  x-since: 2.12
  *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
  *                  in: query
  *                  type: integer
@@ -3663,6 +3726,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/scope/{id}/ghostworkstation/":
  *      post:
  *          summary: set selected amount of ghostworkstations in workstation scope
+ *          x-since: 2.12
  *          tags:
  *              - scope
  *          parameters:
@@ -3699,6 +3763,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/scope/{id}/workstationcount/":
  *      get:
  *          summary: Get a scope with calculated workstation count.
+ *          x-since: 2.11
  *          description: Calculating the workstation count requires performance, thus this is an extra api query
  *          tags:
  *              - scope
@@ -4063,6 +4128,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  in: query
  *                  type: integer
  *              -   name: right
+ *                  x-since: 2.13
  *                  description: "Only fetch users with the given right like 'superuser'"
  *                  in: query
  *                  type: string
@@ -4080,8 +4146,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                                  $ref: "schema/useraccount.json"
  *              401:
  *                  description: "login required"
+ *                  x-since: 2.12
  *              403:
  *                  description: "missing or wrong access rights"
+ *                  x-since: 2.12
  */
 \App::$slim->get('/useraccount/',
     '\BO\Zmsapi\UseraccountList')
@@ -4292,6 +4360,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  description: "login required"
  *              404:
  *                  description: "useraccount loginname does not exists"
+ *                  x-since: 2.12
  */
 \App::$slim->post('/workstation/',
     '\BO\Zmsapi\WorkstationUpdate')
@@ -4303,6 +4372,7 @@ use \Psr\Http\Message\ResponseInterface;
  *      post:
  *          operationId: WorkstationDelete
  *          summary: Change the password and/or username of a useraccount
+ *          x-since: 2.10
  *          tags:
  *              - workstation
  *          parameters:
@@ -4324,6 +4394,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                              $ref: "schema/useraccount.json"
  *              401:
  *                  description: "invalid credentials"
+ *                  x-since: 2.12
  *              404:
  *                  description: "useraccount loginname does not exists"
  */
@@ -4402,11 +4473,13 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/workstation/process/called/":
  *      post:
  *          summary: Set a process to status called and assign to workstation
+ *          x-since: 2.11
  *          tags:
  *              - workstation
  *              - process
  *          parameters:
  *              -   name: process
+ *                  x-since: 2.13
  *                  description: process data to update
  *                  required: true
  *                  in: body
@@ -4434,6 +4507,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/workstation/process/pickup/":
  *      get:
  *          summary: Get a list of processes with pending status by workstation scope or cluster scopes in clusterEnabled
+ *          x-since: 2.12
  *          tags:
  *              - process
  *              - workstation
@@ -4472,6 +4546,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/workstation/process/waitingnumber/":
  *      post:
  *          summary: Get a waitingNumber according to workstations scope or cluster
+ *          x-since: 2.11
  *          tags:
  *              - workstation
  *              - process
@@ -4494,6 +4569,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                              $ref: "schema/process.json"
  *              401:
  *                  description: "login required"
+ *                  x-since: 2.12
  *              404:
  *                  description: "scope or cluster not found"
  */
