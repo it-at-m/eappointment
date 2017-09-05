@@ -43,7 +43,7 @@ class UseraccountEditTest extends Base
 
     public function testRenderingSave()
     {
-        \App::$now = new \DateTime('2016-04-01 11:55:00', new \DateTimeZone('Europe/Berlin'));
+        \App::$now = new \DateTimeImmutable('2016-04-01 11:55:00', new \DateTimeZone('Europe/Berlin'));
         $this->setApiCalls(
             [
                 [
@@ -105,7 +105,7 @@ class UseraccountEditTest extends Base
         $exception->template = 'BO\Zmsentities\Exception\Schemavalidation';
         $exception->data = json_decode($this->readFixture("GET_useraccount_testuser.json"), 1)['data'];
 
-        \App::$now = new \DateTime('2016-04-01 11:55:00', new \DateTimeZone('Europe/Berlin'));
+        \App::$now = new \DateTimeImmutable('2016-04-01 11:55:00', new \DateTimeZone('Europe/Berlin'));
         $this->setApiCalls(
             [
                 [
@@ -155,7 +155,7 @@ class UseraccountEditTest extends Base
     // no department selected
     public function testRenderingSaveFailedNoDepartment()
     {
-        \App::$now = new \DateTime('2016-04-01 11:55:00', new \DateTimeZone('Europe/Berlin'));
+        \App::$now = new \DateTimeImmutable('2016-04-01 11:55:00', new \DateTimeZone('Europe/Berlin'));
         $this->setApiCalls(
             [
                 [
@@ -201,7 +201,7 @@ class UseraccountEditTest extends Base
     // superuser rights needed for all departments
     public function testRenderingSaveFailedNotSuperuser()
     {
-        \App::$now = new \DateTime('2016-04-01 11:55:00', new \DateTimeZone('Europe/Berlin'));
+        \App::$now = new \DateTimeImmutable('2016-04-01 11:55:00', new \DateTimeZone('Europe/Berlin'));
         $this->setApiCalls(
             [
                 [

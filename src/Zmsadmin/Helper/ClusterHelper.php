@@ -82,14 +82,13 @@ class ClusterHelper
 
     public static function getPreferedScopeByCluster()
     {
-        $scope = static::$workstation->scope;
+        $scope = new \BO\Zmsentities\Scope(static::$workstation->scope);
         if (static::isClusterEnabled()) {
             try {
                 $scope = \App::$http
                     ->readGetResult('/scope/prefered/cluster/'. static::$cluster['id'] .'/', ['resolveReferences' => 0])
                     ->getEntity();
             } catch (\BO\Zmsclient\Exception $exception) {
-                //
             }
         }
         return $scope;

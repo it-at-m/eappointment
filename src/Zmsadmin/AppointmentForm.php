@@ -30,14 +30,12 @@ class AppointmentForm extends BaseController
         $requestList = (new Helper\ClusterHelper($workstation))->getRequestList();
         $freeProcessList = Helper\AppointmentFormHelper::readFreeProcessList($request, $workstation);
 
-        $scope = (new Helper\ClusterHelper($workstation))->getPreferedScopeByCluster();
-        
         return \BO\Slim\Render::withHtml(
             $response,
             'block/appointment/form.twig',
             array(
                 'workstation' => $workstation,
-                'scope' => $scope,
+                'scope' => (new Helper\ClusterHelper($workstation))->getPreferedScopeByCluster(),
                 'selectedProcess' => $selectedProcess,
                 'selectedDate' => ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d'),
                 'selectedTime' => ($selectedTime) ? $selectedTime : null,
