@@ -101,18 +101,20 @@ class Process extends Schema\Entity
         return $this;
     }
 
-    public function updateRequests($source, $requestCSV)
+    public function updateRequests($source, $requestCSV = '')
     {
         $this->requests = new Collection\RequestList();
-        foreach (explode(',', $requestCSV) as $id) {
-            $this->requests->addEntity(
-                new Request(
-                    array(
-                        'source' => $source,
-                        'id' => $id
+        if ($requestCSV) {
+            foreach (explode(',', $requestCSV) as $id) {
+                $this->requests->addEntity(
+                    new Request(
+                        array(
+                            'source' => $source,
+                            'id' => $id
+                        )
                     )
-                )
-            );
+                );
+            }
         }
         return $this;
     }
@@ -137,10 +139,8 @@ class Process extends Schema\Entity
         }
         $this->updateRequests('dldb', implode(',', $formData['requests']['value']));
         $this->addClientFromForm($formData);
-        $this->reminderTimestamp = (array_key_exists('headsUpTime', $requestData) && $requestData['headsUpTime'] > 0) ?
-            $dateTime->getTimestamp() - $requestData['headsUpTime'] : 0;
-        $this->amendment = (array_key_exists('amendment', $formData)) ?
-            $formData['amendment']['value'] : null;
+        $this->addReminderTimestamp($requestData, $dateTime);
+        $this->amendment = (array_key_exists('amendment', $formData)) ? $formData['amendment']['value'] : null;
         return $this;
     }
 
@@ -148,8 +148,9 @@ class Process extends Schema\Entity
     {
         $client = new Client();
         foreach ($formData as $key => $item) {
-            if (null !== $item['value'] && array_key_exists($key, $client)) {
-                $client[$key] = $item['value'];
+            $value = (isset($item['value'])) ? $item['value'] : $item;
+            if (null !== $value && array_key_exists($key, $client)) {
+                $client[$key] = $value;
             }
         }
         $this->clients = array();
@@ -172,6 +173,13 @@ class Process extends Schema\Entity
     {
         $timestamp = $this->toProperty()->reminderTimestamp->get();
         return ($timestamp) ? $timestamp : 0;
+    }
+
+    public function addReminderTimestamp($input, \DateTimeInterface $dateTime)
+    {
+        $this->reminderTimestamp = (array_key_exists('headsUpTime', $input) && $input['headsUpTime'] > 0) ?
+            $dateTime->getTimestamp() - $input['headsUpTime'] : 0;
+        return $this;
     }
 
     /**
@@ -250,6 +258,13 @@ class Process extends Schema\Entity
     public function getAmendment()
     {
         return $this->toProperty()->amendment->get();
+    }
+
+    public function addAmendment($input, $notice = '')
+    {
+        $this->amendment = $notice;
+        $this->amendment .= (isset($input['amendment']) && $input['amendment']) ? $input['amendment'] : '';
+        return $this;
     }
 
     public function getAuthKey()
