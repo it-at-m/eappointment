@@ -139,9 +139,9 @@ class Scope extends Base implements MappingInterface
             'preferences__appointment__reservationDuration' => 'scope.reservierungsdauer',
             'preferences__appointment__startInDaysDefault' => 'scope.Termine_ab',
             'preferences__appointment__notificationConfirmationEnabled' =>
-                self::expression('scopesms.enabled && scopesms.Absender != "" && scopesms.interneterinnerung'),
-            'preferences__appointment__notificationHeadsUpEnabled' =>
                 self::expression('scopesms.enabled && scopesms.Absender != "" && scopesms.internetbestaetigung'),
+            'preferences__appointment__notificationHeadsUpEnabled' =>
+                self::expression('scopesms.enabled && scopesms.Absender != "" && scopesms.interneterinnerung'),
             'preferences__client__alternateAppointmentUrl' => 'scope.qtv_url',
             'preferences__client__amendmentActivated' => 'scope.anmerkungPflichtfeld',
             'preferences__client__amendmentLabel' => 'scope.anmerkungLabel',
