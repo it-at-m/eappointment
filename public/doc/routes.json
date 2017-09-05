@@ -5,7 +5,6 @@
 			"tags": [
 				"availability"
 			],
-			"x-since": "2.4.0",
 			"parameters": [
 				{
 					"name": "id",
@@ -471,6 +470,7 @@
 	"/cluster/{id}/queue/next/": {
 		"get": {
 			"summary": "Get the next process in queue by cluster id",
+			"x-since": 2.11,
 			"tags": [
 				"cluster",
 				"process"
@@ -485,6 +485,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"x-since": 2.12,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -531,6 +532,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"x-since": 2.12,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -569,6 +571,7 @@
 	"/cluster/{id}/request/": {
 		"get": {
 			"summary": "Get a list of requests by cluster ID",
+			"x-since": 2.11,
 			"tags": [
 				"request"
 			],
@@ -582,6 +585,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"x-since": 2.12,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -617,6 +621,7 @@
 	"/cluster/{id}/workstation/": {
 		"get": {
 			"summary": "Get a list of today logged in workstations by cluster ID",
+			"x-since": 2.11,
 			"tags": [
 				"cluster",
 				"workstation"
@@ -631,6 +636,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"x-since": 2.12,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -666,6 +672,7 @@
 	"/cluster/{id}/waitingnumber/{hash}/": {
 		"get": {
 			"summary": "Get a waitingNumber according to scope preferences in cluster",
+			"x-since": 2.08,
 			"tags": [
 				"cluster",
 				"process"
@@ -719,6 +726,7 @@
 	"/cluster/{id}/workstationcount/": {
 		"get": {
 			"summary": "Get a cluster with calculated workstation count on its scopes.",
+			"x-since": 2.11,
 			"description": "Calculating the workstation count requires performance, thus this is an extra api query",
 			"tags": [
 				"cluster"
@@ -733,6 +741,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"x-since": 2.12,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -762,6 +771,7 @@
 	"/cluster/{id}/imagedata/calldisplay/": {
 		"get": {
 			"summary": "get image data by cluster id for calldisplay image",
+			"x-since": 2.1,
 			"tags": [
 				"cluster",
 				"mimepart"
@@ -797,6 +807,7 @@
 		},
 		"post": {
 			"summary": "upload and get image data by cluster id for calldisplay image",
+			"x-since": 2.1,
 			"tags": [
 				"cluster",
 				"mimepart"
@@ -841,6 +852,7 @@
 		},
 		"delete": {
 			"summary": "Delete calldisplay image by cluster",
+			"x-since": 2.1,
 			"tags": [
 				"scope"
 			],
@@ -854,6 +866,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"x-since": 2.12,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -872,6 +885,7 @@
 	"/cluster/{id}/organisation/": {
 		"get": {
 			"summary": "Get an organisation by clusterId.",
+			"x-since": 2.1,
 			"tags": [
 				"cluster",
 				"organisation"
@@ -915,6 +929,7 @@
 	"/cluster/{id}/process/{date}/": {
 		"get": {
 			"summary": "Get a list of processes by cluster and date",
+			"x-since": 2.11,
 			"tags": [
 				"cluster",
 				"process"
@@ -1148,6 +1163,7 @@
 					}
 				},
 				"403": {
+					"x-since": 2.12,
 					"description": "missing or wrong access rights"
 				}
 			}
@@ -1277,6 +1293,7 @@
 					"description": "department id does not exists"
 				},
 				"428": {
+					"x-since": 2.12,
 					"description": "department has still assigned scopes or clusters"
 				}
 			}
@@ -1337,6 +1354,7 @@
 	"/department/{id}/cluster/": {
 		"post": {
 			"summary": "Add a new cluster",
+			"x-since": 2.1,
 			"tags": [
 				"department",
 				"cluster"
@@ -1433,9 +1451,11 @@
 					}
 				},
 				"403": {
+					"x-since": 2.12,
 					"description": "department is not assigned to logged in useraccount"
 				},
 				"404": {
+					"x-since": 2.12,
 					"description": "department does not exist"
 				}
 			}
@@ -1444,6 +1464,7 @@
 	"/department/{id}/useraccount/": {
 		"get": {
 			"summary": "Get a list of useraccounts for a department",
+			"x-since": 2.1,
 			"tags": [
 				"department",
 				"useraccount"
@@ -1488,9 +1509,11 @@
 					}
 				},
 				"403": {
+					"x-since": 2.12,
 					"description": "department is not assigned to logged in useraccount"
 				},
 				"404": {
+					"x-since": 2.12,
 					"description": "department does not exist"
 				}
 			}
@@ -1499,6 +1522,7 @@
 	"/department/{id}/workstation/": {
 		"get": {
 			"summary": "Get a list of workstations for a department",
+			"x-since": 2.11,
 			"tags": [
 				"department",
 				"workstation"
@@ -1543,9 +1567,11 @@
 					}
 				},
 				"403": {
+					"x-since": 2.12,
 					"description": "department is not assigned to logged in useraccount"
 				},
 				"404": {
+					"x-since": 2.12,
 					"description": "department does not exist"
 				}
 			}
@@ -1554,6 +1580,7 @@
 	"/log/process/{id}/": {
 		"get": {
 			"summary": "Get a list of log entries for a process",
+			"x-since": 2.11,
 			"tags": [
 				"process",
 				"log"
@@ -1597,6 +1624,7 @@
 	"/mails/": {
 		"get": {
 			"summary": "get a list of mails in the send queue",
+			"x-since": 2.11,
 			"tags": [
 				"mail"
 			],
@@ -1989,6 +2017,7 @@
 					}
 				},
 				"400": {
+					"x-since": 2.12,
 					"description": "Invalid input"
 				},
 				"404": {
@@ -2029,6 +2058,7 @@
 	"/owner/{id}/organisation/": {
 		"post": {
 			"summary": "Add a new organisation",
+			"x-since": 2.11,
 			"tags": [
 				"owner",
 				"organisation"
@@ -2073,6 +2103,7 @@
 					}
 				},
 				"400": {
+					"x-since": 2.12,
 					"description": "Invalid input"
 				}
 			}
@@ -2416,6 +2447,7 @@
 				},
 				{
 					"name": "initiator",
+					"x-since": 2.13,
 					"description": "Identifies the user initiating the request for logging purposes",
 					"in": "query",
 					"type": "string"
@@ -2469,6 +2501,7 @@
 				},
 				{
 					"name": "initiator",
+					"x-since": 2.13,
 					"description": "Identifies the user initiating the request for logging purposes",
 					"in": "query",
 					"type": "string"
@@ -2612,6 +2645,7 @@
 	"/process/{id}/{authKey}/delete/mail/": {
 		"post": {
 			"summary": "send mail on delete process. Depending on config, if no mail is send, an empty mail is returned.",
+			"x-since": 2.08,
 			"tags": [
 				"process",
 				"mail"
@@ -2730,6 +2764,7 @@
 	"/process/{id}/{authKey}/delete/notification/": {
 		"post": {
 			"summary": "send notification on delete process. Depending on config, if no mail is send, an empty mail is returned.",
+			"x-since": 2.11,
 			"tags": [
 				"process",
 				"notification"
@@ -2789,6 +2824,7 @@
 	"/process/search/": {
 		"get": {
 			"summary": "Get a list of search results for processes",
+			"x-since": 2.11,
 			"tags": [
 				"process"
 			],
@@ -3000,6 +3036,7 @@
 					"description": "authkey does not match"
 				},
 				"404": {
+					"x-since": 2.12,
 					"description": "given process is not reserved anymore"
 				}
 			}
@@ -3008,6 +3045,7 @@
 	"/process/status/finished/": {
 		"post": {
 			"summary": "set process to finished or pending status. (other status settings are not allowed)",
+			"x-since": 2.12,
 			"tags": [
 				"process"
 			],
@@ -3058,6 +3096,7 @@
 	"/process/status/pickup/": {
 		"post": {
 			"summary": "Find or create a process to be used to pickup documents.",
+			"x-since": 2.11,
 			"description": "Only process.queue.number is a necessary input. But it is possible to create a full process with a given waiting number. If the process already exists, an update is only performed, if process.id and process.authkey matches. Information about the scope are taken from the workstation fetches by X-Authkey",
 			"tags": [
 				"process"
@@ -3109,6 +3148,7 @@
 	"/process/status/queued/": {
 		"post": {
 			"summary": "set process back to queued status.",
+			"x-since": 2.12,
 			"tags": [
 				"process"
 			],
@@ -3159,6 +3199,7 @@
 	"/process/{id}/": {
 		"get": {
 			"summary": "Get a process (access restricted by X-Authkey)",
+			"x-since": 2.12,
 			"tags": [
 				"process",
 				"workstation"
@@ -3260,6 +3301,7 @@
 	"/provider/{source}/{id}/scopes/": {
 		"get": {
 			"summary": "Get a list of scope by provider ID",
+			"x-since": 2.1,
 			"tags": [
 				"provider",
 				"scope"
@@ -3521,6 +3563,7 @@
 	"/scope/{id}/request/": {
 		"get": {
 			"summary": "Get a list of requests by scope ID",
+			"x-since": 2.11,
 			"tags": [
 				"request"
 			],
@@ -3563,6 +3606,7 @@
 	"/scope/{id}/workstation/": {
 		"get": {
 			"summary": "Get a list of today logged in workstations by scope ID",
+			"x-since": 2.11,
 			"tags": [
 				"scope",
 				"workstation"
@@ -3779,6 +3823,7 @@
 	"/scope/{id}/department/": {
 		"get": {
 			"summary": "Get a department for a scope",
+			"x-since": 2.1,
 			"tags": [
 				"scope",
 				"department"
@@ -3828,6 +3873,7 @@
 	"/scope/{id}/cluster/": {
 		"get": {
 			"summary": "Get a cluster for a scope",
+			"x-since": 2.11,
 			"tags": [
 				"scope",
 				"cluster"
@@ -3923,9 +3969,63 @@
 			}
 		}
 	},
+	"/scope/prefered/cluster/{id}/": {
+		"get": {
+			"summary": "Get the prefered scope with shortest Waitingtime by cluster ID",
+			"x-since": 2.13,
+			"tags": [
+				"scope",
+				"cluster"
+			],
+			"parameters": [
+				{
+					"name": "id",
+					"description": "cluster number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/scope.json"
+								}
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "cluster id does not exists"
+				}
+			}
+		}
+	},
 	"/scope/{id}/availability/": {
 		"get": {
 			"summary": "Get a list of availability entries",
+			"x-since": 2.11,
 			"tags": [
 				"scope",
 				"availability"
@@ -3978,6 +4078,7 @@
 	"/scope/{id}/process/{date}/": {
 		"get": {
 			"summary": "Get a list of processes by scope and date",
+			"x-since": 2.11,
 			"tags": [
 				"scope",
 				"process"
@@ -4037,6 +4138,7 @@
 	"/scope/{id}/process/{status}/": {
 		"get": {
 			"summary": "Get a list of processes by scope and status (pending for example)",
+			"x-since": 2.12,
 			"tags": [
 				"scope",
 				"process"
@@ -4096,6 +4198,7 @@
 	"/scope/{id}/emergency/": {
 		"post": {
 			"summary": "Trigger an emergency",
+			"x-since": 2.1,
 			"tags": [
 				"scope"
 			],
@@ -4136,6 +4239,7 @@
 		},
 		"delete": {
 			"summary": "Cancel an emergency",
+			"x-since": 2.1,
 			"tags": [
 				"scope"
 			],
@@ -4178,6 +4282,7 @@
 	"/scope/{id}/emergency/respond/": {
 		"post": {
 			"summary": "Respond to an emergency",
+			"x-since": 2.1,
 			"tags": [
 				"scope"
 			],
@@ -4220,6 +4325,7 @@
 	"/scope/{id}/queue/next/": {
 		"get": {
 			"summary": "Get the next process in queue by scope id",
+			"x-since": 2.11,
 			"tags": [
 				"scope",
 				"process"
@@ -4234,18 +4340,21 @@
 				},
 				{
 					"name": "X-Authkey",
+					"x-since": 2.12,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
 				},
 				{
 					"name": "date",
+					"x-since": 2.13,
 					"description": "selected date string",
 					"in": "query",
 					"type": "string"
 				},
 				{
 					"name": "exclude",
+					"x-since": 2.13,
 					"description": "exluded process numbers as csv string",
 					"in": "query",
 					"type": "string"
@@ -4278,6 +4387,7 @@
 	"/scope/{id}/queue/{number}/": {
 		"get": {
 			"summary": "Get a process by queue number and scope id",
+			"x-since": 2.1,
 			"tags": [
 				"scope",
 				"process"
@@ -4292,6 +4402,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"x-since": 2.12,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -4331,6 +4442,7 @@
 	"/scope/{id}/imagedata/calldisplay/": {
 		"get": {
 			"summary": "get image data by scope id for calldisplay image",
+			"x-since": 2.1,
 			"tags": [
 				"scope",
 				"mimepart"
@@ -4366,6 +4478,7 @@
 		},
 		"post": {
 			"summary": "upload and get image data by scope id for calldisplay image",
+			"x-since": 2.1,
 			"tags": [
 				"scope",
 				"mimepart"
@@ -4504,12 +4617,14 @@
 				},
 				{
 					"name": "X-Authkey",
+					"x-since": 2.12,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
 				},
 				{
 					"name": "resolveReferences",
+					"x-since": 2.12,
 					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
 					"in": "query",
 					"type": "integer"
@@ -4542,6 +4657,7 @@
 	"/scope/{id}/ghostworkstation/": {
 		"post": {
 			"summary": "set selected amount of ghostworkstations in workstation scope",
+			"x-since": 2.12,
 			"tags": [
 				"scope"
 			],
@@ -4587,6 +4703,7 @@
 	"/scope/{id}/workstationcount/": {
 		"get": {
 			"summary": "Get a scope with calculated workstation count.",
+			"x-since": 2.11,
 			"description": "Calculating the workstation count requires performance, thus this is an extra api query",
 			"tags": [
 				"scope"
@@ -4955,6 +5072,7 @@
 				},
 				{
 					"name": "right",
+					"x-since": 2.13,
 					"description": "Only fetch users with the given right like 'superuser'",
 					"in": "query",
 					"type": "string"
@@ -4979,10 +5097,12 @@
 					}
 				},
 				"401": {
-					"description": "login required"
+					"description": "login required",
+					"x-since": 2.12
 				},
 				"403": {
-					"description": "missing or wrong access rights"
+					"description": "missing or wrong access rights",
+					"x-since": 2.12
 				}
 			}
 		},
@@ -5236,7 +5356,8 @@
 					"description": "login required"
 				},
 				"404": {
-					"description": "useraccount loginname does not exists"
+					"description": "useraccount loginname does not exists",
+					"x-since": 2.12
 				}
 			}
 		}
@@ -5245,6 +5366,7 @@
 		"post": {
 			"operationId": "WorkstationDelete",
 			"summary": "Change the password and/or username of a useraccount",
+			"x-since": 2.1,
 			"tags": [
 				"workstation"
 			],
@@ -5275,7 +5397,8 @@
 					}
 				},
 				"401": {
-					"description": "invalid credentials"
+					"description": "invalid credentials",
+					"x-since": 2.12
 				},
 				"404": {
 					"description": "useraccount loginname does not exists"
@@ -5367,6 +5490,7 @@
 	"/workstation/process/called/": {
 		"post": {
 			"summary": "Set a process to status called and assign to workstation",
+			"x-since": 2.11,
 			"tags": [
 				"workstation",
 				"process"
@@ -5374,6 +5498,7 @@
 			"parameters": [
 				{
 					"name": "process",
+					"x-since": 2.13,
 					"description": "process data to update",
 					"required": true,
 					"in": "body",
@@ -5406,6 +5531,7 @@
 	"/workstation/process/pickup/": {
 		"get": {
 			"summary": "Get a list of processes with pending status by workstation scope or cluster scopes in clusterEnabled",
+			"x-since": 2.12,
 			"tags": [
 				"process",
 				"workstation"
@@ -5454,6 +5580,7 @@
 	"/workstation/process/waitingnumber/": {
 		"post": {
 			"summary": "Get a waitingNumber according to workstations scope or cluster",
+			"x-since": 2.11,
 			"tags": [
 				"workstation",
 				"process"
@@ -5485,7 +5612,8 @@
 					}
 				},
 				"401": {
-					"description": "login required"
+					"description": "login required",
+					"x-since": 2.12
 				},
 				"404": {
 					"description": "scope or cluster not found"
