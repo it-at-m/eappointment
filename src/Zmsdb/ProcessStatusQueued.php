@@ -24,7 +24,9 @@ class ProcessStatusQueued extends Process
         $newQueueNumber = (new Scope())->readWaitingNumberUpdated($process->scope['id'], $dateTime);
         $process->addQueue($newQueueNumber, $dateTime);
         $process = $this->writeNewProcess($process, $dateTime);
-        $this->writeRequestsToDb($process);
+        if (0 < $process->getRequests()->count()) {
+            $this->writeRequestsToDb($process);
+        }
         return $this->readEntity($process->id, $process->authKey, 2);
     }
 
