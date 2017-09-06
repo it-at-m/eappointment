@@ -141,7 +141,7 @@ class View extends BaseView {
                 this.loadMessage(response, this.onDeleteProcess);
             }).catch(err => this.loadErrorCallback(err));
         }).on('click', '.form-actions button.process-abort', (ev) => {
-            this.selectedProcess = null;
+            this.ButtonAction.abort(ev);
             this.load();
         }).on('click', '.form-actions button.process-save', (ev) => {
             event.preventDefault();
