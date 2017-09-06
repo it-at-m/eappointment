@@ -31,6 +31,7 @@ class Messaging
             'appointment' => 'mail_confirmation.twig',
             'pickup' => 'mail_pickup.twig',
             'deleted' => 'mail_delete.twig',
+            'blocked' => 'mail_delete.twig',
             'survey' => 'mail_survey.twig'
         ),
         'ics' => array(
@@ -39,6 +40,7 @@ class Messaging
         ),
         'admin' => array(
             'deleted' => 'mail_admin_delete.twig',
+            'blocked' => 'mail_admin_delete.twig',
             'updated' => 'mail_admin_update.twig'
         )
     );
