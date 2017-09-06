@@ -286,9 +286,8 @@ class Process extends Base implements Interfaces\ResolveReferences
 
     /**
      * Löscht einen Termin aus der Datenbank
-     *
-     * @param
-     *            processId and authKey
+     * Regulär sollte aber ProcessStatusArchived::writeEntityFinished()
+     * oder self::writeBlockedEntity() verwendet werden.
      *
      * @return Resource Status
      */
