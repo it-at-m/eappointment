@@ -15,7 +15,7 @@ class View extends BaseView {
 
     constructor (element, options) {
         super(element);
-        this.element = $(element);
+        this.element = $(element).focus();
         this.includeUrl = options.includeurl;
         this.selectedDate = options['selected-date'];
         this.selectedTime = options['selected-time'];

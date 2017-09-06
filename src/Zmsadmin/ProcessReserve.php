@@ -45,9 +45,10 @@ class ProcessReserve extends BaseController
                     428
                 );
             }
-            $process->withUpdatedData($validationList->getStatus(), $input, $scope, $dateTime);
+            $formData = $validationList->getStatus();
+            $process->withUpdatedData($formData, $input, $dateTime, $scope);
             $process = Helper\AppointmentFormHelper::writeReservedProcess($process);
-            $process = Helper\AppointmentFormHelper::writeConfirmedProcess($validationList->getStatus(), $process);
+            $process = Helper\AppointmentFormHelper::writeConfirmedProcess($formData, $process);
         }
         return \BO\Slim\Render::withHtml(
             $response,

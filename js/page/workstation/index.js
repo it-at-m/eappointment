@@ -5,25 +5,70 @@ import QueueView from '../../block/queue'
 import CalendarView from '../../block/calendar'
 import ClientNextView from '../../block/process/next'
 
+const reloadInterval = 60; //seconds
 
 class View extends BaseView {
 
     constructor (element, options) {
         super(element);
-        this.element = $(element);
+        this.element = $(element).focus();
         this.includeUrl = options.includeurl;
         this.selectedDate = options['selected-date'];
         this.selectedTime = options['selected-time'];
         this.selectedProcess = options['selected-process'];
         this.calledProcess = options['called-process'];
+        this.reloadTimer;
+        this.lastReload = 0;
         this.bindPublicMethods('loadAllPartials', 'onDatePick', 'onDateToday', 'onNextProcess','onDeleteProcess','onEditProcess','onSaveProcess','onQueueProcess');
-        this.$.ready(this.loadData);
+        this.$.ready(() => {
+            this.loadData;
+            this.setLastReload();
+            this.setReloadTimer();
+        });
         $.ajaxSetup({ cache: false });
         this.loadAllPartials().then(() => this.bindEvents());
         console.log('Component: Workstation', this, options);
     }
 
     bindEvents() {
+        window.onfocus = () => {
+            //console.log("on Focus");
+            if (this.lastReload > reloadInterval) {
+                this.loadReloadPartials();
+                this.lastReload = 0;
+            }
+            this.setReloadTimer();
+        }
+        window.onblur = () => {
+            //console.log("lost Focus");
+            clearTimeout(this.reloadTimer);
+        }
+        this.$main.find('[data-queue-table]').mouseenter(() => {
+            //console.log("stop Reload on mouse enter");
+            clearTimeout(this.reloadTimer);
+        });
+        this.$main.find('[data-queue-table]').mouseleave(() => {
+            //console.log("start reload on mouse leave");
+            this.setReloadTimer();
+        });
+    }
+
+    setReloadTimer() {
+        clearTimeout(this.reloadTimer);
+        this.reloadTimer = setTimeout(() => {
+            this.lastReload = 0;
+            this.loadReloadPartials();
+            this.bindEvents();
+            this.setReloadTimer();
+        }, reloadInterval * 1000);
+    }
+
+    setLastReload() {
+        setTimeout(() => {
+            this.lastReload++;
+            //console.log(this.lastReload);
+            this.setLastReload();
+        }, 1000);
     }
 
     onDatePick(date) {
@@ -77,6 +122,10 @@ class View extends BaseView {
             this.loadAppointmentForm(),
             this.loadQueueTable()
         ])
+    }
+
+    loadReloadPartials() {
+        this.loadQueueTable();
     }
 
     loadCalendar () {
