@@ -74,7 +74,10 @@ class View extends BaseView {
     onDatePick(date) {
         this.selectedProcess = null;
         this.selectedDate = date;
-        this.loadAllPartials();
+        this.loadCalendar(),
+        this.loadClientNext(),
+        //this.loadAppointmentForm(),
+        this.loadQueueTable()
     }
 
     onDeleteProcess () {
@@ -153,6 +156,8 @@ class View extends BaseView {
             selectedTime: this.selectedTime,
             selectedProcess: this.selectedProcess,
             includeUrl: this.includeUrl,
+            onDatePick: this.onDatePick,
+            onDateToday: this.onDateToday,
             onDeleteProcess: this.onDeleteProcess,
             onQueueProcess: this.onQueueProcess,
             onSaveProcess: this.onSaveProcess
