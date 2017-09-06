@@ -124,20 +124,19 @@ class Process extends Schema\Entity
         return ('' != $this->toProperty()->scope->contact->email->get());
     }
 
-    public function withUpdatedData($formData, $requestData, $scope = null, $dateTime = null)
+    public function withUpdatedData($formData, $requestData, \DateTimeInterface $dateTime, $scope = null)
     {
+        $this->scope = ($scope) ? $scope : $this->scope;
         if ($dateTime) {
             $this->addAppointment(
                 (new Appointment())
                     ->addDate($dateTime->getTimestamp())
-                    ->addScope($scope['id'])
+                    ->addScope($this->scope['id'])
                     ->addSlotCount($requestData['slotCount'])
             );
         }
-        if ($scope) {
-            $this->scope = $scope;
-        }
-        $this->updateRequests('dldb', implode(',', $formData['requests']['value']));
+        $requestCsv = isset($requestData['requests']) ? implode(',', $requestData['requests']) : 0;
+        $this->updateRequests('dldb', $requestCsv);
         $this->addClientFromForm($formData);
         $this->addReminderTimestamp($requestData, $dateTime);
         $this->amendment = (array_key_exists('amendment', $formData)) ? $formData['amendment']['value'] : null;
