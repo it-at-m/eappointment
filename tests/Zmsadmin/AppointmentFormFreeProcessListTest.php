@@ -33,7 +33,7 @@ class AppointmentFormFreeProcessListTest extends Base
                 ]
             ]
         );
-        $response = parent::testRendering();
+        $response = $this->render([], ['selecteddate' => '2016-04-01'], []);
         $this->assertContains('Spontankunde', (string)$response->getBody());
     }
 
@@ -62,6 +62,7 @@ class AppointmentFormFreeProcessListTest extends Base
         );
         $response = $this->render([], $this->parameters, []);
         $this->assertContains('11:20 (noch 1 frei)', (string)$response->getBody());
+        $this->assertNotContains('Spontankunde', (string)$response->getBody());
     }
 
     public function testEmpty()
