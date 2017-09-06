@@ -26,6 +26,14 @@ class StringTest extends \PHPUnit_Framework_TestCase
         $unvalidvalue = Validator::value($value);
         $validvalue = $unvalidvalue->isString()->setDefault('ok');
         $this->assertEquals('ok', $validvalue->getValue());
+        $this->assertEquals('<h1>', 
+            Validator::value("<h1>")->isString('', false)->getValue(),
+            "HTML Should not be escaped"
+        );
+        $this->assertEquals('&#60;h1&#62;', 
+            Validator::value("<h1>")->isString('', true)->getValue(),
+            "HTML Should be escaped"
+        );
     }
 
     public function testSize()
