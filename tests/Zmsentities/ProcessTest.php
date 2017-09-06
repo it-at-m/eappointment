@@ -166,7 +166,6 @@ class ProcessTest extends EntityCommonTests
             'familyName' => 'Max Mustermann',
             'email' => 'zms@berlinonline.de',
             'telephone' => '0123456789',
-            'requests' => [120335,120697],
             'surveyAccepted' => 1,
             'sendConfirmation' => 1,
             'sendMailConfirmation' => 1,
@@ -178,10 +177,11 @@ class ProcessTest extends EntityCommonTests
         $formCollection = \BO\Zmsentities\Helper\ProcessFormValidation::fromAdminParameters($scope->preferences);
         $input = [
             'headsUpTime' => 60,
-            'slotCount' => 1
+            'slotCount' => 1,
+            'requests' => [120335,120697]
         ];
         $scope = (new \BO\Zmsentities\Scope)->getExample();
-        $entity->withUpdatedData($formCollection->getStatus(), $input, $scope, $now);
+        $entity->withUpdatedData($formCollection->getStatus(), $input, $now, $scope);
         $this->assertTrue($entity->requests->hasEntity(120335));
         $this->assertTrue($entity->requests->hasEntity(120697));
         $this->assertEquals(1451648940, $entity->reminderTimestamp);
