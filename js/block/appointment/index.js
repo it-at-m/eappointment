@@ -5,10 +5,11 @@ import { lightbox } from '../../lib/utils'
 import CalendarView from '../calendar'
 import FormValidationView from '../form-validation'
 import ExceptionHandler from '../../lib/exceptionHandler'
-import MessageHandler from '../../lib/messageHandler';
+import MessageHandler from '../../lib/messageHandler'
 import ButtonActionHandler from "./action"
 import RequestListAction from "./requests"
 import maxChars from '../../element/form/maxChars'
+import moment from 'moment'
 
 class View extends BaseView {
 
@@ -25,6 +26,7 @@ class View extends BaseView {
         this.onSaveProcess = options.onSaveProcess || (() => {});
         this.onEditProcess = options.onEditProcess || (() => {});
         this.onQueueProcess = options.onQueueProcess || (() => {});
+        this.onDatePick = options.onDatePick || (() => {});
         this.slotType = 'intern';
 
         $.ajaxSetup({ cache: false });
@@ -32,7 +34,7 @@ class View extends BaseView {
             this.bindEvents();
             $('textarea.maxchars').each(function() {
                 maxChars(this);
-            })
+            });
         });
     }
 
@@ -98,17 +100,8 @@ class View extends BaseView {
             this.RequestListAction.cleanLists();
             this.RequestListAction.updateLists();
             this.loadFreeProcessList();
-        }).on('click', 'input[name=date]', () => {
-            this.selectDateWithOverlay()
-                   .then(date => {
-                       this.selectedDate = date;
-                       this.setSelectedDate();
-                   })
-                   .then(() => {
-                       this.RequestListAction.calculateSlotCount();
-                       this.loadFreeProcessList();
-                   })
-                   .catch(() => console.log('no date selected'));
+        }).on('click', '.add-date-picker', () => {
+            this.selectDateWithOverlay();
         }).on('change', 'select#appointmentForm_slotCount', (ev) => {
             console.log('slots changed manualy');
             this.RequestListAction.slotCount = this.$main.find('select#appointmentForm_slotCount').val();
@@ -194,35 +187,41 @@ class View extends BaseView {
     }
 
     selectDateWithOverlay () {
-        return new Promise((resolve, reject) => {
-            const destroyCalendar = () => {
-                tempCalendar.destroy()
-            }
+        const destroyCalendar = () => {
+            tempCalendar.destroy()
+        }
 
-            const { lightboxContentElement, destroyLightbox } = lightbox(this.$main, () => {
+        const { lightboxContentElement, destroyLightbox } = lightbox(this.$main, () => {
+            destroyCalendar()
+            reject()
+        })
+
+        const tempCalendar = new CalendarView(lightboxContentElement, {
+            includeUrl: this.includeUrl,
+            selectedDate: this.selectedDate,
+            onDatePick: (date) => {
                 destroyCalendar()
-                reject()
-            })
-
-            const tempCalendar = new CalendarView(lightboxContentElement, {
-                includeUrl: this.includeUrl,
-                selectedDate: this.selectedDate,
-                onDatePick: (date) => {
-                    destroyCalendar()
-                    destroyLightbox()
-                    resolve(date);
-                },
-                onDateToday: (date) => {
-                    destroyCalendar()
-                    destroyLightbox()
-                    resolve(date);
-                }
-            })
-        });
+                destroyLightbox()
+                this.selectedDate = date;
+                this.setSelectedDate();
+                this.RequestListAction.calculateSlotCount();
+                this.loadFreeProcessList();
+                this.onDatePick(date);
+            },
+            onDateToday: (date) => {
+                destroyCalendar()
+                destroyLightbox()
+                this.selectedDate = date;
+                this.setSelectedDate();
+                this.RequestListAction.calculateSlotCount();
+                this.loadFreeProcessList();
+                this.onDateToday(date);
+            }
+        })
     }
 
     setSelectedDate () {
-        this.$main.find('.add-date-picker input[name="date"]').val(moment(this.selectedDate, 'YYYY-MM-DD').format('L'))
+        this.$main.find('.add-date-picker input#process_date').val(moment(this.selectedDate, 'YYYY-MM-DD').format('DD.MM.YYYY'))
     }
 }
 

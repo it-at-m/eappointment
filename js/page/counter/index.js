@@ -22,7 +22,7 @@ class View extends BaseView {
         this.selectedProcess = options['selected-process'];
         this.reloadTimer;
         this.lastReload = 0;
-        this.bindPublicMethods('loadAllPartials', 'selectDateWithOverlay', 'onDatePick', 'onNextProcess', 'onDateToday', 'onGhostWorkstationChange','onDeleteProcess','onEditProcess','onSaveProcess','onQueueProcess');
+        this.bindPublicMethods('loadAllPartials', 'onDatePick', 'onNextProcess', 'onDateToday', 'onGhostWorkstationChange','onDeleteProcess','onEditProcess','onSaveProcess','onQueueProcess');
         this.$.ready(() => {
             this.loadData;
             this.setLastReload();
@@ -74,37 +74,13 @@ class View extends BaseView {
         }, 1000);
     }
 
-    selectDateWithOverlay() {
-        return new Promise((resolve, reject) => {
-            const destroyCalendar = () => {
-                tempCalendar.destroy()
-            }
-
-            const { lightboxContentElement, destroyLightbox } = lightbox(this.$main, () => {
-                destroyCalendar()
-                reject()
-            })
-
-            const tempCalendar = new CalendarView(lightboxContentElement, {
-                includeUrl: this.includeUrl,
-                selectedDate: this.selectedDate,
-                onDatePick: (date) => {
-                    destroyCalendar()
-                    destroyLightbox()
-                    //resolve(date);
-                },
-                onDateToday: (date) => {
-                    destroyCalendar()
-                    destroyLightbox()
-                    //resolve(date);
-                }
-            })
-        });
-    }
-
     onDatePick(date) {
         this.selectedDate = date;
-        this.loadAllPartials();
+        this.loadCalendar(),
+        //this.loadAppointmentForm(),
+        this.loadQueueTable(),
+        this.loadQueueInfo(),
+        this.loadAppointmentTimes()
     }
 
     onDateToday(date) {
@@ -178,6 +154,8 @@ class View extends BaseView {
             selectedTime: this.selectedTime,
             selectedProcess: this.selectedProcess,
             includeUrl: this.includeUrl,
+            onDatePick: this.onDatePick,
+            onDateToday: this.onDateToday,
             onDeleteProcess: this.onDeleteProcess,
             onQueueProcess: this.onQueueProcess,
             onSaveProcess: this.onSaveProcess

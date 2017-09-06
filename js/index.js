@@ -11,7 +11,6 @@ import moment from 'moment'
 import 'moment/locale/de';
 
 // Import Views
-import FormView from "./element/form";
 import EmergencyView from './block/emergency'
 //import DepartmentLinksView from './block/department/links'
 //import DepartmentDaysOffView from './block/department/daysOff'
@@ -36,14 +35,12 @@ import preventFormResubmit from './element/form/preventFormResubmit'
 import maxChars from './element/form/maxChars'
 
 
-
 // Bind jQuery on $ for testing
 window.$ = $;
 
 moment.locale('de')
 
 // Init Views
-$('form').each(function() { new FormView(this);});
 $('.pickup-keyboard-handheld').each(function() { new PickupKeyboardHandheldView(this);});
 $('.emergency').each(function() {
     new EmergencyView(this, getDataAttributes(this));
