@@ -21,10 +21,12 @@ class View extends BaseView {
         this.selectedTime = options['selected-time'];
         this.selectedProcess = options['selected-process'];
         this.reloadTimer;
+        this.lastReload = 0;
         this.bindPublicMethods('loadAllPartials', 'selectDateWithOverlay', 'onDatePick', 'onNextProcess', 'onDateToday', 'onGhostWorkstationChange','onDeleteProcess','onEditProcess','onSaveProcess','onQueueProcess');
         this.$.ready(() => {
             this.loadData;
-            this.reloadPartials();
+            this.setLastReload();
+            this.setReloadTimer();
         });
         $.ajaxSetup({ cache: false });
         this.loadAllPartials().then(() => this.bindEvents());
@@ -33,40 +35,43 @@ class View extends BaseView {
 
     bindEvents() {
         window.onfocus = () => {
-            console.log("on Focus");
-            this.reloadPartials();
+            //console.log("on Focus");
+            if (this.lastReload > reloadInterval) {
+                this.loadReloadPartials();
+                this.lastReload = 0;
+            }
+            this.setReloadTimer();
         }
         window.onblur = () => {
-            console.log("lost Focus");
+            //console.log("lost Focus");
             clearTimeout(this.reloadTimer);
         }
-        this.$main.find('[data-queue-table]').mouseenter(() => {
-            console.log("stop Reload on mouse enter queue table");
+        this.$main.find('[data-queue-table], [data-queue-info]').mouseenter(() => {
+            //console.log("stop Reload on mouse enter");
             clearTimeout(this.reloadTimer);
         });
-        this.$main.find('[data-queue-table]').mouseleave(() => {
-            console.log("start reload on mouse out queue table");
-            this.reloadPartials();
+        this.$main.find('[data-queue-table], [data-queue-info]').mouseleave(() => {
+            //console.log("start reload on mouse leave");
+            this.setReloadTimer();
         });
-        this.$main.find('[data-queue-info]').mouseenter(() => {
-            console.log("stop Reload on mouse enter queue infobox");
-            clearTimeout(this.reloadTimer);
-        });
-        this.$main.find('[data-queue-info]').mouseleave(() => {
-            console.log("start reload on mouse out queue infobox");
-            this.reloadPartials();
-        });
-
     }
 
-    reloadPartials() {
+    setReloadTimer() {
         clearTimeout(this.reloadTimer);
         this.reloadTimer = setTimeout(() => {
-            this.loadQueueTable();
-            this.loadQueueInfo(),
-            this.reloadPartials();
+            this.lastReload = 0;
+            this.loadReloadPartials();
             this.bindEvents();
+            this.setReloadTimer();
         }, reloadInterval * 1000);
+    }
+
+    setLastReload() {
+        setTimeout(() => {
+            this.lastReload++;
+            //console.log(this.lastReload);
+            this.setLastReload();
+        }, 1000);
     }
 
     selectDateWithOverlay() {
@@ -159,6 +164,11 @@ class View extends BaseView {
             onDateToday: this.onDateToday,
             includeUrl: this.includeUrl
         })
+    }
+
+    loadReloadPartials() {
+        this.loadQueueTable();
+        this.loadQueueInfo();
     }
 
     loadAppointmentForm() {
