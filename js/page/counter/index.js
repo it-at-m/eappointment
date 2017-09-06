@@ -9,6 +9,7 @@ import CalendarView from '../../block/calendar'
 import { loadInto } from './utils'
 import { lightbox } from '../../lib/utils'
 
+const reloadInterval = 60; //seconds
 
 class View extends BaseView {
 
@@ -19,15 +20,53 @@ class View extends BaseView {
         this.selectedDate = options['selected-date'];
         this.selectedTime = options['selected-time'];
         this.selectedProcess = options['selected-process'];
+        this.reloadTimer;
         this.bindPublicMethods('loadAllPartials', 'selectDateWithOverlay', 'onDatePick', 'onNextProcess', 'onDateToday', 'onGhostWorkstationChange','onDeleteProcess','onEditProcess','onSaveProcess','onQueueProcess');
-        this.$.ready(this.loadData);
+        this.$.ready(() => {
+            this.loadData;
+            this.reloadPartials();
+        });
         $.ajaxSetup({ cache: false });
         this.loadAllPartials().then(() => this.bindEvents());
         console.log('Component: Counter', this, options);
     }
 
     bindEvents() {
+        window.onfocus = () => {
+            console.log("on Focus");
+            this.reloadPartials();
+        }
+        window.onblur = () => {
+            console.log("lost Focus");
+            clearTimeout(this.reloadTimer);
+        }
+        this.$main.find('[data-queue-table]').mouseenter(() => {
+            console.log("stop Reload on mouse enter queue table");
+            clearTimeout(this.reloadTimer);
+        });
+        this.$main.find('[data-queue-table]').mouseleave(() => {
+            console.log("start reload on mouse out queue table");
+            this.reloadPartials();
+        });
+        this.$main.find('[data-queue-info]').mouseenter(() => {
+            console.log("stop Reload on mouse enter queue infobox");
+            clearTimeout(this.reloadTimer);
+        });
+        this.$main.find('[data-queue-info]').mouseleave(() => {
+            console.log("start reload on mouse out queue infobox");
+            this.reloadPartials();
+        });
 
+    }
+
+    reloadPartials() {
+        clearTimeout(this.reloadTimer);
+        this.reloadTimer = setTimeout(() => {
+            this.loadQueueTable();
+            this.loadQueueInfo(),
+            this.reloadPartials();
+            this.bindEvents();
+        }, reloadInterval * 1000);
     }
 
     selectDateWithOverlay() {
