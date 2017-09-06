@@ -2317,6 +2317,48 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/process/{id}/":
+ *      delete:
+ *          summary: Deletes a process at once
+ *          description: A deleted process usually waits for a cronjob to be removed. This operation deletes the process without any waitingtime. An X-Authkey is required and the workstation needs access to the scope of the process.
+ *          x-since: 2.13
+ *          tags:
+ *              - process
+ *          parameters:
+ *              -   name: id
+ *                  description: process number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: initiator
+ *                  description: "Identifies the user initiating the request for logging purposes"
+ *                  in: query
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success, there might be changes on the object or added information. Use the response for further action with the process"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/process.json"
+ *              403:
+ *                  description: "operation is not allowed due to access rights"
+ *              404:
+ *                  description: "process id does not exists"
+ */
+\App::$slim->delete('/process/{id:\d{1,11}}/',
+    '\BO\Zmsapi\ProcessDeleteQuick')
+    ->setName("ProcessDeleteQuick");
+
+/**
+ *  @swagger
  *  "/process/search/":
  *      get:
  *          summary: Get a list of search results for processes

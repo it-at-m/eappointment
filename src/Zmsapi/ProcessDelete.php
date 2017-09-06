@@ -12,6 +12,9 @@ use \BO\Zmsdb\Mail;
 use \BO\Zmsdb\Config;
 use BO\Mellon\Validator;
 
+/**
+ * @SuppressWarnings(CouplingBetweenObjects)
+ */
 class ProcessDelete extends BaseController
 {
     /**
@@ -23,16 +26,10 @@ class ProcessDelete extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $this->testProcessData($args['id'], $args['authKey']);
-        $process = (new Process)->readEntity($args['id'], $args['authKey'], 1);
+        $process = (new Process)->readEntity($args['id'], new \BO\Zmsdb\Helper\NoAuth(), 1);
+        $this->testProcessData($process, $args['authKey']);
         $process->status = 'deleted';
-        if ($process->hasScopeAdmin()) {
-            $authority = $request->getUri()->getAuthority();
-            $initiator = Validator::param('initiator')->isString()->setDefault("$authority API-User")->getValue();
-            $config = (new Config())->readEntity();
-            $mail = (new \BO\Zmsentities\Mail())->toResolvedEntity($process, $config, $initiator);
-            (new Mail())->writeInQueueWithAdmin($mail);
-        }
+        $this->writeMails($request, $process);
         $processDeleted = (new Process)->deleteEntity($args['id'], $args['authKey']);
         if (! $processDeleted || ! $processDeleted->hasId()) {
             throw new Exception\Process\ProcessDeleteFailed();
@@ -45,12 +42,28 @@ class ProcessDelete extends BaseController
         return $response;
     }
 
-    protected function testProcessData($processId, $authKey)
+    protected function writeMails($request, $process)
     {
-        $authCheck = (new Process())->readAuthKeyByProcessId($processId);
-        if (! $authCheck) {
+        if ($process->hasScopeAdmin()) {
+            $authority = $request->getUri()->getAuthority();
+            $validator = $request->getAttribute('validator');
+            $initiator = $validator->getParameter('initiator')
+                ->isString()
+                ->setDefault("$authority API-User")
+                ->getValue();
+            $config = (new Config())->readEntity();
+            $mail = (new \BO\Zmsentities\Mail())->toResolvedEntity($process, $config, $initiator);
+            (new Mail())->writeInQueueWithAdmin($mail);
+        }
+    }
+
+    protected function testProcessData($process, $authKey)
+    {
+        if (! $process) {
             throw new Exception\Process\ProcessNotFound();
-        } elseif ($authCheck['authKey'] != $authKey && $authCheck['authName'] != $authKey) {
+        }
+        $authName = $process->getFirstClient()['familyName'];
+        if ($process['authKey'] != $authKey && $authName != $authKey) {
             throw new Exception\Process\AuthKeyMatchFailed();
         }
     }
