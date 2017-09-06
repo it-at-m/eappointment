@@ -35,7 +35,7 @@ class ProcessDelete extends BaseController
 
         $initiator = Validator::param('initiator')->isString()->getValue();
         \App::$http
-            ->readDeleteResult('/process/'. $process->id .'/'. $authKey . '/', ['initiator' => $initiator])
+            ->readDeleteResult('/process/'. $process->id .'/', ['initiator' => $initiator])
             ->getEntity();
         \App::$http->readPostResult('/process/'. $process->id .'/'. $authKey .'/delete/mail/', $process);
         \App::$http->readPostResult('/process/'. $process->id .'/'. $authKey .'/delete/notification/', $process);

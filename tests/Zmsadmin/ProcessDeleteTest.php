@@ -36,7 +36,7 @@ class ProcessDeleteTest extends Base
                 ],
                 [
                     'function' => 'readDeleteResult',
-                    'url' => '/process/82252/12a2/',
+                    'url' => '/process/82252/',
                     'parameters' => ['initiator' => 'admin'],
                     'response' => $this->readFixture("GET_process_82252_12a2.json")
                 ],
@@ -82,7 +82,7 @@ class ProcessDeleteTest extends Base
                 ],
                 [
                     'function' => 'readDeleteResult',
-                    'url' => '/process/100632/ec58/',
+                    'url' => '/process/100632/',
                     'parameters' => ['initiator' => 'admin'],
                     'response' => $this->readFixture("GET_process_spontankunde.json")
                 ],
@@ -135,7 +135,7 @@ class ProcessDeleteTest extends Base
                 ],
                 [
                     'function' => 'readDeleteResult',
-                    'url' => '/process/100044/57c2/',
+                    'url' => '/process/100044/',
                     'parameters' => ['initiator' => 'admin'],
                     'exception' => $exception
                 ]
