@@ -47,22 +47,15 @@ class ProcessQueue extends BaseController
             );
         }
 
-        $result = $this->readNewProcessWithoutAppointment(
-            $request->getParsedBody(),
-            $workstation,
-            $dateTime
+        $result = Helper\AppointmentFormHelper::writeQueuedProcess($request->getParsedBody(), $workstation, $dateTime);
+        return \BO\Slim\Render::withHtml(
+            $response,
+            'block/appointment/waitingnumber.twig',
+            array(
+                'process' => $result,
+                'selectedDate' => $selectedDate
+            )
         );
-        if ($result instanceof \BO\Zmsentities\Process) {
-            return \BO\Slim\Render::withHtml(
-                $response,
-                'block/appointment/waitingnumber.twig',
-                array(
-                    'process' => $result,
-                    'selectedDate' => $selectedDate
-                )
-            );
-        }
-        return $result;
     }
 
     protected function readSelectedProcessWithWaitingnumber($validator)
@@ -73,25 +66,6 @@ class ProcessQueue extends BaseController
         if ($selectedProcessId && $isPrint) {
             $result = \App::$http->readGetResult('/process/'. $selectedProcessId .'/')->getEntity();
         }
-        return $result;
-    }
-
-    protected function readNewProcessWithoutAppointment($input, $workstation, \DateTimeImmutable $dateTime)
-    {
-        $result = null;
-        $process = new \BO\Zmsentities\Process();
-        $scope = (new Helper\ClusterHelper($workstation))->getPreferedScopeByCluster();
-        $isOpened = \App::$http
-            ->readGetResult('/scope/'. $scope->id .'/availability/')
-            ->getCollection()
-            ->isOpened(\App::$now);
-        $notice = (! $isOpened) ? 'Außerhalb der Öffnungszeiten gebucht! ' : '';
-        $process = $process->createFromScope($scope, $dateTime);
-        $process->updateRequests('dldb', implode(',', $input['requests']));
-        $process->addClientFromForm($input);
-        $process->addReminderTimestamp($input, $dateTime);
-        $process->addAmendment($input, $notice);
-        $result = Helper\AppointmentFormHelper::writeQueuedProcess($input, $process);
         return $result;
     }
 }

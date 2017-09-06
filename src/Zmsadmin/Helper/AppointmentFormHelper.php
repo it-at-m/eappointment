@@ -29,6 +29,20 @@ class AppointmentFormHelper
         return $process;
     }
 
+    public static function writeUpdateQueuedProcess($input, Entity $process, $initiator)
+    {
+        $process->updateRequests('dldb', isset($input['requests']) ? implode(',', $input['requests']) : 0);
+        $process->addAmendment($input);
+        $process->addClientFromForm($input);
+        $process = \App::$http->readPostResult(
+            '/process/'. $process->id .'/'. $process->authKey .'/',
+            $process,
+            ['initiator' => $initiator]
+        )->getEntity();
+        static::updateMailAndNotificationCount($input, $process);
+        return $process;
+    }
+
     public static function writeConfirmedProcess($formData, Entity $process)
     {
         $process = \App::$http->readPostResult('/process/status/confirmed/', $process)->getEntity();
@@ -38,22 +52,21 @@ class AppointmentFormHelper
         return $process;
     }
 
-    public static function writeQueuedProcess($input, Entity $process)
+    public static function writeQueuedProcess($input, $workstation, \DateTimeImmutable $dateTime)
     {
+        $scope = (new ClusterHelper($workstation))->getPreferedScopeByCluster();
+        $isOpened = \App::$http
+            ->readGetResult('/scope/'. $scope->id .'/availability/')
+            ->getCollection()
+            ->isOpened(\App::$now);
+        $notice = (! $isOpened) ? 'Außerhalb der Öffnungszeiten gebucht! ' : '';
+        $process = (new Entity)->createFromScope($scope, $dateTime);
+        $process->updateRequests('dldb', isset($input['requests']) ? implode(',', $input['requests']) : 0);
+        $process->addClientFromForm($input);
+        $process->addReminderTimestamp($input, $dateTime);
+        $process->addAmendment($input, $notice);
         $process = \App::$http->readPostResult('/workstation/process/waitingnumber/', $process)->getEntity();
-        $client = $process->getFirstClient();
-        if ($client->hasEmail() && isset($input['sendMailConfirmation'])) {
-            \App::$http->readPostResult(
-                '/process/'. $process->id .'/'. $process->authKey .'/confirmation/mail/',
-                $process
-            );
-        }
-        if ($client->hasTelephone() && isset($input['sendConfirmation'])) {
-            \App::$http->readPostResult(
-                '/process/'. $process->id .'/'. $process->authKey .'/confirmation/notification/',
-                $process
-            );
-        }
+        static::updateMailAndNotificationCount($input, $process);
         return $process;
     }
 
@@ -73,26 +86,26 @@ class AppointmentFormHelper
 
     protected static function updateMailAndNotificationCount($formData, Entity $process)
     {
-        //$client = $process->getFirstClient();
-        if (array_key_exists('sendMailConfirmation', $formData) &&
-            1 == $formData['sendMailConfirmation']['value'] /*&&
-            $client->getEmailSendCount() == 0
-            */ #31526 - allow new confirmation mail on counter or workstation changes
-        ) {
-            \App::$http->readPostResult(
-                '/process/'. $process->id .'/'. $process->authKey .'/confirmation/mail/',
-                $process
-            );
+        $client = $process->getFirstClient();
+        if (isset($formData['sendMailConfirmation']) && $client->hasEmail()) {
+            $mailConfirmation = $formData['sendMailConfirmation'];
+            $mailConfirmation = (isset($mailConfirmation['value'])) ? $mailConfirmation['value'] : $mailConfirmation;
+            if ($mailConfirmation) {
+                \App::$http->readPostResult(
+                    '/process/'. $process->id .'/'. $process->authKey .'/confirmation/mail/',
+                    $process
+                );
+            }
         }
-        if (array_key_exists('sendConfirmation', $formData) &&
-            1 == $formData['sendConfirmation']['value'] /*&&
-            $client->getNotificationsSendCount() == 0
-            */ #31526 - allow new confirmation mail on counter or workstation changes
-        ) {
-            \App::$http->readPostResult(
-                '/process/'. $process->id .'/'. $process->authKey .'/confirmation/notification/',
-                $process
-            );
+        if (isset($formData['sendConfirmation']) && $client->hasTelephone()) {
+            $smsConfirmation = $formData['sendConfirmation'];
+            $smsConfirmation = (isset($smsConfirmation['value'])) ? $smsConfirmation['value'] : $smsConfirmation;
+            if ($smsConfirmation) {
+                \App::$http->readPostResult(
+                    '/process/'. $process->id .'/'. $process->authKey .'/confirmation/notification/',
+                    $process
+                );
+            }
         }
     }
 }
