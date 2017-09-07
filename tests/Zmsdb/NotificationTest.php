@@ -9,9 +9,10 @@ class NotificationTest extends Base
 {
     public function testBasic()
     {
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
         $input = $this->getTestEntity();
         $query = new Query();
-        $entity = $query->writeInQueue($input);
+        $entity = $query->writeInQueue($input, $now);
 
         $this->assertEntity("\\BO\\Zmsentities\\Notification", $entity);
         $this->assertEquals("80410", $entity->getProcessId());
@@ -37,19 +38,21 @@ class NotificationTest extends Base
 
     public function testWriteInQueueWithPickupStatus()
     {
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
         $entity = $this->getTestEntity();
         $entity->process['status'] = 'pickup';
         $this->assertEquals('0', $entity->getFirstClient()->emailSendCount);
-        $entity = (new Query)->writeInQueue($entity);
+        $entity = (new Query)->writeInQueue($entity, $now);
         $this->assertEntity("\\BO\\Zmsentities\\Notification", $entity);
         $this->assertEquals('1', $entity->getFirstClient()->notificationsSendCount);
     }
 
     public function testDeleteByProcessId()
     {
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
         $input = $this->getTestEntity();
         $query = new Query();
-        $queueId = $query->writeInQueue($input);
+        $queueId = $query->writeInQueue($input, $now);
         $query->deleteEntityByProcess($input->process['id']);
         $entity = $query->readEntity($queueId);
         $this->assertFalse($entity->hasId($queueId), "Deleted Notification still exists in Database.");
@@ -57,20 +60,22 @@ class NotificationTest extends Base
 
     public function testExceptionWithoutTelephone()
     {
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
         $this->setExpectedException('\BO\Zmsdb\Exception\Notification\ClientWithoutTelephone');
         $query = new Query();
         $input = $this->getTestEntity();
         $input->process['clients'][0]['telephone'] = '';
-        $query->writeInQueue($input);
+        $query->writeInQueue($input, $now);
     }
 
     public function testExceptionMissingProperty()
     {
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
         $this->setExpectedException('\BO\Zmsentities\Exception\NotificationMissedProperty');
         $query = new Query();
         $input = $this->getTestEntity();
         unset($input->message);
-        $query->writeInQueue($input);
+        $query->writeInQueue($input, $now);
     }
 
     protected function getTestEntity()

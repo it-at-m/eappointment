@@ -10,9 +10,10 @@ class MailTest extends Base
 {
     public function testBasic()
     {
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
         $input = $this->getTestEntity();
         $query = new Query();
-        $entity = $query->writeInQueue($input);
+        $entity = $query->writeInQueue($input, $now);
 
         $this->assertEntity("\\BO\\Zmsentities\\Mail", $entity);
         $this->assertEquals('Das ist ein Plaintext Test', $entity->getPlainPart());
@@ -54,10 +55,11 @@ class MailTest extends Base
 
     public function testWriteInQueueWithPickupStatus()
     {
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
         $entity = $this->getTestEntity();
         $entity->process['status'] = 'pickup';
         $this->assertEquals('0', $entity->getFirstClient()->emailSendCount);
-        $entity = (new Query)->writeInQueue($entity);
+        $entity = (new Query)->writeInQueue($entity, $now);
         $this->assertEntity("\\BO\\Zmsentities\\Mail", $entity);
         $this->assertEquals('1', $entity->getFirstClient()->emailSendCount);
     }
@@ -65,26 +67,29 @@ class MailTest extends Base
     public function testExceptionWithoutMail()
     {
         $this->setExpectedException('\BO\Zmsdb\Exception\Mail\ClientWithoutEmail');
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
         $query = new Query();
         $input = $this->getTestEntity();
         $input->process['clients'][0]['email'] = '';
-        $query->writeInQueue($input);
+        $query->writeInQueue($input, $now);
     }
 
     public function testWriteMimepartFailed()
     {
         $this->setExpectedException('BO\Zmsdb\Exception\MailWritePartFailed');
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
         $query = new Query();
         $input = $this->getTestEntity();
         $input->multipart[0]['content'] = null;
-        $query->writeInQueue($input);
+        $query->writeInQueue($input, $now);
     }
 
     public function testDeleteByProcessId()
     {
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
         $input = $this->getTestEntity();
         $query = new Query();
-        $entity = $query->writeInQueue($input);
+        $entity = $query->writeInQueue($input, $now);
         $query->deleteEntityByProcess($input->process['id']);
         $entity = $query->readEntity($entity->id);
         $this->assertFalse($entity->hasId(), "Delete Mail by process id failed.");

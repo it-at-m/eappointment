@@ -82,7 +82,7 @@ class ProcessStatusArchived extends Process
         \BO\Zmsentities\Process $process,
         \DateTimeInterface $now
     ) {
-        $process = $this->updateEntity($process, 1);
+        $process = $this->updateEntity($process, $now, 1);
         $archived = null;
         if ($this->writeBlockedEntity($process)) {
             $archived = $this->writeNewArchivedProcess($process, $now);

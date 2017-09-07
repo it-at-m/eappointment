@@ -87,7 +87,7 @@ class Mail extends Base
         return $this->readEntity($queueId);
     }
 
-    public function writeInQueue(Entity $mail)
+    public function writeInQueue(Entity $mail, \DateTimeInterface $dateTime)
     {
         $query = new Query\MailQueue(Query\Base::INSERT);
         $process = new \BO\Zmsentities\Process($mail->process);
@@ -112,7 +112,7 @@ class Mail extends Base
         $this->writeMimeparts($queueId, $mail->multipart);
         if ('pickup' == $process->status || 'queued' == $process->status) {
             $client->emailSendCount += 1;
-            (new Process())->updateEntity($process);
+            (new Process())->updateEntity($process, $dateTime);
         }
         return $this->readEntity($queueId);
     }
