@@ -110,7 +110,7 @@ class Mail extends Base
         $this->writeItem($query);
         $queueId = $this->getWriter()->lastInsertId();
         $this->writeMimeparts($queueId, $mail->multipart);
-        if ('pickup' == $process->status) {
+        if ('pickup' == $process->status || 'queued' == $process->status) {
             $client->emailSendCount += 1;
             (new Process())->updateEntity($process);
         }
