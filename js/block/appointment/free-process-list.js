@@ -10,12 +10,11 @@ class View extends BaseView {
         this.slotType = options.slotType;
         this.slotsRequired = options.slotsRequired;
         this.includeUrl = options.includeUrl || "";
-        this.bindPublicMethods('load');
+        this.bindPublicMethods('loadList');
         $.ajaxSetup({ cache: false });
-        this.load();
     }
 
-    load() {
+    loadList() {
         const url = `${this.includeUrl}/appointmentForm/processlist/free/?selecteddate=${this.selectedDate}&selectedtime=${this.selectedTime}&slottype=${this.slotType}&slotsrequired=${this.slotsRequired}`
         return this.loadContent(url, 'GET').catch(err => this.loadErrorCallback(err.source, err.url));
     }

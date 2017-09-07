@@ -1,5 +1,8 @@
 import BaseView from '../lib/baseview'
 import $ from 'jquery'
+import ActionHandler from "./appointment/action"
+import RequestList from "./appointment/requests"
+import FreeProcessList from './appointment/free-process-list'
 
 class View extends BaseView {
 
@@ -9,8 +12,8 @@ class View extends BaseView {
         this.includeUrl = options.includeUrl || "";
         this.onDatePick = options.onDatePick || (() => {});
         this.onDateToday = options.onDateToday || (() => {});
-        this.slotsRequired = 0;
-        this.slotType = 'intern';
+        this.slotsRequired = options.slotsRequired;
+        this.slotType = options.slotType;
         this.bindPublicMethods('load');
         $.ajaxSetup({ cache: false });
         this.bindEvents();
@@ -30,7 +33,7 @@ class View extends BaseView {
             ev.stopPropagation();
             const selectedDate = $(ev.target).attr('data-date');
             console.log('date selected', selectedDate)
-            this.onDatePick(selectedDate, this)
+            this.onDatePick(selectedDate);
         }).on('click', '.calendar-navigation .pagemonthlink', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
@@ -42,7 +45,7 @@ class View extends BaseView {
             ev.stopPropagation();
             const selectedDate = $(ev.target).attr('data-date');
             console.log('today selected', selectedDate)
-            this.onDateToday(selectedDate, this)
+            this.onDateToday(selectedDate);
         })
     }
 }

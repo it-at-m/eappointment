@@ -1,22 +1,19 @@
 import BaseView from "../../lib/baseview"
 import $ from "jquery"
-import freeProcessList from './free-process-list'
+import FreeProcessList from './free-process-list'
 import { lightbox } from '../../lib/utils'
 import CalendarView from '../calendar'
 import FormValidationView from '../form-validation'
 import ExceptionHandler from '../../lib/exceptionHandler'
 import MessageHandler from '../../lib/messageHandler'
-import ButtonActionHandler from "./action"
-import RequestListAction from "./requests"
+import ActionHandler from "./action"
+import RequestList from "./requests"
 import maxChars from '../../element/form/maxChars'
-import moment from 'moment'
 
 class View extends BaseView {
 
     constructor (element, options) {
         super(element);
-        this.ButtonAction = new ButtonActionHandler(element, options);
-        this.RequestListAction = new RequestListAction(element, options);
         this.$main = $(element);
         this.selectedDate = options.selectedDate;
         this.selectedTime = options.selectedTime;
@@ -27,8 +24,9 @@ class View extends BaseView {
         this.onEditProcess = options.onEditProcess || (() => {});
         this.onQueueProcess = options.onQueueProcess || (() => {});
         this.onDatePick = options.onDatePick || (() => {});
-        this.slotType = 'intern';
-
+        this.FreeProcessList = new FreeProcessList(this.$main.find('[data-free-process-list]'), options);
+        this.ActionHandler = new ActionHandler(element, options);
+        this.RequestList = new RequestList(element, options);
         $.ajaxSetup({ cache: false });
         this.load().then(() => {
             this.bindEvents();
@@ -41,7 +39,7 @@ class View extends BaseView {
     load() {
         const url = `${this.includeUrl}/appointmentForm/?selecteddate=${this.selectedDate}&selectedprocess=${this.selectedProcess}`
         this.loadPromise = this.loadContent(url).then(() => {
-            this.loadRequestList();
+            this.RequestList.loadList();
         }).catch(err => this.loadErrorCallback(err));
         return this.loadPromise;
     }
@@ -54,28 +52,11 @@ class View extends BaseView {
     loadNew () {
         const url = `${this.includeUrl}/appointmentForm/?selectedprocess=${this.selectedProcess}&new=1&selecteddate=${this.selectedDate}`
         this.loadPromise = this.loadContent(url).then(() => {
-            this.loadRequestList();
-            this.loadFreeProcessList();
+            this.RequestList.loadList();
+            this.FreeProcessList.loadList();
             this.bindEvents();
         }).catch(err => this.loadErrorCallback(err));
         return this.loadPromise;
-    }
-
-    loadRequestList () {
-        if (this.selectedProcess)
-            this.RequestListAction.readList()
-        else
-            this.RequestListAction.cleanLists();
-    }
-
-    loadFreeProcessList () {
-        return new freeProcessList(this.$main.find('[data-free-process-list]'), {
-            selectedDate: this.selectedDate,
-            selectedTime: this.selectedTime,
-            includeUrl: this.includeUrl,
-            slotsRequired: this.RequestListAction.slotCount,
-            slotType: this.slotType
-        })
     }
 
     cleanReload () {
@@ -87,29 +68,29 @@ class View extends BaseView {
 
     bindEvents() {
         this.$main.off().on('change', '.checkboxselect input:checkbox', (event) => {
-            this.RequestListAction.addServiceToList($(event.target), this.RequestListAction.serviceListSelected);
-            this.RequestListAction.removeServiceFromList($(event.target), this.RequestListAction.serviceList);
-            this.RequestListAction.updateLists();
-            this.loadFreeProcessList();
+            this.RequestList.addServiceToList($(event.target), this.RequestList.serviceListSelected);
+            this.RequestList.removeServiceFromList($(event.target), this.RequestList.serviceList);
+            this.RequestList.updateLists();
+            this.FreeProcessList.loadList();
         }).on('change', '.checkboxdeselect input:checkbox', (event) => {
-            this.RequestListAction.removeServiceFromList($(event.target), this.RequestListAction.serviceListSelected);
-            this.RequestListAction.addServiceToList($(event.target), this.RequestListAction.serviceList);
-            this.RequestListAction.updateLists();
-            this.loadFreeProcessList();
+            this.RequestList.removeServiceFromList($(event.target), this.RequestList.serviceListSelected);
+            this.RequestList.addServiceToList($(event.target), this.RequestList.serviceList);
+            this.RequestList.updateLists();
+            this.FreeProcessList.loadList();
         }).on('click', '.clear-list', () => {
-            this.RequestListAction.cleanLists();
-            this.RequestListAction.updateLists();
-            this.loadFreeProcessList();
+            this.RequestList.cleanLists();
+            this.RequestList.updateLists();
+            this.FreeProcessList.loadList();
         }).on('click', '.add-date-picker', () => {
-            this.selectDateWithOverlay();
+            this.ActionHandler.selectDateWithOverlay();
         }).on('change', 'select#appointmentForm_slotCount', (ev) => {
             console.log('slots changed manualy');
-            this.RequestListAction.slotCount = this.$main.find('select#appointmentForm_slotCount').val();
-            this.loadFreeProcessList();
+            this.RequestList.slotCount = this.$main.find('select#appointmentForm_slotCount').val();
+            this.FreeProcessList.loadList();
         }).on('click', '.form-actions button.process-reserve', (ev) => {
             event.preventDefault();
             event.stopPropagation();
-            this.ButtonAction.reserve(ev).then((response) => {
+            this.ActionHandler.reserve(ev).then((response) => {
                 let selectedProcess = $(response).filter('[data-process]').data('process');
                 this.loadMessage(response, () => {
                     this.onSaveProcess(selectedProcess)
@@ -118,7 +99,7 @@ class View extends BaseView {
         }).on('click', '.form-actions button.process-queue', (ev) => {
             event.preventDefault();
             event.stopPropagation();
-            this.ButtonAction.queue(ev).then((response) => {
+            this.ActionHandler.queue(ev).then((response) => {
                 this.loadMessage(response, this.onQueueProcess);
             }).catch(err => this.loadErrorCallback(err));
         }).on('click', '.form-actions button.process-new', (ev) => {
@@ -130,22 +111,22 @@ class View extends BaseView {
         }).on('click', '.form-actions button.process-delete', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
-            this.ButtonAction.delete(ev).then((response) => {
+            this.ActionHandler.delete(ev).then((response) => {
                 this.loadMessage(response, this.onDeleteProcess);
             }).catch(err => this.loadErrorCallback(err));
         }).on('click', '.form-actions button.process-abort', (ev) => {
-            this.ButtonAction.abort(ev);
+            this.ActionHandler.abort(ev);
             this.load();
         }).on('click', '.form-actions button.process-save', (ev) => {
             event.preventDefault();
             event.stopPropagation();
-            this.ButtonAction.save(ev).then((response) => {
+            this.ActionHandler.save(ev).then((response) => {
                 this.loadMessage(response, this.onSaveProcess);
             }).catch(err => this.loadErrorCallback(err));
         }).on('click', '[data-button-print]', (ev) => {
             ev.preventDefault()
             ev.stopPropagation()
-            this.ButtonAction.printWaitingNumber();
+            this.ActionHandler.printWaitingNumber();
         })
     }
 
@@ -154,9 +135,9 @@ class View extends BaseView {
         const { lightboxContentElement, destroyLightbox } = lightbox(this.$main, () => {callback()})
         new MessageHandler(lightboxContentElement, {
             message: response,
-            callback: (buttonAction, buttonUrl) => {
-                if (buttonAction) {
-                    this.ButtonAction[buttonAction]()
+            callback: (ActionHandler, buttonUrl) => {
+                if (ActionHandler) {
+                    this.ActionHandler[ActionHandler]()
                 } else if (buttonUrl) {
                     this.loadByCallbackUrl(buttonUrl);
                 }
@@ -174,7 +155,7 @@ class View extends BaseView {
         else if (err.message.toLowerCase().includes('exception')) {
             let exceptionType = $(err.message).filter('.exception').data('exception');
             if (exceptionType === 'reservation-failed')
-                this.loadFreeProcessList();
+                this.FreeProcessList.loadList();
             else if (exceptionType === 'process-not-found')
                 this.cleanReload()
             else {
@@ -184,44 +165,6 @@ class View extends BaseView {
         }
         else
             console.log('Ajax error', err);
-    }
-
-    selectDateWithOverlay () {
-        const destroyCalendar = () => {
-            tempCalendar.destroy()
-        }
-
-        const { lightboxContentElement, destroyLightbox } = lightbox(this.$main, () => {
-            destroyCalendar()
-            reject()
-        })
-
-        const tempCalendar = new CalendarView(lightboxContentElement, {
-            includeUrl: this.includeUrl,
-            selectedDate: this.selectedDate,
-            onDatePick: (date) => {
-                destroyCalendar()
-                destroyLightbox()
-                this.selectedDate = date;
-                this.setSelectedDate();
-                this.RequestListAction.calculateSlotCount();
-                this.loadFreeProcessList();
-                this.onDatePick(date);
-            },
-            onDateToday: (date) => {
-                destroyCalendar()
-                destroyLightbox()
-                this.selectedDate = date;
-                this.setSelectedDate();
-                this.RequestListAction.calculateSlotCount();
-                this.loadFreeProcessList();
-                this.onDateToday(date);
-            }
-        })
-    }
-
-    setSelectedDate () {
-        this.$main.find('.add-date-picker input#process_date').val(moment(this.selectedDate, 'YYYY-MM-DD').format('DD.MM.YYYY'))
     }
 }
 
