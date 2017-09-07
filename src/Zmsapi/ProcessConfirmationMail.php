@@ -33,7 +33,7 @@ class ProcessConfirmationMail extends BaseController
         $mail = (new \BO\Zmsentities\Mail)->toResolvedEntity($process, $config);
 
         if ($process->getFirstClient()->hasEmail()) {
-            $mail = (new \BO\Zmsdb\Mail)->writeInQueue($mail);
+            $mail = (new \BO\Zmsdb\Mail)->writeInQueue($mail, \App::$now);
             \App::$log->debug("Send mail", [$mail]);
         }
 

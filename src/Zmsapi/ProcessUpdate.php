@@ -12,6 +12,10 @@ use \BO\Zmsdb\Mail;
 use BO\Mellon\Validator;
 use \BO\Zmsdb\Process;
 
+/**
+ * @SuppressWarnings(Coupling)
+ * @return String
+ */
 class ProcessUpdate extends BaseController
 {
     /**
@@ -38,7 +42,7 @@ class ProcessUpdate extends BaseController
         }
 
         $message = Response\Message::create($request);
-        $message->data = (new Process)->updateEntity($entity, $resolveReferences);
+        $message->data = (new Process)->updateEntity($entity, \App::$now, $resolveReferences);
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());

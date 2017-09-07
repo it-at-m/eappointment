@@ -26,7 +26,7 @@ class NotificationAdd extends BaseController
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Notification($input);
         $entity->testValid();
-        $notification = (new Query())->writeInQueue($entity);
+        $notification = (new Query())->writeInQueue($entity, \App::$now);
 
         $message = Response\Message::create($request);
         $message->data = $notification;

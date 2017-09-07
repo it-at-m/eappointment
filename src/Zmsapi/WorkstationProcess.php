@@ -37,7 +37,7 @@ class WorkstationProcess extends BaseController
         $process->setCallTime(\App::$now);
         $process->queue['callCount']++;
         $process->status = 'called';
-        $workstation->process = (new Workstation)->writeAssignedProcess($workstation->id, $process);
+        $workstation->process = (new Workstation)->writeAssignedProcess($workstation->id, $process, \App::$now);
 
         $message = Response\Message::create($request);
         $message->data = $workstation;

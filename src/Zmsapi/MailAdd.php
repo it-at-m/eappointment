@@ -26,7 +26,7 @@ class MailAdd extends BaseController
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Mail($input);
         $entity->testValid();
-        $mail = (new Query())->writeInQueue($entity);
+        $mail = (new Query())->writeInQueue($entity, \App::$now);
 
         $message = Response\Message::create($request);
         $message->data = $mail;

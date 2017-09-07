@@ -35,7 +35,7 @@ class ProcessPickup extends BaseController
             $this->testProcessData($entity);
             $process = (new Query())->readEntity($entity['id'], $entity['authKey'], 0);
             $process->addData($input);
-            $process = (new Query())->updateEntity($process);
+            $process = (new Query())->updateEntity($process, \App::$now);
         } elseif ($entity->hasQueueNumber()) {
             $process = ProcessStatusQueued::init()
                 ->readByQueueNumberAndScope($entity['queue']['number'], $workstation->scope['id']);
@@ -47,7 +47,7 @@ class ProcessPickup extends BaseController
             throw new Exception\Process\ProcessInvalid();
         }
         $workstation->testMatchingProcessScope($workstation->getScopeList($cluster), $process);
-        (new \BO\Zmsdb\Workstation)->writeAssignedProcess($workstation->id, $process);
+        (new \BO\Zmsdb\Workstation)->writeAssignedProcess($workstation->id, $process, \App::$now);
 
         $message = Response\Message::create($request);
         $message->data = (new Query)->readEntity($process->id, $process->authKey);
