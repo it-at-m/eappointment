@@ -37,7 +37,7 @@ class ProcessDeleteNotification extends BaseController
         $notification = (new \BO\Zmsentities\Notification())->toResolvedEntity($process, $config, $department);
 
         if ($process->getFirstClient()->hasTelephone()) {
-            $notification = (new Query())->writeInQueue($notification);
+            $notification = (new Query())->writeInQueue($notification, \App::$now);
             \App::$log->debug("Send notification", [$notification]);
         }
 

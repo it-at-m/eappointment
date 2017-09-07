@@ -34,14 +34,14 @@ class ProcessFinished extends BaseController
 
         $query = new Query();
         if ('pending' == $process['status']) {
-            $process = $query->updateEntity($process);
+            $process = $query->updateEntity($process, \App::$now);
         } else {
             $query->writeEntityFinished($process, \App::$now);
             foreach ($process->getClients() as $client) {
                 if ($client->hasSurveyAccepted()) {
                     $config = (new \BO\Zmsdb\Config())->readEntity();
                     $mail = (new \BO\Zmsentities\Mail())->toResolvedEntity($process, $config);
-                    (new \BO\Zmsdb\Mail())->writeInQueue($mail);
+                    (new \BO\Zmsdb\Mail())->writeInQueue($mail, \App::$now);
                 }
             }
         }
