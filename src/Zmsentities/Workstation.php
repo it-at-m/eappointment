@@ -175,7 +175,7 @@ class Workstation extends Schema\Entity
     {
         $this->queue['appointmentsOnly'] = (isset($formData['appointmentsOnly'])) ?
             $formData['appointmentsOnly']->getValue() :
-            0;
+            $this->getQueuePreference('appointmentsOnly', true);
         return $this;
     }
 }
