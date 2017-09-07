@@ -33,6 +33,9 @@ $queueMissedColor:              $red !default;
         td {
             vertical-align:     middle;
         }
+        td.nowrap {
+            white-space:    nowrap;
+        }
         tbody {
             tr:first-child {
                 .queue-status {
