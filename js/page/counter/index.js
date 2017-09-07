@@ -5,6 +5,8 @@ import AppointmentTimesView from '../../block/appointment/times'
 import QueueView from '../../block/queue'
 import QueueInfoView from '../../block/queue/info'
 import CalendarView from '../../block/calendar'
+import ActionHandler from "../../block/appointment/action"
+import FreeProcessList from "../../block/appointment/free-process-list"
 
 import { loadInto } from './utils'
 import { lightbox } from '../../lib/utils'
@@ -20,6 +22,9 @@ class View extends BaseView {
         this.selectedDate = options['selected-date'];
         this.selectedTime = options['selected-time'];
         this.selectedProcess = options['selected-process'];
+        this.ActionHandler = (new ActionHandler(this.$main.find('[data-appointment-form]'), options));
+        this.slotType = 'intern';
+        this.slotsRequired = 0;
         this.reloadTimer;
         this.lastReload = 0;
         this.bindPublicMethods('loadAllPartials', 'onDatePick', 'onNextProcess', 'onDateToday', 'onGhostWorkstationChange','onDeleteProcess','onEditProcess','onSaveProcess','onQueueProcess');
@@ -74,21 +79,46 @@ class View extends BaseView {
         }, 1000);
     }
 
-    onDatePick(date) {
+    onDatePick(date, full = false) {
+        this.selectedProcess = null;
         this.selectedDate = date;
-        this.loadCalendar(),
-        //this.loadAppointmentForm(),
-        this.loadQueueTable(),
-        this.loadQueueInfo(),
-        this.loadAppointmentTimes()
+        if (full) {
+            this.loadAllPartials();
+        } else {
+            this.loadCalendar(),
+            this.loadQueueTable(),
+            this.loadQueueInfo(),
+            this.loadAppointmentTimes()
+            this.ActionHandler.setSelectedDate(date);
+            (new FreeProcessList(this.$main.find('[data-free-process-list]'), {
+                "includeUrl": this.includeUrl,
+                "slotType": this.slotType,
+                "selectedDate": this.selectedDate,
+                "selectedTime": this.selectedTime,
+                "slotsRequired": this.slotsRequired
+            })).loadList();
+        }
     }
 
-    onDateToday(date) {
+    onDateToday(date, full = false) {
+        this.selectedProcess = null;
         this.selectedDate = date;
-        this.loadCalendar(),
-        this.loadAppointmentForm(),
-        this.loadQueueTable(),
-        this.loadAppointmentTimes()
+        if (full) {
+            this.loadAllPartials();
+        } else {
+            this.loadCalendar(),
+            this.loadQueueTable(),
+            this.loadQueueInfo(),
+            this.loadAppointmentTimes()
+            this.ActionHandler.setSelectedDate(date);
+            (new FreeProcessList(this.$main.find('[data-free-process-list]'), {
+                "includeUrl": this.includeUrl,
+                "slotType": this.slotType,
+                "selectedDate": this.selectedDate,
+                "selectedTime": this.selectedTime,
+                "slotsRequired": this.slotsRequired
+            })).loadList();
+        }
     }
 
     onNextProcess() {
@@ -136,6 +166,8 @@ class View extends BaseView {
     loadCalendar () {
         return new CalendarView(this.$main.find('[data-calendar]'), {
             selectedDate: this.selectedDate,
+            slotsRequired: this.slotsRequired,
+            slotType: this.slotType,
             onDatePick: this.onDatePick,
             onDateToday: this.onDateToday,
             includeUrl: this.includeUrl
@@ -154,6 +186,8 @@ class View extends BaseView {
             selectedTime: this.selectedTime,
             selectedProcess: this.selectedProcess,
             includeUrl: this.includeUrl,
+            slotsRequired: this.slotsRequired,
+            slotType: this.slotType,
             onDatePick: this.onDatePick,
             onDateToday: this.onDateToday,
             onDeleteProcess: this.onDeleteProcess,

@@ -6,10 +6,18 @@ class View extends BaseView {
 
     constructor (element, options) {
         super(element, options);
+        this.selectedProcess = options.selectedProcess;
         this.serviceList = [];
         this.serviceListSelected = [];
         this.slotCount = 0;
         console.log('Component: RequestList actions', this, options);
+    }
+
+    loadList () {
+        if (this.selectedProcess)
+            this.readList()
+        else
+            this.cleanLists();
     }
 
     /**

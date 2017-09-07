@@ -171,6 +171,30 @@ class View extends BaseView {
         }
         this.selectedProcess = null;
     }
+
+    setSelectedDate (date) {
+        this.$main.find('.add-date-picker input#process_date').val(moment(date, 'YYYY-MM-DD').format('DD.MM.YYYY'));
+        this.removeCalendarOverlay();
+    }
+
+    selectDateWithOverlay () {
+        let calendarBox = $.find('[data-calendar]');
+        $('.calendar').addClass('lightbox__content');
+        $(calendarBox).addClass('lightbox').on('click', (ev) => {
+            console.log('Overlay calendar background click', ev);
+            ev.stopPropagation()
+            ev.preventDefault()
+            this.removeCalendarOverlay()
+        }).on('click', '.lightbox__content', (ev) => {
+            ev.stopPropagation();
+        });
+    }
+
+    removeCalendarOverlay () {
+        let calendarBox = $.find('[data-calendar]');
+        $(calendarBox).removeClass('lightbox');
+        $('.calendar').removeClass('lightbox__content');
+    }
 }
 
 export default View;
