@@ -29,10 +29,6 @@ class ProcessQueue extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $validator = $request->getAttribute('validator');
-        $selectedDate = Validator::value($args['date'])->isString()->getValue();
-        $dateTime = ($selectedDate) ?
-            \DateTimeImmutable::createFromFormat('Y-m-d H:i', $selectedDate .' 00:00') :
-            \App::$now;
 
         $process = $this->readSelectedProcessWithWaitingnumber($validator);
         if ($process instanceof \BO\Zmsentities\Process) {
@@ -42,18 +38,17 @@ class ProcessQueue extends BaseController
                 array(
                     'title' => 'Wartenummer drucken',
                     'process' => $process,
-                    'currentDate' => $dateTime
+                    'currentDate' => \App::$now
                 )
             );
         }
 
-        $result = Helper\AppointmentFormHelper::writeQueuedProcess($request->getParsedBody(), $workstation, $dateTime);
+        $result = Helper\AppointmentFormHelper::writeQueuedProcess($request->getParsedBody(), $workstation, \App::$now);
         return \BO\Slim\Render::withHtml(
             $response,
             'block/appointment/waitingnumber.twig',
             array(
-                'process' => $result,
-                'selectedDate' => $selectedDate
+                'process' => $result
             )
         );
     }
