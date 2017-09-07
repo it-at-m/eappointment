@@ -31,7 +31,7 @@ class ProcessTest extends Base
         $now = new \DateTimeImmutable("2016-04-01 11:55");
         $workstation = (new \BO\Zmsdb\Workstation)->writeEntityLoginByName('testadmin', 'vorschau', $now, 2);
         $process =(new Query)->readEntity(10029, '1c56');
-        $workstation->process = (new \BO\Zmsdb\Workstation)->writeAssignedProcess($workstation->id, $process);
+        $workstation->process = (new \BO\Zmsdb\Workstation)->writeAssignedProcess($workstation->id, $process, $now);
         $process = (new Query)->readByWorkstation($workstation, 1);
         $this->assertEntity("\\BO\\Zmsentities\\Process", $process);
         $this->assertEquals(1, $process->requests->count());
@@ -85,13 +85,13 @@ class ProcessTest extends Base
         $process->amendment = 'Test amendment';
         $process->clients[] = new \BO\Zmsentities\Client(['familyName' => 'Unbekannt']);
         $process->queue['lastCallTime'] = 1459511700;
-        $process = $query->updateEntity($process);
+        $process = $query->updateEntity($process, $now);
 
         $this->assertEntity("\\BO\\Zmsentities\\Process", $process);
         $this->assertEquals('Test amendment', $process->amendment);
         $this->assertEquals(151, $process->getScopeId());
 
-        $process = $query->updateProcessStatus($process, 'confirmed');
+        $process = $query->updateProcessStatus($process, 'confirmed', $now);
         $this->assertEquals('confirmed', $process->getStatus());
         $this->assertEquals(1464339600, $process->queue['arrivalTime']);
         $this->assertEquals(2, $process->clients->count());
@@ -106,7 +106,7 @@ class ProcessTest extends Base
         $process = $query->writeEntityReserved($input, $now);
         $process->status = 'processing';
         $process->queue['callTime'] = $process->queue['arrivalTime'] + 3600;
-        $process = $query->updateEntity($process);
+        $process = $query->updateEntity($process, $now);
         $this->assertEntity("\\BO\\Zmsentities\\Process", $process);
         $this->assertEquals(60, $process->queue['waitingTime']);
     }
@@ -119,13 +119,13 @@ class ProcessTest extends Base
         $input->queue['callTime'] = 1464350400;
         $process = $query->writeEntityReserved($input, $now);
         $process->amendment = 'Test amendment';
-        $process = $query->updateEntity($process);
+        $process = $query->updateEntity($process, $now);
 
         $this->assertEntity("\\BO\\Zmsentities\\Process", $process);
         $this->assertEquals('Test amendment', $process->amendment);
         $this->assertEquals(151, $process->getScopeId());
 
-        $process = $query->updateProcessStatus($process, 'confirmed');
+        $process = $query->updateProcessStatus($process, 'confirmed', $now);
         $this->assertEquals('called', $process->getStatus());
     }
 

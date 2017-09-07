@@ -63,7 +63,7 @@ class Notification extends Base
     }
 
 
-    public function writeInQueue(Entity $notification)
+    public function writeInQueue(Entity $notification, \DateTimeInterface $dateTime)
     {
         $queueId = null;
         $process = new \BO\Zmsentities\Process($notification->process);
@@ -88,7 +88,7 @@ class Notification extends Base
         $queueId = $this->getWriter()->lastInsertId();
         if ('pickup' == $process->status || 'queued' == $process->status) {
             $client->notificationsSendCount += 1;
-            (new Process())->updateEntity($process);
+            (new Process())->updateEntity($process, $dateTime);
         }
         return $this->readEntity($queueId);
     }

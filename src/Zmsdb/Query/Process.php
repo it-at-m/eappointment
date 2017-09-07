@@ -256,9 +256,9 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionTime($now)
+    public function addConditionTime($dateTime)
     {
-        $this->query->where('process.Datum', '=', $now->format('Y-m-d'));
+        $this->query->where('process.Datum', '=', $dateTime->format('Y-m-d'));
         return $this;
     }
 
@@ -375,7 +375,7 @@ class Process extends Base implements MappingInterface
         ]);
     }
 
-    public function addValuesUpdateProcess(\BO\Zmsentities\Process $process)
+    public function addValuesUpdateProcess(\BO\Zmsentities\Process $process, \DateTimeInterface $dateTime)
     {
         $data = array();
         $data['Anmerkung'] = $process->getAmendment();
@@ -389,7 +389,7 @@ class Process extends Base implements MappingInterface
         $data = $this->readProcessTimeValuesData($data, $process);
         $data = $this->readWaitingTime($data, $process);
         $data = $this->readSendCount($data, $process);
-        $data = $this->readStatusData($data, $process);
+        $data = $this->readStatusData($data, $process, $dateTime);
         $data = $this->readFilteredData($data);
         $this->addValues($data);
     }
@@ -404,7 +404,7 @@ class Process extends Base implements MappingInterface
         );
     }
 
-    protected function readStatusData($data, $process)
+    protected function readStatusData($data, $process, \DateTimeInterface $dateTime)
     {
         $data['vorlaeufigeBuchung'] = ($process['status'] == 'reserved') ? 1 : 0;
         $data['aufruferfolgreich'] = ($process['status'] == 'processing') ? 1 : 0;
@@ -424,7 +424,7 @@ class Process extends Base implements MappingInterface
         }
         if ($process->status == 'queued') {
             $data['nicht_erschienen'] = 0;
-            $data['wsm_aufnahmezeit'] = (new \DateTimeImmutable())->format('H:i:s');
+            $data['wsm_aufnahmezeit'] = $dateTime->format('H:i:s');
         }
         if ($process->status == 'missed') {
             $data['nicht_erschienen'] = 1;

@@ -126,9 +126,10 @@ class UserAccountTest extends Base
 
     public function testWriteRemovedProcess()
     {
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
         $workstation = $this->writeTestLogin();
         $process = (new \BO\Zmsdb\Process)->readEntity(10029, '1c56');
-        $workstation->process = (new Workstation)->writeAssignedProcess($workstation->id, $process);
+        $workstation->process = (new Workstation)->writeAssignedProcess($workstation->id, $process, $now);
         $workstation->process->queue['callCount'] = 1;
         (new Workstation)->writeRemovedProcess($workstation);
         $process = (new \BO\Zmsdb\Process)->readEntity(10029, '1c56');

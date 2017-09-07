@@ -45,12 +45,12 @@ class Process extends Base implements Interfaces\ResolveReferences
         return $process;
     }
 
-    public function updateEntity(\BO\Zmsentities\Process $process, $resolveReferences = 0)
+    public function updateEntity(\BO\Zmsentities\Process $process, \DateTimeInterface $dateTime, $resolveReferences = 0)
     {
         $query = new Query\Process(Query\Base::UPDATE);
         $query->addConditionProcessId($process['id']);
         $query->addConditionAuthKey($process['authKey']);
-        $query->addValuesUpdateProcess($process);
+        $query->addValuesUpdateProcess($process, $dateTime);
         $this->writeItem($query);
         $this->writeRequestsToDb($process);
         $process = $this->readEntity($process->id, $process->authKey, $resolveReferences);
@@ -92,16 +92,16 @@ class Process extends Base implements Interfaces\ResolveReferences
      */
     protected function writeNewProcess(
         \BO\Zmsentities\Process $process,
-        \DateTimeInterface $now,
+        \DateTimeInterface $dateTime,
         $parentProcess = 0,
         $childProcessCount = 0
     ) {
         $query = new Query\Process(Query\Base::INSERT);
         $process->id = $this->readNewProcessId();
         $process->setRandomAuthKey();
-        $process->createTimestamp = $now->getTimestamp();
+        $process->createTimestamp = $dateTime->getTimestamp();
         $query->addValuesNewProcess($process, $parentProcess, $childProcessCount);
-        $query->addValuesUpdateProcess($process);
+        $query->addValuesUpdateProcess($process, $dateTime);
         $this->writeItem($query);
         Log::writeLogEntry("CREATE (Process::writeNewProcess) $process ", $process->id);
         return $process;
@@ -277,10 +277,10 @@ class Process extends Base implements Interfaces\ResolveReferences
      *
      * @return Resource Status
      */
-    public function updateProcessStatus(\BO\Zmsentities\Process $process, $status = 'free')
+    public function updateProcessStatus(Entity $process, $status = 'free', \DateTimeInterface $dateTime)
     {
         //\App::$log->debug('UPDATE STATUS');
-        $process = (new ProcessStatus())->readUpdatedStatus($process, $status);
+        $process = (new ProcessStatus())->readUpdatedStatus($process, $status, $dateTime);
         return $process;
     }
 

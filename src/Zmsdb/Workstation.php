@@ -186,9 +186,9 @@ class Workstation extends Base
      *
      * @return Resource Process
      */
-    public function writeAssignedProcess($workstationId, \BO\Zmsentities\Process $process)
+    public function writeAssignedProcess($workstationId, \BO\Zmsentities\Process $process, \DateTimeInterface $dateTime)
     {
-        $process = (new Process)->updateEntity($process);
+        $process = (new Process)->updateEntity($process, $dateTime);
         $query = new Query\Process(Query\Base::UPDATE);
         $query->addConditionProcessId($process->id);
         $query->addValues(['NutzerID' => $workstationId]);
