@@ -30,7 +30,9 @@ class Queue extends Schema\Entity implements Helper\NoSanitize
     public function getProcess()
     {
         if ($this->process instanceof Process) {
-            return clone $this->process;
+            $process = clone $this->process;
+            $process->queue = clone $this;
+            return $process;
         }
         return null;
     }
