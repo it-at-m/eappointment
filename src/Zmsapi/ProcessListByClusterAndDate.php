@@ -24,6 +24,7 @@ class ProcessListByClusterAndDate extends BaseController
         (new Helper\User($request))->checkRights('cluster');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $dateTime = new \BO\Zmsentities\Helper\DateTime($args['date']);
+        $dateTime = $dateTime->modify(\App::$now->format('H:i'));
 
         $query = new Query();
         $cluster = $query->readEntity($args['id'], 0);
