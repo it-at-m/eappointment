@@ -277,7 +277,7 @@ class Process extends Base implements Interfaces\ResolveReferences
      *
      * @return Resource Status
      */
-    public function updateProcessStatus(Entity $process, $status = 'free', \DateTimeInterface $dateTime)
+    public function updateProcessStatus(Entity $process, $status, \DateTimeInterface $dateTime)
     {
         //\App::$log->debug('UPDATE STATUS');
         $process = (new ProcessStatus())->readUpdatedStatus($process, $status, $dateTime);
@@ -291,14 +291,13 @@ class Process extends Base implements Interfaces\ResolveReferences
      *
      * @return Resource Status
      */
-    public function writeDeletedEntity($processId, $authKey)
+    public function writeDeletedEntity($processId)
     {
         $query = Query\Process::QUERY_DELETE;
         $statement = $this->getWriter()->prepare($query);
         $status = $statement->execute(
             array(
                 $processId,
-                $authKey,
                 $processId
             )
         );
@@ -335,16 +334,13 @@ class Process extends Base implements Interfaces\ResolveReferences
     {
         $query = Query\Process::QUERY_CANCELED;
         $statement = $this->getWriter()->prepare($query);
-        $status = $statement->execute(
+        $statement->execute(
             array(
                 $processId,
                 $authKey,
                 $processId
             )
         );
-        if ($status) {
-            $this->deleteXRequests($processId);
-        }
         Log::writeLogEntry("DELETE (Process::writeCanceledEntity) $processId ", $processId);
         return $this->readEntity($processId, $authKey, 0);
     }
@@ -380,16 +376,19 @@ class Process extends Base implements Interfaces\ResolveReferences
 
     protected function writeRequestsToDb(\BO\Zmsentities\Process $process)
     {
-        $this->deleteXRequests($process->id);
-        $query = new Query\XRequest(Query\Base::INSERT);
-        foreach ($process->requests as $request) {
-            $query->addValues(
-                [
-                    'AnliegenID' => $request['id'],
-                    'BuergerID' => $process->id
-                ]
-            );
-            $this->writeItem($query);
+        if ($process->requests && count($process->requests)) {
+            // Beware of resolveReferences=0 to not delete the existing requests
+            $this->deleteXRequests($process->id);
+            $query = new Query\XRequest(Query\Base::INSERT);
+            foreach ($process->requests as $request) {
+                $query->addValues(
+                    [
+                        'AnliegenID' => $request['id'],
+                        'BuergerID' => $process->id
+                    ]
+                );
+                $this->writeItem($query);
+            }
         }
     }
 
@@ -400,35 +399,19 @@ class Process extends Base implements Interfaces\ResolveReferences
         return $this->deleteItem($query);
     }
 
-    /**
-     * delete processList by time interval
-     *
-     * @param
-     *            deleteInSeconds
-     *
-     * @return boolean
-     */
-    public function deleteByTimeInterval($deleteInSeconds)
-    {
+    public function readExpiredProcessList(
+        \DateTimeInterface $expirationDate,
+        $limit = 500,
+        $resolveReferences = 0
+    ) {
         $selectQuery = new Query\Process(Query\Base::SELECT);
         $selectQuery
             ->addEntityMapping()
-            ->addConditionProcessDeleteInterval($deleteInSeconds)
-            ->addLimit(500);
+            ->addResolvedReferences($resolveReferences)
+            ->addConditionProcessDeleteInterval($expirationDate)
+            ->addConditionIgnoreSlots()
+            ->addLimit($limit);
         $statement = $this->fetchStatement($selectQuery);
-        $processList = $statement->fetchAll();
-        $nextProcess = array_shift($processList);
-        if (! $nextProcess) {
-            return false;
-        }
-        while ($nextProcess) {
-            $processData = (new Query\Process(Query\Base::SELECT))->postProcessJoins($nextProcess);
-            $entity = new Entity($processData);
-            if ($entity instanceof Entity) {
-                $this->writeDeletedEntity($entity->id, $entity->authKey);
-            }
-            $nextProcess = array_shift($processList);
-        }
-        $this->deleteByTimeInterval($deleteInSeconds);
+        return $this->readList($statement, $resolveReferences);
     }
 }

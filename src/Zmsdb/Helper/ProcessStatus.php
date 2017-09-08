@@ -3,7 +3,7 @@ namespace BO\Zmsdb\Helper;
 
 class ProcessStatus extends \BO\Zmsdb\Process
 {
-    public function readUpdatedStatus(\BO\Zmsentities\Process $process, $status = 'free', \DateTimeInterface $dateTime)
+    public function readUpdatedStatus(\BO\Zmsentities\Process $process, $status, \DateTimeInterface $dateTime)
     {
         $query = new \BO\Zmsdb\Query\Process(\BO\Zmsdb\Query\Base::UPDATE);
         $query->addConditionProcessId($process['id']);

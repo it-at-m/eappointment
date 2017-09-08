@@ -281,14 +281,18 @@ class ProcessTest extends Base
         $this->assertEquals(10029, $processList->getFirst()->id);
     }
 
-    public function testDeleteByTimeInterval()
+    public function testExpiredProcesses()
     {
         $query = new Query();
-        $date = new \DateTimeImmutable("2016-05-27 11:55");
-        $now = new \DateTimeImmutable();
-        $seconds = $now->getTimestamp() - $date->getTimestamp();
-        $deleteTest = $query->deleteByTimeInterval($seconds);
-        $this->assertEquals(null, $deleteTest);
+        $date = new \DateTimeImmutable("2016-04-01 07:30");
+        $processList = $query->readExpiredProcessList($date, 5000);
+        foreach ($processList as $process) {
+            $this->assertTrue(
+                $date->getTimestamp() >= $process->getAppointments()->getFirst()->date,
+                "expired process $process should be older than expiration date " . $date->format('c')
+            );
+        }
+        $this->assertEquals(46, $processList->count());
     }
 
     protected function getTestCalendarEntity()
