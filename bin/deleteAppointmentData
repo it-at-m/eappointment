@@ -12,11 +12,30 @@ if (file_exists("$dir/bootstrap.php")) {
 } else {
     require("$dir/config.php");
 }
-if (isset($argv[2]) && $argv[2] == '--commit') {
-    \BO\Zmsdb\Helper\AppointmentDeleteByCron::init($argv[1]);
+$usage = <<<EOS
+
+Usage: {$argv[0]} days [--verbose] [--pending] --commit
+        ATTENTION! Delete Appointment Data based on time in days interval. USE WITH CAUTION!
+        --commit        no dry run, delete processes
+        --verbose       only shows what would be deleted
+        --pending       include pending processes (Abholer)
+
+        !!!!!!!!!!!!!!!!!!!!!!!
+        !! DATA LOSS WARNING !!
+        !!!!!!!!!!!!!!!!!!!!!!!
+EOS;
+
+$timeInterval = array_shift(preg_grep('#^\d+$#', $argv));
+$verbose = array_shift(preg_grep('#^--?v(erbose)?$#', $argv));
+$commit = preg_grep('#^--commit$#', $argv);
+$pending = preg_grep('#^--pending$#', $argv);
+
+if ($timeInterval) {
+    $job = new \BO\Zmsdb\Helper\AppointmentDeleteByCron($timeInterval, $verbose);
+    $job->startProcessing($commit, $pending);
 } else {
-    echo "Usage: {$argv[0]} timeInterval --commit\n\tATTENTION! Delete Appointment Data based on time ('in days (1 i.e.)') interval. USE WITH CAUTION!\n\n"
-        . "\t!!!!!!!!!!!!!!!!!!!!!!!\n"
-        . "\t!! DATA LOSS WARNING !!\n"
-        . "\t!!!!!!!!!!!!!!!!!!!!!!!\n\n";
+    error_log("Missing time interval argument!$usage");
+}
+if (!$commit) {
+    error_log("Use with --commit to delete entries.");
 }

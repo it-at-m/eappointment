@@ -49,7 +49,7 @@ class Process extends Base implements MappingInterface
 
     const QUERY_DELETE = "DELETE FROM `buerger`
         WHERE
-            (BuergerID = ? AND absagecode = ?)
+            BuergerID = ?
             OR istFolgeterminvon = ?
         ";
 
@@ -206,32 +206,44 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionProcessDeleteInterval($deleteInSeconds)
-    {
-        $this->query->where(function (\Solution10\SQL\ConditionBuilder $condition) use ($deleteInSeconds) {
+    public function addConditionProcessDeleteInterval(
+        \DateTimeInterface $expirationDate
+    ) {
+        $timestamp = $expirationDate->getTimestamp();
+        $this->query->where(function (\Solution10\SQL\ConditionBuilder $condition) use ($timestamp) {
             $condition
                 ->andWith(
                     self::expression(
-                        'UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(`process`.`Datum`)'
+                        'UNIX_TIMESTAMP(`process`.`Datum`) + TIME_TO_SEC(`process`.`Uhrzeit`)'
                     ),
-                    '>=',
-                    $deleteInSeconds
+                    '<=',
+                    $timestamp
                 )
-                ->andWith('process.AbholortID', '=', 0)
-                ->andWith('process.NutzerID', '=', 0);
+                ;
         });
+        $this->query->orderBy('process.Datum', 'ASC');
+        /*
         $this->query->where(function (\Solution10\SQL\ConditionBuilder $condition) {
             $condition
                 ->andWith('process.vorlaeufigeBuchung', '=', 1)
                 ->orWith('process.Name', '=', '(abgesagt)')
                 ->orWith('process.Name', '=', 'dereferenced');
         });
+         */
         return $this;
     }
 
     public function addConditionProcessId($processId)
     {
         $this->query->where('process.BuergerID', '=', $processId);
+        $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) {
+            $query->andWith(self::expression('process.istFolgeterminvon IS NULL OR process.istFolgeterminvon'), '=', 0);
+        });
+        return $this;
+    }
+
+    public function addConditionIgnoreSlots()
+    {
         $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) {
             $query->andWith(self::expression('process.istFolgeterminvon IS NULL OR process.istFolgeterminvon'), '=', 0);
         });

@@ -6,6 +6,9 @@ use \BO\Zmsentities\Mail as Entity;
 use \BO\Zmsentities\Mimepart;
 use \BO\Zmsentities\Collection\MailList as Collection;
 
+/**
+ * @SuppressWarnings(CouplingBetweenObjects)
+ */
 class Mail extends Base
 {
 
