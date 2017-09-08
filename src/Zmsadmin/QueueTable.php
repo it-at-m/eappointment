@@ -32,8 +32,8 @@ class QueueTable extends BaseController
         $queueList = new QueueList();
         $queueListMissed = new QueueList();
         if ($processList) {
-            $queueList = $this->getQueueList($processList, $selectedDate, ['confirmed', 'queued', 'reserved']);
-            $queueListMissed = $this->getQueueList($processList, $selectedDate, ['missed']);
+            $queueList = $this->toProcessListByStatus($processList, $selectedDate, ['confirmed', 'queued', 'reserved']);
+            $queueListMissed = $this->toProcessListByStatus($processList, $selectedDate, ['missed']);
         }
 
         return \BO\Slim\Render::withHtml(
@@ -46,18 +46,15 @@ class QueueTable extends BaseController
                 'selectedDate' => ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d'),
                 'cluster' => $clusterHelper->getEntity(),
                 'processList' => $queueList,
-                'processListMissed' => $queueListMissed
+                'processListMissed' => $queueListMissed,
+                //'debug' => \App::DEBUG
             )
         );
     }
 
-    protected function getQueueList($processList, $selectedDate, $status)
+    protected function toProcessListByStatus($processList, $selectedDate, $status)
     {
         $selectedDateTime = new \DateTimeImmutable($selectedDate);
-        $queueList = $processList
-            ->toQueueList($selectedDateTime)
-            ->withStatus($status)
-            ->withSortedArrival();
-        return $queueList->toProcessList();
+        return $processList->toQueueList($selectedDateTime)->withStatus($status)->toProcessList();
     }
 }
