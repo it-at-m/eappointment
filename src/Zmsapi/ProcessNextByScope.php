@@ -33,9 +33,7 @@ class ProcessNextByScope extends BaseController
         }
         $queueList = $query->readQueueList($scope->id, $dateTime, 1);
         $process = $queueList->getNextProcess($dateTime, $exclude);
-        if (! $process || $process->getFirstAppointment()->date > $dateTime->getTimestamp()) {
-            throw new Exception\Process\ProcessNotFoundInQueue();
-        }
+        
         $message = Response\Message::create($request);
         $message->data = $process;
 
