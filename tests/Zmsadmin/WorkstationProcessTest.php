@@ -27,7 +27,23 @@ class WorkstationProcessTest extends Base
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    public function testRenderingWithProcess()
+    public function testRenderingWithCalledProcess()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_workstation_with_process_called.json")
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, [$this->parameters], []);
+        $this->assertRedirect($response, '/workstation/process/82252/called/');
+    }
+
+    public function testRenderingWithProcessingProcess()
     {
         $this->setApiCalls(
             [
@@ -36,31 +52,10 @@ class WorkstationProcessTest extends Base
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 1],
                     'response' => $this->readFixture("GET_workstation_with_process.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/',
-                    'response' => $this->readFixture("GET_scope_141.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/queue/',
-                    'response' => $this->readFixture("GET_scope_141_queuelist.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/availability/',
-                    'response' => $this->readFixture("GET_scope_141_availability.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/workstation/',
-                    'parameters' => ['resolveReferences' => 1],
-                    'response' => $this->readFixture("GET_scope_141_workstationlist.json")
                 ]
             ]
         );
-        $response = $this->render($this->arguments, $this->parameters, []);
+        $response = $this->render($this->arguments, [$this->parameters], []);
         $this->assertContains('Kundeninformationen', (string)$response->getBody());
         $this->assertContains('Personalausweis beantragen', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());

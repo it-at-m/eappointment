@@ -116,7 +116,7 @@ class View extends BaseView {
             }).catch(err => this.loadErrorCallback(err));
         }).on('click', '.form-actions button.process-abort', (ev) => {
             this.ActionHandler.abort(ev);
-            this.load();
+            this.cleanReload();
         }).on('click', '.form-actions button.process-save', (ev) => {
             event.preventDefault();
             event.stopPropagation();

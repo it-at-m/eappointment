@@ -22,23 +22,23 @@ class View extends BaseView {
     }
 
     load() {
+        console.log('init load')
         this.cleanInstance();
         const url = `${this.includeUrl}/workstation/process/callbutton/`
-        return this.loadContent(url).catch(err => this.loadErrorCallback(err.source, err.url));
+        return this.loadContent(url).then(this.setTimeSinceCall).catch(err => this.loadErrorCallback(err.source, err.url));
     }
 
     loadClientNext() {
         this.cleanInstance();
-        this.setTimeSinceCall();
         const url = `${this.includeUrl}/workstation/process/next/?exclude=` + this.exclude
-        return this.loadContent(url).catch(err => this.loadErrorCallback(err.source, err.url));
+        return this.loadContent(url).then(this.setTimeSinceCall).catch(err => this.loadErrorCallback(err.source, err.url));
     }
 
     loadCall() {
+        console.log('load call')
         this.cleanInstance();
-        this.setTimeSinceCall();
         const url = `${this.includeUrl}/workstation/call/${this.processId}/?direct=1`
-        return this.loadContent(url).catch(err => this.loadErrorCallback(err.source, err.url));
+        return this.loadContent(url).then(this.setTimeSinceCall).catch(err => this.loadErrorCallback(err.source, err.url));
     }
 
     loadCalled() {
@@ -56,9 +56,8 @@ class View extends BaseView {
     // if process is called and button "nein, nächster Kunde bitte" is clicked, delete process from workstation and call next
     loadCancelClientNext() {
         this.cleanInstance();
-        this.setTimeSinceCall();
         const url = `${this.includeUrl}/workstation/process/cancel/next/`
-        return this.loadContent(url).catch(err => this.loadErrorCallback(err.source, err.url));
+        return this.loadContent(url).then(this.setTimeSinceCall).catch(err => this.loadErrorCallback(err.source, err.url));
     }
 
     loadProcessing() {
@@ -114,8 +113,16 @@ class View extends BaseView {
     }
 
     setTimeSinceCall(lastsecond, lastminute) {
-        let second = (lastsecond) ? lastsecond : 0;
-        let minute = (lastminute) ? lastminute : 0;
+        let localTime = new Date() / 1000;
+        let diffServer = Math.floor(new Date($("#clock").data('now')) - $("#clock").data('calltime'));
+        let localCallTime = localTime - diffServer;
+        this.setNextSinceCallTick(localCallTime);
+    }
+
+    setNextSinceCallTick (localCallTime) {
+        let diff = Math.floor((new Date() / 1000) - localCallTime);
+        let minute = (diff >= 60) ? Math.floor(diff/60) : 0;
+        let second = diff % 60;
         let temp = '';
         second++;
         if (second == 60) {
@@ -123,9 +130,11 @@ class View extends BaseView {
             minute++;
         }
         temp+=((minute < 10)? "0" : "")+minute + ":" + ((second < 10)? "0" : "")+second;
+
         $("#clock").text(temp);
+        clearTimeout(this.refreshCounter);
         this.refreshCounter = setTimeout(() => {
-            this.setTimeSinceCall(second, minute)
+            this.setNextSinceCallTick(localCallTime)
         }, 1000);
     }
 
