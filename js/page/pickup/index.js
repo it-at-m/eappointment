@@ -20,7 +20,7 @@ class View extends BaseView {
         this.cleanReload()
     };
 
-    onPickupCallProcess (processId) {
+    onPickupCallProcess () {
         this.cleanReload()
     };
 
