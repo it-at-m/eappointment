@@ -209,27 +209,19 @@ class Process extends Base implements MappingInterface
     public function addConditionProcessDeleteInterval(
         \DateTimeInterface $expirationDate
     ) {
-        $timestamp = $expirationDate->getTimestamp();
-        $this->query->where(function (\Solution10\SQL\ConditionBuilder $condition) use ($timestamp) {
-            $condition
-                ->andWith(
-                    self::expression(
-                        'UNIX_TIMESTAMP(`process`.`Datum`) + TIME_TO_SEC(`process`.`Uhrzeit`)'
-                    ),
-                    '<=',
-                    $timestamp
-                )
-                ;
+        $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($expirationDate) {
+            $query->andWith(
+                'process.Datum',
+                '<=',
+                $expirationDate->format('Y-m-d')
+            );
+            $query->andWith(
+                'process.Uhrzeit',
+                '<=',
+                $expirationDate->format('H:i')
+            );
         });
-        $this->query->orderBy('process.Datum', 'ASC');
-        /*
-        $this->query->where(function (\Solution10\SQL\ConditionBuilder $condition) {
-            $condition
-                ->andWith('process.vorlaeufigeBuchung', '=', 1)
-                ->orWith('process.Name', '=', '(abgesagt)')
-                ->orWith('process.Name', '=', 'dereferenced');
-        });
-         */
+        $this->query->orderBy('appointments__0__date', 'ASC');
         return $this;
     }
 
