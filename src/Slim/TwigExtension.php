@@ -134,7 +134,8 @@ class TwigExtension extends \Twig_Extension
 
     public function currentVersion()
     {
-        return Git::readCurrentVersion();
+        $version = Version::getString();
+        return ($version != Version::UNKNOWN) ? $version : Git::readCurrentVersion();
     }
 
     public function urlGet($routeName, $params = array(), $getparams = array())
