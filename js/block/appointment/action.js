@@ -134,14 +134,16 @@ class View extends BaseView {
         ev.preventDefault();
         ev.stopPropagation();
         const selectedProcessId = $(ev.target).data('process');
-        return this.loadCall(url + `?selectedprocess=${selectedProcessId}&dialog=1`);
+        const sendStatus = $(ev.target).data('status');
+        return this.loadCall(url + `?selectedprocess=${selectedProcessId}&status=${sendStatus}&dialog=1`);
     }
 
     sendMail (ev, url) {
         ev.preventDefault();
         ev.stopPropagation();
         const selectedProcessId = $(ev.target).data('process');
-        return this.loadCall(url + `?selectedprocess=${selectedProcessId}&dialog=1`);
+        const sendStatus = $(ev.target).data('status');
+        return this.loadCall(url + `?selectedprocess=${selectedProcessId}&status=${sendStatus}&dialog=1`);
     }
 
     reset (ev) {

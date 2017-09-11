@@ -117,15 +117,19 @@ class View extends BaseView {
             }).catch(err => this.loadErrorCallback(err));
         }).on('click', '.process-mail-send', (ev) => {
             const url = `${this.includeUrl}/pickup/mail/`;
-            this.ActionHandler.sendMail(ev, url).catch(err => this.loadErrorCallback(err)).then((response) => {
-                this.loadMessage(response, this.onMailSent);
-            });
+            this.ActionHandler.sendMail(ev, url)
+                .then((response) => {
+                    this.loadMessage(response, this.onMailSent)
+                })
+                .catch(err => this.loadErrorCallback(err));
         }).on('click', '.process-custom-mail-send', (ev) => {
             const url = `${this.includeUrl}/mail/`;
-            this.ActionHandler.sendMail(ev, url).catch(err => this.loadErrorCallback(err)).then((response) => {
-                this.loadDialog(response, this.onMailSent);
-            });
-        })
+            this.ActionHandler.sendMail(ev, url)
+                .then((response) => {
+                    this.loadDialog(response, this.onMailSent)
+                })
+                .catch(err => this.loadErrorCallback(err));
+        });
     }
 }
 

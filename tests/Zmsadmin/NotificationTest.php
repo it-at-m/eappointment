@@ -164,7 +164,7 @@ class NotificationTest extends Base
         $response = $this->render($this->arguments, $parameters, [], 'POST');
         $this->assertRedirect(
             $response,
-            '/notification/?selectedprocess='. $this->selectedProcess .'&result=success&source=reminder'
+            '/notification/?selectedprocess='. $this->selectedProcess .'&status=queued&result=success&source=reminder'
         );
         $this->assertEquals(302, $response->getStatusCode());
     }
