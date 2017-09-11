@@ -40,8 +40,41 @@ class WorkstationProcessNextTest extends Base
         $this->assertEquals(302, $response->getStatusCode());
     }
 
+    public function testEmptyQueue()
+    {
+        \App::$now = new \DateTimeImmutable('2016-04-01 07:55:00', new \DateTimeZone('Europe/Berlin'));
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/queue/next/',
+                    'parameters' => ['exclude' => ''],
+                    'response' => $this->readFixture("GET_process_82252_12a2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/cluster/',
+                    'response' => $this->readFixture("GET_cluster_109.json")
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, $this->parameters, []);
+        $this->assertContains(
+            'Entweder ist kein Termin/Spontankunde in der Warteschlange oder die Terminzeit liegt noch in der Zukunft',
+            (string)$response->getBody()
+        );
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
     public function testRenderingClusterEnabledWithExcludeIds()
     {
+        \App::$now = new \DateTimeImmutable('2016-04-01 08:55:00', new \DateTimeZone('Europe/Berlin'));
         $this->setApiCalls(
             [
                 [
@@ -70,6 +103,7 @@ class WorkstationProcessNextTest extends Base
 
     public function testRenderingPreCallRedirect()
     {
+        \App::$now = new \DateTimeImmutable('2016-04-01 11:55:00', new \DateTimeZone('Europe/Berlin'));
         $this->setApiCalls(
             [
                 [
