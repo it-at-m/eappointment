@@ -1,7 +1,7 @@
 import BaseView from "../../lib/baseview"
 import $ from "jquery"
 import { lightbox } from '../../lib/utils'
-import ButtonActionHandler from "../appointment/action"
+import ActionHandler from "../appointment/action"
 import MessageHandler from '../../lib/messageHandler';
 import DialogHandler from '../../lib/dialogHandler';
 
@@ -10,7 +10,7 @@ class View extends BaseView {
     constructor (element, options) {
         super(element, options);
         console.log('Component: Pickup Table', this, options);
-        this.ButtonAction = new ButtonActionHandler(element, options);
+        this.ActionHandler = new ActionHandler(element, options);
         this.includeUrl = options.includeUrl || "";
         this.onFinishProcess = options.onFinishProcess || (() => {});
         this.onPickupCallProcess = options.onPickupCallProcess || (() => {});
@@ -25,7 +25,7 @@ class View extends BaseView {
     loadDirectCall() {
         const processId = this.$main.find('[data-selectedprocess]').data('selectedprocess');
         if (processId) {
-            this.ButtonAction.pickupDirect(processId).catch(err => this.loadErrorCallback(err)).then((response) => {
+            this.ActionHandler.pickupDirect(processId).catch(err => this.loadErrorCallback(err)).then((response) => {
                 this.loadMessage(response, this.onPickupCallProcess);
             });
         }
@@ -39,25 +39,27 @@ class View extends BaseView {
         else {
             console.log('Ajax error', err);
         }
-        this.ButtonAction.cancel().then(this.cleanReload());
+        this.ActionHandler.cancel().then(this.cleanReload());
     }
 
     loadMessage (response, callback) {
         if (response) {
-            const { lightboxContentElement, destroyLightbox } = lightbox(this.$main, () => {
-                this.ButtonAction.cancel();
-                callback();
-            });
+            const { lightboxContentElement, destroyLightbox } = lightbox(this.$main, () => {callback()});
             new MessageHandler(lightboxContentElement, {
                 message: response,
                 callback: (buttonAction, buttonUrl, ev) => {
                     if (buttonAction) {
-                        var newPromise = this.ButtonAction[buttonAction](ev);
-                        newPromise.catch(err => this.loadErrorCallback(err)).then((response) => {
-                            this.loadMessage(response, callback);
-                        }).then(this.cleanReload());
+                        let promise = this.ActionHandler[buttonAction](ev);
+                        if (promise instanceof Promise) {
+                            promise
+                                .then((response) => {this.loadMessage(response, callback)})
+                                .catch(err => this.loadErrorCallback(err))
+                        } else {
+                            callback();
+                        }
                     } else if (buttonUrl) {
-                        this.loadByCallbackUrl(buttonUrl)
+                        this.loadByCallbackUrl(buttonUrl);
+                        callback();
                     }
                     destroyLightbox();
                 }
@@ -92,35 +94,35 @@ class View extends BaseView {
         this.$main.off('click').on('change', '.switchcluster select', (ev) => {
             $(ev.target).closest('form').submit();
         }).on('click', 'a.process-finish', (ev) => {
-            this.ButtonAction.finish(ev).catch(err => this.loadErrorCallback(err)).then((response) => {
+            this.ActionHandler.finish(ev).then((response) => {
                 this.loadMessage(response, this.onFinishProcess);
-            });
+            }).catch(err => this.loadErrorCallback(err));
         }).on('click', 'a.process-finish-list', (ev) => {
-            this.ButtonAction.finishList(ev).catch(err => this.loadErrorCallback(err)).then((response) => {
+            this.ActionHandler.finishList(ev).then((response) => {
                 this.loadMessage(response, this.onFinishProcess);
-            });
+            }).catch(err => this.loadErrorCallback(err));
         }).on('click', 'a.process-pickup', (ev) => {
-            this.ButtonAction.pickup(ev).catch(err => this.loadErrorCallback(err)).then((response) => {
+            this.ActionHandler.pickup(ev).then((response) => {
                 this.loadMessage(response, this.onPickupCallProcess);
-            });
+            }).catch(err => this.loadErrorCallback(err));
         }).on('click', '.process-notification-send', (ev) => {
             const url = `${this.includeUrl}/pickup/notification/`;
-            this.ButtonAction.sendNotification(ev, url).catch(err => this.loadErrorCallback(err)).then((response) => {
+            this.ActionHandler.sendNotification(ev, url).then((response) => {
                 this.loadMessage(response, this.onNotificationSent);
-            });
+            }).catch(err => this.loadErrorCallback(err));
         }).on('click', '.process-custom-notification-send', (ev) => {
             const url = `${this.includeUrl}/notification/`;
-            this.ButtonAction.sendNotification(ev, url).catch(err => this.loadErrorCallback(err)).then((response) => {
+            this.ActionHandler.sendNotification(ev, url).then((response) => {
                 this.loadDialog(response, this.onNotificationSent);
-            });
+            }).catch(err => this.loadErrorCallback(err));
         }).on('click', '.process-mail-send', (ev) => {
             const url = `${this.includeUrl}/pickup/mail/`;
-            this.ButtonAction.sendMail(ev, url).catch(err => this.loadErrorCallback(err)).then((response) => {
+            this.ActionHandler.sendMail(ev, url).catch(err => this.loadErrorCallback(err)).then((response) => {
                 this.loadMessage(response, this.onMailSent);
             });
         }).on('click', '.process-custom-mail-send', (ev) => {
             const url = `${this.includeUrl}/mail/`;
-            this.ButtonAction.sendMail(ev, url).catch(err => this.loadErrorCallback(err)).then((response) => {
+            this.ActionHandler.sendMail(ev, url).catch(err => this.loadErrorCallback(err)).then((response) => {
                 this.loadDialog(response, this.onMailSent);
             });
         })
