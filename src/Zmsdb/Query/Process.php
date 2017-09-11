@@ -411,7 +411,7 @@ class Process extends Base implements MappingInterface
         return array_filter(
             $data,
             function ($value) {
-                return ($value !== null && $value !== false && $value !== '');
+                return ($value !== null && $value !== false);
             }
         );
     }
