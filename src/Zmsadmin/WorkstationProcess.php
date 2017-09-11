@@ -22,14 +22,20 @@ class WorkstationProcess extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
-        $template = ($workstation->process->hasId()) ? 'info' : 'next';
-        $workstationInfo = ('info' == $template) ? Helper\WorkstationInfo::getInfoBoxData($workstation) : null;
+        $template = ($workstation->process->hasId() && 'processing' == $workstation->process->status) ? 'info' : 'next';
+        if ($workstation->process->hasId() && 'called' == $workstation->process->status) {
+            return \BO\Slim\Render::redirect(
+                'workstationProcessCalled',
+                array(
+                    'id' => $workstation->process->id
+                )
+            );
+        }
         return \BO\Slim\Render::withHtml(
             $response,
             'block/process/'. $template .'.twig',
             array(
-                'workstation' => $workstation,
-                'workstationInfo' => $workstationInfo
+                'workstation' => $workstation
             )
         );
     }
