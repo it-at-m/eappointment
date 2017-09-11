@@ -22,6 +22,16 @@ class WorkstationProcessNext extends BaseController
         $excludedIds = $validator->getParameter('exclude')->isString()->getValue();
         $excludedIds = ($excludedIds) ? $excludedIds : '';
         $process = (new Helper\ClusterHelper($workstation))->getNextProcess($excludedIds);
+        if (! $process->hasId() || $process->getFirstAppointment()->date > \App::$now->getTimestamp()) {
+            return \BO\Slim\Render::withHtml(
+                $response,
+                'block/process/next.twig',
+                array(
+                    'workstation' => $workstation,
+                    'processNotFoundInQueue' => 1
+                )
+            );
+        }
         if ($process->toProperty()->amendment->get()) {
             return \BO\Slim\Render::redirect(
                 'workstationProcessPreCall',
