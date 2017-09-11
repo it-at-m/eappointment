@@ -65,7 +65,7 @@ class PickupSpreadSheet extends BaseController
 
             $row = [
                 $rowCount,
-                $date->format('Y-m-d'),
+                $date->format('d.m.Y'),
                 $processItem->queue['number'],
                 $client['familyName'],
                 $client['telephone'],
