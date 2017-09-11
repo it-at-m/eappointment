@@ -42,8 +42,10 @@ class Notification extends BaseController
 
         $formResponse = null;
 
-        if (array_key_exists('submit', (array)$input) && 'reminder' == $input['submit']) {
+        if ($process && $sendStatus) {
             $process->status = $sendStatus;
+        };
+        if (array_key_exists('submit', (array)$input) && 'reminder' == $input['submit']) {
             $formResponse = $this->getReminderNotification($process, $config, $department);
         } elseif (array_key_exists('submit', (array)$input) && 'form' == $input['submit']) {
             $formResponse = $this->getCustomNotification($process, $department);
@@ -56,6 +58,7 @@ class Notification extends BaseController
                 [
                     'selectedprocess' => $process->id,
                     'dialog' => $dialog,
+                    'status' => $sendStatus,
                     'result' => ($formResponse->hasId()) ? 'success' : 'error',
                     'source' => $input['submit']
                 ]
@@ -71,6 +74,7 @@ class Notification extends BaseController
                 'workstation' => $workstation,
                 'department' => $department,
                 'process' => $process,
+                'status' => $sendStatus,
                 'dialog' => $dialog,
                 'result' => $success,
                 'form' => $formResponse,

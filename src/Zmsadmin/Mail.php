@@ -25,14 +25,15 @@ class Mail extends BaseController
         $selectedProcessId = Validator::param('selectedprocess')->isNumber()->getValue();
         $dialog = Validator::param('dialog')->isNumber()->getValue();
         $success = Validator::param('result')->isString()->getValue();
+        $sendStatus = Validator::param('status')->isString()->isBiggerThan(2)->getValue();
         $department = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/department/')->getEntity();
         $formResponse = null;
         $input = $request->getParsedBody();
         $process = ($selectedProcessId) ?
             \App::$http->readGetResult('/process/'. $selectedProcessId .'/')->getEntity() :
             null;
-
         if (array_key_exists('submit', (array)$input) && 'form' == $input['submit']) {
+            $process->status = ($sendStatus) ? $sendStatus : $process->status;
             $formResponse = $this->writeValidatedMail($process, $department);
             if ($formResponse instanceof Entity) {
                 return \BO\Slim\Render::redirect(
@@ -41,6 +42,7 @@ class Mail extends BaseController
                     [
                         'selectedprocess' => $process->id,
                         'dialog' => $dialog,
+                        'status' => $sendStatus,
                         'result' => ('form' == $input['submit'] && $formResponse->hasId()) ? 'success' : 'error'
                     ]
                 );
@@ -56,6 +58,7 @@ class Mail extends BaseController
                 'workstation' => $workstation,
                 'department' => $department,
                 'process' => $process,
+                'status' => $sendStatus,
                 'dialog' => $dialog,
                 'result' => $success,
                 'form' => $formResponse,
