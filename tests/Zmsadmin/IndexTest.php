@@ -58,6 +58,24 @@ class IndexTest extends Base
         $this->assertEquals('8520c285985b5bd209a0110442dc4e45', \BO\Zmsclient\Auth::getKey());
     }
 
+    public function testLoginFailedAuthKeyFound()
+    {
+        $this->expectException('\BO\Zmsclient\Exception');
+        $exception = new \BO\Zmsclient\Exception();
+        $exception->template = 'BO\Zmsapi\Exception\Useraccount\AuthKeyFound';
+
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/workstation/login/',
+                    'exception' => $exception
+                ]
+            ]
+        );
+        $this->render($this->arguments, $this->parameters, [], 'POST');
+    }
+
     public function testLoginValidationError()
     {
         $response = $this->render($this->arguments, [
