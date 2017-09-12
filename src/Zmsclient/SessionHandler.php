@@ -45,14 +45,14 @@ class SessionHandler implements \SessionHandlerInterface
             // @codeCoverageIgnoreEnd
         } catch (Exception $exception) {
             if ($exception->getCode() == 404) {
-                $session = null;
+                $session = false;
             } else {
                 // @codeCoverageIgnoreStart
                 throw $exception;
                 // @codeCoverageIgnoreEnd
             }
         }
-        return (isset($session) && array_key_exists('content', $session)) ? serialize($session->getContent()) : null;
+        return ($session && array_key_exists('content', $session)) ? serialize($session->getContent()) : '';
     }
 
     public function write($sessionId, $sessionData)
