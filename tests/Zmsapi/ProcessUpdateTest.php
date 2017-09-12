@@ -67,4 +67,16 @@ class ProcessUpdateTest extends Base
             }'
         ], []);
     }
+
+    /**
+     * Test a complete dataset for saving an appointment
+     */
+    public function testAppointment()
+    {
+        $response = $this->render(['id' => self::PROCESS_ID, 'authKey' => self::AUTHKEY], [
+            '__body' => $this->readFixture('PostProcessAppointment.json'),
+        ], []);
+        $this->assertContains('process.json', (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
+    }
 }
