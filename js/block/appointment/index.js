@@ -35,15 +35,15 @@ class View extends BaseView {
             $('textarea.maxchars').each(function() {
                 maxChars(this);
             });
+            this.RequestList.loadList();
+            this.FormButtons.load();
+            this.$main.find('[name="familyName"]').focus();
         });
     }
 
     load() {
         const url = `${this.includeUrl}/appointmentForm/?selecteddate=${this.selectedDate}&selectedprocess=${this.selectedProcess}`
-        this.loadPromise = this.loadContent(url).then(() => {
-            this.RequestList.loadList();
-            this.FormButtons.load();
-        }).catch(err => this.loadErrorCallback(err));
+        this.loadPromise = this.loadContent(url).catch(err => this.loadErrorCallback(err));
         return this.loadPromise;
     }
 
@@ -67,6 +67,12 @@ class View extends BaseView {
         this.selectedProcess = null;
         this.load().then(() => {
             this.bindEvents();
+            $('textarea.maxchars').each(function() {
+                maxChars(this);
+            });
+            this.RequestList.loadList();
+            this.FormButtons.load();
+            this.$main.find('[name="familyName"]').focus();
         });
     }
 
