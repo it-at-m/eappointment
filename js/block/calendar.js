@@ -30,7 +30,11 @@ class View extends BaseView {
             ev.stopPropagation();
             const selectedDate = $(ev.target).attr('data-date');
             console.log('date selected', selectedDate)
-            this.onDatePick(selectedDate);
+            let processAlreadySelected = $.find('[data-selectedprocess]');
+            if ($(processAlreadySelected).data('selectedprocess'))
+                this.onDatePick(selectedDate, true);
+            else
+                this.onDatePick(selectedDate);
         }).on('click', '.calendar-navigation .pagemonthlink', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
@@ -42,7 +46,11 @@ class View extends BaseView {
             ev.stopPropagation();
             const selectedDate = $(ev.target).attr('data-date');
             console.log('today selected', selectedDate)
-            this.onDateToday(selectedDate);
+            let processAlreadySelected = $.find('[data-selectedprocess]');
+            if ($(processAlreadySelected).data('selectedprocess'))
+                this.onDatePick(selectedDate, true);
+            else
+                this.onDatePick(selectedDate);
         })
     }
 }

@@ -196,6 +196,6 @@ class AppointmentFormTest extends Base
             ]
         );
         $response = $this->render([], ['selectedprocess' => 100044]);
-        $this->assertContains('data-preferedScope="141"', (string)$response->getBody());
+        $this->assertContains('data-preferedScope=141', (string)$response->getBody());
     }
 }
