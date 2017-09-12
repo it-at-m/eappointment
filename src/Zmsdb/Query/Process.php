@@ -488,7 +488,7 @@ class Process extends Base implements MappingInterface
         }
         if (isset($data['wsm_aufnahmezeit']) && $data['wsm_aufnahmezeit'] == $data['Uhrzeit']) {
             // Do not save arrivalTime if it is an appointment
-            $data['wsm_aufnahmezeit'] = '';
+            $data['wsm_aufnahmezeit'] = 0;
         }
         return $data;
     }
