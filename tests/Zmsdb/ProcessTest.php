@@ -96,6 +96,11 @@ class ProcessTest extends Base
         $this->assertEquals(1464339600, $process->queue['arrivalTime']);
         $this->assertEquals(2, $process->clients->count());
         $this->assertEquals('Unbekannt', $process->getClients()->getLast()->familyName);
+
+        $json = $this->readFixture("ProcessReserved01.json");
+        $data = json_decode($json, true);
+        $process = new Entity($data);
+        $process = $query->updateEntity($process, $now);
     }
 
     public function testUpdateProcessWithStatusProcessing()
