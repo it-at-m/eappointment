@@ -98,6 +98,8 @@ class View extends BaseView {
                 "selectedTime": this.selectedTime,
                 "slotsRequired": this.slotsRequired
             })).loadList();
+            console.log(this.$main.find('[name="familyName"]'));
+            this.$main.find('[name="familyName"]').focus();
         }
     }
 
@@ -123,6 +125,7 @@ class View extends BaseView {
                 "selectedTime": this.selectedTime,
                 "slotsRequired": this.slotsRequired
             })).loadList();
+            this.$main.find('[name="familyName"]').focus();
         }
     }
 
