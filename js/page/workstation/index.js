@@ -7,6 +7,7 @@ import CalendarView from '../../block/calendar'
 import ClientNextView from '../../block/process/next'
 import ActionHandler from "../../block/appointment/action"
 import FreeProcessList from "../../block/appointment/free-process-list"
+import FormButtons from '../../block/appointment/form-buttons'
 
 class View extends BaseView {
 
@@ -85,6 +86,11 @@ class View extends BaseView {
             this.loadClientNext()
             this.loadQueueTable();
             this.ActionHandler.setSelectedDate(date);
+            (new FormButtons(this.$main.find('[data-form-buttons]'), {
+                "includeUrl": this.includeUrl,
+                "selectedDate": this.selectedDate,
+                "selectedProcess": this.selectedProcess
+            })).load();
             (new FreeProcessList(this.$main.find('[data-free-process-list]'), {
                 "includeUrl": this.includeUrl,
                 "slotType": this.slotType,
@@ -105,6 +111,11 @@ class View extends BaseView {
             this.loadClientNext()
             this.loadQueueTable();
             this.ActionHandler.setSelectedDate(date);
+            (new FormButtons(this.$main.find('[data-form-buttons]'), {
+                "includeUrl": this.includeUrl,
+                "selectedDate": this.selectedDate,
+                "selectedProcess": this.selectedProcess
+            })).load();
             (new FreeProcessList(this.$main.find('[data-free-process-list]'), {
                 "includeUrl": this.includeUrl,
                 "slotType": this.slotType,
