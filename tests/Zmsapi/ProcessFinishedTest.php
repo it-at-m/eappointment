@@ -21,6 +21,22 @@ class ProcessFinishedTest extends Base
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
+    public function testWithSurveyAccepted()
+    {
+        $workstation = $this->setWorkstation(138, 'berlinonline', 141);
+        $workstation['queue']['clusterEnabled'] = 1;
+
+        $process = json_decode($this->readFixture("GetProcess_10030.json"), 1);
+        $process['status'] = 'finished';
+        $process['clients'][0]['surveyAccepted'] = 1;
+        $response = $this->render([], [
+            '__body' => json_encode($process)
+        ], []);
+
+        $this->assertContains('"surveyAccepted":1', (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
+    }
+
     public function testRenderingPending()
     {
         $workstation = $this->setWorkstation(138, 'berlinonline', 141);
