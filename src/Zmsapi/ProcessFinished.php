@@ -33,11 +33,12 @@ class ProcessFinished extends BaseController
         $this->testProcessInWorkstation($process, $workstation);
 
         $query = new Query();
+        $clients = $query->readEntity($process->id, new \BO\Zmsdb\Helper\NoAuth())->getClients();
         if ('pending' == $process['status']) {
             $process = $query->updateEntity($process, \App::$now);
         } else {
             $query->writeEntityFinished($process, \App::$now);
-            foreach ($process->getClients() as $client) {
+            foreach ($clients as $client) {
                 if ($client->hasSurveyAccepted()) {
                     $config = (new \BO\Zmsdb\Config())->readEntity();
                     $mail = (new \BO\Zmsentities\Mail())->toResolvedEntity($process, $config);
