@@ -27,7 +27,6 @@ class Notification extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
 
-        $selectedProcessId = Validator::param('selectedprocess')->isNumber()->getValue();
         $dialog = Validator::param('dialog')->isNumber()->getValue();
         $success = Validator::param('result')->isString()->getValue();
         $sendStatus = Validator::param('status')->isString()->isBiggerThan(2)->getValue();
@@ -36,21 +35,8 @@ class Notification extends BaseController
         $department = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/department/')->getEntity();
         $config = \App::$http->readGetResult('/config/')->getEntity();
         $input = $request->getParsedBody();
-        $process = ($selectedProcessId) ?
-            \App::$http->readGetResult('/process/'. $selectedProcessId .'/')->getEntity() :
-            null;
-
-        $formResponse = null;
-
-        if ($process && $sendStatus) {
-            $process->status = $sendStatus;
-        };
-        if (array_key_exists('submit', (array)$input) && 'reminder' == $input['submit']) {
-            $formResponse = $this->getReminderNotification($process, $config, $department);
-        } elseif (array_key_exists('submit', (array)$input) && 'form' == $input['submit']) {
-            $formResponse = $this->getCustomNotification($process, $department);
-        }
-
+        $process = $this->getProcessWithStatus($sendStatus);
+        $formResponse = $this->getValidatedResponse($input, $process, $config, $department);
         if ($formResponse instanceof Entity) {
             return \BO\Slim\Render::redirect(
                 'notification',
@@ -82,6 +68,29 @@ class Notification extends BaseController
                 'redirect' => $workstation->getVariantName()
             )
         );
+    }
+
+    protected function getProcessWithStatus($status = null)
+    {
+        $selectedProcessId = Validator::param('selectedprocess')->isNumber()->getValue();
+        $process = ($selectedProcessId) ?
+            \App::$http->readGetResult('/process/'. $selectedProcessId .'/')->getEntity() :
+            null;
+        if ($process && $status) {
+            $process->status = $status;
+        }
+        return $process;
+    }
+
+    protected function getValidatedResponse($input, $process, $config, $department)
+    {
+        $formResponse = null;
+        if (array_key_exists('submit', (array)$input) && 'reminder' == $input['submit']) {
+            $formResponse = $this->getReminderNotification($process, $config, $department);
+        } elseif (array_key_exists('submit', (array)$input) && 'form' == $input['submit']) {
+            $formResponse = $this->getCustomNotification($process, $department);
+        }
+        return $formResponse;
     }
 
     protected function getReminderNotification($process, $config, $department)
