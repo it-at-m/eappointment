@@ -1,13 +1,12 @@
 import BaseView from '../../lib/baseview'
 import $ from 'jquery'
+import settings from '../../settings'
 import AppointmentView from '../../block/appointment'
 import QueueView from '../../block/queue'
 import CalendarView from '../../block/calendar'
 import ClientNextView from '../../block/process/next'
 import ActionHandler from "../../block/appointment/action"
 import FreeProcessList from "../../block/appointment/free-process-list"
-
-const reloadInterval = 60; //seconds
 
 class View extends BaseView {
 
@@ -38,7 +37,7 @@ class View extends BaseView {
     bindEvents() {
         window.onfocus = () => {
             //console.log("on Focus");
-            if (this.lastReload > reloadInterval) {
+            if (this.lastReload > settings.reloadInterval) {
                 this.loadReloadPartials();
                 this.lastReload = 0;
             }
@@ -65,7 +64,7 @@ class View extends BaseView {
             this.loadReloadPartials();
             this.bindEvents();
             this.setReloadTimer();
-        }, reloadInterval * 1000);
+        }, settings.reloadInterval * 1000);
     }
 
     setLastReload() {
@@ -156,7 +155,8 @@ class View extends BaseView {
     }
 
     loadReloadPartials() {
-        this.loadQueueTable();
+        if (this.$main.find('.lightbox').length == 0)
+            this.loadQueueTable();
     }
 
     loadCalendar () {
