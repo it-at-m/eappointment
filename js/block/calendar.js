@@ -1,8 +1,5 @@
 import BaseView from '../lib/baseview'
 import $ from 'jquery'
-import ActionHandler from "./appointment/action"
-import RequestList from "./appointment/requests"
-import FreeProcessList from './appointment/free-process-list'
 
 class View extends BaseView {
 

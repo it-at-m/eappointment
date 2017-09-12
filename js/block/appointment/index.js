@@ -1,6 +1,7 @@
 import BaseView from "../../lib/baseview"
 import $ from "jquery"
 import FreeProcessList from './free-process-list'
+import FormButtons from './form-buttons'
 import { lightbox } from '../../lib/utils'
 import CalendarView from '../calendar'
 import FormValidationView from '../form-validation'
@@ -25,6 +26,7 @@ class View extends BaseView {
         this.onQueueProcess = options.onQueueProcess || (() => {});
         this.onDatePick = options.onDatePick || (() => {});
         this.FreeProcessList = new FreeProcessList(this.$main.find('[data-free-process-list]'), options);
+        this.FormButtons = new FormButtons(this.$main.find('[data-form-buttons]'), options);
         this.ActionHandler = new ActionHandler(element, options);
         this.RequestList = new RequestList(element, options);
         $.ajaxSetup({ cache: false });
@@ -40,6 +42,7 @@ class View extends BaseView {
         const url = `${this.includeUrl}/appointmentForm/?selecteddate=${this.selectedDate}&selectedprocess=${this.selectedProcess}`
         this.loadPromise = this.loadContent(url).then(() => {
             this.RequestList.loadList();
+            this.FormButtons.load();
         }).catch(err => this.loadErrorCallback(err));
         return this.loadPromise;
     }
@@ -54,6 +57,7 @@ class View extends BaseView {
         this.loadPromise = this.loadContent(url).then(() => {
             this.RequestList.loadList();
             this.FreeProcessList.loadList();
+            this.FormButtons.load();
             this.bindEvents();
         }).catch(err => this.loadErrorCallback(err));
         return this.loadPromise;
@@ -154,8 +158,10 @@ class View extends BaseView {
             });
         else if (err.message.toLowerCase().includes('exception')) {
             let exceptionType = $(err.message).filter('.exception').data('exception');
-            if (exceptionType === 'reservation-failed')
+            if (exceptionType === 'reservation-failed') {
                 this.FreeProcessList.loadList();
+                this.FormButtons.load();
+            }
             else if (exceptionType === 'process-not-found')
                 this.cleanReload()
             else {

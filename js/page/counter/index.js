@@ -8,6 +8,7 @@ import QueueInfoView from '../../block/queue/info'
 import CalendarView from '../../block/calendar'
 import ActionHandler from "../../block/appointment/action"
 import FreeProcessList from "../../block/appointment/free-process-list"
+import FormButtons from '../../block/appointment/form-buttons'
 
 import { loadInto } from './utils'
 import { lightbox } from '../../lib/utils'
@@ -89,6 +90,11 @@ class View extends BaseView {
             this.loadQueueInfo(),
             this.loadAppointmentTimes()
             this.ActionHandler.setSelectedDate(date);
+            (new FormButtons(this.$main.find('[data-form-buttons]'), {
+                "includeUrl": this.includeUrl,
+                "selectedDate": this.selectedDate,
+                "selectedProcess": this.selectedProcess
+            })).load();
             (new FreeProcessList(this.$main.find('[data-free-process-list]'), {
                 "includeUrl": this.includeUrl,
                 "slotType": this.slotType,
@@ -110,6 +116,11 @@ class View extends BaseView {
             this.loadQueueInfo(),
             this.loadAppointmentTimes()
             this.ActionHandler.setSelectedDate(date);
+            (new FormButtons(this.$main.find('[data-form-buttons]'), {
+                "includeUrl": this.includeUrl,
+                "selectedDate": this.selectedDate,
+                "selectedProcess": this.selectedProcess
+            })).load();
             (new FreeProcessList(this.$main.find('[data-free-process-list]'), {
                 "includeUrl": this.includeUrl,
                 "slotType": this.slotType,
