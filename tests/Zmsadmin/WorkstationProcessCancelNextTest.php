@@ -25,7 +25,7 @@ class WorkstationProcessCancelNextTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertRedirect($response, '/workstation/process/next/');
+        $this->assertRedirect($response, '/workstation/process/next/?exclude=');
         $this->assertEquals(302, $response->getStatusCode());
     }
 
@@ -47,7 +47,29 @@ class WorkstationProcessCancelNextTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertRedirect($response, '/workstation/process/next/');
+        $this->assertRedirect($response, '/workstation/process/next/?exclude=');
+        $this->assertEquals(302, $response->getStatusCode());
+    }
+
+    public function testRenderingWithExcludeIds()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_workstation_with_process.json")
+                ],
+                [
+                    'function' => 'readDeleteResult',
+                    'url' => '/workstation/process/',
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, ['exclude' => 123456], []);
+        $this->assertRedirect($response, '/workstation/process/next/?exclude=123456');
         $this->assertEquals(302, $response->getStatusCode());
     }
 }
