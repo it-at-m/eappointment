@@ -30,6 +30,32 @@ class ClusterTest extends EntityCommonTests
         $this->assertFalse($collection->hasScope(1235), 'Scope with id 1235 should not available in clusterlist');
     }
 
+    public function testCollectionSortByName()
+    {
+        $scopeB = (new \BO\Zmsentities\Scope())->getExample();
+        $scopeB->provider['name'] = 'B-Test Name';
+        $scopeA = clone $scopeB;
+        $scopeA->provider['name'] = 'A-Test Name';
+        $scopeList = new \BO\Zmsentities\Collection\ScopeList();
+        $scopeList->addEntity($scopeB);
+        $scopeList->addEntity($scopeA);
+
+        $collection = new $this->collectionclass();
+        $entityB = $this->getExample();
+        $entityB->name = 'B-Cluster';
+        $entityB->scopes = $scopeList;
+        $collection->addEntity($entityB);
+
+        $entityA = $this->getExample();
+        $entityA->name = 'A-Cluster';
+        $entityA->scopes = $scopeList;
+        $collection->addEntity($entityA);
+
+        $collection->sortByName();
+        $this->assertEquals('A-Cluster', $collection->getFirst()->name);
+        $this->assertEquals('A-Test Name', $collection->getFirst()->scopes->getFirst()->provider['name']);
+    }
+
     public function testCollectionAddEntityFailed()
     {
         $this->setExpectedException('\Exception');

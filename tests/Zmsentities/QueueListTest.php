@@ -48,6 +48,14 @@ class QueueListTest extends EntityCommonTests
         $this->assertEquals(null, $collection->getQueuePositionByNumber(999));
     }
 
+    public function testWithEstimatedWaitingTimeFailed()
+    {
+        $this->expectException('\Exception');
+        $now = new \DateTimeImmutable(self::DEFAULT_TIME);
+        $collection = new $this->collectionclass();
+        $collection->withEstimatedWaitingTime(0, 1, $now);
+    }
+
     public function testGetNextProcess()
     {
         $now = new \DateTimeImmutable(self::DEFAULT_TIME);

@@ -2,6 +2,10 @@
 
 namespace BO\Zmsentities\Tests;
 
+/**
+ * @SuppressWarnings(Public)
+ *
+ */
 class WorkstationTest extends EntityCommonTests
 {
     public $entityclass = '\BO\Zmsentities\Workstation';
@@ -144,5 +148,84 @@ class WorkstationTest extends EntityCommonTests
         $scopeList->addEntity((new \BO\Zmsentities\Scope)->getExample());
         $entity->testMatchingProcessScope($scopeList);
         $this->assertTrue($scopeList->hasEntity($entity->process->getScopeId()));
+    }
+
+    public function testSettingValidatedProperties()
+    {
+        $validator = new \BO\Mellon\Validator([
+            'workstation' => 12,
+            'hint' => 'Hinweis',
+            'scope' => '141',
+            'appointmentsOnly' => 1
+        ]);
+        $validator->makeInstance();
+        $result = $this->fromAdditionalParameters();
+        $formdata = $result->getValues();
+
+        $entity = new $this->entityclass();
+        $entity->setValidatedName($formdata);
+        $entity->setValidatedHint($formdata);
+        $entity->setValidatedScope($formdata);
+        $entity->setValidatedAppointmentsOnly($formdata);
+
+        $this->assertEquals(12, $entity->name);
+        $this->assertEquals('Hinweis', $entity->hint);
+        $this->assertEquals(141, $entity->scope['id']);
+        $this->assertEquals(1, $entity->queue['appointmentsOnly']);
+
+        $validatorEmpty = new \BO\Mellon\Validator([
+            'workstation' => '',
+            'hint' => '',
+            'scope' => 'cluster'
+        ]);
+        $validatorEmpty->makeInstance();
+        $result = $this->fromAdditionalParameters();
+        $formdata = $result->getValues();
+
+        $entity2 = new $this->entityclass();
+        $entity2->setValidatedName($formdata);
+        $entity2->setValidatedHint($formdata);
+        $entity2->setValidatedScope($formdata);
+        $entity2->setValidatedAppointmentsOnly($formdata);
+
+        $this->assertEquals('', $entity2->name);
+        $this->assertEquals('', $entity2->hint);
+        $this->assertEquals(1, $entity2->queue['clusterEnabled']);
+        $this->assertEquals(0, $entity2->queue['appointmentsOnly']);
+    }
+
+    private function fromAdditionalParameters()
+    {
+        $collection = array();
+
+        // scope
+        if ('cluster' == \BO\Mellon\Validator::param('scope')->isString()->getValue()) {
+            $collection['scope'] = \BO\Mellon\Validator::param('scope')
+                ->isString('Bitte wählen Sie einen Standort aus');
+        } else {
+            $collection['scope'] = \BO\Mellon\Validator::param('scope')
+                ->isNumber('Bitte wählen Sie einen Standort aus');
+        }
+
+        if (! \BO\Mellon\Validator::param('appointmentsOnly')->isDeclared()->hasFailed()) {
+            $collection['appointmentsOnly'] = \BO\Mellon\Validator::param('appointmentsOnly')
+                ->isNumber();
+        }
+
+        // workstation
+        if (! \BO\Mellon\Validator::param('workstation')->isDeclared()->hasFailed()) {
+            $collection['workstation'] = \BO\Mellon\Validator::param('workstation')
+                 ->isString('Bitte wählen Sie einen Arbeitsplatz oder den Tresen aus')
+                 ->isSmallerThan(5, "Die Arbeitsplatz-Bezeichnung sollte 5 Zeichen nicht überschreiten");
+        }
+        // hint
+        if (! \BO\Mellon\Validator::param('hint')->isDeclared()->hasFailed()) {
+            $collection['hint'] = \BO\Mellon\Validator::param('hint')
+                ->isString();
+        }
+
+        // return validated collection
+        $collection = \BO\Mellon\Validator::collection($collection);
+        return $collection;
     }
 }

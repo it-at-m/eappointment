@@ -30,12 +30,12 @@ class ProcessTest extends EntityCommonTests
 
         $entity->addRequests('dldb', '122305');
         $this->assertContains('122305', $entity->getRequestCSV(), 'requests are not accessible');
-
+        $entity->addAmendment(array('amendment' => 'Das ist ein Zusatztext'));
         $entity->addScope('141');
         $this->assertTrue('141' == $entity->getScopeId(), 'scope is not accessible');
         $entity->setRandomAuthKey();
         $this->assertTrue(4 == strlen($entity->getAuthKey()), 'set random authKey failed');
-        $this->assertTrue('Beispiel Termin' == $entity->getAmendment(), 'amendment is not accessible');
+        $this->assertEquals('Das ist ein Zusatztext', $entity->getAmendment());
 
         $entity->setStatus('reserved');
         $this->assertTrue('reserved' == $entity->getStatus(), 'status is not accessible');
@@ -397,11 +397,16 @@ class ProcessTest extends EntityCommonTests
         $entity = $this->getExample();
         $appointment = (new \BO\Zmsentities\Appointment())->getExample();
         $appointment->availability = (new \BO\Zmsentities\Availability())->getExample();
+        $appointment->scope['id'] = 999;
         $entity->appointments = (new \BO\Zmsentities\Collection\AppointmentList())->addEntity($appointment);
         $entity->scope = (new \BO\Zmsentities\Scope())->getExample();
         $dayoff = (new \BO\Zmsentities\Dayoff())->getExample();
         $entity->scope->dayoff = (new \BO\Zmsentities\Collection\DayoffList())->addEntity($dayoff);
+        $entity->scope->provider['data'] = array();
+        $entityFree = clone $entity;
+        $entityFree->status = 'free';
         $collection->addEntity($entity);
+        $collection->addEntity($entityFree);
         $collection = $collection->withLessData();
         $this->assertEntityList($this->entityclass, $collection);
         $this->assertFalse(isset($entity->withLessData()['dayoff']), 'Converting to less data failed');
