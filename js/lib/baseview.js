@@ -5,7 +5,7 @@ import ExceptionHandler from './exceptionHandler';
 import { lightbox } from './utils';
 import { noOp } from './utils'
 
-const loaderHtml = '<div class="loader"></div>'
+const loaderHtml = '<div class="loader"><div class="spinner"></div></div>'
 
 class BaseView extends ErrorHandler {
 
@@ -20,22 +20,23 @@ class BaseView extends ErrorHandler {
     showSpinner(container = null)
     {
         if (container !== null) {
-            var loaderContainer = container.find('.body');
+            var loaderContainer = container.find('.body').first();
             if (loaderContainer.length < 1)
                 loaderContainer = container;
         } else {
-            var loaderContainer = this.$main.find('.body');
+            var loaderContainer = this.$main.find('.body').first();
             if (loaderContainer.length < 1)
                 loaderContainer = this.$main;
         }
 
 
-        loaderContainer.html(loaderHtml);
+        loaderContainer.prepend(loaderHtml);
     }
 
-    loadContent(url, method = 'GET', data = null, container = null) {
-
-        this.showSpinner(container);
+    loadContent(url, method = 'GET', data = null, container = null, spinner = true) {
+        if (spinner) {
+            this.showSpinner(container);
+        }
 
         const ajaxSettings = {
             method

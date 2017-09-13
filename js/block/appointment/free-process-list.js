@@ -16,7 +16,7 @@ class View extends BaseView {
 
     loadList() {
         const url = `${this.includeUrl}/appointmentForm/processlist/free/?selecteddate=${this.selectedDate}&selectedtime=${this.selectedTime}&slottype=${this.slotType}&slotsrequired=${this.slotsRequired}`
-        return this.loadContent(url, 'GET').catch(err => this.loadErrorCallback(err.source, err.url));
+        return this.loadContent(url, 'GET', null, null, false).catch(err => this.loadErrorCallback(err.source, err.url));
     }
 
     loadErrorCallback(source, url) {

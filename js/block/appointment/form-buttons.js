@@ -5,7 +5,6 @@ class View extends BaseView {
 
     constructor (element, options) {
         super(element, options);
-        console.log('BUTTONS', element);
         this.selectedDate = options.selectedDate;
         this.selectedProcess = options.selectedProcess || 0;
         this.includeUrl = options.includeUrl || "";
@@ -15,7 +14,7 @@ class View extends BaseView {
 
     load() {
         const url = `${this.includeUrl}/appointmentForm/buttons/?selecteddate=${this.selectedDate}&selectedprocess=${this.selectedProcess}`
-        return this.loadContent(url, 'GET').catch(err => this.loadErrorCallback(err.source, err.url));
+        return this.loadContent(url, 'GET', null, null, false).catch(err => this.loadErrorCallback(err.source, err.url));
     }
 
     loadErrorCallback(source, url) {

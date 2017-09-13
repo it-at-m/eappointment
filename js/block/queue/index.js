@@ -14,6 +14,7 @@ class View extends BaseView {
         this.source = options.source;
         this.selectedDate = options.selectedDate;
         this.includeUrl = options.includeUrl || "";
+        this.showLoader = options.showLoader || false;
         this.onDatePick = options.onDatePick || (() => {});
         this.onDateToday = options.onDateToday || (() => {});
         this.onDeleteProcess = options.onDeleteProcess || (() => {});
@@ -28,7 +29,7 @@ class View extends BaseView {
 
     load() {
         const url = `${this.includeUrl}/queueTable/?selecteddate=${this.selectedDate}`
-        return this.loadContent(url).catch(err => this.loadErrorCallback(err));
+        return this.loadContent(url, 'GET', null, null, this.showLoader).catch(err => this.loadErrorCallback(err));
     }
 
     cleanReload () {
