@@ -58,7 +58,7 @@ class View extends BaseView {
     // if process is called and button "nein, nächster Kunde bitte" is clicked, delete process from workstation and call next
     loadCancelClientNext() {
         this.cleanInstance();
-        const url = `${this.includeUrl}/workstation/process/cancel/next/`
+        const url = `${this.includeUrl}/workstation/process/cancel/next/?exclude=` + this.exclude
         return this.loadInto(url).then(this.setTimeSinceCall);
     }
 

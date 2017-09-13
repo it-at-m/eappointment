@@ -22,13 +22,18 @@ class WorkstationProcessCancelNext extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        $validator = $request->getAttribute('validator');
+        $excludedIds = $validator->getParameter('exclude')->isString()->getValue();
+        $excludedIds = ($excludedIds) ? $excludedIds : '';
         if ($workstation->process['id']) {
             \App::$http->readDeleteResult('/workstation/process/')->getEntity();
         }
         return \BO\Slim\Render::redirect(
             'workstationProcessNext',
             array(),
-            array()
+            array(
+                'exclude' => $excludedIds
+            )
         );
     }
 }
