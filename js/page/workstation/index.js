@@ -170,30 +170,32 @@ class View extends BaseView {
 
     loadReloadPartials() {
         if (this.$main.find('.lightbox').length == 0)
-            this.loadQueueTable();
+            this.loadQueueTable(false);
     }
 
-    loadCalendar () {
+    loadCalendar (showLoader = true) {
         return new CalendarView(this.$main.find('[data-calendar]'), {
             selectedDate: this.selectedDate,
             slotsRequired: this.slotsRequired,
             slotType: this.slotType,
             onDatePick: this.onDatePick,
             onDateToday: this.onDateToday,
-            includeUrl: this.includeUrl
+            includeUrl: this.includeUrl,
+            showLoader: showLoader
         })
     }
 
-    loadClientNext () {
+    loadClientNext (showLoader = true) {
         return new ClientNextView(this.$main.find('[data-client-next]'), {
             selectedDate: this.selectedDate,
             includeUrl: this.includeUrl,
             calledProcess: this.calledProcess,
-            onNextProcess: this.onNextProcess
+            onNextProcess: this.onNextProcess,
+            showLoader: showLoader
         })
     }
 
-    loadAppointmentForm() {
+    loadAppointmentForm(showLoader = true) {
         return new AppointmentView(this.$main.find('[data-appointment-form]'), {
             source: 'workstation',
             selectedDate: this.selectedDate,
@@ -206,11 +208,12 @@ class View extends BaseView {
             onDateToday: this.onDateToday,
             onDeleteProcess: this.onDeleteProcess,
             onQueueProcess: this.onQueueProcess,
-            onSaveProcess: this.onSaveProcess
+            onSaveProcess: this.onSaveProcess,
+            showLoader: showLoader
         })
     }
 
-    loadQueueTable () {
+    loadQueueTable (showLoader = true) {
         return new QueueView(this.$main.find('[data-queue-table]'), {
             source: 'workstation',
             selectedDate: this.selectedDate,
@@ -219,7 +222,8 @@ class View extends BaseView {
             onDateToday: this.onDateToday,
             onDeleteProcess: this.onDeleteProcess,
             onEditProcess: this.onEditProcess,
-            onNextProcess: this.onNextProcess
+            onNextProcess: this.onNextProcess,
+            showLoader: showLoader
         })
     }
 

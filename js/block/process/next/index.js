@@ -6,6 +6,7 @@ class View extends BaseView {
     constructor (element, options) {
         super(element, options);
         this.includeUrl = options.includeUrl || "";
+        this.showLoader = options.showLoader || false;
         this.exclude = "";
         this.processId = options.calledProcess || 0;
         this.refreshCounter = null;
@@ -25,45 +26,49 @@ class View extends BaseView {
         console.log('init load')
         this.cleanInstance();
         const url = `${this.includeUrl}/workstation/process/callbutton/`
-        return this.loadContent(url).then(this.setTimeSinceCall).catch(err => this.loadErrorCallback(err.source, err.url));
+        return this.loadInto(url).then(this.setTimeSinceCall);
     }
 
     loadClientNext() {
         this.cleanInstance();
         const url = `${this.includeUrl}/workstation/process/next/?exclude=` + this.exclude
-        return this.loadContent(url).then(this.setTimeSinceCall).catch(err => this.loadErrorCallback(err.source, err.url));
+        return this.loadInto(url).then(this.setTimeSinceCall);
     }
 
     loadCall() {
         console.log('load call')
         this.cleanInstance();
         const url = `${this.includeUrl}/workstation/call/${this.processId}/?direct=1`
-        return this.loadContent(url).then(this.setTimeSinceCall).catch(err => this.loadErrorCallback(err.source, err.url));
+        return this.loadInto(url).then(this.setTimeSinceCall);
     }
 
     loadCalled() {
         this.cleanInstance();
         const url = `${this.includeUrl}/workstation/process/${this.processId}/called/`
-        return this.loadContent(url).catch(err => this.loadErrorCallback(err.source, err.url));
+        return this.loadInto(url);
     }
 
     loadCancel() {
         this.cleanInstance();
         const url = `${this.includeUrl}/workstation/process/cancel/`
-        return this.loadContent(url).catch(err => this.loadErrorCallback(err.source, err.url));
+        return this.loadInto(url);
     }
 
     // if process is called and button "nein, nächster Kunde bitte" is clicked, delete process from workstation and call next
     loadCancelClientNext() {
         this.cleanInstance();
         const url = `${this.includeUrl}/workstation/process/cancel/next/`
-        return this.loadContent(url).then(this.setTimeSinceCall).catch(err => this.loadErrorCallback(err.source, err.url));
+        return this.loadInto(url).then(this.setTimeSinceCall);
     }
 
     loadProcessing() {
         this.cleanInstance();
         const url = `${this.includeUrl}/workstation/process/processing/`
-        return this.loadContent(url).catch(err => this.loadErrorCallback(err.source, err.url));
+        return this.loadInto(url);
+    }
+
+    loadInto(url) {
+        return this.loadContent(url, 'GET', null, null, this.showLoader).catch(err => this.loadErrorCallback(err.source, err.url));
     }
 
     bindEvents() {

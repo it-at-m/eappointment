@@ -7,6 +7,7 @@ class View extends BaseView {
         super(element, options);
         this.selectedDate = options.selectedDate;
         this.includeUrl = options.includeUrl || "";
+        this.showLoader = options.showLoader || false;
         this.onDatePick = options.onDatePick || (() => {});
         this.onDateToday = options.onDateToday || (() => {});
         this.slotsRequired = options.slotsRequired;
@@ -20,7 +21,7 @@ class View extends BaseView {
 
     load() {
         const url = `${this.includeUrl}/calendarPage/?selecteddate=${this.selectedDate}&slottype=${this.slotType}&slotsrequired=${this.slotsRequired}`
-        this.loadPromise = this.loadContent(url)
+        this.loadPromise = this.loadContent(url, 'GET', null, null, this.showLoader)
         return this.loadPromise;
     }
 

@@ -19,6 +19,7 @@ class View extends BaseView {
         this.selectedDate = options.selectedDate;
         this.selectedTime = options.selectedTime;
         this.includeUrl = options.includeUrl || "";
+        this.showLoader = options.showLoader || false;
         this.selectedProcess = options.selectedProcess;
         this.onDeleteProcess = options.onDeleteProcess || (() => {});
         this.onSaveProcess = options.onSaveProcess || (() => {});
@@ -43,7 +44,7 @@ class View extends BaseView {
 
     load() {
         const url = `${this.includeUrl}/appointmentForm/?selecteddate=${this.selectedDate}&selectedprocess=${this.selectedProcess}`
-        this.loadPromise = this.loadContent(url).catch(err => this.loadErrorCallback(err));
+        this.loadPromise = this.loadContent(url, 'GET', null, null, this.showLoader).catch(err => this.loadErrorCallback(err));
         return this.loadPromise;
     }
 

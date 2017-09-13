@@ -175,25 +175,26 @@ class View extends BaseView {
         ])
     }
 
-    loadCalendar () {
+    loadCalendar (showLoader = true) {
         return new CalendarView(this.$main.find('[data-calendar]'), {
             selectedDate: this.selectedDate,
             slotsRequired: this.slotsRequired,
             slotType: this.slotType,
             onDatePick: this.onDatePick,
             onDateToday: this.onDateToday,
-            includeUrl: this.includeUrl
+            includeUrl: this.includeUrl,
+            showLoader: showLoader
         })
     }
 
     loadReloadPartials() {
         if (this.$main.find('.lightbox').length == 0) {
-            this.loadQueueTable();
-            this.loadQueueInfo();
+            this.loadQueueTable(false);
+            this.loadQueueInfo(false);
         }
     }
 
-    loadAppointmentForm() {
+    loadAppointmentForm(showLoader = true) {
         return new AppointmentView(this.$main.find('[data-appointment-form]'), {
             source: 'counter',
             selectedDate: this.selectedDate,
@@ -206,11 +207,12 @@ class View extends BaseView {
             onDateToday: this.onDateToday,
             onDeleteProcess: this.onDeleteProcess,
             onQueueProcess: this.onQueueProcess,
-            onSaveProcess: this.onSaveProcess
+            onSaveProcess: this.onSaveProcess,
+            showLoader: showLoader
         })
     }
 
-    loadQueueTable () {
+    loadQueueTable (showLoader = true) {
         return new QueueView(this.$main.find('[data-queue-table]'), {
             source: 'counter',
             selectedDate: this.selectedDate,
@@ -219,22 +221,25 @@ class View extends BaseView {
             onDateToday: this.onDateToday,
             onDeleteProcess: this.onDeleteProcess,
             onEditProcess: this.onEditProcess,
-            onNextProcess: this.onNextProcess
+            onNextProcess: this.onNextProcess,
+            showLoader: showLoader
         })
     }
 
-    loadAppointmentTimes () {
+    loadAppointmentTimes (showLoader = true) {
         return new AppointmentTimesView(this.$main.find('[data-appointment-times]'), {
             selectedDate: this.selectedDate,
-            includeUrl: this.includeUrl
+            includeUrl: this.includeUrl,
+            showLoader: showLoader
         })
     }
 
-    loadQueueInfo () {
+    loadQueueInfo (showLoader = true) {
         return new QueueInfoView(this.$main.find('[data-queue-info]'), {
             selectedDate: this.selectedDate,
             includeUrl: this.includeUrl,
-            onGhostWorkstationChange: this.onGhostWorkstationChange
+            onGhostWorkstationChange: this.onGhostWorkstationChange,
+            showLoader: showLoader
         })
     }
 

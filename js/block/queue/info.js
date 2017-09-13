@@ -7,6 +7,7 @@ class View extends BaseView {
         super(element, options);
         this.selectedDate = options.selectedDate;
         this.includeUrl = options.includeUrl || "";
+        this.showLoader = options.showLoader || false;
         this.ghostWorkstationCount = "-1";
         this.onGhostWorkstationChange = options.onGhostWorkstationChange || (() => {});
         this.bindPublicMethods('load');
@@ -18,7 +19,7 @@ class View extends BaseView {
 
     load() {
         const url = `${this.includeUrl}/counter/queueInfo/?selecteddate=${this.selectedDate}`
-        return this.loadContent(url).catch(err => this.loadErrorCallback(err.source, err.url));
+        return this.loadContent(url, 'GET', null, null, this.showLoader).catch(err => this.loadErrorCallback(err.source, err.url));
     }
 
     loadErrorCallback(source, url) {
