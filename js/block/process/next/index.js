@@ -1,6 +1,8 @@
 import BaseView from '../../../lib/baseview'
 import $ from 'jquery'
 
+window.refreshCounter = null;
+
 class View extends BaseView {
 
     constructor (element, options) {
@@ -9,7 +11,6 @@ class View extends BaseView {
         this.showLoader = options.showLoader || false;
         this.exclude = "";
         this.processId = options.calledProcess || 0;
-        this.refreshCounter = null;
         this.refreshCurrentTime = null;
         this.onNextProcess = options.onNextProcess || (() => {});
         this.bindPublicMethods('bindEvents','loadClientNext','setTimeSinceCall', 'loadCalled', 'loadProcessing');
@@ -137,14 +138,14 @@ class View extends BaseView {
         temp+=((minute < 10)? "0" : "")+minute + ":" + ((second < 10)? "0" : "")+second;
 
         $("#clock").text(temp);
-        clearTimeout(this.refreshCounter);
-        this.refreshCounter = setTimeout(() => {
+        clearTimeout(window.refreshCounter);
+        window.refreshCounter = setTimeout(() => {
             this.setNextSinceCallTick(localCallTime)
         }, 1000);
     }
 
     cleanInstance() {
-        clearTimeout(this.refreshCounter);
+        clearTimeout(window.refreshCounter);
         clearTimeout(this.refreshCurrentTime);
         this.setCurrentTime();
         this.calledProcess = 0;
