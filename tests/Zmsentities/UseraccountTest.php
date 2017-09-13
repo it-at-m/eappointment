@@ -2,6 +2,11 @@
 
 namespace BO\Zmsentities\Tests;
 
+/**
+ *
+ * @SuppressWarnings(Public)
+ *
+ */
 class UseraccountTest extends EntityCommonTests
 {
     const DEFAULT_TIME = '2016-04-01 11:55:00';
@@ -36,6 +41,20 @@ class UseraccountTest extends EntityCommonTests
         $collection[] = $entity;
         $collection[] = $superuser;
         $this->assertTrue($collection->withRights(['superuser'])->count() == 1, 'Only one superuser given');
+    }
+
+    public function testCollectionSortByCustomStringKey()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $entity->id = 'z-id-test';
+        $superuser = (new $this->entityclass())->getExample();
+        $superuser->id = 'a-id-test';
+        $superuser->rights['superuser'] = true;
+        $collection = new \BO\Zmsentities\Collection\UseraccountList();
+        $collection[] = $entity;
+        $collection[] = $superuser;
+        $this->assertEquals('a-id-test', $collection->sortByCustomStringKey('id')->getFirst()->id);
+        $this->assertEquals('z-id-test', $collection->sortByCustomStringKey('id')->getLast()->id);
     }
 
     public function testDepartment()
@@ -130,6 +149,10 @@ class UseraccountTest extends EntityCommonTests
             new \BO\Zmsentities\Useraccount\EntityAccess($department),
             new \BO\Zmsentities\Useraccount\EntityAccess($scope)
         ]), "User rights should validate");
+        $this->assertContains(
+            "EntityAccess(department#123)",
+            (string)(new \BO\Zmsentities\Useraccount\EntityAccess($department))
+        );
     }
 
     public function testWithCleanedUpFormData()

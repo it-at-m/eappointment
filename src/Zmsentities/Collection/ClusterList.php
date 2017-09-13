@@ -32,11 +32,11 @@ class ClusterList extends Base
     public function sortByName()
     {
         parent::sortByName();
-
         foreach ($this as $cluster) {
             if ($cluster->scopes instanceof ScopeList) {
                 $cluster->scopes->sortByName();
             }
         }
+        return $this;
     }
 }

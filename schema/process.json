@@ -58,8 +58,7 @@
         "status": "confirmed"
     },
     "required": [
-        "id",
-        "authKey"
+        "id"
     ],
     "additionalProperties": false,
     "properties": {

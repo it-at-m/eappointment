@@ -69,6 +69,74 @@ class DepartmentTest extends EntityCommonTests
         $this->assertEquals(0, $collection->getFirst()->scopes->count());
     }
 
+    public function testCollectionSortByName()
+    {
+        $departmentA = new \BO\Zmsentities\Department();
+        $departmentA->name = 'A-Department';
+        $departmentB = clone $departmentA;
+        $departmentB->name = 'B-Department';
+
+        $clusterA = new Cluster();
+        $clusterA->name = 'A-Cluster';
+        $clusterB = clone $clusterA;
+        $clusterB->name = 'B-Cluster';
+
+        $scopeA = (new Scope)->getExample();
+        $scopeA->provider['name'] = 'A-Scope';
+        $scopeB = clone $scopeA;
+        $scopeB->provider['name'] = 'B-Scope';
+
+        $clusterA->scopes->addEntity($scopeB);
+        $clusterA->scopes->addEntity($scopeA);
+        $clusterB->scopes->addEntity($scopeB);
+        $clusterB->scopes->addEntity($scopeA);
+
+        $departmentA['clusters'] = (new ClusterList());
+        $departmentA['clusters']->addEntity($clusterB);
+        $departmentA['clusters']->addEntity($clusterA);
+
+        $departmentA['scopes'] = new ScopeList();
+        $departmentA['scopes']->addEntity($scopeB);
+        $departmentA['scopes']->addEntity($scopeA);
+
+        $departmentB['clusters'] = (new ClusterList());
+        $departmentB['clusters']->addEntity($clusterB);
+        $departmentB['clusters']->addEntity($clusterA);
+
+        $departmentB['scopes'] = new ScopeList();
+        $departmentB['scopes']->addEntity($scopeB);
+        $departmentB['scopes']->addEntity($scopeA);
+
+        $collection = new $this->collectionclass();
+        $collection->addEntity($departmentB);
+        $collection->addEntity($departmentA);
+
+        $this->assertEquals('A-Department', $collection->sortByName()->getFirst()->name);
+        $this->assertEquals('A-Cluster', $collection->sortByName()->getFirst()->clusters->getFirst()->name);
+        $this->assertEquals(
+            'A-Scope',
+            $collection->sortByName()->getFirst()->clusters->getFirst()->scopes->getFirst()->provider['name']
+        );
+    }
+
+    public function testCollectionWithAccess()
+    {
+        $entity = $this->getExample();
+        $collection = new $this->collectionclass();
+        $collection->addEntity($entity);
+
+        $useraccount = (new \BO\Zmsentities\Useraccount())->getExample();
+        $useraccount->departments = $collection;
+        $collection->addEntity(clone $entity);
+
+        $accessibleList = $collection->withAccess($useraccount);
+        $this->assertEquals(2, $accessibleList->count());
+
+        $useraccount->setRights('organisation');
+        $accessibleList = $collection->withAccess($useraccount);
+        $this->assertEquals(2, $accessibleList->count());
+    }
+
     public function testGetDayoffList()
     {
         $entity = $this->getExample();
