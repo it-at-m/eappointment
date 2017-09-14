@@ -29,6 +29,6 @@ class DepartmentUseraccountListTest extends Base
         $this->setWorkstation()->getUseraccount()->setRights('superuser', 'useraccount');
         $this->expectException('BO\Zmsentities\Exception\UserAccountMissingDepartment');
         $this->expectExceptionCode(403);
-        $this->render(['id' => 9999], [], []);
+        $this->render(['id' => 99999], [], []);
     }
 }

@@ -38,4 +38,12 @@ class OrganisationByClusterTest extends Base
         $this->expectExceptionCode(404);
         $this->render(['id' => 999], [], []);
     }
+
+    public function testOrganisationNotFound()
+    {
+        $this->setWorkstation();
+        $this->expectException('\BO\Zmsapi\Exception\Organisation\OrganisationNotFound');
+        $this->expectExceptionCode(404);
+        $this->render(['id' => 1], [], []);
+    }
 }

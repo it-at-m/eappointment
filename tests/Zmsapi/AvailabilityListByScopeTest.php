@@ -28,4 +28,12 @@ class AvailabilityListByScopeTest extends Base
         $this->expectExceptionCode(404);
         $this->render(['id' => 999], [], []);
     }
+
+    public function testNoAvailabilities()
+    {
+        $this->setWorkstation();
+        $this->expectException('\BO\Zmsapi\Exception\Availability\AvailabilityNotFound');
+        $this->expectExceptionCode(404);
+        $this->render(['id' => 1], [], []);
+    }
 }

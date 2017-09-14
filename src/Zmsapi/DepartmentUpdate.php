@@ -24,9 +24,6 @@ class DepartmentUpdate extends BaseController
         $entity = new \BO\Zmsentities\Department($input);
         (new Helper\User($request, 2))->checkRights('department');
         $department = Helper\User::checkDepartment($args['id']);
-        if (! $department) {
-            throw new Exception\Department\DepartmentNotFound();
-        }
 
         $message = Response\Message::create($request);
         $message->data = (new Query())->updateEntity($department->id, $entity);

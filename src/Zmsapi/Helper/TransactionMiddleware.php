@@ -8,6 +8,7 @@ use \Psr\Http\Message\ResponseInterface;
 class TransactionMiddleware
 {
     /**
+     * @codeCoverageIgnore
      *
      */
     public function __invoke(

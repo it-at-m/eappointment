@@ -36,7 +36,7 @@ class DepartmentDeleteTest extends Base
         // The rights check does not know, if the department is missed because of rights or by lack of data
         $this->expectException('BO\Zmsentities\Exception\UserAccountMissingDepartment');
         $this->expectExceptionCode(403);
-        $this->render(['id' => 9999], [], []);
+        $this->render(['id' => 999], [], []);
     }
 
     public function testNoRights()

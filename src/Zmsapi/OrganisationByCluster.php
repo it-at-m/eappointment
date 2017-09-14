@@ -28,7 +28,7 @@ class OrganisationByCluster extends BaseController
             throw new Exception\Cluster\ClusterNotFound();
         }
         $organisation = (new Query())->readByClusterId($cluster->id, $resolveReferences);
-        if (! $organisation) {
+        if (! $organisation->hasId()) {
             throw new Exception\Organisation\OrganisationNotFound();
         }
 

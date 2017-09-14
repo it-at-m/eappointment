@@ -10,6 +10,7 @@ class Info extends Base
 
     /**
      * @SuppressWarnings(Parameter)
+     * @codeCoverageIgnore
      *
      */
     public function cli(array $argv, \League\CLImate\CLImate $climate)

@@ -83,4 +83,22 @@ class SessionUpdateTest extends Base
         }',
         ], []);
     }
+
+    public function testMatchingRequestWithProviderFromScope()
+    {
+        $response = $this->render([], [
+            '__body' => '{
+                "id": "unittest",
+                "name": "unittest",
+                "content": {
+                    "basket": {
+                        "requests" : "120703",
+                        "scope" : "141"
+                    }
+                }
+        }',
+        ], []);
+        $this->assertContains('session.json', (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
+    }
 }
