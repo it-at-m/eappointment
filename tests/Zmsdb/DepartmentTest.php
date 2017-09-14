@@ -36,7 +36,7 @@ class DepartmentTest extends Base
     public function testDeleteWithoutChildren()
     {
         $query = new Query();
-        $this->assertContains('Test Department', $query->deleteEntity(9999)); //Test Department
+        $this->assertContains('Test Department', $query->deleteEntity(999)); //Test Department
     }
 
     public function testReadWithDayOff()
