@@ -43,9 +43,9 @@
             }
         ],
         "clusters": [
-        	{
-        		"id": 45
-        	}
+            {
+                "id": 45
+            }
         ]
     },
     "additionalProperties": false,
@@ -70,7 +70,25 @@
         },
         "email": {
             "type": "string",
-            "description": "sender address for reminder mails to the clients"
+            "description": "sender address for reminder mails to the clients",
+            "oneOf": [
+                {
+                    "enum": [
+                        ""
+                    ]
+                },
+                {
+                    "format": "email"
+                }
+            ],
+            "x-locale": {
+                "de_DE": {
+                    "pointer": "E-Mail",
+                    "messages": {
+                        "one_of": "Die E-Mail Adresse muss eine valide E-Mail im Format max@mustermann.de sein"
+                    }
+                }
+            }
         },
         "links": {
             "type": "array",
@@ -90,19 +108,30 @@
                     "additionalProperties": false,
                     "properties": {
                         "enabled": {
-                            "type": ["boolean", "number"],
+                            "type": [
+                                "boolean",
+                                "number"
+                            ],
                             "description": "true if sms are allowed"
                         },
                         "identification": {
-                            "type": ["string"],
+                            "type": [
+                                "string"
+                            ],
                             "description": "usually an email address"
                         },
                         "sendConfirmationEnabled": {
-                            "type": ["boolean", "number"],
+                            "type": [
+                                "boolean",
+                                "number"
+                            ],
                             "description": "true if confirmation sms are enabled"
                         },
                         "sendReminderEnabled": {
-                            "type": ["boolean", "number"],
+                            "type": [
+                                "boolean",
+                                "number"
+                            ],
                             "description": "true if reminder sms are enabled"
                         }
                     }
