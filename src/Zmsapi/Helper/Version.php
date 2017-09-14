@@ -4,18 +4,19 @@ namespace BO\Zmsapi\Helper;
 
 class Version
 {
-    public static function getString()
+    public static function getString($path = null)
     {
-        $file = \App::APP_PATH . '/VERSION';
+        $path = ($path) ? $path : \App::APP_PATH;
+        $file = $path . '/VERSION';
         if (is_file($file)) {
             return trim(file_get_contents($file));
         }
         return "version.unknown";
     }
 
-    public static function getArray()
+    public static function getArray($path = null)
     {
-        $version = static::getString();
+        $version = static::getString($path);
         $array = [];
         if (preg_match('#^v(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)$#', $version, $array)) {
             return [

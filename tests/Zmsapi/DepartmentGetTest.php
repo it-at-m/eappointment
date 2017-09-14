@@ -31,6 +31,6 @@ class DepartmentGetTest extends Base
         User::$workstation->useraccount->setRights('department');
         $this->expectException('\BO\Zmsapi\Exception\Department\DepartmentNotFound');
         $this->expectExceptionCode(404);
-        $this->render(['id' => 9999], [], []);
+        $this->render(['id' => 99999], [], []);
     }
 }

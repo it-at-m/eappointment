@@ -8,6 +8,7 @@ use \Psr\Http\Message\ResponseInterface;
 class LogOperatorMiddleware
 {
     /**
+     * @codeCoverageIgnore
      *
      */
     public function __invoke(

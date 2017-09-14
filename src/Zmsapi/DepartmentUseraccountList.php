@@ -24,9 +24,6 @@ class DepartmentUseraccountList extends BaseController
         (new Helper\User($request))->checkRights('useraccount');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $department = Helper\User::checkDepartment($args['id']);
-        if (! $department) {
-            throw new Exception\Department\DepartmentNotFound();
-        }
 
         $useraccountList = (new Useraccount)->readCollectionByDepartmentId($department->id, $resolveReferences);
 

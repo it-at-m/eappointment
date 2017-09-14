@@ -39,7 +39,7 @@ class ClusterUpdateTest extends Base
         User::$workstation->useraccount->setRights('cluster');
         $this->expectException('\BO\Zmsapi\Exception\Cluster\ClusterNotFound');
         $this->expectExceptionCode(404);
-        $this->render(["id"=> 1], [
+        $this->render(["id"=> 999], [
             '__body' => '{
                   "id": 999
               }'

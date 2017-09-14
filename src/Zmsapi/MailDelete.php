@@ -27,9 +27,11 @@ class MailDelete extends BaseController
             throw new Exception\Mail\MailNotFound();
         }
 
+        // @codeCoverageIgnoreStart
         if (! $query->deleteEntity($mail->id)) {
             throw new Exception\Mail\MailDeleteFailed();
         }
+        // @codeCoverageIgnoreEnd
 
         $message = Response\Message::create($request);
         $message->data = $mail;

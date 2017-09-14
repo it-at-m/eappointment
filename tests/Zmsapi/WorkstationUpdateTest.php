@@ -49,6 +49,29 @@ class WorkstationUpdateTest extends Base
         ], []);
     }
 
+    public function testAssignedWorkstationExistsByScopeAndNumber()
+    {
+        User::$assignedWorkstation = null;
+
+        $this->expectException('\BO\Zmsapi\Exception\Workstation\WorkstationAlreadyAssigned');
+        $this->expectExceptionCode(200);
+
+        $entity = (new \BO\Zmsdb\Workstation)->writeEntityLoginByName('testadmin', 'vorschau', \App::getNow(), 2);
+        $entity->scope['id'] = 141;
+        $entity->name = self::PLACE;
+        (new \BO\Zmsdb\Workstation)->updateEntity($entity, 0);
+
+        $workstation = $this->setWorkstation();
+        $workstation->name = $entity->name;
+        $workstation->id = 138;
+        $workstation->scope['id'] = $entity->scope['id'];
+
+
+        $this->render([], [
+            '__body' => json_encode($workstation)
+        ], []);
+    }
+
     public function testAccessFailed()
     {
         $this->setExpectedException('BO\Zmsapi\Exception\Workstation\WorkstationAccessFailed');
