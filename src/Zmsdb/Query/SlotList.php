@@ -134,9 +134,17 @@ class SlotList extends Base
         GROUP BY o.OeffnungszeitID, b.Datum, `slotnr`
         HAVING
             -- reduce results cause processing them costs time even with query cache
-            appointment__date BETWEEN
-                DATE_ADD(:nowStart, INTERVAL availability__bookable__startInDays DAY)
-                AND DATE_ADD(:nowEnd, INTERVAL availability__bookable__endInDays + 1 DAY)
+            (
+                appointment__date BETWEEN
+                    DATE_ADD(:nowStart, INTERVAL availability__bookable__startInDays DAY)
+                    -- appointment__date includes midnight time, so take the following day to include the last day
+                    AND DATE_ADD(:nowEnd, INTERVAL availability__bookable__endInDays + 1 DAY)
+                AND
+                (
+                    slotdate !=  DATE_ADD(:nowCompare, INTERVAL availability__bookable__endInDays DAY)
+                    OR availability__startTime < :nowTime
+                )
+            )
             OR appointment__date IS NULL
 
         -- ordering is important for processing later on (slot reduction)
@@ -201,6 +209,8 @@ class SlotList extends Base
             'end_availability' => $monthDateTime->format('Y-m-t'),
             'nowStart' => $now->format('Y-m-d'),
             'nowEnd' => $now->format('Y-m-d'),
+            'nowCompare' => $now->format('Y-m-d'),
+            'nowTime' => $now->format('H:i:s'),
         ];
         return $parameters;
     }
@@ -218,6 +228,8 @@ class SlotList extends Base
             'end_availability' => $dateTime->format('Y-m-d'),
             'nowStart' => $now->format('Y-m-d'),
             'nowEnd' => $now->format('Y-m-d'),
+            'nowCompare' => $now->format('Y-m-d'),
+            'nowTime' => $now->format('H:i:s'),
         ];
         return $parameters;
     }
@@ -363,10 +375,9 @@ class SlotList extends Base
         $stopDate = $stopDate->modify('00:00:00');
         $time = DateTime::create($startDate);
         $slotlist = $this->availability->getSlotList();
-        $nowDate = $now->modify('00:00:00');
         do {
             $date = $time->format('Y-m-d');
-            if ($this->availability->hasDate($time, $nowDate)) {
+            if ($this->availability->hasDate($time, $now)) {
                 $this->slots[$date] = clone $slotlist;
             }
             $time = $time->modify('+1day');
