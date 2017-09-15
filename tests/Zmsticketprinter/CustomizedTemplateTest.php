@@ -55,4 +55,18 @@ class CustomizedTemplateTest extends Base
         $this->assertContains('Ordnungsamt Charlottenburg-Wilmersdorf', (string) $response->getBody());
         $this->assertNotContains('Wartenummer für', (string) $response->getBody());
     }
+
+    public function testTemplateNotFound()
+    {
+        $this->expectException('\BO\Zmsticketprinter\Exception\TemplateNotFound');
+        $this->expectExceptionCode(404);
+        $response = $this->render([
+            'scopeId' => 615
+        ], [
+            '__cookie' => [
+                'Ticketprinter' => '710caa9f2e7547a52106d6b00868c5cf3a',
+            ],
+            'template' => 'notfound'
+        ], [ ]);
+    }
 }
