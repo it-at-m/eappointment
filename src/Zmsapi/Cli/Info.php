@@ -15,7 +15,7 @@ class Info extends Base
      */
     public function cli(array $argv, \League\CLImate\CLImate $climate)
     {
-        $version = \App::VERSION_MAJOR . '.' . \App::VERSION_MINOR . '.' . \App::VERSION_PATCH;
+        $version = \BO\Zmsapi\Helper\Version::getString();
         $climate->out("API Version $version");
     }
 }
