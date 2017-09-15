@@ -86,12 +86,15 @@ class Schema extends \ArrayObject
     public function getPropertyByPath($path)
     {
         $pointerList = explode('/', trim($path, '/ '));
-        $property = $this->toProperty()->properties;
+        $property = $this->toProperty();
+        $property = $pointerList[0] == 'properties' ? $property : $property->properties;
         foreach ($pointerList as $pointer) {
             if ($property->type->get() == 'array') {
                 $property = $property['items'];
-            } elseif ($property->type->get() == 'object') {
+            } elseif ($property->type->get() == 'object' && $pointer !== 'properties') {
                 $property = $property->properties[$pointer];
+            } elseif (is_numeric($pointer)) {
+                // ignore array items
             } else {
                 $property = $property[$pointer];
             }

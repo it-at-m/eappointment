@@ -13,45 +13,6 @@ class SchemaValidation extends \Exception
 
     public $data = [];
 
-    protected $errorMessages = [
-        ErrorCode::INVALID_NUMERIC         => "INVALID_NUMERIC",
-        ErrorCode::INVALID_NULL            => "INVALID_NULL",
-        ErrorCode::INVALID_INTEGER         => "INVALID_INTEGER",
-        ErrorCode::INVALID_STRING          => "INVALID_STRING",
-        ErrorCode::INVALID_BOOLEAN         => "INVALID_BOOLEAN",
-        ErrorCode::INVALID_ARRAY           => "INVALID_ARRAY",
-        ErrorCode::INVALID_OBJECT          => "INVALID_OBJECT",
-        ErrorCode::INVALID_ENUM            => "INVALID_ENUM",
-        ErrorCode::INVALID_MIN             => "INVALID_MIN",
-        ErrorCode::INVALID_EXCLUSIVE_MIN   => "INVALID_EXCLUSIVE_MIN",
-        ErrorCode::INVALID_MAX             => "INVALID_MAX",
-        ErrorCode::INVALID_EXCLUSIVE_MAX   => "INVALID_EXCLUSIVE_MAX",
-        ErrorCode::INVALID_MIN_COUNT       => "INVALID_MIN_COUNT",
-        ErrorCode::MAX_ITEMS_EXCEEDED      => "MAX_ITEMS_EXCEEDED",
-        ErrorCode::INVALID_MIN_LENGTH      => "INVALID_MIN_LENGTH",
-        ErrorCode::INVALID_MAX_LENGTH      => "INVALID_MAX_LENGTH",
-        ErrorCode::INVALID_MULTIPLE        => "INVALID_MULTIPLE",
-        ErrorCode::NOT_UNIQUE_ITEM         => "NOT_UNIQUE_ITEM",
-        ErrorCode::INVALID_PATTERN         => "INVALID_PATTERN",
-        ErrorCode::INVALID_TYPE            => "INVALID_TYPE",
-        ErrorCode::NOT_SCHEMA              => "NOT_SCHEMA",
-        ErrorCode::MISSING_REQUIRED        => "MISSING_REQUIRED",
-        ErrorCode::ONE_OF_SCHEMA           => "ONE_OF_SCHEMA",
-        ErrorCode::ANY_OF_SCHEMA           => "ANY_OF_SCHEMA",
-        ErrorCode::ALL_OF_SCHEMA           => "ALL_OF_SCHEMA",
-        ErrorCode::NOT_ALLOWED_PROPERTY    => "NOT_ALLOWED_PROPERTY",
-        ErrorCode::INVALID_EMAIL           => "INVALID_EMAIL",
-        ErrorCode::INVALID_URI             => "INVALID_URI",
-        ErrorCode::INVALID_IPV4            => "INVALID_IPV4",
-        ErrorCode::INVALID_IPV6            => "INVALID_IPV6",
-        ErrorCode::INVALID_DATE_TIME       => "INVALID_DATE_TIME",
-        ErrorCode::INVALID_HOST_NAME       => "INVALID_HOST_NAME",
-        ErrorCode::INVALID_FORMAT          => "INVALID_FORMAT",
-        ErrorCode::NOT_ALLOWED_ITEM        => "NOT_ALLOWED_ITEM",
-        ErrorCode::UNMET_DEPENDENCY        => "UNMET_DEPENDENCY",
-        ErrorCode::MAX_PROPERTIES_EXCEEDED => "MAX_PROPERTIES_EXCEEDED",
-        "INVALID_STRING_MATCHING"          => "INVALID_STRING_MATCHING"
-    ];
 
     protected $validationErrorList = [];
 
@@ -72,18 +33,20 @@ class SchemaValidation extends \Exception
         return $this;
     }
 
+	/**
+    * Merge conflict, on error see commit c05b7e5fca6b52fc8d0936f4fbb653f3cad8f06b
+    */
     public function setData()
     {
         foreach ($this->validationErrorList as $error) {
-            $pointer = $error->getPointer();
-            if (! isset($this->data[$pointer['origin']]['messages'])) {
-                $this->data[$pointer['origin']]['messages'] = array();
+            $pointer = $error->getSchemaPath();
+            if (! isset($this->data[$pointer]['messages'])) {
+                $this->data[$pointer]['messages'] = array();
             }
-            if (! in_array($error->getMessage(), $this->data[$pointer['origin']]['messages'])) {
-                $this->data[$pointer['origin']]['messages'][] = $error->getMessage();
+            if (! in_array($error->getMessage(), $this->data[$pointer]['messages'])) {
+                $this->data[$pointer]['messages'][] = $error->getMessage();
             }
-            $this->data[$pointer['origin']]['translated'] = $pointer['translated'];
-            $this->data[$pointer['origin']]['failed'] = 1;
+            $this->data[$pointer]['failed'] = 1;
         }
     }
 
@@ -104,17 +67,19 @@ class SchemaValidation extends \Exception
 
     public function getErrorMessage(\League\JsonGuard\ValidationError $error)
     {
-        $message = $this->schemaName . '#';
-        $message .= $this->errorMessages[$error->getCode()];
+        $message = $this->schemaName . '';
+        $message .= $error->getSchemaPath() . '';
+        //$message .= $error->getKeyword();
         $message .= ' ';
-        $message .= $error->getPointer()['origin'];
+        $message .= $error->getDataPath();
         $message .= '=';
-        $message .= var_export($error->getValue(), true);
+        $message .= var_export($error->getCause(), true);
         $message .= ' ';
         $message .= $error->getMessage();
         //$message .= ' (';
         //$message .= var_export($error->getConstraints(), true);
         //$message .= ')';
+        //$message .= var_export($error->toArray(), true);
 
         return $message;
     }

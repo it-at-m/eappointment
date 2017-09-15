@@ -34,8 +34,8 @@
                 "de_DE": {
                     "pointer": "Benutzername",
                     "messages": {
-                        "min_length": "Es muss ein aussagekräftiger Nutzername eingegeben werden",
-                        "max_length": "Der Nutzername sollte 40 Zeichen nicht überschreiten"
+                        "minLength": "Es muss ein aussagekräftiger Nutzername eingegeben werden",
+                        "maxLength": "Der Nutzername sollte 40 Zeichen nicht überschreiten"
                     }
                 }
             }
@@ -65,8 +65,8 @@
                     "de_DE": {
                         "pointer": "Passwortwiederholung",
                         "messages": {
-                            "min_length": "Die Länge des Passwortes muss mindestens 6 Zeichen betragen",
-                            "max_length": "Die Länge des Passwortes darf maximal 40 Zeichen betragen"
+                            "minLength": "Die Länge des Passwortes muss mindestens 6 Zeichen betragen",
+                            "maxLength": "Die Länge des Passwortes darf maximal 40 Zeichen betragen"
                         }
                     }
                 }
@@ -79,7 +79,7 @@
                 "de_DE": {
                     "pointer": "Passwortwiederholung",
                     "messages": {
-                        "is_equal": "Die beiden Passwörter müssen identisch sein"
+                        "format": "Die beiden Passwörter müssen identisch sein"
                     }
                 }
             }
