@@ -1,0 +1,10 @@
+{%
+    include "exception/bo/layout.twig" with {
+		"message":"Die für den anderen Arbeitsplatz vorhandene Sitzung wurde für ungültig erklärt, so dass dort unter ihrem Nutzernamen keine Aktionen mehr durchgeführt werden können.",
+		"title":"Mit ihrem Nutzernamen und Passwort war bereits ein anderer Arbeitsplatz oder Browser eingeloggt.",
+        "exceptionData":"user-already-loggedin",
+    	"showlinks":{
+			'workstationSelect':'Weiter zur Auswahl des Standortes',
+        }
+    }
+%}

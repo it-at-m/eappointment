@@ -1,0 +1,10 @@
+.searchresults {
+    @extend 
+        .board,
+        .board--noBodyPadding;
+    table {
+        @extend
+            .table,
+            .table--cells;
+    }
+}

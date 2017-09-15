@@ -1,0 +1,26 @@
+{% extends "layout/main.twig" %}
+{% use "block/header/pageheader.twig" %}
+{% use "block/navigation/navigation.twig" %}
+
+{% block pageheader %}
+    {{ parent() }}
+{% endblock %}
+
+{% block pageheader_middle %}
+    <span class="sitename">Statistik - Auswahl Standort und Arbeitsplatz</span>
+{% endblock %}
+
+{% block pageheader_right %}
+    {{ parent() }}
+{% endblock %}
+
+
+
+{% block content %}
+	{{ parent() }}
+    <div class="lineup--workstation">
+    	<div class="lineup_actor--full">
+            {% include "block/workstation/selectform.twig" %}
+        </div>
+    </div>
+{% endblock %}

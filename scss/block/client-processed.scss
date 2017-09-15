@@ -1,0 +1,49 @@
+.client-processed {
+    @extend 
+        .board;
+    .form-input-counter {
+        &:hover {
+            background: #fff;
+            cursor: pointer;
+            a.increment {
+                @extend 
+                    .btn--success;
+            }
+        }
+        .input-counter {
+            margin-right:   1em;
+            display:        inline-block;
+            float:          left;
+            &:hover {
+                a {
+                    background-color: inherit;
+                    border-color: inherit;
+                    color: inherit;
+                }
+            }
+            a.increment, a.decrement {
+                cursor: pointer;
+                padding: 0.3em 0.5em;
+                &:hover {
+                    @extend 
+                    .btn--success;
+                    text-decoration: none;
+                }
+            }
+            input {
+                color: #000;
+            }
+        }
+        .form-input {
+            background-color: transparent;
+            border:     0 none;
+            margin:     0;
+            min-width:  0;
+            padding:    0;
+            text-align: center;
+            width:      1.4em;
+        }
+    }
+}
+
+

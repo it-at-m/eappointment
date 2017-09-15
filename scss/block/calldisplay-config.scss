@@ -1,0 +1,35 @@
+.calldisplay-config {
+  @extend .board;
+
+  form {
+    @extend .form--horizontal;
+
+    .form-group > .controls label {
+      display: inline-block;
+    }
+  }
+
+}
+
+.calldisplay-config__item {
+  label {
+    display: inline-block;
+
+    width: 60%;
+    text-align: left;
+    margin-left: 0;
+  }
+
+  span {
+    width: 40%;
+    display: inline-block;
+    text-align: right;
+  }
+
+  select {
+    display: inline-block;
+    min-width: 60%;
+
+    font-weight: 400;
+  }
+}

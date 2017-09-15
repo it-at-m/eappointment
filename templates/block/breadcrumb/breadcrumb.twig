@@ -1,0 +1,10 @@
+{% block breadcrumb %}
+
+                {% if block('breadcrumb_items') is not empty -%}
+                <ul class="breadcrumb">
+                    {%- block breadcrumb_items %}{% endblock %}
+                </ul>
+                {%- endif %}
+
+{% endblock %}
+

@@ -1,0 +1,32 @@
+{% extends "layout/main.twig" %}
+
+{% block content %}
+    {% set exceptionData = {'exceptionData': ''} %}
+    {% if exceptiondata %}{% set exceptionData = {'exceptionData': exceptiondata} %}{% endif %}
+    {% if data %}{% set exceptionData = data %}{% endif %}
+
+    {% embed "block/scaffholding/board.twig" with {
+        'class': 'exception',
+        'data': exceptionData,
+        'reload': reload
+    } %}
+
+        {% block board_title %}Es ist ein Fehler aufgetreten.{% endblock %}
+        {% block board_body %}
+            <h2>
+                {% trans title %}
+            </h2>
+            <p>
+                {% trans message %}
+            </p>
+            {% if showlinks %}
+            <div class="form-actions">
+                {% for link, name in showlinks %}
+                	<a class="btn right" href="{{ urlGet(link) }}">{% trans name %}</a>
+                {% endfor %}
+            </div>
+            {% endif %}
+        {% endblock %}
+    {% endembed %}
+
+{% endblock %}

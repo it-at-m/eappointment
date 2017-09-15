@@ -1,0 +1,56 @@
+{#
+ #    This is a superglobal skeleton for scaffholding all kind of blocks called "board".
+ #    Be careful when edit this file
+ #}
+
+{% if class is empty %}{% set class = 'board' %}{% endif %}
+{% if data %}
+    {% if class != "exception" %}
+        {% set dataprop = "" %}
+        {% for key, value in data %}
+            {% set dataprop = dataprop ~ " data-" ~ key ~ "=" ~ value %}
+        {% endfor %}
+    {% endif %}
+{% endif %}
+
+{% block board %}
+
+<!-- start: board {{ class }} -->
+
+                        <div class="{{ class }}"{{ dataprop|raw }}
+                        {% if class == "exception" %}
+                            data-exception-errorlist = "{{ data|json_encode() }}" %}
+                        {% endif %}
+                        {% if reload %}
+                            data-reload = {{ reload }}
+                        {% endif %}>
+                            <div class="header">
+                                <h2 class="title">
+                                    {% block board_title -%}{%- endblock %}
+                                </h2>
+                                {% if block('board_title_aside') is not empty %}
+                                <div class="aside">
+                                    {% block board_title_aside %}{% endblock %}
+                                </div>
+                                {%- endif %}
+                                {% if block('board_header_right') is not empty %}
+                                <div class="header_right">
+                                    {% block board_header_right %}{% endblock %}
+                                </div>
+                                {%- endif %}
+
+                            </div>
+                            <div class="body">
+                                {% block board_body -%}{%- endblock %}
+                            </div>
+                            {% if block('board_footer') is not empty %}
+                            <div class="footer">
+                                {% block board_footer -%}{%- endblock %}
+                            </div>
+                            {%- endif %}
+
+                        </div>
+
+<!-- /end: board {{ class }} -->
+
+{% endblock %}

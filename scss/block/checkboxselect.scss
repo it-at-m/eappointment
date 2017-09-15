@@ -1,0 +1,40 @@
+.checkboxselect,
+.checkboxdeselect {
+    .inner {
+        width:                  auto;
+        height:                 10em;
+        border:                 solid 1px $greyBorder;
+        overflow:               auto;
+        color:                  $black;
+        background-color:       $white;
+    }
+    label {
+        display:            block;
+    }
+    .clear-list {
+        display:            block;
+        text-align:         right;
+        font-size:          0.85em;
+        cursor:             pointer;
+    }
+}
+
+.checkboxdeselect {
+    .inner {
+        background-color:       $grey;
+    }
+    input[type=checkbox]:checked {
+        display:            none;
+        + span::before {
+            color:          #BF0D1C;
+            content:        "⨯";
+            display:        inline-block;
+            font-family:    "Neo";
+            font-size:      1.7em;
+            height:         1em;
+            line-height:    0.9em;
+            vertical-align: middle;
+            width:          0.9em;
+        }
+    }
+}

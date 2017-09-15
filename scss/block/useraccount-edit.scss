@@ -1,0 +1,11 @@
+.useraccount-edit {
+    @extend 
+        .board;
+    form {
+        @extend 
+            .form--horizontal;
+    },
+    form select {
+    	height: $multipleSelectHeight
+    }
+}

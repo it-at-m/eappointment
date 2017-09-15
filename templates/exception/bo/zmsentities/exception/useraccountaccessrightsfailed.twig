@@ -1,0 +1,21 @@
+{% extends "layout/main.twig" %}
+{% block title %}Sie sind nicht eingeloggt{% endblock %}
+
+{% block headline %}
+    {{ snippets.headline1("Fehlende Rechte") }}
+{% endblock %}
+{% block content %}
+
+    <div class="textile">
+                <h2>
+                    Es ist ein Fehler aufgetreten.
+                </h2>
+                <p>
+                Um diesen Benutzer zu bearbeiten fehlen Ihnen die notwendigen Rechte.
+                </p>
+                <ul>
+                    <li><a href="{{ urlGet('useraccount', {}, {}) }}">Zurück zur Nutzerliste</a></li>
+                </ul>
+            </div>
+
+{% endblock %}

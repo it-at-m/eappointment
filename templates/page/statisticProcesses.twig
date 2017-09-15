@@ -1,0 +1,13 @@
+{% extends "layout/main.twig" %}
+{% block content %}
+<div class="counter-view" data-includeurl="{{ includeUrl() }}" data-selected-date="{{ selectedDate }}" data-selected-process="{{ waitingnumber }}" data-selected-time="{{ selectedTime }}">
+        <div class="lineup lineup--statistic">
+            <div class="lineup_actor--left">
+            {% include "block/statistic/selectDateForm.twig" %}
+            </div>
+            <div class="lineup_actor--right">
+            {% include "block/statistic/departmentlist.twig" %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

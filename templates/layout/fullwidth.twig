@@ -1,0 +1,42 @@
+{% use "block/header/pageheader.twig" %}
+{% use "block/breadcrumb/breadcrumb.twig" %}
+{% use "block/navigation/navigation.twig" %}
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>{{ title }} - Zeitmanagementsystem</title>
+    <link rel="stylesheet" type="text/css" href="{{ includeUrl() }}/_css/admin.css" />
+</head>
+<body>
+    <div id="main">
+        
+        <div id="main-header">
+            {% block pageheader -%}
+                {{ parent() }}
+            {%- endblock %}
+        </div>
+        
+        <div id="main-body">
+            <div id="mainbar" class="fullwidth"><!-- fullwidth, no sidebar -->
+                {% block breadcrumb -%}
+                    {{ parent() }}
+                {%- endblock %}
+
+                {% block content -%}
+                    {# pages placed here #}
+                {%- endblock %}
+
+            </div>
+        </div>
+        
+        <div id="main-footer">
+            <p class="version"><small>Version: 0.01.00</small></p>
+        </div>
+        
+    </div>
+    <script type="text/javascript" src="{{ includeUrl() }}/_js/index.js"></script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+{%
+    include "exception/bo/layout.twig" with {
+		"message":"Der vorliegende Browser war noch im System eingeloggt. Sie können die Sitzung weiter verwenden oder sich ausloggen.",
+		"title":"Sie sind noch eingeloggt",
+        "exceptionData":"user-already-loggedin",
+    	"showlinks":{
+			'logout':'Aktuelles Nutzerkonto ausloggen',
+			'workstationSelect':'Weiter zur Auswahl des Standortes',
+        }
+    }
+%}

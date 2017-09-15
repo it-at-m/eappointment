@@ -1,0 +1,8 @@
+.welcome {
+    @extend 
+        .board;
+    .logo {
+        height:         1.3em;
+        vertical-align: text-bottom;
+    }
+}

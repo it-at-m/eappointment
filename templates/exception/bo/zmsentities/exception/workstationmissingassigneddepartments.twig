@@ -1,0 +1,21 @@
+{% extends "layout/main.twig" %}
+{% block title %}Fehler{% endblock %}
+
+{% block headline %}
+    {{ snippets.headline1("Sie konnten nicht eingeloggt werden.") }}
+{% endblock %}
+{% block content %}
+
+    <div class="textile">
+                <h2>
+                    Es ist ein Fehler aufgetreten.
+                </h2>
+                <p>
+                Es konnte keine zugewiesene Behörde gefunden werden oder es wurden keine Standorte für diese Behörden angelegt.
+                </p>
+                <ul>
+                    <li><a href="{{ urlGet('index', {}, {}) }}">Zum Login</a></li>
+                </ul>
+            </div>
+
+{% endblock %}

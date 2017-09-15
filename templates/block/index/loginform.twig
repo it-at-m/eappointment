@@ -1,0 +1,49 @@
+{% embed "block/scaffholding/board.twig" with {'class': 'loginform'} %}
+        {% from 'element/helper/form.twig' import formgroup, formbutton, inputfield %}
+
+        {% block board_title %}
+            {{ title }}
+        {% endblock %}
+
+
+        {% block board_body %}
+            <form action="./" method="POST">
+                <fieldset>
+                    {{ formgroup(
+                        {"label": "Nutzername:", "errors": loginData.loginName.messages},
+                        [{
+                            "type":"input",
+                            "parameter": {
+                                "name": "loginName",
+                                "maxlength": "20",
+                                "accesskey": "n",
+                            }
+                        }]
+                    ) }}
+
+                    {{ formgroup(
+                        {"label": "Passwort:", "errors": loginData.password.messages},
+                        [{
+                            "type":"input",
+                            "parameter": {
+                                "type": "password",
+                                "name": "password",
+                                "maxlength": "20",
+                                "accesskey": "p",
+                            }
+                        }]
+                    ) }}
+                </fieldset>
+                {{ inputfield({ "name":"login_form_validate", "type":"hidden", "value":"1" }) }}
+                <div class="form-actions">
+                    {{ formbutton({ "type":"login", "label":"Anmelden", "value": "Anmelden" }) }}
+                </div>
+            </form>
+        {% endblock %}
+
+
+        {% block board_footer %}
+            Wenden Sie sich bei vergessenen Passwörtern bitte an Ihren lokalen Anwendungssystembetreuer.
+        {% endblock %}
+
+{% endembed %}

@@ -1,0 +1,38 @@
+.client-called {
+    @extend
+        .board_body--maxHeight,
+        .board;
+    .body {
+        @extend
+            .align-center;
+            min-height: 182px;
+        .title {
+            margin:         1em 0 1em 0;
+            font-size:      1.1em;
+            font-weight:    bold;
+        }
+    }
+    .form-actions {
+        margin-bottom:      0;
+    }
+}
+
+.client-called_button-skip {
+    @extend
+        .btn;
+}
+
+.client-called_button-abort {
+    @extend
+        .btn,
+        .btn--alert;
+}
+
+.client-called_button-success {
+    @extend
+        .btn--success,
+        .btn;
+    font-size:      1.5em;
+    line-height:    1.5em;
+    padding:        0.4em 1em 0.5em 1.1em;
+}

@@ -1,0 +1,29 @@
+{% block pageheader %}
+    {% from 'element/helper/form.twig' import formgroup, formbutton %}
+        <div class="left">
+            {% block pageheader_left -%}
+            <img alt="Logo" src="data:image/png;base64,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"/>
+            {%- endblock %}
+        </div>
+        <div class="middle">
+            {% block pageheader_middle -%}
+            <div class="header-scope">
+        		{% set scopeName = workstation.scope.contact.name %}
+        		{% if workstation.scope.contact.name|length > 30 %}
+        			{% set scopeName = workstation.scope.contact.name[:30] ~ "..." %}
+        		{% endif %}
+            	<div class="user-scope" title="{{ workstation.scope.contact.name }}">Standort: <strong>{{ scopeName }}</strong></div>
+            </div>
+            {%- endblock %}
+
+        </div>
+        <div class="right">
+            {% block pageheader_right -%}
+                <span class="user-name">👤
+                    <strong>{{ workstation.useraccount.id }}</strong>
+                </span>&nbsp;&nbsp;&nbsp;&nbsp;
+            <a href="{{ urlGet('logout', {'loginName' : workstation.loginName}, {}) }}" title="Abmelden">❎ Abmelden</a>
+            {%- endblock %}
+        </div>
+
+{% endblock %}

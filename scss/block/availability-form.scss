@@ -1,0 +1,14 @@
+.availability-form {
+  form {
+    @extend .form--horizontal;
+  }
+
+  h2.title:before {
+    content: "✎ ";
+    padding-right: 1em;
+  }
+
+  input[type=text][name=description] {
+    width: 100%;
+  }
+}

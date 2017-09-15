@@ -1,0 +1,11 @@
+.notification-form {
+    @extend 
+        .board;
+    form {
+        @extend 
+            .form--horizontal;
+        textarea.text {
+            min-height:     10em;
+        }
+    }
+}
