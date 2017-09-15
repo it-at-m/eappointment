@@ -1,0 +1,6 @@
+.cluster-form {
+    @extend .board;
+    form {
+        @extend .form--horizontal;
+    }
+}

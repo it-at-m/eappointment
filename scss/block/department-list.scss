@@ -1,0 +1,8 @@
+ul.department-list {
+    @extend 
+        .list-bare;
+    > li {
+    }
+    .department-list_title {
+    }
+}

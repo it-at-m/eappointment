@@ -1,0 +1,34 @@
+$canvasSidebarWidth:    15% !default;
+$canvasMainbarWidth:    85% !default;
+
+#main-body {
+    @extend 
+        .grid, 
+        .grid--rev;
+    #sidebar {
+        @extend 
+            .grid__item,  
+            .one-sixth, 
+            .portable--one-whole;
+        // we need more space in the content area, so overwrite the grid 
+        @include media-query(desk) {
+            width:  $canvasSidebarWidth; 
+        }
+    }
+    #mainbar {
+        @extend 
+            .grid__item, 
+            .five-sixths, 
+            .portable--one-whole;
+        &.fullwidth {
+            @extend .one-whole;
+        }
+        // we need more space in the content area, so overwrite the grid 
+        @include media-query(desk) {
+            width:  $canvasMainbarWidth;
+        }
+    }
+}
+
+
+

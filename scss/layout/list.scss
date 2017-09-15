@@ -1,0 +1,84 @@
+$formErrorColor:        #a94442 !default;
+
+/* UL */
+ul {
+    margin:                 0;
+    padding-left:           1.5em;
+    li {
+        margin:             0.1em 0;
+    }
+}
+
+/* OL */
+ol {
+    padding-left:           1em;
+}
+
+
+/* DL */
+dl {
+    @extend .list-dl;
+    dt {
+        @extend
+            .list-dl__title;
+    }
+    dd {
+        @extend
+            .list-dl__description;
+    }
+}
+
+.list-dl {
+    display:                block;
+}
+
+.list-dl__title {
+    font-weight:            bold;
+}
+
+.list-dl__description {
+    margin-left:            1em;
+    margin-bottom:          0.5em;
+}
+
+.list-dl--horizontal {
+    @extend .clearfix;
+    dt {
+        @extend .clearfix;
+        display:            inline-block;
+         margin-bottom:     0em;
+    }
+    dd {
+        @extend .clearfix;
+        display:            inline;
+        word-wrap:          break-word;
+        margin-left:        0.1em;
+        margin-bottom:      0.5em;
+    }
+}
+
+.list-dl--compact {
+    dt, dd {
+        line-height:        1.25em;
+        display:            block;
+    }
+    dt {
+        font-size:          $fontSizeLabels;
+        line-height:        1.2em;
+        //float:            left;
+        //margin-right:     0.5em;
+    }
+    dd {
+        margin-left:        0;
+        margin-bottom:      0.5em;
+    }
+}
+
+.list-error {
+    li {
+        color:              $formErrorColor;
+        font-size:          0.9em;
+        line-height:        1.2em;
+        letter-spacing:     normal;
+    }
+}

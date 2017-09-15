@@ -1,0 +1,8 @@
+ul.cluster-list {
+    @extend 
+        .list-bare;
+    > li {
+    }
+    .cluster-list_title {
+    }
+}

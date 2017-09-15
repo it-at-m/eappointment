@@ -1,0 +1,74 @@
+{% use "block/header/pageheader.twig" %}
+{% use "block/breadcrumb/breadcrumb.twig" %}
+{% use "block/navigation/navigation.twig" %}
+
+{% import "element/helper/snippets.twig" as snippets %}
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>{{ title }} - Zeitmanagementsystem</title>
+    <link rel="stylesheet" media="screen" type="text/css" href="{{ includeUrl() }}/_css/statistic.css" />
+    <link rel="stylesheet" media="print" type="text/css" href="{{ includeUrl() }}/_css/print.css" />
+</head>
+<body>
+    <div id="main">
+
+        <div id="main-header">
+            {% block pageheader %}
+                {{ parent() }}
+            {%- endblock %}
+        </div>
+
+        <div id="main-body">
+            <div id="mainbar">
+                {% block breadcrumb %}
+                    {{ parent() }}
+                {%- endblock %}
+
+                {% block headline %}{% endblock %}
+                {% block content %}
+                	{% block errors %}
+                        {% if block(error) is defined %}
+                            {{ block(error) }}
+                        {% endif %}
+                    {% endblock %}
+                    {% block notices %}
+                        {% if block(notice) is defined %}
+                            {{ block(notice) }}
+                        {% endif %}
+                    {% endblock %}
+                    {% block successes %}
+                        {% if block(notice) is defined %}
+                            {{ block(success) }}
+                        {% endif %}
+                    {% endblock %}
+                {% endblock %}
+
+            </div>
+            <div id="sidebar">
+                {% block navigation %}
+                    {{ parent() }}
+                    {% include "block/metalinks/metalinks.twig" %}
+                {%- endblock %}
+
+
+            </div>
+        </div>
+
+        <div id="main-footer">
+            <a href="{{ urlGet('changelog', {}, {}) }}" class="version" title="Änderungshistorie anzeigen"><small>Version {{ currentVersion() }}</small></a> | <a href="{{ urlGet('status', {}, {}) }}" class="version" title="Betriebsstatus des Systems"><small>Status</small></a>
+        </div>
+
+    </div>
+    <script type="text/javascript" src="{{ includeUrl() }}/_js/vendor.js"></script>
+    <script type="text/javascript" src="{{ includeUrl() }}/_js/index.js"></script>
+    {% block javascript %}
+    {%- endblock %}
+    {% if (debug)  %}
+    <!-- httplog --> {{ dumpHttpLog() }}
+    {% endif %}
+</body>
+</html>

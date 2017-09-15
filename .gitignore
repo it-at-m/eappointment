@@ -1,0 +1,12 @@
+vendor
+node_modules
+config.php
+**.swp
+.sass-cache
+.DS_Store
+bower_components
+cache/
+vendor.old
+vendor.update
+VERSION
+public/_tests

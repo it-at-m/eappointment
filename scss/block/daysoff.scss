@@ -1,0 +1,42 @@
+.daysoff-item {
+  .add-date-picker,
+  .react-datepicker__input-container,
+  .add-date-picker input {
+    width: 100%;
+  }
+
+  .add-date-picker input {
+    padding: $formItemBasePadding; 
+  }
+
+  margin-bottom: 1em;
+}
+
+.daysoff-item__name,
+.daysoff-item__date,
+.daysoff-item__delete {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.daysoff-item__date,
+.daysoff-item__delete {
+  padding-left: 1em;
+}
+
+.daysoff-item__name {
+  width: 50%;
+}
+
+.daysoff-item__date {
+  width: 30%;
+}
+
+.daysoff-item__delete {
+  width: 20%;
+}
+
+.daysoff__delete-button {
+  cursor: pointer;
+}
+

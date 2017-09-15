@@ -1,0 +1,30 @@
+{% block navigation %}
+    {% set rights = workstation.useraccount.rights %}
+
+    <div class="navigation">
+        <ul class="nav">
+            <li>
+                <h3 class="navigation__title">Statistik</h3>
+                <ul>
+                    {% if not workstation.scope.id %}
+                    <li>
+                            <a class="nav__item{% if menuActive == 'select' %} active{% endif %}" href="{{ urlGet('workstationSelect', {}, {}) }}">Standort auswählen</a>
+                    </li>
+                    {% endif %}
+                    {% if workstation.scope.id %}
+                        <li>
+                                <a class="nav__item{% if menuActive == 'processes' %} active{% endif %}" href="{{ urlGet('statisticProcesses', {}, {}) }}">Kundenstatistik</a>
+                        </li>
+                        <li>
+                                <a class="nav__item{% if menuActive == 'requests' %} active{% endif %}" href="{{ urlGet('statisticRequests', {}, {}) }}">Dienstleistungsstatistik</a>
+                        </li>
+                        <li>
+                                <a class="nav__item{% if menuActive == 'waitingtime' %} active{% endif %}" href="{{ urlGet('statisticWaitingTime', {}, {}) }}">Wartestatistik</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+{% endblock %}

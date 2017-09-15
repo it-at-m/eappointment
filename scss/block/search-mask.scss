@@ -1,0 +1,43 @@
+#mainbar .search-mask {
+    @extend 
+        .board;
+    form {
+        @extend 
+            .form--horizontal;
+        .form-group {
+            margin-bottom:  0;
+        }
+    }
+}
+
+#sidebar .search-mask {
+    background-color:       $grey;
+    border:                 1px solid $greyDark;
+    margin-bottom:          $gridGutter;
+    .body {
+        padding:            $baseBoxElementPadding;
+        border:             0 none;
+        background-color:   transparent;
+    }
+    .header {
+        padding:            0;
+        margin:             0;
+        background-color:   transparent;
+        .title {
+            @extend 
+                .navigation__title;
+        }
+    }
+    form {
+        margin-bottom:      0.5em;
+    }
+    .form-group {
+        margin-bottom:      0;
+    }
+    .form-actions {
+        margin:             0em;
+    }
+    .button-submit {
+        margin:             0.3em 0.1em 0 0;
+    }
+}

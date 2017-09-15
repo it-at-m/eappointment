@@ -1,0 +1,32 @@
+{% extends "layout/main.twig" %}
+{% use "block/header/pageheader.twig" %}
+{% use "block/navigation/navigation.twig" %}
+{% block title %}Anmeldung{% endblock %}
+{% block pageheader %}
+    {{ parent() }}
+{% endblock %}
+
+{% block navigation -%}
+    {% include "block/navigation/index.twig" %}
+    {% include "block/metalinks/metalinks.twig" %}
+{%- endblock %}
+
+{% block pageheader_middle %}
+    <span class="sitename">Statistik - Anmeldung für Behördenmitarbeiter</span>
+{% endblock %}
+
+{% block pageheader_right %}
+{% endblock %}
+
+{% block content %}
+	{{ parent() }}
+    <div class="lineup--login">
+        <div class="lineup_actor--left">
+            {% include "block/index/welcome.twig" %}
+        </div>
+        <div class="lineup_actor--right">
+            {% include "block/index/loginform.twig" %}
+        </div>
+    </div>
+    {% include "block/index/versioninfo.twig" %}
+{% endblock %}

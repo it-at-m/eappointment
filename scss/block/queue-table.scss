@@ -1,0 +1,124 @@
+$queuePastColor:                #E6E6E6 !default;
+$queueFutureColor:              #74CAF0 !default;
+$queueMissedColor:              $red !default;
+
+.queue-table {
+    @extend
+        .board,
+        .board--noBodyPadding;
+
+    > .body {
+      min-height: 312px;
+    }
+
+    > .header {
+        .title {
+            margin-right:           0.7em;
+        }
+        .switchcluster {
+            max-width:              24em;
+            margin:                 0;
+        }
+    }
+    table {
+        @extend
+            .table,
+            .table--cells;
+        margin-bottom:          $gridGutter;
+        thead {
+            th {
+                border:         0 none;
+            }
+        }
+        td {
+            vertical-align:     middle;
+        }
+        td.nowrap {
+            white-space:    nowrap;
+        }
+        tbody {
+            tr:first-child {
+                .queue-status {
+                    border-top:     1px solid $greyBorder;
+                }
+            }
+        }
+        .queue-status {
+            border:             0 none;
+            padding:            0.2em;
+        }
+
+        .queue-table-amendment-time {
+            font-size: 0.8em;
+            color: #999;
+            &:before {
+                content: '(';
+            }
+            &:after {
+                content: ')';
+            }
+            position: relative;
+            top: 1.5em;
+            margin-top: -1.5em;
+        }
+
+        tr.past {
+            .queue-status {
+                background-color:       $queuePastColor;
+            }
+            + tr.future {
+                .queue-status {
+                    border-top:         1px solid $white;
+                    position:           relative;
+                    /*
+                    &:before {
+                        display:            block;
+                        width:              10px;
+                        height:             10px;
+                        content:            "🕓";
+                        left:               -16px;
+                        position:           absolute;
+                        top:                -10px;
+                        color:              $greyDark;
+                    }
+                    */
+                }
+            }
+        }
+        tr.future {
+            background-color:       $white;
+            .queue-status {
+                background-color:   $queueFutureColor;
+            }
+        }
+        tr.missed {
+            background-color:       $queuePastColor;
+            color:                  #666666;
+            a {
+                color:              $linkColor;
+            }
+        }
+        &.queue-missed {
+            margin-top:             1em;
+            margin-bottom:          0;
+        }
+        tr.reserved {
+            background-color:       $disabledColorBackground;
+            opacity:                0.45;
+            color:                  #666666;
+            a {
+                color:              $fontInactiveColor;
+                pointer-events: none;
+                cursor: default;
+            }
+        }
+        tr.hide {
+            display:                none;
+        }
+    }
+    .form-actions {
+        > * {
+            margin-bottom:          0;
+        }
+    }
+}

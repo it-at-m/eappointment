@@ -1,0 +1,42 @@
+{% set showList = "complete-list" %}
+{% if shortchangelog %}
+{% set showList = "short-list" %}
+{% endif %}
+
+<div class="{{ showList }}">
+
+    <div class="last-changelog-items">
+        <div class="changelog-item">
+            <h3>Version 2.13.00 <small>(27. September 2017)</small></h3>
+            <p>Erste Version des überarbeiteten Zeitmanagementsystems. In den ersten Monaten werden sowohl das alte wie das neue System parallel betrieben. Ein Wechsel zwischen den Systemen ist jederzeit möglich, um die Eingewöhnung zu erleichtern. Folgende sichtbare Änderungen ergeben sich durch die neue Version:</p>
+            <ul>
+                <li><strong>Layout und Benuteroberfläche:</strong> <span>Das Layout wurde komplett überarbeitet. Bedienelemente wie Buttons und Formulare bleiben weitestgehend gleich. Über Änderungen in der Bedienung wird gesondert informiert.</span></li>
+                <li><strong>Login:</strong> <span>Der Login findet nun in zwei Schritten statt. Loggen Sie sich zuerst ein und auf der folgenden Seite wählen Sie nun Standort und Platz- oder Raum-Nummer aus.</span></li>
+                <li><strong>Aufruf von Kunden:</strong> <span>Der Aufruf eines Kunden erfolgt nun ohne Popup. Ein Wechsel der Seite ist während des Aufrufs möglich. Beachten Sie, dass vor einem Abmelden am System der Aufruf eines Kunden abeschlossen sein muss.</span></li>
+                <li><strong>Versand von E-Mail und SMS:</strong> <span>E-Mails und SMS können nur noch an eingetragene Kunden verschickt werden. Eine freie Eingabe einer Telefonnummer oder E-Mail-Adresse ist nicht mehr möglich.</span></li>
+                <li><strong>Notruf:</strong> <span>Ein Notruf kann nun ausgeblendet werden.</span></li>
+                <li><strong>Gruppierung von Dienstleistungen:</strong> <span>Die Auswahl von Dienstleistungen werden nun nach den aktuellen Themen aus dem Service-Portal gruppiert.</span></li>
+                <li><strong>Browser-Kompatibilität und Klang-Ereignisse:</strong> <span>Für das Abspielen von Klang-Ereignissen (Notruf, Aufrufbildschirm) wird kein Quicktime-Plugin mehr benötigt. Eine aktuelle Browser-Version wird vorausgesetzt.</span></li>
+                <li><strong>Öffnungszeiten:</strong> <span>Die Administration der Öffnungszeiten wurde komplett überarbeitet.</span></li>
+                <li><strong>Konfiguration Kiosk-System und Aufrufanlage:</strong> <span>Die Erstellung einer URL für ein Kiosk-System zur Ziehung von Wartenummern oder einer Aufrufanlage erfordert nun einen Login im System. Die fertige URL kann aber weiterhin kopiert und ohne Login genutzt werden.</span></li>
+                <li><strong>Templates für Kiosk-System und Aufrufanlage:</strong> <span>Es können nun aus einer Liste vorgefertigte Templates ausgewählt und innerhalb eines Standorts auch unterschiedliche Ansichten realisiert werden.</span></li>
+                <li><strong>Startseite des Kiosk-System:</strong> <span>Für ein Kiosk-System können nun abweichende Startseiten angegeben werden. Damit ist eine Integration in digitale Informationssysteme möglich.</span></li>
+                <li><strong>Berechnung der Wartezeit:</strong> <span>Die Berechnung der Wartezeit erfolgt nun durch eine andere Formel und es kann zu Abweichungen kommen. Passen Sie falls nötig in den Standort-Einstellungen die "Durchschnittliche Bearbeitungszeit" an.</span></li>
+                <li><strong>Suche:</strong> <span>Durch Eingabe einer Vorgangsnummer kann nun eine kurze Historie dieser Nummer eingesehen werden.</span></li>
+                <li><strong>Externe Datenquellen:</strong> <span>Die Dienstleistungsdatenbank der Berliner Behörden ist nun nicht mehr die einzige Datenquelle. Einstellungen zu Standorten erfordern nun die Auswahl einer vorgegebenen Datenquelle.</span></li>
+                <li><strong>Darstellung von Dienstleistungen:</strong> <span>Voraussetzungen und erforderliche Unterlagen werden jetzt wie in der Dienstleistungsdatenbank getrennt dargestellt (z.B. in Terminbestätigungen).</span></li>
+                <li><strong>Fehlerbehebung Internetbuchung:</strong> <span>Eine Fehlbuchung eines Termins durch eine gleichzeitige Buchung über mehrere Tabs im Browser ist nun nicht mehr möglich.</span></li>
+                <li><strong>Systemumgebung:</strong> <span>Softwarekomponenten sowie Servertechnik wurden umfangreich erneuert.</span></li>
+            </ul>
+        </div>
+    </div>
+
+{% if not shortchangelog %}
+
+    <div class="changelog-item">
+        <h3>Version 1.6.12 <small>(2017)</small></h3>
+        <p>Letzte Version des Vorgänger-Systems.</p>
+    </div>
+
+{% endif %}
+</div>
