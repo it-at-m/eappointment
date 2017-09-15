@@ -14,21 +14,6 @@ class Application extends \BO\Slim\Application
     const IDENTIFIER = 'Zmsapi';
 
     /**
-     * @var String VERSION_MAJOR
-     */
-    const VERSION_MAJOR = '2';
-
-    /**
-     * @var String VERSION_MINOR
-     */
-    const VERSION_MINOR = '10';
-
-    /**
-     * @var String VERSION_PATCH
-     */
-    const VERSION_PATCH = '0';
-
-    /**
      * @var Bool DEBUG
      */
     const DEBUG = false;
