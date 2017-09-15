@@ -66,6 +66,38 @@ class TicketprinterTest extends Base
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
+    public function testFromButtonListScopeFailed()
+    {
+        $this->expectException('\BO\Zmsapi\Exception\Ticketprinter\UnvalidButtonList');
+        $this->expectExceptionCode(428);
+        $this->render([], [
+            '__body' => '{
+                "buttonlist": "s139",
+                "enabled": true,
+                "hash": "ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2",
+                "id": 1,
+                "lastUpdate": 1447925326000,
+                "name": "Eingangsbereich links"
+            }'
+        ], []);
+    }
+
+    public function testFromButtonListClusterFailed()
+    {
+        $this->expectException('\BO\Zmsapi\Exception\Ticketprinter\UnvalidButtonList');
+        $this->expectExceptionCode(428);
+        $this->render([], [
+            '__body' => '{
+                "buttonlist": "c4",
+                "enabled": true,
+                "hash": "ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2",
+                "id": 1,
+                "lastUpdate": 1447925326000,
+                "name": "Eingangsbereich links"
+            }'
+        ], []);
+    }
+
     public function testUnvalidInput()
     {
         $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
