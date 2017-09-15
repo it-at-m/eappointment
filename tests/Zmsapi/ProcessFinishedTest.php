@@ -28,7 +28,6 @@ class ProcessFinishedTest extends Base
 
         $process = json_decode($this->readFixture("GetProcess_10030.json"), 1);
         $process['status'] = 'finished';
-        $process['clients'][0]['surveyAccepted'] = 1;
         $response = $this->render([], [
             '__body' => json_encode($process)
         ], []);

@@ -36,7 +36,7 @@ class ProcessDeleteQuick extends ProcessDelete
         $this->writeMails($request, $process);
         $status = (new Process)->writeBlockedEntity($process);
         if (! $status) {
-            throw new Exception\Process\ProcessDeleteFailed();
+            throw new Exception\Process\ProcessDeleteFailed(); // @codeCoverageIgnore
         }
         $message = Response\Message::create($request);
         $message->data = $process;
