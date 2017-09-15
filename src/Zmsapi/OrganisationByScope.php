@@ -32,7 +32,7 @@ class OrganisationByScope extends BaseController
         }
         $organisation = (new Query())->readByScopeId($scope->id, $resolveReferences);
 
-        if (! $organisation) {
+        if (! $organisation->hasId()) {
             throw new Exception\Organisation\OrganisationNotFound();
         }
 
