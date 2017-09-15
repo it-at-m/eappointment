@@ -6,16 +6,19 @@ DIR=$(dirname $($REALPATH ${BASH_SOURCE[0]}))
 ROOT=$($REALPATH $DIR/..)
 LOG=$ROOT/schemavalidation.log
 
-echo "Testing application"
+echo "Testing json schemas"
 touch $LOG
 for filename in $ROOT/schema/*.json
 do
     echo "Testing $filename" >> $LOG
-    ($ROOT/vendor/bin/validate-json $filename $ROOT/tests/jsonschema4.json >> $LOG)|| (cat $LOG && echo "Validating $filename failed" && exit 1)
+    ($ROOT/vendor/bin/json-guard check -q $filename >> $LOG)|| (cat $LOG && echo "Validating $filename failed" && exit 1)
 done;
 rm $LOG
 cd $ROOT
 
+echo "Testing coding standards"
 $ROOT/vendor/bin/phpcs --standard=psr2 src/ || exit 1
+echo "Testing code quality"
 $ROOT/vendor/bin/phpmd src/ text phpmd.rules.xml || exit 1
+echo "Testing units"
 $ROOT/vendor/bin/phpunit || exit 1

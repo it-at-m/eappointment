@@ -12,30 +12,36 @@ class Validator extends \League\JsonGuard\Validator
 
     protected $locale;
 
+    protected $validator;
+
     public function __construct($data, Schema $schemaObject, $locale)
     {
         $this->schemaData = $data;
         $this->schemaObject = $schemaObject;
         $this->locale = $locale;
-        parent::__construct($data, $schemaObject->toJsonObject());
+        $ruleset = new \League\JsonGuard\RuleSet\DraftFour();
+        $ruleset->set('type', Extensions\CoerceType::class);
+        $this->validator = new \League\JsonGuard\Validator($data, $schemaObject->toJsonObject(), $ruleset);
     }
 
     public function isValid()
     {
-        return $this->passes();
+        return $this->validator->passes();
     }
 
     public function getErrors()
     {
         $errorsReducedList = array();
-        $errors = $this->errors();
+        $errors = $this->validator->errors();
         foreach ($errors as $error) {
             $errorsReducedList[] = new ValidationError(
                 $this->getCustomMessage($error),
-                $error->getCode(),
-                $error->getValue(),
+                $error->getKeyword(),
+                $error->getParameter(),
+                $error->getData(),
                 $this->getTranslatedPointer($error),
-                $error->getConstraints()
+                $error->getSchema(),
+                $error->getSchemaPath()
             );
         }
         return $errorsReducedList;
@@ -44,28 +50,28 @@ class Validator extends \League\JsonGuard\Validator
     public function getCustomMessage(ValidationError $error)
     {
         $message = null;
-        foreach (array_keys($error->getConstraints()) as $constraint) {
-            $property = $this->schemaObject->getPropertyByPath($error->getPointer());
-            $property = new \BO\Zmsentities\Helper\Property($property);
-            $message = $property['x-locale'][$this->locale]->messages[$constraint]->get();
-        }
+        $property = new \BO\Zmsentities\Helper\Property($error->getSchema());
+        $message = $property['x-locale'][$this->locale]->messages[$error->getKeyword()]->get();
         return ($message) ? $message : $error->getMessage();
     }
 
     public function getOriginPointer(ValidationError $error)
     {
-        $pointer = explode('/', $error->getPointer());
-        $pointer = (isset($pointer[1])) ? $pointer[1] : $pointer[0];
-        return $pointer;
+        $pointer = explode('/', $error->getSchemaPath());
+        return (isset($pointer[1])) ? $pointer[1] : $pointer[0];
     }
 
+	/**
+     * on error see merge conflict with c05b7e5fca6b52fc8d0936f4fbb653f3cad8f06b
+     */
     public function getTranslatedPointer(ValidationError $error)
     {
-        $pointer = [];
-        $property = $this->schemaObject->getPropertyByPath($error->getPointer());
-        $property = new \BO\Zmsentities\Helper\Property($property);
-        $pointer['origin'] = $this->getOriginPointer($error);
-        $pointer['translated'] = $property['x-locale'][$this->locale]->pointer->get($this->getOriginPointer($error));
-        return $pointer;
+        $property = new \BO\Zmsentities\Helper\Property($error->getSchema());
+        return $property['x-locale'][$this->locale]->pointer->get($this->getOriginPointer($error));
+    }
+
+    public function registerFormatExtension($name, $extension)
+    {
+        return $this->validator->getRuleset()->get('format')->addExtension($name, $extension);
     }
 }
