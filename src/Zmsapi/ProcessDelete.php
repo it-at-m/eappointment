@@ -32,7 +32,7 @@ class ProcessDelete extends BaseController
         $this->writeMails($request, $process);
         $processDeleted = (new Process)->deleteEntity($args['id'], $args['authKey']);
         if (! $processDeleted || ! $processDeleted->hasId()) {
-            throw new Exception\Process\ProcessDeleteFailed();
+            throw new Exception\Process\ProcessDeleteFailed(); // @codeCoverageIgnore
         }
         $message = Response\Message::create($request);
         $message->data = $processDeleted;
