@@ -36,7 +36,6 @@ class ProcessReserve extends BaseController
             $slotsRequired = 0;
             $slotType = 'public';
         }
-
         $process = (new Process)->readSlotCount($process);
         $process = ProcessStatusFree::init()->writeEntityReserved($process, \App::$now, $slotType, $slotsRequired);
 
