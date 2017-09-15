@@ -54,7 +54,7 @@ class WorkstationLogin extends BaseController
             //to avoid commit on unit tests, is there a better solution?
             $noCommit = $validator->getParameter('nocommit')->isNumber()->setDefault(0)->getValue();
             if (!$noCommit) {
-                \BO\Zmsdb\Connection\Select::writeCommit();
+                \BO\Zmsdb\Connection\Select::writeCommit(); // @codeCoverageIgnore
             }
             $exception = new \BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn();
             $exception->data = $workstation;

@@ -98,6 +98,22 @@ class TicketprinterTest extends Base
         ], []);
     }
 
+    public function testDisabledTicketprinter()
+    {
+        $this->expectException('\BO\Zmsapi\Exception\Ticketprinter\TicketprinterNotEnabled');
+        $this->expectExceptionCode(200);
+        $this->render([], [
+            '__body' => '{
+                "buttonlist": "c4",
+                "enabled": false,
+                "hash": "ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2",
+                "id": 1,
+                "lastUpdate": 1447925326000,
+                "name": "Eingangsbereich links"
+            }'
+        ], []);
+    }
+
     public function testUnvalidInput()
     {
         $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');

@@ -17,6 +17,17 @@ class WorkstationLoginTest extends Base
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
+    public function testAuthKeyFound()
+    {
+        $this->expectException('\BO\Zmsapi\Exception\Useraccount\AuthKeyFound');
+        $this->expectExceptionCode(200);
+        $this->setWorkstation();
+        $this->render([], [
+            '__body' => $this->readFixture('GetUseraccount.json'),
+            'nocommit' => 1
+        ], []);
+    }
+
     public function testAlreadyLoggedIn()
     {
         $this->expectException('\BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn');
