@@ -5,12 +5,15 @@ namespace BO\Zmsapi\Cli;
 use Ulrichsg\Getopt\Getopt;
 use Ulrichsg\Getopt\Option;
 
+/**
+ * @codeCoverageIgnore
+ *
+ */
 class Config extends Base
 {
 
     /**
      * @SuppressWarnings(Parameter)
-     * @codeCoverageIgnore
      *
      */
     public function cli(array $argv, \League\CLImate\CLImate $climate)
