@@ -1,4 +1,4 @@
-# ZMS Administration
+# ZMS Statistic
 
 This application offers an administrative web frontend for statistics.
 
