@@ -293,12 +293,13 @@ class Availability extends Schema\Entity
     {
         $now = Helper\DateTime::create($now);
         $availabilityStart = Helper\Property::create($this)->bookable->startInDays->get();
+        $time = $this->getStartDateTime()->format('H:i:s');
         if (null !== $availabilityStart) {
-            return $now->modify('+' . $availabilityStart . 'days');
+            return $now->modify('+' . $availabilityStart . 'days')->modify($time);
         }
         $scopeStart = Helper\Property::create($this)->scope->preferences->appointment->startInDaysDefault->get();
         if (null !== $scopeStart) {
-            return $now->modify('+' . $scopeStart . 'days');
+            return $now->modify('+' . $scopeStart . 'days')->modify($time);
         }
         throw new \BO\Zmsentities\Exception\ProcessBookableFailed(
             "Undefined start time for booking, try to set the scope properly"
@@ -315,13 +316,14 @@ class Availability extends Schema\Entity
     public function getBookableEnd(\DateTimeInterface $now)
     {
         $now = Helper\DateTime::create($now);
-        $availabilityStart = Helper\Property::create($this)->bookable->endInDays->get();
-        if (null !== $availabilityStart) {
-            return $now->modify('+' . $availabilityStart . 'days');
+        $availabilityEnd = Helper\Property::create($this)->bookable->endInDays->get();
+        $time = $this->getEndDateTime()->format('H:i:s');
+        if (null !== $availabilityEnd) {
+            return $now->modify('+' . $availabilityEnd . 'days')->modify($time);
         }
-        $scopeStart = Helper\Property::create($this)->scope->preferences->appointment->endInDaysDefault->get();
-        if (null !== $scopeStart) {
-            return $now->modify('+' . $scopeStart . 'days');
+        $scopeEnd = Helper\Property::create($this)->scope->preferences->appointment->endInDaysDefault->get();
+        if (null !== $scopeEnd) {
+            return $now->modify('+' . $scopeEnd . 'days')->modify($time);
         }
         throw new \BO\Zmsentities\Exception\ProcessBookableFailed(
             "Undefined end time for booking, try to set the scope properly"
@@ -330,24 +332,37 @@ class Availability extends Schema\Entity
 
     /**
      * Check, if the dateTime contains is within the bookable range (usually for public access)
+     * The current time is used to compare the start Time of the availability
      *
      * @param \DateTimeInterface $dateTime
      * @param \DateTimeInterface $now relative time to compare booking settings
      *
      * @return Bool
      */
-    public function isBookable(\DateTimeInterface $dateTime, \DateTimeInterface $now)
+    public function isBookable(\DateTimeInterface $bookableDate, \DateTimeInterface $now)
     {
-        $dateTime = Helper\DateTime::create($dateTime);
-        $start = $this->getBookableStart($now);
-        $end = $this->getBookableEnd($now);
-        if ($dateTime->getTimestamp() < $start->getTimestamp()) {
-            //error_log($dateTime->format('c').'<'.$start->format('c'). " " . $this);
+        $bookableCurrentTime = $bookableDate->modify($now->format('H:i:s'));
+            Helper\DateTime::create($bookableDate)->getTimestamp() + Helper\DateTime::create($now)->getSecondsOfDay();
+        $startDate = $this->getBookableStart($now)->modify('00:00:00');
+        if ($bookableCurrentTime->getTimestamp() < $startDate->getTimestamp()) {
+            //error_log("START " . $bookableCurrentTime->format('c').'<'.$startDate->format('c'). " " . $this);
             return false;
         }
-        if ($dateTime->getTimestamp() > $end->getTimestamp()) {
-            //error_log($dateTime->format('c').'>'.$end->format('c'). " " . $this);
+        $endDate = $this->getBookableEnd($now)->modify('23:59:59');
+        if ($bookableCurrentTime->getTimestamp() > $endDate->getTimestamp()) {
+            //error_log("END " . $bookableCurrentTime->format('c').'>'.$endDate->format('c'). " " . $this);
             return false;
+        }
+        if ($bookableDate->format('Y-m-d') == $endDate->format('Y-m-d')) {
+            // Avoid releasing all appointments on midnight, allow smaller contingents distributed over the day
+            $delayedStart = $this->getBookableEnd($now)->modify($this->getStartDateTime()->format('H:i:s'));
+            if ($bookableCurrentTime->getTimestamp() < $delayedStart->getTimestamp()) {
+                //error_log(
+                //    sprintf("DELAY %s<%s", $bookableCurrentTime->format('c'), $delayedStart->format('c'))
+                //    ." $this"
+                //);
+                return false;
+            }
         }
         return true;
     }
