@@ -158,7 +158,7 @@ class AvailabilityTest extends EntityCommonTests
 
         try {
             $entity->bookable['endInDays'] = null;
-            $entity->isBookable($time, $time);
+            $entity->isBookable($time->modify('+7 days'), $time);
             $this->fail("Expected exception ProcessBookableFailed not thrown");
         } catch (\BO\Zmsentities\Exception\ProcessBookableFailed $exception) {
             $this->assertEquals(
@@ -169,7 +169,7 @@ class AvailabilityTest extends EntityCommonTests
         $entity->bookable['endInDays'] = $endInDays;
         try {
             $entity->bookable['startInDays'] = null;
-            $entity->isBookable($time, $time);
+            $entity->isBookable($time->modify('+7 days'), $time);
             $this->fail("Expected exception ProcessBookableFailed not thrown");
         } catch (\BO\Zmsentities\Exception\ProcessBookableFailed $exception) {
             $this->assertEquals(
