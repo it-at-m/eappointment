@@ -25,7 +25,7 @@ class ScopeList extends BaseController
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $scopeList = (new Query())->readList($resolveReferences);
         if (0 == $scopeList->count()) {
-            throw new Exception\Scope\ScopeNotFound();
+            throw new Exception\Scope\ScopeNotFound(); // @codeCoverageIgnore
         }
         if ((new Helper\User($request))->hasRights()) {
             (new Helper\User($request))->checkRights('scope');
