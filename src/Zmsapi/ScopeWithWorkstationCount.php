@@ -25,8 +25,7 @@ class ScopeWithWorkstationCount extends BaseController
         $scope = (new Scope)->readWithWorkstationCount($args['id'], \App::$now, $resolveReferences);
         if (! $scope->hasId()) {
             throw new Exception\Scope\ScopeNotFound();
-        }
-        (new Helper\User($request, 2))->checkRights(
+        }(new Helper\User($request, 2))->checkRights(
             'scope',
             new \BO\Zmsentities\Useraccount\EntityAccess($scope)
         );

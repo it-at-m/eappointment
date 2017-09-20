@@ -25,8 +25,7 @@ class OrganisationUpdate extends BaseController
         $organisation = (new Query())->readEntity($args['id'], 1);
         if (! $organisation) {
             throw new Exception\Organisation\OrganisationNotFound();
-        }
-        (new Helper\User($request, 2))->checkRights(
+        }(new Helper\User($request, 2))->checkRights(
             'organisation',
             new \BO\Zmsentities\Useraccount\EntityAccess($organisation)
         );
