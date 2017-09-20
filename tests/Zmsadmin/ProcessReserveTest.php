@@ -52,6 +52,50 @@ class ProcessReserveTest extends Base
         $this->assertEquals(200, $response->getStatusCode());
     }
 
+    public function testWithConfirmations()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/process/status/reserved/',
+                    'parameters' => ['slotType' => 'intern'],
+                    'response' => $this->readFixture("GET_process_194104_2b88_notification.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/cluster/',
+                    'response' => $this->readFixture("GET_cluster_109.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/process/status/confirmed/',
+                    'response' => $this->readFixture("GET_process_194104_2b88_notification.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/process/194104/2b88/confirmation/mail/',
+                    'response' => $this->readFixture("POST_mail.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/process/194104/2b88/confirmation/notification/',
+                    'response' => $this->readFixture("POST_notification.json")
+                ]
+            ]
+        );
+        $paremeters = array_merge($this->parameters, array('sendConfirmation' => 1, 'sendMailConfirmation' => 1));
+        $response = $this->render($this->arguments, $paremeters, [], 'POST');
+        $this->assertContains('Reservierung erfolgreich', (string)$response->getBody());
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
     public function testRenderingValidationFailed()
     {
         $this->setApiCalls(
