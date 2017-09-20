@@ -22,8 +22,7 @@ class ScopeDelete extends BaseController
         $scope = (new Scope)->readEntity($args['id'], 0);
         if (! $scope) {
             throw new Exception\Scope\ScopeNotFound();
-        }
-        (new Helper\User($request, 2))->checkRights(
+        }(new Helper\User($request, 2))->checkRights(
             'scope',
             new \BO\Zmsentities\Useraccount\EntityAccess($scope)
         );
