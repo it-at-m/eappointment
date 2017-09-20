@@ -37,8 +37,15 @@ class ProcessDelete extends BaseController
         \App::$http
             ->readDeleteResult('/process/'. $process->id .'/', ['initiator' => $initiator])
             ->getEntity();
-        \App::$http->readPostResult('/process/'. $process->id .'/'. $authKey .'/delete/mail/', $process);
-        \App::$http->readPostResult('/process/'. $process->id .'/'. $authKey .'/delete/notification/', $process);
+
+        if ($process->getFirstClient()->hasEmail()) {
+            \App::$http->readPostResult('/process/'. $process->id .'/'. $authKey .'/delete/mail/', $process);
+        }
+        if ($process->scope->getPreference('appointment', 'notificationConfirmationEnabled') &&
+            $process->getFirstClient()->hasTelephone()
+        ) {
+            \App::$http->readPostResult('/process/'. $process->id .'/'. $authKey .'/delete/notification/', $process);
+        }
 
         return \BO\Slim\Render::withHtml(
             $response,
