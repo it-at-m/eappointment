@@ -2,9 +2,6 @@
 
 namespace BO\Zmsentities\Exception;
 
-/**
- * example class to generate an exception
- */
 class WorkstationMissingAssignedDepartments extends \Exception
 {
     protected $code = 500;

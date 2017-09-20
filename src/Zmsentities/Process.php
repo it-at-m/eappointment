@@ -139,7 +139,7 @@ class Process extends Schema\Entity
         $this->updateRequests('dldb', $requestCsv);
         $this->addClientFromForm($formData);
         $this->addReminderTimestamp($requestData, $dateTime);
-        $this->amendment = (array_key_exists('amendment', $formData)) ? $formData['amendment']['value'] : null;
+        $this->amendment = (array_key_exists('amendment', $formData)) ? trim($formData['amendment']['value']) : null;
         return $this;
     }
 
@@ -263,6 +263,7 @@ class Process extends Schema\Entity
     {
         $this->amendment = $notice;
         $this->amendment .= (isset($input['amendment']) && $input['amendment']) ? $input['amendment'] : '';
+        trim($this->amendment);
         return $this;
     }
 
