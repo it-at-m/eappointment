@@ -18,6 +18,9 @@ class WorkstationProcessFinished extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        if (! $workstation->process->hasId()) {
+            throw new \BO\Zmsentities\Exception\WorkstationMissingAssignedProcess();
+        }
         $requestList = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/request/')->getCollection();
 
         $statisticEnabled = $workstation->getScope()->getPreference('queue', 'statisticsEnabled');
