@@ -25,7 +25,8 @@ class Process extends Base implements MappingInterface
             process.IPTimeStamp = 0,
             process.vorlaeufigeBuchung = 1,
             process.absagecode = 'deref!0',
-            process.EMail = ''
+            process.EMail = '',
+            process.NutzerID = 0
         WHERE
             (process.BuergerID = ? AND process.absagecode = ?)
             OR process.istFolgeterminvon = ?
@@ -256,7 +257,10 @@ class Process extends Base implements MappingInterface
 
     public function addConditionWorkstationId($workstationId)
     {
-        $this->query->where('process.NutzerID', '=', $workstationId);
+        $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($workstationId) {
+            $query->andWith('process.NutzerID', '=', $workstationId);
+            $query->andWith('process.StandortID', '>', 0);
+        });
         return $this;
     }
 
