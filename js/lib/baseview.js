@@ -93,9 +93,7 @@ class BaseView extends ErrorHandler {
             $.ajax(url, ajaxSettings).done(responseData => {
                 resolve(responseData);
             }).fail(err => {
-                if (err.responseText) {
-                    let isException = err.responseText.toLowerCase().includes('exception');
-                }
+                let isException = err.responseText.toLowerCase().includes('exception');
                 if (err.status >= 400 && isException) {
                     const { lightboxContentElement, destroyLightbox } = lightbox(null, () => {
                         reject({'source': 'lightbox', 'message': err.responseText})
