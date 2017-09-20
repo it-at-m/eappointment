@@ -25,7 +25,7 @@ class AppointmentFormHelper
             $process,
             ['initiator' => $initiator]
         )->getEntity();
-        static::updateMailAndNotificationCount($formData, $process);
+        static::updateMailAndNotification($formData, $process);
         return $process;
     }
 
@@ -39,7 +39,7 @@ class AppointmentFormHelper
             $process,
             ['initiator' => $initiator]
         )->getEntity();
-        static::updateMailAndNotificationCount($input, $process);
+        static::updateMailAndNotification($input, $process);
         return $process;
     }
 
@@ -47,7 +47,7 @@ class AppointmentFormHelper
     {
         $process = \App::$http->readPostResult('/process/status/confirmed/', $process)->getEntity();
         if ('confirmed' == $process->status) {
-            static::updateMailAndNotificationCount($formData, $process);
+            static::updateMailAndNotification($formData, $process);
         }
         return $process;
     }
@@ -66,7 +66,7 @@ class AppointmentFormHelper
         $process->addReminderTimestamp($input, $dateTime);
         $process->addAmendment($input, $notice);
         $process = \App::$http->readPostResult('/workstation/process/waitingnumber/', $process)->getEntity();
-        static::updateMailAndNotificationCount($input, $process);
+        static::updateMailAndNotification($input, $process);
         return $process;
     }
 
@@ -84,28 +84,40 @@ class AppointmentFormHelper
         return ($freeProcessList) ? $freeProcessList->toProcessListByTime()->sortByTimeKey() : null;
     }
 
-    protected static function updateMailAndNotificationCount($formData, Entity $process)
+    protected static function updateMailAndNotification($formData, Entity $process)
     {
-        $client = $process->getFirstClient();
-        if (isset($formData['sendMailConfirmation']) && $client->hasEmail()) {
+        if (isset($formData['sendMailConfirmation'])) {
             $mailConfirmation = $formData['sendMailConfirmation'];
             $mailConfirmation = (isset($mailConfirmation['value'])) ? $mailConfirmation['value'] : $mailConfirmation;
-            if ($mailConfirmation) {
-                \App::$http->readPostResult(
-                    '/process/'. $process->id .'/'. $process->authKey .'/confirmation/mail/',
-                    $process
-                );
-            }
+            self::writeMail($mailConfirmation, $process);
         }
-        if (isset($formData['sendConfirmation']) && $client->hasTelephone()) {
+        if (isset($formData['sendConfirmation'])) {
             $smsConfirmation = $formData['sendConfirmation'];
             $smsConfirmation = (isset($smsConfirmation['value'])) ? $smsConfirmation['value'] : $smsConfirmation;
-            if ($smsConfirmation) {
-                \App::$http->readPostResult(
-                    '/process/'. $process->id .'/'. $process->authKey .'/confirmation/notification/',
-                    $process
-                );
-            }
+            self::writeNotification($smsConfirmation, $process);
+        }
+    }
+
+    protected static function writeNotification($smsConfirmation, Entity $process)
+    {
+        if ($smsConfirmation &&
+            $process->scope->getPreference('appointment', 'notificationConfirmationEnabled') &&
+            $process->getFirstClient()->hasTelephone()
+        ) {
+            \App::$http->readPostResult(
+                '/process/'. $process->id .'/'. $process->authKey .'/confirmation/notification/',
+                $process
+            );
+        }
+    }
+
+    protected static function writeMail($mailConfirmation, Entity $process)
+    {
+        if ($mailConfirmation && $process->getFirstClient()->hasEmail()) {
+            \App::$http->readPostResult(
+                '/process/'. $process->id .'/'. $process->authKey .'/confirmation/mail/',
+                $process
+            );
         }
     }
 }
