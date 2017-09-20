@@ -60,7 +60,7 @@ class ProcessDeleteTest extends Base
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    public function testDeleteWithoutAppointment()
+    public function testDeleteWithoutAppointmentAndNotificationDisabled()
     {
         $this->setApiCalls(
             [
@@ -90,11 +90,6 @@ class ProcessDeleteTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/process/100632/ec58/delete/mail/',
                     'response' => $this->readFixture("POST_mail.json")
-                ],
-                [
-                    'function' => 'readPostResult',
-                    'url' => '/process/100632/ec58/delete/notification/',
-                    'response' => $this->readFixture("POST_notification.json")
                 ]
             ]
         );
