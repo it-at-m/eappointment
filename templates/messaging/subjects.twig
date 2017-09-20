@@ -1,9 +1,9 @@
 {% block german %}
     {% if process.status == 'confirmed' %}
     Terminbestaetigung
-    {% elseif process.status == 'deleted' and not initiator %}
+    {% elseif (process.status == 'deleted' or process.status == 'blocked') and not initiator %}
     Terminabsage
-    {% elseif process.status == 'deleted' and initiator %}
+    {% elseif (process.status == 'deleted' or process.status == 'blocked') and initiator %}
     Information Terminabsage
     {% elseif process.status == 'updated' and initiator %}
     Information Terminänderung
