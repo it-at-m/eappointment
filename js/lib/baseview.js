@@ -51,9 +51,7 @@ class BaseView extends ErrorHandler {
                 this.$main.html(responseData);
                 resolve(this.$main);
             }).fail(err => {
-                if (err.responseText) {
-                    let isException = err.responseText.toLowerCase().includes('exception');
-                }
+                let isException = err.responseText.toLowerCase().includes('exception');
                 if (err.status >= 400 && isException) {
                     const { lightboxContentElement, destroyLightbox } = lightbox(null, () => {
                         reject({'source': 'lightbox', 'message': err.responseText})
