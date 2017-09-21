@@ -32,6 +32,23 @@ class WorkstationProcessFinishedTest extends Base
         $this->assertEquals(200, $response->getStatusCode());
     }
 
+    public function testMissingAssignedProcess()
+    {
+        $this->expectException('BO\Zmsentities\Exception\WorkstationMissingAssignedProcess');
+        $this->expectExceptionCode(404);
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_workstation_without_process.json")
+                ]
+            ]
+        );
+        $this->render($this->arguments, $this->parameters, []);
+    }
+
     public function testRenderingSave()
     {
         $this->setApiCalls(
