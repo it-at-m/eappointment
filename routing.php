@@ -182,7 +182,7 @@ use \Psr\Http\Message\ResponseInterface;
  \App::$slim->get('/pickup/', '\BO\Zmsadmin\Pickup')
      ->setName("pickup");
 
- \App::$slim->delete('/pickup/delete/{ids}/', '\BO\Zmsadmin\PickupDelete')
+ \App::$slim->delete('/pickup/delete/{id:\d+}/', '\BO\Zmsadmin\PickupDelete')
      ->setName("pickup_delete");
 
  \App::$slim->map(['GET','POST'], '/pickup/handheld/', '\BO\Zmsadmin\PickupHandheld')

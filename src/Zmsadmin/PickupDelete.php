@@ -20,20 +20,18 @@ class PickupDelete extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
-        $processIdList = Validator::value($args['ids'])->isString()->getValue();
-        $idList = explode(',', $processIdList);
-        foreach ($idList as $processId) {
-            $process = \App::$http->readGetResult('/process/'. $processId .'/')->getEntity();
-            $process->status = 'finished';
-            \App::$http->readDeleteResult('/workstation/process/');
-            $processArchived = \App::$http->readPostResult('/process/status/finished/', $process)->getEntity();
-        }
+        $processId = Validator::value($args['id'])->isNumber()->getValue();
+        $deleteList = Validator::param('list')->isNumber()->getValue();
+        $process = \App::$http->readGetResult('/process/'. $processId .'/')->getEntity();
+        $process->status = 'finished';
+        \App::$http->readDeleteResult('/workstation/process/');
+        $processArchived = \App::$http->readPostResult('/process/status/finished/', $process)->getEntity();
 
         return \BO\Slim\Render::withHtml(
             $response,
             'block/pickup/deleted.twig',
             array(
-                'idList' => $idList,
+                'deleteList' => $deleteList,
                 'workstation' => $workstation,
                 'process' => $process,
                 'archive' => $processArchived,
