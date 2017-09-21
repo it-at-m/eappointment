@@ -18,42 +18,21 @@ class WorkstationProcessFinished extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-        if (! $workstation->process->hasId()) {
-            throw new \BO\Zmsentities\Exception\WorkstationMissingAssignedProcess();
-        }
-        $requestList = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/request/')->getCollection();
+        $this->testProcess($workstation);
 
+        $requestList = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/request/')->getCollection();
         $statisticEnabled = $workstation->getScope()->getPreference('queue', 'statisticsEnabled');
         $isDefaultPickup = $workstation->getScope()->getPreference('pickup', 'isDefault');
         $workstation->process['status'] = (! $statisticEnabled && $isDefaultPickup) ? 'pending' : 'finished';
         $process = clone $workstation->process;
+        $input = $request->getParsedBody();
 
         if (! $statisticEnabled && ! $isDefaultPickup) {
-            $process = \App::$http->readPostResult('/process/status/finished/', $process)->getEntity();
-            $workstation = \App::$http->readDeleteResult('/workstation/process/')->getEntity();
-            return \BO\Slim\Render::redirect(
-                $workstation->getVariantName(),
-                array(),
-                array()
-            );
-        } else {
-            $input = $request->getParsedBody();
-            if (is_array($input) && array_key_exists('id', $input['process'])) {
-                $process->addData($input['process']);
-                //pickup
-                if (array_key_exists('pickupScope', $input) && 0 != $input['pickupScope']) {
-                    $process->status = 'pending';
-                    $process->scope['id'] = $input['pickupScope'];
-                }
-                $process->setClientsCount($input['statistic']['clientsCount']);
-                $process = \App::$http->readPostResult('/process/status/finished/', $process)->getEntity();
-                $workstation = \App::$http->readDeleteResult('/workstation/process/')->getEntity();
-                return \BO\Slim\Render::redirect(
-                    $workstation->getVariantName(),
-                    array(),
-                    array()
-                );
-            }
+            return $this->getResponseWithStatisticDisabled($process);
+        }
+
+        if (is_array($input) && array_key_exists('id', $input['process'])) {
+            return $this->getResponseWithStatisticEnabled($input, $process);
         }
 
         return \BO\Slim\Render::withHtml(
@@ -68,6 +47,42 @@ class WorkstationProcessFinished extends BaseController
                 'statisticEnabled' => $statisticEnabled,
                 'isDefaultPickup' => $isDefaultPickup
             )
+        );
+    }
+
+    protected function testProcess(\BO\Zmsentities\Workstation $workstation)
+    {
+        if (! $workstation->process->hasId()) {
+            throw new \BO\Zmsentities\Exception\WorkstationMissingAssignedProcess();
+        }
+    }
+
+    protected function getResponseWithStatisticDisabled($process)
+    {
+        $process = \App::$http->readPostResult('/process/status/finished/', $process)->getEntity();
+        $workstation = \App::$http->readDeleteResult('/workstation/process/')->getEntity();
+        return \BO\Slim\Render::redirect(
+            $workstation->getVariantName(),
+            array(),
+            array()
+        );
+    }
+
+    protected function getResponseWithStatisticEnabled(array $input, \BO\Zmsentities\Process $process)
+    {
+        $process->addData($input['process']);
+        //pickup
+        if (array_key_exists('pickupScope', $input) && 0 != $input['pickupScope']) {
+            $process->status = 'pending';
+            $process->scope['id'] = $input['pickupScope'];
+        }
+        $process->setClientsCount($input['statistic']['clientsCount']);
+        $process = \App::$http->readPostResult('/process/status/finished/', $process)->getEntity();
+        $workstation = \App::$http->readDeleteResult('/workstation/process/')->getEntity();
+        return \BO\Slim\Render::redirect(
+            $workstation->getVariantName(),
+            array(),
+            array()
         );
     }
 }
