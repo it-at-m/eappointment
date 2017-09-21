@@ -82,7 +82,7 @@ class View extends BaseView {
         if (withoutconfirmation) {
             return this.loadCall(url, 'DELETE');
         }
-        const ok = confirm('Wenn Sie den Kunden Nr. '+ id +' '+ name +' löschen und ins Archiv verschieben wollen, klicken Sie auf OK.')
+        const ok = confirm('Wenn Sie den Kunden Nr. '+ id +' '+ name +' löschen wollen, klicken Sie auf OK.')
         if (ok) {
             return this.loadCall(url, 'DELETE');
         }
