@@ -54,19 +54,24 @@ class View extends BaseView {
         console.log("Finish List Pickup Button clicked", ev);
         ev.preventDefault();
         ev.stopPropagation();
-        let promise = Promise.resolve(false);
-        const ok = confirm('Wollen Sie wirklich alle Abholer aus dieser Liste löschen?')
+        var promise = Promise.resolve(false);
+        const ok = confirm('Wollen Sie wirklich alle Abholer aus dieser Liste löschen?');
+        var idList = this.$main.find(".process-finish").map((index, item) => {
+            return $(item).data('id');
+        }).get();
         if (ok) {
-            var idList = this.$main.find(".process-finish").map((index, item) => {
-                return $(item).data('id');
-            }).get();
-            $.each(idList, (index, processId) => {
-                let url = `${this.includeUrl}/pickup/delete/${processId}/`;
-                if (index == idList.length-1) {
-                    url = url + '?list=1';
+            var deleteFromQueue = () => {
+                let processId = idList.shift();
+                if (processId) {
+                    let url = `${this.includeUrl}/pickup/delete/${processId}/`;
+                    if (idList.length == 0) {
+                        url = url + "?list=1";
+                        return this.loadCall(url, 'DELETE');
+                    }
+                    return this.loadCall(url, 'DELETE').then(deleteFromQueue);
                 }
-                promise = this.loadCall(url, 'DELETE');
-            });
+            }
+            promise = deleteFromQueue();
         }
         return promise;
     }
