@@ -94,14 +94,14 @@ class View extends BaseView {
             this.FreeProcessList.loadList();
         }).on('click', '.add-date-picker', () => {
             this.ActionHandler.selectDateWithOverlay();
-        }).on('change', 'select#appointmentForm_slotCount', (ev) => {
+        }).on('change', 'select#appointmentForm_slotCount', (event) => {
             console.log('slots changed manualy');
             this.RequestList.slotCount = this.$main.find('select#appointmentForm_slotCount').val();
             this.FreeProcessList.loadList();
-        }).on('click', '.form-actions button.process-reserve', (ev) => {
+        }).on('click', '.form-actions button.process-reserve', (event) => {
             event.preventDefault();
             event.stopPropagation();
-            this.ActionHandler.reserve(ev).then((response) => {
+            this.ActionHandler.reserve(event).then((response) => {
                 let selectedProcess = $(response).filter('[data-process]').data('process');
                 this.loadMessage(response, () => {
                     this.onSaveProcess(selectedProcess)
@@ -110,33 +110,33 @@ class View extends BaseView {
         }).on('click', '.form-actions button.process-queue', (ev) => {
             event.preventDefault();
             event.stopPropagation();
-            this.ActionHandler.queue(ev).then((response) => {
+            this.ActionHandler.queue(event).then((response) => {
                 this.loadMessage(response, this.onQueueProcess);
             }).catch(err => this.loadErrorCallback(err));
-        }).on('click', '.form-actions button.process-new', (ev) => {
+        }).on('click', '.form-actions button.process-new', (event) => {
             event.preventDefault();
             event.stopPropagation();
             this.loadNew();
-        }).on('click', '.form-actions button.process-edit', (ev) => {
-            this.onEditProcess($(ev.target).data('id'))
-        }).on('click', '.form-actions button.process-delete', (ev) => {
-            ev.preventDefault();
-            ev.stopPropagation();
-            this.ActionHandler.delete(ev).then((response) => {
-                this.loadMessage(response, this.onDeleteProcess);
-            }).catch(err => this.loadErrorCallback(err));
-        }).on('click', '.form-actions button.process-abort', (ev) => {
-            this.ActionHandler.abort(ev);
-            this.cleanReload();
-        }).on('click', '.form-actions button.process-save', (ev) => {
+        }).on('click', '.form-actions button.process-edit', (event) => {
+            this.onEditProcess($(event.target).data('id'))
+        }).on('click', '.form-actions button.process-delete', (event) => {
             event.preventDefault();
             event.stopPropagation();
-            this.ActionHandler.save(ev).then((response) => {
+            this.ActionHandler.delete(event).then((response) => {
+                this.loadMessage(response, this.onDeleteProcess);
+            }).catch(err => this.loadErrorCallback(err));
+        }).on('click', '.form-actions button.process-abort', (event) => {
+            this.ActionHandler.abort(event);
+            this.cleanReload();
+        }).on('click', '.form-actions button.process-save', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            this.ActionHandler.save(event).then((response) => {
                 this.loadMessage(response, this.onSaveProcess);
             }).catch(err => this.loadErrorCallback(err));
-        }).on('click', '[data-button-print]', (ev) => {
-            ev.preventDefault()
-            ev.stopPropagation()
+        }).on('click', '[data-button-print]', (event) => {
+            event.preventDefault()
+            event.stopPropagation()
             this.ActionHandler.printWaitingNumber();
         })
     }
