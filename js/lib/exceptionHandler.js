@@ -1,6 +1,4 @@
 import $ from 'jquery';
-import BaseView from './baseview'
-import { lightbox } from './utils';
 
 class ExceptionHandler {
 
@@ -17,7 +15,7 @@ class ExceptionHandler {
     render() {
         var message = $(this.message).filter('div.exception');
         if (message.length == 0) {
-            var message = $(this.message).find('div.exception').get(0).outerHTML;
+            message = $(this.message).find('div.exception').get(0).outerHTML;
         }
         this.$main.html(message);
     }

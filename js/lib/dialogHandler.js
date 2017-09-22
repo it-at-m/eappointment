@@ -1,6 +1,5 @@
 import $ from 'jquery';
 import BaseView from './baseview'
-import { lightbox } from './utils';
 import ExceptionHandler from './exceptionHandler'
 import maxChars from '../element/form/maxChars'
 
@@ -20,7 +19,7 @@ class DialogHandler extends BaseView {
         if (content.length == 0) {
             var message = $(this.response).find('div.dialog');
             if (message.length > 0) {
-                var content = message.get(0).outerHTML;
+                content = message.get(0).outerHTML;
             }
         }
 

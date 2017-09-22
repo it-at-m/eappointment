@@ -1,3 +1,4 @@
+/* global window */
 import BaseView from '../../../lib/baseview'
 import $ from 'jquery'
 
@@ -118,7 +119,7 @@ class View extends BaseView {
         }
     }
 
-    setTimeSinceCall(lastsecond, lastminute) {
+    setTimeSinceCall() {
         let localTime = new Date() / 1000;
         let diffServer = Math.floor(new Date($("#clock").data('now')) - $("#clock").data('calltime'));
         let localCallTime = localTime - diffServer;

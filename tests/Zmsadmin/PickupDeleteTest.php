@@ -41,7 +41,7 @@ class PickupDeleteTest extends Base
         );
         $response = parent::testRendering();
         $this->assertContains(
-            'Der Termin mit der Nummer 82252 wurde zur erfolgreich archiviert und aus der Liste entfernt.',
+            'Der Termin mit der Nummer 82252 wurde erfolgreich aus der Liste entfernt.',
             (string)$response->getBody()
         );
         $this->assertEquals(200, $response->getStatusCode());
@@ -76,7 +76,7 @@ class PickupDeleteTest extends Base
         );
         $response = $this->render($this->arguments, ['list' => 1], []);
         $this->assertContains(
-            'Alle Termine wurden erfolgreich archiviert und aus der Liste entfernt.',
+            'Alle Termine wurden erfolgreich aus der Liste entfernt.',
             (string)$response->getBody()
         );
         $this->assertEquals(200, $response->getStatusCode());

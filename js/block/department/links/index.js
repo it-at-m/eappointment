@@ -28,7 +28,7 @@ const renderLink = (link, index, onChange, onDeleteClick) => {
                 />
             </div>
             <div className="link-item__target">
-                <label class="checkbox-label">
+                <label className="checkbox-label">
                     <Inputs.Checkbox
                         name={`${formName}[target]`}
                         key="In neuem Fenster öffnen"

@@ -1,6 +1,4 @@
 import $ from 'jquery';
-import BaseView from './baseview'
-import { lightbox } from './utils';
 import ExceptionHandler from './exceptionHandler'
 
 class MessageHandler {
@@ -19,7 +17,7 @@ class MessageHandler {
         if (content.length == 0) {
             var message = $(this.message).find('div.dialog');
             if (message.length > 0) {
-                var content = message.get(0).outerHTML;
+                content = message.get(0).outerHTML;
             }
         }
 

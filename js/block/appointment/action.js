@@ -1,3 +1,5 @@
+/* global window */
+/* global confirm */
 import BaseView from "../../lib/baseview"
 import $ from "jquery"
 import moment from 'moment'

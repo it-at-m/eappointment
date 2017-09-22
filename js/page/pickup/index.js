@@ -18,19 +18,19 @@ class View extends BaseView {
 
     onFinishProcess () {
         this.cleanReload()
-    };
+    }
 
     onPickupCallProcess () {
         this.cleanReload()
-    };
+    }
 
     onMailSent () {
         this.cleanReload()
-    };
+    }
 
     onNotificationSent () {
         this.cleanReload()
-    };
+    }
 
     loadPickupTable () {
         return new PickupTableView(this.$main, {

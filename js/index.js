@@ -31,6 +31,7 @@ import printWaitingNumber from './page/waitingnumber/print'
 //import bindReact from './lib/bindReact.js'
 import { getDataAttributes } from './lib/utils'
 
+import scopeChangeProvider from './element/form/scope'
 import preventFormResubmit from './element/form/preventFormResubmit'
 import maxChars from './element/form/maxChars'
 
@@ -82,6 +83,10 @@ $('form').each(function() {
 $('textarea.maxchars').each(function() {
     maxChars(this);
 })
+
+$('.scope-form-update').each(function() {
+    scopeChangeProvider(this);
+});
 
 printScopeAppointmentsByDay()
 printWaitingNumber()

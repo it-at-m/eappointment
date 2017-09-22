@@ -1,6 +1,5 @@
 import BaseView from "../../lib/baseview"
 import $ from "jquery"
-import moment from 'moment'
 
 class View extends BaseView {
 
@@ -13,7 +12,7 @@ class View extends BaseView {
         console.log('Component: RequestList actions', this, options);
     }
 
-    loadList () {
+    loadList () {
         if (this.selectedProcess)
             this.readList()
         else

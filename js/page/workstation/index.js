@@ -1,3 +1,4 @@
+/* global window */
 import BaseView from '../../lib/baseview'
 import $ from 'jquery'
 import settings from '../../settings'
@@ -133,18 +134,18 @@ class View extends BaseView {
         this.selectedProcess = null;
         this.loadAppointmentForm();
         this.loadQueueTable();
-    };
+    }
 
     onQueueProcess () {
         this.selectedProcess = null;
         this.loadAppointmentForm();
         this.loadQueueTable();
-    };
+    }
 
     onEditProcess (processId) {
         this.selectedProcess = processId;
         this.loadAppointmentForm();
-    };
+    }
 
     onSaveProcess (processId) {
         if (processId)

@@ -1,3 +1,4 @@
+/* global window */
 import BaseView from '../../lib/baseview'
 import $ from 'jquery'
 import settings from '../../settings'
@@ -9,9 +10,6 @@ import CalendarView from '../../block/calendar'
 import ActionHandler from "../../block/appointment/action"
 import FreeProcessList from "../../block/appointment/free-process-list"
 import FormButtons from '../../block/appointment/form-buttons'
-
-import { loadInto } from './utils'
-import { lightbox } from '../../lib/utils'
 
 class View extends BaseView {
 
@@ -141,18 +139,18 @@ class View extends BaseView {
         this.selectedProcess = null;
         this.loadAppointmentForm();
         this.loadQueueTable();
-    };
+    }
 
     onQueueProcess () {
         this.selectedProcess = null;
         this.loadAppointmentForm();
         this.loadQueueTable();
-    };
+    }
 
     onEditProcess (processId) {
         this.selectedProcess = processId;
         this.loadAppointmentForm();
-    };
+    }
 
     onSaveProcess (processId) {
         if (processId)
