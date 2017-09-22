@@ -25,7 +25,7 @@ class Useraccount extends BaseController
             $department = new \BO\Zmsentities\Department([
                 'name' => 'Systemweite Nutzer'
                 ]);
-            $userAccountList = \App::$http->readGetResult(
+            $useraccountList = \App::$http->readGetResult(
                 "/useraccount/",
                 [
                     "resolveReferences" => 0,
@@ -40,7 +40,7 @@ class Useraccount extends BaseController
             $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
             $department = $workstation->getUseraccount()->getDepartmentList()->getFirst();
             $departmentId = $department->id;
-            $userAccountList = \App::$http->readGetResult("/department/$departmentId/useraccount/")->getCollection();
+            $useraccountList = \App::$http->readGetResult("/department/$departmentId/useraccount/")->getCollection();
             $organisationList = new \BO\Zmsentities\Collection\OrganisationList();
             foreach ($workstation->useraccount->departments as $accountDepartment) {
                 if (!$organisationList->getByDepartmentId($accountDepartment->id)->count()) {
@@ -56,12 +56,12 @@ class Useraccount extends BaseController
         return \BO\Slim\Render::withHtml(
             $response,
             'page/useraccount.twig',
-            array (
+            array(
                 'title' => 'Nutzer',
                 'menuActive' => 'useraccount',
                 'workstation' => $workstation,
                 'department' => $department,
-                'userAccountList' => $userAccountList,
+                'useraccountList' => $useraccountList,
                 'organisationList' => $organisationList,
             )
         );

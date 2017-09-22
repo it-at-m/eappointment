@@ -6,6 +6,8 @@
 
 namespace BO\Zmsadmin;
 
+use \BO\Zmsentities\Collection\UseraccountList as Collection;
+
 class UseraccountByDepartment extends BaseController
 {
     /**
@@ -20,7 +22,7 @@ class UseraccountByDepartment extends BaseController
         $departmentId = $args['id'];
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $department = $workstation->getUseraccount()->getDepartment($departmentId);
-        $userAccountList = \App::$http->readGetResult("/department/$departmentId/useraccount/")->getCollection();
+        $useraccountList = \App::$http->readGetResult("/department/$departmentId/useraccount/")->getCollection();
         $workstationList = \App::$http->readGetResult("/department/$departmentId/workstation/")->getCollection();
 
         $organisation = \App::$http->readGetResult(
@@ -38,7 +40,9 @@ class UseraccountByDepartment extends BaseController
                 'workstation' => $workstation,
                 'department' => $department,
                 'workstationList' => $workstationList,
-                'userAccountList' => $userAccountList->sortByCustomStringKey('id'),
+                'useraccountList' => ($useraccountList) ?
+                    $useraccountList->sortByCustomStringKey('id') :
+                    new Collection(),
                 'organisationList' => $organisationList,
             )
         );
