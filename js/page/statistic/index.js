@@ -16,7 +16,7 @@ class View extends BaseView {
 
     bindEvents() {
         this.$main.off('click')
-        .on('change', 'input[type="checkbox"]', (ev) => {
+        .on('change', 'input[type="checkbox"]', () => {
             this.toggleButtons();
         }).on('click', 'div.input-counter a', (ev) => {
             this.changeInputCounter(ev);
@@ -59,7 +59,7 @@ class View extends BaseView {
 
     toggleButtons() {
         const statisticEnabled = this.$.find('[data-statistic-enabled]').data('statistic-enabled');
-        if (! statisticEnabled || this.checkCheckboxes() || this.checkInputCounter()) {
+        if (! statisticEnabled || this.checkCheckboxes() || this.checkInputCounter()) {
             $('.client-processed form').find('button:submit').each((index, button) => {
                 $(button).prop('disabled', false);
             })

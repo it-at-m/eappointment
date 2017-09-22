@@ -2,7 +2,6 @@ import BaseView from "../../lib/baseview"
 import $ from "jquery"
 import { lightbox } from '../../lib/utils'
 import FormValidationView from '../form-validation'
-import ExceptionHandler from '../../lib/exceptionHandler'
 import MessageHandler from '../../lib/messageHandler';
 
 class View extends BaseView {
@@ -24,10 +23,10 @@ class View extends BaseView {
     }
 
     bindEvents() {
-        this.$main.off().on('click', '.form-actions button.button-save', (ev) => {
+        this.$main.off().on('click', '.form-actions button.button-save', (event) => {
             event.preventDefault();
             event.stopPropagation();
-            this.save(ev).then((response) => {
+            this.save(event).then((response) => {
                 this.loadMessage(response, this.onSaveProcess);
             }).catch(err => this.loadErrorCallback(err));
         })
@@ -39,7 +38,8 @@ class View extends BaseView {
             this.cleanReload();
         });
         new MessageHandler(lightboxContentElement, {
-            message: response
+            message: response,
+            callback: callback
         });
     }
 

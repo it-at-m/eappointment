@@ -3,9 +3,7 @@ import $ from "jquery"
 import FreeProcessList from './free-process-list'
 import FormButtons from './form-buttons'
 import { lightbox } from '../../lib/utils'
-import CalendarView from '../calendar'
 import FormValidationView from '../form-validation'
-import ExceptionHandler from '../../lib/exceptionHandler'
 import MessageHandler from '../../lib/messageHandler'
 import ActionHandler from "./action"
 import RequestList from "./requests"
@@ -94,7 +92,7 @@ class View extends BaseView {
             this.FreeProcessList.loadList();
         }).on('click', '.add-date-picker', () => {
             this.ActionHandler.selectDateWithOverlay();
-        }).on('change', 'select#appointmentForm_slotCount', (event) => {
+        }).on('change', 'select#appointmentForm_slotCount', () => {
             console.log('slots changed manualy');
             this.RequestList.slotCount = this.$main.find('select#appointmentForm_slotCount').val();
             this.FreeProcessList.loadList();
@@ -107,7 +105,7 @@ class View extends BaseView {
                     this.onSaveProcess(selectedProcess)
                 });
             }).catch(err => this.loadErrorCallback(err));
-        }).on('click', '.form-actions button.process-queue', (ev) => {
+        }).on('click', '.form-actions button.process-queue', (event) => {
             event.preventDefault();
             event.stopPropagation();
             this.ActionHandler.queue(event).then((response) => {

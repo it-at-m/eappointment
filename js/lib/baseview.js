@@ -19,12 +19,11 @@ class BaseView extends ErrorHandler {
 
     showSpinner(container = null)
     {
+        var loaderContainer = this.$main.find('.body').first();
         if (container !== null) {
-            var loaderContainer = container.find('.body').first();
             if (loaderContainer.length < 1)
                 loaderContainer = container;
         } else {
-            var loaderContainer = this.$main.find('.body').first();
             if (loaderContainer.length < 1)
                 loaderContainer = this.$main;
         }
@@ -56,8 +55,7 @@ class BaseView extends ErrorHandler {
                     const { lightboxContentElement, destroyLightbox } = lightbox(null, () => {
                         reject({'source': 'lightbox', 'message': err.responseText})
                     })
-
-                    const exceptionHandler = new ExceptionHandler(lightboxContentElement, {
+                    new ExceptionHandler(lightboxContentElement, {
                         code: err.status,
                         message: err.responseText,
                         callback: (exceptionButtonUrl) => {
@@ -68,7 +66,6 @@ class BaseView extends ErrorHandler {
                             reject({'source': 'button', 'url': exceptionButtonUrl })
                         }
                     })
-
                 } else {
                     console.log('XHR load error', url, err);
                     reject(err);
@@ -97,7 +94,7 @@ class BaseView extends ErrorHandler {
                         reject({'source': 'lightbox', 'message': err.responseText})
                     })
 
-                    const exceptionHandler = new ExceptionHandler(lightboxContentElement, {
+                    new ExceptionHandler(lightboxContentElement, {
                         code: err.status,
                         message: err.responseText,
                         callback: (exceptionButtonUrl) => {

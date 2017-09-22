@@ -1,8 +1,8 @@
+/* global window */
 import BaseView from "../../lib/baseview"
 import $ from "jquery"
 import { lightbox } from '../../lib/utils'
 import ButtonActionHandler from "../appointment/action"
-import ProcessNext from "../process/next"
 import MessageHandler from '../../lib/messageHandler';
 import DialogHandler from '../../lib/dialogHandler';
 
