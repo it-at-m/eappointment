@@ -16,6 +16,15 @@ fix: # run code fixing
 watch:
 	node_modules/.bin/gulp watch
 
+css: now
+	node_modules/.bin/gulp scss
+
+js: now
+	node_modules/.bin/gulp js
+
+vendorjs: now
+	node_modules/.bin/gulp vendor
+
 live: # init live system
 	$(COMPOSER) install --no-dev --prefer-dist
 
