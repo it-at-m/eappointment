@@ -32,7 +32,7 @@ class Mail extends BaseController
                 $entity = new \BO\Zmsentities\Mail($item);
                 $mailer = $this->getValidMailer($entity);
                 $mailer->AddAddress($entity->client['email'], $entity->client['familyName']);
-                $result = $this->sendMailer($mailer, $action);
+                $result = $this->sendMailer($entity, $mailer, $action);
                 if ($result instanceof \PHPMailer) {
                     $resultList[] = array(
                         'id' => ($result->getLastMessageID()) ? $result->getLastMessageID() : $entity->id,

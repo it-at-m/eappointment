@@ -1,0 +1,24 @@
+{
+    "$schema": "http://localhost/",
+    "meta": {
+        "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+        "error": false,
+        "generated": "2017-09-25T16:22:38+02:00",
+        "server": "Zmsapi-ENV (v2.12.00)"
+    },
+    "data": {
+        "queryString": "INSERT INTO `log` SET `message`=:message, `reference_id`=:referenceId, `type`=:type"
+    },
+    "profiler": [
+        {
+            "duration": 0.0048110485076904,
+            "function": "perform",
+            "statement": "INSERT INTO `log` SET `message`=:message, `reference_id`=:referenceId, `type`=:type",
+            "bind_values": {
+                "message": "MTA successful, subject=Example Mail [lib]",
+                "referenceId": 123456,
+                "type": "buerger"
+            }
+        }
+    ]
+}
