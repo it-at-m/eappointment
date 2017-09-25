@@ -1333,6 +1333,51 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/log/process/{id}/":
+ *      post:
+ *          summary: Add a log entry for a process
+ *          tags:
+ *              - process
+ *              - log
+ *          parameters:
+ *              -   name: X-Authkey
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: id
+ *                  description: id of a process
+ *                  in: path
+ *                  required: true
+ *                  type: number
+ *              -   name: mail
+ *                  description: mail data
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/mail.json"
+ *          responses:
+ *              200:
+ *                  description: log accepted
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/mail.json"
+ *              400:
+ *                  description: "Missing required properties in the mail"
+ *              403:
+ *                  description: "Missing access rights, unvalid process id"
+ */
+\App::$slim->post('/mails/',
+    '\BO\Zmsapi\MailAdd')
+    ->setName("MailAdd");
+
+/**
+ *  @swagger
  *  "/mails/":
  *      get:
  *          summary: get a list of mails in the send queue
@@ -1374,7 +1419,7 @@ use \Psr\Http\Message\ResponseInterface;
  *          tags:
  *              - mail
  *          parameters:
- *              -   name: notification
+ *              -   name: mail
  *                  description: mail data to send
  *                  required: true
  *                  in: body
