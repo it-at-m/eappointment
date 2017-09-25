@@ -24,11 +24,15 @@ class ProcessAddLog extends BaseController
         (new Helper\User($request))->checkRights('superuser');
         $processId = Validator::value($args['id'])->isNumber()->getValue();
         $input = Validator::input()->isJson()->assertValid()->getValue();
-        $mail = new \BO\Zmsentities\Mail($input);
-        $mail->testValid();
+        $logMessage = '';
+        if (isset($input['subject'])) {
+            $logMessage = $input['subject'];
+        } elseif (isset($input['message'])) {
+            $logMessage = $input['message'];
+        }
 
         $message = Response\Message::create($request);
-        $message->data = Query::writeLogEntry("MTA successful, subject=". $mail->subject, $processId);
+        $message->data = Query::writeLogEntry("MTA successful, subject=". $logMessage, $processId);
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message, 200);
