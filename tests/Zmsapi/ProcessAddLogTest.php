@@ -16,7 +16,7 @@ class ProcessAddLogTest extends Base
         $response = $this->render(['id' => self::PROCESS_ID], [
             '__body' => $this->readFixture('GetMail.json')
         ], []);
-        $this->assertContains('MTA successful, subject=Example Mail', (string)$response->getBody());
+        $this->assertContains("INSERT INTO `log` SET `message`=:message", (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
@@ -26,10 +26,7 @@ class ProcessAddLogTest extends Base
         $response = $this->render(['id' => self::PROCESS_ID], [
             '__body' => $this->readFixture('GetNotification.json')
         ], []);
-        $this->assertContains(
-            'MTA successful, subject=Denken Sie an ihren Termin mit der Nummer 10029',
-            (string)$response->getBody()
-        );
+        $this->assertContains("INSERT INTO `log` SET `message`=:message", (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
