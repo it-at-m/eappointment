@@ -1372,9 +1372,9 @@ use \Psr\Http\Message\ResponseInterface;
  *              403:
  *                  description: "Missing access rights, unvalid process id"
  */
-\App::$slim->post('/mails/',
-    '\BO\Zmsapi\MailAdd')
-    ->setName("MailAdd");
+\App::$slim->post('/log/process/{id:\d{1,11}}/',
+    '\BO\Zmsapi\ProcessAddLog')
+    ->setName("ProcessAddLog");
 
 /**
  *  @swagger
