@@ -15,7 +15,7 @@ class TemplateFinder
 
     protected $template;
 
-    public function __construct($defaultTemplate = "default", $subPath = '/page/customized')
+    public function __construct($defaultTemplate = "defaultplatz", $subPath = '/page/customized')
     {
         $this->subPath = $subPath;
         $this->template = $subPath . '/' . $defaultTemplate . '.twig';
@@ -39,7 +39,7 @@ class TemplateFinder
     public function setCustomizedTemplate($calldisplay)
     {
         $template = null;
-        if ($this->defaultTemplate == 'default') {
+        if ($this->defaultTemplate == 'defaultplatz') {
             $template = $this->getTemplateBySettings($calldisplay);
         }
         $this->template = ($template) ? $template : $this->template;
