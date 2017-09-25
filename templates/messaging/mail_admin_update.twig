@@ -3,7 +3,7 @@
 Geändert wurde der Termin von {{ process.clients|first.familyName }} (Vorgangsnummer: {{ process.id }})
 am {{ process.appointments|first.date|date('d. F Y') }} um {{ process.appointments|first.date|date('H:i') }} Uhr
 {% else %}
-Einem Spontankunden mit der Wartenummer {{ process.queue.number }} wurde am {{ "now"|date('d. F Y') }} geändert
+Einem Spontankunden mit der Wartenummer {{ process.queue.number }} wurde am {{ "now"|date('d. F Y') }} der Termin geändert
 {% endif %} für den Standort {{ process.scope.contact.name }} {{ process.scope.shortName }}, {{ process.scope.contact.street }} {{ process.scope.contact.streetNumber }}.
 <br /><br />
 Die Terminänderung wurde initiiert via "{{ initiator }}".
