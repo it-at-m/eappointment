@@ -19,6 +19,8 @@ class ConfigInfo extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $config = \App::$http->readGetResult('/config/')->getEntity();
+        $processExample = ((new \BO\Zmsentities\Process)->getExample());
+        $processExample->scope = ((new \BO\Zmsentities\Scope)->getExample());
         return \BO\Slim\Render::withHtml(
             $response,
             'page/configinfo.twig',
@@ -26,6 +28,7 @@ class ConfigInfo extends BaseController
                 'title' => 'Konfiguration System',
                 'workstation' => $workstation,
                 'config' => $config,
+                'processExample' => $processExample,
                 'menuActive' => 'configinfo'
             )
         );

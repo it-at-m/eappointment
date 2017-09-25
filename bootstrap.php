@@ -24,6 +24,10 @@ require(APP_PATH . '/config.php');
 \BO\Slim\Bootstrap::addTwigExtension(new \BO\Zmsclient\TwigExtension(\App::$slim->getContainer()));
 \BO\Zmsclient\Http::$logEnabled = \App::DEBUG;
 
+// Templating
+\BO\Slim\Bootstrap::addTwigTemplateDirectory('zmsentities', \BO\Zmsentities\Helper\TemplateFinder::getTemplatePath());
+\BO\Slim\Bootstrap::addTwigTemplateDirectory('dldb', \BO\Dldb\Helper\TemplateFinder::getTemplatePath());
+
 // add slim middleware
 \App::$slim->add(new \BO\Slim\Middleware\TrailingSlash());
 

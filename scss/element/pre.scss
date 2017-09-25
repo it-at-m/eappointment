@@ -1,0 +1,33 @@
+pre, .pre {
+    white-space:        unset;
+    font-size:          0.85em;
+    background:         #fff;
+    padding:            10px;
+    border:             1px solid #ccc;
+    border-radius:      4px;
+    line-height:        1.4em;
+}
+
+pre.admin, .pre.admin {
+    background: rgb(255,255,235);
+}
+
+pre.subject, .pre.subject {
+    background:         rgb(215,215,215);
+    font-weight:        bold;
+}
+
+.legend {
+    display:            table;
+    margin-bottom:      15px;
+}
+
+.legend .pre {
+    display:            table-cell;
+    width:              10px;
+    height:             10px;
+}
+
+.legend small {
+    margin:        0px 10px 0px 5px;
+}
