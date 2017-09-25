@@ -42,17 +42,19 @@ class BaseController
         \App::$http->readDeleteResult('/workstation/_system_messenger/');
     }
 
-    protected function sendMailer($mailer = null, $action = false)
+    protected function sendMailer(\BO\Zmsentities\Schema\Entity $entity, $mailer = null, $action = false)
     {
         if (false !== $action) {
             // @codeCoverageIgnoreStart
             if (null !== $mailer) {
                 if (! $mailer->Send()) {
+                    throw new \Exception('Zmsmessaging Failed');
                     \App::$log->debug('Zmsmessaging Failed', [$mailer->ErrorInfo]);
                 }
             }
             // @codeCoverageIgnoreEnd
         }
+        \App::$http->readPostResult('/log/process/'. $entity->process['id'] .'/', $entity);
         return $mailer;
     }
 

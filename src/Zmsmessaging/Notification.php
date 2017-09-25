@@ -32,7 +32,7 @@ class Notification extends BaseController
                 $entity = new \BO\Zmsentities\Notification($item);
                 $mailer = $this->getValidMailer($entity);
                 $mailer->AddAddress($entity->getRecipient());
-                $result = $this->sendMailer($mailer, $action);
+                $result = $this->sendMailer($entity, $mailer, $action);
                 if ($result instanceof \PHPMailer) {
                     $resultList[] = array(
                         'id' => ($result->getLastMessageID()) ? $result->getLastMessageID() : $entity->id,

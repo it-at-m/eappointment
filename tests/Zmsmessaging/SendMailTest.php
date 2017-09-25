@@ -29,6 +29,11 @@ class SendMailTest extends Base
                     'function' => 'readDeleteResult',
                     'url' => '/workstation/_system_messenger/',
                     'response' => $this->readFixture("GET_mail.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/log/process/123456/',
+                    'response' => $this->readFixture("POST_log.json")
                 ]
             ]
         );

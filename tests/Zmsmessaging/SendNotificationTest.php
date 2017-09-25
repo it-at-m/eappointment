@@ -25,6 +25,11 @@ class SendNotificationTest extends Base
                 'response' => $this->readFixture("GET_notifications_queue.json")
             ],
             [
+                'function' => 'readPostResult',
+                'url' => '/log/process/123456/',
+                'response' => $this->readFixture("POST_log.json")
+            ],
+            [
                 'function' => 'readDeleteResult',
                 'url' => '/workstation/_system_messenger/',
                 'response' => $this->readFixture("GET_mail.json")
