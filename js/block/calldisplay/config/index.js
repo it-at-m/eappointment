@@ -42,7 +42,7 @@ class CallDisplayConfigView extends Component {
                 }
             }),
             queueStatus: 'all',
-            template: 'default',
+            template: 'defaultplatz',
             generatedUrl: ""
         }
     }
@@ -199,10 +199,13 @@ class CallDisplayConfigView extends Component {
                         <Controls>
                             <Select
                                 options={[
-                                    {name: 'Uhrzeit, 6-12 Aufrufe', value: 'default'},
+                                    {name: 'Uhrzeit, 6-12 Aufrufe', value: 'defaultplatz'},
+                                    {name: 'Uhrzeit, 6-12 Aufrufe | Raum', value: 'defaultraum'},
                                     {name: 'Uhrzeit, 6 Aufrufe', value: 'clock5'},
-                                    {name: 'Uhrzeit, Anzahl Wartende, 6-12 Aufrufe', value: 'clocknr'},
-                                    {name: 'Uhrzeit, Anzahl Wartende, Wartezeit, 6-12 Aufrufe', value: 'clocknrwait'},
+                                    {name: 'Uhrzeit, Anzahl Wartende, 6-12 Aufrufe', value: 'clocknrplatz'},
+                                    {name: 'Uhrzeit, Anzahl Wartende, 6-12 Aufrufe | Raum', value: 'clocknrraum'},
+                                    {name: 'Uhrzeit, Anzahl Wartende, Wartezeit, 6-12 Aufrufe', value: 'clocknrwaitplatz'},
+                                    {name: 'Uhrzeit, Anzahl Wartende, Wartezeit, 6-12 Aufrufe | Raum', value: 'clocknrwaitraum'},
                                     {name: '6-18 Aufrufe', value: 'raw18'}
                                 ]}
                                 value={this.state.template}
