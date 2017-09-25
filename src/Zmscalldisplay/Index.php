@@ -25,7 +25,7 @@ class Index extends BaseController
         $validator = $request->getAttribute('validator');
         $defaultTemplate = $validator->getParameter("template")
             ->isPath()
-            ->setDefault('default')
+            ->setDefault('defaultplatz')
             ->getValue();
         $calldisplayHelper = (new Helper\Calldisplay($request));
         $calldisplay = $calldisplayHelper->getEntity();
