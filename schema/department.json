@@ -71,21 +71,12 @@
         "email": {
             "type": "string",
             "description": "sender address for reminder mails to the clients",
-            "oneOf": [
-                {
-                    "enum": [
-                        ""
-                    ]
-                },
-                {
-                    "format": "email"
-                }
-            ],
+            "pattern": "^[a-z0-9_\\-\\.]{2,}@[a-z0-9_\\-\\.]{2,}\\.[a-z]{2,}$|^$",
             "x-locale": {
                 "de_DE": {
                     "pointer": "E-Mail",
                     "messages": {
-                        "one_of": "Die E-Mail Adresse muss eine valide E-Mail im Format max@mustermann.de sein"
+                        "pattern": "Die E-Mail Adresse muss eine valide E-Mail im Format max@mustermann.de sein"
                     }
                 }
             }
