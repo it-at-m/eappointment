@@ -48,17 +48,15 @@ class BaseController
 
     protected function sendMailer(\BO\Zmsentities\Schema\Entity $entity, $mailer = null, $action = false)
     {
-        if (false !== $action && null !== $mailer) {
-            // @codeCoverageIgnoreStart
-            if (! $mailer->Send()) {
-                throw new \Exception('Zmsmessaging Failed');
-                \App::$log->debug('Zmsmessaging Failed', [$mailer->ErrorInfo]);
-            }
-            // @codeCoverageIgnoreEnd
-            $log = new Mimepart(['mime' => 'text/plain']);
-            $log->content = ($entity instanceof Mail) ? $entity->subject : $entity->message;
-            \App::$http->readPostResult('/log/process/'. $entity->process['id'] .'/', $log);
+        // @codeCoverageIgnoreStart
+        if (false !== $action && null !== $mailer && ! $mailer->Send()) {
+            throw new \Exception('Zmsmessaging Failed');
+            \App::$log->debug('Zmsmessaging Failed', [$mailer->ErrorInfo]);
         }
+        // @codeCoverageIgnoreEnd
+        $log = new Mimepart(['mime' => 'text/plain']);
+        $log->content = ($entity instanceof Mail) ? $entity->subject : $entity->message;
+        \App::$http->readPostResult('/log/process/'. $entity->process['id'] .'/', $log);
         return $mailer;
     }
 
