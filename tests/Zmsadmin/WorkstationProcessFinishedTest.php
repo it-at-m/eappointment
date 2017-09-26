@@ -68,11 +68,6 @@ class WorkstationProcessFinishedTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/process/status/finished/',
                     'response' => $this->readFixture("GET_process_82252_12a2.json")
-                ],
-                [
-                    'function' => 'readDeleteResult',
-                    'url' => '/workstation/process/',
-                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ]
             ]
         );
@@ -138,11 +133,6 @@ class WorkstationProcessFinishedTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/process/status/finished/',
                     'response' => $this->readFixture("GET_process_82252_12a2.json")
-                ],
-                [
-                    'function' => 'readDeleteResult',
-                    'url' => '/workstation/process/',
-                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ]
             ]
         );

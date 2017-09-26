@@ -6,6 +6,8 @@
 
 namespace BO\Zmsadmin;
 
+use \Psr\Http\Message\RequestInterface;
+
 class WorkstationProcessFinished extends BaseController
 {
     /**
@@ -13,14 +15,14 @@ class WorkstationProcessFinished extends BaseController
      * @return String
      */
     public function readResponse(
-        \Psr\Http\Message\RequestInterface $request,
+        RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $this->testProcess($workstation);
-
         $requestList = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/request/')->getCollection();
+
         $statisticEnabled = $workstation->getScope()->getPreference('queue', 'statisticsEnabled');
         $isDefaultPickup = $workstation->getScope()->getPreference('pickup', 'isDefault');
         $workstation->process['status'] = (! $statisticEnabled && $isDefaultPickup) ? 'pending' : 'finished';
@@ -28,11 +30,11 @@ class WorkstationProcessFinished extends BaseController
         $input = $request->getParsedBody();
 
         if (! $statisticEnabled && ! $isDefaultPickup) {
-            return $this->getResponseWithStatisticDisabled($process);
+            return $this->getResponseWithStatisticDisabled($process, $workstation);
         }
 
         if (is_array($input) && array_key_exists('id', $input['process'])) {
-            return $this->getResponseWithStatisticEnabled($input, $process);
+            return $this->getResponseWithStatisticEnabled($input, $process, $workstation);
         }
 
         return \BO\Slim\Render::withHtml(
@@ -57,10 +59,10 @@ class WorkstationProcessFinished extends BaseController
         }
     }
 
-    protected function getResponseWithStatisticDisabled($process)
+    protected function getResponseWithStatisticDisabled($process, $workstation)
     {
         $process = \App::$http->readPostResult('/process/status/finished/', $process)->getEntity();
-        $workstation = \App::$http->readDeleteResult('/workstation/process/')->getEntity();
+        //$workstation = \App::$http->readDeleteResult('/workstation/process/')->getEntity();
         return \BO\Slim\Render::redirect(
             $workstation->getVariantName(),
             array(),
@@ -68,7 +70,7 @@ class WorkstationProcessFinished extends BaseController
         );
     }
 
-    protected function getResponseWithStatisticEnabled(array $input, \BO\Zmsentities\Process $process)
+    protected function getResponseWithStatisticEnabled(array $input, \BO\Zmsentities\Process $process, $workstation)
     {
         $process->addData($input['process']);
         //pickup
@@ -78,7 +80,7 @@ class WorkstationProcessFinished extends BaseController
         }
         $process->setClientsCount($input['statistic']['clientsCount']);
         $process = \App::$http->readPostResult('/process/status/finished/', $process)->getEntity();
-        $workstation = \App::$http->readDeleteResult('/workstation/process/')->getEntity();
+        //$workstation = \App::$http->readDeleteResult('/workstation/process/')->getEntity();
         return \BO\Slim\Render::redirect(
             $workstation->getVariantName(),
             array(),
