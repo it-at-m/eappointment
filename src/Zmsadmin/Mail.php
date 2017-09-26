@@ -43,7 +43,7 @@ class Mail extends BaseController
                         'selectedprocess' => $process->id,
                         'dialog' => $dialog,
                         'status' => $sendStatus,
-                        'result' => ('form' == $input['submit'] && $formResponse->hasId()) ? 'success' : 'error'
+                        'result' => ($formResponse->hasId()) ? 'success' : 'error'
                     ]
                 );
             }
