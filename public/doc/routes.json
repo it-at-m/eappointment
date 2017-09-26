@@ -1619,6 +1619,62 @@
 					}
 				}
 			}
+		},
+		"post": {
+			"summary": "Add a log entry for a process",
+			"tags": [
+				"process",
+				"log"
+			],
+			"parameters": [
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				},
+				{
+					"name": "id",
+					"description": "id of a process",
+					"in": "path",
+					"required": true,
+					"type": "number"
+				},
+				{
+					"name": "mimepart",
+					"description": "mimepart data with content",
+					"required": true,
+					"in": "body",
+					"schema": {
+						"$ref": "schema/mimepart.json"
+					}
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "log accepted",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/mimepart.json"
+								}
+							}
+						}
+					}
+				},
+				"400": {
+					"description": "Missing required properties in the mimepart"
+				},
+				"403": {
+					"description": "Missing access rights, unvalid process id"
+				}
+			}
 		}
 	},
 	"/mails/": {
@@ -1669,7 +1725,7 @@
 			],
 			"parameters": [
 				{
-					"name": "notification",
+					"name": "mail",
 					"description": "mail data to send",
 					"required": true,
 					"in": "body",
@@ -2821,6 +2877,110 @@
 			}
 		}
 	},
+	"/process/{id}/": {
+		"delete": {
+			"summary": "Deletes a process at once",
+			"description": "A deleted process usually waits for a cronjob to be removed. This operation deletes the process without any waitingtime. An X-Authkey is required and the workstation needs access to the scope of the process.",
+			"x-since": 2.13,
+			"tags": [
+				"process"
+			],
+			"parameters": [
+				{
+					"name": "id",
+					"description": "process number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				},
+				{
+					"name": "initiator",
+					"description": "Identifies the user initiating the request for logging purposes",
+					"in": "query",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success, there might be changes on the object or added information. Use the response for further action with the process",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/process.json"
+							}
+						}
+					}
+				},
+				"403": {
+					"description": "operation is not allowed due to access rights"
+				},
+				"404": {
+					"description": "process id does not exists"
+				}
+			}
+		},
+		"get": {
+			"summary": "Get a process (access restricted by X-Authkey)",
+			"x-since": 2.12,
+			"tags": [
+				"process",
+				"workstation"
+			],
+			"parameters": [
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				},
+				{
+					"name": "id",
+					"description": "process number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/workstation.json"
+							}
+						}
+					}
+				},
+				"401": {
+					"description": "login required"
+				},
+				"404": {
+					"description": "process not found"
+				}
+			}
+		}
+	},
 	"/process/search/": {
 		"get": {
 			"summary": "Get a list of search results for processes",
@@ -3192,59 +3352,6 @@
 				},
 				"403": {
 					"description": "authkey does not match"
-				}
-			}
-		}
-	},
-	"/process/{id}/": {
-		"get": {
-			"summary": "Get a process (access restricted by X-Authkey)",
-			"x-since": 2.12,
-			"tags": [
-				"process",
-				"workstation"
-			],
-			"parameters": [
-				{
-					"name": "X-Authkey",
-					"description": "authentication key to identify user for testing access rights",
-					"in": "header",
-					"type": "string"
-				},
-				{
-					"name": "id",
-					"description": "process number",
-					"in": "path",
-					"required": true,
-					"type": "integer"
-				},
-				{
-					"name": "resolveReferences",
-					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
-					"in": "query",
-					"type": "integer"
-				}
-			],
-			"responses": {
-				"200": {
-					"description": "success",
-					"schema": {
-						"type": "object",
-						"properties": {
-							"meta": {
-								"$ref": "schema/metaresult.json"
-							},
-							"data": {
-								"$ref": "schema/workstation.json"
-							}
-						}
-					}
-				},
-				"401": {
-					"description": "login required"
-				},
-				"404": {
-					"description": "process not found"
 				}
 			}
 		}
