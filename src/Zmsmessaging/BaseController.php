@@ -7,6 +7,10 @@
 */
 namespace BO\Zmsmessaging;
 
+use \BO\Zmsentities\Mail;
+use \BO\Zmsentities\Notification;
+use \BO\Zmsentities\Mimepart;
+
 class BaseController
 {
     protected $workstation = null;
@@ -44,17 +48,17 @@ class BaseController
 
     protected function sendMailer(\BO\Zmsentities\Schema\Entity $entity, $mailer = null, $action = false)
     {
-        if (false !== $action) {
+        if (false !== $action && null !== $mailer) {
             // @codeCoverageIgnoreStart
-            if (null !== $mailer) {
-                if (! $mailer->Send()) {
-                    throw new \Exception('Zmsmessaging Failed');
-                    \App::$log->debug('Zmsmessaging Failed', [$mailer->ErrorInfo]);
-                }
+            if (! $mailer->Send()) {
+                throw new \Exception('Zmsmessaging Failed');
+                \App::$log->debug('Zmsmessaging Failed', [$mailer->ErrorInfo]);
             }
             // @codeCoverageIgnoreEnd
+            $log = new Mimepart(['mime' => 'text/plain']);
+            $log->content = ($entity instanceof Mail) ? $entity->subject : $entity->message;
+            \App::$http->readPostResult('/log/process/'. $entity->process['id'] .'/', $log);
         }
-        \App::$http->readPostResult('/log/process/'. $entity->process['id'] .'/', $entity);
         return $mailer;
     }
 
