@@ -10,6 +10,7 @@ use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\ProcessStatusArchived as Query;
 use \BO\Zmsdb\Process;
+use \BO\Zmsdb\Workstation;
 
 /**
  * @SuppressWarnings(Coupling)
@@ -36,6 +37,7 @@ class ProcessFinished extends BaseController
         $clients = $query->readEntity($process->id, new \BO\Zmsdb\Helper\NoAuth())->getClients();
         if ('pending' == $process['status']) {
             $process = $query->updateEntity($process, \App::$now);
+            (new Workstation)->writeRemovedProcess($workstation);
         } else {
             $query->writeEntityFinished($process, \App::$now);
             foreach ($clients as $client) {
