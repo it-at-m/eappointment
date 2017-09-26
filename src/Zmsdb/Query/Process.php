@@ -23,6 +23,7 @@ class Process extends Base implements MappingInterface
             process.Name = 'dereferenced',
             process.IPadresse = '',
             process.IPTimeStamp = 0,
+            process.NutzerID = 0,
             process.vorlaeufigeBuchung = 1,
             process.absagecode = 'deref!0',
             process.EMail = '',
@@ -42,6 +43,7 @@ class Process extends Base implements MappingInterface
             process.Name = '(abgesagt)',
             process.IPadresse = '',
             process.IPTimeStamp = FLOOR(UNIX_TIMESTAMP()) + (s.loeschdauer * 60),
+            process.NutzerID = 0,
             process.vorlaeufigeBuchung = 1
         WHERE
             (process.BuergerID = ? AND process.absagecode = ?)
