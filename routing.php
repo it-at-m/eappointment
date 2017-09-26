@@ -1349,12 +1349,12 @@ use \Psr\Http\Message\ResponseInterface;
  *                  in: path
  *                  required: true
  *                  type: number
- *              -   name: mail
- *                  description: mail data
+ *              -   name: mimepart
+ *                  description: mimepart data with content
  *                  required: true
  *                  in: body
  *                  schema:
- *                      $ref: "schema/mail.json"
+ *                      $ref: "schema/mimepart.json"
  *          responses:
  *              200:
  *                  description: log accepted
@@ -1366,9 +1366,9 @@ use \Psr\Http\Message\ResponseInterface;
  *                          data:
  *                              type: array
  *                              items:
- *                                  $ref: "schema/mail.json"
+ *                                  $ref: "schema/mimepart.json"
  *              400:
- *                  description: "Missing required properties in the mail"
+ *                  description: "Missing required properties in the mimepart"
  *              403:
  *                  description: "Missing access rights, unvalid process id"
  */

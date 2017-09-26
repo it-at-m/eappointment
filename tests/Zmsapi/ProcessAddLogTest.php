@@ -14,19 +14,9 @@ class ProcessAddLogTest extends Base
     {
         $this->setWorkstation()->getUseraccount()->setRights('superuser');
         $response = $this->render(['id' => self::PROCESS_ID], [
-            '__body' => $this->readFixture('GetMail.json')
+            '__body' => $this->readFixture('GetMimepart.json')
         ], []);
-        $this->assertContains("INSERT INTO `log` SET `message`=:message", (string)$response->getBody());
-        $this->assertTrue(200 == $response->getStatusCode());
-    }
-
-    public function testNotification()
-    {
-        $this->setWorkstation()->getUseraccount()->setRights('superuser');
-        $response = $this->render(['id' => self::PROCESS_ID], [
-            '__body' => $this->readFixture('GetNotification.json')
-        ], []);
-        $this->assertContains("INSERT INTO `log` SET `message`=:message", (string)$response->getBody());
+        $this->assertContains("mimepart.json", (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
