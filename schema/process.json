@@ -37,7 +37,7 @@
         "requests": [
             {
                 "id": "123456",
-                "name": "Abmeldung einer Wohnung",
+                "name": "Name der Dienstleistung",
                 "source": "dldb"
             }
         ],
