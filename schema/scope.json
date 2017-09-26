@@ -205,21 +205,12 @@
                             "type": "string",
                             "description": "Mail address for sending mails to clients",
                             "default": "",
-                            "oneOf": [
-                                {
-                                    "enum": [
-                                        ""
-                                    ]
-                                },
-                                {
-                                    "format": "email"
-                                }
-                            ],
+                            "pattern": "^[a-z0-9_\\-\\.]{2,}@[a-z0-9_\\-\\.]{2,}\\.[a-z]{2,}$|^$",
                             "x-locale": {
                                 "de_DE": {
                                     "pointer": "Absender E-Mail",
                                     "messages": {
-                                        "one_of": "Die E-Mail Adresse muss eine valide E-Mail im Format max@mustermann.de sein"
+                                        "pattern": "Die E-Mail Adresse muss eine valide E-Mail im Format max@mustermann.de sein"
                                     }
                                 }
                             }
