@@ -9,9 +9,11 @@
     	{{ parent() }}
     {% endblock %}
     <body class="hiddencursor locale_{{ currentLang() }}" id="{% block pageid %}{% endblock %}" type="{% block pagetype %}{% endblock %}">
+            {% if getSystemStatus('ZMS_ENV') != "www" %}
             {% block devhint %}
             	{{ parent() }}
             {% endblock %}
+            {% endif %}
             {% block pageheader %}
             	{{ parent() }}
             {% endblock %}
