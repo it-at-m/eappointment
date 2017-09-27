@@ -2,7 +2,7 @@
 
 /**
  *
- * @package Zmsappointment
+ * @package Zmscalldisplay
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
@@ -25,7 +25,7 @@ class RedirectOld
         $collections = Helper\EntryFromOldRoute::getFromOldRoute($request);
         return \BO\Slim\Render::redirect(
             'index',
-            array (),
+            array(),
             $collections
         );
     }

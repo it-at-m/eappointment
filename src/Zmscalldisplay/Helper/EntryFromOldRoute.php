@@ -2,7 +2,7 @@
 
 /**
  *
- * @package Zmsticketprinter
+ * @package Zmscalldisplay
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */

@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @package 115Mandant
+ * @package Zmscalldisplay
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
