@@ -67,9 +67,9 @@ class TwigExtension extends \Twig_Extension
         return new \DateTimeImmutable();
     }
 
-    public static function getSystemStatus()
+    public static function getSystemStatus($env)
     {
-        return \App::SYSTEM;
+        return getenv($env);
     }
 
     public function toTextFormat($string)
