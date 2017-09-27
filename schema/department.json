@@ -71,7 +71,7 @@
         "email": {
             "type": "string",
             "description": "sender address for reminder mails to the clients",
-            "pattern": "^[a-z0-9_\\-\\.]{2,}@[a-z0-9_\\-\\.]{2,}\\.[a-z]{2,}$|^$",
+            "pattern": "^[a-zA-Z0-9_\\-\\.]{2,}@[a-zA-Z0-9_\\-\\.]{2,}\\.[a-z]{2,}$|^$",
             "x-locale": {
                 "de_DE": {
                     "pointer": "E-Mail",

@@ -158,6 +158,8 @@ class Messaging
     {
         $replaceThis = array(
             "<br />" => "$lineBreak",
+            "<ul>"  => "$lineBreak",
+            "</ul>"  => "$lineBreak",
             "<li>" => "$lineBreak- ",
             "</li>" => "",
             "<h2>" => "$lineBreak",

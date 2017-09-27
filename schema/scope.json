@@ -205,7 +205,7 @@
                             "type": "string",
                             "description": "Mail address for sending mails to clients",
                             "default": "",
-                            "pattern": "^[a-z0-9_\\-\\.]{2,}@[a-z0-9_\\-\\.]{2,}\\.[a-z]{2,}$|^$",
+                            "pattern": "^[a-zA-Z0-9_\\-\\.]{2,}@[a-zA-Z0-9_\\-\\.]{2,}\\.[a-z]{2,}$|^$",
                             "x-locale": {
                                 "de_DE": {
                                     "pointer": "Absender E-Mail",

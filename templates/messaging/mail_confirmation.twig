@@ -21,13 +21,11 @@ Sie haben folgende {{ requestalias }} ausgewählt:
 {% for request in process.requests %}
 <h2>{{ request.name }}</h2>
 {% if request.source == "dldb" %}
-{% include "@dldb/detail/service_detail_prerequisites.twig" with {"service":request.data} %}
-{% include "@dldb/detail/service_detail_requirements.twig" with {"service":request.data} %}
-{% include "@dldb/detail/service_detail_fees.twig" with {"service":request.data} %}
+{% include "@dldb/detail/service_detail_prerequisites.twig" with {"service":request.data} %}<br />
+{% include "@dldb/detail/service_detail_requirements.twig" with {"service":request.data} %}<br />
+{% include "@dldb/detail/service_detail_fees.twig" with {"service":request.data} %}<br />
 {% endif %}
-{% endfor %}<br />
-
-Sollten Sie den Termin nicht wahrnehmen können, sagen Sie ihn bitte ab.
+{% endfor %}<br />Sollten Sie den Termin nicht wahrnehmen können, sagen Sie ihn bitte ab.
 <br /><br />
 Dies können Sie über unsere Internetbuchungsseite {{ config.appointments.urlChange }}{{ process.id }}/ unter Angabe Ihrer Vorgangsnummer "{{ process.id }}" und Ihres persönlichen Absage-Codes "{{ process.authKey }}" erledigen.<br /><br />
 {% if config.appointments.sms.telephone %}
