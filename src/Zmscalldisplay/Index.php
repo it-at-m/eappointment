@@ -37,7 +37,7 @@ class Index extends BaseController
             array(
                 'debug' => \App::DEBUG,
                 'queueStatusRequested' => implode(',', $calldisplayHelper::getRequestedQueueStatus($request)),
-                'collections' => $calldisplayHelper->collections,
+                'scopeList' => $calldisplay->getFullScopeList()->getIdsCsv(),
                 'title' => 'Aufrufanzeige',
                 'calldisplay' => $calldisplay,
             )

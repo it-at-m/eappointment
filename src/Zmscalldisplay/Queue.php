@@ -25,7 +25,8 @@ class Queue extends BaseController
         $validator = $request->getAttribute('validator');
 
         $calldisplay = new Helper\Calldisplay($request);
-        $queueList = \App::$http->readPostResult('/calldisplay/queue/', $calldisplay->getEntity())->getCollection();
+        $queueList = \App::$http->readPostResult('/calldisplay/queue/', $calldisplay->getEntity(false))
+            ->getCollection();
         $queueList = ($queueList) ?
             $queueList->withStatus($calldisplay::getRequestedQueueStatus($request)) :
             new \BO\Zmsentities\Collection\QueueList();
