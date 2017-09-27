@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @package Zmsappointment
+ * @package Zmscalldisplay
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
@@ -25,9 +25,7 @@ class Queue extends BaseController
         $validator = $request->getAttribute('validator');
 
         $calldisplay = new Helper\Calldisplay($request);
-        //error_log(json_encode($calldisplay->getEntity(false)));
-        $queueList = \App::$http->readPostResult('/calldisplay/queue/', $calldisplay->getEntity(false))
-            ->getCollection();
+        $queueList = \App::$http->readPostResult('/calldisplay/queue/', $calldisplay->getEntity())->getCollection();
         $queueList = ($queueList) ?
             $queueList->withStatus($calldisplay::getRequestedQueueStatus($request)) :
             new \BO\Zmsentities\Collection\QueueList();

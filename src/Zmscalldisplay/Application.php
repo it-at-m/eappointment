@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @package Zmsappointment
+ * @package Zmscalldisplay
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */

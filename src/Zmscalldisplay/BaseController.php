@@ -1,6 +1,6 @@
 <?php
 /**
- * @package Zmsappointment
+ * @package Zmscalldisplay
  * @copyright BerlinOnline Stadtportal GmbH & Co. KGd
  *
  */
@@ -15,5 +15,4 @@ use \Psr\Http\Message\ResponseInterface;
  */
 abstract class BaseController extends \BO\Slim\Controller
 {
-
 }
