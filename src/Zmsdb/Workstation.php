@@ -70,6 +70,7 @@ class Workstation extends Base
         $query
             ->addEntityMapping()
             ->addConditionScopeId($scopeId)
+            ->addConditionWorkstationIsNotCounter()
             ->addConditionTime($dateTime)
             ->addResolvedReferences($resolveReferences);
         $result = $this->fetchList($query, new Entity());
