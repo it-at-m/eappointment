@@ -15,14 +15,11 @@ class Calldisplay
     protected $entity;
     protected $isEntityResolved = false;
 
-    public $collections = '';
-
     const DEFAULT_STATUS = ['called', 'pickup'];
 
     public function __construct($request)
     {
         $this->entity = static::createInstance($request);
-        $this->collections = static::getCollections($request);
     }
 
     /**
