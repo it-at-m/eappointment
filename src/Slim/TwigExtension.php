@@ -50,6 +50,7 @@ class TwigExtension extends \Twig_Extension
             new \Twig_SimpleFunction('getNow', array($this, 'getNow')),
             new \Twig_SimpleFunction('isNumeric', array($this, 'isNumeric')),
             new \Twig_SimpleFunction('dumpAppProfiler', array($this, 'dumpAppProfiler'), $safe),
+            new \Twig_SimpleFunction('getSystemStatus', array($this, 'getSystemStatus'), $safe),
         );
     }
 
@@ -64,6 +65,11 @@ class TwigExtension extends \Twig_Extension
             return \App::$now;
         }
         return new \DateTimeImmutable();
+    }
+
+    public static function getSystemStatus()
+    {
+        return \App::SYSTEM;
     }
 
     public function toTextFormat($string)
