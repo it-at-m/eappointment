@@ -219,6 +219,7 @@ class Scope extends Base implements MappingInterface
                         FROM nutzer
                         WHERE nutzer.StandortID = scope.StandortID
                         AND nutzer.Datum = "'. $dateTime->format('Y-m-d') .'"
+                        AND nutzer.Arbeitsplatznr <> 0
                     )
                 )
             ')
