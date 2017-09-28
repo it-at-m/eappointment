@@ -1,5 +1,4 @@
 /* global window */
-/* global confirm */
 import BaseView from "../../lib/baseview"
 import $ from "jquery"
 import moment from 'moment'
@@ -39,43 +38,34 @@ class View extends BaseView {
 
     delete (ev) {
         console.log("Delete Button clicked", ev);
-        let initiator = (this.source == "counter") ? "Tresen" : "Arbeitsplatz";
         ev.preventDefault();
         ev.stopPropagation();
+        let initiator = (this.source == "counter") ? "Tresen" : "Arbeitsplatz";
         const id  = $(ev.target).data('id')
-        const name  = $(ev.target).data('name')
-        const ok = confirm('Wenn Sie den Kunden Nr. '+ id +' '+ name +' löschen wollen, klicken Sie auf OK. Der Kunde wird darüber per eMail und/oder SMS informiert.)')
         const url = `${this.includeUrl}/process/${id}/delete/?initiator=${initiator}`;
-        if (ok) {
-            return this.loadCall(url, 'DELETE');
-        }
-        return Promise.resolve(false);
+        return this.loadCall(url, 'DELETE');
     }
 
     finishList(ev) {
         console.log("Finish List Pickup Button clicked", ev);
         ev.preventDefault();
         ev.stopPropagation();
-        var promise = Promise.resolve(false);
-        const ok = confirm('Wollen Sie wirklich alle Abholer aus dieser Liste löschen?');
         var idList = this.$main.find(".process-finish").map((index, item) => {
             return $(item).data('id');
         }).get();
-        if (ok) {
-            var deleteFromQueue = () => {
-                let processId = idList.shift();
-                if (processId) {
-                    let url = `${this.includeUrl}/pickup/delete/${processId}/`;
-                    if (idList.length == 0) {
-                        url = url + "?list=1";
-                        return this.loadCall(url, 'DELETE');
-                    }
-                    return this.loadCall(url, 'DELETE').then(deleteFromQueue);
+        this.showSpinner();
+        var deleteFromQueue = () => {
+            let processId = idList.shift();
+            if (processId) {
+                let url = `${this.includeUrl}/pickup/delete/${processId}/`;
+                if (idList.length == 0) {
+                    url = url + "?list=1";
+                    return this.loadCall(url, 'DELETE');
                 }
+                return this.loadCall(url, 'DELETE').then(deleteFromQueue);
             }
-            promise = deleteFromQueue();
         }
-        return promise;
+        return deleteFromQueue();
     }
 
     finish (ev) {
@@ -84,16 +74,7 @@ class View extends BaseView {
         ev.stopPropagation();
         const id  = $(ev.target).data('id');
         const url = `${this.includeUrl}/pickup/delete/${id}/`;
-        const name  = $(ev.target).data('name');
-        const withoutconfirmation  = $(ev.target).data('no-confirmation');
-        if (withoutconfirmation) {
-            return this.loadCall(url, 'DELETE');
-        }
-        const ok = confirm('Wenn Sie den Kunden Nr. '+ id +' '+ name +' löschen wollen, klicken Sie auf OK.')
-        if (ok) {
-            return this.loadCall(url, 'DELETE');
-        }
-        return Promise.resolve(false);
+        return this.loadCall(url, 'DELETE');
     }
 
     reserve (ev) {
@@ -130,17 +111,13 @@ class View extends BaseView {
     sendNotificationReminder (ev) {
         ev.preventDefault();
         ev.stopPropagation();
-        const selectedProcessId = $(ev.target).data('process');
+        const id = $(ev.target).data('id');
         const url = `${this.includeUrl}/notification/`;
-        const ok = confirm('Möchten Sie dem Kunden per SMS mitteilen, dass er/sie bald an der Reihe ist, dann klicken Sie auf OK.')
-        if (ok) {
-            return this.loadCall(url, 'POST', {
-                'selectedprocess': selectedProcessId,
-                'status': 'queued',
-                'submit': 'reminder'
-            });
-        }
-        return Promise.resolve(false);
+        return this.loadCall(url, 'POST', {
+            'selectedprocess': id,
+            'status': 'queued',
+            'submit': 'reminder'
+        });
     }
 
     sendNotification (ev, url) {

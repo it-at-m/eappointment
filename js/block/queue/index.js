@@ -2,7 +2,7 @@
 import BaseView from "../../lib/baseview"
 import $ from "jquery"
 import { lightbox } from '../../lib/utils'
-import ButtonActionHandler from "../appointment/action"
+import ActionHandler from "../appointment/action"
 import MessageHandler from '../../lib/messageHandler';
 import DialogHandler from '../../lib/dialogHandler';
 
@@ -10,7 +10,7 @@ class View extends BaseView {
 
     constructor (element, options) {
         super(element, options);
-        this.ButtonAction = new ButtonActionHandler(element, options);
+        this.ActionHandler = new ActionHandler(element, options);
         this.source = options.source;
         this.selectedDate = options.selectedDate;
         this.includeUrl = options.includeUrl || "";
@@ -54,17 +54,26 @@ class View extends BaseView {
 
     loadMessage (response, callback) {
         if (response) {
-            const { lightboxContentElement, destroyLightbox } = lightbox(this.$main, () => {callback()})
+            const { lightboxContentElement, destroyLightbox } = lightbox(this.$main, () => {callback()});
             new MessageHandler(lightboxContentElement, {
                 message: response,
-                callback: (buttonAction, buttonUrl) => {
-                    if (buttonAction)
-                        this.ButtonAction[buttonAction]()
-                    else if (buttonUrl)
-                        this.loadByCallbackUrl(buttonUrl)
-                    destroyLightbox()
-                    this.cleanReload();
-                }})
+                callback: (ActionHandler, buttonUrl, ev) => {
+                    if (ActionHandler) {
+                        let promise = this.ActionHandler[ActionHandler](ev);
+                        if (promise instanceof Promise) {
+                            promise
+                                .then((response) => {this.loadMessage(response, callback)})
+                                .catch(err => this.loadErrorCallback(err))
+                        } else {
+                            callback();
+                        }
+                    } else if (buttonUrl) {
+                        this.loadByCallbackUrl(buttonUrl);
+                        callback();
+                    }
+                    destroyLightbox();
+                }
+            })
         }
     }
 
@@ -109,11 +118,14 @@ class View extends BaseView {
         }).on('click', 'a.process-edit', (ev) => {
             this.onEditProcess($(ev.target).data('id'))
         }).on('click', 'a.process-reset', (ev) => {
-            this.ButtonAction.reset(ev).catch(err => this.loadErrorCallback(err)).then((response) => {
+            this.ActionHandler.reset(ev).catch(err => this.loadErrorCallback(err)).then((response) => {
                 this.loadMessage(response, this.onDeleteProcess);
             });
         }).on('click', 'a.process-delete', (ev) => {
-            this.ButtonAction.delete(ev).catch(err => this.loadErrorCallback(err)).then((response) => {
+            const id  = $(ev.target).data('id')
+            const name  = $(ev.target).data('name')
+            var confirmDelete = this.loadCall(`${this.includeUrl}/dialog/?template=confirm_delete&parameter[id]=${id}&parameter[name]=${name}`);
+            confirmDelete.catch(err => this.loadErrorCallback(err)).then((response) => {
                 this.loadMessage(response, this.onDeleteProcess);
             });
         }).on('click', '.queue-table .calendar-navigation .pagedaylink', (ev) => {
@@ -129,17 +141,20 @@ class View extends BaseView {
             console.log('today selected', selectedDate)
             this.onDateToday(selectedDate, this)
         }).on('click', '.queue-table .process-notification-send', (ev) => {
-            this.ButtonAction.sendNotificationReminder(ev).catch(err => this.loadErrorCallback(err)).then((response) => {
+            const id  = $(ev.target).data('process')
+            var confirmNotificationReminder = this.loadCall(`${this.includeUrl}/dialog/?template=confirm_notification_reminder&parameter[id]=${id}`);
+            confirmNotificationReminder.catch(err => this.loadErrorCallback(err)).then((response) => {
+                this.showSpinner();
                 this.loadMessage(response, this.load);
             });
         }).on('click', '.process-custom-mail-send', (ev) => {
             const url = `${this.includeUrl}/mail/`;
-            this.ButtonAction.sendMail(ev, url).catch(err => this.loadErrorCallback(err)).then((response) => {
+            this.ActionHandler.sendMail(ev, url).catch(err => this.loadErrorCallback(err)).then((response) => {
                 this.loadDialog(response, this.load);
             });
         }).on('click', '.process-custom-notification-send', (ev) => {
             const url = `${this.includeUrl}/notification/`;
-            this.ButtonAction.sendNotification(ev, url).catch(err => this.loadErrorCallback(err)).then((response) => {
+            this.ActionHandler.sendNotification(ev, url).catch(err => this.loadErrorCallback(err)).then((response) => {
                 this.loadDialog(response, this.load);
             });
         })

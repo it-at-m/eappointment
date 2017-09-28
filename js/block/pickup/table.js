@@ -54,12 +54,12 @@ class View extends BaseView {
                             promise
                                 .then((response) => {this.loadMessage(response, callback)})
                                 .catch(err => this.loadErrorCallback(err))
-                        } else {
+                        } else if ('abort' != ActionHandler) {
                             callback();
                         }
                     } else if (buttonUrl) {
                         this.loadByCallbackUrl(buttonUrl);
-                        callback();
+                        return callback();
                     }
                     destroyLightbox();
                 }
@@ -94,13 +94,17 @@ class View extends BaseView {
         this.$main.off('click').on('change', '.switchcluster select', (ev) => {
             $(ev.target).closest('form').submit();
         }).on('click', 'a.process-finish', (ev) => {
-            this.ActionHandler.finish(ev).then((response) => {
+            const id  = $(ev.target).data('id')
+            const name  = $(ev.target).data('name')
+            var confirmFinish = this.loadCall(`${this.includeUrl}/dialog/?template=confirm_finish&parameter[id]=${id}&parameter[name]=${name}`);
+            confirmFinish.catch(err => this.loadErrorCallback(err)).then((response) => {
                 this.loadMessage(response, this.onFinishProcess);
-            }).catch(err => this.loadErrorCallback(err));
+            });
         }).on('click', 'a.process-finish-list', (ev) => {
-            this.ActionHandler.finishList(ev).then((response) => {
+            var confirmFinishList = this.loadCall(`${this.includeUrl}/dialog/?template=confirm_finish_list`);
+            confirmFinishList.catch(err => this.loadErrorCallback(err)).then((response) => {
                 this.loadMessage(response, this.onFinishProcess);
-            }).catch(err => this.loadErrorCallback(err));
+            });
         }).on('click', 'a.process-pickup', (ev) => {
             this.ActionHandler.pickup(ev).then((response) => {
                 this.loadMessage(response, this.onPickupCallProcess);

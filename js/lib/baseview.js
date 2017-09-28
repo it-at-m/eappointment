@@ -121,7 +121,7 @@ class BaseView extends ErrorHandler {
     }
 
     cleanReload () {
-        window.location.href = window.location.href;
+        window.location.reload(true);
     }
 
 }
