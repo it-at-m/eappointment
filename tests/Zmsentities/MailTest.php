@@ -37,7 +37,7 @@ class MailTest extends EntityCommonTests
         $this->assertTrue(null === $entity->getIcsPart(), 'Mimepart with mime text/calendar should not exist');
         $resolvedEntity = $entity->toResolvedEntity($process, $config);
         $this->assertContains(
-            '<strong>Sehr geehrte/r Frau',
+            'Sehr geehrte/r Frau',
             $resolvedEntity->getHtmlPart(),
             'Mimepart content is not html'
         );

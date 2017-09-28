@@ -1,5 +1,5 @@
 {% block german %}
-<strong>Sehr geehrte/r Frau oder Herr {{ client.familyName }}</strong>
+Sehr geehrte/r Frau oder Herr {{ client.familyName }},
 <br /><br />
 hiermit bestätigen wir Ihre Wartenummer für den {{ toGermanDateFromTs(date|default(getNow|date('U'))).date }}<br /><br />
 <strong>Ort:</strong> {{ process.scope.provider.name ~ " " ~ process.scope.provider.contact.street ~", " ~ process.scope.provider.contact.postalCode ~ " " ~ process.scope.provider.contact.city }}<br />
@@ -15,10 +15,10 @@ Zahlungshinweis: {{ process.scope.provider.data.payment }}<br /><br />
 {% else %}
 {% set requestalias = "Dienstleistung" %}
 {% endif %}
-Sie haben folgende {{ requestalias }} ausgewählt:
+Sie haben folgende {{ requestalias }} ausgewählt:<br/>
 <br />
 {% for request in process.requests %}
-<h2>{{ request.name }}</h2>
+<strong>{{ request.name }}</strong><br/>
 {% if request.source == "dldb" %}
 {% include "@dldb/detail/service_detail_prerequisites.twig" with {"service":request.data} %}
 {% include "@dldb/detail/service_detail_requirements.twig" with {"service":request.data} %}
@@ -26,9 +26,9 @@ Sie haben folgende {{ requestalias }} ausgewählt:
 {% endif %}
 {% endfor %}
 
-<br /><br />
+<br />
 Mit freundlichem Gruß<br />
 Ihre Terminverwaltung des Landes Berlin
 <br /><br />
-{{ config.appointments.urlAppointments }}
+<a href="{{ config.appointments.urlAppointments }}">{{ config.appointments.urlAppointments }}</a>
 {% endblock %}

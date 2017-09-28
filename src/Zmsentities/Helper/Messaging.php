@@ -170,17 +170,11 @@ class Messaging
         $content = \str_replace(array_keys($replaceThis), $replaceThis, $content);
         $content = \strip_tags($content);
 
-        /*
-        $lines = \explode("\n", $content);
-        $new_lines = array();
-        foreach ($lines as $line) {
-            if (!empty($line)) {
-                $new_lines[]=$line;
-            }
-        }
-        $content = \implode("\n", $new_lines);
-         */
         $content = \html_entity_decode($content);
+        $content = trim($content);
+        $content = \preg_replace('# *'.preg_quote($lineBreak).' *#m', $lineBreak, $content);
+        $content = \preg_replace('#('.preg_quote($lineBreak).'){2,}#m', $lineBreak.$lineBreak, $content);
+        //error_log(">>>$content<<<");
         return $content;
     }
 }

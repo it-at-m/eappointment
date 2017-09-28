@@ -1,5 +1,5 @@
 {% block german %}
-    <strong>Sehr geehrte/r Frau oder Herr {{ client.familyName }}</strong>
+    Sehr geehrte/r Frau oder Herr {{ client.familyName }},
     <br /><br />
     Ihr Dokument ({{ process.requests|first.name }}) ist fertig und liegt zur Abholung bereit.,
     <br /><br />
@@ -10,5 +10,5 @@
     Mit freundlichem Gruß<br />
     Ihre Terminverwaltung des Landes Berlin
     <br /><br />
-    {{ config.appointments.urlAppointments }}
+<a href="{{ config.appointments.urlAppointments }}">{{ config.appointments.urlAppointments }}</a>
 {% endblock %}

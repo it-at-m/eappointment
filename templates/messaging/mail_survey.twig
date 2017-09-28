@@ -1,5 +1,5 @@
 {% block german %}
-    <strong>Sehr geehrte/r Frau oder Herr {{ client.familyName }}</strong>
+    Sehr geehrte/r Frau oder Herr {{ client.familyName }},
     <br /><br />
-    {{ process.scope.preferences.survey.emailContent }}
+    {{ process.scope.preferences.survey.emailContent|raw }}
 {% endblock %}

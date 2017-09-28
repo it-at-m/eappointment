@@ -1,40 +1,46 @@
 {% block german %}
-<strong>Sehr geehrte/r Frau oder Herr {{ client.familyName }}</strong>
-<br /><br />
-hiermit bestätigen wir Ihnen Ihren gebuchten Termin am {{ toGermanDateFromTs(date|default(getNow|date('U'))).date }} um {{ toGermanDateFromTs(date|default(getNow|date('U'))).time }}<br /><br />
+Sehr geehrte/r Frau oder Herr {{ client.familyName }},<br />
+<br />
+hiermit bestätigen wir Ihnen Ihren gebuchten Termin am {{ toGermanDateFromTs(date|default(getNow|date('U'))).date }} um {{ toGermanDateFromTs(date|default(getNow|date('U'))).time }}<br />
+<br />
 <strong>Ort:</strong> {{ process.scope.provider.name ~ " " ~ process.scope.provider.contact.street ~", " ~ process.scope.provider.contact.postalCode ~ " " ~ process.scope.provider.contact.city }}<br />
 {% if process.scope.hint %}
-({{ process.scope.hint|split('|')|first }} {{ process.scope.hint|split('|')|last}})
-{% endif %}<br /><br />
+({{ process.scope.hint }})<br />
+{% endif %}<br />
 Ihre Vorgangsnummer ist die <strong>"{{ process.id }}"</strong><br />
-Ihr Code zur Terminabsage oder -änderung lautet <strong>"{{ process.authKey }}"</strong><br /><br />
+Ihr Code zur Terminabsage oder -änderung lautet <strong>"{{ process.authKey }}"</strong><br />
+<br />
 {% if process.scope.provider.source == "dldb" and process.scope.provider.data.payment %}
-Zahlungshinweis: {{ process.scope.provider.data.payment }}<br /><br />
+Zahlungshinweis: {{ process.scope.provider.data.payment }}<br />i
+<br />
 {% endif %}
 {% if process.request|length > 0 %}
 {% set requestalias = "Dienstleistungen" %}
 {% else %}
 {% set requestalias = "Dienstleistung" %}
 {% endif %}
-Sie haben folgende {{ requestalias }} ausgewählt:
+Sie haben folgende {{ requestalias }} ausgewählt:<br />
 <br />
 {% for request in process.requests %}
-<h2>{{ request.name }}</h2>
+<strong>{{ request.name }}</strong><br/>
 {% if request.source == "dldb" %}
 {% include "@dldb/detail/service_detail_prerequisites.twig" with {"service":request.data} %}<br />
 {% include "@dldb/detail/service_detail_requirements.twig" with {"service":request.data} %}<br />
 {% include "@dldb/detail/service_detail_fees.twig" with {"service":request.data} %}<br />
 {% endif %}
-{% endfor %}<br />Sollten Sie den Termin nicht wahrnehmen können, sagen Sie ihn bitte ab.
-<br /><br />
-Dies können Sie über unsere Internetbuchungsseite {{ config.appointments.urlChange }}{{ process.id }}/ unter Angabe Ihrer Vorgangsnummer "{{ process.id }}" und Ihres persönlichen Absage-Codes "{{ process.authKey }}" erledigen.<br /><br />
+{% endfor %}
+<br />
+Sollten Sie den Termin nicht wahrnehmen können, sagen Sie ihn bitte ab.<br />
+<br />
+Dies können Sie über unsere Internetbuchungsseite <a href="{{ config.appointments.urlChange }}{{ process.id }}/">{{ config.appointments.urlChange }}{{ process.id }}/</a> unter Angabe Ihrer Vorgangsnummer "{{ process.id }}" und Ihres persönlichen Absage-Codes "{{ process.authKey }}" erledigen.<br />
+<br />
 {% if config.appointments.sms.telephone %}
 Oder schicken Sie eine SMS mit dem Inhalt "{{ config.appointments.sms.textCancel }}\{{ process.id }}" an die Rufnummer {{ config.appointments.sms.telephone }}.
-"Hierbei ist die Groß- und Kleinschreibung von "{{ config.appointments.sms.textCancel }}" nicht wichtig. Bei Absage per SMS erhalten Sie zu Ihrer Sicherheit eine Bestätigungs-SMS Ihrer Absage.<br /><br />
-{% endif %}
+"Hierbei ist die Groß- und Kleinschreibung von "{{ config.appointments.sms.textCancel }}" nicht wichtig. Bei Absage per SMS erhalten Sie zu Ihrer Sicherheit eine Bestätigungs-SMS Ihrer Absage.<br />
 <br />
+{% endif %}
 Mit freundlichem Gruß<br />
 Ihre Terminverwaltung des Landes Berlin
 <br /><br />
-{{ config.appointments.urlAppointments }}
+<a href="{{ config.appointments.urlAppointments }}">{{ config.appointments.urlAppointments }}</a>
 {% endblock %}
