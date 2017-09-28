@@ -21,7 +21,6 @@ class Workstation extends Base implements MappingInterface
             `Datum`=?,
             `Arbeitsplatznr`="",
             `aufrufzusatz`="",
-            `BehoerdenID`=0,
             `StandortID`=0
         WHERE
             `Name`=? AND
@@ -45,7 +44,6 @@ class Workstation extends Base implements MappingInterface
             `SessionID`="",
             `StandortID`=0,
             `Datum`="0000-00-00",
-            `BehoerdenID`=0,
             `Arbeitsplatznr`="",
             `aufrufzusatz`=""
         WHERE
