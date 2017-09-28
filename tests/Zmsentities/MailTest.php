@@ -42,7 +42,7 @@ class MailTest extends EntityCommonTests
             'Mimepart content is not html'
         );
         $this->assertContains(
-            'Ihre Vorgangsnummer ist die "123456"',
+            'Ihre Vorgangsnummer ist die **"123456"**',
             $resolvedEntity->getPlainPart(),
             'Mimepart content is not plain text'
         );

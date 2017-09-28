@@ -156,25 +156,11 @@ class Messaging
 
     public static function getPlainText($content, $lineBreak = "\n")
     {
-        $replaceThis = array(
-            "<br />" => "$lineBreak",
-            "<ul>"  => "$lineBreak",
-            "</ul>"  => "$lineBreak",
-            "<li>" => "$lineBreak- ",
-            "</li>" => "",
-            "<h2>" => "$lineBreak",
-            "</h2>" => "$lineBreak",
-        );
-
-        $content = \preg_replace('!\s+!m', ' ', $content);
-        $content = \str_replace(array_keys($replaceThis), $replaceThis, $content);
-        $content = \strip_tags($content);
-
-        $content = \html_entity_decode($content);
-        $content = trim($content);
-        $content = \preg_replace('# *'.preg_quote($lineBreak).' *#m', $lineBreak, $content);
-        $content = \preg_replace('#('.preg_quote($lineBreak).'){2,}#m', $lineBreak.$lineBreak, $content);
-        //error_log(">>>$content<<<");
-        return $content;
+        $converter = new \League\HTMLToMarkdown\HtmlConverter();
+        $text = $converter->convert($content);
+        $text = strip_tags($text);
+        $text = str_replace("\n", $lineBreak, $text);
+        //error_log(">>>$text<<<");
+        return $text;
     }
 }

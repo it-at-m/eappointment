@@ -1,7 +1,8 @@
 {% block german %}
+<div style="color: #000000; background: #ffffff;">
 Sehr geehrte/r Frau oder Herr {{ client.familyName }},<br />
 <br />
-hiermit bestätigen wir Ihnen Ihren gebuchten Termin am {{ toGermanDateFromTs(date|default(getNow|date('U'))).date }} um {{ toGermanDateFromTs(date|default(getNow|date('U'))).time }}<br />
+hiermit bestätigen wir Ihnen Ihren gebuchten Termin am <strong>{{ toGermanDateFromTs(date|default(getNow|date('U'))).date }} um {{ toGermanDateFromTs(date|default(getNow|date('U'))).time }}</strong>.<br />
 <br />
 <strong>Ort:</strong> {{ process.scope.provider.name ~ " " ~ process.scope.provider.contact.street ~", " ~ process.scope.provider.contact.postalCode ~ " " ~ process.scope.provider.contact.city }}<br />
 {% if process.scope.hint %}
@@ -24,9 +25,15 @@ Sie haben folgende {{ requestalias }} ausgewählt:<br />
 {% for request in process.requests %}
 <strong>{{ request.name }}</strong><br/>
 {% if request.source == "dldb" %}
-{% include "@dldb/detail/service_detail_prerequisites.twig" with {"service":request.data} %}<br />
-{% include "@dldb/detail/service_detail_requirements.twig" with {"service":request.data} %}<br />
-{% include "@dldb/detail/service_detail_fees.twig" with {"service":request.data} %}<br />
+<div style="color: #444444; border-left: 1em solid #ffffff; background: #ffffff;">
+<br />
+{% include "@dldb/detail/service_detail_prerequisites.twig" with {"service":request.data, "headerlevel":"strong"} %}
+
+{% include "@dldb/detail/service_detail_requirements.twig" with {"service":request.data, "headerlevel":"strong"} %}
+
+{% include "@dldb/detail/service_detail_fees.twig" with {"service":request.data, "headerlevel":"strong"} %}
+<br />
+</div>
 {% endif %}
 {% endfor %}
 <br />
@@ -43,4 +50,5 @@ Mit freundlichem Gruß<br />
 Ihre Terminverwaltung des Landes Berlin
 <br /><br />
 <a href="{{ config.appointments.urlAppointments }}">{{ config.appointments.urlAppointments }}</a>
+</div>
 {% endblock %}
