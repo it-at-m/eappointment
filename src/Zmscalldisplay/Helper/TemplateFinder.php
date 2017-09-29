@@ -90,7 +90,7 @@ class TemplateFinder
     /**
      * @todo check against ISO definition
      */
-    protected function getTemplatePath()
+    public function getTemplatePath()
     {
         return realpath(__DIR__) .'/../../../templates';
     }
