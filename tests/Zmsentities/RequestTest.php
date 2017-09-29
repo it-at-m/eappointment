@@ -18,11 +18,11 @@ class RequestTest extends EntityCommonTests
             1 == count($collection),
             'Missing new Entity with ID ' . $entity->id . ' in collection, 1 expected (' .
             count($collection) . ' found)'
-            );
+        );
 
         $this->assertFalse($collection->hasRequests(1234), 'Provider list should not have a request with id 1234');
-        $this->assertContains('1234', $collection->getCsv(), 'Failed to get csv from ids in request list');
-        $this->assertEquals('123456', $collection->getIds()[0], 'Failed to get csv from ids in request list');
+        $this->assertContains('120335', $collection->getCsv(), 'Failed to get csv from ids in request list');
+        $this->assertEquals('120335', $collection->getIds()[0], 'Failed to get csv from ids in request list');
 
         $entity->id = 1234;
         $collection->addEntity($entity);
