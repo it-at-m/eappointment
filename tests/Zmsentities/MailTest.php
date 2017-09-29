@@ -29,6 +29,7 @@ class MailTest extends EntityCommonTests
     {
         $entity = (new $this->entityclass())->getExample();
         $process = (new \BO\Zmsentities\Process())->getExample();
+        $process->requests[] = (new \BO\Zmsentities\Request())->getExample();
         $config = (new \BO\Zmsentities\Config())->getExample();
         $entity->addMultiPart(array());
         $entity->client = null;
