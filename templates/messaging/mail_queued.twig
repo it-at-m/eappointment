@@ -1,4 +1,5 @@
 {% block german %}
+<div style="color: #000000; background: #ffffff;">
 Sehr geehrte/r Frau oder Herr {{ client.familyName }},
 <br /><br />
 hiermit bestätigen wir Ihre Wartenummer für den {{ toGermanDateFromTs(date|default(getNow|date('U'))).date }}<br /><br />
@@ -20,9 +21,13 @@ Sie haben folgende {{ requestalias }} ausgewählt:<br/>
 {% for request in process.requests %}
 <strong>{{ request.name }}</strong><br/>
 {% if request.source == "dldb" %}
-{% include "@dldb/detail/service_detail_prerequisites.twig" with {"service":request.data} %}
-{% include "@dldb/detail/service_detail_requirements.twig" with {"service":request.data} %}
-{% include "@dldb/detail/service_detail_fees.twig" with {"service":request.data} %}
+<div style="color: #444444; border-left: 1em solid #ffffff; background: #ffffff;">
+{% include "@dldb/detail/service_detail_prerequisites.twig" with {"service":request.data, "headerlevel":"h4"} %}
+
+{% include "@dldb/detail/service_detail_requirements.twig" with {"service":request.data, "headerlevel":"h4"} %}
+
+{% include "@dldb/detail/service_detail_fees.twig" with {"service":request.data, "headerlevel":"h4"} %}
+</div>
 {% endif %}
 {% endfor %}
 
@@ -31,4 +36,5 @@ Mit freundlichem Gruß<br />
 Ihre Terminverwaltung des Landes Berlin
 <br /><br />
 <a href="{{ config.appointments.urlAppointments }}">{{ config.appointments.urlAppointments }}</a>
+</div>
 {% endblock %}
