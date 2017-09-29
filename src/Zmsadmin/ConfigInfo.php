@@ -21,6 +21,7 @@ class ConfigInfo extends BaseController
         $config = \App::$http->readGetResult('/config/')->getEntity();
         $processExample = ((new \BO\Zmsentities\Process)->getExample());
         $processExample->scope = ((new \BO\Zmsentities\Scope)->getExample());
+        $processExample->requests[] = (new \BO\Zmsentities\Request())->getExample();
         return \BO\Slim\Render::withHtml(
             $response,
             'page/configinfo.twig',
