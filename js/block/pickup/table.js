@@ -100,7 +100,7 @@ class View extends BaseView {
             confirmFinish.catch(err => this.loadErrorCallback(err)).then((response) => {
                 this.loadMessage(response, this.onFinishProcess);
             });
-        }).on('click', 'a.process-finish-list', (ev) => {
+        }).on('click', 'a.process-finish-list', () => {
             var confirmFinishList = this.loadCall(`${this.includeUrl}/dialog/?template=confirm_finish_list`);
             confirmFinishList.catch(err => this.loadErrorCallback(err)).then((response) => {
                 this.loadMessage(response, this.onFinishProcess);
