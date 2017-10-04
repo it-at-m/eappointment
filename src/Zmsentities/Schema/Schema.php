@@ -35,7 +35,7 @@ class Schema extends \ArrayObject
         return $this;
     }
 
-    public function toSanitizedArray($keepEmpty)
+    public function toSanitizedArray($keepEmpty = false)
     {
         $data = $this->getArrayCopy();
         $data = $this->toSanitizedValue($data, $keepEmpty);
@@ -46,7 +46,7 @@ class Schema extends \ArrayObject
      * Sanitize value for valid export as JSON
      *
      */
-    protected function toSanitizedValue($value, $keepEmpty)
+    protected function toSanitizedValue($value, $keepEmpty = false)
     {
         if ($value instanceof \BO\Zmsentities\Helper\NoSanitize) {
             return $value;
