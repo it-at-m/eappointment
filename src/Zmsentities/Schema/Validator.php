@@ -55,13 +55,17 @@ class Validator extends \League\JsonGuard\Validator
     public function getOriginPointer(ValidationError $error)
     {
         $pointer = explode('/', $error->getPointer());
-        return (isset($pointer[1])) ? $pointer[1] : $pointer[0];
+        $pointer = (isset($pointer[1])) ? $pointer[1] : $pointer[0];
+        return $pointer;
     }
 
     public function getTranslatedPointer(ValidationError $error)
     {
+        $pointer = [];
         $property = $this->schemaObject->getPropertyByPath($error->getPointer());
         $property = new \BO\Zmsentities\Helper\Property($property);
-        return $property['x-locale'][$this->locale]->pointer->get($this->getOriginPointer($error));
+        $pointer['origin'] = $this->getOriginPointer($error);
+        $pointer['translated'] = $property['x-locale'][$this->locale]->pointer->get($this->getOriginPointer($error));
+        return $pointer;
     }
 }

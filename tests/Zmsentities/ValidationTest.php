@@ -43,8 +43,8 @@ class ValidationTest extends Base
             $this->fail("Expected exception SchemaValidation not thrown");
         } catch (\BO\Zmsentities\Exception\SchemaValidation $exception) {
             $errorList = $exception->getValidationErrorList();
-            $this->assertEquals('Passwortwiederholung', $errorList[0]->getPointer());
-            $this->assertEquals('Passwortwiederholung', $errorList[1]->getPointer());
+            $this->assertEquals('Passwortwiederholung', $errorList[0]->getPointer()['translated']);
+            $this->assertEquals('Passwortwiederholung', $errorList[1]->getPointer()['translated']);
             $this->assertContains('Zeichen', $errorList[0]->getMessage());
             $this->assertContains('identisch', $errorList[1]->getMessage());
         }

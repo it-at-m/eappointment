@@ -17,12 +17,14 @@ class Schema extends \ArrayObject
         parent::__construct($input, $flags, $iterator_class);
     }
 
-    public function toJsonObject()
+    public function toJsonObject($keepEmpty = false)
     {
         if (null !== $this->asObject) {
             $data = $this->asObject;
+        } elseif (! $keepEmpty) {
+            $data = json_decode(json_encode($this->toSanitizedArray($keepEmpty)));
         } else {
-            $data = json_decode(json_encode($this->toSanitizedArray()));
+            $data = json_decode(json_encode($this->toSanitizedArray($keepEmpty)));
         }
         return $data;
     }
@@ -33,10 +35,10 @@ class Schema extends \ArrayObject
         return $this;
     }
 
-    public function toSanitizedArray()
+    public function toSanitizedArray($keepEmpty)
     {
         $data = $this->getArrayCopy();
-        $data = $this->toSanitizedValue($data);
+        $data = $this->toSanitizedValue($data, $keepEmpty);
         return $data;
     }
 
@@ -44,7 +46,7 @@ class Schema extends \ArrayObject
      * Sanitize value for valid export as JSON
      *
      */
-    protected function toSanitizedValue($value)
+    protected function toSanitizedValue($value, $keepEmpty)
     {
         if ($value instanceof \BO\Zmsentities\Helper\NoSanitize) {
             return $value;
@@ -56,8 +58,8 @@ class Schema extends \ArrayObject
         }
         if (is_array($value)) {
             foreach ($value as $key => $item) {
-                $value[$key] = $this->toSanitizedValue($item);
-                if ($this->isItemEmpty($value[$key])) {
+                $value[$key] = $this->toSanitizedValue($item, $keepEmpty);
+                if (! $keepEmpty && $this->isItemEmpty($value[$key])) {
                     unset($value[$key]);
                 }
             }

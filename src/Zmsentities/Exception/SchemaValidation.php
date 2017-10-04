@@ -76,13 +76,14 @@ class SchemaValidation extends \Exception
     {
         foreach ($this->validationErrorList as $error) {
             $pointer = $error->getPointer();
-            if (! isset($this->data[$pointer]['messages'])) {
-                $this->data[$pointer]['messages'] = array();
+            if (! isset($this->data[$pointer['origin']]['messages'])) {
+                $this->data[$pointer['origin']]['messages'] = array();
             }
-            if (! in_array($error->getMessage(), $this->data[$pointer]['messages'])) {
-                $this->data[$pointer]['messages'][] = $error->getMessage();
+            if (! in_array($error->getMessage(), $this->data[$pointer['origin']]['messages'])) {
+                $this->data[$pointer['origin']]['messages'][] = $error->getMessage();
             }
-            $this->data[$pointer]['failed'] = 1;
+            $this->data[$pointer['origin']]['translated'] = $pointer['translated'];
+            $this->data[$pointer['origin']]['failed'] = 1;
         }
     }
 
@@ -106,7 +107,7 @@ class SchemaValidation extends \Exception
         $message = $this->schemaName . '#';
         $message .= $this->errorMessages[$error->getCode()];
         $message .= ' ';
-        $message .= $error->getPointer();
+        $message .= $error->getPointer()['origin'];
         $message .= '=';
         $message .= var_export($error->getValue(), true);
         $message .= ' ';
