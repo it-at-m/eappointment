@@ -11,7 +11,6 @@ namespace BO\Zmsentities;
  */
 class Session extends Schema\Entity
 {
-
     const PRIMARY = 'id';
 
     public static $schema = "session.json";
@@ -19,13 +18,13 @@ class Session extends Schema\Entity
     public function getDefaults()
     {
         return [
-            'content' => array (
+            'content' => array(
                 'basket' => [
                     'requests' => '',
                     'providers' => '',
-                    'scope' => null,
-                    'process' => null,
-                    'date' => null,
+                    'scope' => 0,
+                    'process' => 0,
+                    'date' => 0,
                     'familyName' => '',
                     'email' => '',
                     'telehone' => '',
@@ -39,7 +38,7 @@ class Session extends Schema\Entity
                     'origin' => '',
                     'remoteAddress' => '',
                     'referer' => '',
-                    'step' => array ()
+                    'step' => array()
                 ],
                 'status' => 'start',
                 'X-Authkey' => '',
