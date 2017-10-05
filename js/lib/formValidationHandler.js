@@ -1,4 +1,4 @@
-import BaseView from '../lib/baseview'
+import BaseView from './baseview'
 import $ from 'jquery'
 
 class View extends BaseView {
@@ -16,7 +16,7 @@ class View extends BaseView {
         $.each(this.responseJson, (index, item) => {
             if (item.failed) {
                 this.$main
-                    .find('[name="' + index +'"], [data-form-validate="'+ index +'"]')
+                    .find('[name="' + index +'"], [name="' + index +'[]"], [name="' + index +'[][id]"], [data-form-validate="'+ index +'"]')
                     .closest('div.controls')
                     .addClass('has-error')
                     .append(this.getMessageList(item.messages));

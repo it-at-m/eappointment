@@ -53,7 +53,7 @@ class BaseView extends ErrorHandler {
                 let isException = err.responseText.toLowerCase().includes('exception');
                 if (err.status >= 400 && isException) {
                     const { lightboxContentElement, destroyLightbox } = lightbox(null, () => {
-                        reject({'source': 'lightbox', 'message': err.responseText})
+                        reject({'source': 'lightbox', 'message': err.responseText, 'code': err.status})
                     })
                     new ExceptionHandler(lightboxContentElement, {
                         code: err.status,
@@ -91,7 +91,7 @@ class BaseView extends ErrorHandler {
                 let isException = err.responseText.toLowerCase().includes('exception');
                 if (err.status >= 400 && isException) {
                     const { lightboxContentElement, destroyLightbox } = lightbox(null, () => {
-                        reject({'source': 'lightbox', 'message': err.responseText})
+                        reject({'source': 'lightbox', 'message': err.responseText, 'code': err.status})
                     })
 
                     new ExceptionHandler(lightboxContentElement, {
@@ -122,6 +122,10 @@ class BaseView extends ErrorHandler {
 
     cleanReload () {
         window.location.reload(true);
+    }
+
+    locationLoad (url) {
+        window.location.href = url;
     }
 
 }

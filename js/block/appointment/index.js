@@ -3,7 +3,7 @@ import $ from "jquery"
 import FreeProcessList from './free-process-list'
 import FormButtons from './form-buttons'
 import { lightbox } from '../../lib/utils'
-import FormValidationView from '../form-validation'
+import FormValidationView from '../../lib/formValidationHandler'
 import MessageHandler from '../../lib/messageHandler'
 import ActionHandler from "./action"
 import RequestList from "./requests"

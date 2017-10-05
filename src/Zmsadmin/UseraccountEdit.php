@@ -10,7 +10,6 @@ namespace BO\Zmsadmin;
 
 use BO\Zmsentities\Useraccount as Entity;
 use BO\Mellon\Validator;
-use \BO\Zmsadmin\Helper\UseraccountForm;
 
 class UseraccountEdit extends BaseController
 {
@@ -31,33 +30,29 @@ class UseraccountEdit extends BaseController
         $workstation->getUseraccount()->hasEditAccess($userAccount);
         $ownerList = \App::$http->readGetResult('/owner/', ['resolveReferences' => 2])->getCollection();
 
-        $formData = null;
         $input = $request->getParsedBody();
-        if (is_array($input) && array_key_exists('save', $input)) {
-            $form = UseraccountForm::fromAddParameters();
-            $formData = $form->getStatus();
-            if ($formData && ! $form->hasFailed()) {
-                $entity = new Entity($input);
-                $entity = $entity->withDepartmentList()->withCleanedUpFormData();
-                $entity->id = $userAccountName;
-                if (array_key_exists('changePassword', $input) && !empty($input['changePassword'])) {
-                    \App::$http->readPostResult('/workstation/password/', $entity);
-                }
-                $entity = \App::$http->readPostResult(
-                    '/useraccount/'. $userAccount->id .'/',
-                    $entity
-                )->getEntity();
-
-                return \BO\Slim\Render::redirect(
-                    'useraccountEdit',
-                    array(
-                        'loginname' => $entity->id
-                    ),
-                    array(
-                        'confirm_success' => \App::$now->getTimeStamp()
-                    )
-                );
+        if (is_array($input) && array_key_exists('id', $input)) {
+            $entity = new Entity($input);
+            $entity = $entity->withDepartmentList()->withCleanedUpFormData();
+            $entity->departments = [];
+            $entity->id = $userAccountName;
+            if (isset($entity['changePassword']) && 0 < count(array_filter($entity['changePassword']))) {
+                \App::$http->readPostResult('/workstation/password/', $entity);
             }
+            $entity = \App::$http->readPostResult(
+                '/useraccount/'. $userAccount->id .'/',
+                $entity
+            )->getEntity();
+
+            return \BO\Slim\Render::redirect(
+                'useraccountEdit',
+                array(
+                    'loginname' => $entity->id
+                ),
+                array(
+                    'confirm_success' => \App::$now->getTimeStamp()
+                )
+            );
         }
 
         return \BO\Slim\Render::withHtml(
@@ -67,7 +62,6 @@ class UseraccountEdit extends BaseController
                 'debug' => \App::DEBUG,
                 'userAccount' => $userAccount,
                 'confirm_success' => $confirm_success,
-                'formdata' => $formData,
                 'ownerList' => $ownerList ? $ownerList->toDepartmentListByOrganisationName() : [],
                 'workstation' => $workstation,
                 'title' => 'Nutzer: Einrichtung und Administration','menuActive' => 'useraccount'
