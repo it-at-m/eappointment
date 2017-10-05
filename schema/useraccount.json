@@ -42,7 +42,18 @@
         },
         "password": {
             "type": "string",
-            "description": "this field is only used on changing the password and login"
+            "description": "this field is only used on changing the password and login",
+            "minLength": 6,
+            "maxLength": 40,
+            "x-locale": {
+                "de_DE": {
+                    "pointer": "Passwort",
+                    "messages": {
+                        "min_length": "Die Länge des Passwortes muss mindestens 6 Zeichen betragen",
+                        "max_length": "Die Länge des Passwortes darf maximal 40 Zeichen betragen"
+                    }
+                }
+            }
         },
         "changePassword": {
             "type": "array",
