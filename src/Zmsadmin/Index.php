@@ -27,7 +27,8 @@ class Index extends BaseController
         if ($loginData && !$form->hasFailed()) {
             $userAccount = new \BO\Zmsentities\Useraccount(array(
                 'id' => $loginData['loginName']['value'],
-                'password' => $loginData['password']['value']
+                'password' => $loginData['password']['value'],
+                'departments' => array('id' => 0) // required in schema validation
             ));
             try {
                 $workstation = \App::$http->readPostResult('/workstation/login/', $userAccount)->getEntity();

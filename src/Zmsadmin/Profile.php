@@ -20,13 +20,13 @@ class Profile extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $confirm_success = $request->getAttribute('validator')->getParameter('confirm_success')->isString()->getValue();
         $entity = new Entity($workstation->useraccount);
         $input = $request->getParsedBody();
 
         if (is_array($input) && array_key_exists('changePassword', $input)) {
-            $newEntity = (new Entity($input))->withCleanedUpFormData();
+            $newEntity = (new Entity($input))->withCleanedUpFormData(true);
             $entity = \App::$http->readPostResult('/workstation/password/', $newEntity)
                     ->getEntity();
             return \BO\Slim\Render::redirect('profile', [], [

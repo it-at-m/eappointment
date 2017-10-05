@@ -1,6 +1,6 @@
 import BaseView from '../../lib/baseview'
 import $ from 'jquery'
-import ChangePasswordView from '../../block/useraccount/changePassword'
+import UserFormView from '../../block/useraccount/userForm'
 
 class View extends BaseView {
 
@@ -8,7 +8,7 @@ class View extends BaseView {
         super(element);
         this.element = $(element);
         this.includeUrl = options.includeurl;
-        this.bindPublicMethods('loadChangePasswordForm');
+        this.bindPublicMethods('loadChangePasswordForm', 'onSaveProcess');
         this.$.ready(this.loadChangePasswordForm);
         $.ajaxSetup({ cache: false });
         console.log('Component: Profile', this, options);
@@ -18,13 +18,15 @@ class View extends BaseView {
     }
 
     loadChangePasswordForm() {
-        return new ChangePasswordView(this.$main.find('[data-useraccount-changepassword]'), {
+        return new UserFormView(this.$main.find('[data-useraccount-changepassword]'), {
             onSaveProcess: this.onSaveProcess,
-            includeUrl: this.includeUrl
+            includeUrl: this.includeUrl,
+            dateUrl: `${this.includeUrl}/profile/`
         })
     }
 
     onSaveProcess () {
+        this.cleanReload();
     }
 }
 

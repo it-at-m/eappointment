@@ -32,6 +32,12 @@ class UseraccountEditTest extends Base
                     'url' => '/owner/',
                     'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_owner.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/department/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_department_74.json")
                 ]
             ]
         );
@@ -67,6 +73,12 @@ class UseraccountEditTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/workstation/password/',
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/department/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_department_74.json")
                 ],
                 [
                     'function' => 'readPostResult',
@@ -126,6 +138,12 @@ class UseraccountEditTest extends Base
                     'response' => $this->readFixture("GET_owner.json")
                 ],
                 [
+                    'function' => 'readGetResult',
+                    'url' => '/department/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_department_74.json")
+                ],
+                [
                     'function' => 'readPostResult',
                     'url' => '/workstation/password/',
                     'exception' => $exception
@@ -155,52 +173,10 @@ class UseraccountEditTest extends Base
     // no department selected
     public function testRenderingSaveFailedNoDepartment()
     {
-        \App::$now = new \DateTimeImmutable('2016-04-01 11:55:00', new \DateTimeZone('Europe/Berlin'));
-        $this->setApiCalls(
-            [
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 1],
-                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/useraccount/testuser/',
-                    'response' => $this->readFixture("GET_useraccount_testuser.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/owner/',
-                    'parameters' => ['resolveReferences' => 2],
-                    'response' => $this->readFixture("GET_owner.json")
-                ]
-            ]
-        );
-        $response = $this->render($this->arguments, [
-            'id' => 'unittest',
-            'changePassword' => array(
-                'passwort',
-                'passwort',
-            ),
-            'rights' => array(
-                'sms' => '1',
-                'ticketprinter' => '1',
-                'availability' => '1',
-                'scope' => '1'
-            ),
-            'save' => 'save'
-        ], [], 'POST');
-        $this->assertContains(
-            'Es muss mindestens eine Behörde oder systemübergreifend ausgewählt werden',
-            (string)$response->getBody()
-        );
-        $this->assertEquals(200, $response->getStatusCode());
-    }
+        $this->expectException('\BO\Zmsclient\Exception');
+        $exception = new \BO\Zmsclient\Exception();
+        $exception->template = 'BO\Zmsentities\Exception\Schemavalidation';
 
-    // superuser rights needed for all departments
-    public function testRenderingSaveFailedNotSuperuser()
-    {
         \App::$now = new \DateTimeImmutable('2016-04-01 11:55:00', new \DateTimeZone('Europe/Berlin'));
         $this->setApiCalls(
             [
@@ -220,17 +196,25 @@ class UseraccountEditTest extends Base
                     'url' => '/owner/',
                     'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_owner.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/department/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_department_74.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/useraccount/testuser/',
+                    'exception' => $exception
                 ]
             ]
         );
-        $response = $this->render($this->arguments, [
+        $this->render($this->arguments, [
             'id' => 'unittest',
             'changePassword' => array(
-                'passwort',
-                'passwort',
-            ),
-            'departments' => array(
-                ['id' => 0]
+                '',
+                '',
             ),
             'rights' => array(
                 'sms' => '1',
@@ -240,10 +224,5 @@ class UseraccountEditTest extends Base
             ),
             'save' => 'save'
         ], [], 'POST');
-        $this->assertContains(
-            'Für &quot;systemübergreifend&quot; muss die Superuser-Berechtigung ausgewählt werden',
-            (string)$response->getBody()
-        );
-        $this->assertEquals(200, $response->getStatusCode());
     }
 }
