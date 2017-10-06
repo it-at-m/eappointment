@@ -21,17 +21,17 @@ class WorkstationPassword extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights();
+        $workstation = (new Helper\User($request))->checkRights();
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $useraccount = new \BO\Zmsentities\Useraccount($input);
         $useraccount->testValid();
-        $this->testUseraccount($useraccount['id'], $useraccount->password);
+        $this->testUseraccount($workstation->getUseraccount()->id, $useraccount->password);
         if ($useraccount->changePassword) {
             $useraccount->password = reset($useraccount->changePassword);
         }
 
         $message = Response\Message::create($request);
-        $message->data = (new Query)->updateEntity($useraccount['id'], $useraccount);
+        $message->data = (new Query)->updateEntity($workstation->getUseraccount()->id, $useraccount);
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());

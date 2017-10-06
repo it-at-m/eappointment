@@ -45,6 +45,20 @@ class WorkstationPasswordTest extends Base
         ], []);
     }
 
+    public function testSchemsValidationFailed()
+    {
+        $this->setWorkstation();
+        $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
+        $this->expectExceptionCode(400);
+        //6 chars for password required
+        $this->render([], [
+            '__body' => '{
+                "id": "testadmin",
+                "password": "vorschau"
+            }'
+        ], []);
+    }
+
     public function testEmpty()
     {
         $this->setWorkstation();

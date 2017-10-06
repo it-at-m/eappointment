@@ -54,10 +54,10 @@ class UseraccountAddTest extends Base
         $this->render([], [], []);
     }
 
-    public function testNotFound()
+    public function testInvalidInput()
     {
         $this->setWorkstation()->getUseraccount()->setRights('useraccount');
-        $this->expectException('\BO\Zmsapi\Exception\Useraccount\UseraccountNotFound');
+        $this->expectException('BO\Zmsapi\Exception\Useraccount\UseraccountInvalidInput');
         $this->expectExceptionCode(404);
         $this->render([], [
             '__body' => '[]'
