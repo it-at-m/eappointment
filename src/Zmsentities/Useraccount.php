@@ -182,6 +182,19 @@ class Useraccount extends Schema\Entity
         return $department;
     }
 
+    public function withPassword($input)
+    {
+        if (isset($input['password']) && '' != $input['password']) {
+            $this->password = $input['password'];
+        }
+        if (isset($input['changePassword']) && 0 < count(array_filter($input['changePassword']))) {
+            if (! isset($input['password'])) {
+                $this->password = $input['changePassword'][0];
+            }
+            $this->changePassword = $input['changePassword'];
+        }
+    }
+
     public function withDepartmentList()
     {
         $departmentList = new Collection\DepartmentList();
@@ -196,13 +209,13 @@ class Useraccount extends Schema\Entity
         return $entity;
     }
 
-    public function withCleanedUpFormData()
+    public function withCleanedUpFormData($keepPassword = false)
     {
         unset($this['save']);
-        if (isset($this['password']) && '' == $this['password']) {
+        if (isset($this['password']) && '' == $this['password'] && false === $keepPassword) {
             unset($this['password']);
         }
-        if (0 == count(array_filter($this['changePassword']))) {
+        if ($this['changePassword'] && 0 == count(array_filter($this['changePassword'])) && false === $keepPassword) {
             unset($this['changePassword']);
         }
 
