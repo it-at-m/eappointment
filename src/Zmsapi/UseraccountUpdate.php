@@ -27,8 +27,16 @@ class UseraccountUpdate extends BaseController
         }
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         $input = Validator::input()->isJson()->assertValid()->getValue();
+        if (0 == count($input)) {
+            throw new Exception\Useraccount\UseraccountInvalidInput();
+        }
+
         $entity = new \BO\Zmsentities\Useraccount($input);
         $entity->testValid();
+
+        if ($args['loginname'] != $entity->id && (new Useraccount)->readIsUserExisting($entity->id)) {
+            throw new Exception\Useraccount\UseraccountAlreadyExists();
+        }
 
         $message = Response\Message::create($request);
         $message->data = (new Useraccount)->updateEntity($args['loginname'], $entity, $resolveReferences);
