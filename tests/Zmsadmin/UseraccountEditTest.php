@@ -32,12 +32,6 @@ class UseraccountEditTest extends Base
                     'url' => '/owner/',
                     'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_owner.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/department/',
-                    'parameters' => ['resolveReferences' => 1],
-                    'response' => $this->readFixture("GET_department_74.json")
                 ]
             ]
         );
@@ -68,17 +62,6 @@ class UseraccountEditTest extends Base
                     'url' => '/owner/',
                     'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_owner.json")
-                ],
-                [
-                    'function' => 'readPostResult',
-                    'url' => '/workstation/password/',
-                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/department/',
-                    'parameters' => ['resolveReferences' => 1],
-                    'response' => $this->readFixture("GET_department_74.json")
                 ],
                 [
                     'function' => 'readPostResult',
@@ -138,14 +121,8 @@ class UseraccountEditTest extends Base
                     'response' => $this->readFixture("GET_owner.json")
                 ],
                 [
-                    'function' => 'readGetResult',
-                    'url' => '/department/',
-                    'parameters' => ['resolveReferences' => 1],
-                    'response' => $this->readFixture("GET_department_74.json")
-                ],
-                [
                     'function' => 'readPostResult',
-                    'url' => '/workstation/password/',
+                    'url' => '/useraccount/testuser/',
                     'exception' => $exception
                 ]
             ]
@@ -196,12 +173,6 @@ class UseraccountEditTest extends Base
                     'url' => '/owner/',
                     'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_owner.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/department/',
-                    'parameters' => ['resolveReferences' => 1],
-                    'response' => $this->readFixture("GET_department_74.json")
                 ],
                 [
                     'function' => 'readPostResult',
