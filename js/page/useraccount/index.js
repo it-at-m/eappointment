@@ -8,7 +8,7 @@ class View extends BaseView {
         super(element);
         this.element = $(element);
         this.includeUrl = options.includeurl;
-        this.selectedUserId = options.selecteduserid || 'add';
+        this.selectedUserId = options.selecteduserid || 'add';
         this.bindPublicMethods('loadForm', 'onSaveProcess');
         this.$.ready(this.loadForm);
         $.ajaxSetup({ cache: false });

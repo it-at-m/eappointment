@@ -25,9 +25,10 @@ class Profile extends BaseController
         $entity = new Entity($workstation->useraccount);
         $input = $request->getParsedBody();
 
-        if (is_array($input) && array_key_exists('changePassword', $input)) {
-            $newEntity = (new Entity($input))->withCleanedUpFormData(true);
-            $entity = \App::$http->readPostResult('/workstation/password/', $newEntity)
+        if (is_array($input) && array_key_exists('id', $input)) {
+            $entity = (new Entity($input))->withCleanedUpFormData();
+            $entity->withPassword($input);
+            $entity = \App::$http->readPostResult('/workstation/password/', $entity)
                     ->getEntity();
             return \BO\Slim\Render::redirect('profile', [], [
                 'confirm_success' => \App::$now->getTimeStamp()
