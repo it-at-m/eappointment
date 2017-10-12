@@ -49,6 +49,8 @@ definitions:
     $ref: "schema/department.json"
   dayoff:
     $ref: "schema/dayoff.json"
+  exchange:
+    $ref: "schema/exchange.json"
   log:
     $ref: "schema/log.json"
   mail:
