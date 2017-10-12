@@ -23,6 +23,9 @@ class UseraccountAddTest extends Base
                 "ticketprinter": "0",
                 "useraccount": "1"
               },
+              "departments": [
+                  {"id": 74}
+              ],
               "id": "unittest",
               "lastLogin": 1459461600
             }'
