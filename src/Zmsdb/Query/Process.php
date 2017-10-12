@@ -253,7 +253,11 @@ class Process extends Base implements MappingInterface
 
     public function addConditionQueueNumber($queueNumber)
     {
-        $this->query->where('process.wartenummer', '=', $queueNumber);
+        if (1000 > $queueNumber) {
+            $this->query->where('process.wartenummer', '=', $queueNumber);
+        } else {
+            $this->query->where('process.BuergerID', '=', $queueNumber);
+        }
         return $this;
     }
 
