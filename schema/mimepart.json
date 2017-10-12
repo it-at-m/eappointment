@@ -15,7 +15,7 @@
     "properties": {
         "queueId": {
         	"type": "number",
-            "description": "Number of queued mail item, this part belongs to"
+            "description": "optional ID of queued message item, this part belongs to"
         },
         "mime": {
             "type": "string",
