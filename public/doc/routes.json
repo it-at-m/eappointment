@@ -5382,6 +5382,188 @@
 			}
 		}
 	},
+	"/warehouse/": {
+		"get": {
+			"summary": "Get a list of available subjects",
+			"tags": [
+				"exchange"
+			],
+			"parameters": [
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/exchange.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "report does not exists"
+				}
+			}
+		}
+	},
+	"/warehouse/{subject}/": {
+		"get": {
+			"summary": "Get a list of available subject IDs",
+			"tags": [
+				"exchange"
+			],
+			"parameters": [
+				{
+					"name": "subject",
+					"description": "The subject is the name of the data set",
+					"in": "path",
+					"required": true,
+					"type": "string"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/exchange.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "report does not exists"
+				}
+			}
+		}
+	},
+	"/warehouse/{subject}/{subjectId}/": {
+		"get": {
+			"summary": "Get a list of available time periods on subject",
+			"tags": [
+				"exchange"
+			],
+			"parameters": [
+				{
+					"name": "subject",
+					"description": "The subject is the name of the data set",
+					"in": "path",
+					"required": true,
+					"type": "string"
+				},
+				{
+					"name": "subjectId",
+					"description": "A reference ID for the subject, an \"_\" means getting all available IDs or no ID necessary",
+					"in": "path",
+					"required": true,
+					"type": "string"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/exchange.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "report does not exists"
+				}
+			}
+		}
+	},
+	"/warehouse/{subject}/{subjectId}/{period}/": {
+		"get": {
+			"summary": "Get a set of data for statistical usage",
+			"tags": [
+				"exchange"
+			],
+			"parameters": [
+				{
+					"name": "subject",
+					"description": "The subject is the name of the data set",
+					"in": "path",
+					"required": true,
+					"type": "string"
+				},
+				{
+					"name": "subjectId",
+					"description": "A reference ID for the subject, an \"_\" means getting all available IDs or no ID necessary",
+					"in": "path",
+					"required": true,
+					"type": "string"
+				},
+				{
+					"name": "period",
+					"description": "A string referring to a date period. A \"_\" if no period is necessary, a single year like \"2017\" for getting monthly cumlative reports, a \"2017-11\" for getting daily cumulative reports and \"2017-11-11\" for getting hourly reports",
+					"in": "path",
+					"required": true,
+					"type": "string"
+				},
+				{
+					"name": "X-Authkey",
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/exchange.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "report does not exists"
+				}
+			}
+		}
+	},
 	"/workstation/": {
 		"get": {
 			"summary": "Get the current workstation based on authkey",
