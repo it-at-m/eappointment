@@ -3386,7 +3386,7 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
- *  "/scope/{id}/process/{status}/":
+ *  "/scope/{id}/process/status/{status}/":
  *      get:
  *          summary: Get a list of processes by scope and status (pending for example)
  *          x-since: 2.12
@@ -3427,7 +3427,7 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "scope id does not exists"
  */
-\App::$slim->get('/scope/{id:\d{1,11}}/process/{status}/',
+\App::$slim->get('/scope/{id:\d{1,11}}/process/status/{status}/',
     '\BO\Zmsapi\ProcessListByScopeAndStatus')
     ->setName("ProcessListByScopeAndStatus");
 
@@ -3625,7 +3625,7 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "Could not find a process or scope not found"
  */
-\App::$slim->get('/scope/{id:\d{1,4}}/queue/{number:\d{1,4}}/',
+\App::$slim->get('/scope/{id:\d{1,4}}/queue/{number:\d{1,10}}/',
     '\BO\Zmsapi\ProcessByQueueNumber')
     ->setName("ProcessByQueueNumber");
 
