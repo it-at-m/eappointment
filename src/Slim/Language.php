@@ -54,7 +54,7 @@ class Language
         if (null !== $this->request) {
             $queryString = $this->request->getUri()->getQuery();
             parse_str($queryString, $queryArr);
-            $current = $queryArr['lang'];
+            $current = isset($queryArr['lang']) ? $queryArr['lang'] : $this->getDefault();
         }
         return $current;
     }
