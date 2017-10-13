@@ -6,7 +6,6 @@ use Psr\Http\Message\RequestInterface;
 
 class Language
 {
-
     public static $supportedLanguages = array();
 
     public $current = '';
@@ -53,10 +52,9 @@ class Language
         $lang_ids = array_keys(self::$supportedLanguages);
         $lang_ids = array_diff($lang_ids, array($default));
         if (null !== $this->request) {
-            $url = $this->request->getUri()->getBasePath();
-            if (preg_match('~^/('.implode('|', $lang_ids).')~', $url, $matches)) {
-                $current = $matches[1];
-            }
+            $queryString = $this->request->getUri()->getQuery();
+            parse_str($queryString, $queryArr);
+            $current = $queryArr['lang'];
         }
         return $current;
     }
@@ -68,7 +66,8 @@ class Language
 
     public function getCurrentLocale($lang = '')
     {
-        return ($lang != '') ? $lang : $this->current;
+        $current = $this->getCurrent($lang);
+        return self::$supportedLanguages[$current]['locale'];
     }
 
     public function getDefault()
