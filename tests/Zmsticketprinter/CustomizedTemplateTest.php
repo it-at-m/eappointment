@@ -60,7 +60,7 @@ class CustomizedTemplateTest extends Base
     {
         $this->expectException('\BO\Zmsticketprinter\Exception\TemplateNotFound');
         $this->expectExceptionCode(404);
-        $response = $this->render([
+        $this->render([
             'scopeId' => 615
         ], [
             '__cookie' => [

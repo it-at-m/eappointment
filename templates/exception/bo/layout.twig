@@ -1,12 +1,12 @@
 {% extends "layout/main.twig" %}
-{% block title %}{% trans "Ein Fehler ist aufgetreten" %}{% endblock %}
+{% block title %}{% trans %}Ein Fehler ist aufgetreten{% endtrans %}{% endblock %}
 {% block pageid %}{% if task %}{{ task }}{% else %}exception{% endif %}{% endblock %}
 {% block pageheader %}
 	<div id="main-header">
 		<span class="noprint">
 			<div class="adressangabe">
 				{% if header %}
-				{% trans header %}
+				{{ header|trans }}
 				{% else %}
                 {% block adressangabe %}
 					Ein Fehler ist aufgetreten
@@ -18,17 +18,17 @@
 {% endblock %}
 {% block content %}
 	<div class="alert alert-error noprint textile">
-        <h1>{% trans title %}</h1>
+        <h1>{{ title|trans }}</h1>
 
         {% if message %}
         	<p>
-        	{% trans message %}
+        	{{ message|trans }}
         	</p>
         {% endif %}
         {% if showlinks %}
         <ul>
         	{% for link, name in showlinks %}
-        	<li><a href="{{ urlGet(link) }}">{% trans name %}</a></li>
+        	<li><a href="{{ urlGet(link) }}">{{ name|trans }}</a></li>
         	{% endfor %}
         </ul>
         {% endif %}

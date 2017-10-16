@@ -9,12 +9,11 @@ namespace BO\Zmsticketprinter;
 
 class TicketprinterByScope extends BaseController
 {
-
     /**
      * @SuppressWarnings(UnusedFormalParameter)
      * @return String
      */
-    public function __invoke(
+    public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
@@ -32,11 +31,11 @@ class TicketprinterByScope extends BaseController
 
         $department = \App::$http->readGetResult('/scope/'. $scope->id . '/department/')->getEntity();
         $queueList = \App::$http->readGetResult('/scope/'. $scope->id . '/queue/')->getCollection();
+
         $estimatedData = ($queueList) ? $scope->getWaitingTimeFromQueueList($queueList, \App::$now) : null;
         $organisation = $ticketprinterHelper::$organisation;
 
-        $template = (new Helper\TemplateFinder($defaultTemplate))
-            ->setCustomizedTemplate($ticketprinter, $organisation);
+        $template = (new Helper\TemplateFinder($defaultTemplate))->setCustomizedTemplate($ticketprinter, $organisation);
 
         return \BO\Slim\Render::withHtml(
             $response,
