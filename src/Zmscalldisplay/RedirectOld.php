@@ -8,7 +8,7 @@
  */
 namespace BO\Zmscalldisplay;
 
-class RedirectOld
+class RedirectOld extends BaseController
 {
 
     /**
@@ -17,7 +17,7 @@ class RedirectOld
      *
      * @return string
      */
-    public function __invoke(
+    public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args

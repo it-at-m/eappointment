@@ -1,9 +1,9 @@
 {% block estimatedWaitingClients %}
     {% if calldisplay.scopes|length == 1 or calldisplay.clusters|length == 1 %}
     <div class="wartende_aktuell">
-    	<div class="wartende_text">{% trans "Anzahl der Wartenden" %}:</div>
+    	<div class="wartende_text">{% trans %}Anzahl der Wartenden{% endtrans %}:</div>
         <div id="wartende">
-        {% trans "keine" %}
+        {% trans %}keine{% endtrans %}
         </div>
     </div>
     {% endif %}
