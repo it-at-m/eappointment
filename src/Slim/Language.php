@@ -35,6 +35,7 @@ class Language
             if (!$this->current) {
                 $this->current = $this->getDefault();
             }
+            $this->setCurrentLocale();
             $this->setTranslator();
             self::$instance = $this;
         }
