@@ -41,6 +41,7 @@ abstract class Controller
 
     public function __invoke(RequestInterface $request, ResponseInterface $response, array $args)
     {
+        $request = $this->initRequest($request);
         Render::$request = $request;
         $this->request = $request;
         Render::$response = $response;
@@ -60,5 +61,13 @@ abstract class Controller
             $renderResponse->getBody()->write($output);
         }
         return $renderResponse instanceof ResponseInterface ? $renderResponse : Render::$response;
+    }
+
+    // init the request with language translation
+    public function initRequest(RequestInterface $request)
+    {
+        \App::$now = (! \App::$now) ? new \DateTimeImmutable() : \App::$now;
+        \App::$language = new \BO\Slim\Language($request, \App::$supportedLanguages);
+        return $request;
     }
 }
