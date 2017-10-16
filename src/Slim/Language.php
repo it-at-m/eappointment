@@ -4,11 +4,18 @@ namespace BO\Slim;
 
 use Psr\Http\Message\RequestInterface;
 
+// Symfony Translation Classes
+use Symfony\Bridge\Twig\Extension\TranslationExtension;
+use Symfony\Component\Translation\Loader\JsonFileLoader;
+use Symfony\Component\Translation\MessageSelector;
+use Symfony\Component\Translation\Translator;
+
 class Language
 {
     public static $supportedLanguages = array();
 
     public $current = '';
+
     protected $default = '';
 
     protected static $instance = null;
@@ -21,42 +28,16 @@ class Language
 
     public function __construct(RequestInterface $request, array $supportedLanguages)
     {
-        if (self::$instance) {
-            throw new \Exception('\BO\Slim\Language is a singleton, do not init twice');
+        if (! self::$instance) {
+            $this->request = $request;
+            self::$supportedLanguages = $supportedLanguages;
+            $this->current = $this->getLanguageFromRequest();
+            if (!$this->current) {
+                $this->current = $this->getDefault();
+            }
+            $this->setTranslator();
+            self::$instance = $this;
         }
-        self::$instance = $this;
-
-        $this->request = $request;
-        self::$supportedLanguages = $supportedLanguages;
-        $this->current = $this->getLanguageFromRequest();
-        if (!$this->current) {
-            $this->current = $this->getDefault();
-        }
-
-        $this->setTextDomain();
-    }
-
-    public function getBaseWithLanguage($baseUri)
-    {
-        if (\App::$language->getCurrent() != \App::$language->getDefault()) {
-            $baseUri .= '/'. \App::$language->getCurrent();
-        }
-        return $baseUri;
-    }
-
-    protected function getLanguageFromRequest()
-    {
-        $current = null;
-        $default = $this->getDefault();
-        // Detect current language based on request URI
-        $lang_ids = array_keys(self::$supportedLanguages);
-        $lang_ids = array_diff($lang_ids, array($default));
-        if (null !== $this->request) {
-            $queryString = $this->request->getUri()->getQuery();
-            parse_str($queryString, $queryArr);
-            $current = isset($queryArr['lang']) ? $queryArr['lang'] : $this->getDefault();
-        }
-        return $current;
     }
 
     public function getCurrent($lang = '')
@@ -64,10 +45,15 @@ class Language
         return ($lang != '') ? $lang : $this->current;
     }
 
-    public function getCurrentLocale($lang = '')
+    public function getCurrentLocale($locale = '')
     {
-        $current = $this->getCurrent($lang);
-        return self::$supportedLanguages[$current]['locale'];
+        return self::$supportedLanguages[$this->getCurrent($locale)]['locale'];
+    }
+
+    public function setCurrentLocale($locale = '')
+    {
+        $locale = ('' == $locale) ? self::$supportedLanguages[$this->current]['locale'] : $locale;
+        \setlocale(LC_ALL, $locale);
     }
 
     public function getDefault()
@@ -87,18 +73,39 @@ class Language
         return $this->default;
     }
 
-    protected function setTextDomain()
+    protected function getLanguageFromRequest()
     {
-        $domain = 'dldb-'.$this->current;
-        \putenv('LANG='. $this->current);
-        if (!isset(self::$supportedLanguages[$this->current]['locale'])) {
+        $current = null;
+        $default = $this->getDefault();
+        // Detect current language based on request URI
+        $lang_ids = array_keys(self::$supportedLanguages);
+        $lang_ids = array_diff($lang_ids, array($default));
+        if (null !== $this->request) {
+            $queryString = $this->request->getUri()->getQuery();
+            parse_str($queryString, $queryArr);
+            $current = isset($queryArr['lang']) ? $queryArr['lang'] : $this->getDefault();
+        }
+        return $current;
+    }
+
+    protected function setTranslator()
+    {
+        $default = $this->getCurrentLocale($this->getDefault());
+        // First param is the "default language" to use.
+        $translator = new Translator($this->getCurrentLocale($this->current), new MessageSelector());
+        // Set a fallback language incase you don't have a translation in the default language
+        $translator->setFallbackLocales([$default]);
+        // Add a loader that will get the php files we are going to store our translations in
+        $translator->addLoader('json', new JsonFileLoader());
+        // Add language files here
+        foreach (\App::$supportedLanguages as $language) {
+            $locale = $language['locale'];
+            $translator->addResource('json', \App::APP_PATH .'/lang/'. $locale .'.json', $locale);
+        }
+
+        if (! isset(self::$supportedLanguages[$this->current]['locale'])) {
             throw new \Exception("Unsupported type of language");
         }
-        $locale = self::$supportedLanguages[$this->current]['locale'];
-        \setlocale(LC_ALL, $locale);
-        // Specify the location of the translation tables
-        \bindtextdomain($domain, \App::APP_PATH. '/locale');
-        \bind_textdomain_codeset($domain, \App::CHARSET);
-        textdomain($domain);
+        \BO\Slim\Bootstrap::addTwigExtension(new TranslationExtension($translator));
     }
 }
