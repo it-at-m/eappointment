@@ -8,7 +8,7 @@
  */
 namespace BO\Zmsticketprinter;
 
-class RedirectOld
+class RedirectOld extends BaseController
 {
 
     /**
@@ -17,7 +17,7 @@ class RedirectOld
      *
      * @return string
      */
-    public function __invoke(
+    public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
@@ -25,9 +25,9 @@ class RedirectOld
         $buttonList = Helper\EntryFromOldRoute::getFromOldMehrfachKiosk($request);
         return \BO\Slim\Render::redirect(
             'Index',
-            array (),
-            array (
-                'ticketprinter' => array (
+            array(),
+            array(
+                'ticketprinter' => array(
                     'buttonlist' => $buttonList
                 )
             )

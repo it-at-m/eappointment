@@ -23,7 +23,7 @@
         </div>
         {% if route %}
         <div class="table-cell collapsible-options span1">
-        	<a href="{{ route }}" class="edit icon-pencil" title="Standort Bearbeiten">{% trans "Bearbeiten" %}</a>
+        	<a href="{{ route }}" class="edit icon-pencil" title="Standort Bearbeiten">{% trans %}Bearbeiten{% endtrans %}</a>
         </div>
         {% endif %}
     </div>
@@ -49,7 +49,7 @@
 	{% else %}
         {{ provider.name }} - {{ address }}
         <br />
-    	<strong>{% trans "Zahlungshinweis" %}:</strong><br />
+    	<strong>{% trans %}Zahlungshinweis{% endtrans %}:</strong><br />
     	{{ provider.data.payment }}
    	{% endif %}
 {% endmacro %}

@@ -10,7 +10,7 @@
 	{{ block("print") }}
 	<div class="noprint">
 		<span class="msg_wartenummer_lautet">
-		    {% trans "Ihre Wartenummer lautet" %}: <br>
+		    {% trans %}Ihre Wartenummer lautet{% endtrans %}: <br>
 		</span>
 		<div class="nummernanzeige">
 		    {{ process.queue.number }}
@@ -29,15 +29,15 @@
         </span>
     	<br />
 
-        {% trans "Vorraussichtliche Wartezeit" %}:
+        {% trans %}Vorraussichtliche Wartezeit{% endtrans %}:
     	{% if estimatedData.waitingTimeEstimate %}
     		{% if estimatedData.waitingTimeEstimate < 120 %}
-    	        {{ estimatedData.waitingTimeEstimate }} {% trans "Minuten" %}
+    	        {{ estimatedData.waitingTimeEstimate }} {% trans %}Minuten{% endtrans %}
     	    {% else %}
-    	    	{{ (estimatedData.waitingTimeEstimate / 60)|round(0, 'floor') }} {% trans "Stunden" %}
+    	    	{{ (estimatedData.waitingTimeEstimate / 60)|round(0, 'floor') }} {% trans %}Stunden{% endtrans %}
     	    {% endif %}
     	{% else %}
-    	    {% trans "keine" %}
+    	    {% trans %}keine{% endtrans %}
     	{% endif %}
     	{% if
     	    estimatedData.waitingTimeEstimate > (scope.preferences.ticketprinter.notificationsDelay)|round() and

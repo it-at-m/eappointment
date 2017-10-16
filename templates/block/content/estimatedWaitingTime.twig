@@ -1,12 +1,12 @@
 {% block estimatedWaitingTime %}
-{% trans "Vorraussichtliche Wartezeit" %}:
+{% trans %}Vorraussichtliche Wartezeit{% endtrans %}:
 {% if waitingTime %}
 	{% if waitingTime < 120 %}
-        {{ waitingTime }} {% trans "Minuten" %}
+        {{ waitingTime }} {% trans %}Minuten{% endtrans %}
     {% else %}
-    	{{ (waitingTime / 60)|round(0, 'floor') }} {% trans "Stunden" %}
+    	{{ (waitingTime / 60)|round(0, 'floor') }} {% trans %}Stunden{% endtrans %}
     {% endif %}
 {% else %}
-    {% trans "keine" %}
+    {% trans %}keine{% endtrans %}
 {% endif %}
 {% endblock %}

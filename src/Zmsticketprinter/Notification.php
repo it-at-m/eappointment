@@ -16,7 +16,7 @@ class Notification extends BaseController
      * @SuppressWarnings(UnusedFormalParameter)
      * @return String
      */
-    public function __invoke(
+    public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args
