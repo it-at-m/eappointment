@@ -4,7 +4,7 @@
 {% use "block/queue/estimatedWaitingClients.twig" %}
 {% use "block/queue/estimatedWaitingTime.twig" %}
 
-{% block title %}{% trans "calldisplay" %}{% endblock %}
+{% block title %}{% trans %}calldisplay{% endtrans %}{% endblock %}
 {% block pageid %}customized{% endblock %}
 
 {% block content %}
@@ -26,4 +26,3 @@
 <script type="text/javascript">window.bo.zmscalldisplay.tableLayout.multiColumns="2"</script>
 <script type="text/javascript">window.bo.zmscalldisplay.tableLayout.maxResults=10</script>
 {% endblock %}
-
