@@ -125,6 +125,11 @@ class Ticketprinter extends Base
                 $scope->getPreference('ticketprinter', 'deactivatedText')
             );
         }
+        if ($scope && ! $ticketprinter->buttons[0]['enabled']) {
+            throw new Exception\Ticketprinter\DisabledByScope(
+                $scope->getPreference('ticketprinter', 'deactivatedText')
+            );
+        }
     }
 
     protected function readWithContactData(Entity $entity)
