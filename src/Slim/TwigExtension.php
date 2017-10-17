@@ -135,7 +135,7 @@ class TwigExtension extends \Twig_Extension
 
     public function currentLang()
     {
-        return \App::$language->getCurrent();
+        return \App::$language->getCurrentLanguage();
     }
 
     public function currentVersion()
