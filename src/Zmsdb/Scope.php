@@ -199,9 +199,9 @@ class Scope extends Base
      *
      * @return Bool
      */
-    public function readWaitingNumberUpdated($scopeId, $dateTime)
+    public function readWaitingNumberUpdated($scopeId, $dateTime, $respectContingent = true)
     {
-        if (! $this->readIsGivenNumberInContingent($scopeId)) {
+        if (! $this->readIsGivenNumberInContingent($scopeId) && $respectContingent) {
             throw new Exception\Scope\GivenNumberCountExceeded();
         }
         $this->getReader()
