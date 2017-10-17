@@ -140,10 +140,21 @@ abstract class Base extends \PHPUnit_Framework_TestCase
 
     protected function render($arguments = [], $parameters = [], $sessionData = null, $method = 'GET')
     {
-        $validator = new \BO\Mellon\Validator($parameters);
         $renderClass = $this->getControllerIdentifier();
         $controller = new $renderClass(\App::$slim->getContainer());
-        $request = $this->getRequest($method, '', $sessionData);
+
+        //add uri to test multi languages
+        $uri = (array_key_exists('__uri', $parameters)) ? $parameters['__uri'] : '';
+        $request = $this->getRequest($method, $uri, $sessionData);
+        $request = $this->setRequestParameters($request, $parameters, $method);
+        $this->setValidatorInstance($parameters);
+        $request = \BO\Slim\Middleware\Validator::withValidator($request);
+        $response = $controller->__invoke($request, $this->getResponse(), $arguments);
+        return $response;
+    }
+
+    protected function setRequestParameters($request, $parameters, $method)
+    {
         if ('GET' === $method) {
             $request = $request->withQueryParams($parameters);
         } elseif ('POST' === $method) {
@@ -153,7 +164,6 @@ abstract class Base extends \PHPUnit_Framework_TestCase
             $body = new \Slim\Http\Body(fopen('php://temp', 'r+'));
             $body->write($parameters['__body']);
             $request = $request->withBody($body);
-            $validator->setInput($parameters['__body']);
         }
         if (array_key_exists('__cookie', $parameters)) {
             $request = $request->withCookieParams($parameters['__cookie']);
@@ -166,10 +176,16 @@ abstract class Base extends \PHPUnit_Framework_TestCase
                 $request = $request->withAddedHeader($key, $value);
             }
         }
+        return $request;
+    }
+
+    protected function setValidatorInstance($parameters)
+    {
+        $validator = new \BO\Mellon\Validator($parameters);
+        if (array_key_exists('__body', $parameters)) {
+            $validator->setInput($parameters['__body']);
+        }
         $validator->makeInstance();
-        $request = \BO\Slim\Middleware\Validator::withValidator($request);
-        $response = $controller->__invoke($request, $this->getResponse(), $arguments);
-        return $response;
     }
 
     public function assertRedirect($response, $uri)
