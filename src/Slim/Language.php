@@ -42,12 +42,19 @@ class Language
 
     public function getCurrentLanguage($lang = '')
     {
-        return ($lang != '') ? $lang : $this->current;
+        $current = (isset(self::$supportedLanguages[$this->current])) ? $this->current : $this->getDefault();
+        return ($lang != '') ? $lang : $current;
     }
 
     public function getCurrentLocale($locale = '')
     {
-        return self::$supportedLanguages[$this->getCurrentLanguage($locale)]['locale'];
+        if (isset(self::$supportedLanguages[$this->getCurrentLanguage($locale)]) &&
+            isset(self::$supportedLanguages[$this->getCurrentLanguage($locale)]['locale'])) {
+            $locale = self::$supportedLanguages[$this->getCurrentLanguage($locale)]['locale'];
+        } else {
+            $locale = $this->getDefault();
+        }
+        return $locale;
     }
 
     public function getDefault()
@@ -69,7 +76,13 @@ class Language
 
     public function setCurrentLocale($locale = '')
     {
-        $locale = ('' == $locale) ? self::$supportedLanguages[$this->current]['locale'] : $locale;
+        if (isset(self::$supportedLanguages[$this->getCurrentLanguage()]) &&
+            isset(self::$supportedLanguages[$this->getCurrentLanguage()]['locale'])) {
+            $locale = self::$supportedLanguages[$this->getCurrentLanguage()]['locale'];
+        } elseif ('' == $locale) {
+            $locale = $this->getDefault();
+        }
+
         \setlocale(LC_ALL, $locale);
     }
 
@@ -108,9 +121,6 @@ class Language
         foreach (\App::$supportedLanguages as $language) {
             $locale = $language['locale'];
             $translator->addResource('json', \App::APP_PATH .'/lang/'. $locale .'.json', $locale);
-        }
-        if (! isset(self::$supportedLanguages[$current]['locale'])) {
-            throw new \Exception("Unsupported type of language");
         }
         \BO\Slim\Bootstrap::addTwigExtension(new TranslationExtension($translator));
         return $translator;
