@@ -66,8 +66,10 @@ abstract class Controller
     // init the request with language translation
     public function initRequest(RequestInterface $request)
     {
+        if (\App::MULTILANGUAGE) {
+            \App::$language = new \BO\Slim\Language($request, \App::$supportedLanguages);
+        }
         \App::$now = (! \App::$now) ? new \DateTimeImmutable() : \App::$now;
-        \App::$language = new \BO\Slim\Language($request, \App::$supportedLanguages);
         return $request;
     }
 }

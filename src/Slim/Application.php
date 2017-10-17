@@ -96,6 +96,8 @@ class Application
      * @var \BO\Slim\Language $language
      *
      */
+    const MULTILANGUAGE = true;
+
     public static $language = null;
 
     public static $supportedLanguages = array(
