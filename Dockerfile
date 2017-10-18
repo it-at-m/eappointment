@@ -1,7 +1,6 @@
-FROM php:5.6
+FROM mysql:5.6
 
-ADD . /opt/zmsdb
+ENV MYSQL_ROOT_PASSWORD='zms'
 
-WORKDIR /opt/zmsdb
+COPY testdataset.sql.gz /docker-entrypoint-initdb.d/
 
-RUN docker-php-ext-install pdo_mysql
