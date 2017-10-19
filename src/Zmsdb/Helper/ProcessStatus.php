@@ -3,8 +3,12 @@ namespace BO\Zmsdb\Helper;
 
 class ProcessStatus extends \BO\Zmsdb\Process
 {
-    public function readUpdatedStatus(\BO\Zmsentities\Process $process, $status, \DateTimeInterface $dateTime)
-    {
+    public function readUpdatedStatus(
+        \BO\Zmsentities\Process $process,
+        $status,
+        \DateTimeInterface $dateTime,
+        $resolveReferences
+    ) {
         $query = new \BO\Zmsdb\Query\Process(\BO\Zmsdb\Query\Base::UPDATE);
         $query->addConditionProcessId($process['id']);
         $query->addConditionAuthKey($process['authKey']);
@@ -25,7 +29,7 @@ class ProcessStatus extends \BO\Zmsdb\Process
         $query->addValuesUpdateProcess($entity, $dateTime);
 
         $this->writeItem($query, 'process', $query::TABLE);
-        $process = $this->readEntity($process['id'], $process['authKey']);
+        $process = $this->readEntity($process['id'], $process['authKey'], $resolveReferences);
         $process['status'] = $this->readProcessStatus($process['id'], $process['authKey']);
         return $process;
     }
