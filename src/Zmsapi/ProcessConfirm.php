@@ -21,6 +21,7 @@ class ProcessConfirm extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(3)->getValue();
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Process($input);
         $entity->testValid();
@@ -30,7 +31,7 @@ class ProcessConfirm extends BaseController
         if ('reserved' != $process->status) {
             throw new Exception\Process\ProcessNotReservedAnymore();
         }
-        $process = (new Process())->updateProcessStatus($process, 'confirmed', \App::$now);
+        $process = (new Process())->updateProcessStatus($process, 'confirmed', \App::$now, $resolveReferences);
 
         $message = Response\Message::create($request);
         $message->data = $process;
