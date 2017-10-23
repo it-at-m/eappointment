@@ -135,4 +135,15 @@ class Mail extends Schema\Entity
         $this->department = $department;
         return $this;
     }
+
+    public function getRecipient()
+    {
+        if (! isset($this['client'])) {
+            $this['client'] = $this->getFirstClient();
+        }
+        if (! isset($this['client']['email']) || "" == $this['client']['email']) {
+            throw new Exception\MailMissedAddress();
+        }
+        return $this['client']['email'];
+    }
 }
