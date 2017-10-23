@@ -26,7 +26,13 @@ class ProcessAddLog extends BaseController
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $mimepart = new \BO\Zmsentities\Mimepart($input);
         $mimepart->testValid();
-        Query::writeLogEntry("MTA successful, subject=". $mimepart->content, $processId);
+
+        $isError = Validator::param('error')->isNumber()->setDefault(0)->getValue();
+        if ($isError) {
+            Query::writeLogEntry("MTA failed, message=". $mimepart->content, $processId);
+        } else {
+            Query::writeLogEntry("MTA successful, subject=". $mimepart->content, $processId);
+        }
 
         $message = Response\Message::create($request);
         $message->data = $mimepart;
