@@ -56,6 +56,9 @@ class Notification extends Schema\Entity
 
     public function getRecipient()
     {
+        if (! isset($this->client['telephone']) || "" == $this->client['telephone']) {
+            throw new Exception\NotificationMissedNumber();
+        }
         $telephone = preg_replace('[^0-9]', '', $this->client['telephone']);
         $telephone = preg_replace('/\s+/', '', $telephone);
         $recipient = 'SMS='.preg_replace('/^0049/', '+49', $telephone).'@sms.verwalt-berlin.de';
