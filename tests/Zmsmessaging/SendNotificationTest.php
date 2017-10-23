@@ -42,7 +42,10 @@ class SendNotificationTest extends Base
                 echo "ERROR OCCURED: ". $notification['errorInfo'] ."\n";
             } else {
                 $this->assertContains('Content-Transfer-Encoding: base64', trim($notification['mime']));
-                $this->assertContains('sms=0123456789@example.com', json_encode($notification['recipients']));
+                $this->assertContains(
+                    'sms=0123456789@example.com',
+                    json_encode($notification['recipients'])
+                );
             }
         }
     }
