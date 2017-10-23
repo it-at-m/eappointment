@@ -27,11 +27,14 @@ class Notification extends BaseController
 
     public function initQueueTransmission($action = false)
     {
+        $resultList = [];
         if (count($this->messagesQueue)) {
             foreach ($this->messagesQueue as $item) {
                 $entity = new \BO\Zmsentities\Notification($item);
                 $mailer = $this->getValidMailer($entity);
-                $mailer->AddAddress($entity->getRecipient());
+                if (! $mailer) {
+                    continue;
+                }
                 $result = $this->sendMailer($entity, $mailer, $action);
                 if ($result instanceof \PHPMailer) {
                     $resultList[] = array(
@@ -62,17 +65,28 @@ class Notification extends BaseController
 
     protected function getValidMailer(\BO\Zmsentities\Notification $entity)
     {
+        $message = '';
         try {
             $mailer = $this->readMailer($entity);
+            $mailer->AddAddress($entity->getRecipient());
         // @codeCoverageIgnoreStart
         } catch (phpmailerException $exception) {
-            \App::$log->debug('Zmsmessaging PHPMailer', [$exception]);
-            return $exception->getMessage();
-        } catch (Exception $exception) {
-            \App::$log->debug('Zmsmessaging', [$exception]);
-            return $exception->getMessage();
+            \App::$log->debug('Zmsmessaging PHPMailer Failure', [$exception]);
+            $message = 'Zmsmessaging PHPMailer Failure: '. $exception->getMessage();
+        } catch (\Exception $exception) {
+            \App::$log->debug('Zmsmessaging Failure', [$exception]);
+            $message = 'Zmsmessaging Failure: '. $exception->getMessage();
         }
-        // @codeCoverageIgnoreEnd
+        if ($message) {
+            $log = new Mimepart(['mime' => 'text/plain']);
+            $log->content = $message;
+            \App::$http->readPostResult(
+                '/log/process/'. $entity->process['id'] .'/',
+                $log,
+                ['error' => 1]
+            );
+            return false;
+        }
         return $mailer;
     }
 

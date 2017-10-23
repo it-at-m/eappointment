@@ -50,8 +50,7 @@ class BaseController
     {
         // @codeCoverageIgnoreStart
         if (false !== $action && null !== $mailer && ! $mailer->Send()) {
-            throw new \Exception('Zmsmessaging Failed');
-            \App::$log->debug('Zmsmessaging Failed', [$mailer->ErrorInfo]);
+            throw new Exception\SendingFailed();
         }
         // @codeCoverageIgnoreEnd
         $log = new Mimepart(['mime' => 'text/plain']);
