@@ -20,7 +20,7 @@ class NotificationTest extends EntityCommonTests
         $this->assertContains('terminvereinbarung@', $entity->getIdentification(), 'Getting message failed');
         $this->assertEquals('Max Mustermann', $entity->getFirstClient()->familyName, 'Getting first client failed');
         $this->assertEquals(
-            'SMS=030115@sms.verwalt-berlin.de',
+            'SMS=+4930115@sms.verwalt-berlin.de',
             $entity->getRecipient(),
             'Getting recipient number failed'
         );

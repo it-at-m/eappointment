@@ -59,9 +59,10 @@ class Notification extends Schema\Entity
         if (! isset($this->client['telephone']) || "" == $this->client['telephone']) {
             throw new Exception\NotificationMissedNumber();
         }
-        $telephone = preg_replace('[^0-9]', '', $this->client['telephone']);
-        $telephone = preg_replace('/\s+/', '', $telephone);
-        $recipient = 'SMS='.preg_replace('/^0049/', '+49', $telephone).'@sms.verwalt-berlin.de';
+        $phoneNumberUtil = \libphonenumber\PhoneNumberUtil::getInstance();
+        $phoneNumberObject = $phoneNumberUtil->parse($this->client['telephone'], 'DE');
+        $telephone = $phoneNumberUtil->format($phoneNumberObject, \libphonenumber\PhoneNumberFormat::E164);
+        $recipient = 'SMS='. $telephone .'@sms.verwalt-berlin.de';
         return $recipient;
     }
 
