@@ -21,4 +21,35 @@ class Exchange extends Schema\Entity
             'data' => [ ]
         ];
     }
+
+    public function setPeriod(\DateTimeInterface $firstDay, \DateTimeInterface $lastDay)
+    {
+        $this->firstDay = (new Day())->setDateTime($firstDay);
+        $this->lastDay = (new Day())->setDateTime($lastDay);
+        return $this;
+    }
+
+    public function addDictionaryEntry($variable, $type = 'string', $description = '', $reference = '')
+    {
+        $position = count($this['dictionary']);
+        $this['dictionary'][$position] = [
+            'position' => $position,
+            'variable' => $variable,
+            'type' => $type,
+            'description' => $description,
+            'reference' => $reference
+        ];
+        return $this;
+    }
+
+    public function addDataSet($values)
+    {
+        if (!is_array($values) && !$values instanceof Traversable) {
+            throw new \Exception("Values have to be of type array");
+        }
+        if (count($this->dictionary) != count($values)) {
+            throw new \Exception("Mismatching dictionary settings for values (count mismatch)");
+        }
+        $this->data[] = $values;
+    }
 }
