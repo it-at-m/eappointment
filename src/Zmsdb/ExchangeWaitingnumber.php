@@ -46,7 +46,7 @@ class ExchangeWaitingnumber extends Base
         $raw = $this->getReader()->fetchAll(Query\ExchangeWaitingnumber::QUERY_SUBJECTS, []);
         $entity = new Exchange();
         $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable());
-        $entity->addDictionaryEntry('subject');
+        $entity->addDictionaryEntry('subject', 'string', 'ID of a scope', 'scope.id');
         $entity->addDictionaryEntry('periodstart');
         $entity->addDictionaryEntry('periodend');
         $entity->addDictionaryEntry('description');
@@ -69,4 +69,16 @@ class ExchangeWaitingnumber extends Base
         }
         return $entity;
     }
+/*
+ * @todo ...
+    public function writeWaitingTimeCalculated(ScopeEntity $scope, \DateTimeInterface $date)
+    {
+        $queueList = (new Scope())->readQueueListWithWaitingTime($scope, $date);
+        $existingEntry = $this->getReader()->fetchAll(Query\ExchangeWaitingnumber::QUERY_READ, [
+            'scopeid' => $scope->id,
+            'datestart' => $date->format('Y-m-d'),
+            'dateend' => $date->format('Y-m-d'),
+        ]);
+    }
+*/
 }
