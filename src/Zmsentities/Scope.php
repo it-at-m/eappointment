@@ -57,7 +57,7 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
     public function getPreference($preferenceKey, $index, $isBool = false)
     {
         $preference = $this->toProperty()->preferences->$preferenceKey->$index->get();
-        if (!$isBool && null !== $preference) {
+        if (!$isBool && $preference) {
             return $preference;
         }
         return ($isBool && $preference) ? 1 : 0;
@@ -132,6 +132,12 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
         }
         $this->setStatusQueue('lastGivenNumberTimestamp', $dateTime->getTimestamp());
         return $this;
+    }
+
+    public function hasEmailFrom()
+    {
+        $emailFrom = $this->getPreference('client', 'emailFrom');
+        return ($emailFrom) ? true : false;
     }
 
     public function hasAccess(Useraccount $useraccount)
