@@ -72,20 +72,17 @@ class Mail extends BaseController
             $mailer->AddAddress($entity->getRecipient(), $entity->client['familyName']);
         // @codeCoverageIgnoreStart
         } catch (phpmailerException $exception) {
-            \App::$log->debug('Zmsmessaging PHPMailer Failure', [$exception]);
             $message = 'Zmsmessaging PHPMailer Failure: '. $exception->getMessage();
+            \App::$log->warning($message, [$exception]);
         } catch (\Exception $exception) {
-            \App::$log->debug('Zmsmessaging Failure', [$exception]);
             $message = 'Zmsmessaging Failure: '. $exception->getMessage();
+            \App::$log->warning($message, [$exception]);
         }
         if ($message) {
+            $this->removeEntityOlderThanOneHour($entity);
             $log = new Mimepart(['mime' => 'text/plain']);
             $log->content = $message;
-            \App::$http->readPostResult(
-                '/log/process/'. $entity->process['id'] .'/',
-                $log,
-                ['error' => 1]
-            );
+            \App::$http->readPostResult('/log/process/'. $entity->process['id'] .'/', $log, ['error' => 1]);
             return false;
         }
 

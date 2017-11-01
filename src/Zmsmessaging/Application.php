@@ -17,6 +17,8 @@ class Application
 
     const DEBUG = false;
 
+    public static $now = '';
+
     /*
      * -----------------------------------------------------------------------
      * ZMS Messaging access
@@ -44,4 +46,12 @@ class Application
     public static $log = null;
 
     const MONOLOG_LOGLEVEL = \Monolog\Logger::WARNING;
+
+    public static function getNow()
+    {
+        if (\App::$now instanceof \DateTimeInterface) {
+            return \App::$now;
+        }
+        return new \DateTimeImmutable();
+    }
 }

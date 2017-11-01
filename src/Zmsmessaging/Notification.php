@@ -71,13 +71,14 @@ class Notification extends BaseController
             $mailer->AddAddress($entity->getRecipient());
         // @codeCoverageIgnoreStart
         } catch (phpmailerException $exception) {
-            \App::$log->debug('Zmsmessaging PHPMailer Failure', [$exception]);
             $message = 'Zmsmessaging PHPMailer Failure: '. $exception->getMessage();
+            \App::$log->warning($message, [$exception]);
         } catch (\Exception $exception) {
-            \App::$log->debug('Zmsmessaging Failure', [$exception]);
             $message = 'Zmsmessaging Failure: '. $exception->getMessage();
+            \App::$log->warning($message, [$exception]);
         }
         if ($message) {
+            $this->removeEntityOlderThanOneHour($entity);
             $log = new Mimepart(['mime' => 'text/plain']);
             $log->content = $message;
             \App::$http->readPostResult(
@@ -95,6 +96,7 @@ class Notification extends BaseController
         $sender = $entity->getIdentification();
         $mailer = new PHPMailer(true);
         $mailer->Encoding = 'base64';
+        $mailer->SetLanguage("de");
         // Without base64, encoding leads to additional spaces
         $mailer->Subject = "=?UTF-8?B?".$mailer->base64EncodeWrapMB(trim($entity->getMessage()))."?=";
         $mailer->Body = '';

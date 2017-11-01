@@ -19,7 +19,7 @@ then
 fi
 
 if [ -n "$PHPFILES" ]
-then 
+then
     echo "Checking only: $PHPFILES"
     php -l $PHPFILES || exit 1
 else
@@ -28,4 +28,4 @@ else
 fi
 $ROOT/vendor/bin/phpcs --standard=psr2 $PHPFILES || exit 1
 $ROOT/vendor/bin/phpmd $ROOT/src text phpmd.rules.xml || exit 1
-#$ROOT/vendor/bin/phpunit || exit 1
+$ROOT/vendor/bin/phpunit || exit 1

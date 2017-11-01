@@ -9,11 +9,15 @@ namespace BO\Zmsmessaging\PhpUnit;
 
 use \Prophecy\Argument;
 
+use PHPUnit\Framework\TestCase;
+
 /**
  * @codeCoverageIgnore
  */
-abstract class Base extends \PHPUnit_Framework_TestCase
+abstract class Base extends TestCase
 {
+    use \PhoenixRVD\PHPUnitLogAssertions\LogAssertions;
+
     /**
      * An array of API-Calls, e.g.:
      * [
@@ -29,6 +33,7 @@ abstract class Base extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         \App::$http = $this->getApiMockup();
+        self::attachLogger(\App::$log);
     }
 
     public function tearDown()
