@@ -5,7 +5,6 @@ define('ZMS_API_URL', getenv('ZMS_API_URL') ? getenv('ZMS_API_URL') : 'https://l
 
 class App extends \BO\Zmsmessaging\Application
 {
-
     const APP_PATH = APP_PATH;
 
     // Uncomment the following lines on debugging
@@ -21,3 +20,6 @@ class App extends \BO\Zmsmessaging\Application
 
     const HTTP_BASE_URL = ZMS_API_URL;
 }
+
+// uncomment for testing
+App::$now = new DateTimeImmutable('2016-04-01 11:55:00', new DateTimeZone('Europe/Berlin'));
