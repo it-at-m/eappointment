@@ -59,6 +59,19 @@ class BaseController
         return $mailer;
     }
 
+    protected function removeEntityOlderThanOneHour($entity)
+    {
+        $now = \App::getNow();
+        if (3600 < $now->getTimestamp() - $entity->createTimestamp) {
+            $this->deleteEntityFromQueue($entity);
+            $log = new Mimepart(['mime' => 'text/plain']);
+            $log->content = 'Zmsmessaging Failure: Queue entry older than 1 hour has been removed';
+            \App::$http->readPostResult('/log/process/'. $entity->process['id'] .'/', $log, ['error' => 1]);
+            \App::$log->warning($log->content);
+            return false;
+        }
+    }
+
     public function deleteEntityFromQueue($entity)
     {
         $type = ($entity instanceof \BO\Zmsentities\Mail) ? 'mails' : 'notification';

@@ -11,18 +11,18 @@
       "$schema": "https://schema.berlin.de/queuemanagement/mail.json",
       "id": 1234,
       "createIP": "145.15.3.10",
-      "createTimestamp": 1459504500,
+      "createTimestamp": 1459500600,
       "department": {
         "id": 123,
         "preferences": {
           "notifications": {
             "enabled": true,
-            "identification": "test@example.com",
+            "identification": "terminvereinbarung@mitte.berlin.de",
             "sendConfirmationEnabled": true,
             "sendReminderEnabled": true
           }
         },
-        "email": "test@example.com",
+        "email": "",
         "name": "Bürgeramt"
       },
       "multipart": [
@@ -49,7 +49,7 @@
         "clients": [
           {
             "familyName": "Max Mustermann",
-            "email": "test@example.com",
+            "email": "max@example.com",
             "telephone": "030 115"
           }
         ],
@@ -114,7 +114,7 @@
       "subject": "Example Mail",
       "client": {
         "familyName": "Max Mustermann",
-        "email": "test@example.com"
+        "email": "max@example.com"
       }
     }
   }
