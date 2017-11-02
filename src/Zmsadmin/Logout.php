@@ -8,10 +8,6 @@ namespace BO\Zmsadmin;
 
 use \BO\Zmsclient\Auth;
 
-/**
-  * Handle requests concerning services
-  *
-  */
 class Logout extends BaseController
 {
     /**
