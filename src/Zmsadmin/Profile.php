@@ -21,7 +21,7 @@ class Profile extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-        $confirm_success = $request->getAttribute('validator')->getParameter('confirm_success')->isString()->getValue();
+        $confirmSuccess = $request->getAttribute('validator')->getParameter('confirm_success')->isString()->getValue();
         $entity = new Entity($workstation->useraccount);
         $input = $request->getParsedBody();
 
@@ -43,7 +43,7 @@ class Profile extends BaseController
                 'menuActive' => 'profile',
                 'workstation' => $workstation,
                 'useraccount' => $entity->getArrayCopy(),
-                'confirm_success' => $confirm_success
+                'confirm_success' => $confirmSuccess
             )
         );
     }

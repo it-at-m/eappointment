@@ -31,6 +31,9 @@ class View extends BaseView {
             this.save(event).then((response) => {
                 this.loadMessage(response, this.onSaveProcess);
             }).catch(err => this.loadErrorCallback(err));
+        }).on('click', '.form-actions button.button-abort', (event) => {
+            this.ActionHandler.abort(event);
+            this.cleanReload()
         })
     }
 
@@ -60,22 +63,16 @@ class View extends BaseView {
     }
 
     loadErrorCallback(err) {
-        if (err.message.includes('data-exception-errorlist')) {
+        if (err.message && err.message.includes('data-exception-errorlist')) {
             let exceptionData = $(err.message).find('[data-exception-errorlist]').data('exception-errorlist');
             new FormValidationView(this.$main.find('form'), {
                 responseJson: exceptionData
             });
         }
-        else if (err.message.toLowerCase().includes('exception')) {
+        else if (err.message && err.message.toLowerCase().includes('exception')) {
             let exceptionType = $(err.message).filter('.exception').data('exception');
-            if (exceptionType === 'reservation-failed') {
-                this.FreeProcessList.loadList();
-                this.FormButtons.load();
-            }
-            else {
-                this.cleanReload()
-                console.log('EXCEPTION thrown: ' + exceptionType);
-            }
+            this.cleanReload()
+            console.log('EXCEPTION thrown: ' + exceptionType);
         }
         else {
             console.log('Ajax error', err);
