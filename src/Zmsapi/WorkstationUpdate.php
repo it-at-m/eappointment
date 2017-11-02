@@ -27,7 +27,7 @@ class WorkstationUpdate extends BaseController
         $entity = new \BO\Zmsentities\Workstation($input);
         $entity->testValid();
         Helper\User::testWorkstationAssigend($entity, $resolveReferences);
-
+        Helper\User::testWorkstationIsOveraged($entity);
         if ($entity->getUseraccount()->id != $currentWorkstation->getUseraccount()->id) {
             throw new Exception\Workstation\WorkstationAccessFailed();
         }
