@@ -25,7 +25,7 @@ class WorkstationPassword extends BaseController
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $useraccount = new \BO\Zmsentities\Useraccount($input);
         $useraccount->testValid();
-        $this->testUseraccount($workstation->getUseraccount()->id, $useraccount->password);
+        Helper\User::testUseraccountExists($workstation->getUseraccount()->id, $useraccount->password, $input);
         if ($useraccount->changePassword) {
             $useraccount->password = reset($useraccount->changePassword);
         }
@@ -36,16 +36,5 @@ class WorkstationPassword extends BaseController
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
         return $response;
-    }
-
-    protected function testUseraccount($oldLoginName, $oldPassword)
-    {
-        $query = new Query();
-        if (! $query->readIsUserExisting($oldLoginName)) {
-            throw new Exception\Useraccount\UseraccountNotFound();
-        }
-        if (! $query->readIsUserExisting($oldLoginName, $oldPassword)) {
-            throw new Exception\Useraccount\InvalidCredentials();
-        }
     }
 }

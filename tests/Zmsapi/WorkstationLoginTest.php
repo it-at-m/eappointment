@@ -21,7 +21,8 @@ class WorkstationLoginTest extends Base
     {
         $this->expectException('\BO\Zmsapi\Exception\Useraccount\AuthKeyFound');
         $this->expectExceptionCode(200);
-        $this->setWorkstation();
+        $workstation = $this->setWorkstation();
+        $workstation->getUseraccount()->lastLogin = 1447926465;
         $this->render([], [
             '__body' => $this->readFixture('GetUseraccount.json'),
             'nocommit' => 1
@@ -54,7 +55,8 @@ class WorkstationLoginTest extends Base
         $this->expectExceptionCode(404);
         $this->render([], [
             '__body' => '{
-                "id": "unittest"
+                "id": "unittest",
+                "password": "unittest"
             }'
         ], []);
     }

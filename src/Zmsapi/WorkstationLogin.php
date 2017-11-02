@@ -31,16 +31,9 @@ class WorkstationLogin extends BaseController
         $useraccount = new \BO\Zmsentities\Useraccount($input);
         $useraccount->testValid();
 
+        Helper\User::testUseraccountExists($useraccount->id, $useraccount->password, $input);
         $workstation = (new Helper\User($request, $resolveReferences))->readWorkstation();
-        if ($workstation->hasId() && ! $workstation->getUseraccount()->isOveraged(\App::$now)) {
-            $exception = new \BO\Zmsapi\Exception\Useraccount\AuthKeyFound();
-            $exception->data = $workstation;
-            throw $exception;
-        }
-
-        if (! (new Useraccount)->readIsUserExisting($useraccount->id) || 0 == count($input)) {
-            throw new Exception\Useraccount\UseraccountNotFound();
-        }
+        Helper\User::testWorkstationIsOveraged($workstation);
 
         $logInHash = (new Workstation)->readLoggedInHashByName($useraccount->id);
         $workstation = (new Workstation)->writeEntityLoginByName(

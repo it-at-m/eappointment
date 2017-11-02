@@ -7,7 +7,8 @@ use \BO\Zmsdb\Useraccount;
 use \BO\Zmsdb\Workstation;
 
 /**
- * example class to generate a response
+ *
+ * @SuppressWarnings(CouplingBetweenObjects)
  */
 class User
 {
@@ -77,7 +78,7 @@ class User
     {
         $workstation = static::readWorkstation();
         if (\App::RIGHTSCHECK_ENABLED) {
-            $workstation->getUseraccount()->testRights(func_get_args(), \App::$now);
+            $workstation->getUseraccount()->testRights(func_get_args());
         }
         return $workstation;
     }
@@ -108,14 +109,6 @@ class User
         return $department;
     }
 
-    protected static function testReadDepartmentByOrganisation($departmentId, $userAccount)
-    {
-        $organisation = (new \BO\Zmsdb\Organisation())->readByDepartmentId($departmentId, 1);
-        $organisation->departments = $organisation->getDepartmentList()->withAccess($userAccount);
-        $department = $organisation->departments->getEntity($departmentId);
-        return $department;
-    }
-
     public static function hasRights()
     {
         $userAccount = static::readWorkstation()->getUseraccount();
@@ -135,5 +128,34 @@ class User
             $xAuthKey = current($xAuthKey);
         }
         return $xAuthKey;
+    }
+
+
+    public static function testWorkstationIsOveraged($workstation)
+    {
+        if ($workstation->hasId() && $workstation->getUseraccount()->isOveraged(\App::$now)) {
+            $exception = new \BO\Zmsapi\Exception\Useraccount\AuthKeyFound();
+            $exception->data = $workstation;
+            throw $exception;
+        }
+    }
+
+    protected static function testReadDepartmentByOrganisation($departmentId, $userAccount)
+    {
+        $organisation = (new \BO\Zmsdb\Organisation())->readByDepartmentId($departmentId, 1);
+        $organisation->departments = $organisation->getDepartmentList()->withAccess($userAccount);
+        $department = $organisation->departments->getEntity($departmentId);
+        return $department;
+    }
+
+    public static function testUseraccountExists($loginName, $password, $input)
+    {
+        $query = new Useraccount();
+        if (! $query->readIsUserExisting($loginName) || 0 == count($input)) {
+            throw new \BO\Zmsapi\Exception\Useraccount\UseraccountNotFound();
+        }
+        if (! $query->readIsUserExisting($loginName, $password)) {
+            throw new \BO\Zmsapi\Exception\Useraccount\InvalidCredentials();
+        }
     }
 }

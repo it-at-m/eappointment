@@ -23,8 +23,8 @@ class WorkstationUpdateTest extends Base
 
     public function testOveragedLogin()
     {
-        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingLogin');
-        $this->expectExceptionCode(401);
+        $this->expectException('\BO\Zmsapi\Exception\Useraccount\AuthKeyFound');
+        $this->expectExceptionCode(200);
 
         $workstation = $this->setWorkstation();
         $workstation->getUseraccount()->lastLogin = 1447926465; //19.11.2015;
