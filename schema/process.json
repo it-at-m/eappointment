@@ -99,7 +99,8 @@
     },
     "id": {
       "type": "number",
-      "description": "Number is used to identify appointments like on call displays\n"
+      "description": "Number is used to identify appointments like on call displays\n",
+      "minimum": 1000
     },
     "queue": {
       "$ref": "queue.json"
