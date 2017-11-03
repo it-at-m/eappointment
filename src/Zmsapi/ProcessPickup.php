@@ -31,7 +31,6 @@ class ProcessPickup extends BaseController
         $cluster = (new \BO\Zmsdb\Cluster)->readByScopeId($workstation->scope['id'], 1);
 
         if ($entity->hasProcessCredentials()) {
-            $entity->testValid();
             $this->testProcessData($entity);
             $process = (new Query())->readEntity($entity['id'], $entity['authKey'], 0);
             $process->addData($input);
@@ -39,11 +38,13 @@ class ProcessPickup extends BaseController
         } elseif ($entity->hasQueueNumber()) {
             $process = ProcessStatusQueued::init()
                 ->readByQueueNumberAndScope($entity['queue']['number'], $workstation->scope['id']);
-            if (!$process->id) {
+            if (! $process->id) {
                 $workstation = (new \BO\Zmsdb\Workstation)->readResolvedReferences($workstation, 1);
                 $process = (new Query())->writeNewPickup($workstation->scope, \App::$now, $entity['queue']['number']);
             }
+            $process->testValid();
         } else {
+            $entity->testValid();
             throw new Exception\Process\ProcessInvalid();
         }
         $workstation->testMatchingProcessScope($workstation->getScopeList($cluster), $process);
@@ -59,6 +60,7 @@ class ProcessPickup extends BaseController
 
     protected function testProcessData($entity)
     {
+        $entity->testValid();
         $authCheck = (new Query())->readAuthKeyByProcessId($entity->id);
         if (! $authCheck) {
             throw new Exception\Process\ProcessNotFound();

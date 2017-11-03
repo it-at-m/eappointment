@@ -66,18 +66,18 @@ class ProcessFinished extends BaseController
 
     protected function testProcessData($process)
     {
-        $hasValidCredentials = (
-            $process->hasProcessCredentials() &&
+        $hasValidId = (
+            $process->hasId() &&
             ('pending' == $process['status'] || 'finished' == $process['status'])
         );
-        if (! $hasValidCredentials) {
+        if (! $hasValidId) {
             throw new Exception\Process\ProcessInvalid();
         }
 
-        $authCheck = (new Process())->readAuthKeyByProcessId($process->id);
-        if (! $authCheck) {
+        $processCheck = (new Process())->readEntity($process->id, new \BO\Zmsdb\Helper\NoAuth());
+        if (null === $processCheck || false === $processCheck->hasId()) {
             throw new Exception\Process\ProcessNotFound();
-        } elseif ($authCheck['authKey'] != $process->authKey && $authCheck['authName'] != $process->authKey) {
+        } elseif ($processCheck->authKey != $process->authKey) {
             throw new Exception\Process\AuthKeyMatchFailed();
         }
     }
