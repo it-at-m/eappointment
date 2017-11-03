@@ -63,16 +63,6 @@ class ProcessPickupTest extends Base
         ], []);
     }
 
-    public function testEmpty()
-    {
-        $this->setWorkstation();
-        $this->expectException('\BO\Zmsapi\Exception\Process\ProcessInvalid');
-        $this->expectExceptionCode(400);
-        $this->render([], [
-            '__body' => '{}'
-        ], []);
-    }
-
     public function testUnvalidInput()
     {
         $workstation = $this->setWorkstation(138, 'berlinonline', 141);
@@ -81,27 +71,6 @@ class ProcessPickupTest extends Base
         $this->expectExceptionCode(400);
         $this->render([], [
             '__body' => '{
-                "id": '. self::PROCESS_ID .',
-                "authKey": "123",
-                "scope": {
-                    "id": '. self::SCOPE_ID . '
-                },
-                "clients": [
-                    {
-                        "familyName": "Max Mustermann",
-                        "email": "max@service.berlin.de",
-                        "telephone": "030 115"
-                    }
-                ],
-                "appointments" : [
-                    {
-                        "date": 1447869172,
-                        "scope": {
-                            "id": '. self::SCOPE_ID . '
-                        },
-                        "slotCount": 2
-                    }
-                ],
                 "status": "pickup"
             }'
         ], []);
