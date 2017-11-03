@@ -21,6 +21,7 @@ class Useraccount extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         if ($workstation->hasSuperUseraccount()) {
             $department = new \BO\Zmsentities\Department([
                 'name' => 'Systemweite Nutzer'
@@ -63,6 +64,7 @@ class Useraccount extends BaseController
                 'department' => $department,
                 'useraccountList' => $useraccountList,
                 'organisationList' => $organisationList,
+                'success' => $success,
             )
         );
     }

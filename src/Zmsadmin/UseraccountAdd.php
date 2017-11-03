@@ -21,7 +21,7 @@ class UseraccountAdd extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
-        $confirm_success = $request->getAttribute('validator')->getParameter('confirm_success')->isString()->getValue();
+        $confirmSuccess = $request->getAttribute('validator')->getParameter('confirm_success')->isString()->getValue();
         $ownerList = \App::$http->readGetResult('/owner/', ['resolveReferences' => 2])->getCollection();
 
         $input = $request->getParsedBody();
@@ -41,13 +41,17 @@ class UseraccountAdd extends BaseController
             );
         }
 
-        return \BO\Slim\Render::withHtml($response, 'page/useraccountEdit.twig', array(
+        return \BO\Slim\Render::withHtml(
+            $response,
+            'page/useraccountEdit.twig',
+            array(
             'ownerList' => $ownerList->toDepartmentListByOrganisationName(),
             'workstation' => $workstation,
-            'confirm_success' => $confirm_success,
+            'confirm_success' => $confirmSuccess,
             'action' => 'add',
             'title' => 'Nutzer: Einrichtung und Administration',
             'menuActive' => 'useraccount'
-        ));
+            )
+        );
     }
 }
