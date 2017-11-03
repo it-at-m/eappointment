@@ -121,7 +121,7 @@ class BaseView extends ErrorHandler {
     }
 
     cleanReload () {
-        window.location.reload(true);
+        location.assign(window.location);
     }
 
     locationLoad (url) {
