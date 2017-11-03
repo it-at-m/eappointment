@@ -103,7 +103,7 @@ class Service extends Base
             $locationsCsvByUser = true;
         }
 
-        $boolquery = new \Elastica\Query\Bool();
+        $boolquery = new \Elastica\Query\BoolQuery();
         $searchquery = new \Elastica\Query\QueryString();
         if ('' === trim($querystring)) {
             $searchquery->setQuery('*');

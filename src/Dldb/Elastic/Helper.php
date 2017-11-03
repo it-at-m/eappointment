@@ -3,11 +3,10 @@ namespace BO\Dldb\Elastic;
 
 class Helper
 {
-
     public static function boolFilteredQuery()
     {
-        $boolQuery = new \Elastica\Query\Bool();
-        $boolFilter = new \Elastica\Filter\Bool();
+        $boolQuery = new \Elastica\Query\BoolQuery();
+        $boolFilter = new \Elastica\Filter\BoolFilter();
         $query = new \Elastica\Query\Filtered($boolQuery, $boolFilter);
         // $matchAllQuery = new \Elastica\Query\MatchAll();
         // $boolQuery->addMust($matchAllQuery);

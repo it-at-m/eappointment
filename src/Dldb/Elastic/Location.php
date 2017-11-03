@@ -131,7 +131,6 @@ class Location extends Base
             'address.street',
             'address.postal_code^9'
         ]);
-        $searchquery->setLowercaseExpandedTerms(false);
         $query->getQuery()->addShould($searchquery);
         $filter = null;
         if ($service_csv) {
@@ -196,7 +195,6 @@ class Location extends Base
             'address.street',
             'address.postal_code^9'
         ]);
-        $searchquery->setLowercaseExpandedTerms(false);
         $query->getQuery()->addShould($searchquery);
         $filter = null;
         if ($service_csv) {
