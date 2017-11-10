@@ -8,9 +8,13 @@ use \BO\Zmsentities\Scope as ScopeEntity;
 class ExchangeWaitingnumber extends Base
 {
 
-    public function readEntity(ScopeEntity $scope, \DateTimeInterface $datestart, \DateTimeInterface $dateend)
-    {
-        $raw = $this->getReader()->fetchAll(Query\ExchangeWaitingnumber::QUERY_READ, [
+    public function readEntity(
+        ScopeEntity $scope,
+        \DateTimeInterface $datestart,
+        \DateTimeInterface $dateend,
+        $period = 'DAY'
+    ) {
+        $raw = $this->getReader()->fetchAll(constant("\BO\Zmsdb\Query\ExchangeWaitingnumber::QUERY_READ_" . $period), [
             'scopeid' => $scope->id,
             'datestart' => $datestart->format('Y-m-d'),
             'dateend' => $dateend->format('Y-m-d'),
