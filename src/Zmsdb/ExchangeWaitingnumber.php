@@ -60,11 +60,14 @@ class ExchangeWaitingnumber extends Base
         return $entity;
     }
 
-    public function readPeriodList(ScopeEntity $scope)
+    public function readPeriodList(ScopeEntity $scope, $period = 'DAY')
     {
-        $raw = $this->getReader()->fetchAll(Query\ExchangeWaitingnumber::QUERY_PERIODLIST, [
-            'scopeid' => $scope->id,
-        ]);
+        $raw = $this->getReader()->fetchAll(
+            constant("\BO\Zmsdb\Query\ExchangeWaitingnumber::QUERY_PERIODLIST_" . $period),
+            [
+                'scopeid' => $scope->id,
+            ]
+        );
         $entity = new Exchange();
         $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable());
         $entity->addDictionaryEntry('period');
