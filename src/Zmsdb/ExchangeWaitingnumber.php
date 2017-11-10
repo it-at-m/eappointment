@@ -5,17 +5,17 @@ namespace BO\Zmsdb;
 use \BO\Zmsentities\Exchange;
 use \BO\Zmsentities\Scope as ScopeEntity;
 
-class ExchangeWaitingnumber extends Base
+class ExchangeWaitingnumber extends Base implements Interfaces\ExchangeSubject
 {
 
     public function readEntity(
-        ScopeEntity $scope,
+        $subjectid,
         \DateTimeInterface $datestart,
         \DateTimeInterface $dateend,
         $period = 'DAY'
     ) {
         $raw = $this->getReader()->fetchAll(constant("\BO\Zmsdb\Query\ExchangeWaitingnumber::QUERY_READ_" . $period), [
-            'scopeid' => $scope->id,
+            'scopeid' => $subjectid,
             'datestart' => $datestart->format('Y-m-d'),
             'dateend' => $dateend->format('Y-m-d'),
         ]);
@@ -33,7 +33,7 @@ class ExchangeWaitingnumber extends Base
                 $waitingtime = $entry[sprintf('echte_zeit_ab_%02s', $hour)];
                 $waitingcalculated = $entry[sprintf('zeit_ab_%02s', $hour)];
                 $entity->addDataSet([
-                    $scope->id,
+                    $subjectid,
                     $entry['datum'],
                     $hour,
                     $waitingcount,
@@ -60,12 +60,12 @@ class ExchangeWaitingnumber extends Base
         return $entity;
     }
 
-    public function readPeriodList(ScopeEntity $scope, $period = 'DAY')
+    public function readPeriodList($subjectid, $period = 'DAY')
     {
         $raw = $this->getReader()->fetchAll(
             constant("\BO\Zmsdb\Query\ExchangeWaitingnumber::QUERY_PERIODLIST_" . $period),
             [
-                'scopeid' => $scope->id,
+                'scopeid' => $subjectid,
             ]
         );
         $entity = new Exchange();
