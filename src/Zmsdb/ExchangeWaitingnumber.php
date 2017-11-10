@@ -21,7 +21,7 @@ class ExchangeWaitingnumber extends Base implements Interfaces\ExchangeSubject
         ]);
         $entity = new Exchange();
         $entity->setPeriod($datestart, $dateend);
-        $entity->addDictionaryEntry('subjectid');
+        $entity->addDictionaryEntry('subjectid', 'string', 'ID of a scope', 'scope.id');
         $entity->addDictionaryEntry('date');
         $entity->addDictionaryEntry('hour');
         $entity->addDictionaryEntry('waitingcount');
