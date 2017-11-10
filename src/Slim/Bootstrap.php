@@ -42,6 +42,7 @@ class Bootstrap
         ini_set('default_charset', $charset);
         date_default_timezone_set($timezone);
         mb_internal_encoding($charset);
+        \App::$now = (! \App::$now) ? new \DateTimeImmutable() : \App::$now;
     }
 
     protected function configureLogger(
