@@ -9,7 +9,7 @@ class ExchangeWaitingnumber extends Base
      */
     const TABLE = 'wartenrstatistik';
 
-    const QUERY_READ = '
+    const QUERY_READ_DAY = '
         SELECT * FROM ' . self::TABLE . '
         WHERE `standortid` = :scopeid
             AND `datum` BETWEEN :datestart AND :dateend
