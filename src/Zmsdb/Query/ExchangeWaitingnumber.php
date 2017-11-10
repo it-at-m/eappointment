@@ -28,7 +28,7 @@ class ExchangeWaitingnumber extends Base
         ORDER BY w.`standortid` ASC
     ';
 
-    const QUERY_PERIODLIST = '
+    const QUERY_PERIODLIST_DAY = '
         SELECT 
             `datum`
         FROM ' . self::TABLE . ' AS w
