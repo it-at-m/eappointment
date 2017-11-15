@@ -56,6 +56,10 @@
             "type": "number",
             "description": "estimated time in minutes to wait for a call"
         },
+        "waitingTimeOptimistic": {
+            "type": "number",
+            "description": "estimated time in minutes to wait for a call (optimistic value for views with timespan)"
+        },
         "withAppointment": {
             "type": "boolean",
             "description": "true if corresponding process has an appointment",
