@@ -25,16 +25,25 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         $currentTime = $dateTime->getTimestamp();
 
         $waitingTime = 0;
+        $optimisticTime = 0;
         $timeSlot = ($workstationCount) ? $processTimeAverage * 60 / $workstationCount : $processTimeAverage * 60;
+        $timeSlotOptimistic = $timeSlot / 60 * 0.8;
         while ($nextWithAppointment || $nextNoAppointment) {
             if ($nextWithAppointment && $currentTime >= $nextWithAppointment->arrivalTime) {
                 $nextWithAppointment->waitingTimeEstimate = $waitingTime;
+                $nextWithAppointment->waitingTimeOptimistic = $waitingTime;
+                if ($dateTime->getTimestamp() >= $nextWithAppointment->arrivalTime) {
+                    $nextWithAppointment->waitingTimeOptimistic = floor($optimisticTime);
+                    $optimisticTime += $timeSlotOptimistic;
+                }
                 $queueWithWaitingTime->addEntity($nextWithAppointment);
                 $nextWithAppointment = array_shift($listWithAppointment);
             } elseif ($nextNoAppointment) {
                 $nextNoAppointment->waitingTimeEstimate = $waitingTime;
+                $nextNoAppointment->waitingTimeOptimistic = floor($optimisticTime);
                 $queueWithWaitingTime->addEntity($nextNoAppointment);
                 $nextNoAppointment = array_shift($listNoAppointment);
+                $optimisticTime += $timeSlotOptimistic;
             }
             $currentTime += $timeSlot;
             $waitingTime = round(($currentTime - $dateTime->getTimestamp()) / 60, 0);
