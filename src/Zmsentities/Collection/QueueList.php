@@ -22,31 +22,35 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         $listNoAppointment = $this->withOutAppointment()->withSortedArrival()->getArrayCopy();
         $nextWithAppointment = array_shift($listWithAppointment);
         $nextNoAppointment = array_shift($listNoAppointment);
-        $currentTime = $dateTime->getTimestamp();
+        $currentTime = $dateTime->getTimestamp() + 120;
+        $optimisticTime = $dateTime->getTimestamp();
 
         $waitingTime = 0;
-        $optimisticTime = 0;
+        $waitingTimeOpt = 0;
         $timeSlot = ($workstationCount) ? $processTimeAverage * 60 / $workstationCount : $processTimeAverage * 60;
-        $timeSlotOptimistic = $timeSlot / 60 * 0.8;
+        $timeSlotOptimistic = $timeSlot * 0.8;
         while ($nextWithAppointment || $nextNoAppointment) {
             if ($nextWithAppointment && $currentTime >= $nextWithAppointment->arrivalTime) {
-                $nextWithAppointment->waitingTimeEstimate = $waitingTime;
-                $nextWithAppointment->waitingTimeOptimistic = $waitingTime;
-                if ($dateTime->getTimestamp() >= $nextWithAppointment->arrivalTime) {
-                    $nextWithAppointment->waitingTimeOptimistic = floor($optimisticTime);
-                    $optimisticTime += $timeSlotOptimistic;
+                $nextWithAppointment->waitingTimeEstimate = $waitingTime + 1;
+                $nextWithAppointment->waitingTimeOptimistic =
+                    floor(($nextWithAppointment->arrivalTime - $dateTime->getTimestamp()) / 60);
+                if ($optimisticTime >= $nextWithAppointment->arrivalTime) {
+                    $nextWithAppointment->waitingTimeOptimistic = $waitingTimeOpt;
+                    $nextWithAppointment->waitingTimeEstimate = $waitingTime;
                 }
+                $optimisticTime += $timeSlotOptimistic;
                 $queueWithWaitingTime->addEntity($nextWithAppointment);
                 $nextWithAppointment = array_shift($listWithAppointment);
             } elseif ($nextNoAppointment) {
                 $nextNoAppointment->waitingTimeEstimate = $waitingTime;
-                $nextNoAppointment->waitingTimeOptimistic = floor($optimisticTime);
+                $nextNoAppointment->waitingTimeOptimistic = $waitingTimeOpt;
                 $queueWithWaitingTime->addEntity($nextNoAppointment);
                 $nextNoAppointment = array_shift($listNoAppointment);
                 $optimisticTime += $timeSlotOptimistic;
             }
             $currentTime += $timeSlot;
-            $waitingTime = round(($currentTime - $dateTime->getTimestamp()) / 60, 0);
+            $waitingTime = (int)ceil(($currentTime - $dateTime->getTimestamp()) / 60);
+            $waitingTimeOpt = (int)floor(($optimisticTime - $dateTime->getTimestamp()) / 60);
         }
         return $queueWithWaitingTime;
     }
