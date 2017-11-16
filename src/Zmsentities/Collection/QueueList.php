@@ -12,11 +12,33 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
 
     const FAKE_WAITINGNUMBER = 1001;
 
-    public function withEstimatedWaitingTime($processTimeAverage, $workstationCount, \DateTimeInterface $dateTime)
+    protected $processTimeAverage;
+
+    protected $workstationCount;
+
+    public function setWaitingTimePreferences($processTimeAverage, $workstationCount)
     {
         if ($processTimeAverage <= 0) {
             throw new \Exception("QueueList::withEstimatedWaitingTime() requires processTimeAverage");
         }
+        $this->processTimeAverage = $processTimeAverage;
+        $this->workstationCount = $workstationCount;
+        return $this;
+    }
+
+    public function getProcessTimeAverage()
+    {
+        return $this->processTimeAverage;
+    }
+
+    public function getWorkstationCount()
+    {
+        return $this->workstationCount;
+    }
+
+    public function withEstimatedWaitingTime($processTimeAverage, $workstationCount, \DateTimeInterface $dateTime)
+    {
+        $this->setWaitingTimePreferences($processTimeAverage, $workstationCount);
         $queueWithWaitingTime = new self();
         $listWithAppointment = $this->withAppointment()->withSortedArrival()->getArrayCopy();
         $listNoAppointment = $this->withOutAppointment()->withSortedArrival()->getArrayCopy();
@@ -85,26 +107,35 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
 
     public function getEstimatedWaitingTime($processTimeAverage, $workstationCount, \DateTimeInterface $dateTime)
     {
+        $queueList = $this->withFakeWaitingnumber($dateTime);
+        $queueList = $queueList
+          ->withEstimatedWaitingTime($processTimeAverage, $workstationCount, $dateTime);
+        $newEntity = $queueList->getFakeOrLastWaitingnumber();
+        $dataOfFackedEntity = array(
+            'amountBefore' => $queueList->getQueuePositionByNumber($newEntity->number),
+            'waitingTimeEstimate' => $newEntity->waitingTimeEstimate
+        );
+        return $dataOfFackedEntity;
+    }
+
+    public function withFakeWaitingnumber(\DateTimeInterface $dateTime)
+    {
         $queueList = clone $this;
         $entity = new \BO\Zmsentities\Queue();
         $entity->number = self::FAKE_WAITINGNUMBER;
         $entity->withAppointment = false;
         $entity->arrivalTime = $dateTime->getTimestamp();
         $queueList->addEntity($entity);
-        $queueList = $queueList
-          ->withEstimatedWaitingTime($processTimeAverage, $workstationCount, $dateTime);
-        $newEntity = $queueList->getQueueByNumber(self::FAKE_WAITINGNUMBER);
-        $lastEntity = end($queueList);
+        return $queueList;
+    }
 
-        $dataOfLastEntity = array(
-            'amountBefore' =>$queueList->count(),
-            'waitingTimeEstimate' => $lastEntity->waitingTimeEstimate
-        );
-        $dataOfFackedEntity = array(
-            'amountBefore' => $queueList->getQueuePositionByNumber($newEntity->number),
-            'waitingTimeEstimate' => $newEntity->waitingTimeEstimate
-        );
-        return ($newEntity) ? $dataOfFackedEntity : $dataOfLastEntity;
+    public function getFakeOrLastWaitingnumber()
+    {
+        $entity = $this->getQueueByNumber(self::FAKE_WAITINGNUMBER);
+        if (!$entity) {
+            $entity = end($this);
+        }
+        return $entity;
     }
 
     public function getQueueByNumber($number)
