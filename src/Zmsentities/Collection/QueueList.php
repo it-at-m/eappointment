@@ -10,7 +10,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
 {
     const ENTITY_CLASS = '\BO\Zmsentities\Queue';
 
-    const FAKE_WAITINGNUMBER = 1001;
+    const FAKE_WAITINGNUMBER = -1;
 
     protected $processTimeAverage;
 
@@ -33,15 +33,16 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
 
     public function getWorkstationCount()
     {
-        return $this->workstationCount;
+        return $this->workstationCount ? $this->workstationCount : 1;
     }
 
     public function withEstimatedWaitingTime($processTimeAverage, $workstationCount, \DateTimeInterface $dateTime)
     {
         $this->setWaitingTimePreferences($processTimeAverage, $workstationCount);
         $queueWithWaitingTime = new self();
-        $listWithAppointment = $this->withAppointment()->withSortedArrival()->getArrayCopy();
-        $listNoAppointment = $this->withOutAppointment()->withSortedArrival()->getArrayCopy();
+        $queueFull = $this->withWaitingTime($dateTime)->withFakeWaitingnumber($dateTime);
+        $listWithAppointment = $queueFull->withAppointment()->withSortedArrival()->getArrayCopy();
+        $listNoAppointment = $queueFull->withOutAppointment()->withSortedArrival()->getArrayCopy();
         $nextWithAppointment = array_shift($listWithAppointment);
         $nextNoAppointment = array_shift($listNoAppointment);
         $currentTime = $dateTime->getTimestamp() + 120;
@@ -75,6 +76,18 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
             $waitingTimeOpt = (int)floor(($optimisticTime - $dateTime->getTimestamp()) / 60);
         }
         return $queueWithWaitingTime;
+    }
+
+    public function withWaitingTime(\DateTimeInterface $dateTime)
+    {
+        $queueList = clone $this;
+        $timestamp = $dateTime->getTimestamp();
+        foreach ($queueList as $entity) {
+            if ($timestamp > $entity->arrivalTime) {
+                $entity->waitingTime = floor(($timestamp - $entity->arrivalTime) / 60);
+            }
+        }
+        return $queueList;
     }
 
     public function withSortedArrival()
@@ -123,8 +136,11 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         $queueList = clone $this;
         $entity = new \BO\Zmsentities\Queue();
         $entity->number = self::FAKE_WAITINGNUMBER;
+        $entity->status = 'fake';
         $entity->withAppointment = false;
-        $entity->arrivalTime = $dateTime->getTimestamp();
+        $entity->destination = (string)$this->getProcessTimeAverage();
+        $entity->destinationHint = (string)$this->getWorkstationCount();
+        $entity->arrivalTime = $dateTime->modify('+24 hours')->getTimestamp();
         $queueList->addEntity($entity);
         return $queueList;
     }
@@ -223,7 +239,9 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         $processList = new ProcessList();
         foreach ($this as $queue) {
             $process = $queue->getProcess();
-            $processList->addEntity($process);
+            if ($process) {
+                $processList->addEntity($process);
+            }
         }
         return $processList;
     }
