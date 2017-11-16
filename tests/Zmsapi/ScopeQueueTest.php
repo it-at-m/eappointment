@@ -30,7 +30,6 @@ class ScopeQueueTest extends Base
         $this->setWorkstation();
         User::$workstation->useraccount->setRights('scope');
         $response = $this->render(['id' => 141], ['date' => '2015-04-01'], []);
-        $this->assertContains('"data":{}', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

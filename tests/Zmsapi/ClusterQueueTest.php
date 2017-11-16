@@ -22,7 +22,6 @@ class ClusterQueueTest extends Base
         $this->setWorkstation();
         User::$workstation->useraccount->setRights('cluster');
         $response = $this->render(['id' => 109], ['date' => '2015-04-01'], []);
-        $this->assertContains('"data":{}', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
