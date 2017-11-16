@@ -2,5 +2,9 @@
     {{ waitingClients }}
 </div>
 <div id="waitingTime" style="display:none">
-    {{ waitingTime }}
+    {% if waitingTime > 120 %}
+        mehr als {{ (waitingTime / 60)|round(0, 'floor') }} Stunden
+    {% else %}
+        {{ waitingTimeOptimistic }} - {{ waitingTime }} Minuten
+    {% endif %}
 </div>

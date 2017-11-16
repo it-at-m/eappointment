@@ -25,16 +25,12 @@ class Queue extends BaseController
         $validator = $request->getAttribute('validator');
 
         $calldisplay = new Helper\Calldisplay($request);
-        $queueList = \App::$http->readPostResult('/calldisplay/queue/', $calldisplay->getEntity(false))
+        $queueListFull = \App::$http->readPostResult('/calldisplay/queue/', $calldisplay->getEntity(false))
             ->getCollection();
-        $queueList = ($queueList) ?
-            $queueList->withStatus($calldisplay::getRequestedQueueStatus($request)) :
+        $lastItem = $queueListFull->getFakeOrLastWaitingnumber();
+        $queueList = ($queueListFull) ?
+            $queueListFull->withStatus($calldisplay::getRequestedQueueStatus($request)) :
             new \BO\Zmsentities\Collection\QueueList();
-        $lastItem = $queueList->getLast();
-        $waitingTime = 0;
-        if ($lastItem) {
-            $waitingTime = $lastItem->waitingTimeEstimate;
-        }
         return \BO\Slim\Render::withHtml(
             $response,
             'block/queue/queueTable.twig',
@@ -42,8 +38,9 @@ class Queue extends BaseController
                 'tableSettings' => $validator->getParameter('tableLayout')->isArray()->getValue(),
                 'calldisplay' => $calldisplay->getEntity(false),
                 'queueList' => $queueList,
-                'waitingClients' => $queueList->count(),
-                'waitingTime' => $waitingTime,
+                'waitingClients' => $queueListFull->getQueuePositionByNumber($lastItem->number),
+                'waitingTime' => $lastItem->waitingTimeEstimate,
+                'waitingTimeOptimistic' => $lastItem->waitingTimeOptimistic,
             )
         );
     }

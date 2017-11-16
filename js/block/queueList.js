@@ -48,13 +48,7 @@ class View extends BaseView {
     setWaitingTime (data)
     {
         var waitingTime = $(data).filter("div#waitingTime").text();
-        if (0 < waitingTime) {
-            if (120 < waitingTime) {
-                $("#wartezeit").html(Math.floor(waitingTime/60) + " Stunden");
-            } else {
-                $("#wartezeit").html(waitingTime + " Minuten");
-            }
-        }
+        $("#wartezeit").html(waitingTime);
     }
 
     setColorForNewCall()
