@@ -51,7 +51,7 @@ class ClusterTest extends Base
         $query = new Query();
         $queueList = $query->readQueueList(110, $now);
         $this->assertEntityList("\\BO\\Zmsentities\\Queue", $queueList);
-        $this->assertEquals(105, $queueList->count());
+        $this->assertEquals(106, $queueList->count());
     }
 
     public function testReadQueueListWithCalledProcess()
@@ -60,7 +60,7 @@ class ClusterTest extends Base
         $query = new Query();
         $queueList = $query->readQueueList(110, $now);
         $this->assertEntityList("\\BO\\Zmsentities\\Queue", $queueList);
-        $this->assertEquals(105, $queueList->count());
+        $this->assertEquals(106, $queueList->count());
     }
 
     public function testReadIsOpenedScopeList()
@@ -80,7 +80,7 @@ class ClusterTest extends Base
         $queueList = (new \BO\Zmsdb\Scope())->readQueueListWithWaitingTime($scope, $now);
         $estimatedData = $scope->getWaitingTimeFromQueueList($queueList, $now);
         $this->assertEquals(146, $scope->id);
-        $this->assertEquals(233, $estimatedData['waitingTimeEstimate']);
+        $this->assertEquals(236, $estimatedData['waitingTimeEstimate']);
     }
 
     public function testReadQueueListWithCallTime()
