@@ -1,0 +1,120 @@
+{% extends "layout/main.twig" %}
+{% block content %}
+<div class="counter-view" data-includeurl="{{ includeUrl() }}" data-selected-date="{{ selectedDate }}" data-selected-process="{{ waitingnumber }}" data-selected-time="{{ selectedTime }}">
+        <div class="report-index">
+            <div class="report-period">
+
+                <ul class="report-period--breadcrumb">
+                    <li class="report-period--subject">Kundenstatistik</li>
+                    <li><a href="#organisation">Bezirksamt Charlottenburg-Wilmersdorf</a></li>
+                    <li><a href="#department">Bürgeramt</a></li>
+                    <li>{{workstation.scope.contact.name}} {{workstation.scope.shortName}}</li>
+                </ul>
+
+                <ul class="report-period--list">
+                    <li class="report-period--year">
+                        <h4><a href="#">2017</a></h4>
+                        <ul class="report-period--month-list">
+                            <li><a href="#">Januar</a></li>
+                            <li><a href="#">Februar</a></li>
+                            <li><a href="#">März</a></li>
+                            <li><a href="#">April</a></li>
+                            <li><a href="#">Mai</a></li>
+                            <li><a href="#">Juni</a></li>
+                            <li><a href="#">Juli</a></li>
+                            <li><a href="#">August</a></li>
+                            <li><a href="#" class="report-period--month-current">September</a></li>
+                        </ul>
+                    </li>
+                    <li class="report-period--year">
+                        <h4><a href="#" class="report-period--year-active">2016</a></h4>
+                        <ul class="report-period--month-list">
+                            <li><a href="#">Januar</a></li>
+                            <li><a href="#">Februar</a></li>
+                            <li><a href="#">März</a></li>
+                            <li><a href="#">April</a></li>
+                            <li><a href="#">Mai</a></li>
+                            <li><a href="#">Juni</a></li>
+                            <li><a href="#" class="report-period--month-active">Juli</a></li>
+                            <li><a href="#">August</a></li>
+                            <li><a href="#">September</a></li>
+                            <li><a href="#">Oktober</a></li>
+                            <li><a href="#">November</a></li>
+                            <li><a href="#">Dezember</a></li>
+                        </ul>
+                    </li>
+                    <li class="report-period--year report-period--old">
+                        <h4><a href="#">2015</a></h4>
+                        <ul class="report-period--month-list">
+                            <li><a href="#">Juni</a></li>
+                            <li><a href="#">Juli</a></li>
+                            <li><a href="#">August</a></li>
+                            <li><a href="#">September</a></li>
+                            <li><a href="#">Oktober</a></li>
+                            <li><a href="#">November</a></li>
+                            <li><a href="#">Dezember</a></li>
+                        </ul>
+                    </li>
+                    <li class="report-period--show-all" id="report-period--show-all">
+                        <a href="#report-period--show-all">Alle Jahre anzeigen</a>
+                    </li>
+                </ul>
+            </div>
+            {% embed "block/scaffholding/board.twig" with {'class': 'selectdate-form'} %}
+
+            {% block board_title %}
+                Auswertung
+            {% endblock %}
+
+            {% block board_body %}
+                <table class="report-table">
+                    <thead>
+                        <th>&nbsp;</th>
+                        <th>Datum</th>
+                        <th>SMS</th>
+                        <th>SMS-Kosten *</th>
+                        <th>Kunden **</th>
+                        <th>davon mit Termin **</th>
+                        <th>Dienstleistungen</th>
+                    </thead>
+                    <tbody>
+                        <tr><td class="colDatum zusammenfassung" colspan="2">Juli 2016</td><td class="col054 zusammenfassung">64</td><td class="col055 zusammenfassung">9,60 EUR</td><td class="colKunden zusammenfassung">1998 (414)</td><td class="colMitTermin zusammenfassung">1565 (405)</td><td class="colDienstleistungen zusammenfassung">1868</td></tr>
+                        <tr><td class="colWochenTag statistik">Fr</td><td class="colDatumTag statistik">01.07.2016</td><td class="col037 statistik">2</td><td class="col040 statistik">0,30 EUR</td><td class="colKunden statistik">97 (23)</td><td class="colMitTermin statistik">86 (22)</td><td class="colDienstleistungen statistik">98</td></tr>
+                        <tr><td class="colWochenTag statistik">Sa</td><td class="colDatumTag statistik">02.07.2016</td><td class="col037 statistik"></td><td class="col040 statistik">-</td><td class="colKunden statistik">0 (0)</td><td class="colMitTermin statistik">0 (0)</td><td class="colDienstleistungen statistik">0</td></tr>
+                        <tr><td class="colWochenTag statistik">So</td><td class="colDatumTag statistik">03.07.2016</td><td class="col037 statistik"></td><td class="col040 statistik">-</td><td class="colKunden statistik">0 (0)</td><td class="colMitTermin statistik">0 (0)</td><td class="colDienstleistungen statistik">0</td></tr>
+                        <tr><td class="colWochenTag statistik">Mo</td><td class="colDatumTag statistik">04.07.2016</td><td class="col037 statistik">2</td><td class="col040 statistik">0,30 EUR</td><td class="colKunden statistik">131 (33)</td><td class="colMitTermin statistik">100 (33)</td><td class="colDienstleistungen statistik">131</td></tr>
+                        <tr><td class="colWochenTag statistik">Di</td><td class="colDatumTag statistik">05.07.2016</td><td class="col037 statistik">4</td><td class="col040 statistik">0,60 EUR</td><td class="colKunden statistik">113 (35)</td><td class="colMitTermin statistik">87 (35)</td><td class="colDienstleistungen statistik">114</td></tr>
+                        <tr><td class="colWochenTag statistik">Mi</td><td class="colDatumTag statistik">06.07.2016</td><td class="col037 statistik">3</td><td class="col040 statistik">0,45 EUR</td><td class="colKunden statistik">96 (15)</td><td class="colMitTermin statistik">77 (15)</td><td class="colDienstleistungen statistik">98</td></tr>
+                        <tr><td class="colWochenTag statistik">Do</td><td class="colDatumTag statistik">07.07.2016</td><td class="col037 statistik">6</td><td class="col040 statistik">0,90 EUR</td><td class="colKunden statistik">140 (29)</td><td class="colMitTermin statistik">104 (27)</td><td class="colDienstleistungen statistik">145</td></tr>
+                        <tr><td class="colWochenTag statistik">Fr</td><td class="colDatumTag statistik">08.07.2016</td><td class="col037 statistik">3</td><td class="col040 statistik">0,45 EUR</td><td class="colKunden statistik">93 (17)</td><td class="colMitTermin statistik">84 (17)</td><td class="colDienstleistungen statistik">94</td></tr>
+                        <tr><td class="colWochenTag statistik">Sa</td><td class="colDatumTag statistik">09.07.2016</td><td class="col037 statistik"></td><td class="col040 statistik">-</td><td class="colKunden statistik">0 (0)</td><td class="colMitTermin statistik">0 (0)</td><td class="colDienstleistungen statistik">0</td></tr>
+                        <tr><td class="colWochenTag statistik">So</td><td class="colDatumTag statistik">10.07.2016</td><td class="col037 statistik"></td><td class="col040 statistik">-</td><td class="colKunden statistik">0 (0)</td><td class="colMitTermin statistik">0 (0)</td><td class="colDienstleistungen statistik">0</td></tr>
+                        <tr><td class="colWochenTag statistik">Mo</td><td class="colDatumTag statistik">11.07.2016</td><td class="col037 statistik">6</td><td class="col040 statistik">0,90 EUR</td><td class="colKunden statistik">96 (13)</td><td class="colMitTermin statistik">71 (13)</td><td class="colDienstleistungen statistik">90</td></tr>
+                        <tr><td class="colWochenTag statistik">Di</td><td class="colDatumTag statistik">12.07.2016</td><td class="col037 statistik">5</td><td class="col040 statistik">0,75 EUR</td><td class="colKunden statistik">83 (24)</td><td class="colMitTermin statistik">62 (24)</td><td class="colDienstleistungen statistik">62</td></tr>
+                        <tr><td class="colWochenTag statistik">Mi</td><td class="colDatumTag statistik">13.07.2016</td><td class="col037 statistik">2</td><td class="col040 statistik">0,30 EUR</td><td class="colKunden statistik">75 (8)</td><td class="colMitTermin statistik">45 (8)</td><td class="colDienstleistungen statistik">75</td></tr>
+                        <tr><td class="colWochenTag statistik">Do</td><td class="colDatumTag statistik">14.07.2016</td><td class="col037 statistik">9</td><td class="col040 statistik">1,35 EUR</td><td class="colKunden statistik">98 (14)</td><td class="colMitTermin statistik">80 (13)</td><td class="colDienstleistungen statistik">88</td></tr>
+                        <tr><td class="colWochenTag statistik">Fr</td><td class="colDatumTag statistik">15.07.2016</td><td class="col037 statistik">2</td><td class="col040 statistik">0,30 EUR</td><td class="colKunden statistik">53 (19)</td><td class="colMitTermin statistik">41 (17)</td><td class="colDienstleistungen statistik">62</td></tr>
+                        <tr><td class="colWochenTag statistik">Sa</td><td class="colDatumTag statistik">16.07.2016</td><td class="col037 statistik"></td><td class="col040 statistik">-</td><td class="colKunden statistik">0 (0)</td><td class="colMitTermin statistik">0 (0)</td><td class="colDienstleistungen statistik">0</td></tr>
+                        <tr><td class="colWochenTag statistik">So</td><td class="colDatumTag statistik">17.07.2016</td><td class="col037 statistik"></td><td class="col040 statistik">-</td><td class="colKunden statistik">0 (0)</td><td class="colMitTermin statistik">0 (0)</td><td class="colDienstleistungen statistik">0</td></tr>
+                        <tr><td class="colWochenTag statistik">Mo</td><td class="colDatumTag statistik">18.07.2016</td><td class="col037 statistik"></td><td class="col040 statistik">-</td><td class="colKunden statistik">113 (28)</td><td class="colMitTermin statistik">96 (27)</td><td class="colDienstleistungen statistik">97</td></tr>
+                        <tr><td class="colWochenTag statistik">Di</td><td class="colDatumTag statistik">19.07.2016</td><td class="col037 statistik">3</td><td class="col040 statistik">0,45 EUR</td><td class="colKunden statistik">82 (21)</td><td class="colMitTermin statistik">54 (21)</td><td class="colDienstleistungen statistik">74</td></tr>
+                        <tr><td class="colWochenTag statistik">Mi</td><td class="colDatumTag statistik">20.07.2016</td><td class="col037 statistik">3</td><td class="col040 statistik">0,45 EUR</td><td class="colKunden statistik">79 (12)</td><td class="colMitTermin statistik">58 (12)</td><td class="colDienstleistungen statistik">72</td></tr>
+                        <tr><td class="colWochenTag statistik">Do</td><td class="colDatumTag statistik">21.07.2016</td><td class="col037 statistik">4</td><td class="col040 statistik">0,60 EUR</td><td class="colKunden statistik">114 (28)</td><td class="colMitTermin statistik">84 (27)</td><td class="colDienstleistungen statistik">95</td></tr>
+                        <tr><td class="colWochenTag statistik">Fr</td><td class="colDatumTag statistik">22.07.2016</td><td class="col037 statistik"></td><td class="col040 statistik">-</td><td class="colKunden statistik">99 (6)</td><td class="colMitTermin statistik">78 (6)</td><td class="colDienstleistungen statistik">94</td></tr>
+                        <tr><td class="colWochenTag statistik">Sa</td><td class="colDatumTag statistik">23.07.2016</td><td class="col037 statistik"></td><td class="col040 statistik">-</td><td class="colKunden statistik">0 (0)</td><td class="colMitTermin statistik">0 (0)</td><td class="colDienstleistungen statistik">0</td></tr>
+                        <tr><td class="colWochenTag statistik">So</td><td class="colDatumTag statistik">24.07.2016</td><td class="col037 statistik"></td><td class="col040 statistik">-</td><td class="colKunden statistik">0 (0)</td><td class="colMitTermin statistik">0 (0)</td><td class="colDienstleistungen statistik">0</td></tr>
+                        <tr><td class="colWochenTag statistik">Mo</td><td class="colDatumTag statistik">25.07.2016</td><td class="col037 statistik"></td><td class="col040 statistik">-</td><td class="colKunden statistik">119 (22)</td><td class="colMitTermin statistik">96 (22)</td><td class="colDienstleistungen statistik">106</td></tr>
+                        <tr><td class="colWochenTag statistik">Di</td><td class="colDatumTag statistik">26.07.2016</td><td class="col037 statistik">2</td><td class="col040 statistik">0,30 EUR</td><td class="colKunden statistik">107 (10)</td><td class="colMitTermin statistik">85 (10)</td><td class="colDienstleistungen statistik">91</td></tr>
+                        <tr><td class="colWochenTag statistik">Mi</td><td class="colDatumTag statistik">27.07.2016</td><td class="col037 statistik">4</td><td class="col040 statistik">0,60 EUR</td><td class="colKunden statistik">63 (11)</td><td class="colMitTermin statistik">55 (11)</td><td class="colDienstleistungen statistik">54</td></tr>
+                        <tr><td class="colWochenTag statistik">Do</td><td class="colDatumTag statistik">28.07.2016</td><td class="col037 statistik"></td><td class="col040 statistik">-</td><td class="colKunden statistik">89 (24)</td><td class="colMitTermin statistik">79 (23)</td><td class="colDienstleistungen statistik">75</td></tr>
+                        <tr><td class="colWochenTag statistik">Fr</td><td class="colDatumTag statistik">29.07.2016</td><td class="col037 statistik">4</td><td class="col040 statistik">0,60 EUR</td><td class="colKunden statistik">58 (22)</td><td class="colMitTermin statistik">43 (22)</td><td class="colDienstleistungen statistik">53</td></tr>
+                        <tr><td class="colWochenTag statistik">Sa</td><td class="colDatumTag statistik">30.07.2016</td><td class="col037 statistik"></td><td class="col040 statistik">-</td><td class="colKunden statistik">0 (0)</td><td class="colMitTermin statistik">0 (0)</td><td class="colDienstleistungen statistik">0</td></tr>
+                        <tr><td class="colWochenTag statistik">So</td><td class="colDatumTag statistik">31.07.2016</td><td class="col037 statistik"></td><td class="col040 statistik">-</td><td class="colKunden statistik">0 (0)</td><td class="colMitTermin statistik">0 (0)</td><td class="colDienstleistungen statistik">0</td></tr>
+                    </tbody>
+                </table>
+            {% endblock %}
+
+            {% endembed %}
+        </div>
+    </div>
+{% endblock %}

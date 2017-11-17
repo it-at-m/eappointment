@@ -5275,6 +5275,70 @@ hr {
 .exception h2.exception-headline {
   margin-top: 10px !important; }
 
+.report-period .report-period--breadcrumb {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 1em; }
+  .report-period .report-period--breadcrumb li {
+    display: inline;
+    font-size: 16px;
+    font-size: 1.14286rem;
+    line-height: 1.25;
+    font-weight: bold; }
+    .report-period .report-period--breadcrumb li:after {
+      content: " › "; }
+    .report-period .report-period--breadcrumb li:last-child:after {
+      content: ""; }
+  .report-period .report-period--breadcrumb li.report-period--subject {
+    font-weight: normal; }
+
+.report-period .report-period--list {
+  list-style: none;
+  margin-bottom: 2em; }
+
+.report-period .report-period--year {
+  background-color: #FFFFFF;
+  border-width: 0;
+  padding: 0;
+  margin: 0; }
+  .report-period .report-period--year h4 {
+    display: inline; }
+    .report-period .report-period--year h4 a {
+      border-width: 0 0 0 0.3em;
+      border-color: #F0F0F0;
+      border-style: solid;
+      padding: 0.1em 0.3em; }
+      .report-period .report-period--year h4 a.report-period--year-active {
+        font-weight: bold;
+        border-color: #008CCA; }
+
+.report-period .report-period--month-list {
+  list-style: none;
+  display: inline; }
+  .report-period .report-period--month-list li {
+    display: inline; }
+    .report-period .report-period--month-list li:after {
+      content: ""; }
+    .report-period .report-period--month-list li:last-child:after {
+      content: ""; }
+    .report-period .report-period--month-list li a {
+      border-width: 0 0 0 0.3em;
+      border-color: #F0F0F0;
+      border-style: solid;
+      padding: 0.1em 0.3em; }
+      .report-period .report-period--month-list li a.report-period--month-active {
+        font-weight: bold;
+        border-color: #008CCA; }
+
+.report-period .report-period--show-all {
+  text-align: right;
+  padding-right: 1em; }
+  .report-period .report-period--show-all:before {
+    content: "» "; }
+
+.report-table tr:nth-child(even) td {
+  background: #F0F0F0; }
+
 .rc-time-picker {
   display: inline-block;
   box-sizing: border-box; }
