@@ -6,22 +6,41 @@
             <li>
                 <h3 class="navigation__title">Statistik</h3>
                 <ul>
-                    {% if not workstation.scope.id %}
                     <li>
                             <a class="nav__item{% if menuActive == 'select' %} active{% endif %}" href="{{ urlGet('workstationSelect', {}, {}) }}">Standort auswählen</a>
                     </li>
-                    {% endif %}
-                    {% if workstation.scope.id %}
+                </ul>
+            </li>
+            {% if workstation.scope.id %}
+            <li>
+                <h3 class="navigation__title">Auswertungen</h3>
+                <ul>
                         <li>
-                                <a class="nav__item{% if menuActive == 'processes' %} active{% endif %}" href="{{ urlGet('statisticProcesses', {}, {}) }}">Kundenstatistik</a>
+                                <a class="nav__item{% if menuActive == 'client' %} active{% endif %}" href="{{ urlGet('ReportClientIndex', {}, {}) }}">Kundenstatistik</a>
                         </li>
                         <li>
-                                <a class="nav__item{% if menuActive == 'requests' %} active{% endif %}" href="{{ urlGet('statisticRequests', {}, {}) }}">Dienstleistungsstatistik</a>
+                                <a class="nav__item{% if menuActive == 'request' %} active{% endif %}" href="{{ urlGet('ReportRequestIndex', {}, {}) }}">Dienstleistungsstatistik</a>
                         </li>
                         <li>
-                                <a class="nav__item{% if menuActive == 'waitingtime' %} active{% endif %}" href="{{ urlGet('statisticWaitingTime', {}, {}) }}">Wartestatistik</a>
+                                <a class="nav__item{% if menuActive == 'waitingnumber' %} active{% endif %}" href="{{ urlGet('ReportWaitingnumberIndex', {}, {}) }}">Wartestatistik</a>
                         </li>
-                    {% endif %}
+                </ul>
+            </li>
+            <li>
+                <h3 class="navigation__title">Rohdaten</h3>
+                <ul>
+                        <li>
+                                <a class="nav__item{% if menuActive == 'warehouse' %} active{% endif %}" href="{{ urlGet('warehouseindex', {}, {}) }}">Kategorien</a>
+                        </li>
+                </ul>
+            </li>
+            {% endif %}
+            <li>
+                <h3 class="navigation__title">Weiterführende Links</h3>
+                <ul>
+                    <li>
+                        <a class="nav__item extern" href="/terminvereinbarung/admin/" target="_blank">Tresen/Sachbearbeiter</a>
+                    </li>
                 </ul>
             </li>
         </ul>

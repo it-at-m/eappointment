@@ -13,6 +13,7 @@
         			{% set scopeName = workstation.scope.contact.name[:30] ~ "..." %}
         		{% endif %}
             	<div class="user-scope" title="{{ workstation.scope.contact.name }}">Standort: <strong>{{ scopeName }}</strong></div>
+            	<div class="user-workstation"><a href="{{ urlGet('workstationSelect', {}, {}) }}" class="icon" title="Auswahl ändern">✎</a></div>
             </div>
             {%- endblock %}
 

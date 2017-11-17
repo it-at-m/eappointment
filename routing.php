@@ -17,17 +17,30 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->map(['GET','POST'], '/', '\BO\Zmsstatistic\Index')
     ->setName("index");
 
-\App::$slim->map(['GET','POST'], '/processes/', '\BO\Zmsstatistic\StatisticProcesses')
-    ->setName("statisticProcesses");
-
-\App::$slim->map(['GET','POST'], '/requests/', '\BO\Zmsstatistic\StatisticRequests')
-    ->setName("statisticRequests");
-
-\App::$slim->map(['GET','POST'], '/waitingtime/', '\BO\Zmsstatistic\StatisticWaitingTime')
-    ->setName("statisticWaitingTime");
-
 \App::$slim->get('/workstation/quicklogin/', '\BO\Zmsstatistic\QuickLogin')
     ->setName("quickLogin");
+
+/*
+ * ---------------------------------------------------------------------------
+ * Result views
+ * -------------------------------------------------------------------------
+ */
+\App::$slim->map(['GET','POST'], '/report/client/', '\BO\Zmsstatistic\ReportClientIndex')
+    ->setName("ReportClientIndex");
+
+\App::$slim->map(['GET','POST'], '/report/request/', '\BO\Zmsstatistic\ReportRequestIndex')
+    ->setName("ReportRequestIndex");
+
+\App::$slim->map(['GET','POST'], '/report/waitingnumber/', '\BO\Zmsstatistic\ReportWaitingnumberIndex')
+    ->setName("ReportWaitingnumberIndex");
+/*
+ * ---------------------------------------------------------------------------
+ * Warehouse downloads
+ * -------------------------------------------------------------------------
+ */
+
+\App::$slim->map(['GET','POST'], '/warehouse/', '\BO\Zmsstatistic\WarehouseIndex')
+    ->setName("warehouseindex");
 
 /*
  * ---------------------------------------------------------------------------
