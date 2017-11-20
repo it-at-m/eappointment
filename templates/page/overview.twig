@@ -1,0 +1,48 @@
+{% extends "layout/main.twig" %}
+{% block content %}
+<div class="counter-view" data-includeurl="{{ includeUrl() }}" data-selected-date="{{ selectedDate }}" data-selected-process="{{ waitingnumber }}" data-selected-time="{{ selectedTime }}">
+        <div class="report-index">
+            <h1>Übersicht verfügbarer Statistiken</h1>
+
+            <p>Im folgenden werden Links zu den Auswertungen zusammengefasst:</p>
+
+            <h2>Auswertungen</h2>
+            <h3>Kundenstatistik</h3>
+            {% embed "block/report/period.twig" %}
+                {% block breadcrumb %}
+                <ul class="report-period--breadcrumb">
+                    <li><a href="#organisation">Bezirksamt Charlottenburg-Wilmersdorf</a></li>
+                    <li><a href="#department">Bürgeramt</a></li>
+                    <li>{{workstation.scope.contact.name}} {{workstation.scope.shortName}}</li>
+                </ul>
+                {% endblock %}
+            {% endembed %}
+
+            <h3>Dienstleistungsstatistik</h3>
+            {% embed "block/report/period.twig" %}
+                {% block breadcrumb %}
+                <ul class="report-period--breadcrumb">
+                    <li><a href="#organisation">Bezirksamt Charlottenburg-Wilmersdorf</a></li>
+                    <li><a href="#department">Bürgeramt</a></li>
+                    <li>{{workstation.scope.contact.name}} {{workstation.scope.shortName}}</li>
+                </ul>
+                {% endblock %}
+            {% endembed %}
+
+            <h3>Wartestatistik</h3>
+            {% embed "block/report/period.twig" %}
+                {% block breadcrumb %}
+                <ul class="report-period--breadcrumb">
+                    <li><a href="#organisation">Bezirksamt Charlottenburg-Wilmersdorf</a></li>
+                    <li><a href="#department">Bürgeramt</a></li>
+                    <li>{{workstation.scope.contact.name}} {{workstation.scope.shortName}}</li>
+                </ul>
+                {% endblock %}
+            {% endembed %}
+
+            <h2>Rohdaten</h2>
+            <p>Hier sind weitere Daten als Download verfügbar. Diese Daten müssen selbst aufbereitet werden, möchte man diese auswerten.</p>
+            <p><a href="#">» Zu den Rohdaten</a></p>
+        </div>
+    </div>
+{% endblock %}

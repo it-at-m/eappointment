@@ -1,0 +1,17 @@
+{% extends "layout/main.twig" %}
+{% block content %}
+<div class="counter-view" data-includeurl="{{ includeUrl() }}" data-selected-date="{{ selectedDate }}" data-selected-process="{{ waitingnumber }}" data-selected-time="{{ selectedTime }}">
+        <div class="report-index">
+            <h1>Übersicht verfügbarer Kategorien</h1>
+
+            <p>Die Rohdaten sind in Kategorien aufgeteilt. Zu jeder Kategorie finden sich IDs wie zum Beispiel Standort-Namen. Darunter befinden sich unterschiedliche Zeitabschnitte. Die verfügbaren Auswertungen bedienen sich gleichfalls dieser Rohdaten. Aber nicht zu allen Rohdaten existieren Auswertungen.</p>
+
+            <h2>Kategorien</h2>
+            <ul>
+                <li><a href="{{ urlGet('WarehouseSubject', {'subject': 'waitingnumber'}, {}) }}">waitingnumber</a></li>
+                <li><a href="{{ urlGet('WarehouseSubject', {'subject': 'waitingnumberdepartment'}, {}) }}">waitingnumberdepartment</a></li>
+                <li><a href="{{ urlGet('WarehouseSubject', {'subject': 'waitingnumberorganisation'}, {}) }}">waitingnumberorganisation</a></li>
+            </ul>
+        </div>
+    </div>
+{% endblock %}

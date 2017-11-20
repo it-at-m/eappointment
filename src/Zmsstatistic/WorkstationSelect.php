@@ -36,7 +36,7 @@ class WorkstationSelect extends BaseController
             if (! $form->hasFailed()) {
                 LoginForm::writeWorkstationUpdate($form, $workstation);
                 return \BO\Slim\Render::redirect(
-                    'statisticProcesses',
+                    'Overview',
                     array(),
                     $queryParams
                 );

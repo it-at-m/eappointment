@@ -6,7 +6,7 @@
 
 namespace BO\Zmsstatistic;
 
-class ReportClientIndex extends BaseController
+class ReportRequestIndex extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
@@ -33,10 +33,10 @@ class ReportClientIndex extends BaseController
 
         return \BO\Slim\Render::withHtml(
             $response,
-            'page/reportClientIndex.twig',
+            'page/reportRequestIndex.twig',
             array(
-                'title' => 'Kundenstatistik',
-                'menuActive' => 'client',
+                'title' => 'Dienstleistungsstatistik',
+                'menuActive' => 'request',
                 'selectedDate' => $selectedDate,
                 'workstation' => $workstation->getArrayCopy()
             )

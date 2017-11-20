@@ -1,0 +1,52 @@
+{% extends "layout/main.twig" %}
+{% block content %}
+<div class="counter-view" data-includeurl="{{ includeUrl() }}" data-selected-date="{{ selectedDate }}" data-selected-process="{{ waitingnumber }}" data-selected-time="{{ selectedTime }}">
+        <div class="report-index">
+            <h1>Übersicht verfügbarer Zeit-Perioden</h1>
+
+            {% embed "block/report/board.twig" with {'class': 'report-board'} %}
+            {% block board_title %}
+                Kategorie: waitingnumber
+            {% endblock %}
+            {% block board_body %}
+                <table class="report-board--table report-board--text">
+                    <thead>
+                        <th>Period</th>
+                        <th>XLSX-Download</th>
+                        <th>CSV-Download</th>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><a href="{{ urlGet('WarehouseReport', {'subject': 'waitingnumber', 'subjectid': 140, 'period': '2016'}, {}) }}">2016</a></td>
+                            <td><a href="#" target="_blank" title="Download" class="btn btn--bigicon download">⤓</a>
+                            <td><a href="#" target="_blank" title="Download" class="btn btn--bigicon download">⤓</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><a href="{{ urlGet('WarehouseReport', {'subject': 'waitingnumber', 'subjectid': 140, 'period': '2016-07'}, {}) }}">2016-07</a></td>
+                            <td><a href="#" target="_blank" title="Download" class="btn btn--bigicon download">⤓</a>
+                            <td><a href="#" target="_blank" title="Download" class="btn btn--bigicon download">⤓</a>
+                        </tr>
+                        <tr>
+                            <td><a href="{{ urlGet('WarehouseReport', {'subject': 'waitingnumber', 'subjectid': 140, 'period': '2016-06'}, {}) }}">2016-06</a></td>
+                            <td><a href="#" target="_blank" title="Download" class="btn btn--bigicon download">⤓</a>
+                            <td><a href="#" target="_blank" title="Download" class="btn btn--bigicon download">⤓</a>
+                        </tr>
+                        <tr>
+                            <td><a href="{{ urlGet('WarehouseReport', {'subject': 'waitingnumber', 'subjectid': 140, 'period': '2016-05'}, {}) }}">2016-05</a></td>
+                            <td><a href="#" target="_blank" title="Download" class="btn btn--bigicon download">⤓</a>
+                            <td><a href="#" target="_blank" title="Download" class="btn btn--bigicon download">⤓</a>
+                        </tr>
+                        <tr>
+                            <td><a href="{{ urlGet('WarehouseReport', {'subject': 'waitingnumber', 'subjectid': 140, 'period': '2016-04'}, {}) }}">2016-04</a></td>
+                            <td><a href="#" target="_blank" title="Download" class="btn btn--bigicon download">⤓</a>
+                            <td><a href="#" target="_blank" title="Download" class="btn btn--bigicon download">⤓</a>
+                        </tr>
+                    </tbody>
+                </table>
+            {% endblock %}
+
+            {% endembed %}
+        </div>
+    </div>
+{% endblock %}
