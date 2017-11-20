@@ -20,6 +20,9 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/workstation/quicklogin/', '\BO\Zmsstatistic\QuickLogin')
     ->setName("quickLogin");
 
+\App::$slim->get('/overview/', '\BO\Zmsstatistic\Overview')
+    ->setName("Overview");
+
 /*
  * ---------------------------------------------------------------------------
  * Result views
@@ -40,7 +43,16 @@ use \Psr\Http\Message\ResponseInterface;
  */
 
 \App::$slim->map(['GET','POST'], '/warehouse/', '\BO\Zmsstatistic\WarehouseIndex')
-    ->setName("warehouseindex");
+    ->setName("WarehouseIndex");
+
+\App::$slim->map(['GET','POST'], '/warehouse/{subject}/', '\BO\Zmsstatistic\WarehouseSubject')
+    ->setName("WarehouseSubject");
+
+\App::$slim->map(['GET','POST'], '/warehouse/{subject}/{subjectid}/', '\BO\Zmsstatistic\WarehousePeriod')
+    ->setName("WarehousePeriod");
+
+\App::$slim->map(['GET','POST'], '/warehouse/{subject}/{subjectid}/{period}/', '\BO\Zmsstatistic\WarehouseReport')
+    ->setName("WarehouseReport");
 
 /*
  * ---------------------------------------------------------------------------

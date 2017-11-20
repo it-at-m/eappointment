@@ -38,7 +38,8 @@ class ReportClientIndex extends BaseController
                 'title' => 'Kundenstatistik',
                 'menuActive' => 'client',
                 'selectedDate' => $selectedDate,
-                'workstation' => $workstation->getArrayCopy()            )
+                'workstation' => $workstation->getArrayCopy()
+            )
         );
     }
 }

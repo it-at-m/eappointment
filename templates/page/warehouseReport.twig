@@ -1,0 +1,84 @@
+{% extends "layout/main.twig" %}
+{% block content %}
+<div class="counter-view" data-includeurl="{{ includeUrl() }}" data-selected-date="{{ selectedDate }}" data-selected-process="{{ waitingnumber }}" data-selected-time="{{ selectedTime }}">
+        <div class="report-index">
+            <h1>Report Rohdaten</h1>
+
+            {% embed "block/report/board.twig" with {'class': 'report-board'} %}
+            {% block board_title %}
+                Kategorie: waitingnumber
+            {% endblock %}
+            {% block board_body %}
+                <table class="report-board--table report-board--text">
+                    <thead>
+                        <th>#</th>
+                        <th>Variablenname</th>
+                        <th>Typ</th>
+                        <th>Beschreibung</th>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>subjectid</td>
+                            <td>string</td>
+                            <td>ID of a scope</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>date</td>
+                            <td>string</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>hour</td>
+                            <td>string</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>waitingcount</td>
+                            <td>string</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>waitingtime</td>
+                            <td>string</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>waitingcalculated</td>
+                            <td>string</td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p><a href="#">Ergbnisse in die Zwischenablage kopieren</a></p>
+                <table class="report-board--table report-board--text">
+                    <thead>
+                        <th>subjectid</th>
+                        <th>date</th>
+                        <th>hour</th>
+                        <th>waitingcount</th>
+                        <th>waitingtime</th>
+                        <th>waitingcalculated</th>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>140</td>
+                            <td>2016-07-31</td>
+                            <td>17</td>
+                            <td>4</td>
+                            <td>54</td>
+                            <td>107</td>
+                        </tr>
+                    </tbody>
+                </table>
+            {% endblock %}
+
+            {% endembed %}
+        </div>
+    </div>
+{% endblock %}

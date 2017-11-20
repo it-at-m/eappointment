@@ -1,0 +1,39 @@
+{% extends "layout/main.twig" %}
+{% block content %}
+<div class="counter-view" data-includeurl="{{ includeUrl() }}" data-selected-date="{{ selectedDate }}" data-selected-process="{{ waitingnumber }}" data-selected-time="{{ selectedTime }}">
+        <div class="report-index">
+            <h1>Übersicht verfügbarer IDs</h1>
+
+            {% embed "block/report/board.twig" with {'class': 'report-board'} %}
+            {% block board_title %}
+                Kategorie: waitingnumber
+            {% endblock %}
+            {% block board_body %}
+                <table class="report-board--table">
+                    <thead>
+                        <th>ID of a scope</th>
+                        <th>periodstart</th>
+                        <th>periodend</th>
+                        <th>description</th>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><a href="{{ urlGet('WarehousePeriod', {'subject': 'waitingnumber', 'subjectid': 140}, {}) }}">140</a></td>
+                            <td>2011-01-01</td>
+                            <td>2017-11-08</td>
+                            <td>Bürgeramt Hohenzollerndamm</td>
+                        </tr>
+                        <tr>
+                            <td><a href="{{ urlGet('WarehousePeriod', {'subject': 'waitingnumber', 'subjectid': 141}, {}) }}">141</a></td>
+                            <td>2011-01-01</td>
+                            <td>2017-11-08</td>
+                            <td>{{workstation.scope.contact.name}} {{workstation.scope.shortName}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            {% endblock %}
+
+            {% endembed %}
+        </div>
+    </div>
+{% endblock %}
