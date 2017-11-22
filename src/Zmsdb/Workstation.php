@@ -187,14 +187,17 @@ class Workstation extends Base
      *
      * @return Resource Process
      */
-    public function writeAssignedProcess($workstationId, \BO\Zmsentities\Process $process, \DateTimeInterface $dateTime)
-    {
+    public function writeAssignedProcess(
+        \BO\Zmsentities\Workstation $workstation,
+        \BO\Zmsentities\Process $process,
+        \DateTimeInterface $dateTime
+    ) {
         $process = (new Process)->updateEntity($process, $dateTime);
         $query = new Query\Process(Query\Base::UPDATE);
         $query->addConditionProcessId($process->id);
-        $query->addValues(['NutzerID' => $workstationId]);
+        $query->addValues(['NutzerID' => $workstation->id]);
         $this->writeItem($query);
-        $checksum = sha1($process->id . '-' . $workstationId);
+        $checksum = sha1($process->id . '-' . $workstation->getUseraccount()->id);
         Log::writeLogEntry("UPDATE (Workstation::writeAssignedProcess) $checksum ", $process->id);
         return $process;
     }
