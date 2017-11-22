@@ -46,7 +46,6 @@ class DepartmentAddScope extends BaseController
 
         if (is_array($input) && array_key_exists('save', $input)) {
             $entity = (new Entity($input))->withCleanedUpFormData();
-            $entity->hint = implode(' | ', $input['hint']);
             $entity = \App::$http->readPostResult('/department/'. $department->id .'/scope/', $entity)
                 ->getEntity();
             (new Helper\FileUploader($request, 'uploadCallDisplayImage'))->writeUploadToScope($entity->id);

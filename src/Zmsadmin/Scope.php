@@ -49,7 +49,6 @@ class Scope extends BaseController
         $input = $request->getParsedBody();
         if (is_array($input) && array_key_exists('save', $input)) {
             $entity = (new Entity($input))->withCleanedUpFormData();
-            $entity->hint = implode(' | ', $input['hint']);
             $entity->id = $entityId;
             $entity = \App::$http->readPostResult('/scope/' . $entity->id . '/', $entity)->getEntity();
             if (isset($input['removeImage']) && $input['removeImage']) {
