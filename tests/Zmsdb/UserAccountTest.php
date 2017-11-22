@@ -2,7 +2,7 @@
 
 namespace BO\Zmsdb\Tests;
 
-use \BO\Zmsdb\UserAccount as Query;
+use \BO\Zmsdb\Useraccount as Query;
 use \BO\Zmsdb\Workstation;
 use \BO\Zmsentities\Useraccount as Entity;
 use \BO\Zmsentities\Workstation as WorkstationEntity;
@@ -129,7 +129,7 @@ class UserAccountTest extends Base
         $now = new \DateTimeImmutable("2016-04-01 11:55");
         $workstation = $this->writeTestLogin();
         $process = (new \BO\Zmsdb\Process)->readEntity(10029, '1c56');
-        $workstation->process = (new Workstation)->writeAssignedProcess($workstation->id, $process, $now);
+        $workstation->process = (new Workstation)->writeAssignedProcess($workstation, $process, $now);
         $workstation->process->queue['callCount'] = 1;
         (new Workstation)->writeRemovedProcess($workstation);
         $process = (new \BO\Zmsdb\Process)->readEntity(10029, '1c56');
@@ -190,7 +190,7 @@ class UserAccountTest extends Base
             $workstation->scope['id'] = $scopeId;
         }
         //update workstation to read by scope testing
-        return (new Workstation())->updateEntity($workstationInput);
+        return (new Workstation())->updateEntity($workstationInput, 1);
     }
 
     protected function getTestEntity()

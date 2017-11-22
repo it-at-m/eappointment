@@ -31,7 +31,7 @@ class ProcessTest extends Base
         $now = new \DateTimeImmutable("2016-04-01 11:55");
         $workstation = (new \BO\Zmsdb\Workstation)->writeEntityLoginByName('testadmin', 'vorschau', $now, 2);
         $process =(new Query)->readEntity(10029, '1c56');
-        $workstation->process = (new \BO\Zmsdb\Workstation)->writeAssignedProcess($workstation->id, $process, $now);
+        $workstation->process = (new \BO\Zmsdb\Workstation)->writeAssignedProcess($workstation, $process, $now);
         $process = (new Query)->readByWorkstation($workstation, 1);
         $this->assertEntity("\\BO\\Zmsentities\\Process", $process);
         $this->assertEquals(1, $process->requests->count());
