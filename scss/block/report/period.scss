@@ -3,8 +3,9 @@
 .report-index .report-period {
 
     // @todo smaller on overview page
-    .report-period--breadcrumb {
-        font-size: 0.8em;
+    .report-period--breadcrumb li {
+        font-size: 1em;
+        font-weight: normal;
     }
 }
 
