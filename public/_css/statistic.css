@@ -5275,6 +5275,9 @@ hr {
 .exception h2.exception-headline {
   margin-top: 10px !important; }
 
+.report-index .report-period .report-period--breadcrumb {
+  font-size: 0.8em; }
+
 .report-period .report-period--breadcrumb {
   list-style: none;
   padding: 0;
@@ -5291,6 +5294,28 @@ hr {
       content: ""; }
   .report-period .report-period--breadcrumb li.report-period--subject {
     font-weight: normal; }
+
+.report-period .report-period--table {
+  background-color: #FFFFFF;
+  border-width: 0;
+  margin: 0;
+  margin-bottom: 1em;
+  padding: 0.47633em 0.7145em;
+  width: auto;
+  border-spacing: 4px;
+  border-collapse: seperate; }
+  .report-period .report-period--table td {
+    border-width: 0 0 0 0.3em;
+    border-color: #F0F0F0;
+    border-style: solid;
+    padding: 0 0.3em;
+    color: #D2D2D2; }
+    .report-period .report-period--table td.report-period--year-active {
+      font-weight: bold;
+      border-left-color: #008CCA; }
+    .report-period .report-period--table td.report-period--month-active {
+      font-weight: bold;
+      border-left-color: #008CCA; }
 
 .report-period .report-period--list {
   list-style: none;
@@ -5340,7 +5365,8 @@ hr {
   padding: 1px; }
 
 .report-board .report-board--table {
-  margin-bottom: 1.429em; }
+  margin-bottom: 1.429em;
+  border-collapse: collapse; }
   .report-board .report-board--table.report-board--narrow tbody td, .report-board .report-board--table.report-board--narrow thead th {
     padding-left: 2px;
     padding-right: 3px;
@@ -5363,6 +5389,8 @@ hr {
     border-top: 0 none; }
     .report-board .report-board--table tbody tr td.report-board--summary {
       background: #D2D2D2; }
+    .report-board .report-board--table tbody tr td[data-value="0"] {
+      color: #D2D2D2; }
   .report-board .report-board--table tbody tr:nth-child(odd) td, .report-board .report-board--table tbody tr:nth-child(odd) th {
     background: #F0F0F0; }
     .report-board .report-board--table tbody tr:nth-child(odd) td.report-board--summary, .report-board .report-board--table tbody tr:nth-child(odd) th.report-board--summary {

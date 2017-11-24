@@ -8,6 +8,8 @@
             {% block board_title %}
                 Kategorie: waitingnumber
             {% endblock %}
+            {% block board_header_right %}
+            {% endblock %}
             {% block board_body %}
                 <table class="report-board--table report-board--text">
                     <thead>
@@ -18,9 +20,8 @@
                     <tbody>
                         <tr>
                             <td><a href="{{ urlGet('WarehouseReport', {'subject': 'waitingnumber', 'subjectid': 140, 'period': '2016'}, {}) }}">2016</a></td>
-                            <td><a href="#" target="_blank" title="Download" class="btn btn--bigicon download">⤓</a>
-                            <td><a href="#" target="_blank" title="Download" class="btn btn--bigicon download">⤓</a>
-                            </td>
+                            <td><a href="#" target="_blank" title="Download">Download XLSX</a></td>
+                            <td><a href="#" target="_blank" title="Download">Download CSV</a></td>
                         </tr>
                         <tr>
                             <td><a href="{{ urlGet('WarehouseReport', {'subject': 'waitingnumber', 'subjectid': 140, 'period': '2016-07'}, {}) }}">2016-07</a></td>

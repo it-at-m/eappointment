@@ -13,6 +13,9 @@
         .table,
         .table--cells;
         margin-bottom:          $gridGutter;
+
+        border-collapse: collapse;
+
         &.report-board--narrow {
             tbody td, thead th {
                 padding-left: 2px;
@@ -52,6 +55,9 @@
                     border-top: 0 none;
                     &.report-board--summary {
                         background: $greyDark;
+                    }
+                    &[data-value="0"] {
+                        color: $greyDark;
                     }
 
                 }

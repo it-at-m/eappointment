@@ -1,5 +1,13 @@
 
 
+.report-index .report-period {
+
+    // @todo smaller on overview page
+    .report-period--breadcrumb {
+        font-size: 0.8em;
+    }
+}
+
 .report-period {
     .report-period--breadcrumb {
         list-style: none;
@@ -22,6 +30,34 @@
 
         li.report-period--subject {
            font-weight: normal;
+        }
+    }
+
+    .report-period--table {
+        background-color:           $white;
+        border-width:               0;
+        margin:                     0;
+        margin-bottom: 1em;
+        padding: $baseBoxElementPadding;
+        width: auto;
+        border-spacing: 4px;
+        border-collapse: seperate;
+
+        td {
+            border-width: 0 0 0 0.3em;
+            border-color: $grey;
+            border-style: solid;
+            padding: 0 0.3em;
+            color: $greyDark;
+
+            &.report-period--year-active {
+                font-weight: bold;
+                border-left-color: $blue;
+            }
+            &.report-period--month-active {
+                font-weight: bold;
+                border-left-color: $blue;
+            }
         }
     }
 
