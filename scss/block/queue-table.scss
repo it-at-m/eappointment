@@ -44,6 +44,24 @@ $queueMissedColor:              $red !default;
                     border-top:     1px solid $greyBorder;
                 }
             }
+            tr {
+                &:nth-child(odd) {
+                    td, th {
+                        background: $grey;
+                        &.report-board--summary {
+                            background: $greyDark;
+                        }
+                    }
+                }
+                &.queue-table--hidden-row {
+                    td, td.queue-status {
+                        padding: 0px;
+                    }
+                    td.queue-status {
+                        background: $greyDark;
+                    }
+                }
+            }
         }
         .queue-status {
             border:             0 none;
