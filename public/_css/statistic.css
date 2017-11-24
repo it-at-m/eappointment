@@ -5275,8 +5275,9 @@ hr {
 .exception h2.exception-headline {
   margin-top: 10px !important; }
 
-.report-index .report-period .report-period--breadcrumb {
-  font-size: 0.8em; }
+.report-index .report-period .report-period--breadcrumb li {
+  font-size: 1em;
+  font-weight: normal; }
 
 .report-period .report-period--breadcrumb {
   list-style: none;
