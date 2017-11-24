@@ -25,6 +25,8 @@ $queueMissedColor:              $red !default;
             .table,
             .table--cells;
         margin-bottom:          $gridGutter;
+        border-collapse: collapse;
+
         thead {
             th {
                 border:         0 none;
