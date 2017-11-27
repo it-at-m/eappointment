@@ -92,6 +92,7 @@ class ElasticSearch
         $this->readTopics();
         $this->readServices();
         $this->readLocations();
+        $this->readAuthorities();
         return $this;
     }
 
@@ -159,6 +160,24 @@ class ElasticSearch
             foreach ($this->dldb->fromLocation($locale)->fetchList() as $location) {
                 $id = $locale . $location['id'];
                 $docs[] = new \Elastica\Document($id, $location);
+            }
+        }
+        $esType->addDocuments($docs);
+        return $docs;
+    }
+
+    /**
+     *
+     * @return self
+     */
+    protected function readAuthorities()
+    {
+        $esType = $this->getIndex()->getType('authority');
+        $docs = array();
+        foreach ($this->localeList as $locale) {
+            foreach ($this->dldb->fromAuthority($locale)->fetchSource() as $authority) {
+                $id = $locale . $authority['id'];
+                $docs[] = new \Elastica\Document($id, $authority);
             }
         }
         $esType->addDocuments($docs);

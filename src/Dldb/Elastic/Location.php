@@ -258,4 +258,41 @@ class Location extends Base
 
         return $geoJson;
     }
+
+    public function fetchLocationsForCompilation($authoritys = [], $locations = []) {
+        $limit = 1000;
+
+        $localeFilter = new \Elastica\Query\Term(array(
+            'meta.locale' => $this->locale
+        ));
+
+        $boolquery = new \Elastica\Query\BoolQuery();
+        $boolquery->addMust($localeFilter);
+
+        if (!empty($authoritys)) {
+            $authorityFilter = new \Elastica\Query\Terms('authority.id', $authoritys);
+            $boolquery->addMust($authorityFilter);
+        }
+        if (!empty($locations)) {
+            $locationFilter = new \Elastica\Query\Terms('id', $locations);
+            $boolquery->addMust($locationFilter);
+        }
+
+        $query = \Elastica\Query::create($boolquery);
+        $query->addSort(['sort' => 'asc']);
+        #print_r(json_encode($query->toArray()));exit;
+        $resultList = $this
+            ->access()
+            ->getIndex()
+            ->getType('location')
+            ->search($query, $limit)
+        ;
+
+        $locationList = new Collection();
+        foreach ($resultList as $result) {
+            $location = new Entity($result->getData());
+            $locationList[$location['id']] = $location;
+        }
+        return $locationList;
+    }
 }

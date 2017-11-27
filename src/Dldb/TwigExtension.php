@@ -12,6 +12,11 @@ namespace BO\Dldb;
 class TwigExtension extends \Twig_Extension
 {
 
+    public function __construct($container)
+    {
+        $this->container = $container;
+    }
+
     public function getName()
     {
         return 'dldb';
