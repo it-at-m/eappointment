@@ -177,4 +177,43 @@ class Service extends Base
         }
         return $serviceList;
     }
+
+    public function fetchServicesForCompilation($authoritys = [], $locations = [], $services = []) {
+        $limit = 1000;
+
+        $localeFilter = new \Elastica\Query\Term(array(
+            'meta.locale' => $this->locale
+        ));
+
+        $boolquery = new \Elastica\Query\BoolQuery();
+        $boolquery->addMust($localeFilter);
+
+        if (!empty($authoritys)) {
+            $authorityFilter = new \Elastica\Query\Terms('authorities.id', $authoritys);
+            $boolquery->addMust($authorityFilter);
+        }
+        if (!empty($locations)) {
+            $locationFilter = new \Elastica\Query\Terms('locations.location', $locations);
+            $boolquery->addMust($locationFilter);
+        }
+        if (!empty($services)) {
+            $serviceFilter = new \Elastica\Query\Terms('id', $services);
+            $boolquery->addMust($serviceFilter);
+        }
+
+        $query = \Elastica\Query::create($boolquery);
+        $query->addSort(['sort' => 'asc']);
+        $resultList = $this
+            ->access()
+            ->getIndex()
+            ->getType('service')
+            ->search($query, $limit)
+        ;
+        $serviceList = new Collection();
+        foreach ($resultList as $result) {
+            $service = new Entity($result->getData());
+            $serviceList[$service['id']] = $service;
+        }
+        return $serviceList;
+    }
 }
