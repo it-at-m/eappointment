@@ -52,4 +52,13 @@ class Exchange extends Schema\Entity
         }
         $this->data[] = $values;
     }
+
+    public function withLessData()
+    {
+        $entity = clone $this;
+        unset($entity['firstDay']);
+        unset($entity['lastDay']);
+        unset($entity['period']);
+        return $entity;
+    }
 }

@@ -1,3 +1,4 @@
 /vendor/
 tags
 /public
+.DS_*

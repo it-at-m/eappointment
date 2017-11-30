@@ -79,4 +79,10 @@ class ExchangeTest extends EntityCommonTests
         $entity->addDictionaryEntry('name', 'string', 'Naming');
         $entity->addDataSet([1, '2016-04-01']);
     }
+
+    public function testWithLessData()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $this->assertNotContains('firstDay', $entity->withLessData());
+    }
 }
