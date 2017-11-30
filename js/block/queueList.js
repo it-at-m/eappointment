@@ -16,15 +16,19 @@ class View extends BaseView {
     initRequest () {
         $.post( this.getUrl('/queue/'), window.bo.zmscalldisplay)
          .done(data => {
+             this.hideMessages(0);
              $( '#queueImport' ).html( data );
              this.setColorForNewCall();
              this.setWaitingClients(data);
              this.setWaitingTime(data);
-             this.setInterval();
              var audioCheck = new RingAudio();
              audioCheck.initSoundCheck();
              this.getDestinationToNumber();
+         })
+         .fail(function() {
+            $( '.fatal' ).show();
          });
+         this.setInterval();
     }
 
     setInterval () {
@@ -71,6 +75,16 @@ class View extends BaseView {
                     $(this).text(string.replace(/\D/g,''));
                 }
             });
+        }
+    }
+
+    hideMessages(delay = 5000)
+    {
+        let message = $.find('[data-hide-message]');
+        if (message.length) {
+            setTimeout(() => {
+                $(message).fadeOut();
+            },delay)
         }
     }
 }
