@@ -1,11 +1,11 @@
 {% block queueTable %}
-{% if queueList|length <= 6 or (tableSettings.maxResults <= 6 and tableSettings.multiColumns == 1) %}
-{% include "block/queue/table/oneColumn.twig" with {"settings": tableSettings} %}
-{% else %}
-{% include "block/queue/table/multiColumn.twig" with {"settings": tableSettings} %}
-{% endif %}
+    {% if queueList|length <= 6 or (tableSettings.maxResults <= 6 and tableSettings.multiColumns == 1) %}
+    {% include "block/queue/table/oneColumn.twig" with {"settings": tableSettings} %}
+    {% else %}
+    {% include "block/queue/table/multiColumn.twig" with {"settings": tableSettings} %}
+    {% endif %}
 
-{% include "element/queueTable/tempWaitingValues.twig" %}
-{# Give ServerTime (\App::$now) from calldisplay to queue call - important for testing #}
-<script type="text/javascript">window.bo.zmscalldisplay.serverTime={{ calldisplay.serverTime }}</script>
+    {% include "element/queueTable/tempWaitingValues.twig" %}
+    {# Give ServerTime (\App::$now) from calldisplay to queue call - important for testing #}
+    <script type="text/javascript">window.bo.zmscalldisplay.serverTime={{ calldisplay.serverTime }}</script>
 {% endblock %}

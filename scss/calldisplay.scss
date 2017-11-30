@@ -3,7 +3,7 @@
 /**
  * Import our css
  */
- 
+
 // Main site grid and global layout rules
 
 @import "layout/main";
@@ -12,6 +12,7 @@
 @import "element/ring";
 // Block rules
 @import "block/alerts";
+@import "block/message";
 @import "block/exception";
 @import "block/aufrufanzeige";
 @import "block/tabellen";

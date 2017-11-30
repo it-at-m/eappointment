@@ -22,6 +22,9 @@
         </div>
     {% endif %}
 <div class="aufrufanzeige_main{% if skipAll %} aufrufanzeige_full{% endif %}">
+    {% block messages %}
+        {% include "block/messages/messages.twig" %}
+    {% endblock %}
 	{% include "block/default/importContainer.twig" with {"tableLayout": tableLayout} %}
 </div>
 
@@ -32,4 +35,3 @@
 
 {% block tableLayoutSettings %}
 {% endblock %}
-
