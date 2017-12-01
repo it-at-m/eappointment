@@ -66,12 +66,20 @@ class ExchangeWaitingorganisation extends Base implements Interfaces\ExchangeSub
 
     public function readPeriodList($subjectid, $period = 'day')
     {
-        $raw = $this->getReader()->fetchAll(
-            constant("\BO\Zmsdb\Query\ExchangeWaitingorganisation::QUERY_PERIODLIST_" . mb_strtoupper($period)),
+        $years = $this->getReader()->fetchAll(
+            constant("\BO\Zmsdb\Query\ExchangeWaitingorganisation::QUERY_PERIODLIST_YEAR"),
             [
                 'organisationid' => $subjectid,
             ]
         );
+        $months = $this->getReader()->fetchAll(
+            constant("\BO\Zmsdb\Query\ExchangeWaitingorganisation::QUERY_PERIODLIST_MONTH"),
+            [
+                'organisationid' => $subjectid,
+            ]
+        );
+        $raw = array_merge($years, $months);
+        sort($raw);
         $entity = new Exchange();
         $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable(), $period);
         $entity->addDictionaryEntry('period');

@@ -37,8 +37,7 @@ class ExchangeWaitingscope extends Base
     ';
 
     const QUERY_PERIODLIST_MONTH = '
-        SELECT DISTINCT
-            DATE_FORMAT(`datum`,"%Y-%m") AS month
+        SELECT DISTINCT DATE_FORMAT(`datum`,"%Y-%m") AS date
         FROM ' . self::TABLE . ' AS w
         WHERE `standortid` = :scopeid
         ORDER BY `datum` ASC
@@ -46,7 +45,7 @@ class ExchangeWaitingscope extends Base
 
     const QUERY_PERIODLIST_YEAR = '
         SELECT DISTINCT
-            DATE_FORMAT(`datum`,"%Y") AS year
+            DATE_FORMAT(`datum`,"%Y") AS date
         FROM ' . self::TABLE . ' AS w
         WHERE `standortid` = :scopeid
         ORDER BY `datum` ASC

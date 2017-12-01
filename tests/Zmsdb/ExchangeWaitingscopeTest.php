@@ -30,6 +30,6 @@ class ExchangeWaitingscopeTest extends Base
         $query = new Query();
         $entity = $query->readPeriodList(141);
         $this->assertEntity("\\BO\\Zmsentities\\Exchange", $entity);
-        $this->assertEquals(306, count($entity->data));
+        $this->assertEquals(17, count($entity->data));
     }
 }
