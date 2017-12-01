@@ -11,12 +11,12 @@ class ExchangeWaitingdepartment extends Base implements Interfaces\ExchangeSubje
         $subjectid,
         \DateTimeInterface $datestart,
         \DateTimeInterface $dateend,
-        $period = 'DAY'
+        $period = 'day'
     ) {
         $raw = $this
             ->getReader()
             ->fetchAll(
-                constant("\BO\Zmsdb\Query\ExchangeWaitingdepartment::QUERY_READ_" . $period),
+                constant("\BO\Zmsdb\Query\ExchangeWaitingdepartment::QUERY_READ_" . mb_strtoupper($period)),
                 [
                     'departmentid' => $subjectid,
                     'datestart' => $datestart->format('Y-m-d'),
@@ -24,7 +24,7 @@ class ExchangeWaitingdepartment extends Base implements Interfaces\ExchangeSubje
                 ]
             );
         $entity = new Exchange();
-        $entity->setPeriod($datestart, $dateend);
+        $entity->setPeriod($datestart, $dateend, $period);
         $entity->addDictionaryEntry('subjectid', 'string', 'ID of a department', 'department.id');
         $entity->addDictionaryEntry('date');
         $entity->addDictionaryEntry('hour');
@@ -64,16 +64,16 @@ class ExchangeWaitingdepartment extends Base implements Interfaces\ExchangeSubje
         return $entity;
     }
 
-    public function readPeriodList($subjectid, $period = 'DAY')
+    public function readPeriodList($subjectid, $period = 'day')
     {
         $raw = $this->getReader()->fetchAll(
-            constant("\BO\Zmsdb\Query\ExchangeWaitingdepartment::QUERY_PERIODLIST_" . $period),
+            constant("\BO\Zmsdb\Query\ExchangeWaitingdepartment::QUERY_PERIODLIST_" . mb_strtoupper($period)),
             [
                 'departmentid' => $subjectid,
             ]
         );
         $entity = new Exchange();
-        $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable());
+        $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable(), $period);
         $entity->addDictionaryEntry('period');
         foreach ($raw as $entry) {
             $entity->addDataSet(array_values($entry));

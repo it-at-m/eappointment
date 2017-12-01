@@ -35,4 +35,20 @@ class ExchangeWaitingscope extends Base
         WHERE `standortid` = :scopeid
         ORDER BY `datum` ASC
     ';
+
+    const QUERY_PERIODLIST_MONTH = '
+        SELECT DISTINCT
+            DATE_FORMAT(`datum`,"%Y-%m") AS month
+        FROM ' . self::TABLE . ' AS w
+        WHERE `standortid` = :scopeid
+        ORDER BY `datum` ASC
+    ';
+
+    const QUERY_PERIODLIST_YEAR = '
+        SELECT DISTINCT
+            DATE_FORMAT(`datum`,"%Y") AS year
+        FROM ' . self::TABLE . ' AS w
+        WHERE `standortid` = :scopeid
+        ORDER BY `datum` ASC
+    ';
 }

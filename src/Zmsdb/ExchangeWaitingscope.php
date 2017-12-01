@@ -11,15 +11,20 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
         $subjectid,
         \DateTimeInterface $datestart,
         \DateTimeInterface $dateend,
-        $period = 'DAY'
+        $period = 'day'
     ) {
-        $raw = $this->getReader()->fetchAll(constant("\BO\Zmsdb\Query\ExchangeWaitingscope::QUERY_READ_" . $period), [
-            'scopeid' => $subjectid,
-            'datestart' => $datestart->format('Y-m-d'),
-            'dateend' => $dateend->format('Y-m-d'),
-        ]);
+        $raw = $this
+            ->getReader()
+            ->fetchAll(
+                constant("\BO\Zmsdb\Query\ExchangeWaitingscope::QUERY_READ_" . mb_strtoupper($period)),
+                [
+                    'scopeid' => $subjectid,
+                    'datestart' => $datestart->format('Y-m-d'),
+                    'dateend' => $dateend->format('Y-m-d'),
+                ]
+            );
         $entity = new Exchange();
-        $entity->setPeriod($datestart, $dateend);
+        $entity->setPeriod($datestart, $dateend, $period);
         $entity->addDictionaryEntry('subjectid', 'string', 'ID of a scope', 'scope.id');
         $entity->addDictionaryEntry('date');
         $entity->addDictionaryEntry('hour');
@@ -59,16 +64,16 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
         return $entity;
     }
 
-    public function readPeriodList($subjectid, $period = 'DAY')
+    public function readPeriodList($subjectid, $period = 'day')
     {
         $raw = $this->getReader()->fetchAll(
-            constant("\BO\Zmsdb\Query\ExchangeWaitingscope::QUERY_PERIODLIST_" . $period),
+            constant("\BO\Zmsdb\Query\ExchangeWaitingscope::QUERY_PERIODLIST_" . mb_strtoupper($period)),
             [
                 'scopeid' => $subjectid,
             ]
         );
         $entity = new Exchange();
-        $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable());
+        $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable(), $period);
         $entity->addDictionaryEntry('period');
         foreach ($raw as $entry) {
             $entity->addDataSet(array_values($entry));

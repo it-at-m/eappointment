@@ -42,7 +42,31 @@ class ExchangeWaitingorganisation extends Base
             LEFT JOIN ' . Department::TABLE .' AS d ON s.`BehoerdenID` = d.`BehoerdenID`
             LEFT JOIN ' . Organisation::TABLE .' AS o ON d.`OrganisationsID` = o.`OrganisationsID`
         WHERE
-            d.`BehoerdenID` = :departmentid
+            o.`OrganisationsID` = :organisationid
+        ORDER BY `datum` ASC
+    ';
+
+    const QUERY_PERIODLIST_MONTH = '
+        SELECT DISTINCT
+            DATE_FORMAT(`datum`,"%Y-%m") AS month
+        FROM ' . self::TABLE . ' AS w
+            LEFT JOIN ' . Scope::TABLE .' AS s ON w.`standortid` = s.`StandortID`
+            LEFT JOIN ' . Department::TABLE .' AS d ON s.`BehoerdenID` = d.`BehoerdenID`
+            LEFT JOIN ' . Organisation::TABLE .' AS o ON d.`OrganisationsID` = o.`OrganisationsID`
+        WHERE
+            o.`OrganisationsID` = :organisationid
+        ORDER BY `datum` ASC
+    ';
+
+    const QUERY_PERIODLIST_YEAR = '
+        SELECT DISTINCT
+            DATE_FORMAT(`datum`,"%Y") AS year
+        FROM ' . self::TABLE . ' AS w
+            LEFT JOIN ' . Scope::TABLE .' AS s ON w.`standortid` = s.`StandortID`
+            LEFT JOIN ' . Department::TABLE .' AS d ON s.`BehoerdenID` = d.`BehoerdenID`
+            LEFT JOIN ' . Organisation::TABLE .' AS o ON d.`OrganisationsID` = o.`OrganisationsID`
+        WHERE
+            o.`OrganisationsID` = :organisationid
         ORDER BY `datum` ASC
     ';
 }
