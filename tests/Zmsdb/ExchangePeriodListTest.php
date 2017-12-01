@@ -9,7 +9,7 @@ class ExchangePeriodListTest extends Base
 {
     public function testScopeDay()
     {
-        $query = new \BO\Zmsdb\ExchangeWaitingScope();
+        $query = new \BO\Zmsdb\ExchangeWaitingscope();
         $entity = $query->readPeriodList(141);
         $this->assertEntity("\\BO\\Zmsentities\\Exchange", $entity);
         $this->assertEquals(306, count($entity->data));
@@ -17,7 +17,7 @@ class ExchangePeriodListTest extends Base
 
     public function testDepartmentMonth()
     {
-        $query = new \BO\Zmsdb\ExchangeWaitingDepartment();
+        $query = new \BO\Zmsdb\ExchangeWaitingdepartment();
         $entity = $query->readPeriodList(74, 'month');
         $this->assertEntity("\\BO\\Zmsentities\\Exchange", $entity);
         $this->assertEquals(15, count($entity->data));
@@ -25,7 +25,7 @@ class ExchangePeriodListTest extends Base
 
     public function testOrganisationYear()
     {
-        $query = new \BO\Zmsdb\ExchangeWaitingOrganisation();
+        $query = new \BO\Zmsdb\ExchangeWaitingorganisation();
         $entity = $query->readPeriodList(71, 'year');
         $this->assertEntity("\\BO\\Zmsentities\\Exchange", $entity);
         $this->assertEquals(2, count($entity->data));
