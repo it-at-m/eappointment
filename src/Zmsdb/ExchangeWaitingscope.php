@@ -5,16 +5,15 @@ namespace BO\Zmsdb;
 use \BO\Zmsentities\Exchange;
 use \BO\Zmsentities\Scope as ScopeEntity;
 
-class ExchangeWaitingnumber extends Base implements Interfaces\ExchangeSubject
+class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
 {
-
     public function readEntity(
         $subjectid,
         \DateTimeInterface $datestart,
         \DateTimeInterface $dateend,
         $period = 'DAY'
     ) {
-        $raw = $this->getReader()->fetchAll(constant("\BO\Zmsdb\Query\ExchangeWaitingnumber::QUERY_READ_" . $period), [
+        $raw = $this->getReader()->fetchAll(constant("\BO\Zmsdb\Query\ExchangeWaitingscope::QUERY_READ_" . $period), [
             'scopeid' => $subjectid,
             'datestart' => $datestart->format('Y-m-d'),
             'dateend' => $dateend->format('Y-m-d'),
@@ -47,7 +46,7 @@ class ExchangeWaitingnumber extends Base implements Interfaces\ExchangeSubject
 
     public function readSubjectList()
     {
-        $raw = $this->getReader()->fetchAll(Query\ExchangeWaitingnumber::QUERY_SUBJECTS, []);
+        $raw = $this->getReader()->fetchAll(Query\ExchangeWaitingscope::QUERY_SUBJECTS, []);
         $entity = new Exchange();
         $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable());
         $entity->addDictionaryEntry('subject', 'string', 'ID of a scope', 'scope.id');
@@ -63,7 +62,7 @@ class ExchangeWaitingnumber extends Base implements Interfaces\ExchangeSubject
     public function readPeriodList($subjectid, $period = 'DAY')
     {
         $raw = $this->getReader()->fetchAll(
-            constant("\BO\Zmsdb\Query\ExchangeWaitingnumber::QUERY_PERIODLIST_" . $period),
+            constant("\BO\Zmsdb\Query\ExchangeWaitingscope::QUERY_PERIODLIST_" . $period),
             [
                 'scopeid' => $subjectid,
             ]
@@ -81,7 +80,7 @@ class ExchangeWaitingnumber extends Base implements Interfaces\ExchangeSubject
     public function writeWaitingTimeCalculated(ScopeEntity $scope, \DateTimeInterface $date)
     {
         $queueList = (new Scope())->readQueueListWithWaitingTime($scope, $date);
-        $existingEntry = $this->getReader()->fetchAll(Query\ExchangeWaitingnumber::QUERY_READ, [
+        $existingEntry = $this->getReader()->fetchAll(Query\ExchangeWaiting::QUERY_READ, [
             'scopeid' => $scope->id,
             'datestart' => $date->format('Y-m-d'),
             'dateend' => $date->format('Y-m-d'),
