@@ -8,9 +8,8 @@ namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
-use \BO\Zmsdb\Warehouse as Query;
 
-class WarehouseSubjectListGet extends BaseController
+class WarehouseSubjectGet extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
@@ -22,13 +21,18 @@ class WarehouseSubjectListGet extends BaseController
         array $args
     ) {
         (new Helper\User($request))->checkRights('scope');
-
-        $message = Response\Message::create($request);
-        $subjectsList = (new Query)->readSubjectsList();
-        if (! $subjectsList) {
+        $subject = Validator::value($args['subject'])->isString()->getValue();
+        $exchangeClass = '\BO\Zmsdb\Exchange' . ucfirst($subject);
+        if (! class_exists($exchangeClass)) {
             throw new Exception\Warehouse\ReportNotFound();
         }
-        $message->data = $subjectsList;
+        $subjectIdList = (new $exchangeClass)->readSubjectList($subject);
+        if (! $subjectIdList) {
+            throw new Exception\Warehouse\ReportNotFound();
+        }
+
+        $message = Response\Message::create($request);
+        $message->data = (new Helper\ExchangeAccessFilter($subjectIdList))->getFilteredEntity()->withLessData();
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message, $message->getStatuscode());
