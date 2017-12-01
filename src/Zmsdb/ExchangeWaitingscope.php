@@ -16,7 +16,7 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
         $raw = $this
             ->getReader()
             ->fetchAll(
-                constant("\BO\Zmsdb\Query\ExchangeWaitingscope::QUERY_READ_" . mb_strtoupper($period)),
+                constant("\BO\Zmsdb\Query\ExchangeWaitingscope::QUERY_READ_DAY"),
                 [
                     'scopeid' => $subjectid,
                     'datestart' => $datestart->format('Y-m-d'),
