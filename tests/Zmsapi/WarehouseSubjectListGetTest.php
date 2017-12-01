@@ -10,8 +10,8 @@ class WarehouseSubjectListGetTest extends Base
 
     public function testRendering()
     {
-        $this->setWorkstation();
-        User::$workstation->useraccount->setRights('organisation');
+        $workstation = $this->setWorkstation();
+        $workstation->getUseraccount()->setRights('scope');
         $response = $this->render([], [], []);
         $this->assertContains('exchange.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
@@ -19,8 +19,8 @@ class WarehouseSubjectListGetTest extends Base
 
     public function testNoRights()
     {
-        $this->setWorkstation();
-        User::$workstation->useraccount->setRights('department');
+        $workstation = $this->setWorkstation();
+        $workstation->getUseraccount()->setRights('basic');
         $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingRights');
         $this->render([], [], []);
     }
