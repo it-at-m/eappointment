@@ -22,7 +22,7 @@ class Exchange extends Schema\Entity
         ];
     }
 
-    public function setPeriod(\DateTimeInterface $firstDay, \DateTimeInterface $lastDay, $period = 'DAY')
+    public function setPeriod(\DateTimeInterface $firstDay, \DateTimeInterface $lastDay, $period = 'day')
     {
         $this->firstDay = (new Day())->setDateTime($firstDay);
         $this->lastDay = (new Day())->setDateTime($lastDay);
