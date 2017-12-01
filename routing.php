@@ -4459,7 +4459,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: string
  *              -   name: subjectId
- *                  description: A reference ID for the subject, an "_" means getting all available IDs or no ID necessary
+ *                  description: A reference ID for the subject, an "_" means no ID necessary
  *                  in: path
  *                  required: true
  *                  type: string
@@ -4498,7 +4498,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: string
  *              -   name: subjectId
- *                  description: A reference ID for the subject, an "_" means getting all available IDs or no ID necessary
+ *                  description: A reference ID for the subject, an "_" means no ID necessary
  *                  in: path
  *                  required: true
  *                  type: string
