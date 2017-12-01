@@ -20,9 +20,10 @@ class ExchangeTest extends EntityCommonTests
     {
         $now = new \DateTimeImmutable('2016-04-01 11:55:00');
         $entity = (new $this->entityclass());
-        $entity->setPeriod($now, $now);
+        $entity->setPeriod($now, $now, 'MONTH');
         $this->assertEquals(2016, $entity->firstDay->year);
         $this->assertEquals(4, $entity->lastDay->month);
+        $this->assertEquals('MONTH', $entity->period);
     }
 
     public function testDictionary()
