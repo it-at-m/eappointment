@@ -61,4 +61,15 @@ class Exchange extends Schema\Entity
         unset($entity['period']);
         return $entity;
     }
+
+    public function getReferenceByString($string = '')
+    {
+        $reference = [];
+        if ($string) {
+            $array = explode('.', $string);
+            $reference['entity'] = reset($array);
+            $reference['property'] = end($array);
+        }
+        return $reference;
+    }
 }

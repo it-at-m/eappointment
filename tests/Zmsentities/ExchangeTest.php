@@ -85,4 +85,11 @@ class ExchangeTest extends EntityCommonTests
         $entity = (new $this->entityclass())->getExample();
         $this->assertNotContains('firstDay', $entity->withLessData());
     }
+
+    public function testGetReference()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $this->assertEquals('scope', $entity->getReferenceByString('scope.id')['entity']);
+        $this->assertEquals('id', $entity->getReferenceByString('scope.id')['property']);
+    }
 }
