@@ -42,7 +42,7 @@ class WarehousePeriodGet extends BaseController
         }
 
         $message = Response\Message::create($request);
-        $message->data = $subjectPeriod;
+        $message->data = (new Helper\ExchangeAccessFilter($subjectPeriod))->getFilteredEntity()->withLessData();
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message, $message->getStatuscode());
