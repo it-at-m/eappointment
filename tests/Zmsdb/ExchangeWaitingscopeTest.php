@@ -2,11 +2,11 @@
 
 namespace BO\Zmsdb\Tests;
 
-use \BO\Zmsdb\ExchangeWaitingnumber as Query;
+use \BO\Zmsdb\ExchangeWaitingscope as Query;
 use \BO\Zmsentities\Exchange;
 use \DateTimeImmutable as DateTime;
 
-class ExchangeWaitingnumberTest extends Base
+class ExchangeWaitingscopeTest extends Base
 {
     public function testBasic()
     {

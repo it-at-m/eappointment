@@ -2,7 +2,7 @@
 
 namespace BO\Zmsdb\Query;
 
-class ExchangeWaitingnumber extends Base
+class ExchangeWaitingscope extends Base
 {
     /**
      * @var String TABLE mysql table reference
@@ -17,7 +17,7 @@ class ExchangeWaitingnumber extends Base
     ';
 
     const QUERY_SUBJECTS = '
-        SELECT 
+        SELECT
             w.`standortid` as subject,
             MIN(`datum`) AS periodstart,
             MAX(`datum`) AS periodend,
@@ -29,7 +29,7 @@ class ExchangeWaitingnumber extends Base
     ';
 
     const QUERY_PERIODLIST_DAY = '
-        SELECT 
+        SELECT
             `datum`
         FROM ' . self::TABLE . ' AS w
         WHERE `standortid` = :scopeid

@@ -9,17 +9,17 @@ class Warehouse extends Base
 {
     protected $subjects = [
         [
-            'subject' => 'waitingnumber',
+            'subject' => 'waitingscope',
             'description' => 'Wartestatistik Standort',
             'right' => 'useraccount.rights.scope'
         ],
         [
-            'subject' => 'waitingnumberdepartment',
+            'subject' => 'waitingdepartment',
             'description' => 'Wartestatistik Behörde',
             'right' => 'useraccount.rights.department'
         ],
         [
-            'subject' => 'waitingnumberorganisation',
+            'subject' => 'waitingorganisation',
             'description' => 'Wartestatistik Organisation',
             'right' => 'useraccount.rights.organisation'
         ],
