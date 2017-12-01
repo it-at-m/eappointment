@@ -66,12 +66,20 @@ class ExchangeWaitingdepartment extends Base implements Interfaces\ExchangeSubje
 
     public function readPeriodList($subjectid, $period = 'day')
     {
-        $raw = $this->getReader()->fetchAll(
-            constant("\BO\Zmsdb\Query\ExchangeWaitingdepartment::QUERY_PERIODLIST_" . mb_strtoupper($period)),
+        $years = $this->getReader()->fetchAll(
+            constant("\BO\Zmsdb\Query\ExchangeWaitingdepartment::QUERY_PERIODLIST_YEAR"),
             [
                 'departmentid' => $subjectid,
             ]
         );
+        $months = $this->getReader()->fetchAll(
+            constant("\BO\Zmsdb\Query\ExchangeWaitingdepartment::QUERY_PERIODLIST_MONTH"),
+            [
+                'departmentid' => $subjectid,
+            ]
+        );
+        $raw = array_merge($years, $months);
+        sort($raw);
         $entity = new Exchange();
         $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable(), $period);
         $entity->addDictionaryEntry('period');

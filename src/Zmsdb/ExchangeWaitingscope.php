@@ -66,12 +66,21 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
 
     public function readPeriodList($subjectid, $period = 'day')
     {
-        $raw = $this->getReader()->fetchAll(
-            constant("\BO\Zmsdb\Query\ExchangeWaitingscope::QUERY_PERIODLIST_" . mb_strtoupper($period)),
+        $years = $this->getReader()->fetchAll(
+            constant("\BO\Zmsdb\Query\ExchangeWaitingscope::QUERY_PERIODLIST_YEAR"),
             [
                 'scopeid' => $subjectid,
             ]
         );
+        $months = $this->getReader()->fetchAll(
+            constant("\BO\Zmsdb\Query\ExchangeWaitingscope::QUERY_PERIODLIST_MONTH"),
+            [
+                'scopeid' => $subjectid,
+            ]
+        );
+        $raw = array_merge($years, $months);
+        sort($raw);
+
         $entity = new Exchange();
         $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable(), $period);
         $entity->addDictionaryEntry('period');

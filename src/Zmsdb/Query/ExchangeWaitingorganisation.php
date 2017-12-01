@@ -48,7 +48,7 @@ class ExchangeWaitingorganisation extends Base
 
     const QUERY_PERIODLIST_MONTH = '
         SELECT DISTINCT
-            DATE_FORMAT(`datum`,"%Y-%m") AS month
+            DATE_FORMAT(`datum`,"%Y-%m") AS date
         FROM ' . self::TABLE . ' AS w
             LEFT JOIN ' . Scope::TABLE .' AS s ON w.`standortid` = s.`StandortID`
             LEFT JOIN ' . Department::TABLE .' AS d ON s.`BehoerdenID` = d.`BehoerdenID`
@@ -60,7 +60,7 @@ class ExchangeWaitingorganisation extends Base
 
     const QUERY_PERIODLIST_YEAR = '
         SELECT DISTINCT
-            DATE_FORMAT(`datum`,"%Y") AS year
+            DATE_FORMAT(`datum`,"%Y") AS date
         FROM ' . self::TABLE . ' AS w
             LEFT JOIN ' . Scope::TABLE .' AS s ON w.`standortid` = s.`StandortID`
             LEFT JOIN ' . Department::TABLE .' AS d ON s.`BehoerdenID` = d.`BehoerdenID`
