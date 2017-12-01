@@ -14,7 +14,7 @@ class WarehousePeriodListGetTest extends Base
         $workstation->getUseraccount()->setRights('scope');
         $response = $this->render(['subject' => 'waitingscope', 'subjectId' => 141], [], []);
         $this->assertContains('exchange.json', (string)$response->getBody());
-        $this->assertContains('"period":"day"', (string)$response->getBody());
+        $this->assertContains('"period":"month"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

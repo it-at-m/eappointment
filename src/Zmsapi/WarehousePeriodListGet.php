@@ -22,7 +22,7 @@ class WarehousePeriodListGet extends BaseController
     ) {
         (new Helper\User($request))->checkRights('scope');
         $validator = $request->getAttribute('validator');
-        $period = $validator->getParameter('period')->isString()->isBiggerThan(2)->setDefault('day')->getValue();
+        $period = $validator->getParameter('period')->isString()->isBiggerThan(2)->setDefault('month')->getValue();
         $subject = Validator::value($args['subject'])->isString()->getValue();
         $subjectId = Validator::value($args['subjectId'])->isNumber()->getValue();
         $exchangeClass = '\BO\Zmsdb\Exchange' . ucfirst($subject);
