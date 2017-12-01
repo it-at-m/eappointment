@@ -9,7 +9,7 @@ namespace BO\Zmsapi;
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 
-class WarehousePeriodListGet extends BaseController
+class WarehousePeriodGet extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
@@ -21,21 +21,28 @@ class WarehousePeriodListGet extends BaseController
         array $args
     ) {
         (new Helper\User($request))->checkRights('scope');
-        $validator = $request->getAttribute('validator');
-        $period = $validator->getParameter('period')->isString()->isBiggerThan(2)->setDefault('month')->getValue();
         $subject = Validator::value($args['subject'])->isString()->getValue();
         $subjectId = Validator::value($args['subjectId'])->isNumber()->getValue();
+        $period = Validator::value($args['period'])->isString()->isBiggerThan(2)->setDefault('_')->getValue();
+
         $exchangeClass = '\BO\Zmsdb\Exchange' . ucfirst($subject);
         if (! class_exists($exchangeClass)) {
             throw new Exception\Warehouse\ReportNotFound();
         }
-        $subjectPeriodList = (new $exchangeClass)->readPeriodList($subjectId, $period);
-        if (! $subjectPeriodList) {
+
+        $periodHelper = new Helper\ExchangePeriod($period);
+        $subjectPeriod = (new $exchangeClass)->readEntity(
+            $subjectId,
+            $periodHelper->getStartDateTime(),
+            $periodHelper->getEndDateTime(),
+            $periodHelper->getPeriodIdentifier()
+        );
+        if (! $subjectPeriod) {
             throw new Exception\Warehouse\ReportNotFound();
         }
 
         $message = Response\Message::create($request);
-        $message->data = $subjectPeriodList;
+        $message->data = $subjectPeriod;
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message, $message->getStatuscode());
