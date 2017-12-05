@@ -13,6 +13,8 @@ class ExchangeClientscope extends Base
         \DateTimeInterface $dateend
     ) {
         $config = (new Config)->readEntity();
+        $costs = $config->getNotificationPreferences()['costs'];
+
         $entity = new Exchange();
         $entity->setPeriod($datestart, $dateend);
         $entity->addDictionaryEntry('subjectid', 'string', 'ID of a scope', 'scope.id');
@@ -41,7 +43,7 @@ class ExchangeClientscope extends Base
                     ]
                 );
             foreach ($raw as $entry) {
-                $entry['notificationscost'] = $entry['notificationscount'] * $config->getNotificationPreferences()['costs'];
+                $entry['notificationscost'] = $entry['notificationscount'] * $costs;
                 $entity->addDataSet(array_values($entry));
             }
         }
@@ -66,17 +68,17 @@ class ExchangeClientscope extends Base
     public function readPeriodList($subjectid, $period = 'month')
     {
         $years = $this->getReader()->fetchAll(
-          constant("\BO\Zmsdb\Query\ExchangeWaitingscope::QUERY_PERIODLIST_YEAR"),
-          [
-              'scopeid' => $subjectid,
-          ]
-      );
+            constant("\BO\Zmsdb\Query\ExchangeWaitingscope::QUERY_PERIODLIST_YEAR"),
+            [
+                'scopeid' => $subjectid,
+            ]
+        );
         $months = $this->getReader()->fetchAll(
-          constant("\BO\Zmsdb\Query\ExchangeWaitingscope::QUERY_PERIODLIST_MONTH"),
-          [
-              'scopeid' => $subjectid,
-          ]
-      );
+            constant("\BO\Zmsdb\Query\ExchangeWaitingscope::QUERY_PERIODLIST_MONTH"),
+            [
+                'scopeid' => $subjectid,
+            ]
+        );
         $raw = array_merge($years, $months);
         sort($raw);
 
