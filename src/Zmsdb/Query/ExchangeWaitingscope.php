@@ -18,14 +18,23 @@ class ExchangeWaitingscope extends Base
 
     const QUERY_SUBJECTS = '
         SELECT
-            w.`standortid` as subject,
-            MIN(`datum`) AS periodstart,
-            MAX(`datum`) AS periodend,
-            CONCAT(`Bezeichnung`, " ", `standortinfozeile`) AS description
-        FROM ' . self::TABLE . ' AS w
-            LEFT JOIN ' . Scope::TABLE .' AS s ON w.`standortid` = s.`StandortID`
-        GROUP BY w.`standortid`
-        ORDER BY w.`standortid` ASC
+            scope.`StandortID` as subject,
+            periodstart,
+            periodend,
+            CONCAT(scope.`Bezeichnung`, " ", scope.`standortinfozeile`) AS description
+        FROM '. Scope::TABLE .' AS scope
+            INNER JOIN
+              (
+          SELECT
+            w.standortid as scopeid,
+            MIN(w.`datum`) AS periodstart,
+            MAX(w.`datum`) AS periodend
+          FROM '. self::TABLE .' w
+          group by scopeid
+        )
+            maxAndminDate ON maxAndminDate.`scopeid` = scope.`StandortID` 
+        GROUP BY scope.`StandortID`
+        ORDER BY scope.`StandortID` ASC
     ';
 
     const QUERY_PERIODLIST_DAY = '
