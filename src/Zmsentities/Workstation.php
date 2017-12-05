@@ -128,6 +128,15 @@ class Workstation extends Schema\Entity
         return $scopeList;
     }
 
+    public function getScopeListFromAssignedDepartments()
+    {
+        $scopeList = new Collection\ScopeList();
+        foreach ($this->getDepartmentList() as $department) {
+            $scopeList->addList($department->getScopeList());
+        }
+        return $scopeList;
+    }
+
     public function testMatchingProcessScope($scopeList, Process $process = null)
     {
         if (null === $process) {
