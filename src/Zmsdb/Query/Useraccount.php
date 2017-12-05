@@ -35,8 +35,8 @@ class Useraccount extends Base implements MappingInterface
     const QUERY_READ_SUPERUSER_DEPARTMENTS = '
         SELECT behoerde.`BehoerdenID` AS id,
             organisation.Organisationsname as organisation__name
-        FROM behoerde
-        LEFT JOIN organisation USING(OrganisationsID)
+        FROM '. Department::TABLE .'
+        LEFT JOIN '. Organisation::TABLE .' USING(OrganisationsID)
         ORDER BY organisation.Organisationsname, behoerde.Name
     ';
 
@@ -45,8 +45,8 @@ class Useraccount extends Base implements MappingInterface
             organisation.Organisationsname as organisation__name
         FROM '. self::TABLE_ASSIGNMENT .' userAssignment
         LEFT JOIN '. self::TABLE .' useraccount ON useraccount.Name = :useraccountName
-        LEFT JOIN behoerde ON userAssignment.behoerdenid = behoerde.BehoerdenID
-        LEFT JOIN organisation USING(OrganisationsID)
+        LEFT JOIN '. Department::TABLE .' ON userAssignment.behoerdenid = behoerde.BehoerdenID
+        LEFT JOIN '. Organisation::TABLE .' USING(OrganisationsID)
         WHERE
             useraccount.`NutzerID` = userAssignment.`nutzerid`
         ORDER BY organisation.Organisationsname, behoerde.Name
