@@ -20,7 +20,7 @@ class WarehouseSubjectGet extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('scope');
+        $workstation = (new Helper\User($request, 2))->checkRights('scope');
         $subject = Validator::value($args['subject'])->isString()->getValue();
         $exchangeClass = '\BO\Zmsdb\Exchange' . ucfirst($subject);
         if (! class_exists($exchangeClass)) {
@@ -32,7 +32,9 @@ class WarehouseSubjectGet extends BaseController
         }
 
         $message = Response\Message::create($request);
-        $message->data = (new Helper\ExchangeAccessFilter($subjectIdList))->getFilteredEntity()->withLessData();
+        $message->data = (new Helper\ExchangeAccessFilter($subjectIdList, $workstation))
+          ->getFilteredEntity()
+          ->withLessData();
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message, $message->getStatuscode());

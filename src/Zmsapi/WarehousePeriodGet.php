@@ -20,9 +20,9 @@ class WarehousePeriodGet extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('scope');
+        $workstation = (new Helper\User($request, 2))->checkRights('scope');
         $subject = Validator::value($args['subject'])->isString()->getValue();
-        $subjectId = Validator::value($args['subjectId'])->isNumber()->getValue();
+        $subjectId = Validator::value($args['subjectId'])->isString()->getValue();
         $period = Validator::value($args['period'])->isString()->isBiggerThan(2)->setDefault('_')->getValue();
 
         $exchangeClass = '\BO\Zmsdb\Exchange' . ucfirst($subject);
@@ -42,7 +42,7 @@ class WarehousePeriodGet extends BaseController
         }
 
         $message = Response\Message::create($request);
-        $message->data = (new Helper\ExchangeAccessFilter($subjectPeriod))->getFilteredEntity()->withLessData();
+        $message->data = (new Helper\ExchangeAccessFilter($subjectPeriod, $workstation))->getFilteredEntity();
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message, $message->getStatuscode());
