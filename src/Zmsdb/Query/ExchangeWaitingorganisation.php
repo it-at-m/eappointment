@@ -15,8 +15,9 @@ class ExchangeWaitingorganisation extends Base
             LEFT JOIN ' . Scope::TABLE .' AS s ON w.`standortid` = s.`StandortID`
             LEFT JOIN ' . Department::TABLE .' AS d ON s.`BehoerdenID` = d.`BehoerdenID`
             LEFT JOIN ' . Organisation::TABLE .' AS o ON d.`OrganisationsID` = o.`OrganisationsID`
-        WHERE d.`BehoerdenID` = :departmentid
+        WHERE o.`OrganisationsID` = :organisationid
             AND `datum` BETWEEN :datestart AND :dateend
+        GROUP BY `datum` ASC
         ORDER BY `datum` ASC
     ';
 
