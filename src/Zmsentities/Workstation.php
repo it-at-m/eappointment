@@ -134,6 +134,11 @@ class Workstation extends Schema\Entity
         foreach ($this->getDepartmentList() as $department) {
             $scopeList->addList($department->getScopeList());
         }
+        foreach ($this->getScopeList() as $scope) {
+            if (! $scopeList->hasEntity($scope->id) && $scope instanceof Scope) {
+                $scopeList->addEntity($scope);
+            }
+        }
         return $scopeList;
     }
 
