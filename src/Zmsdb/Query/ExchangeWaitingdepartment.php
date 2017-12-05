@@ -16,6 +16,7 @@ class ExchangeWaitingdepartment extends Base
             LEFT JOIN ' . Department::TABLE .' AS d ON s.`BehoerdenID` = d.`BehoerdenID`
         WHERE d.`BehoerdenID` = :departmentid
             AND `datum` BETWEEN :datestart AND :dateend
+        GROUP BY `datum` ASC
         ORDER BY `datum` ASC
     ';
 

@@ -8,8 +8,8 @@ interface ExchangeSubject
         $subjectid,
         \DateTimeInterface $datestart,
         \DateTimeInterface $dateend,
-        $period = 'DAY'
+        $period = 'day'
     );
     public function readSubjectList();
-    public function readPeriodList($subjectid, $period = 'DAY');
+    public function readPeriodList($subjectid, $period = 'day');
 }
