@@ -10,17 +10,22 @@ use \BO\Slim\Render;
  */
 class ExchangeAccessFilter
 {
+    protected static $filterList = [
+        'scope.id' => 'getFilteredEntityByScope',
+        'department.id' => 'getFilteredEntityByDepartment',
+        'organisation.id' => 'getFilteredEntityByOrganisation'
+    ];
+
     protected static $exchangeEntity = null;
 
     protected static $filteredEntity = null;
 
     protected static $workstation = null;
 
-    public function __construct($exchangeEntity)
+    public function __construct($exchangeEntity, $workstation)
     {
         static::$exchangeEntity = $exchangeEntity;
-
-        static::$workstation = User::readWorkstation(2);
+        static::$workstation = $workstation;
     }
 
     /**
@@ -31,55 +36,40 @@ class ExchangeAccessFilter
     {
         static::$filteredEntity = clone static::$exchangeEntity;
         foreach (static::$exchangeEntity->dictionary as $entry) {
-            $reference = static::$exchangeEntity->getReferenceByString($entry['reference']);
-            if (isset($reference['entity'])) {
-                $filterMethod = 'getFilteredEntityBy' . ucfirst($reference['entity']);
-                if (method_exists($this, $filterMethod)) {
-                    static::$filterMethod($entry['position']);
+            if ($entry['reference'] && isset(static::$filterList[$entry['reference']])) {
+                $filterMethod = self::$filterList[$entry['reference']];
+                foreach (static::$filteredEntity->data as $key => $data) {
+                    static::$filterMethod($data[$entry['position']], $key);
                 }
             }
         }
+
         return static::$filteredEntity;
     }
 
-    protected static function getFilteredEntityByScope($position = 0)
+    protected static function getFilteredEntityByScope($entityId, $filteredKey)
     {
         if (static::$workstation->getUseraccount()->hasRights(['scope'])) {
-            foreach (static::$filteredEntity->data as $key => $entry) {
-                $idList = explode(',', $entry[$position]);
-                foreach ($idList as $entityId) {
-                    if (! static::$workstation->getScopeList()->hasEntity($entityId)) {
-                        unset(static::$filteredEntity->data[$key]);
-                    }
-                }
+            if (! static::$workstation->getScopeListFromAssignedDepartments()->hasEntity($entityId)) {
+                unset(static::$filteredEntity->data[$filteredKey]);
             }
         }
     }
 
-    protected static function getFilteredEntityByDepartment($position = 0)
+    protected static function getFilteredEntityByDepartment($entityId, $filteredKey)
     {
         if (static::$workstation->getUseraccount()->hasRights(['department'])) {
-            foreach (static::$filteredEntity->data as $key => $entry) {
-                $idList = explode(',', $entry[$position]);
-                foreach ($idList as $entityId) {
-                    if (! static::$workstation->getDepartmentList()->hasEntity($entityId)) {
-                        unset(static::$filteredEntity->data[$key]);
-                    }
-                }
+            if (! static::$workstation->getDepartmentList()->hasEntity($entityId)) {
+                unset(static::$filteredEntity->data[$filteredKey]);
             }
         }
     }
 
-    protected static function getFilteredEntityByOrganisation($position = 0)
+    protected static function getFilteredEntityByOrganisation($entityId, $filteredKey)
     {
         if (static::$workstation->getUseraccount()->hasRights(['organisation'])) {
-            foreach (static::$filteredEntity->data as $key => $entry) {
-                $idList = explode(',', $entry[$position]);
-                foreach ($idList as $entityId) {
-                    if (! static::getOrganisationListByDepartments()->hasEntity($entityId)) {
-                        unset(static::$filteredEntity->data[$key]);
-                    }
-                }
+            if (! static::getOrganisationListByDepartments()->hasEntity($entityId)) {
+                unset(static::$filteredEntity->data[$filteredKey]);
             }
         }
     }
