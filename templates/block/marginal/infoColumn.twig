@@ -4,9 +4,9 @@
    	<img src="data:image/{{ calldisplay.image.mime }};base64,{{ calldisplay.image.data }}" width="200" border="0" alt="">
 	<br><br>
 	{% if calldisplay.clusters|length == 1 and calldisplay.clusters|first.callDisplayText %}
-	{{ calldisplay.clusters|first.callDisplayText|raw }}
+	{{ calldisplay.clusters|first.callDisplayText|raw|nl2br }}
 	{% elseif calldisplay.scopes|length == 1 and calldisplay.scopes|first.preferences.queue.callDisplayText%}
-	{{ calldisplay.scopes|first.preferences.queue.callDisplayText|raw }}
+	{{ calldisplay.scopes|first.preferences.queue.callDisplayText|raw|nl2br }}
 	{% endif %}
 </div>
 {% endblock %}
