@@ -17,8 +17,7 @@ class ExchangeClientscopeTest extends Base
         $this->assertEquals(84, $entity->data[0][4]); // clients COUNT
         $this->assertEquals(16, $entity->data[0][5]); // clients missed COUNT
         $this->assertEquals(84, $entity->data[0][6]); // clients with appointment COUNT
-        $this->assertEquals(59, $entity->data[0][8]); // requests COUNT
-        $this->assertEquals('Charlottenburg-Wilmersdorf', $entity->data[0][11]); // organisation
+        $this->assertEquals(61, $entity->data[0][8]); // requests COUNT
     }
 
     public function testSubjectList()

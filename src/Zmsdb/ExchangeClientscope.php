@@ -3,7 +3,6 @@
 namespace BO\Zmsdb;
 
 use \BO\Zmsentities\Exchange;
-use \BO\Zmsentities\Scope as ScopeEntity;
 
 class ExchangeClientscope extends Base
 {
@@ -26,9 +25,6 @@ class ExchangeClientscope extends Base
         $entity->addDictionaryEntry('withappointment');
         $entity->addDictionaryEntry('missedwithappointment');
         $entity->addDictionaryEntry('requestscount');
-        $entity->addDictionaryEntry('scopename', 'string', 'name of scope');
-        $entity->addDictionaryEntry('departmentname', 'string', 'name of department');
-        $entity->addDictionaryEntry('organisationname', 'string', 'name of organisation');
         $subjectIdList = explode(',', $subjectid);
 
         foreach ($subjectIdList as $subjectid) {
