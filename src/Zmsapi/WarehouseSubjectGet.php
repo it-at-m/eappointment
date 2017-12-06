@@ -26,7 +26,7 @@ class WarehouseSubjectGet extends BaseController
         if (! class_exists($exchangeClass)) {
             throw new Exception\Warehouse\ReportNotFound();
         }
-        $subjectIdList = (new $exchangeClass)->readSubjectList($subject);
+        $subjectIdList = (new $exchangeClass)->readSubjectList();
         if (! $subjectIdList) {
             throw new Exception\Warehouse\ReportNotFound();
         }
