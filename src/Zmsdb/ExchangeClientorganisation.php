@@ -4,7 +4,7 @@ namespace BO\Zmsdb;
 
 use \BO\Zmsentities\Exchange;
 
-class ExchangeClientdepartment extends Base
+class ExchangeClientorganisation extends Base
 {
     public function readEntity(
         $subjectid,
@@ -16,7 +16,7 @@ class ExchangeClientdepartment extends Base
 
         $entity = new Exchange();
         $entity->setPeriod($datestart, $dateend);
-        $entity->addDictionaryEntry('subjectid', 'string', 'ID of a department', 'department.id');
+        $entity->addDictionaryEntry('subjectid', 'string', 'ID of a organisation', 'organisation.id');
         $entity->addDictionaryEntry('date');
         $entity->addDictionaryEntry('notificationscount');
         $entity->addDictionaryEntry('notificationscost');
@@ -31,9 +31,9 @@ class ExchangeClientdepartment extends Base
             $raw = $this
                 ->getReader()
                 ->fetchAll(
-                    constant("\BO\Zmsdb\Query\ExchangeClientdepartment::QUERY_READ_REPORT"),
+                    constant("\BO\Zmsdb\Query\ExchangeClientorganisation::QUERY_READ_REPORT"),
                     [
-                        'departmentid' => $subjectid,
+                        'organisationid' => $subjectid,
                         'datestart' => $datestart->format('Y-m-d'),
                         'dateend' => $dateend->format('Y-m-d'),
                     ]
@@ -48,10 +48,10 @@ class ExchangeClientdepartment extends Base
 
     public function readSubjectList()
     {
-        $raw = $this->getReader()->fetchAll(Query\ExchangeClientdepartment::QUERY_SUBJECTS, []);
+        $raw = $this->getReader()->fetchAll(Query\ExchangeClientorganisation::QUERY_SUBJECTS, []);
         $entity = new Exchange();
         $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable());
-        $entity->addDictionaryEntry('subject', 'string', 'ID of a department', 'department.id');
+        $entity->addDictionaryEntry('subject', 'string', 'ID of a organisation', 'organisation.id');
         $entity->addDictionaryEntry('periodstart');
         $entity->addDictionaryEntry('periodend');
         $entity->addDictionaryEntry('description');
@@ -64,15 +64,15 @@ class ExchangeClientdepartment extends Base
     public function readPeriodList($subjectid, $period = 'month')
     {
         $years = $this->getReader()->fetchAll(
-            constant("\BO\Zmsdb\Query\ExchangeClientdepartment::QUERY_PERIODLIST_YEAR"),
+            constant("\BO\Zmsdb\Query\ExchangeWaitingorganisation::QUERY_PERIODLIST_YEAR"),
             [
-                'departmentid' => $subjectid,
+                'organisationid' => $subjectid,
             ]
         );
         $months = $this->getReader()->fetchAll(
-            constant("\BO\Zmsdb\Query\ExchangeClientdepartment::QUERY_PERIODLIST_MONTH"),
+            constant("\BO\Zmsdb\Query\ExchangeWaitingorganisation::QUERY_PERIODLIST_MONTH"),
             [
-                'departmentid' => $subjectid,
+                'organisationid' => $subjectid,
             ]
         );
         $raw = array_merge($years, $months);

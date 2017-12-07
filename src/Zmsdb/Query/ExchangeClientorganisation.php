@@ -2,7 +2,7 @@
 
 namespace BO\Zmsdb\Query;
 
-class ExchangeClientdepartment extends Base
+class ExchangeClientorganisation extends Base
 {
     /**
      * @var String TABLE mysql table reference
@@ -78,7 +78,7 @@ class ExchangeClientdepartment extends Base
     const QUERY_READ_REPORT = '
         SELECT
             #subjectid
-            s.`behoerdenid` as subjectid,
+            s.`organisationsid` as subjectid,
             #date
             s.`datum` as date,
             #notification count
@@ -87,49 +87,60 @@ class ExchangeClientdepartment extends Base
               FROM abrechnung n
                 LEFT JOIN '. Scope::TABLE .' scope ON n.`StandortID` = scope.`StandortID`
                 LEFT JOIN '. Department::TABLE .' d ON scope.`BehoerdenID` = d.`BehoerdenID`
+                LEFT JOIN '. Organisation::TABLE .' o ON o.`OrganisationsID` = d.`OrganisationsID`
               WHERE
-                  d.`BehoerdenID` = s.`behoerdenid` AND n.Datum = s.datum
+                  o.`OrganisationsID` = s.`organisationsid` AND n.Datum = s.datum
             ) as notificationscount,
             #notfication cost placeholder
             0 as notificationscost,
             #clients count
             ( SELECT
                 SUM(a.AnzahlPersonen)
-              FROM '. Department::TABLE .' d
+              FROM '. Organisation::TABLE .' o
+                LEFT JOIN '. Department::TABLE .' d ON o.OrganisationsID = d.OrganisationsID
                 LEFT JOIN '. Scope::TABLE .' scope ON d.BehoerdenID = scope.BehoerdenID
-                LEFT JOIN '. ProcessStatusArchived::TABLE .' a ON a.StandortID = scope.StandortID
+                LEFT JOIN '. ProcessStatusArchived::TABLE .' a ON scope.StandortID = a.StandortID
               WHERE
-                d.`BehoerdenID` = s.`behoerdenid` AND a.Datum = s.datum AND a.`nicht_erschienen` = 0
+                o.`OrganisationsID` = s.`organisationsid` AND a.Datum = s.datum AND a.`nicht_erschienen` = 0
             ) as clientscount,
 
             #clients missed
             ( SELECT
                 IFNULL(COUNT(a.nicht_erschienen), 0)
-              FROM '. Department::TABLE .' d
+              FROM '. Organisation::TABLE .' o
+                LEFT JOIN '. Department::TABLE .' d ON o.OrganisationsID = d.OrganisationsID
                 LEFT JOIN '. Scope::TABLE .' scope ON d.BehoerdenID = scope.BehoerdenID
-                LEFT JOIN '. ProcessStatusArchived::TABLE .' a ON a.StandortID = scope.StandortID
+                LEFT JOIN '. ProcessStatusArchived::TABLE .' a ON scope.StandortID = a.StandortID
               WHERE
-                d.`BehoerdenID` = s.`behoerdenid` AND a.Datum = s.datum AND a.`nicht_erschienen` = 1
+                o.`OrganisationsID` = s.`organisationsid` AND a.Datum = s.datum AND a.`nicht_erschienen` = 1
           ) as missed,
 
             #clients with appointment
             ( SELECT
                 count(*)
-              FROM '. Department::TABLE .' d
+              FROM '. Organisation::TABLE .' o
+                LEFT JOIN '. Department::TABLE .' d ON o.OrganisationsID = d.OrganisationsID
                 LEFT JOIN '. Scope::TABLE .' scope ON d.BehoerdenID = scope.BehoerdenID
-                LEFT JOIN '. ProcessStatusArchived::TABLE .' a ON a.StandortID = scope.StandortID
+                LEFT JOIN '. ProcessStatusArchived::TABLE .' a ON scope.StandortID = a.StandortID
               WHERE
-                  d.`BehoerdenID` = s.`behoerdenid` AND a.Datum = s.datum AND a.nicht_erschienen=0 AND a.mitTermin=1
+                  o.`OrganisationsID` = s.`organisationsid` AND
+                  a.Datum = s.datum AND
+                  a.nicht_erschienen=0 AND
+                  a.mitTermin=1
           ) as withappointment,
 
             #clients missed with appointment
             ( SELECT
                 COUNT(*)
-              FROM '. Department::TABLE .' d
+              FROM '. Organisation::TABLE .' o
+                LEFT JOIN '. Department::TABLE .' d ON o.OrganisationsID = d.OrganisationsID
                 LEFT JOIN '. Scope::TABLE .' scope ON d.BehoerdenID = scope.BehoerdenID
-                LEFT JOIN '. ProcessStatusArchived::TABLE .' a ON a.StandortID = scope.StandortID
+                LEFT JOIN '. ProcessStatusArchived::TABLE .' a ON scope.StandortID = a.StandortID
               WHERE
-                d.`BehoerdenID` = s.`behoerdenid` AND a.Datum = s.datum AND a.nicht_erschienen=1 AND a.mitTermin=1
+                o.`OrganisationsID` = s.`organisationsid` AND
+                a.Datum = s.datum AND
+                a.nicht_erschienen=1 AND
+                a.mitTermin=1
           ) as missedwithappointment,
       #requests count
           (
@@ -140,18 +151,19 @@ class ExchangeClientdepartment extends Base
                     ba.`BuergerarchivID` IN (
                         SELECT
                             a.BuergerarchivID
-                        FROM '. Department::TABLE .' d
-                            LEFT JOIN '. Scope::TABLE .' scope ON d.BehoerdenID = scope.BehoerdenID
-                            LEFT JOIN '. ProcessStatusArchived::TABLE .' a ON a.StandortID = scope.StandortID
+                        FROM '. Organisation::TABLE .' o
+                          LEFT JOIN '. Department::TABLE .' d ON o.OrganisationsID = d.OrganisationsID
+                          LEFT JOIN '. Scope::TABLE .' scope ON d.BehoerdenID = scope.BehoerdenID
+                          LEFT JOIN '. ProcessStatusArchived::TABLE .' a ON scope.StandortID = a.StandortID
                         WHERE
-                          d.`BehoerdenID` = s.`behoerdenid` AND
-                            a.Datum = s.datum AND
-                            a.nicht_erschienen = 0
+                          o.`OrganisationsID` = s.`organisationsid` AND
+                          a.Datum = s.datum AND
+                          a.nicht_erschienen = 0
                 )
             ) as requestscount
 
         FROM '. self::TABLE .' AS s
-        WHERE s.`behoerdenid` = :departmentid AND s.`Datum` BETWEEN :datestart AND :dateend
+        WHERE s.`organisationsid` = :organisationid AND s.`Datum` BETWEEN :datestart AND :dateend
         GROUP BY s.`datum`
         ORDER BY s.`datum` ASC
     ';
@@ -160,68 +172,50 @@ class ExchangeClientdepartment extends Base
     //fast query from statistic table, but statistic is not up-to-date - 2008 - 2011 not available or complete
     const QUERY_SUBJECTS = '
       SELECT
-          d.`BehoerdenID` as subject,
+          o.`OrganisationsID` as subject,
           periodstart,
           periodend,
-          d.`Name` AS description
-      FROM '. Department::TABLE .' AS d
+          o.`Organisationsname` AS description
+      FROM '. Organisation::TABLE .' AS o
           INNER JOIN
             (
               SELECT
-                s.`behoerdenid` as departmentid,
+                s.`organisationsid` AS organisationsid,
                 MIN(s.`datum`) AS periodstart,
                 MAX(s.`datum`) AS periodend
               FROM '. self::TABLE .' s
-              group by departmentid
+              group by organisationsid
             )
-          maxAndminDate ON maxAndminDate.`departmentid` = d.`BehoerdenID`
-      GROUP BY d.`BehoerdenID`
-      ORDER BY d.`BehoerdenID` ASC
+          maxAndminDate ON maxAndminDate.`organisationsid` = o.`OrganisationsID`
+      GROUP BY o.`OrganisationsID`
+      ORDER BY o.`OrganisationsID` ASC
     ';
-    /*
-    const QUERY_SUBJECTS = '
-      SELECT
-          subject,
-          periodstart,
-          periodend,
-          d.`Name` AS description
-      FROM '. Department::TABLE .' AS d
-          INNER JOIN (
-            SELECT
-              s.`behoerdenid` as subject,
-              MIN(a.`Datum`) AS periodstart,
-              MAX(a.`Datum`) AS periodend
-            FROM standort s
-              INNER JOIN buergerarchiv a ON a.StandortID = s.StandortID AND a.Datum <> "0000-00-00"
-            GROUP BY subject
-          ) minmaxjoin ON minmaxjoin.subject = d.BehoerdenID
-    ';
-    */
 
     const QUERY_PERIODLIST_MONTH = '
         SELECT date
-        FROM '. Department::TABLE .' AS d
+        FROM '. Organisation::TABLE .' AS o
             INNER JOIN (
               SELECT
-                behoerdenid,
+                organisationsid,
                 DATE_FORMAT(`datum`,"%Y-%m") AS date
               FROM '. self::TABLE .'
-            ) s ON s.behoerdenid = d.BehoerdenID
-        WHERE d.`BehoerdenID` = :departmentid
+            ) s ON s.organisationsid = o.`OrganisationsID`
+        WHERE o.`OrganisationsID` = :organisationid
         GROUP BY date
         ORDER BY date ASC
     ';
 
     const QUERY_PERIODLIST_YEAR = '
         SELECT date
-        FROM '. Department::TABLE .' AS d
+        FROM '. Organisation::TABLE .' AS o
             INNER JOIN (
               SELECT
-                behoerdenid,
+                organisationsid,
                 DATE_FORMAT(`datum`,"%Y") AS date
               FROM '. self::TABLE .'
-            ) s ON s.behoerdenid = d.BehoerdenID
-        WHERE d.`BehoerdenID` = :departmentid
+              WHERE StandortID <> 0 AND Datum <> "0000-00-00"
+            ) s ON s.organisationsid = o.`OrganisationsID`
+        WHERE o.`OrganisationsID` = :organisationid
         GROUP BY date
         ORDER BY date ASC
     ';

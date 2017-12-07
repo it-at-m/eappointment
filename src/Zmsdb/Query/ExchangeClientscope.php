@@ -11,6 +11,8 @@ class ExchangeClientscope extends Base
 
     const BATABLE = 'buergeranliegen';
 
+    /*
+    // from buergerarchiv
     const QUERY_READ_REPORT = '
       SELECT
           #subjectid
@@ -66,6 +68,75 @@ class ExchangeClientscope extends Base
       GROUP BY a.`Datum`
       ORDER BY a.`datum` ASC
     ';
+    */
+
+    const QUERY_READ_REPORT = '
+      SELECT
+          #subjectid
+          s.`standortid` as subjectid,
+          #date
+          s.`datum` as date,
+          #notification count
+          ( SELECT
+                IFNULL(SUM(n.gesendet), 0)
+            FROM abrechnung n
+            WHERE
+                n.`StandortID` = s.`standortid` AND n.`Datum` = s.`datum`
+          ) as notificationscount,
+          #notfication cost placeholder
+          0 as notificationscost,
+          #clients count
+          ( SELECT
+                SUM(a.AnzahlPersonen)
+            FROM '. ProcessStatusArchived::TABLE .' a
+            WHERE
+                a.`StandortID` = s.`standortid` AND a.`nicht_erschienen` = 0 AND a.Datum = s.datum
+          ) as clientscount,
+          #clients missed
+          ( SELECT
+                IFNULL(COUNT(a.nicht_erschienen), 0)
+            FROM '. ProcessStatusArchived::TABLE .' a
+            WHERE
+                a.`StandortID` = s.`standortid` AND a.`nicht_erschienen` = 1 AND a.Datum = s.datum
+          ) as missed,
+          #clients with appointment
+          ( SELECT
+                count(*)
+            FROM '. ProcessStatusArchived::TABLE .' a
+            WHERE
+                a.`StandortID` = s.`standortid` AND a.Datum = s.datum AND a.nicht_erschienen=0 AND a.mitTermin=1
+          ) as withappointment,
+          #clients missed with appointment
+           ( SELECT
+                COUNT(*)
+            FROM '. ProcessStatusArchived::TABLE .' a
+            WHERE
+                a.`StandortID` = s.`standortid` AND a.Datum = s.datum AND a.nicht_erschienen=1 AND a.mitTermin=1
+          ) as missedwithappointment,
+
+          #requests count
+          (
+            SELECT
+                COUNT(IF(ba.AnliegenID > 0, ba.AnliegenID, null))
+            FROM '. self::BATABLE .' ba
+            WHERE
+                ba.`BuergerarchivID` IN (
+                    SELECT
+                        a.BuergerarchivID
+                    FROM '. Scope::TABLE .' scope
+                        LEFT JOIN '. ProcessStatusArchived::TABLE .' a ON a.StandortID = scope.StandortID
+                    WHERE
+                      scope.`standortid` = s.`standortid` AND
+                        a.Datum = s.datum AND
+                        a.nicht_erschienen = 0
+            )
+        ) as requestscount
+
+      FROM '. self::TABLE .' AS s
+      WHERE s.`standortid` = :scopeid AND s.`Datum` BETWEEN :datestart AND :dateend
+      GROUP BY s.`datum`
+      ORDER BY s.`datum` ASC
+    ';
 
     const QUERY_SUBJECTS = '
       SELECT
@@ -89,17 +160,30 @@ class ExchangeClientscope extends Base
     ';
 
     const QUERY_PERIODLIST_MONTH = '
-        SELECT DISTINCT DATE_FORMAT(`datum`,"%Y-%m") AS date
-        FROM ' . self::TABLE . ' AS s
-        WHERE `standortid` = :scopeid
-        ORDER BY `datum` ASC
+        SELECT date
+        FROM '. Scope::TABLE .' AS scope
+            INNER JOIN (
+              SELECT
+                `StandortID`,
+                DATE_FORMAT(`Datum`,"%Y-%m") AS date
+              FROM '. self::TABLE .'
+            ) s ON scope.`StandortID` = s.`standortid`
+        WHERE scope.`StandortID` = 141
+        GROUP BY date
+        ORDER BY date ASC
     ';
 
     const QUERY_PERIODLIST_YEAR = '
-        SELECT DISTINCT
-            DATE_FORMAT(`datum`,"%Y") AS date
-        FROM ' . self::TABLE . ' AS s
-        WHERE `standortid` = :scopeid
-        ORDER BY `datum` ASC
+        SELECT date
+        FROM '. Scope::TABLE .' AS scope
+            INNER JOIN (
+              SELECT
+                `StandortID`,
+                DATE_FORMAT(`Datum`,"%Y") AS date
+              FROM '. self::TABLE .'
+            ) s ON scope.`StandortID` = s.`standortid`
+        WHERE scope.`StandortID` = 141
+        GROUP BY date
+        ORDER BY date ASC
     ';
 }
