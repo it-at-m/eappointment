@@ -64,13 +64,13 @@ class ExchangeClientscope extends Base
     public function readPeriodList($subjectid, $period = 'month')
     {
         $years = $this->getReader()->fetchAll(
-            constant("\BO\Zmsdb\Query\ExchangeWaitingscope::QUERY_PERIODLIST_YEAR"),
+            constant("\BO\Zmsdb\Query\ExchangeClientscope::QUERY_PERIODLIST_YEAR"),
             [
                 'scopeid' => $subjectid,
             ]
         );
         $months = $this->getReader()->fetchAll(
-            constant("\BO\Zmsdb\Query\ExchangeWaitingscope::QUERY_PERIODLIST_MONTH"),
+            constant("\BO\Zmsdb\Query\ExchangeClientscope::QUERY_PERIODLIST_MONTH"),
             [
                 'scopeid' => $subjectid,
             ]

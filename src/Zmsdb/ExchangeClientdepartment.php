@@ -64,13 +64,13 @@ class ExchangeClientdepartment extends Base
     public function readPeriodList($subjectid, $period = 'month')
     {
         $years = $this->getReader()->fetchAll(
-            constant("\BO\Zmsdb\Query\ExchangeWaitingdepartment::QUERY_PERIODLIST_YEAR"),
+            constant("\BO\Zmsdb\Query\ExchangeClientdepartment::QUERY_PERIODLIST_YEAR"),
             [
                 'departmentid' => $subjectid,
             ]
         );
         $months = $this->getReader()->fetchAll(
-            constant("\BO\Zmsdb\Query\ExchangeWaitingdepartment::QUERY_PERIODLIST_MONTH"),
+            constant("\BO\Zmsdb\Query\ExchangeClientdepartment::QUERY_PERIODLIST_MONTH"),
             [
                 'departmentid' => $subjectid,
             ]
