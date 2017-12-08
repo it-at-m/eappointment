@@ -80,7 +80,7 @@ class Cluster extends Base
         if (! $entity->hasId()) {
             return null;
         }
-        $entity = $this->readResolvedReferences($entity, $resolveReferences - 1);
+        $entity = $this->readResolvedReferences($entity, $resolveReferences);
         return $entity;
     }
 
@@ -96,7 +96,7 @@ class Cluster extends Base
         if (count($result)) {
             foreach ($result as $entity) {
                 if ($entity instanceof Entity && !$clusterList->hasEntity($entity->id)) {
-                    $entity = $this->readResolvedReferences($entity, $resolveReferences - 1);
+                    $entity = $this->readResolvedReferences($entity, $resolveReferences);
                     $clusterList->addEntity($entity);
                 }
             }
