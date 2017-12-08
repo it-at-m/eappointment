@@ -168,7 +168,7 @@ class ExchangeClientscope extends Base
                 DATE_FORMAT(`Datum`,"%Y-%m") AS date
               FROM '. self::TABLE .'
             ) s ON scope.`StandortID` = s.`standortid`
-        WHERE scope.`StandortID` = 141
+        WHERE scope.`StandortID` = :scopeid
         GROUP BY date
         ORDER BY date ASC
     ';
@@ -182,7 +182,7 @@ class ExchangeClientscope extends Base
                 DATE_FORMAT(`Datum`,"%Y") AS date
               FROM '. self::TABLE .'
             ) s ON scope.`StandortID` = s.`standortid`
-        WHERE scope.`StandortID` = 141
+        WHERE scope.`StandortID` = :scopeid
         GROUP BY date
         ORDER BY date ASC
     ';
