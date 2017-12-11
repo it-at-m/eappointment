@@ -14,15 +14,15 @@
         {% block board_title %}Es ist ein Fehler aufgetreten.{% endblock %}
         {% block board_body %}
             <h2>
-                {% trans title %}
+                {{ title|trans }}
             </h2>
             <p>
-                {% trans message %}
+                {{ message|trans }}
             </p>
             {% if showlinks %}
             <div class="form-actions">
                 {% for link, name in showlinks %}
-                	<a class="btn right" href="{{ urlGet(link) }}">{% trans name %}</a>
+                	<a class="btn right" href="{{ urlGet(link) }}">{{ name|trans }}</a>
                 {% endfor %}
             </div>
             {% endif %}

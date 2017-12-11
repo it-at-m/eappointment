@@ -18,9 +18,15 @@ class Overview extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 3])->getEntity();
-        $validator = $request->getAttribute('validator');
-        $selectedDate = $validator->getParameter('date')->isString()->getValue();
-        $selectedDate = ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d');
+        $department = \App::$http->readGetResult('/scope/' . $workstation->scope['id'] . '/department/')->getEntity();
+        $organisation = \App::$http->readGetResult('/department/' .$department->id . '/organisation/')->getEntity();
+
+        $waitingperiod = \App::$http
+          ->readGetResult('/warehouse/waitingscope/' . $workstation->scope['id'] . '/')
+          ->getEntity();
+        $clientperiod = \App::$http
+          ->readGetResult('/warehouse/clientscope/' . $workstation->scope['id'] . '/')
+          ->getEntity();
 
         if (!$workstation->hasId()) {
             return \BO\Slim\Render::redirect(
@@ -35,10 +41,13 @@ class Overview extends BaseController
             $response,
             'page/overview.twig',
             array(
-                'title' => 'Wartestatistik',
-                'menuActive' => 'waitingsnumber',
-                'selectedDate' => $selectedDate,
-                'workstation' => $workstation->getArrayCopy()
+                'title' => 'Statistik',
+                'workstation' => $workstation->getArrayCopy(),
+                'department' => $department,
+                'organisation' => $organisation,
+                'waitingperiod' => $waitingperiod,
+                'clientperiod' => $clientperiod,
+                'isOverview' => 1
             )
         );
     }

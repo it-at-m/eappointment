@@ -24,6 +24,7 @@ abstract class BaseController extends \BO\Slim\Controller
 
     public function __invoke(RequestInterface $request, ResponseInterface $response, array $args)
     {
+        $request = $this->initRequest($request);
         $noCacheResponse = \BO\Slim\Render::withLastModified($response, time(), '0');
         return $this->readResponse($request, $noCacheResponse, $args);
     }
