@@ -1,40 +1,39 @@
 {% extends "layout/main.twig" %}
 {% block content %}
-<div class="counter-view" data-includeurl="{{ includeUrl() }}" data-selected-date="{{ selectedDate }}" data-selected-process="{{ waitingnumber }}" data-selected-time="{{ selectedTime }}">
+<div class="counter-view" data-includeurl="{{ includeUrl() }}">
         <div class="report-index">
-            <h1>Übersicht verfügbarer Statistiken</h1>
+            <h1>{% trans %}Übersicht verfügbarer Statistik{% endtrans %}</h1>
+            <p>{% trans %}Im folgenden werden Links zu den Auswertungen zusammengefasst{% endtrans %}:</p>
+            <h2>{% trans %}Auswertungen{% endtrans %}</h2>
 
-            <p>Im folgenden werden Links zu den Auswertungen zusammengefasst:</p>
-
-            <h2>Auswertungen</h2>
-            <h3>Kundenstatistik</h3>
-            {% embed "block/report/period.twig" %}
+            <h3>{% trans %}Kundenstatistik{% endtrans %}</h3>
+            {% embed "block/report/period.twig" with {"source":"Client", "items": clientperiod} %}
                 {% block breadcrumb %}
                 <ul class="report-period--breadcrumb">
-                    <li><a href="#organisation">Bezirksamt Charlottenburg-Wilmersdorf</a></li>
-                    <li><a href="#department">Bürgeramt</a></li>
+                    <li><a href="{{ urlGet("ReportOrganisationClient", {'organisationId': organisation.id}, {}) }}">{{organisation.name}}</a></li>
+                    <li><a href="{{ urlGet("ReportDepartmentClient", {'departmentId': department.id}, {}) }}">{{department.name}}</a></li>
                     <li>{{workstation.scope.contact.name}} {{workstation.scope.shortName}}</li>
                 </ul>
                 {% endblock %}
             {% endembed %}
 
-            <h3>Dienstleistungsstatistik</h3>
-            {% embed "block/report/period.twig" %}
+            <h3>{% trans %}Dienstleistungsstatistik{% endtrans %}</h3>
+            {% embed "block/report/period.twig" with {"source":"Request", "items": requestperiod} %}
                 {% block breadcrumb %}
                 <ul class="report-period--breadcrumb">
-                    <li><a href="#organisation">Bezirksamt Charlottenburg-Wilmersdorf</a></li>
-                    <li><a href="#department">Bürgeramt</a></li>
+                    <li><a href="{{ urlGet("ReportOrganisationRequest", {'organisationId': organisation.id}, {}) }}">{{organisation.name}}</a></li>
+                    <li><a href="{{ urlGet("ReportDepartmentRequest", {'departmentId': department.id}, {}) }}">{{department.name}}</a></li>
                     <li>{{workstation.scope.contact.name}} {{workstation.scope.shortName}}</li>
                 </ul>
                 {% endblock %}
             {% endembed %}
 
-            <h3>Wartestatistik</h3>
-            {% embed "block/report/period.twig" %}
+            <h3>{% trans %}Wartestatistik{% endtrans %}</h3>
+            {% embed "block/report/period.twig" with {"source":"Waiting", "items": waitingperiod} %}
                 {% block breadcrumb %}
                 <ul class="report-period--breadcrumb">
-                    <li><a href="#organisation">Bezirksamt Charlottenburg-Wilmersdorf</a></li>
-                    <li><a href="#department">Bürgeramt</a></li>
+                    <li><a href="{{ urlGet("ReportOrganisationWaiting", {'organisationId': organisation.id}, {}) }}">{{organisation.name}}</a></li>
+                    <li><a href="{{ urlGet("ReportDepartmentWaiting", {'departmentId': department.id}, {}) }}">{{department.name}}</a></li>
                     <li>{{workstation.scope.contact.name}} {{workstation.scope.shortName}}</li>
                 </ul>
                 {% endblock %}

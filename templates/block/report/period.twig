@@ -1,114 +1,45 @@
 <div class="report-period">
-
     {% block breadcrumb %}
     <ul class="report-period--breadcrumb">
         <li class="report-period--subject">Auswertung</li>
     </ul>
     {% endblock %}
 
+    {% set years = [] %}
+    {% for key, entry in items.data %}
+        {% if entry|first|length == 4 %}
+            {% set years = years|merge([entry|first]) %}
+        {% endif %}
+    {% endfor %}
+
     <table class="report-period--table">
         <tbody>
-            <tr>
-                <td class="report-period--year"><a href="#">2017</a></td>
-                <td><a href="#">Januar</a></td>
-                <td><a href="#">Februar</a></td>
-                <td><a href="#">März</a></td>
-                <td><a href="#">April</a></td>
-                <td><a href="#">Mai</a></td>
-                <td><a href="#">Juni</a></td>
-                <td><a href="#">Juli</a></td>
-                <td><a href="#">August</a></td>
-                <td><a href="#">September</a></td>
-                <td>Oktober</td>
-                <td>November</td>
-                <td>Dezember</td>
-            </tr>
-            <tr>
-                <td class="report-period--year report-period--year-active"><a href="#">2016</a></td>
-                <td><a href="#">Januar</a></td>
-                <td><a href="#">Februar</a></td>
-                <td><a href="#">März</a></td>
-                <td><a href="#">April</a></td>
-                <td><a href="#">Mai</a></td>
-                <td><a href="#">Juni</a></td>
-                <td class="report-period--month-active"><a href="#">Juli</a></td>
-                <td><a href="#">August</a></td>
-                <td><a href="#">September</a></td>
-                <td><a href="#">Oktober</a></td>
-                <td><a href="#">November</a></td>
-                <td><a href="#">Dezember</a></td>
-            </tr>
-            <tr>
-                <td class="report-period--year"><a href="#">2015</a></td>
-                <td>Januar</td>
-                <td>Februar</td>
-                <td>März</td>
-                <td>April</td>
-                <td>Mai</td>
-                <td><a href="#">Juni</a></td>
-                <td><a href="#">Juli</a></td>
-                <td><a href="#">August</a></td>
-                <td><a href="#">September</a></td>
-                <td><a href="#">Oktober</a></td>
-                <td><a href="#">November</a></td>
-                <td><a href="#">Dezember</a></td>
-            </tr>
+            {% for year in years|reverse %}
+                <tr>
+                    <td class="report-period--year"><a href="{{ urlGet("Report%s%s"|format('Scope', source), {'scopeId': workstation.scope.id ,'period': year}, {}) }}">{{ year }}</a></td>
+                    {% for month in 1..12 %}
+                        {% set monthExists = 0 %}
+                        {% set tmpmonth = year ~"-"~ "%02d"|format(month) %}
+                        {% for entry in items.data if monthExists == 0 %}
+                            {% if entry|first|length > 4 and entry|first|date('Y-m') == tmpmonth %}
+                                {% set monthExists = 1 %}
+                            {% endif %}
+                        {% endfor %}
+                        <td>
+                            {% if monthExists %}
+                                <a href="{{ urlGet("Report%s%s"|format('Scope',source), {'scopeId': workstation.scope.id ,'period': tmpmonth}, {}) }}">{{ tmpmonth|localizeddate("full","none",NULL,NULL,"MMMM") }}</a>
+                            {% else %}
+                                {{ tmpmonth|localizeddate("full","none",NULL,NULL,"MMMM") }}
+                            {% endif %}
+                        </td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
         </tbody>
     </table>
-    <!--
-    <ul class="report-period--list">
-        <li class="report-period--year">
-            <h4><a href="#">2017</a></h4>
-            <ul class="report-period--month-list">
-                <li><a href="#">Januar</a></li>
-                <li><a href="#">Februar</a></li>
-                <li><a href="#">März</a></li>
-                <li><a href="#">April</a></li>
-                <li><a href="#">Mai</a></li>
-                <li><a href="#">Juni</a></li>
-                <li><a href="#">Juli</a></li>
-                <li><a href="#">August</a></li>
-                <li><a href="#" class="report-period--month-current">September</a></li>
-                <li><a href="#">Oktober</a></li>
-                <li><a href="#">November</a></li>
-                <li><a href="#">Dezember</a></li>
-            </ul>
-        </li>
-        <li class="report-period--year">
-            <h4><a href="#" class="report-period--year-active">2016</a></h4>
-            <ul class="report-period--month-list">
-                <li><a href="#">Januar</a></li>
-                <li><a href="#">Februar</a></li>
-                <li><a href="#">März</a></li>
-                <li><a href="#">April</a></li>
-                <li><a href="#">Mai</a></li>
-                <li><a href="#">Juni</a></li>
-                <li><a href="#" class="report-period--month-active">Juli</a></li>
-                <li><a href="#">August</a></li>
-                <li><a href="#">September</a></li>
-                <li><a href="#">Oktober</a></li>
-                <li><a href="#">November</a></li>
-                <li><a href="#">Dezember</a></li>
-            </ul>
-        </li>
-        <li class="report-period--year report-period--old">
-            <h4><a href="#">2015</a></h4>
-            <ul class="report-period--month-list">
-                <li><a href="#">Juni</a></li>
-                <li><a href="#">Juli</a></li>
-                <li><a href="#">August</a></li>
-                <li><a href="#">September</a></li>
-                <li><a href="#">Oktober</a></li>
-                <li><a href="#">November</a></li>
-                <li><a href="#">Dezember</a></li>
-            </ul>
-        </li>
-        <li class="report-period--show-all" id="report-period--show-all">
-            <a href="#report-period--show-all">Alle Jahre anzeigen</a>
-        </li>
-    </ul>
-    -->
+    {% if not isOverview %}
     <p class="report-period--show-all" id="report-period--show-all">
         <a href="#report-period--show-all">Alle Jahre anzeigen</a>
     </p>
+    {% endif %}
 </div>
