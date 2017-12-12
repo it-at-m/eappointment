@@ -62,4 +62,37 @@ class Exchange extends Schema\Entity
         unset($entity['period']);
         return $entity;
     }
+
+    public function withCalculatedTotals()
+    {
+        $entity = clone $this;
+        $totals = [];
+        foreach ($this->data as $item) {
+            foreach ($item as $position => $data) {
+                if (is_numeric($data)) {
+                    $totals[$position] += $data;
+                }
+            }
+        }
+        $entity->data[] = $totals;
+        return $entity;
+    }
+
+    public function getJoinedHashData()
+    {
+        $hashData['firstDay'] = $this->firstDay;
+        $hashData['lastDay'] = $this->lastDay;
+        $hashData['period'] = $this->period;
+        $hashData['data'] = array();
+        foreach ($this->dictionary as $entry) {
+            foreach ($this->data as $key => $item) {
+                foreach ($item as $position => $data) {
+                    if ($entry['position'] == $position) {
+                        $hashData['data'][$key][$entry['variable']] = $data;
+                    }
+                }
+            }
+        }
+        return $hashData;
+    }
 }
