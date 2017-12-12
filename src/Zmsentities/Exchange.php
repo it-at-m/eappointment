@@ -63,19 +63,46 @@ class Exchange extends Schema\Entity
         return $entity;
     }
 
-    public function withCalculatedTotals()
+    public function getPositionByName($name)
+    {
+        foreach ($this->dictionary as $entry) {
+            if (isset($entry['variable']) && $entry['variable'] == $name) {
+                return $entry['position'];
+            }
+        }
+        return false;
+    }
+
+    public function withCalculatedTotals(array $keysToCalculate = ['count'], $dateName = 'name')
     {
         $entity = clone $this;
-        $totals = [];
-        foreach ($this->data as $item) {
-            foreach ($item as $position => $data) {
-                if (is_numeric($data)) {
-                    $totals[$position] += $data;
+        $namePosition = $this->getPositionByName($dateName);
+        $totals = array_fill(0, count($entity->data[0]), '');
+        $totals[$namePosition] = 'totals';
+        foreach ($keysToCalculate as $name) {
+            $calculatePosition = $this->getPositionByName($name);
+            foreach ($this->data as $item) {
+                foreach ($item as $position => $data) {
+                    if (is_numeric($data) && $calculatePosition == $position) {
+                        $totals[$position] += $data;
+                    }
                 }
             }
         }
-        $entity->data[] = $totals;
+        $entity->addDataSet($totals);
         return $entity;
+    }
+
+    public function getCalculatedTotals()
+    {
+        foreach (array_reverse($this->data) as $item) {
+            foreach ($item as $data) {
+                if ($data == 'totals') {
+                    return $item;
+                }
+            }
+        }
+        return null;
     }
 
     public function getJoinedHashData()

@@ -16,6 +16,40 @@ class ExchangeTest extends EntityCommonTests
         $this->assertTrue($entity->isValid());
     }
 
+    public function testJoinedHash()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $this->assertEquals('test', $entity->getJoinedHashData()['data'][0]['name']);
+        $this->assertEquals('test2', $entity->getJoinedHashData()['data'][1]['name']);
+        $this->assertEquals('day', $entity->getJoinedHashData()['period']);
+    }
+
+    public function testWithCalculatedTotals()
+    {
+        $now = new \DateTimeImmutable('2016-04-01 11:55:00');
+        $entity = (new $this->entityclass());
+        $entity->setPeriod($now, $now);
+        $entity->addDictionaryEntry('id', 'number');
+        $entity->addDictionaryEntry('date', 'date');
+        $entity->addDictionaryEntry('name', 'string', 'Naming');
+        $entity->addDictionaryEntry('count', 'number', 'value');
+        $entity->addDictionaryEntry('count2', 'number', 'value');
+        $entity->addDataSet([1, '2016-04-01', 'Test', 1, 2]);
+        $entity->addDataSet([2, '2016-04-02', 'Test', 2, 3]);
+        $entity->addDataSet([3, '2016-04-03', 'Test', 4, 5]);
+        $this->assertEquals('totals', $entity->withCalculatedTotals(['count','count2'])->getCalculatedTotals()[2]);
+        $this->assertEquals('7', $entity->withCalculatedTotals(['count','count2'])->getCalculatedTotals()[3]);
+        $this->assertEquals('10', $entity->withCalculatedTotals(['count','count2'])->getCalculatedTotals()[4]);
+        $this->assertEquals(
+            7,
+            $entity->withCalculatedTotals(['count','count2'])->getJoinedHashData()['data'][3]['count']
+        );
+        $this->assertEquals(
+            10,
+            $entity->withCalculatedTotals(['count','count2'])->getJoinedHashData()['data'][3]['count2']
+        );
+    }
+
     public function testPeriod()
     {
         $now = new \DateTimeImmutable('2016-04-01 11:55:00');
