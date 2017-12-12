@@ -11,149 +11,63 @@ class ExchangeClientdepartment extends Base
 
     const BATABLE = 'buergeranliegen';
 
-    // from buergerarchiv slow
-    /*
-    const QUERY_READ_REPORT = '
-        SELECT
-            #subjectid
-            d.BehoerdenID as subjectid,
-
-            #date
-            a.`datum` as date,
-
-            #notification count
-            ( SELECT
-                  IFNULL(SUM(n.gesendet), 0)
-              FROM abrechnung n
-                LEFT JOIN '. Scope::TABLE .' scope ON n.`StandortID` = scope.`StandortID`
-                LEFT JOIN '. Department::TABLE .' d ON scope.`BehoerdenID` = d.`BehoerdenID`
-              WHERE
-                  n.Datum = a.`datum` AND d.`BehoerdenID` = :departmentid
-            ) as notificationscount,
-
-            #notfication cost placeholder
-            0 as notificationscost,
-
-            #clients count
-            (SUM(a.AnzahlPersonen) - SUM(a.`nicht_erschienen`=1)) as clientscount,
-
-            #clients missed
-            IFNULL(SUM(a.`nicht_erschienen`=1), 0) as missed,
-
-            #clients with appointment
-            (SUM(a.`mitTermin`=1) - SUM(a.`nicht_erschienen`=1 AND a.`mitTermin`=1)) as withappointment,
-
-            #clients missed with appointment
-            IFNULL(SUM(a.`nicht_erschienen`=1 AND a.`mitTermin`=1), 0) as missedwithappointment,
-
-            #requests count
-            (
-                SELECT
-                    COUNT(IF(ba.AnliegenID > 0, ba.AnliegenID, null))
-                      FROM '. self::BATABLE .' ba
-                      WHERE
-                            ba.`BuergerarchivID` IN (
-                        SELECT
-                            a2.BuergerarchivID
-                              FROM '. Department::TABLE .' d
-                                    LEFT JOIN '. Scope::TABLE .' scope
-                              ON scope.`BehoerdenID` = d.`BehoerdenID`
-                                      LEFT JOIN '. ProcessStatusArchived::TABLE .' a2
-                              ON a2.`StandortID` = scope.`StandortID`
-                        WHERE
-                                    d.`BehoerdenID` = :departmentid AND
-                            a2.Datum = a.Datum AND
-                            a2.nicht_erschienen = 0
-                    )
-            ) as requestscount
-        FROM '. Department::TABLE .' AS d
-            LEFT JOIN '. Scope::TABLE .' scope ON scope.`BehoerdenID` = d.`BehoerdenID`
-            LEFT JOIN '. ProcessStatusArchived::TABLE .' a ON a.`StandortID` = scope.`StandortID`
-        WHERE d.`BehoerdenID` = :departmentid AND a.`Datum` BETWEEN :datestart AND :dateend
-        GROUP BY a.`Datum`,d.`BehoerdenID`
-        ORDER BY a.`datum` ASC
-    ';
-    */
+    const NOTIFICATIONSTABLE = 'abrechnung';
 
     const QUERY_READ_REPORT = '
-        SELECT
-            #subjectid
-            s.`behoerdenid` as subjectid,
-            #date
-            s.`datum` as date,
-            #notification count
-            ( SELECT
-                  IFNULL(SUM(n.gesendet), 0)
-              FROM abrechnung n
-                LEFT JOIN '. Scope::TABLE .' scope ON n.`StandortID` = scope.`StandortID`
-                LEFT JOIN '. Department::TABLE .' d ON scope.`BehoerdenID` = d.`BehoerdenID`
-              WHERE
-                  d.`BehoerdenID` = s.`behoerdenid` AND n.Datum = s.datum
-            ) as notificationscount,
-            #notfication cost placeholder
-            0 as notificationscost,
-            #clients count
-            ( SELECT
-                SUM(a.AnzahlPersonen)
-              FROM '. Department::TABLE .' d
-                LEFT JOIN '. Scope::TABLE .' scope ON d.BehoerdenID = scope.BehoerdenID
-                LEFT JOIN '. ProcessStatusArchived::TABLE .' a ON a.StandortID = scope.StandortID
-              WHERE
-                d.`BehoerdenID` = s.`behoerdenid` AND a.Datum = s.datum AND a.`nicht_erschienen` = 0
-            ) as clientscount,
+    SELECT
+        s.`behoerdenid` as subjectid,
+        DATE_FORMAT(s.`datum`, :groupby) as date,
+        ANY_VALUE(notification.total) as notificationscount,
+        0 as notificationscost,
+        ANY_VALUE(clientscount.total) as clientscount,
+        ANY_VALUE(clientscount.missed) as missed,
+        ANY_VALUE(clientscount.withappointment) as withappointment,
+        ANY_VALUE(clientscount.missedwithappointment) as missedwithappointment,
+        ANY_VALUE(requestscount.total) as requestcount
 
-            #clients missed
-            ( SELECT
-                IFNULL(COUNT(a.nicht_erschienen), 0)
-              FROM '. Department::TABLE .' d
-                LEFT JOIN '. Scope::TABLE .' scope ON d.BehoerdenID = scope.BehoerdenID
-                LEFT JOIN '. ProcessStatusArchived::TABLE .' a ON a.StandortID = scope.StandortID
-              WHERE
-                d.`BehoerdenID` = s.`behoerdenid` AND a.Datum = s.datum AND a.`nicht_erschienen` = 1
-          ) as missed,
+    FROM '. self::TABLE .' AS s
+        LEFT JOIN (
+          SELECT
+            DATE_FORMAT(n.`Datum`, :groupby) as date,
+            IFNULL(SUM(n.gesendet), 0) as total
+          FROM '. Department::TABLE .' d
+              LEFT JOIN '. Scope::TABLE .' scope ON scope.`BehoerdenID` = d.`BehoerdenID`
+              LEFT JOIN abrechnung n ON n.`StandortID` = scope.`StandortID`
+          WHERE d.`BehoerdenID` = :departmentid AND n.`Datum` BETWEEN :datestart AND :dateend
+          GROUP BY date
+		) as notification ON notification.date =  DATE_FORMAT(s.`datum`, :groupby)
 
-            #clients with appointment
-            ( SELECT
-                count(*)
-              FROM '. Department::TABLE .' d
-                LEFT JOIN '. Scope::TABLE .' scope ON d.BehoerdenID = scope.BehoerdenID
-                LEFT JOIN '. ProcessStatusArchived::TABLE .' a ON a.StandortID = scope.StandortID
-              WHERE
-                  d.`BehoerdenID` = s.`behoerdenid` AND a.Datum = s.datum AND a.nicht_erschienen=0 AND a.mitTermin=1
-          ) as withappointment,
+        LEFT JOIN (
+          SELECT
+            DATE_FORMAT(a.`Datum`, :groupby) as date,
+                SUM(IF(a.`nicht_erschienen`=0,a.AnzahlPersonen,0)) as total,
+                SUM(IF(a.`nicht_erschienen`=1,a.AnzahlPersonen,0)) as missed,
+                SUM(IF(a.`nicht_erschienen`=0 AND a.mitTermin=1,a.AnzahlPersonen,0)) as withappointment,
+                SUM(IF(a.`nicht_erschienen`=1 AND a.mitTermin=1,a.AnzahlPersonen,0)) as missedwithappointment
+            FROM '. Department::TABLE .' d
+                LEFT JOIN '. Scope::TABLE .' scope ON scope.`BehoerdenID` = d.`BehoerdenID`
+                LEFT JOIN '. ProcessStatusArchived::TABLE .' a ON a.`StandortID` = scope.`StandortID`
+            WHERE d.`BehoerdenID` = :departmentid AND a.`Datum` BETWEEN :datestart AND :dateend
+              GROUP BY date
+          ) as clientscount ON clientscount.date = DATE_FORMAT(s.`datum`, :groupby)
 
-            #clients missed with appointment
-            ( SELECT
-                COUNT(*)
-              FROM '. Department::TABLE .' d
-                LEFT JOIN '. Scope::TABLE .' scope ON d.BehoerdenID = scope.BehoerdenID
-                LEFT JOIN '. ProcessStatusArchived::TABLE .' a ON a.StandortID = scope.StandortID
-              WHERE
-                d.`BehoerdenID` = s.`behoerdenid` AND a.Datum = s.datum AND a.nicht_erschienen=1 AND a.mitTermin=1
-          ) as missedwithappointment,
-      #requests count
-          (
-                SELECT
-                    COUNT(IF(ba.AnliegenID > 0, ba.AnliegenID, null))
-                FROM '. self::BATABLE .' ba
+          LEFT JOIN (
+            SELECT
+              DATE_FORMAT(a.`Datum`, :groupby) as date,
+                COUNT(IF(ba.AnliegenID > 0, ba.AnliegenID, null)) as total
+                FROM '. Department::TABLE .' as d
+                    LEFT JOIN '. Scope::TABLE .' as scope ON d.`BehoerdenID` = scope.`BehoerdenID`
+                    LEFT JOIN '. ProcessStatusArchived::TABLE .' as a ON scope.`StandortID` = a.`StandortID`
+                    LEFT JOIN '. self::BATABLE .' as ba ON a.BuergerarchivID = ba.BuergerarchivID
                 WHERE
-                    ba.`BuergerarchivID` IN (
-                        SELECT
-                            a.BuergerarchivID
-                        FROM '. Department::TABLE .' d
-                            LEFT JOIN '. Scope::TABLE .' scope ON d.BehoerdenID = scope.BehoerdenID
-                            LEFT JOIN '. ProcessStatusArchived::TABLE .' a ON a.StandortID = scope.StandortID
-                        WHERE
-                          d.`BehoerdenID` = s.`behoerdenid` AND
-                            a.Datum = s.datum AND
-                            a.nicht_erschienen = 0
-                )
-            ) as requestscount
+                  d.`BehoerdenID` = :departmentid AND
+                  a.nicht_erschienen=0 AND
+                  a.`Datum` BETWEEN :datestart AND :dateend
+            GROUP BY date
+          ) as requestscount ON requestscount.date = DATE_FORMAT(s.`datum`, :groupby)
 
-        FROM '. self::TABLE .' AS s
-        WHERE s.`behoerdenid` = :departmentid AND s.`Datum` BETWEEN :datestart AND :dateend
-        GROUP BY s.`datum`
-        ORDER BY s.`datum` ASC
+    WHERE s.`behoerdenid` = :departmentid AND s.`datum` BETWEEN :datestart AND :dateend
+    GROUP BY DATE_FORMAT(s.`datum`, :groupby)
     ';
 
 
@@ -178,25 +92,6 @@ class ExchangeClientdepartment extends Base
       GROUP BY d.`BehoerdenID`
       ORDER BY d.`BehoerdenID` ASC
     ';
-    /*
-    const QUERY_SUBJECTS = '
-      SELECT
-          subject,
-          periodstart,
-          periodend,
-          d.`Name` AS description
-      FROM '. Department::TABLE .' AS d
-          INNER JOIN (
-            SELECT
-              s.`behoerdenid` as subject,
-              MIN(a.`Datum`) AS periodstart,
-              MAX(a.`Datum`) AS periodend
-            FROM standort s
-              INNER JOIN buergerarchiv a ON a.StandortID = s.StandortID AND a.Datum <> "0000-00-00"
-            GROUP BY subject
-          ) minmaxjoin ON minmaxjoin.subject = d.BehoerdenID
-    ';
-    */
 
     const QUERY_PERIODLIST_MONTH = '
         SELECT date
