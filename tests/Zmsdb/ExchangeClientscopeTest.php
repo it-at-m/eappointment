@@ -11,7 +11,7 @@ class ExchangeClientscopeTest extends Base
     public function testBasic()
     {
         $query = new Query();
-        $entity = $query->readEntity(141, new DateTime('2016-04-01'), new DateTime('2016-04-01'));
+        $entity = $query->readEntity(141, new DateTime('2016-04-01'), new DateTime('2016-04-30'), 'day');
         $this->assertEntity("\\BO\\Zmsentities\\Exchange", $entity);
         $this->assertEquals(1, count($entity->data));
         $this->assertEquals(84, $entity->data[0][4]); // clients COUNT

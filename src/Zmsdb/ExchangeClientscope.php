@@ -6,16 +6,23 @@ use \BO\Zmsentities\Exchange;
 
 class ExchangeClientscope extends Base
 {
+    protected $groupBy = array(
+        'month' => '%Y-%m',
+        'day' => '%Y-%m-%d',
+        'hour' => '%H-%i'
+    );
+
     public function readEntity(
         $subjectid,
         \DateTimeInterface $datestart,
-        \DateTimeInterface $dateend
+        \DateTimeInterface $dateend,
+        $period = 'day'
     ) {
         $config = (new Config)->readEntity();
         $costs = $config->getNotificationPreferences()['costs'];
 
         $entity = new Exchange();
-        $entity->setPeriod($datestart, $dateend);
+        $entity->setPeriod($datestart, $dateend, $period);
         $entity->addDictionaryEntry('subjectid', 'string', 'ID of a scope', 'scope.id');
         $entity->addDictionaryEntry('date');
         $entity->addDictionaryEntry('notificationscount');
@@ -36,6 +43,7 @@ class ExchangeClientscope extends Base
                         'scopeid' => $subjectid,
                         'datestart' => $datestart->format('Y-m-d'),
                         'dateend' => $dateend->format('Y-m-d'),
+                        'groupby' => $this->groupBy[$period]
                     ]
                 );
             foreach ($raw as $entry) {
