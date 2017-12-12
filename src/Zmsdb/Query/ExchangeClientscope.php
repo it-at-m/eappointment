@@ -11,131 +11,56 @@ class ExchangeClientscope extends Base
 
     const BATABLE = 'buergeranliegen';
 
-    /*
-    // from buergerarchiv
-    const QUERY_READ_REPORT = '
-      SELECT
-          #subjectid
-          a.`standortid` as subjectid,
-
-          #date
-          a.`datum` as date,
-
-          #notification count
-          ( SELECT
-                IFNULL(SUM(n.gesendet), 0)
-            FROM abrechnung n
-            WHERE
-                n.`StandortID` = a.`StandortID` AND n.`Datum` = a.`datum`
-          ) as notificationscount,
-
-          #notfication cost placeholder
-          0 as notificationscost,
-
-          #clients count
-          (SUM(a.AnzahlPersonen) - SUM(a.`nicht_erschienen`=1)) as clientscount,
-
-          #clients missed
-          IFNULL(SUM(a.`nicht_erschienen`=1), 0) as missed,
-
-          #clients with appointment
-          (SUM(a.`mitTermin`=1) - SUM(a.`nicht_erschienen`=1 AND a.`mitTermin`=1)) as withappointment,
-
-          #clients missed with appointment
-          IFNULL(SUM(a.`nicht_erschienen`=1 AND a.`mitTermin`=1), 0) as missedwithappointment,
-
-          #requests count
-          (
-              SELECT
-                  COUNT(IF(ba.AnliegenID > 0, ba.AnliegenID, null))
-              FROM '. self::BATABLE .' ba
-              WHERE
-                  ba.`BuergerarchivID` IN (
-                  SELECT
-                      a2.BuergerarchivID
-                  FROM '. Scope::TABLE .' s
-                      LEFT JOIN '. ProcessStatusArchived::TABLE .' a2 ON a2.`StandortID` = s.`StandortID`
-                  WHERE
-                      a2.`StandortID` = a.`standortid` AND
-                      a2.`Datum` = a.`datum` AND
-                      a2.nicht_erschienen = 0
-            )
-          ) as requestscount
-
-      FROM ' . ProcessStatusArchived::TABLE .' AS a
-          LEFT JOIN '. Scope::TABLE .' AS s ON a.`StandortID` = s.`StandortID`
-      WHERE a.`StandortID` = :scopeid AND a.`Datum` BETWEEN :datestart AND :dateend
-      GROUP BY a.`Datum`
-      ORDER BY a.`datum` ASC
-    ';
-    */
+    const NOTIFICATIONSTABLE = 'abrechnung';
 
     const QUERY_READ_REPORT = '
-      SELECT
-          #subjectid
-          s.`standortid` as subjectid,
-          #date
-          s.`datum` as date,
-          #notification count
-          ( SELECT
-                IFNULL(SUM(n.gesendet), 0)
-            FROM abrechnung n
-            WHERE
-                n.`StandortID` = s.`standortid` AND n.`Datum` = s.`datum`
-          ) as notificationscount,
-          #notfication cost placeholder
-          0 as notificationscost,
-          #clients count
-          ( SELECT
-                SUM(a.AnzahlPersonen)
-            FROM '. ProcessStatusArchived::TABLE .' a
-            WHERE
-                a.`StandortID` = s.`standortid` AND a.`nicht_erschienen` = 0 AND a.Datum = s.datum
-          ) as clientscount,
-          #clients missed
-          ( SELECT
-                IFNULL(COUNT(a.nicht_erschienen), 0)
-            FROM '. ProcessStatusArchived::TABLE .' a
-            WHERE
-                a.`StandortID` = s.`standortid` AND a.`nicht_erschienen` = 1 AND a.Datum = s.datum
-          ) as missed,
-          #clients with appointment
-          ( SELECT
-                count(*)
-            FROM '. ProcessStatusArchived::TABLE .' a
-            WHERE
-                a.`StandortID` = s.`standortid` AND a.Datum = s.datum AND a.nicht_erschienen=0 AND a.mitTermin=1
-          ) as withappointment,
-          #clients missed with appointment
-           ( SELECT
-                COUNT(*)
-            FROM '. ProcessStatusArchived::TABLE .' a
-            WHERE
-                a.`StandortID` = s.`standortid` AND a.Datum = s.datum AND a.nicht_erschienen=1 AND a.mitTermin=1
-          ) as missedwithappointment,
+    SELECT
+        #subjectid
+        s.`standortid` as subjectid,
+        #date
+        DATE_FORMAT(s.`datum`, :groupby) as date,
+        ANY_VALUE(notification.total) as notificationscount,
+        0 as notificationscost,
+        ANY_VALUE(clientscount.total) as clientscount,
+        ANY_VALUE(clientscount.missed) as missed,
+        ANY_VALUE(clientscount.withappointment) as withappointment,
+        ANY_VALUE(clientscount.missedwithappointment) as missedwithappointment,
+        ANY_VALUE(requestscount.total) as requestcount
 
-          #requests count
-          (
+    FROM '. self::TABLE .' AS s
+        LEFT JOIN (
+          SELECT
+            DATE_FORMAT(`Datum`, :groupby) as date,
+            IFNULL(SUM(gesendet), 0) as total
+          FROM '. self::NOTIFICATIONSTABLE .'
+          WHERE `StandortID` = :scopeid AND `Datum` BETWEEN :datestart AND :dateend
+          GROUP BY date
+        ) as notification ON notification.date =  DATE_FORMAT(s.`datum`, :groupby)
+
+        LEFT JOIN (
+          SELECT
+            DATE_FORMAT(`Datum`, :groupby) as date,
+                SUM(IF(`nicht_erschienen`=0,AnzahlPersonen,0)) as total,
+                SUM(IF(`nicht_erschienen`=1,AnzahlPersonen,0)) as missed,
+                SUM(IF(`nicht_erschienen`=0 AND mitTermin=1,AnzahlPersonen,0)) as withappointment,
+                SUM(IF(`nicht_erschienen`=1 AND mitTermin=1,AnzahlPersonen,0)) as missedwithappointment
+            FROM '. ProcessStatusArchived::TABLE .'
+            WHERE `StandortID` = :scopeid AND `Datum` BETWEEN :datestart AND :dateend
+              GROUP BY date
+          ) as clientscount ON clientscount.date = DATE_FORMAT(s.`datum`, :groupby)
+
+          LEFT JOIN (
             SELECT
-                COUNT(IF(ba.AnliegenID > 0, ba.AnliegenID, null))
-            FROM '. self::BATABLE .' ba
-            WHERE
-                ba.`BuergerarchivID` IN (
-                    SELECT
-                        a.BuergerarchivID
-                    FROM '. Scope::TABLE .' scope
-                        LEFT JOIN '. ProcessStatusArchived::TABLE .' a ON a.StandortID = scope.StandortID
-                    WHERE
-                      scope.`standortid` = s.`standortid` AND
-                        a.Datum = s.datum AND
-                        a.nicht_erschienen = 0
-            )
-        ) as requestscount
+              DATE_FORMAT(`Datum`, :groupby) as date,
+                COUNT(IF(ba.AnliegenID > 0, ba.AnliegenID, null)) as total
+            FROM '. ProcessStatusArchived::TABLE .' a
+              LEFT JOIN '. self::BATABLE .' as ba ON a.BuergerarchivID = ba.BuergerarchivID
+            WHERE `StandortID` = :scopeid AND `Datum` BETWEEN :datestart AND :dateend AND nicht_erschienen=0
+            GROUP BY date
+          ) as requestscount ON requestscount.date = DATE_FORMAT(s.`datum`, :groupby)
 
-      FROM '. self::TABLE .' AS s
-      WHERE s.`standortid` = :scopeid AND s.`Datum` BETWEEN :datestart AND :dateend
-      GROUP BY s.`datum`
-      ORDER BY s.`datum` ASC
+    WHERE s.`standortid` = :scopeid AND s.`Datum` BETWEEN :datestart AND :dateend
+    GROUP BY DATE_FORMAT(s.`datum`, :groupby)
     ';
 
     const QUERY_SUBJECTS = '
