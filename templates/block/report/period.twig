@@ -11,12 +11,16 @@
             {% set years = years|merge([entry|first]) %}
         {% endif %}
     {% endfor %}
-
+    {% set last3Year = years|reverse|slice(0,3) %}
     <table class="report-period--table">
         <tbody>
             {% for year in years|reverse %}
-                <tr>
-                    <td class="report-period--year"><a href="{{ urlGet("Report%s%s"|format('Scope', source), {'scopeId': workstation.scope.id ,'period': year}, {}) }}">{{ year }}</a></td>
+                {% set display = 'hide' %}
+                {% if year in last3Year %}{% set display = 'show' %}{% endif %}
+                <tr class="{{ display }}">
+                    <td class="report-period--year{% if year == selected|date('Y') or year == selected %} report-period--year-active{% endif %}">
+                        <a href="{{ urlGet("Report%s"|format(source.entity), {'id': source.id ,'period': year}, {}) }}">{{ year }}</a>
+                    </td>
                     {% for month in 1..12 %}
                         {% set monthExists = 0 %}
                         {% set tmpmonth = year ~"-"~ "%02d"|format(month) %}
@@ -25,9 +29,9 @@
                                 {% set monthExists = 1 %}
                             {% endif %}
                         {% endfor %}
-                        <td>
+                        <td class="{% if tmpmonth == selected|date('Y-m') and monthExists %}report-period--month-active{% endif %}">
                             {% if monthExists %}
-                                <a href="{{ urlGet("Report%s%s"|format('Scope',source), {'scopeId': workstation.scope.id ,'period': tmpmonth}, {}) }}">{{ tmpmonth|localizeddate("full","none",NULL,NULL,"MMMM") }}</a>
+                                <a href="{{ urlGet("Report%s"|format(source.entity), {'id': source.id ,'period': tmpmonth}, {}) }}">{{ tmpmonth|localizeddate("full","none",NULL,NULL,"MMMM") }}</a>
                             {% else %}
                                 {{ tmpmonth|localizeddate("full","none",NULL,NULL,"MMMM") }}
                             {% endif %}
@@ -37,9 +41,9 @@
             {% endfor %}
         </tbody>
     </table>
-    {% if not isOverview %}
+    {% if showAll %}
     <p class="report-period--show-all" id="report-period--show-all">
-        <a href="#report-period--show-all">Alle Jahre anzeigen</a>
+        <a href="#">Alle Jahre anzeigen</a>
     </p>
     {% endif %}
 </div>

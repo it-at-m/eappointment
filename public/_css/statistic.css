@@ -143,7 +143,7 @@
  * 2. Remove any margins and paddings that might affect the grid system.
  * 3. Apply a negative `margin-left` to negate the columns’ gutters.
  */
-.grid, #main-header, #main-body, .form--horizontal .form-group, #main-header form .form-group, .loginform form .form-group, .form--horizontal .form-group--nomaxwidth .controls, .form-group--nomaxwidth .form--horizontal .controls, #main-header form .form-group--nomaxwidth .controls, .form-group--nomaxwidth #main-header form .controls, .loginform form .form-group--nomaxwidth .controls, .form-group--nomaxwidth .loginform form .controls, .list-tablelist_row, .lineup, .lineup--statistic, .lineup--login, .selectdate-form .split {
+.grid, #main-header, #main-body, .form--horizontal .form-group, #main-header form .form-group, .loginform form .form-group, .form--horizontal .form-group--nomaxwidth .controls, .form-group--nomaxwidth .form--horizontal .controls, #main-header form .form-group--nomaxwidth .controls, .form-group--nomaxwidth #main-header form .controls, .loginform form .form-group--nomaxwidth .controls, .form-group--nomaxwidth .loginform form .controls, .list-tablelist_row, .lineup, .lineup--statistic, .lineup--login {
   list-style: none;
   /* [1] */
   margin: 0;
@@ -171,8 +171,7 @@
 .list-tablelist_row,
 .lineup,
 .lineup--statistic,
-.lineup--login,
-.selectdate-form .split {
+.lineup--login {
   word-spacing: -0.43em; }
 
 /**
@@ -198,7 +197,7 @@ select,
 .input--size-4,
 .input--size-3,
 .input--size-2,
-.input--size-1, .list-tablelist_cell, .lineup .lineup_actor, .lineup--statistic .lineup_actor--left, .lineup--statistic .lineup_actor--right, .lineup--login .lineup_actor--left, .lineup--login .lineup_actor--right, .selectdate-form .split .split_left, .selectdate-form .split .split_right {
+.input--size-1, .list-tablelist_cell, .lineup .lineup_actor, .lineup--statistic .lineup_actor--left, .lineup--statistic .lineup_actor--right, .lineup--login .lineup_actor--left, .lineup--login .lineup_actor--right {
   display: inline-block;
   /* [1] */
   padding-left: 1.429em;
@@ -255,7 +254,7 @@ select,
   .input--size-2, #main-body >
   .input--size-2, .grid--rev >
   .input--size-1, #main-body >
-  .input--size-1, .grid--rev > .list-tablelist_cell, #main-body > .list-tablelist_cell, .lineup .grid--rev > .lineup_actor, .lineup #main-body > .lineup_actor, .lineup--statistic .grid--rev > .lineup_actor--left, .lineup--statistic #main-body > .lineup_actor--left, .lineup--statistic .grid--rev > .lineup_actor--right, .lineup--statistic #main-body > .lineup_actor--right, .lineup--login .grid--rev > .lineup_actor--left, .lineup--login #main-body > .lineup_actor--left, .lineup--login .grid--rev > .lineup_actor--right, .lineup--login #main-body > .lineup_actor--right, .selectdate-form .split .grid--rev > .split_left, .selectdate-form .split #main-body > .split_left, .selectdate-form .split .grid--rev > .split_right, .selectdate-form .split #main-body > .split_right {
+  .input--size-1, .grid--rev > .list-tablelist_cell, #main-body > .list-tablelist_cell, .lineup .grid--rev > .lineup_actor, .lineup #main-body > .lineup_actor, .lineup--statistic .grid--rev > .lineup_actor--left, .lineup--statistic #main-body > .lineup_actor--left, .lineup--statistic .grid--rev > .lineup_actor--right, .lineup--statistic #main-body > .lineup_actor--right, .lineup--login .grid--rev > .lineup_actor--left, .lineup--login #main-body > .lineup_actor--left, .lineup--login .grid--rev > .lineup_actor--right, .lineup--login #main-body > .lineup_actor--right {
     direction: ltr;
     text-align: left; }
 
@@ -313,7 +312,7 @@ select,
   .input--size-2, .grid--full >
   .input--size-1, #main-header >
   .input--size-1, .list-tablelist_row >
-  .input--size-1, .grid--full > .list-tablelist_cell, #main-header > .list-tablelist_cell, .list-tablelist_row > .list-tablelist_cell, .lineup .grid--full > .lineup_actor, .lineup #main-header > .lineup_actor, .lineup .list-tablelist_row > .lineup_actor, .lineup--statistic .grid--full > .lineup_actor--left, .lineup--statistic #main-header > .lineup_actor--left, .lineup--statistic .list-tablelist_row > .lineup_actor--left, .lineup--statistic .grid--full > .lineup_actor--right, .lineup--statistic #main-header > .lineup_actor--right, .lineup--statistic .list-tablelist_row > .lineup_actor--right, .lineup--login .grid--full > .lineup_actor--left, .lineup--login #main-header > .lineup_actor--left, .lineup--login .list-tablelist_row > .lineup_actor--left, .lineup--login .grid--full > .lineup_actor--right, .lineup--login #main-header > .lineup_actor--right, .lineup--login .list-tablelist_row > .lineup_actor--right, .selectdate-form .split .grid--full > .split_left, .selectdate-form .split #main-header > .split_left, .selectdate-form .split .list-tablelist_row > .split_left, .selectdate-form .split .grid--full > .split_right, .selectdate-form .split #main-header > .split_right, .selectdate-form .split .list-tablelist_row > .split_right {
+  .input--size-1, .grid--full > .list-tablelist_cell, #main-header > .list-tablelist_cell, .list-tablelist_row > .list-tablelist_cell, .lineup .grid--full > .lineup_actor, .lineup #main-header > .lineup_actor, .lineup .list-tablelist_row > .lineup_actor, .lineup--statistic .grid--full > .lineup_actor--left, .lineup--statistic #main-header > .lineup_actor--left, .lineup--statistic .list-tablelist_row > .lineup_actor--left, .lineup--statistic .grid--full > .lineup_actor--right, .lineup--statistic #main-header > .lineup_actor--right, .lineup--statistic .list-tablelist_row > .lineup_actor--right, .lineup--login .grid--full > .lineup_actor--left, .lineup--login #main-header > .lineup_actor--left, .lineup--login .list-tablelist_row > .lineup_actor--left, .lineup--login .grid--full > .lineup_actor--right, .lineup--login #main-header > .lineup_actor--right, .lineup--login .list-tablelist_row > .lineup_actor--right {
     padding-left: 0; }
 
 /**
@@ -337,7 +336,7 @@ select,
   .input--size-4, .grid--right >
   .input--size-3, .grid--right >
   .input--size-2, .grid--right >
-  .input--size-1, .grid--right > .list-tablelist_cell, .lineup .grid--right > .lineup_actor, .lineup--statistic .grid--right > .lineup_actor--left, .lineup--statistic .grid--right > .lineup_actor--right, .lineup--login .grid--right > .lineup_actor--left, .lineup--login .grid--right > .lineup_actor--right, .selectdate-form .split .grid--right > .split_left, .selectdate-form .split .grid--right > .split_right {
+  .input--size-1, .grid--right > .list-tablelist_cell, .lineup .grid--right > .lineup_actor, .lineup--statistic .grid--right > .lineup_actor--left, .lineup--statistic .grid--right > .lineup_actor--right, .lineup--login .grid--right > .lineup_actor--left, .lineup--login .grid--right > .lineup_actor--right {
     text-align: left; }
 
 /**
@@ -362,7 +361,7 @@ select,
   .input--size-4, .grid--center >
   .input--size-3, .grid--center >
   .input--size-2, .grid--center >
-  .input--size-1, .grid--center > .list-tablelist_cell, .lineup .grid--center > .lineup_actor, .lineup--statistic .grid--center > .lineup_actor--left, .lineup--statistic .grid--center > .lineup_actor--right, .lineup--login .grid--center > .lineup_actor--left, .lineup--login .grid--center > .lineup_actor--right, .selectdate-form .split .grid--center > .split_left, .selectdate-form .split .grid--center > .split_right {
+  .input--size-1, .grid--center > .list-tablelist_cell, .lineup .grid--center > .lineup_actor, .lineup--statistic .grid--center > .lineup_actor--left, .lineup--statistic .grid--center > .lineup_actor--right, .lineup--login .grid--center > .lineup_actor--left, .lineup--login .grid--center > .lineup_actor--right {
     text-align: left; }
 
 /**
@@ -385,7 +384,7 @@ select, .grid--middle >
 .input--size-4, .grid--middle >
 .input--size-3, .grid--middle >
 .input--size-2, .grid--middle >
-.input--size-1, .grid--middle > .list-tablelist_cell, .lineup .grid--middle > .lineup_actor, .lineup--statistic .grid--middle > .lineup_actor--left, .lineup--statistic .grid--middle > .lineup_actor--right, .lineup--login .grid--middle > .lineup_actor--left, .lineup--login .grid--middle > .lineup_actor--right, .selectdate-form .split .grid--middle > .split_left, .selectdate-form .split .grid--middle > .split_right {
+.input--size-1, .grid--middle > .list-tablelist_cell, .lineup .grid--middle > .lineup_actor, .lineup--statistic .grid--middle > .lineup_actor--left, .lineup--statistic .grid--middle > .lineup_actor--right, .lineup--login .grid--middle > .lineup_actor--left, .lineup--login .grid--middle > .lineup_actor--right {
   vertical-align: middle; }
 
 .grid--bottom > .grid__item, #main-header .grid--bottom > .left, #main-header .grid--bottom > .middle, #main-header .grid--bottom > .right, #main-body .grid--bottom > #sidebar, #main-body .grid--bottom > #mainbar, .form--horizontal .form-group.grid--bottom > label, #main-header form .form-group.grid--bottom > label, .loginform form .form-group.grid--bottom > label, .form--horizontal .form-group--nomaxwidth .controls.grid--bottom > label, .form-group--nomaxwidth .form--horizontal .controls.grid--bottom > label, #main-header form .form-group--nomaxwidth .controls.grid--bottom > label, .form-group--nomaxwidth #main-header form .controls.grid--bottom > label, .loginform form .form-group--nomaxwidth .controls.grid--bottom > label, .form-group--nomaxwidth .loginform form .controls.grid--bottom > label,
@@ -404,7 +403,7 @@ select, .grid--bottom >
 .input--size-4, .grid--bottom >
 .input--size-3, .grid--bottom >
 .input--size-2, .grid--bottom >
-.input--size-1, .grid--bottom > .list-tablelist_cell, .lineup .grid--bottom > .lineup_actor, .lineup--statistic .grid--bottom > .lineup_actor--left, .lineup--statistic .grid--bottom > .lineup_actor--right, .lineup--login .grid--bottom > .lineup_actor--left, .lineup--login .grid--bottom > .lineup_actor--right, .selectdate-form .split .grid--bottom > .split_left, .selectdate-form .split .grid--bottom > .split_right {
+.input--size-1, .grid--bottom > .list-tablelist_cell, .lineup .grid--bottom > .lineup_actor, .lineup--statistic .grid--bottom > .lineup_actor--left, .lineup--statistic .grid--bottom > .lineup_actor--right, .lineup--login .grid--bottom > .lineup_actor--left, .lineup--login .grid--bottom > .lineup_actor--right {
   vertical-align: bottom; }
 
 /**
@@ -428,7 +427,7 @@ select, .grid--bottom >
   .input--size-4, .grid--narrow >
   .input--size-3, .grid--narrow >
   .input--size-2, .grid--narrow >
-  .input--size-1, .grid--narrow > .list-tablelist_cell, .lineup .grid--narrow > .lineup_actor, .lineup--statistic .grid--narrow > .lineup_actor--left, .lineup--statistic .grid--narrow > .lineup_actor--right, .lineup--login .grid--narrow > .lineup_actor--left, .lineup--login .grid--narrow > .lineup_actor--right, .selectdate-form .split .grid--narrow > .split_left, .selectdate-form .split .grid--narrow > .split_right {
+  .input--size-1, .grid--narrow > .list-tablelist_cell, .lineup .grid--narrow > .lineup_actor, .lineup--statistic .grid--narrow > .lineup_actor--left, .lineup--statistic .grid--narrow > .lineup_actor--right, .lineup--login .grid--narrow > .lineup_actor--left, .lineup--login .grid--narrow > .lineup_actor--right {
     padding-left: 0.7145em; }
 
 /**
@@ -452,7 +451,7 @@ select, .grid--bottom >
   .input--size-4, .grid--wide >
   .input--size-3, .grid--wide >
   .input--size-2, .grid--wide >
-  .input--size-1, .grid--wide > .list-tablelist_cell, .lineup .grid--wide > .lineup_actor, .lineup--statistic .grid--wide > .lineup_actor--left, .lineup--statistic .grid--wide > .lineup_actor--right, .lineup--login .grid--wide > .lineup_actor--left, .lineup--login .grid--wide > .lineup_actor--right, .selectdate-form .split .grid--wide > .split_left, .selectdate-form .split .grid--wide > .split_right {
+  .input--size-1, .grid--wide > .list-tablelist_cell, .lineup .grid--wide > .lineup_actor, .lineup--statistic .grid--wide > .lineup_actor--left, .lineup--statistic .grid--wide > .lineup_actor--right, .lineup--login .grid--wide > .lineup_actor--left, .lineup--login .grid--wide > .lineup_actor--right {
     padding-left: 2.858em; }
 
 /*------------------------------------*    $WIDTHS
@@ -558,10 +557,10 @@ select,
 .one-twelfth, .input--size-1 {
   width: 8.333%; }
 
-.five-twelfths, .input--size-5, .selectdate-form .split .split_left {
+.five-twelfths, .input--size-5 {
   width: 41.666%; }
 
-.seven-twelfths, .input--size-7, .selectdate-form .split .split_right {
+.seven-twelfths, .input--size-7 {
   width: 58.333%; }
 
 .eleven-twelfths, .input--size-11 {
@@ -586,7 +585,7 @@ select,
   .input--size-8,
   .input--size-7,
   .input--size-6,
-  .input--size-5, .list-tablelist_cell, .lineup--statistic .lineup_actor--left, .lineup--statistic .lineup_actor--right, .lineup--login .lineup_actor--left, .lineup--login .lineup_actor--right, .selectdate-form .split .split_left, .selectdate-form .split .split_right {
+  .input--size-5, .list-tablelist_cell, .lineup--statistic .lineup_actor--left, .lineup--statistic .lineup_actor--right, .lineup--login .lineup_actor--left, .lineup--login .lineup_actor--right {
     width: 100%; }
   /**
      * Halves
@@ -1891,7 +1890,7 @@ html {
 /**
  * The list-bare object simply removes any indents and bullet points from lists.
  */
-.list-bare, .navigation ul, .metalinks ul {
+.list-bare, .navigation ul {
   margin: 0;
   padding: 0;
   list-style: none; }
@@ -1925,7 +1924,7 @@ html {
  * Extend the clearfix class with Sass to avoid the `.clearfix` class appearing
  * over and over in your markup.
  */
-.clearfix:after, .list-dl--horizontal:after, .list-dl--horizontal dt:after, .list-dl--horizontal dd:after, .form-actions:after, .board_header:after, .board > .header:after, .selectdate-form > .header:after, .welcome > .header:after, .loginform > .header:after, .versioninfo > .header:after, .exception > .header:after, .dialog > .header:after, .report-board > .header:after {
+.clearfix:after, .list-dl--horizontal:after, .list-dl--horizontal dt:after, .list-dl--horizontal dd:after, .form-actions:after, .board_header:after, .board > .header:after, .welcome > .header:after, .loginform > .header:after, .versioninfo > .header:after, .exception > .header:after, .dialog > .header:after, .report-board > .header:after {
   content: "";
   display: table;
   clear: both; }
@@ -3691,7 +3690,7 @@ select,
 .input--size-4,
 .input--size-3,
 .input--size-2,
-.input--size-1, .list-tablelist_cell, .lineup .lineup_actor, .lineup--statistic .lineup_actor--left, .lineup--statistic .lineup_actor--right, .lineup--login .lineup_actor--left, .lineup--login .lineup_actor--right, .selectdate-form .split .split_left, .selectdate-form .split .split_right {
+.input--size-1, .list-tablelist_cell, .lineup .lineup_actor, .lineup--statistic .lineup_actor--left, .lineup--statistic .lineup_actor--right, .lineup--login .lineup_actor--left, .lineup--login .lineup_actor--right {
   margin-right: -0.1em; }
 
 #main-header {
@@ -4942,6 +4941,8 @@ a {
   text-decoration: none; }
   a:hover, a:focus {
     text-decoration: underline; }
+  a.active {
+    text-decoration: underline; }
 
 p {
   margin: 0 0 1em 0; }
@@ -5043,63 +5044,63 @@ hr {
  * Be careful when edit!
  */
 /* ... to be @extend´ed! use the board css to extend the layout of the blocks */
-.board, .selectdate-form, .welcome, .loginform, .versioninfo, .exception, .dialog, .report-board {
+.board, .welcome, .loginform, .versioninfo, .exception, .dialog, .report-board {
   margin: 0 0 1.429em 0;
   padding: 0; }
-  .board > .header .aside, .selectdate-form > .header .aside, .welcome > .header .aside, .loginform > .header .aside, .versioninfo > .header .aside, .exception > .header .aside, .dialog > .header .aside, .report-board > .header .aside {
+  .board > .header .aside, .welcome > .header .aside, .loginform > .header .aside, .versioninfo > .header .aside, .exception > .header .aside, .dialog > .header .aside, .report-board > .header .aside {
     display: inline-block; }
-  .board > .footer span, .selectdate-form > .footer span, .welcome > .footer span, .loginform > .footer span, .versioninfo > .footer span, .exception > .footer span, .dialog > .footer span, .report-board > .footer span {
+  .board > .footer span, .welcome > .footer span, .loginform > .footer span, .versioninfo > .footer span, .exception > .footer span, .dialog > .footer span, .report-board > .footer span {
     white-space: nowrap; }
 
 /* set the board layout */
-.board_header, .board > .header, .selectdate-form > .header, .welcome > .header, .loginform > .header, .versioninfo > .header, .exception > .header, .dialog > .header, .report-board > .header {
+.board_header, .board > .header, .welcome > .header, .loginform > .header, .versioninfo > .header, .exception > .header, .dialog > .header, .report-board > .header {
   padding: 0.47633em 0.7145em;
   background-color: #008CCA;
   position: relative;
   color: #FFFFFF;
   margin-bottom: 0; }
-  .board_header > *, .board > .header > *, .selectdate-form > .header > *, .welcome > .header > *, .loginform > .header > *, .versioninfo > .header > *, .exception > .header > *, .dialog > .header > *, .report-board > .header > * {
+  .board_header > *, .board > .header > *, .welcome > .header > *, .loginform > .header > *, .versioninfo > .header > *, .exception > .header > *, .dialog > .header > *, .report-board > .header > * {
     vertical-align: middle; }
-  .board_header a, .board > .header a, .selectdate-form > .header a, .welcome > .header a, .loginform > .header a, .versioninfo > .header a, .exception > .header a, .dialog > .header a, .report-board > .header a,
-  .board_header label, .board > .header label, .selectdate-form > .header label, .welcome > .header label, .loginform > .header label, .versioninfo > .header label, .exception > .header label, .dialog > .header label, .report-board > .header label {
+  .board_header a, .board > .header a, .welcome > .header a, .loginform > .header a, .versioninfo > .header a, .exception > .header a, .dialog > .header a, .report-board > .header a,
+  .board_header label, .board > .header label, .welcome > .header label, .loginform > .header label, .versioninfo > .header label, .exception > .header label, .dialog > .header label, .report-board > .header label {
     color: #FFFFFF; }
-  .board_header a, .board > .header a, .selectdate-form > .header a, .welcome > .header a, .loginform > .header a, .versioninfo > .header a, .exception > .header a, .dialog > .header a, .report-board > .header a,
-  .board_header button, .board > .header button, .selectdate-form > .header button, .welcome > .header button, .loginform > .header button, .versioninfo > .header button, .exception > .header button, .dialog > .header button, .report-board > .header button {
+  .board_header a, .board > .header a, .welcome > .header a, .loginform > .header a, .versioninfo > .header a, .exception > .header a, .dialog > .header a, .report-board > .header a,
+  .board_header button, .board > .header button, .welcome > .header button, .loginform > .header button, .versioninfo > .header button, .exception > .header button, .dialog > .header button, .report-board > .header button {
     margin-top: 0;
     margin-bottom: 0; }
-  .board_header .form-group, .board > .header .form-group, .selectdate-form > .header .form-group, .welcome > .header .form-group, .loginform > .header .form-group, .versioninfo > .header .form-group, .exception > .header .form-group, .dialog > .header .form-group, .report-board > .header .form-group, .board_header .form-group--nomaxwidth .controls, .form-group--nomaxwidth .board_header .controls, .board > .header .form-group--nomaxwidth .controls, .form-group--nomaxwidth .board > .header .controls, .selectdate-form > .header .form-group--nomaxwidth .controls, .form-group--nomaxwidth .selectdate-form > .header .controls, .welcome > .header .form-group--nomaxwidth .controls, .form-group--nomaxwidth .welcome > .header .controls, .loginform > .header .form-group--nomaxwidth .controls, .form-group--nomaxwidth .loginform > .header .controls, .versioninfo > .header .form-group--nomaxwidth .controls, .form-group--nomaxwidth .versioninfo > .header .controls, .exception > .header .form-group--nomaxwidth .controls, .form-group--nomaxwidth .exception > .header .controls, .dialog > .header .form-group--nomaxwidth .controls, .form-group--nomaxwidth .dialog > .header .controls, .report-board > .header .form-group--nomaxwidth .controls, .form-group--nomaxwidth .report-board > .header .controls {
+  .board_header .form-group, .board > .header .form-group, .welcome > .header .form-group, .loginform > .header .form-group, .versioninfo > .header .form-group, .exception > .header .form-group, .dialog > .header .form-group, .report-board > .header .form-group, .board_header .form-group--nomaxwidth .controls, .form-group--nomaxwidth .board_header .controls, .board > .header .form-group--nomaxwidth .controls, .form-group--nomaxwidth .board > .header .controls, .welcome > .header .form-group--nomaxwidth .controls, .form-group--nomaxwidth .welcome > .header .controls, .loginform > .header .form-group--nomaxwidth .controls, .form-group--nomaxwidth .loginform > .header .controls, .versioninfo > .header .form-group--nomaxwidth .controls, .form-group--nomaxwidth .versioninfo > .header .controls, .exception > .header .form-group--nomaxwidth .controls, .form-group--nomaxwidth .exception > .header .controls, .dialog > .header .form-group--nomaxwidth .controls, .form-group--nomaxwidth .dialog > .header .controls, .report-board > .header .form-group--nomaxwidth .controls, .form-group--nomaxwidth .report-board > .header .controls {
     margin: 0 2em; }
-  .board_header .btn, .board > .header .btn, .selectdate-form > .header .btn, .welcome > .header .btn, .loginform > .header .btn, .versioninfo > .header .btn, .exception > .header .btn, .dialog > .header .btn, .report-board > .header .btn, .board_header .button-default, .board > .header .button-default, .selectdate-form > .header .button-default, .welcome > .header .button-default, .loginform > .header .button-default, .versioninfo > .header .button-default, .exception > .header .button-default, .dialog > .header .button-default, .report-board > .header .button-default, .board_header .button-emergency, .board > .header .button-emergency, .selectdate-form > .header .button-emergency, .welcome > .header .button-emergency, .loginform > .header .button-emergency, .versioninfo > .header .button-emergency, .exception > .header .button-emergency, .dialog > .header .button-emergency, .report-board > .header .button-emergency, .board_header .button-submit, .board > .header .button-submit, .selectdate-form > .header .button-submit, .welcome > .header .button-submit, .loginform > .header .button-submit, .versioninfo > .header .button-submit, .exception > .header .button-submit, .dialog > .header .button-submit, .report-board > .header .button-submit, .board_header .button-reload, .board > .header .button-reload, .selectdate-form > .header .button-reload, .welcome > .header .button-reload, .loginform > .header .button-reload, .versioninfo > .header .button-reload, .exception > .header .button-reload, .dialog > .header .button-reload, .report-board > .header .button-reload, .board_header .button-new, .board > .header .button-new, .selectdate-form > .header .button-new, .welcome > .header .button-new, .loginform > .header .button-new, .versioninfo > .header .button-new, .exception > .header .button-new, .dialog > .header .button-new, .report-board > .header .button-new, .board_header .button-logout, .board > .header .button-logout, .selectdate-form > .header .button-logout, .welcome > .header .button-logout, .loginform > .header .button-logout, .versioninfo > .header .button-logout, .exception > .header .button-logout, .dialog > .header .button-logout, .report-board > .header .button-logout, .board_header .button-save, .board > .header .button-save, .selectdate-form > .header .button-save, .welcome > .header .button-save, .loginform > .header .button-save, .versioninfo > .header .button-save, .exception > .header .button-save, .dialog > .header .button-save, .report-board > .header .button-save, .board_header .button-login, .board > .header .button-login, .selectdate-form > .header .button-login, .welcome > .header .button-login, .loginform > .header .button-login, .versioninfo > .header .button-login, .exception > .header .button-login, .dialog > .header .button-login, .report-board > .header .button-login, .board_header .button-delete, .board > .header .button-delete, .selectdate-form > .header .button-delete, .welcome > .header .button-delete, .loginform > .header .button-delete, .versioninfo > .header .button-delete, .exception > .header .button-delete, .dialog > .header .button-delete, .report-board > .header .button-delete, .board_header .button-close, .board > .header .button-close, .selectdate-form > .header .button-close, .welcome > .header .button-close, .loginform > .header .button-close, .versioninfo > .header .button-close, .exception > .header .button-close, .dialog > .header .button-close, .report-board > .header .button-close, .board_header .button-cancel, .board > .header .button-cancel, .selectdate-form > .header .button-cancel, .welcome > .header .button-cancel, .loginform > .header .button-cancel, .versioninfo > .header .button-cancel, .exception > .header .button-cancel, .dialog > .header .button-cancel, .report-board > .header .button-cancel, .board_header .button-reset, .board > .header .button-reset, .selectdate-form > .header .button-reset, .welcome > .header .button-reset, .loginform > .header .button-reset, .versioninfo > .header .button-reset, .exception > .header .button-reset, .dialog > .header .button-reset, .report-board > .header .button-reset, .board_header .button-keyboard, .board > .header .button-keyboard, .selectdate-form > .header .button-keyboard, .welcome > .header .button-keyboard, .loginform > .header .button-keyboard, .versioninfo > .header .button-keyboard, .exception > .header .button-keyboard, .dialog > .header .button-keyboard, .report-board > .header .button-keyboard, .board_header .button-pickupcall, .board > .header .button-pickupcall, .selectdate-form > .header .button-pickupcall, .welcome > .header .button-pickupcall, .loginform > .header .button-pickupcall, .versioninfo > .header .button-pickupcall, .exception > .header .button-pickupcall, .dialog > .header .button-pickupcall, .report-board > .header .button-pickupcall, .board_header .button-callnextclient, .board > .header .button-callnextclient, .selectdate-form > .header .button-callnextclient, .welcome > .header .button-callnextclient, .loginform > .header .button-callnextclient, .versioninfo > .header .button-callnextclient, .exception > .header .button-callnextclient, .dialog > .header .button-callnextclient, .report-board > .header .button-callnextclient, .board_header .exception .button-cancel, .exception .board_header .button-cancel, .board > .header .exception .button-cancel, .exception .board > .header .button-cancel, .selectdate-form > .header .exception .button-cancel, .exception .selectdate-form > .header .button-cancel, .welcome > .header .exception .button-cancel, .exception .welcome > .header .button-cancel, .loginform > .header .exception .button-cancel, .exception .loginform > .header .button-cancel, .versioninfo > .header .exception .button-cancel, .exception .versioninfo > .header .button-cancel, .exception > .header .button-cancel, .dialog > .header .exception .button-cancel, .exception .dialog > .header .button-cancel, .report-board > .header .exception .button-cancel, .exception .report-board > .header .button-cancel, .board_header .dialog .button, .dialog .board_header .button, .board > .header .dialog .button, .dialog .board > .header .button, .selectdate-form > .header .dialog .button, .dialog .selectdate-form > .header .button, .welcome > .header .dialog .button, .dialog .welcome > .header .button, .loginform > .header .dialog .button, .dialog .loginform > .header .button, .versioninfo > .header .dialog .button, .dialog .versioninfo > .header .button, .exception > .header .dialog .button, .dialog .exception > .header .button, .dialog > .header .button, .report-board > .header .dialog .button, .dialog .report-board > .header .button, .board_header .dialog .button-cancel, .dialog .board_header .button-cancel, .board > .header .dialog .button-cancel, .dialog .board > .header .button-cancel, .selectdate-form > .header .dialog .button-cancel, .dialog .selectdate-form > .header .button-cancel, .welcome > .header .dialog .button-cancel, .dialog .welcome > .header .button-cancel, .loginform > .header .dialog .button-cancel, .dialog .loginform > .header .button-cancel, .versioninfo > .header .dialog .button-cancel, .dialog .versioninfo > .header .button-cancel, .exception > .header .dialog .button-cancel, .dialog .exception > .header .button-cancel, .dialog > .header .button-cancel, .report-board > .header .dialog .button-cancel, .dialog .report-board > .header .button-cancel {
+  .board_header .btn, .board > .header .btn, .welcome > .header .btn, .loginform > .header .btn, .versioninfo > .header .btn, .exception > .header .btn, .dialog > .header .btn, .report-board > .header .btn, .board_header .button-default, .board > .header .button-default, .welcome > .header .button-default, .loginform > .header .button-default, .versioninfo > .header .button-default, .exception > .header .button-default, .dialog > .header .button-default, .report-board > .header .button-default, .board_header .button-emergency, .board > .header .button-emergency, .welcome > .header .button-emergency, .loginform > .header .button-emergency, .versioninfo > .header .button-emergency, .exception > .header .button-emergency, .dialog > .header .button-emergency, .report-board > .header .button-emergency, .board_header .button-submit, .board > .header .button-submit, .welcome > .header .button-submit, .loginform > .header .button-submit, .versioninfo > .header .button-submit, .exception > .header .button-submit, .dialog > .header .button-submit, .report-board > .header .button-submit, .board_header .button-reload, .board > .header .button-reload, .welcome > .header .button-reload, .loginform > .header .button-reload, .versioninfo > .header .button-reload, .exception > .header .button-reload, .dialog > .header .button-reload, .report-board > .header .button-reload, .board_header .button-new, .board > .header .button-new, .welcome > .header .button-new, .loginform > .header .button-new, .versioninfo > .header .button-new, .exception > .header .button-new, .dialog > .header .button-new, .report-board > .header .button-new, .board_header .button-logout, .board > .header .button-logout, .welcome > .header .button-logout, .loginform > .header .button-logout, .versioninfo > .header .button-logout, .exception > .header .button-logout, .dialog > .header .button-logout, .report-board > .header .button-logout, .board_header .button-save, .board > .header .button-save, .welcome > .header .button-save, .loginform > .header .button-save, .versioninfo > .header .button-save, .exception > .header .button-save, .dialog > .header .button-save, .report-board > .header .button-save, .board_header .button-login, .board > .header .button-login, .welcome > .header .button-login, .loginform > .header .button-login, .versioninfo > .header .button-login, .exception > .header .button-login, .dialog > .header .button-login, .report-board > .header .button-login, .board_header .button-delete, .board > .header .button-delete, .welcome > .header .button-delete, .loginform > .header .button-delete, .versioninfo > .header .button-delete, .exception > .header .button-delete, .dialog > .header .button-delete, .report-board > .header .button-delete, .board_header .button-close, .board > .header .button-close, .welcome > .header .button-close, .loginform > .header .button-close, .versioninfo > .header .button-close, .exception > .header .button-close, .dialog > .header .button-close, .report-board > .header .button-close, .board_header .button-cancel, .board > .header .button-cancel, .welcome > .header .button-cancel, .loginform > .header .button-cancel, .versioninfo > .header .button-cancel, .exception > .header .button-cancel, .dialog > .header .button-cancel, .report-board > .header .button-cancel, .board_header .button-reset, .board > .header .button-reset, .welcome > .header .button-reset, .loginform > .header .button-reset, .versioninfo > .header .button-reset, .exception > .header .button-reset, .dialog > .header .button-reset, .report-board > .header .button-reset, .board_header .button-keyboard, .board > .header .button-keyboard, .welcome > .header .button-keyboard, .loginform > .header .button-keyboard, .versioninfo > .header .button-keyboard, .exception > .header .button-keyboard, .dialog > .header .button-keyboard, .report-board > .header .button-keyboard, .board_header .button-pickupcall, .board > .header .button-pickupcall, .welcome > .header .button-pickupcall, .loginform > .header .button-pickupcall, .versioninfo > .header .button-pickupcall, .exception > .header .button-pickupcall, .dialog > .header .button-pickupcall, .report-board > .header .button-pickupcall, .board_header .button-callnextclient, .board > .header .button-callnextclient, .welcome > .header .button-callnextclient, .loginform > .header .button-callnextclient, .versioninfo > .header .button-callnextclient, .exception > .header .button-callnextclient, .dialog > .header .button-callnextclient, .report-board > .header .button-callnextclient, .board_header .exception .button-cancel, .exception .board_header .button-cancel, .board > .header .exception .button-cancel, .exception .board > .header .button-cancel, .welcome > .header .exception .button-cancel, .exception .welcome > .header .button-cancel, .loginform > .header .exception .button-cancel, .exception .loginform > .header .button-cancel, .versioninfo > .header .exception .button-cancel, .exception .versioninfo > .header .button-cancel, .exception > .header .button-cancel, .dialog > .header .exception .button-cancel, .exception .dialog > .header .button-cancel, .report-board > .header .exception .button-cancel, .exception .report-board > .header .button-cancel, .board_header .dialog .button, .dialog .board_header .button, .board > .header .dialog .button, .dialog .board > .header .button, .welcome > .header .dialog .button, .dialog .welcome > .header .button, .loginform > .header .dialog .button, .dialog .loginform > .header .button, .versioninfo > .header .dialog .button, .dialog .versioninfo > .header .button, .exception > .header .dialog .button, .dialog .exception > .header .button, .dialog > .header .button, .report-board > .header .dialog .button, .dialog .report-board > .header .button, .board_header .dialog .button-cancel, .dialog .board_header .button-cancel, .board > .header .dialog .button-cancel, .dialog .board > .header .button-cancel, .welcome > .header .dialog .button-cancel, .dialog .welcome > .header .button-cancel, .loginform > .header .dialog .button-cancel, .dialog .loginform > .header .button-cancel, .versioninfo > .header .dialog .button-cancel, .dialog .versioninfo > .header .button-cancel, .exception > .header .dialog .button-cancel, .dialog .exception > .header .button-cancel, .dialog > .header .button-cancel, .report-board > .header .dialog .button-cancel, .dialog .report-board > .header .button-cancel {
     color: #000000;
     line-height: 1em;
     padding: 0.45em; }
-  .board_header .title, .board > .header .title, .selectdate-form > .header .title, .welcome > .header .title, .loginform > .header .title, .versioninfo > .header .title, .exception > .header .title, .dialog > .header .title, .report-board > .header .title {
+  .board_header .title, .board > .header .title, .welcome > .header .title, .loginform > .header .title, .versioninfo > .header .title, .exception > .header .title, .dialog > .header .title, .report-board > .header .title {
     display: inline-block; }
-  .board_header .header_right, .board > .header .header_right, .selectdate-form > .header .header_right, .welcome > .header .header_right, .loginform > .header .header_right, .versioninfo > .header .header_right, .exception > .header .header_right, .dialog > .header .header_right, .report-board > .header .header_right {
+  .board_header .header_right, .board > .header .header_right, .welcome > .header .header_right, .loginform > .header .header_right, .versioninfo > .header .header_right, .exception > .header .header_right, .dialog > .header .header_right, .report-board > .header .header_right {
     float: right; }
-    .board_header .header_right > *, .board > .header .header_right > *, .selectdate-form > .header .header_right > *, .welcome > .header .header_right > *, .loginform > .header .header_right > *, .versioninfo > .header .header_right > *, .exception > .header .header_right > *, .dialog > .header .header_right > *, .report-board > .header .header_right > *,
-    .board_header .header_right form > *, .board > .header .header_right form > *, .selectdate-form > .header .header_right form > *, .welcome > .header .header_right form > *, .loginform > .header .header_right form > *, .versioninfo > .header .header_right form > *, .exception > .header .header_right form > *, .dialog > .header .header_right form > *, .report-board > .header .header_right form > * {
+    .board_header .header_right > *, .board > .header .header_right > *, .welcome > .header .header_right > *, .loginform > .header .header_right > *, .versioninfo > .header .header_right > *, .exception > .header .header_right > *, .dialog > .header .header_right > *, .report-board > .header .header_right > *,
+    .board_header .header_right form > *, .board > .header .header_right form > *, .welcome > .header .header_right form > *, .loginform > .header .header_right form > *, .versioninfo > .header .header_right form > *, .exception > .header .header_right form > *, .dialog > .header .header_right form > *, .report-board > .header .header_right form > * {
       display: inline-block;
       margin-bottom: 0;
       vertical-align: middle; }
-    .board_header .header_right .btn, .board > .header .header_right .btn, .selectdate-form > .header .header_right .btn, .welcome > .header .header_right .btn, .loginform > .header .header_right .btn, .versioninfo > .header .header_right .btn, .exception > .header .header_right .btn, .dialog > .header .header_right .btn, .report-board > .header .header_right .btn, .board_header .header_right .button-default, .board > .header .header_right .button-default, .selectdate-form > .header .header_right .button-default, .welcome > .header .header_right .button-default, .loginform > .header .header_right .button-default, .versioninfo > .header .header_right .button-default, .exception > .header .header_right .button-default, .dialog > .header .header_right .button-default, .report-board > .header .header_right .button-default, .board_header .header_right .button-emergency, .board > .header .header_right .button-emergency, .selectdate-form > .header .header_right .button-emergency, .welcome > .header .header_right .button-emergency, .loginform > .header .header_right .button-emergency, .versioninfo > .header .header_right .button-emergency, .exception > .header .header_right .button-emergency, .dialog > .header .header_right .button-emergency, .report-board > .header .header_right .button-emergency, .board_header .header_right .button-submit, .board > .header .header_right .button-submit, .selectdate-form > .header .header_right .button-submit, .welcome > .header .header_right .button-submit, .loginform > .header .header_right .button-submit, .versioninfo > .header .header_right .button-submit, .exception > .header .header_right .button-submit, .dialog > .header .header_right .button-submit, .report-board > .header .header_right .button-submit, .board_header .header_right .button-reload, .board > .header .header_right .button-reload, .selectdate-form > .header .header_right .button-reload, .welcome > .header .header_right .button-reload, .loginform > .header .header_right .button-reload, .versioninfo > .header .header_right .button-reload, .exception > .header .header_right .button-reload, .dialog > .header .header_right .button-reload, .report-board > .header .header_right .button-reload, .board_header .header_right .button-new, .board > .header .header_right .button-new, .selectdate-form > .header .header_right .button-new, .welcome > .header .header_right .button-new, .loginform > .header .header_right .button-new, .versioninfo > .header .header_right .button-new, .exception > .header .header_right .button-new, .dialog > .header .header_right .button-new, .report-board > .header .header_right .button-new, .board_header .header_right .button-logout, .board > .header .header_right .button-logout, .selectdate-form > .header .header_right .button-logout, .welcome > .header .header_right .button-logout, .loginform > .header .header_right .button-logout, .versioninfo > .header .header_right .button-logout, .exception > .header .header_right .button-logout, .dialog > .header .header_right .button-logout, .report-board > .header .header_right .button-logout, .board_header .header_right .button-save, .board > .header .header_right .button-save, .selectdate-form > .header .header_right .button-save, .welcome > .header .header_right .button-save, .loginform > .header .header_right .button-save, .versioninfo > .header .header_right .button-save, .exception > .header .header_right .button-save, .dialog > .header .header_right .button-save, .report-board > .header .header_right .button-save, .board_header .header_right .button-login, .board > .header .header_right .button-login, .selectdate-form > .header .header_right .button-login, .welcome > .header .header_right .button-login, .loginform > .header .header_right .button-login, .versioninfo > .header .header_right .button-login, .exception > .header .header_right .button-login, .dialog > .header .header_right .button-login, .report-board > .header .header_right .button-login, .board_header .header_right .button-delete, .board > .header .header_right .button-delete, .selectdate-form > .header .header_right .button-delete, .welcome > .header .header_right .button-delete, .loginform > .header .header_right .button-delete, .versioninfo > .header .header_right .button-delete, .exception > .header .header_right .button-delete, .dialog > .header .header_right .button-delete, .report-board > .header .header_right .button-delete, .board_header .header_right .button-close, .board > .header .header_right .button-close, .selectdate-form > .header .header_right .button-close, .welcome > .header .header_right .button-close, .loginform > .header .header_right .button-close, .versioninfo > .header .header_right .button-close, .exception > .header .header_right .button-close, .dialog > .header .header_right .button-close, .report-board > .header .header_right .button-close, .board_header .header_right .button-cancel, .board > .header .header_right .button-cancel, .selectdate-form > .header .header_right .button-cancel, .welcome > .header .header_right .button-cancel, .loginform > .header .header_right .button-cancel, .versioninfo > .header .header_right .button-cancel, .exception > .header .header_right .button-cancel, .dialog > .header .header_right .button-cancel, .report-board > .header .header_right .button-cancel, .board_header .header_right .button-reset, .board > .header .header_right .button-reset, .selectdate-form > .header .header_right .button-reset, .welcome > .header .header_right .button-reset, .loginform > .header .header_right .button-reset, .versioninfo > .header .header_right .button-reset, .exception > .header .header_right .button-reset, .dialog > .header .header_right .button-reset, .report-board > .header .header_right .button-reset, .board_header .header_right .button-keyboard, .board > .header .header_right .button-keyboard, .selectdate-form > .header .header_right .button-keyboard, .welcome > .header .header_right .button-keyboard, .loginform > .header .header_right .button-keyboard, .versioninfo > .header .header_right .button-keyboard, .exception > .header .header_right .button-keyboard, .dialog > .header .header_right .button-keyboard, .report-board > .header .header_right .button-keyboard, .board_header .header_right .button-pickupcall, .board > .header .header_right .button-pickupcall, .selectdate-form > .header .header_right .button-pickupcall, .welcome > .header .header_right .button-pickupcall, .loginform > .header .header_right .button-pickupcall, .versioninfo > .header .header_right .button-pickupcall, .exception > .header .header_right .button-pickupcall, .dialog > .header .header_right .button-pickupcall, .report-board > .header .header_right .button-pickupcall, .board_header .header_right .button-callnextclient, .board > .header .header_right .button-callnextclient, .selectdate-form > .header .header_right .button-callnextclient, .welcome > .header .header_right .button-callnextclient, .loginform > .header .header_right .button-callnextclient, .versioninfo > .header .header_right .button-callnextclient, .exception > .header .header_right .button-callnextclient, .dialog > .header .header_right .button-callnextclient, .report-board > .header .header_right .button-callnextclient, .board_header .header_right .exception .button-cancel, .exception .board_header .header_right .button-cancel, .board > .header .header_right .exception .button-cancel, .exception .board > .header .header_right .button-cancel, .selectdate-form > .header .header_right .exception .button-cancel, .exception .selectdate-form > .header .header_right .button-cancel, .welcome > .header .header_right .exception .button-cancel, .exception .welcome > .header .header_right .button-cancel, .loginform > .header .header_right .exception .button-cancel, .exception .loginform > .header .header_right .button-cancel, .versioninfo > .header .header_right .exception .button-cancel, .exception .versioninfo > .header .header_right .button-cancel, .exception > .header .header_right .button-cancel, .dialog > .header .header_right .exception .button-cancel, .exception .dialog > .header .header_right .button-cancel, .report-board > .header .header_right .exception .button-cancel, .exception .report-board > .header .header_right .button-cancel, .board_header .header_right .dialog .button, .dialog .board_header .header_right .button, .board > .header .header_right .dialog .button, .dialog .board > .header .header_right .button, .selectdate-form > .header .header_right .dialog .button, .dialog .selectdate-form > .header .header_right .button, .welcome > .header .header_right .dialog .button, .dialog .welcome > .header .header_right .button, .loginform > .header .header_right .dialog .button, .dialog .loginform > .header .header_right .button, .versioninfo > .header .header_right .dialog .button, .dialog .versioninfo > .header .header_right .button, .exception > .header .header_right .dialog .button, .dialog .exception > .header .header_right .button, .dialog > .header .header_right .button, .report-board > .header .header_right .dialog .button, .dialog .report-board > .header .header_right .button, .board_header .header_right .dialog .button-cancel, .dialog .board_header .header_right .button-cancel, .board > .header .header_right .dialog .button-cancel, .dialog .board > .header .header_right .button-cancel, .selectdate-form > .header .header_right .dialog .button-cancel, .dialog .selectdate-form > .header .header_right .button-cancel, .welcome > .header .header_right .dialog .button-cancel, .dialog .welcome > .header .header_right .button-cancel, .loginform > .header .header_right .dialog .button-cancel, .dialog .loginform > .header .header_right .button-cancel, .versioninfo > .header .header_right .dialog .button-cancel, .dialog .versioninfo > .header .header_right .button-cancel, .exception > .header .header_right .dialog .button-cancel, .dialog .exception > .header .header_right .button-cancel, .dialog > .header .header_right .button-cancel, .report-board > .header .header_right .dialog .button-cancel, .dialog .report-board > .header .header_right .button-cancel {
+    .board_header .header_right .btn, .board > .header .header_right .btn, .welcome > .header .header_right .btn, .loginform > .header .header_right .btn, .versioninfo > .header .header_right .btn, .exception > .header .header_right .btn, .dialog > .header .header_right .btn, .report-board > .header .header_right .btn, .board_header .header_right .button-default, .board > .header .header_right .button-default, .welcome > .header .header_right .button-default, .loginform > .header .header_right .button-default, .versioninfo > .header .header_right .button-default, .exception > .header .header_right .button-default, .dialog > .header .header_right .button-default, .report-board > .header .header_right .button-default, .board_header .header_right .button-emergency, .board > .header .header_right .button-emergency, .welcome > .header .header_right .button-emergency, .loginform > .header .header_right .button-emergency, .versioninfo > .header .header_right .button-emergency, .exception > .header .header_right .button-emergency, .dialog > .header .header_right .button-emergency, .report-board > .header .header_right .button-emergency, .board_header .header_right .button-submit, .board > .header .header_right .button-submit, .welcome > .header .header_right .button-submit, .loginform > .header .header_right .button-submit, .versioninfo > .header .header_right .button-submit, .exception > .header .header_right .button-submit, .dialog > .header .header_right .button-submit, .report-board > .header .header_right .button-submit, .board_header .header_right .button-reload, .board > .header .header_right .button-reload, .welcome > .header .header_right .button-reload, .loginform > .header .header_right .button-reload, .versioninfo > .header .header_right .button-reload, .exception > .header .header_right .button-reload, .dialog > .header .header_right .button-reload, .report-board > .header .header_right .button-reload, .board_header .header_right .button-new, .board > .header .header_right .button-new, .welcome > .header .header_right .button-new, .loginform > .header .header_right .button-new, .versioninfo > .header .header_right .button-new, .exception > .header .header_right .button-new, .dialog > .header .header_right .button-new, .report-board > .header .header_right .button-new, .board_header .header_right .button-logout, .board > .header .header_right .button-logout, .welcome > .header .header_right .button-logout, .loginform > .header .header_right .button-logout, .versioninfo > .header .header_right .button-logout, .exception > .header .header_right .button-logout, .dialog > .header .header_right .button-logout, .report-board > .header .header_right .button-logout, .board_header .header_right .button-save, .board > .header .header_right .button-save, .welcome > .header .header_right .button-save, .loginform > .header .header_right .button-save, .versioninfo > .header .header_right .button-save, .exception > .header .header_right .button-save, .dialog > .header .header_right .button-save, .report-board > .header .header_right .button-save, .board_header .header_right .button-login, .board > .header .header_right .button-login, .welcome > .header .header_right .button-login, .loginform > .header .header_right .button-login, .versioninfo > .header .header_right .button-login, .exception > .header .header_right .button-login, .dialog > .header .header_right .button-login, .report-board > .header .header_right .button-login, .board_header .header_right .button-delete, .board > .header .header_right .button-delete, .welcome > .header .header_right .button-delete, .loginform > .header .header_right .button-delete, .versioninfo > .header .header_right .button-delete, .exception > .header .header_right .button-delete, .dialog > .header .header_right .button-delete, .report-board > .header .header_right .button-delete, .board_header .header_right .button-close, .board > .header .header_right .button-close, .welcome > .header .header_right .button-close, .loginform > .header .header_right .button-close, .versioninfo > .header .header_right .button-close, .exception > .header .header_right .button-close, .dialog > .header .header_right .button-close, .report-board > .header .header_right .button-close, .board_header .header_right .button-cancel, .board > .header .header_right .button-cancel, .welcome > .header .header_right .button-cancel, .loginform > .header .header_right .button-cancel, .versioninfo > .header .header_right .button-cancel, .exception > .header .header_right .button-cancel, .dialog > .header .header_right .button-cancel, .report-board > .header .header_right .button-cancel, .board_header .header_right .button-reset, .board > .header .header_right .button-reset, .welcome > .header .header_right .button-reset, .loginform > .header .header_right .button-reset, .versioninfo > .header .header_right .button-reset, .exception > .header .header_right .button-reset, .dialog > .header .header_right .button-reset, .report-board > .header .header_right .button-reset, .board_header .header_right .button-keyboard, .board > .header .header_right .button-keyboard, .welcome > .header .header_right .button-keyboard, .loginform > .header .header_right .button-keyboard, .versioninfo > .header .header_right .button-keyboard, .exception > .header .header_right .button-keyboard, .dialog > .header .header_right .button-keyboard, .report-board > .header .header_right .button-keyboard, .board_header .header_right .button-pickupcall, .board > .header .header_right .button-pickupcall, .welcome > .header .header_right .button-pickupcall, .loginform > .header .header_right .button-pickupcall, .versioninfo > .header .header_right .button-pickupcall, .exception > .header .header_right .button-pickupcall, .dialog > .header .header_right .button-pickupcall, .report-board > .header .header_right .button-pickupcall, .board_header .header_right .button-callnextclient, .board > .header .header_right .button-callnextclient, .welcome > .header .header_right .button-callnextclient, .loginform > .header .header_right .button-callnextclient, .versioninfo > .header .header_right .button-callnextclient, .exception > .header .header_right .button-callnextclient, .dialog > .header .header_right .button-callnextclient, .report-board > .header .header_right .button-callnextclient, .board_header .header_right .exception .button-cancel, .exception .board_header .header_right .button-cancel, .board > .header .header_right .exception .button-cancel, .exception .board > .header .header_right .button-cancel, .welcome > .header .header_right .exception .button-cancel, .exception .welcome > .header .header_right .button-cancel, .loginform > .header .header_right .exception .button-cancel, .exception .loginform > .header .header_right .button-cancel, .versioninfo > .header .header_right .exception .button-cancel, .exception .versioninfo > .header .header_right .button-cancel, .exception > .header .header_right .button-cancel, .dialog > .header .header_right .exception .button-cancel, .exception .dialog > .header .header_right .button-cancel, .report-board > .header .header_right .exception .button-cancel, .exception .report-board > .header .header_right .button-cancel, .board_header .header_right .dialog .button, .dialog .board_header .header_right .button, .board > .header .header_right .dialog .button, .dialog .board > .header .header_right .button, .welcome > .header .header_right .dialog .button, .dialog .welcome > .header .header_right .button, .loginform > .header .header_right .dialog .button, .dialog .loginform > .header .header_right .button, .versioninfo > .header .header_right .dialog .button, .dialog .versioninfo > .header .header_right .button, .exception > .header .header_right .dialog .button, .dialog .exception > .header .header_right .button, .dialog > .header .header_right .button, .report-board > .header .header_right .dialog .button, .dialog .report-board > .header .header_right .button, .board_header .header_right .dialog .button-cancel, .dialog .board_header .header_right .button-cancel, .board > .header .header_right .dialog .button-cancel, .dialog .board > .header .header_right .button-cancel, .welcome > .header .header_right .dialog .button-cancel, .dialog .welcome > .header .header_right .button-cancel, .loginform > .header .header_right .dialog .button-cancel, .dialog .loginform > .header .header_right .button-cancel, .versioninfo > .header .header_right .dialog .button-cancel, .dialog .versioninfo > .header .header_right .button-cancel, .exception > .header .header_right .dialog .button-cancel, .dialog .exception > .header .header_right .button-cancel, .dialog > .header .header_right .button-cancel, .report-board > .header .header_right .dialog .button-cancel, .dialog .report-board > .header .header_right .button-cancel {
       margin-right: 0;
       margin-left: 0.5em; }
 
-.board_body, .board > .body, .selectdate-form > .body, .welcome > .body, .loginform > .body, .versioninfo > .body, .exception > .body, .dialog > .body, .report-board > .body {
+.board_body, .board > .body, .welcome > .body, .loginform > .body, .versioninfo > .body, .exception > .body, .dialog > .body, .report-board > .body {
   background-color: #F0F0F0;
   border: 1px solid #D2D2D2;
   border-width: 0 1px 1px 1px;
   position: relative;
   padding: 0.47633em 0.7145em; }
-  .board_body > *:last-child, .board > .body > *:last-child, .selectdate-form > .body > *:last-child, .welcome > .body > *:last-child, .loginform > .body > *:last-child, .versioninfo > .body > *:last-child, .exception > .body > *:last-child, .dialog > .body > *:last-child, .report-board > .body > *:last-child {
+  .board_body > *:last-child, .board > .body > *:last-child, .welcome > .body > *:last-child, .loginform > .body > *:last-child, .versioninfo > .body > *:last-child, .exception > .body > *:last-child, .dialog > .body > *:last-child, .report-board > .body > *:last-child {
     margin-bottom: 0; }
-  .board_body > *:first-child, .board > .body > *:first-child, .selectdate-form > .body > *:first-child, .welcome > .body > *:first-child, .loginform > .body > *:first-child, .versioninfo > .body > *:first-child, .exception > .body > *:first-child, .dialog > .body > *:first-child, .report-board > .body > *:first-child {
+  .board_body > *:first-child, .board > .body > *:first-child, .welcome > .body > *:first-child, .loginform > .body > *:first-child, .versioninfo > .body > *:first-child, .exception > .body > *:first-child, .dialog > .body > *:first-child, .report-board > .body > *:first-child {
     margin-top: 0; }
-    .board_body > *:first-child > *:first-child, .board > .body > *:first-child > *:first-child, .selectdate-form > .body > *:first-child > *:first-child, .welcome > .body > *:first-child > *:first-child, .loginform > .body > *:first-child > *:first-child, .versioninfo > .body > *:first-child > *:first-child, .exception > .body > *:first-child > *:first-child, .dialog > .body > *:first-child > *:first-child, .report-board > .body > *:first-child > *:first-child {
+    .board_body > *:first-child > *:first-child, .board > .body > *:first-child > *:first-child, .welcome > .body > *:first-child > *:first-child, .loginform > .body > *:first-child > *:first-child, .versioninfo > .body > *:first-child > *:first-child, .exception > .body > *:first-child > *:first-child, .dialog > .body > *:first-child > *:first-child, .report-board > .body > *:first-child > *:first-child {
       margin-top: 0; }
 
-.board_footer, .board > .footer, .selectdate-form > .footer, .welcome > .footer, .loginform > .footer, .versioninfo > .footer, .exception > .footer, .dialog > .footer, .report-board > .footer {
+.board_footer, .board > .footer, .welcome > .footer, .loginform > .footer, .versioninfo > .footer, .exception > .footer, .dialog > .footer, .report-board > .footer {
   font-size: 0.9em;
   border: 1px solid #D2D2D2;
   border-width: 0px 1px 1px 1px;
@@ -5108,12 +5109,12 @@ hr {
   position: relative;
   background-color: #F8F8F8;
   text-align: center; }
-  .board_footer > *:last-child, .board > .footer > *:last-child, .selectdate-form > .footer > *:last-child, .welcome > .footer > *:last-child, .loginform > .footer > *:last-child, .versioninfo > .footer > *:last-child, .exception > .footer > *:last-child, .dialog > .footer > *:last-child, .report-board > .footer > *:last-child {
+  .board_footer > *:last-child, .board > .footer > *:last-child, .welcome > .footer > *:last-child, .loginform > .footer > *:last-child, .versioninfo > .footer > *:last-child, .exception > .footer > *:last-child, .dialog > .footer > *:last-child, .report-board > .footer > *:last-child {
     margin-bottom: 0; }
-  .board_footer > *:first-child, .board > .footer > *:first-child, .selectdate-form > .footer > *:first-child, .welcome > .footer > *:first-child, .loginform > .footer > *:first-child, .versioninfo > .footer > *:first-child, .exception > .footer > *:first-child, .dialog > .footer > *:first-child, .report-board > .footer > *:first-child {
+  .board_footer > *:first-child, .board > .footer > *:first-child, .welcome > .footer > *:first-child, .loginform > .footer > *:first-child, .versioninfo > .footer > *:first-child, .exception > .footer > *:first-child, .dialog > .footer > *:first-child, .report-board > .footer > *:first-child {
     margin-top: 0; }
 
-.board_header__title, .board_header .title, .board > .header .title, .selectdate-form > .header .title, .welcome > .header .title, .loginform > .header .title, .versioninfo > .header .title, .exception > .header .title, .dialog > .header .title, .report-board > .header .title {
+.board_header__title, .board_header .title, .board > .header .title, .welcome > .header .title, .loginform > .header .title, .versioninfo > .header .title, .exception > .header .title, .dialog > .header .title, .report-board > .header .title {
   font-size: 1em;
   line-height: 1.25em;
   margin: 0;
@@ -5125,7 +5126,7 @@ hr {
 .board--noBodyPadding > .body {
   padding: 0; }
 
-.board_body--noPadding, .board > .body.no-padding, .selectdate-form > .body.no-padding, .welcome > .body.no-padding, .loginform > .body.no-padding, .versioninfo > .body.no-padding, .exception > .body.no-padding, .dialog > .body.no-padding, .report-board > .body.no-padding {
+.board_body--noPadding, .board > .body.no-padding, .welcome > .body.no-padding, .loginform > .body.no-padding, .versioninfo > .body.no-padding, .exception > .body.no-padding, .dialog > .body.no-padding, .report-board > .body.no-padding {
   padding: 0; }
 
 .board_body--noBorder {
@@ -5188,39 +5189,6 @@ hr {
   .breadcrumb > li + li:before {
     content: " › "; }
 
-.metalinks ul li {
-  padding-left: 1.5em;
-  margin-bottom: 1.429em; }
-  .metalinks ul li .title {
-    margin: 0;
-    font-weight: normal; }
-  .metalinks ul li::before {
-    margin-left: -1.3em;
-    float: left; }
-  .metalinks ul li.support:before {
-    content: "⍰"; }
-  .metalinks ul li.manual:before {
-    content: "📖"; }
-  .metalinks ul li.version:before {
-    content: "ℹ"; }
-  .metalinks ul li.logo {
-    padding-left: 1.429em;
-    font-size: 80%; }
-    .metalinks ul li.logo img.logo {
-      max-width: 100%; }
-
-.selectdate-form > .body {
-  padding: 0.5em 0.4em; }
-
-.selectdate-form .form-group, .selectdate-form .form-group--nomaxwidth .controls, .form-group--nomaxwidth .selectdate-form .controls {
-  margin-bottom: 0.4em !important; }
-
-.selectdate-form .form-actions {
-  margin-bottom: 0; }
-
-.selectdate-form label {
-  font-size: 0.8566em; }
-
 .welcome .logo {
   height: 1.3em;
   vertical-align: text-bottom; }
@@ -5266,9 +5234,6 @@ hr {
   border-color: #c2e2b4;
   background-color: #E0F0D9; }
 
-.timepicker select {
-  width: auto; }
-
 .exception .header {
   background-color: #E75656; }
 
@@ -5305,6 +5270,8 @@ hr {
   width: auto;
   border-spacing: 4px;
   border-collapse: seperate; }
+  .report-period .report-period--table tr.hide {
+    display: none; }
   .report-period .report-period--table td {
     border-width: 0 0 0 0.3em;
     border-color: #F0F0F0;

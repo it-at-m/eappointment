@@ -17,6 +17,16 @@ abstract class BaseController extends \BO\Slim\Controller
 {
     protected $workstation;
 
+    protected $totals = [
+        'notificationscount',
+        'notificationscost',
+        'clientscount',
+        'missed',
+        'withappointment',
+        'missedwithappointment',
+        'requestscount'
+    ];
+
     public function __construct(\Interop\Container\ContainerInterface $containerInterface)
     {
         parent::__construct($containerInterface);

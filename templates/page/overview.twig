@@ -7,33 +7,33 @@
             <h2>{% trans %}Auswertungen{% endtrans %}</h2>
 
             <h3>{% trans %}Kundenstatistik{% endtrans %}</h3>
-            {% embed "block/report/period.twig" with {"source":"Client", "items": clientperiod} %}
+            {% embed "block/report/period.twig" with {"source":{"entity":"ScopeClient","id":scopeId}, "items": clientperiod} %}
                 {% block breadcrumb %}
                 <ul class="report-period--breadcrumb">
-                    <li><a href="{{ urlGet("ReportOrganisationClient", {'organisationId': organisation.id}, {}) }}">{{organisation.name}}</a></li>
-                    <li><a href="{{ urlGet("ReportDepartmentClient", {'departmentId': department.id}, {}) }}">{{department.name}}</a></li>
+                    <li><a href="{{ urlGet("ReportOrganisationClient", {'id': organisation.id}, {}) }}">{{organisation.name}}</a></li>
+                    <li><a href="{{ urlGet("ReportDepartmentClient", {'id': department.id}, {}) }}">{{department.name}}</a></li>
                     <li>{{workstation.scope.contact.name}} {{workstation.scope.shortName}}</li>
                 </ul>
                 {% endblock %}
             {% endembed %}
 
             <h3>{% trans %}Dienstleistungsstatistik{% endtrans %}</h3>
-            {% embed "block/report/period.twig" with {"source":"Request", "items": requestperiod} %}
+            {% embed "block/report/period.twig" with {"source":{"entity":"ScopeRequest","id":scopeId}, "items": requestperiod} %}
                 {% block breadcrumb %}
                 <ul class="report-period--breadcrumb">
-                    <li><a href="{{ urlGet("ReportOrganisationRequest", {'organisationId': organisation.id}, {}) }}">{{organisation.name}}</a></li>
-                    <li><a href="{{ urlGet("ReportDepartmentRequest", {'departmentId': department.id}, {}) }}">{{department.name}}</a></li>
+                    <li><a href="{{ urlGet("ReportOrganisationRequest", {'id': organisation.id}, {}) }}">{{organisation.name}}</a></li>
+                    <li><a href="{{ urlGet("ReportDepartmentRequest", {'id': department.id}, {}) }}">{{department.name}}</a></li>
                     <li>{{workstation.scope.contact.name}} {{workstation.scope.shortName}}</li>
                 </ul>
                 {% endblock %}
             {% endembed %}
 
             <h3>{% trans %}Wartestatistik{% endtrans %}</h3>
-            {% embed "block/report/period.twig" with {"source":"Waiting", "items": waitingperiod} %}
+            {% embed "block/report/period.twig" with {"source":{"entity":"ScopeWaiting","id":scopeId}, "items": waitingperiod} %}
                 {% block breadcrumb %}
                 <ul class="report-period--breadcrumb">
-                    <li><a href="{{ urlGet("ReportOrganisationWaiting", {'organisationId': organisation.id}, {}) }}">{{organisation.name}}</a></li>
-                    <li><a href="{{ urlGet("ReportDepartmentWaiting", {'departmentId': department.id}, {}) }}">{{department.name}}</a></li>
+                    <li><a href="{{ urlGet("ReportOrganisationWaiting", {'id': organisation.id}, {}) }}">{{organisation.name}}</a></li>
+                    <li><a href="{{ urlGet("ReportDepartmentWaiting", {'id': department.id}, {}) }}">{{department.name}}</a></li>
                     <li>{{workstation.scope.contact.name}} {{workstation.scope.shortName}}</li>
                 </ul>
                 {% endblock %}

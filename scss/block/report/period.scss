@@ -43,7 +43,11 @@
         width: auto;
         border-spacing: 4px;
         border-collapse: seperate;
-
+        tr {
+            &.hide {
+                display:        none;
+            }
+        }
         td {
             border-width: 0 0 0 0.3em;
             border-color: $grey;
