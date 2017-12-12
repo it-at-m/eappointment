@@ -4,6 +4,7 @@ config.php
 **.swp
 .sass-cache
 .DS_Store
+package-lock.json
 bower_components
 cache/
 vendor.old

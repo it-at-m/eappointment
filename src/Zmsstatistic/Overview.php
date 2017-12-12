@@ -47,7 +47,8 @@ class Overview extends BaseController
                 'organisation' => $organisation,
                 'waitingperiod' => $waitingperiod,
                 'clientperiod' => $clientperiod,
-                'isOverview' => 1
+                'scopeId' => $workstation->scope['id'],
+                'showAll' => 0
             )
         );
     }
