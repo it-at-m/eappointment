@@ -25,6 +25,16 @@ class MailTest extends \PHPUnit_Framework_TestCase
         );
         $value = "abc@not-existing-dns-entry.me";
         $this->assertTrue(
+            Validator::value($value)->isMail()->hasDNS()->hasFailed(),
+            "mail address '$value' should not validate for not having a valid DNS"
+        );
+        $value = "abc@berlin.de";
+        $this->assertFalse(
+            Validator::value($value)->isMail()->hasDNS()->hasFailed(),
+            "mail address '$value' should validate with a valid DNS"
+        );
+        $value = "abc@not-existing-dns-entry.me";
+        $this->assertTrue(
             Validator::value($value)->isMail()->hasMX()->hasFailed(),
             "mail address '$value' should not validate for not having a valid MX"
         );
