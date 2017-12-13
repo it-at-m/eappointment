@@ -29,6 +29,19 @@ class ValidMail extends \BO\Mellon\ValidString
         return $this;
     }
 
+    public function hasDNS($message = 'no valid DNS entry found')
+    {
+        $this->validated = true;
+        if ($this->value) {
+            $domain = substr($this->value, strpos($this->value, '@') + 1);
+            $hasDNS = checkdnsrr($domain);
+            if (false === $hasDNS) {
+                $this->setFailure($message);
+            }
+        }
+        return $this;
+    }
+
     public function hasMX($message = 'no valid DNS entry of type MX found')
     {
         $this->validated = true;
