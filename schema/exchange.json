@@ -43,8 +43,7 @@
     ]
   },
   "required": [
-    "dictionary",
-    "data"
+    "dictionary"
   ],
   "additionalProperties": false,
   "properties": {
