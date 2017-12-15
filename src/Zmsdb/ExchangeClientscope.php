@@ -59,10 +59,10 @@ class ExchangeClientscope extends Base
         $raw = $this->getReader()->fetchAll(Query\ExchangeClientscope::QUERY_SUBJECTS, []);
         $entity = new Exchange();
         $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable());
-        $entity->addDictionaryEntry('subject', 'string', 'ID of a scope', 'scope.id');
-        $entity->addDictionaryEntry('periodstart');
-        $entity->addDictionaryEntry('periodend');
-        $entity->addDictionaryEntry('description');
+        $entity->addDictionaryEntry('subject', 'string', 'Standort Id', 'scope.id');
+        $entity->addDictionaryEntry('periodstart', 'string', 'Zeitraum Anfang');
+        $entity->addDictionaryEntry('periodend', 'string', 'Zeitraum Ende');
+        $entity->addDictionaryEntry('description', 'string', 'Standort Name');
         foreach ($raw as $entry) {
             $entity->addDataSet(array_values($entry));
         }
