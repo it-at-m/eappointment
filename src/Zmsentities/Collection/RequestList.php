@@ -42,4 +42,27 @@ class RequestList extends Base
         ksort($list);
         return $list;
     }
+
+    /**
+     * Filter the request list and return a new list with appropriate numbers of requests
+     *
+     * @param array $countlist - a list with the request.id as number and a count as value
+     *
+     * @return RequestList
+     */
+    public function withCountList($countList)
+    {
+        $requestList = new self();
+        foreach ($countList as $requestId => $counter) {
+            if (!$this->hasEntity($requestId)) {
+                throw new \BO\Zmsentities\Exception\RequestListMissing(
+                    "Requested item '$requestId' in RequestList is missing"
+                );
+            }
+            while ($counter-- > 0) {
+                $requestList[] = $this->getEntity($requestId);
+            }
+        }
+        return $requestList;
+    }
 }
