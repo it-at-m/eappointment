@@ -6,9 +6,9 @@
                 {% block breadcrumb %}
                 <ul class="report-period--breadcrumb">
                     <li class="report-period--subject">{{ title|trans }}</li>
-                    <li><a class="{{ activeOrganisation }}" href="{{ urlGet("ReportOrganisationClient", {'id': organisation.id}, {}) }}">{{ organisation.name }}</a></li>
-                    <li><a class="{{ activeDepartment }}" href="{{ urlGet("ReportDepartmentClient", {'id': department.id}, {}) }}">{{ department.name }}</a></li>
-                    <li><a class="{{ activeScope }}" href="{{ urlGet("ReportScopeClient", {'id': workstation.scope.id}, {}) }}">{{workstation.scope.contact.name}} {{workstation.scope.shortName}}</a></li>
+                    <li><a class="{{ activeOrganisation }}" href="{{ urlGet("ReportClientOrganisation", {}, {}) }}">{{ organisation.name }}</a></li>
+                    <li><a class="{{ activeDepartment }}" href="{{ urlGet("ReportClientDepartment", {}, {}) }}">{{ department.name }}</a></li>
+                    <li><a class="{{ activeScope }}" href="{{ urlGet("ReportClientIndex", {}, {}) }}">{{workstation.scope.contact.name}} {{workstation.scope.shortName}}</a></li>
                 </ul>
                 </ul>
                 {% endblock %}

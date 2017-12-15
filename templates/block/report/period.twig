@@ -19,7 +19,7 @@
                 {% if year in last3Year %}{% set display = 'show' %}{% endif %}
                 <tr class="{{ display }}">
                     <td class="report-period--year{% if year == selected|date('Y') or year == selected %} report-period--year-active{% endif %}">
-                        <a href="{{ urlGet("Report%s"|format(source.entity), {'id': source.id ,'period': year}, {}) }}">{{ year }}</a>
+                        <a href="{{ urlGet("Report%s"|format(source.entity), {'period': year}, {}) }}">{{ year }}</a>
                     </td>
                     {% for month in 1..12 %}
                         {% set monthExists = 0 %}
@@ -31,7 +31,7 @@
                         {% endfor %}
                         <td class="{% if tmpmonth == selected|date('Y-m') and monthExists %}report-period--month-active{% endif %}">
                             {% if monthExists %}
-                                <a href="{{ urlGet("Report%s"|format(source.entity), {'id': source.id ,'period': tmpmonth}, {}) }}">{{ tmpmonth|localizeddate("full","none",NULL,NULL,"MMMM") }}</a>
+                                <a href="{{ urlGet("Report%s"|format(source.entity), {'period': tmpmonth}, {}) }}">{{ tmpmonth|localizeddate("full","none",NULL,NULL,"MMMM") }}</a>
                             {% else %}
                                 {{ tmpmonth|localizeddate("full","none",NULL,NULL,"MMMM") }}
                             {% endif %}
