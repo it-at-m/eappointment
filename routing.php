@@ -2087,6 +2087,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/process/{id}/{authKey}/":
  *      post:
  *          summary: Update a process but does not send any mails or notifications on status changes
+ *          description: Attention: An empty list in "requests" does not delete the associated requests as expected. To delete the requests, create a dummy request with an ID of "-1" and create a one item list with this request into the process. This is required to delete the associated requests.
  *          tags:
  *              - process
  *          parameters:
