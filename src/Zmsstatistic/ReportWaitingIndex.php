@@ -8,10 +8,15 @@ namespace BO\Zmsstatistic;
 
 class ReportWaitingIndex extends BaseController
 {
-    protected $totals = [
+    protected $hashset = [
         'waitingcount',
         'waitingtime',
-        'waitingtimecalculated'
+        'waitingcalculated'
+    ];
+
+    protected $groupfields = [
+        'date',
+        'hour'
     ];
 
     /**
@@ -36,8 +41,9 @@ class ReportWaitingIndex extends BaseController
             $exchangeWaiting = \App::$http
             ->readGetResult('/warehouse/waitingscope/' . $workstation->scope['id'] . '/'. $args['period']. '/')
             ->getEntity()
-            ->withCalculatedTotals($this->totals)
-            ->toGrouped(['date', 'hour']);
+            ->toGrouped($this->groupfields, $this->hashset)
+            ->withMaxByHour($this->hashset)
+            ->withMaxAndAverageFromWaitingTime();
         }
 
         if (!$workstation->hasId()) {

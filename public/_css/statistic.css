@@ -5357,8 +5357,8 @@ hr {
     border-top: 0 none; }
     .report-board .report-board--table tbody tr td.report-board--summary {
       background: #D2D2D2; }
-    .report-board .report-board--table tbody tr td[data-value="0"] {
-      color: #D2D2D2; }
+    .report-board .report-board--table tbody tr td[data-value="0"], .report-board .report-board--table tbody tr td .ausgegraut {
+      color: #909090; }
   .report-board .report-board--table tbody tr:nth-child(odd) td, .report-board .report-board--table tbody tr:nth-child(odd) th {
     background: #F0F0F0; }
     .report-board .report-board--table tbody tr:nth-child(odd) td.report-board--summary, .report-board .report-board--table tbody tr:nth-child(odd) th.report-board--summary {
