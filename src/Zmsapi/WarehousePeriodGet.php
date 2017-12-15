@@ -25,6 +25,9 @@ class WarehousePeriodGet extends BaseController
         $subjectId = Validator::value($args['subjectId'])->isString()->getValue();
         $period = Validator::value($args['period'])->isString()->isBiggerThan(2)->setDefault('_')->getValue();
 
+        $validator = $request->getAttribute('validator');
+        $groupby = $validator->getParameter('groupby')->isString()->isBiggerThan(2)->getValue();
+
         $exchangeClass = '\BO\Zmsdb\Exchange' . ucfirst($subject);
         if (! class_exists($exchangeClass)) {
             throw new Exception\Warehouse\ReportNotFound();
@@ -35,7 +38,7 @@ class WarehousePeriodGet extends BaseController
             $subjectId,
             $periodHelper->getStartDateTime(),
             $periodHelper->getEndDateTime(),
-            $periodHelper->getPeriodIdentifier()
+            $periodHelper->getPeriodIdentifier($groupby)
         );
         if (! $subjectPeriod) {
             throw new Exception\Warehouse\ReportNotFound();
