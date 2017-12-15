@@ -34,7 +34,7 @@ class WorkstationProcessFinished extends BaseController
         }
 
         if (is_array($input) && array_key_exists('id', $input['process'])) {
-            return $this->getResponseWithStatisticEnabled($input, $process, $workstation);
+            return $this->getResponseWithStatisticEnabled($input, $process, $workstation, $requestList);
         }
 
         return \BO\Slim\Render::withHtml(
@@ -70,15 +70,39 @@ class WorkstationProcessFinished extends BaseController
         );
     }
 
-    protected function getResponseWithStatisticEnabled(array $input, \BO\Zmsentities\Process $process, $workstation)
-    {
+    protected function getResponseWithStatisticEnabled(
+        array $input,
+        \BO\Zmsentities\Process $process,
+        \BO\Zmsentities\Workstation $workstation,
+        \BO\Zmsentities\Collection\RequestList $requestList
+    ) {
         $process->addData($input['process']);
         //pickup
         if (array_key_exists('pickupScope', $input) && 0 != $input['pickupScope']) {
             $process->status = 'pending';
             $process->scope['id'] = $input['pickupScope'];
         }
+        if (array_key_exists('ignoreRequests', $input) && $input['ignoreRequests']) {
+            $process->requests = new \BO\Zmsentities\Collection\RequestList();
+            $request = new \BO\Zmsentities\Request([
+                'id' => -1,
+                'source' => 'dldb',
+                'name' =>  "Ohne Erfassung",
+            ]);
+            $process->requests[] = $request;
+        } elseif (array_key_exists('noRequestsPerformed', $input) && $input['noRequestsPerformed']) {
+            $process->requests = new \BO\Zmsentities\Collection\RequestList();
+            $request = new \BO\Zmsentities\Request([
+                'id' => 0,
+                'source' => 'dldb',
+                'name' =>  "Dienstleistung konnte nicht erbracht werden",
+            ]);
+            $process->requests[] = $request;
+        } elseif (array_key_exists('requestCountList', $input)) {
+            $process->requests = $requestList->withCountList($input['requestCountList']);
+        }
         $process->setClientsCount($input['statistic']['clientsCount']);
+        //throw new \Exception("Test");
         $process = \App::$http->readPostResult('/process/status/finished/', $process)->getEntity();
         //$workstation = \App::$http->readDeleteResult('/workstation/process/')->getEntity();
         return \BO\Slim\Render::redirect(
