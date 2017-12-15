@@ -91,7 +91,6 @@ class ProcessStatusArchived extends Process
         if ($archived) {
             $this->writeXRequestsArchived($process->id, $archived->archiveId);
         }
-        //ToDo write to statistic Table
         return $archived;
     }
 

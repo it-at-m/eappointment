@@ -17,13 +17,13 @@ class ExchangeClientdepartment extends Base
     SELECT
         s.`behoerdenid` as subjectid,
         DATE_FORMAT(s.`datum`, :groupby) as date,
-        ANY_VALUE(notification.total) as notificationscount,
+        MIN(notification.total) as notificationscount,
         0 as notificationscost,
-        ANY_VALUE(clientscount.total) as clientscount,
-        ANY_VALUE(clientscount.missed) as missed,
-        ANY_VALUE(clientscount.withappointment) as withappointment,
-        ANY_VALUE(clientscount.missedwithappointment) as missedwithappointment,
-        ANY_VALUE(requestscount.total) as requestcount
+        MIN(clientscount.total) as clientscount,
+        MIN(clientscount.missed) as missed,
+        MIN(clientscount.withappointment) as withappointment,
+        MIN(clientscount.missedwithappointment) as missedwithappointment,
+        MIN(requestscount.total) as requestcount
 
     FROM '. self::TABLE .' AS s
         LEFT JOIN (
