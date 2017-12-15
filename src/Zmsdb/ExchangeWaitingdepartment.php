@@ -3,7 +3,6 @@
 namespace BO\Zmsdb;
 
 use \BO\Zmsentities\Exchange;
-use \BO\Zmsentities\department as departmentEntity;
 
 class ExchangeWaitingdepartment extends Base implements Interfaces\ExchangeSubject
 {
@@ -21,13 +20,13 @@ class ExchangeWaitingdepartment extends Base implements Interfaces\ExchangeSubje
         $entity->addDictionaryEntry('waitingcount');
         $entity->addDictionaryEntry('waitingtime');
         $entity->addDictionaryEntry('waitingcalculated');
-
         $subjectIdList = explode(',', $subjectid);
+
         foreach ($subjectIdList as $subjectid) {
             $raw = $this
                 ->getReader()
                 ->fetchAll(
-                    constant("\BO\Zmsdb\Query\ExchangeWaitingdepartment::QUERY_READ_DAY"),
+                    constant("\BO\Zmsdb\Query\ExchangeWaitingdepartment::QUERY_READ_". strtoupper($period)),
                     [
                         'departmentid' => $subjectid,
                         'datestart' => $datestart->format('Y-m-d'),

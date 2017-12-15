@@ -3,7 +3,6 @@
 namespace BO\Zmsdb;
 
 use \BO\Zmsentities\Exchange;
-use \BO\Zmsentities\Scope as ScopeEntity;
 
 class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
 {
@@ -21,17 +20,17 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
         $entity->addDictionaryEntry('waitingcount');
         $entity->addDictionaryEntry('waitingtime');
         $entity->addDictionaryEntry('waitingcalculated');
-
         $subjectIdList = explode(',', $subjectid);
+
         foreach ($subjectIdList as $subjectid) {
             $raw = $this
                 ->getReader()
                 ->fetchAll(
-                    constant("\BO\Zmsdb\Query\ExchangeWaitingscope::QUERY_READ_DAY"),
+                    constant("\BO\Zmsdb\Query\ExchangeWaitingscope::QUERY_READ_". strtoupper($period)),
                     [
                         'scopeid' => $subjectid,
                         'datestart' => $datestart->format('Y-m-d'),
-                        'dateend' => $dateend->format('Y-m-d'),
+                        'dateend' => $dateend->format('Y-m-d')
                     ]
                 );
 
@@ -42,7 +41,7 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
                     $waitingcalculated = $entry[sprintf('zeit_ab_%02s', $hour)];
                     $entity->addDataSet([
                           $subjectid,
-                          $entry['datum'],
+                          $entry['date'],
                           $hour,
                           $waitingcount,
                           $waitingtime,
