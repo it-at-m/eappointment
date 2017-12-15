@@ -56,8 +56,8 @@
                     &.report-board--summary {
                         background: $greyDark;
                     }
-                    &[data-value="0"] {
-                        color: $greyDark;
+                    &[data-value="0"], .ausgegraut {
+                        color: $greyMiddle;
                     }
 
                 }

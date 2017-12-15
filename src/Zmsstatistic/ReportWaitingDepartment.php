@@ -6,7 +6,7 @@
 
 namespace BO\Zmsstatistic;
 
-class ReportWaitingIndex extends BaseController
+class ReportWaitingDepartment extends BaseController
 {
     protected $hashset = [
         'waitingcount',
@@ -30,16 +30,16 @@ class ReportWaitingIndex extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $department = \App::$http->readGetResult('/scope/' . $workstation->scope['id'] . '/department/')->getEntity();
-        $organisation = \App::$http->readGetResult('/department/' .$department->id . '/organisation/')->getEntity();
+        $organisation = \App::$http->readGetResult('/department/' . $department->id . '/organisation/')->getEntity();
 
         $waitingPeriod = \App::$http
-          ->readGetResult('/warehouse/waitingscope/' . $workstation->scope['id'] . '/')
+          ->readGetResult('/warehouse/waitingdepartment/' . $department->id . '/')
           ->getEntity();
 
         $exchangeWaiting = null;
         if (isset($args['period'])) {
             $exchangeWaiting = \App::$http
-            ->readGetResult('/warehouse/waitingscope/' . $workstation->scope['id'] . '/'. $args['period']. '/')
+            ->readGetResult('/warehouse/waitingdepartment/' . $department->id . '/'. $args['period']. '/')
             ->getEntity()
             ->toGrouped($this->groupfields, $this->hashset)
             ->withMaxByHour($this->hashset)
@@ -60,7 +60,7 @@ class ReportWaitingIndex extends BaseController
             'page/reportWaitingIndex.twig',
             array(
               'title' => 'Wartestatistik Standort',
-              'activeScope' => 'active',
+              'activeDepartment' => 'active',
               'menuActive' => 'waiting',
               'department' => $department,
               'organisation' => $organisation,
@@ -68,7 +68,7 @@ class ReportWaitingIndex extends BaseController
               'showAll' => 1,
               'period' => $args['period'],
               'exchangeWaiting' => $exchangeWaiting,
-              'source' => ['entity' => 'WaitingIndex'],
+              'source' => ['entity' => 'WaitingDepartment'],
               'workstation' => $workstation->getArrayCopy()
             )
         );
