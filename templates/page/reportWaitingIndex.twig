@@ -1,0 +1,57 @@
+{% extends "layout/main.twig" %}
+{% block content %}
+<div class="counter-view" data-includeurl="{{ includeUrl() }}" data-selected-date="{{ selectedDate }}" data-selected-process="{{ waitingnumber }}" data-selected-time="{{ selectedTime }}">
+        <div class="report-index">
+            {% embed "block/report/period.twig" with {"source":source, "items": waitingPeriod, "selected": period} %}
+                {% block breadcrumb %}
+                <ul class="report-period--breadcrumb">
+                    <li class="report-period--subject">{{ title|trans }}</li>
+                    <li><a class="{{ activeOrganisation }}" href="{{ urlGet("ReportClientOrganisation", {}, {}) }}">{{ organisation.name }}</a></li>
+                    <li><a class="{{ activeDepartment }}" href="{{ urlGet("ReportClientDepartment", {}, {}) }}">{{ department.name }}</a></li>
+                    <li><a class="{{ activeScope }}" href="{{ urlGet("ReportClientIndex", {}, {}) }}">{{workstation.scope.contact.name}} {{workstation.scope.shortName}}</a></li>
+                </ul>
+                </ul>
+                {% endblock %}
+            {% endembed %}
+
+            {% if exchangeWaiting %}
+                {% embed "block/report/board.twig" with {'class': 'report-board'} %}
+                {% block board_body %}
+                    {% set firstDay = "%s-%s-%s"|format(exchangeWaiting.firstDay.year, exchangeWaiting.firstDay.month, exchangeWaiting.firstDay.day) %}
+                    {% set lastDay = "%s-%s-%s"|format(exchangeWaiting.lastDay.year, exchangeWaiting.lastDay.month, exchangeWaiting.lastDay.day) %}
+                    <table class="report-board--table report-board--narrow">
+                        <thead>
+                                <th class="statistik">
+                                    <span class="keinumbruch">
+                                        {% trans %}Zeitabschnitte{% endtrans %}
+                                    </span>
+                                </th>
+                                <th class="statistik">{{ firstDay|localizeddate("MEDIUM","none",NULL,NULL,"LLL") }}</th>
+                                {% for day in range(firstDay|date('U'), lastDay|date('U'), 86400 ) %}
+                                   <th class="statistik">&nbsp;{{ day|date('d') }}</th>
+                                {% endfor %}
+                            </thead>
+                        <tbody class="">
+                            {% for hour in 0..23 %}
+                                <tr>
+                                    <th class="statistik">
+                                        {% trans %}Maxima{% endtrans %} {{ hour }} - {{ hour + 1 }} {% trans %}Uhr{% endtrans %} <br>
+                                        {% trans %}berechnete Zeit{% endtrans %}<br>
+                                        {% trans %}Wartende{% endtrans %}<br>
+                                        {% trans %}gemessene Zeit{% endtrans %}
+                                    </th>
+                                    {% for day in range(firstDay|date('U'), lastDay|date('U'), 86400 ) %}
+                                        <td class="statistik report-board--summary">
+                                                {{ dump()}}
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endblock %}
+                {% endembed %}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

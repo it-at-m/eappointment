@@ -8,6 +8,16 @@ namespace BO\Zmsstatistic;
 
 class ReportClientDepartment extends BaseController
 {
+    protected $totals = [
+        'notificationscount',
+        'notificationscost',
+        'clientscount',
+        'missed',
+        'withappointment',
+        'missedwithappointment',
+        'requestscount'
+    ];
+
     /**
      * @SuppressWarnings(Param)
      * @return String
@@ -18,7 +28,7 @@ class ReportClientDepartment extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-        $department = \App::$http->readGetResult('/department/' . $args['id'] . '/')->getEntity();
+        $department = \App::$http->readGetResult('/scope/' . $workstation->scope['id'] . '/department/')->getEntity();
         $organisation = \App::$http->readGetResult('/department/' .$department->id . '/organisation/')->getEntity();
 
         $clientPeriod = \App::$http
@@ -63,7 +73,7 @@ class ReportClientDepartment extends BaseController
                 'period' => $args['period'],
                 'exchangeClient' => $exchangeClient,
                 'exchangeNotification' => $exchangeNotification,
-                'source' => ['entity' => 'DepartmentClient', 'id' => $department->id],
+                'source' => ['entity' => 'ClientDepartment'],
                 'workstation' => $workstation->getArrayCopy()
             )
         );

@@ -29,41 +29,35 @@ use \Psr\Http\Message\ResponseInterface;
  * -------------------------------------------------------------------------
  */
 
- \App::$slim->map(['GET','POST'], '/report/client/', '\BO\Zmsstatistic\ReportClientIndex')
+ \App::$slim->map(['GET','POST'], '/report/client/scope/[{period}/]', '\BO\Zmsstatistic\ReportClientIndex')
      ->setName("ReportClientIndex");
 
- \App::$slim->map(['GET','POST'], '/report/request/', '\BO\Zmsstatistic\ReportRequestIndex')
+ \App::$slim->map(['GET','POST'], '/report/client/department/[{period}/]', '\BO\Zmsstatistic\ReportClientDepartment')
+     ->setName("ReportClientDepartment");
+
+ \App::$slim->map(['GET','POST'], '/report/client/organisation/[{period}/]', '\BO\Zmsstatistic\ReportClientOrganisation')
+     ->setName("ReportClientOrganisation");
+
+
+ \App::$slim->map(['GET','POST'], '/report/request/scope/[{period}/]', '\BO\Zmsstatistic\ReportRequestIndex')
      ->setName("ReportRequestIndex");
 
- \App::$slim->map(['GET','POST'], '/report/waiting/', '\BO\Zmsstatistic\ReportWaitingIndex')
+ \App::$slim->map(['GET','POST'], '/report/request/department/[{period}/]', '\BO\Zmsstatistic\ReportRequestDepartment')
+     ->setName("ReportRequestDepartment");
+
+ \App::$slim->map(['GET','POST'], '/report/request/organisation/[{period}/]', '\BO\Zmsstatistic\ReportRequestOrganisation')
+     ->setName("ReportRequestOrganisation");
+
+ \App::$slim->map(['GET','POST'], '/report/waiting/scope/[{period}/]', '\BO\Zmsstatistic\ReportWaitingIndex')
      ->setName("ReportWaitingIndex");
 
-\App::$slim->map(['GET','POST'], '/report/client/scope/{id}/[{period}/]', '\BO\Zmsstatistic\ReportClientScope')
-    ->setName("ReportScopeClient");
+\App::$slim->map(['GET','POST'], '/report/waiting/department/[{period}/]', '\BO\Zmsstatistic\ReportWaitingDepartment')
+    ->setName("ReportWaitingDepartment");
 
-\App::$slim->map(['GET','POST'], '/report/request/scope/{id}/[{period}/]', '\BO\Zmsstatistic\ReportRequestScope')
-    ->setName("ReportScopeRequest");
+\App::$slim->map(['GET','POST'], '/report/waiting/organisation/[{period}/]', '\BO\Zmsstatistic\ReportWaitingOrganisation')
+    ->setName("ReportWaitingOrganisation");
 
-\App::$slim->map(['GET','POST'], '/report/waiting/scope/{id}/[{period}/]', '\BO\Zmsstatistic\ReportWaitingScope')
-    ->setName("ReportScopeWaiting");
 
-\App::$slim->map(['GET','POST'], '/report/client/department/{id}/[{period}/]', '\BO\Zmsstatistic\ReportClientDepartment')
-    ->setName("ReportDepartmentClient");
-
-\App::$slim->map(['GET','POST'], '/report/request/department/{id}/[{period}/]', '\BO\Zmsstatistic\ReportRequestDepartment')
-    ->setName("ReportDepartmentRequest");
-
-\App::$slim->map(['GET','POST'], '/report/waiting/department/{id}/[{period}/]', '\BO\Zmsstatistic\ReportWaitingDepartment')
-    ->setName("ReportDepartmentWaiting");
-
-\App::$slim->map(['GET','POST'], '/report/client/organisation/{id}/[{period}/]', '\BO\Zmsstatistic\ReportClientOrganisation')
-    ->setName("ReportOrganisationClient");
-
-\App::$slim->map(['GET','POST'], '/report/request/organisation/{id}/[{period}/]', '\BO\Zmsstatistic\ReportRequestOrganisation')
-    ->setName("ReportOrganisationRequest");
-
-\App::$slim->map(['GET','POST'], '/report/waiting/organisation/{id}/[{period}/]', '\BO\Zmsstatistic\ReportWaitingOrganisation')
-    ->setName("ReportOrganisationWaiting");
 
 /*
  * ---------------------------------------------------------------------------

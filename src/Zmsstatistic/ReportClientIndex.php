@@ -8,6 +8,16 @@ namespace BO\Zmsstatistic;
 
 class ReportClientIndex extends BaseController
 {
+    protected $totals = [
+        'notificationscount',
+        'notificationscost',
+        'clientscount',
+        'missed',
+        'withappointment',
+        'missedwithappointment',
+        'requestscount'
+    ];
+
     /**
      * @SuppressWarnings(Param)
      * @return String
@@ -17,10 +27,28 @@ class ReportClientIndex extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 3])->getEntity();
-        $validator = $request->getAttribute('validator');
-        $selectedDate = $validator->getParameter('date')->isString()->getValue();
-        $selectedDate = ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d');
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        $department = \App::$http->readGetResult('/scope/' . $workstation->scope['id'] . '/department/')->getEntity();
+        $organisation = \App::$http->readGetResult('/department/' .$department->id . '/organisation/')->getEntity();
+
+        $clientPeriod = \App::$http
+          ->readGetResult('/warehouse/clientscope/' . $workstation->scope['id'] . '/')
+          ->getEntity();
+
+        $exchangeClient = null;
+        $exchangeNotification = null;
+        if (isset($args['period'])) {
+            $exchangeClient = \App::$http
+              ->readGetResult('/warehouse/clientscope/' . $workstation->scope['id'] . '/'. $args['period']. '/')
+              ->getEntity()
+              ->withCalculatedTotals($this->totals)
+              ->getJoinedHashData();
+
+            $exchangeNotification = \App::$http
+              ->readGetResult('/warehouse/notificationscope/' . $workstation->scope['id'] . '/'. $args['period']. '/')
+              ->getEntity()
+              ->getJoinedHashData();
+        }
 
         if (!$workstation->hasId()) {
             return \BO\Slim\Render::redirect(
@@ -35,9 +63,17 @@ class ReportClientIndex extends BaseController
             $response,
             'page/reportClientIndex.twig',
             array(
-                'title' => 'Kundenstatistik',
+                'title' => 'Kundenstatistik Standort',
+                'activeScope' => 'active',
                 'menuActive' => 'client',
-                'selectedDate' => $selectedDate,
+                'department' => $department,
+                'organisation' => $organisation,
+                'clientperiod' => $clientPeriod,
+                'showAll' => 1,
+                'period' => $args['period'],
+                'exchangeClient' => $exchangeClient,
+                'exchangeNotification' => $exchangeNotification,
+                'source' => ['entity' => 'ClientIndex'],
                 'workstation' => $workstation->getArrayCopy()
             )
         );
