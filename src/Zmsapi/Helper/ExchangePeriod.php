@@ -57,8 +57,8 @@ class ExchangePeriod
         return static::$endDateTime;
     }
 
-    public function getPeriodIdentifier()
+    public function getPeriodIdentifier($groupby)
     {
-        return static::$periodIdentifier;
+        return ($groupby) ? $groupby : static::$periodIdentifier;
     }
 }
