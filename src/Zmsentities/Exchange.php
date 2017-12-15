@@ -3,6 +3,8 @@
 namespace BO\Zmsentities;
 
 /**
+ * @SuppressWarnings(Complexity)
+ * @SuppressWarnings(PublicMethod)
  *
  */
 class Exchange extends Schema\Entity
@@ -93,6 +95,47 @@ class Exchange extends Schema\Entity
         return $entity;
     }
 
+    public function withMaxByHour(array $keysToCalculate = ['count'])
+    {
+        $entity = clone $this;
+        $maxima = [];
+        foreach ($entity->data as $dateItems) {
+            foreach ($dateItems as $hour => $hourItems) {
+                foreach ($hourItems as $key => $value) {
+                    if (is_numeric($value) && in_array($key, $keysToCalculate)) {
+                        $maxima[$hour][$key] = (
+                          isset($maxima[$hour][$key]) && $maxima[$hour][$key] > $value
+                        ) ? $maxima[$hour][$key] : $value;
+                    }
+                }
+            }
+            $entity->data['max'] = $maxima;
+        }
+        return $entity;
+    }
+
+    public function withMaxAndAverageFromWaitingTime()
+    {
+        $entity = clone $this;
+        foreach ($entity->data as $date => $dateItems) {
+            $maxima = 0;
+            $total = 0;
+            $count = 0;
+            foreach ($dateItems as $hourItems) {
+                foreach ($hourItems as $key => $value) {
+                    if (is_numeric($value) && 'waitingtime' == $key && 0 < $value) {
+                        $total += $value;
+                        $count += 1;
+                        $maxima = ($maxima > $value) ? $maxima : $value;
+                    }
+                }
+            }
+            $entity->data[$date]['max'] = $maxima;
+            $entity->data[$date]['average'] = floor($total / $count);
+        }
+        return $entity;
+    }
+
     public function getCalculatedTotals()
     {
         foreach (array_reverse($this->data) as $item) {
@@ -105,21 +148,63 @@ class Exchange extends Schema\Entity
         return null;
     }
 
+    public function getHashData(array $hashfields = [], $first = false)
+    {
+        $hash = [];
+        foreach ($this->dictionary as $entry) {
+            foreach ($this->data as $key => $item) {
+                foreach ($item as $position => $data) {
+                    if ($entry['position'] == $position) {
+                        if (count($hashfields) && in_array($entry['variable'], $hashfields)) {
+                            $hash[$key][$entry['variable']] = $data;
+                        } else {
+                            $hash[$key][$entry['variable']] = $data;
+                        }
+                    }
+                }
+            }
+        }
+        return ($first) ? reset($hash) : $hash;
+    }
+
     public function getJoinedHashData()
     {
         $hashData['firstDay'] = $this->firstDay;
         $hashData['lastDay'] = $this->lastDay;
         $hashData['period'] = $this->period;
-        $hashData['data'] = array();
-        foreach ($this->dictionary as $entry) {
-            foreach ($this->data as $key => $item) {
-                foreach ($item as $position => $data) {
-                    if ($entry['position'] == $position) {
-                        $hashData['data'][$key][$entry['variable']] = $data;
-                    }
+        $hashData['data'] = $this->getHashData();
+        return $hashData;
+    }
+
+    public function toGrouped(array $fields, array $hashfields)
+    {
+        $entity = clone $this;
+        $entity->data = $this->getGroupedHashSet($fields, $hashfields);
+        unset($entity->dictionary);
+        return $entity;
+    }
+
+    public function getGroupedHashSet(array $fields, array $hashfields)
+    {
+        $list = [];
+        if (count($fields)) {
+            $field = array_shift($fields);
+            $fieldposition = $this->getPositionByName($field);
+            foreach ($this->data as $element) {
+                if (! isset($list[$element[$fieldposition]])) {
+                    $list[$element[$fieldposition]] = clone $this;
+                    $list[$element[$fieldposition]]->data = [];
+                }
+                $list[$element[$fieldposition]]->data[] = $element;
+            }
+            foreach ($list as $key => $row) {
+                if ($row instanceof Exchange) {
+                    $list[$key] = $row->getGroupedHashSet($fields, $hashfields);
                 }
             }
+        } else {
+            return $this->getHashData($hashfields, true);
         }
-        return $hashData;
+        return $list;
     }
 }
