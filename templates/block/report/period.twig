@@ -11,10 +11,10 @@
             {% set years = years|merge([entry|first]) %}
         {% endif %}
     {% endfor %}
-    {% set last3Year = years|reverse|slice(0,3) %}
+    {% set last3Year = years|slice(0,3) %}
     <table class="report-period--table">
         <tbody>
-            {% for year in years|reverse %}
+            {% for year in years %}
                 {% set display = 'hide' %}
                 {% if year in last3Year %}{% set display = 'show' %}{% endif %}
                 <tr class="{{ display }}">

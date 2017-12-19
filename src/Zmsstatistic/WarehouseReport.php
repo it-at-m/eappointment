@@ -17,11 +17,7 @@ class WarehouseReport extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 3])->getEntity();
-        $validator = $request->getAttribute('validator');
-        $selectedDate = $validator->getParameter('date')->isString()->getValue();
-        $selectedDate = ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d');
-
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         if (!$workstation->hasId()) {
             return \BO\Slim\Render::redirect(
                 'index',
@@ -30,15 +26,21 @@ class WarehouseReport extends BaseController
                 )
             );
         }
+        $report = \App::$http
+          ->readGetResult('/warehouse/'. $args['subject'] .'/'. $args['subjectid'] .'/'. $args['period'] .'/')
+          ->getEntity();
 
         return \BO\Slim\Render::withHtml(
             $response,
             'page/warehouseReport.twig',
             array(
-                'title' => 'Kategorien',
-                'menuActive' => 'warehouse',
-                'selectedDate' => $selectedDate,
-                'workstation' => $workstation->getArrayCopy()
+              'title' => 'Kategorien',
+              'menuActive' => 'warehouse',
+              'report' => $report,
+              'category' => $args['subject'],
+              'subjectid' => $args['subjectid'],
+              'period' => $args['period'],
+              'workstation' => $workstation->getArrayCopy()
             )
         );
     }
