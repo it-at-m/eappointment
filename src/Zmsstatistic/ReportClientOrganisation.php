@@ -42,12 +42,12 @@ class ReportClientOrganisation extends BaseController
             ->readGetResult('/warehouse/clientorganisation/' . $organisation->id . '/'. $args['period']. '/')
             ->getEntity()
             ->withCalculatedTotals($this->totals)
-            ->getJoinedHashData();
+            ->toHashed();
 
             $exchangeNotification = \App::$http
             ->readGetResult('/warehouse/notificationorganisation/' . $organisation->id . '/'. $args['period']. '/')
             ->getEntity()
-            ->getJoinedHashData();
+            ->toHashed();
         }
 
         if (!$workstation->hasId()) {

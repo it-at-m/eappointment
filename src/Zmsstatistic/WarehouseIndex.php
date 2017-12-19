@@ -17,11 +17,7 @@ class WarehouseIndex extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 3])->getEntity();
-        $validator = $request->getAttribute('validator');
-        $selectedDate = $validator->getParameter('date')->isString()->getValue();
-        $selectedDate = ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d');
-
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         if (!$workstation->hasId()) {
             return \BO\Slim\Render::redirect(
                 'index',
@@ -30,6 +26,12 @@ class WarehouseIndex extends BaseController
                 )
             );
         }
+        var_dump($warehouse = \App::$http->readGetResult('/warehouse/')
+          ->getEntity());
+        $warehouse = \App::$http->readGetResult('/warehouse/')
+          ->getEntity()
+          ->toHashed()
+          ->withRightsFromUseraccount($workstation->getUseraccount());
 
         return \BO\Slim\Render::withHtml(
             $response,
@@ -37,7 +39,7 @@ class WarehouseIndex extends BaseController
             array(
                 'title' => 'Kategorien',
                 'menuActive' => 'warehouse',
-                'selectedDate' => $selectedDate,
+                'warehouse' => $warehouse,
                 'workstation' => $workstation->getArrayCopy()
             )
         );

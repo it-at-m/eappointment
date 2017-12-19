@@ -2,15 +2,16 @@
 {% block content %}
 <div class="counter-view" data-includeurl="{{ includeUrl() }}" data-selected-date="{{ selectedDate }}" data-selected-process="{{ waitingnumber }}" data-selected-time="{{ selectedTime }}">
         <div class="report-index">
-            <h1>Übersicht verfügbarer Kategorien</h1>
+            <h1>{% trans %}Übersicht verfügbarer Kategorien{% endtrans %}</h1>
 
-            <p>Die Rohdaten sind in Kategorien aufgeteilt. Zu jeder Kategorie finden sich IDs wie zum Beispiel Standort-Namen. Darunter befinden sich unterschiedliche Zeitabschnitte. Die verfügbaren Auswertungen bedienen sich gleichfalls dieser Rohdaten. Aber nicht zu allen Rohdaten existieren Auswertungen.</p>
+            <p>{% trans %}Die Rohdaten sind in Kategorien aufgeteilt. Zu jeder Kategorie finden sich IDs wie zum Beispiel Standort-Namen. Darunter befinden sich unterschiedliche Zeitabschnitte. Die verfügbaren Auswertungen bedienen sich gleichfalls dieser Rohdaten. Aber nicht zu allen Rohdaten existieren Auswertungen.{% endtrans %}
+            </p>
 
-            <h2>Kategorien</h2>
+            <h2>{% trans %}Kategorien{% endtrans %}</h2>
             <ul>
-                <li><a href="{{ urlGet('WarehouseSubject', {'subject': 'waitingnumber'}, {}) }}">waitingnumber</a></li>
-                <li><a href="{{ urlGet('WarehouseSubject', {'subject': 'waitingnumberdepartment'}, {}) }}">waitingnumberdepartment</a></li>
-                <li><a href="{{ urlGet('WarehouseSubject', {'subject': 'waitingnumberorganisation'}, {}) }}">waitingnumberorganisation</a></li>
+                {% for entry in warehouse.data %}
+                    <li><a href="{{ urlGet('WarehouseSubject', {'subject': entry.subject}, {}) }}">{{ entry.description|trans }}</a></li>
+                {% endfor %}
             </ul>
         </div>
     </div>
