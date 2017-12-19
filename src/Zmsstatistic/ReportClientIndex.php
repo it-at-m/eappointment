@@ -42,12 +42,12 @@ class ReportClientIndex extends BaseController
               ->readGetResult('/warehouse/clientscope/' . $workstation->scope['id'] . '/'. $args['period']. '/')
               ->getEntity()
               ->withCalculatedTotals($this->totals)
-              ->getJoinedHashData();
+              ->toHashed();
 
             $exchangeNotification = \App::$http
               ->readGetResult('/warehouse/notificationscope/' . $workstation->scope['id'] . '/'. $args['period']. '/')
               ->getEntity()
-              ->getJoinedHashData();
+              ->toHashed();
         }
 
         if (!$workstation->hasId()) {

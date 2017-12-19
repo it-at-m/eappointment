@@ -42,12 +42,12 @@ class ReportClientDepartment extends BaseController
             ->readGetResult('/warehouse/clientdepartment/' . $department->id . '/'. $args['period']. '/')
             ->getEntity()
             ->withCalculatedTotals($this->totals)
-            ->getJoinedHashData();
+            ->toHashed();
 
             $exchangeNotification = \App::$http
             ->readGetResult('/warehouse/notificationdepartment/' . $department->id . '/'. $args['period']. '/')
             ->getEntity()
-            ->getJoinedHashData();
+            ->toHashed();
         }
 
         if (!$workstation->hasId()) {
