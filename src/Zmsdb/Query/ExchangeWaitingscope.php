@@ -67,14 +67,14 @@ class ExchangeWaitingscope extends Base
 
     const QUERY_READ_QUARTER = "
         SELECT
-          CONCAT(YEAR(`datum`),'-',QUARTER(`datum`)) as date,
+          CONCAT(YEAR(w.`datum`),'-',QUARTER(w.`datum`)) as datum,
           ". self::WAITING_VALUES ."
-        FROM ". self::TABLE ."
+        FROM ". self::TABLE ." w
         WHERE
-          `standortid` = :scopeid AND
-          `datum` BETWEEN :datestart AND :dateend
-        GROUP BY date
-        ORDER BY date ASC
+          w.`standortid` = :scopeid AND
+          w.`datum` BETWEEN :datestart AND :dateend
+        GROUP BY CONCAT(YEAR(w.`datum`),'-',QUARTER(w.`datum`))
+        ORDER BY CONCAT(YEAR(w.`datum`),'-',QUARTER(w.`datum`)) ASC
     ";
 
     const QUERY_SUBJECTS = '

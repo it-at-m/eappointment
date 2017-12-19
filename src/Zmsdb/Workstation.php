@@ -45,10 +45,7 @@ class Workstation extends Base
                 );
                 $workstation->linkList = (new Link)->readByScopeId($workstation->scope['id']);
             }
-            $workstation->process = (new Process)->readByWorkstation(
-                $workstation,
-                $resolveReferences - 1
-            );
+            $workstation->process = (new Process)->readByWorkstation($workstation, $resolveReferences - 1);
         }
         return $workstation;
     }
@@ -56,11 +53,8 @@ class Workstation extends Base
     public function readLoggedInHashByName($loginName)
     {
         $query = Query\Workstation::QUERY_LOGGEDIN_CHECK;
-        $LoggedInWorkstation = $this->getReader()->fetchOne(
-            $query,
-            ['loginName' => $loginName]
-        );
-        return ($LoggedInWorkstation['hash']) ? $LoggedInWorkstation['hash'] : null;
+        $loggedInWorkstation = $this->getReader()->fetchOne($query, ['loginName' => $loginName]);
+        return ($loggedInWorkstation['hash']) ? $loggedInWorkstation['hash'] : null;
     }
 
     public function readLoggedInListByScope($scopeId, \DateTimeInterface $dateTime, $resolveReferences = 0)
