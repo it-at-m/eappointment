@@ -20,7 +20,7 @@ class ExchangeNotificationorganisation extends Base
             LEFT JOIN '. Department::TABLE .' d ON d.`OrganisationsID` = o.`OrganisationsID`
             LEFT JOIN '. Scope::TABLE .' s ON d.`BehoerdenID` = s.`BehoerdenID`
             LEFT JOIN '. self::TABLE .' n ON
-                s.`StandortID` = n.`StandortID` AND 
+                s.`StandortID` = n.`StandortID` AND
                 n.`Datum` BETWEEN :datestart AND :dateend
         WHERE
             o.`OrganisationsID` = :organisationid
@@ -45,18 +45,6 @@ class ExchangeNotificationorganisation extends Base
     const QUERY_PERIODLIST_MONTH = '
         SELECT
             DATE_FORMAT(n.datum,"%Y-%m") AS date
-        FROM '. self::TABLE .' AS n
-            LEFT JOIN '. Scope::TABLE .' AS s ON n.`standortid` = s.`StandortID`
-            LEFT JOIN '. Department::TABLE .' AS d ON s.`BehoerdenID` = d.`BehoerdenID`
-            INNER JOIN '. Organisation::TABLE .' AS o ON d.`OrganisationsID` = o.`OrganisationsID`
-        WHERE o.`OrganisationsID` = :organisationid
-        GROUP BY date
-        ORDER BY date ASC
-    ';
-
-    const QUERY_PERIODLIST_YEAR = '
-        SELECT
-            DATE_FORMAT(n.datum,"%Y") AS date
         FROM '. self::TABLE .' AS n
             LEFT JOIN '. Scope::TABLE .' AS s ON n.`standortid` = s.`StandortID`
             LEFT JOIN '. Department::TABLE .' AS d ON s.`BehoerdenID` = d.`BehoerdenID`

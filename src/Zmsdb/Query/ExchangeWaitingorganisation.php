@@ -65,8 +65,8 @@ class ExchangeWaitingorganisation extends Base
             LEFT JOIN ' . Scope::TABLE .' AS s ON w.`standortid` = s.`StandortID`
             LEFT JOIN ' . Department::TABLE .' AS d ON s.`BehoerdenID` = d.`BehoerdenID`
             LEFT JOIN ' . Organisation::TABLE .' AS o ON d.`OrganisationsID` = o.`OrganisationsID`
-        GROUP BY w.`standortid`
-        ORDER BY w.`standortid` ASC
+        GROUP BY o.`OrganisationsID`
+        ORDER BY o.`OrganisationsID` ASC, periodstart DESC
     ';
 
     const QUERY_PERIODLIST_DAY = '
@@ -84,18 +84,6 @@ class ExchangeWaitingorganisation extends Base
     const QUERY_PERIODLIST_MONTH = '
         SELECT DISTINCT
             DATE_FORMAT(`datum`,"%Y-%m") AS date
-        FROM ' . self::TABLE . ' AS w
-            LEFT JOIN ' . Scope::TABLE .' AS s ON w.`standortid` = s.`StandortID`
-            LEFT JOIN ' . Department::TABLE .' AS d ON s.`BehoerdenID` = d.`BehoerdenID`
-            LEFT JOIN ' . Organisation::TABLE .' AS o ON d.`OrganisationsID` = o.`OrganisationsID`
-        WHERE
-            o.`OrganisationsID` = :organisationid
-        ORDER BY `datum` ASC
-    ';
-
-    const QUERY_PERIODLIST_YEAR = '
-        SELECT DISTINCT
-            DATE_FORMAT(`datum`,"%Y") AS date
         FROM ' . self::TABLE . ' AS w
             LEFT JOIN ' . Scope::TABLE .' AS s ON w.`standortid` = s.`StandortID`
             LEFT JOIN ' . Department::TABLE .' AS d ON s.`BehoerdenID` = d.`BehoerdenID`

@@ -50,15 +50,4 @@ class ExchangeNotificationdepartment extends Base
         GROUP BY date
         ORDER BY date ASC
     ';
-
-    const QUERY_PERIODLIST_YEAR = '
-        SELECT
-            DATE_FORMAT(n.datum,"%Y") AS date
-        FROM '. self::TABLE .' AS n
-            LEFT JOIN '. Scope::TABLE .' AS s ON n.`standortid` = s.`StandortID`
-            LEFT JOIN '. Department::TABLE .' AS d ON s.`BehoerdenID` = d.`BehoerdenID`
-        WHERE d.`BehoerdenID` = :departmentid
-        GROUP BY date
-        ORDER BY date ASC
-    ';
 }

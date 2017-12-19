@@ -59,38 +59,41 @@ class ExchangeClientorganisation extends Base
         $raw = $this->getReader()->fetchAll(Query\ExchangeClientorganisation::QUERY_SUBJECTS, []);
         $entity = new Exchange();
         $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable());
-        $entity->addDictionaryEntry('subject', 'string', 'ID of a organisation', 'organisation.id');
-        $entity->addDictionaryEntry('periodstart');
-        $entity->addDictionaryEntry('periodend');
-        $entity->addDictionaryEntry('description');
+        $entity->addDictionaryEntry('subject', 'string', 'Organisation ID', 'organisation.id');
+        $entity->addDictionaryEntry('periodstart', 'string', 'Datum von');
+        $entity->addDictionaryEntry('periodend', 'string', 'Datum bis');
+        $entity->addDictionaryEntry('description', 'string', 'Name der Organisation');
         foreach ($raw as $entry) {
             $entity->addDataSet(array_values($entry));
         }
         return $entity;
     }
 
-    public function readPeriodList($subjectid, $period = 'month')
+    public function readPeriodList($subjectid, $period = 'day')
     {
-        $years = $this->getReader()->fetchAll(
-            constant("\BO\Zmsdb\Query\ExchangeWaitingorganisation::QUERY_PERIODLIST_YEAR"),
-            [
-                'organisationid' => $subjectid,
-            ]
-        );
-        $months = $this->getReader()->fetchAll(
-            constant("\BO\Zmsdb\Query\ExchangeWaitingorganisation::QUERY_PERIODLIST_MONTH"),
-            [
-                'organisationid' => $subjectid,
-            ]
-        );
-        $raw = array_merge($years, $months);
-        sort($raw);
-
         $entity = new Exchange();
         $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable(), $period);
         $entity->addDictionaryEntry('period');
-        foreach ($raw as $entry) {
-            $entity->addDataSet(array_values($entry));
+
+        $montsList = $this->getReader()->fetchAll(
+            constant("\BO\Zmsdb\Query\ExchangeClientorganisation::QUERY_PERIODLIST_MONTH"),
+            [
+                'organisationid' => $subjectid,
+            ]
+        );
+        $raw = [];
+        foreach ($montsList as $month) {
+            $date = new \DateTimeImmutable($month['date']);
+            $raw[$date->format('Y')][] = $month['date'];
+            rsort($raw[$date->format('Y')]);
+        }
+        krsort($raw);
+
+        foreach ($raw as $year => $months) {
+            $entity->addDataSet([$year]);
+            foreach ($months as $month) {
+                $entity->addDataSet([$month]);
+            }
         }
         return $entity;
     }
