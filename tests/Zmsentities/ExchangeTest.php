@@ -18,10 +18,28 @@ class ExchangeTest extends EntityCommonTests
 
     public function testJoinedHash()
     {
-        $entity = (new $this->entityclass())->getExample();
-        $this->assertEquals('test', $entity->getJoinedHashData()['data'][0]['name']);
-        $this->assertEquals('test2', $entity->getJoinedHashData()['data'][1]['name']);
-        $this->assertEquals('day', $entity->getJoinedHashData()['period']);
+        $entity = (new $this->entityclass())->getExample()->toHashed();
+        $this->assertEquals('test', $entity['data'][0]['name']);
+        $this->assertEquals('test2', $entity['data'][1]['name']);
+        $this->assertEquals('day', $entity['period']);
+    }
+
+    public function testHashedWithRights()
+    {
+        $now = new \DateTimeImmutable('2016-04-01 11:55:00');
+        $useraccount = (new \BO\Zmsentities\Useraccount)->getExample();
+        $entity = (new $this->entityclass());
+        $entity->setPeriod($now, $now);
+        $entity->addDictionaryEntry('subject', 'string', 'subject name');
+        $entity->addDictionaryEntry('description', 'string', 'subject description');
+        $entity->addDictionaryEntry('right', 'string', 'useraccount right for this subject');
+        $entity->addDataSet(['waitingscope', 'Wartestatistik Standort', 'useraccount.rights.scope']);
+        $entity->addDataSet(['waitingdepartment', 'Wartestatistik Behörde', 'useraccount.rights.department']);
+        $entity->addDataSet(['waitingorganisation', 'Wartestatistik Organisation', 'useraccount.rights.organisation']);
+
+        $entity = $entity->toHashed()->withRightsFromUseraccount($useraccount);
+        $this->assertEquals('waitingscope', $entity['data'][0]['subject']);
+        $this->assertEquals(1, count($entity['data']));
     }
 
     public function testWithCalculatedTotals()
@@ -40,13 +58,14 @@ class ExchangeTest extends EntityCommonTests
         $this->assertEquals('totals', $entity->withCalculatedTotals(['count','count2'])->getCalculatedTotals()[2]);
         $this->assertEquals('7', $entity->withCalculatedTotals(['count','count2'])->getCalculatedTotals()[3]);
         $this->assertEquals('10', $entity->withCalculatedTotals(['count','count2'])->getCalculatedTotals()[4]);
+        $entity = $entity->withCalculatedTotals(['count','count2'])->toHashed();
         $this->assertEquals(
             7,
-            $entity->withCalculatedTotals(['count','count2'])->getJoinedHashData()['data'][3]['count']
+            $entity['data'][3]['count']
         );
         $this->assertEquals(
             10,
-            $entity->withCalculatedTotals(['count','count2'])->getJoinedHashData()['data'][3]['count2']
+            $entity['data'][3]['count2']
         );
     }
 
