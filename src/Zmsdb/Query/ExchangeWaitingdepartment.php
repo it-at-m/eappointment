@@ -10,8 +10,9 @@ class ExchangeWaitingdepartment extends Base
     const TABLE = 'wartenrstatistik';
 
     const QUERY_READ_DAY = '
-        SELECT w.`datum`,
-        '. ExchangeWaitingscope::WAITING_VALUES .'
+        SELECT
+            w.`datum`,
+            '. ExchangeWaitingscope::WAITING_VALUES .'
         FROM ' . self::TABLE . ' as w
             LEFT JOIN ' . Scope::TABLE .' AS s ON w.`standortid` = s.`StandortID`
             LEFT JOIN ' . Department::TABLE .' AS d ON s.`BehoerdenID` = d.`BehoerdenID`
@@ -39,16 +40,16 @@ class ExchangeWaitingdepartment extends Base
 
     const QUERY_READ_QUARTER = '
         SELECT
-          CONCAT(YEAR(w.`datum`),'-',QUARTER(w.`datum`)) as date,
+          CONCAT(YEAR(w.`datum`),"-",QUARTER(w.`datum`)) as datum,
           '. ExchangeWaitingscope::WAITING_VALUES .'
         FROM '. self::TABLE .' as w
-              LEFT JOIN ' . Scope::TABLE .' AS s ON w.`standortid` = s.`StandortID`
-              LEFT JOIN ' . Department::TABLE .' AS d ON s.`BehoerdenID` = d.`BehoerdenID`
+          LEFT JOIN ' . Scope::TABLE .' AS s ON w.`standortid` = s.`StandortID`
+          LEFT JOIN ' . Department::TABLE .' AS d ON s.`BehoerdenID` = d.`BehoerdenID`
         WHERE
           d.`BehoerdenID` = :departmentid AND
           w.`datum` BETWEEN :datestart AND :dateend
-        GROUP BY CONCAT(YEAR(w.`datum`),'-',QUARTER(w.`datum`))
-        ORDER BY CONCAT(YEAR(w.`datum`),'-',QUARTER(w.`datum`)) ASC
+        GROUP BY CONCAT(YEAR(w.`datum`),"-",QUARTER(w.`datum`))
+        ORDER BY CONCAT(YEAR(w.`datum`),"-",QUARTER(w.`datum`)) ASC
     ';
 
     const QUERY_SUBJECTS = '

@@ -21,7 +21,6 @@ class ExchangeWaitingdepartment extends Base implements Interfaces\ExchangeSubje
         $entity->addDictionaryEntry('waitingtime');
         $entity->addDictionaryEntry('waitingcalculated');
         $subjectIdList = explode(',', $subjectid);
-
         foreach ($subjectIdList as $subjectid) {
             $raw = $this
                 ->getReader()

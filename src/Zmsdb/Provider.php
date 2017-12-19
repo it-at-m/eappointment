@@ -44,10 +44,7 @@ class Provider extends Base
     public function readSlotCountById($providerId)
     {
         $query = Query\Provider::getQuerySlots();
-        $slotCounts = $this->getReader()->fetchAll(
-            $query,
-            ['provider_id' => $providerId]
-        );
+        $slotCounts = $this->getReader()->fetchAll($query, ['provider_id' => $providerId]);
         return $slotCounts;
     }
 

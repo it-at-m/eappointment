@@ -3,7 +3,6 @@
 namespace BO\Zmsdb;
 
 use \BO\Zmsentities\Exchange;
-use \BO\Zmsentities\organisation as organisationEntity;
 
 class ExchangeWaitingorganisation extends Base implements Interfaces\ExchangeSubject
 {
@@ -21,13 +20,13 @@ class ExchangeWaitingorganisation extends Base implements Interfaces\ExchangeSub
         $entity->addDictionaryEntry('waitingcount');
         $entity->addDictionaryEntry('waitingtime');
         $entity->addDictionaryEntry('waitingcalculated');
-
         $subjectIdList = explode(',', $subjectid);
+
         foreach ($subjectIdList as $subjectid) {
             $raw = $this
                 ->getReader()
                 ->fetchAll(
-                    constant("\BO\Zmsdb\Query\ExchangeWaitingorganisation::QUERY_READ_DAY"),
+                    constant("\BO\Zmsdb\Query\ExchangeWaitingorganisation::QUERY_READ_". strtoupper($period)),
                     [
                         'organisationid' => $subjectid,
                         'datestart' => $datestart->format('Y-m-d'),
@@ -35,20 +34,19 @@ class ExchangeWaitingorganisation extends Base implements Interfaces\ExchangeSub
                     ]
                 );
 
-            foreach ($raw as $entry) {
+            $entry = array_shift($raw);
+            while ($entry) {
                 foreach (range(0, 23) as $hour) {
-                    $waitingcount = $entry[sprintf('wartende_ab_%02s', $hour)];
-                    $waitingtime = $entry[sprintf('echte_zeit_ab_%02s', $hour)];
-                    $waitingcalculated = $entry[sprintf('zeit_ab_%02s', $hour)];
                     $entity->addDataSet([
                         $subjectid,
                         $entry['datum'],
                         $hour,
-                        $waitingcount,
-                        $waitingtime,
-                        $waitingcalculated
+                        $entry[sprintf('wartende_ab_%02s', $hour)],
+                        $entry[sprintf('echte_zeit_ab_%02s', $hour)],
+                        $entry[sprintf('zeit_ab_%02s', $hour)]
                     ]);
                 }
+                $entry = array_shift($raw);
             }
         }
         return $entity;

@@ -25,23 +25,17 @@ class Request extends Base
     public function readSlotsOnEntity(\BO\Zmsentities\Request $entity)
     {
         $query = Query\Request::getQuerySlots();
-        $providerSlots = $this->getReader()->fetchAll(
-            $query,
-            ['request_id' => $entity->id]
-        );
+        $providerSlots = $this->getReader()->fetchAll($query, ['request_id' => $entity->id]);
         return $providerSlots;
     }
 
     public function readSlotsOnEntityByProvider($requestId, $providerId)
     {
         $query = Query\Request::getQueryRequestSlotCount();
-        $requestSlotCount = $this->getReader()->fetchValue(
-            $query,
-            [
-                'request_id' => $requestId,
-                'provider_id' => $providerId
-            ]
-        );
+        $requestSlotCount = $this->getReader()->fetchValue($query, [
+            'request_id' => $requestId,
+            'provider_id' => $providerId
+        ]);
         return $requestSlotCount;
     }
 
