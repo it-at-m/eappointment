@@ -17,11 +17,7 @@ class WarehousePeriod extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 3])->getEntity();
-        $validator = $request->getAttribute('validator');
-        $selectedDate = $validator->getParameter('date')->isString()->getValue();
-        $selectedDate = ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d');
-
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         if (!$workstation->hasId()) {
             return \BO\Slim\Render::redirect(
                 'index',
@@ -30,6 +26,9 @@ class WarehousePeriod extends BaseController
                 )
             );
         }
+        $periodList = \App::$http
+          ->readGetResult('/warehouse/'. $args['subject'] .'/'. $args['subjectid'] .'/')
+          ->getEntity();
 
         return \BO\Slim\Render::withHtml(
             $response,
@@ -37,7 +36,9 @@ class WarehousePeriod extends BaseController
             array(
                 'title' => 'Kategorien',
                 'menuActive' => 'warehouse',
-                'selectedDate' => $selectedDate,
+                'periodList' => $periodList,
+                'category' => $args['subject'],
+                'subjectId' => $args['subjectid'],
                 'workstation' => $workstation->getArrayCopy()
             )
         );

@@ -5344,13 +5344,15 @@ hr {
     text-align: left; }
   .report-board .report-board--table thead th {
     border-left: 0 none;
-    border-top: 0 none; }
+    border-top: 0 none;
+    white-space: nowrap; }
   .report-board .report-board--table tbody tr th {
     width: 15%;
     color: #444444;
     font-size: 0.8em;
     border-left: 0 none;
-    border-top: 0 none; }
+    border-top: 0 none;
+    white-space: nowrap; }
   .report-board .report-board--table tbody tr td {
     text-align: right;
     border-left: 0 none;

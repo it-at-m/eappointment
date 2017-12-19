@@ -29,53 +29,60 @@ use \Psr\Http\Message\ResponseInterface;
  * -------------------------------------------------------------------------
  */
 
- \App::$slim->map(['GET','POST'], '/report/client/scope/[{period}/]', '\BO\Zmsstatistic\ReportClientIndex')
+ \App::$slim->get('/report/client/scope/[{period}/]', '\BO\Zmsstatistic\ReportClientIndex')
      ->setName("ReportClientIndex");
 
- \App::$slim->map(['GET','POST'], '/report/client/department/[{period}/]', '\BO\Zmsstatistic\ReportClientDepartment')
+ \App::$slim->get('/report/client/department/[{period}/]', '\BO\Zmsstatistic\ReportClientDepartment')
      ->setName("ReportClientDepartment");
 
- \App::$slim->map(['GET','POST'], '/report/client/organisation/[{period}/]', '\BO\Zmsstatistic\ReportClientOrganisation')
+ \App::$slim->get('/report/client/organisation/[{period}/]', '\BO\Zmsstatistic\ReportClientOrganisation')
      ->setName("ReportClientOrganisation");
 
 
- \App::$slim->map(['GET','POST'], '/report/request/scope/[{period}/]', '\BO\Zmsstatistic\ReportRequestIndex')
+ \App::$slim->get('/report/request/scope/[{period}/]', '\BO\Zmsstatistic\ReportRequestIndex')
      ->setName("ReportRequestIndex");
 
- \App::$slim->map(['GET','POST'], '/report/request/department/[{period}/]', '\BO\Zmsstatistic\ReportRequestDepartment')
+ \App::$slim->get('/report/request/department/[{period}/]', '\BO\Zmsstatistic\ReportRequestDepartment')
      ->setName("ReportRequestDepartment");
 
- \App::$slim->map(['GET','POST'], '/report/request/organisation/[{period}/]', '\BO\Zmsstatistic\ReportRequestOrganisation')
+ \App::$slim->get('/report/request/organisation/[{period}/]', '\BO\Zmsstatistic\ReportRequestOrganisation')
      ->setName("ReportRequestOrganisation");
 
- \App::$slim->map(['GET','POST'], '/report/waiting/scope/[{period}/]', '\BO\Zmsstatistic\ReportWaitingIndex')
+ \App::$slim->get('/report/waiting/scope/[{period}/]', '\BO\Zmsstatistic\ReportWaitingIndex')
      ->setName("ReportWaitingIndex");
 
-\App::$slim->map(['GET','POST'], '/report/waiting/department/[{period}/]', '\BO\Zmsstatistic\ReportWaitingDepartment')
+\App::$slim->get('/report/waiting/department/[{period}/]', '\BO\Zmsstatistic\ReportWaitingDepartment')
     ->setName("ReportWaitingDepartment");
 
-\App::$slim->map(['GET','POST'], '/report/waiting/organisation/[{period}/]', '\BO\Zmsstatistic\ReportWaitingOrganisation')
+\App::$slim->get('/report/waiting/organisation/[{period}/]', '\BO\Zmsstatistic\ReportWaitingOrganisation')
     ->setName("ReportWaitingOrganisation");
 
-
+\App::$slim->get('/report/download/{category}/{subject}/{period}/', '\BO\Zmsstatistic\DownloadReport')
+    ->setName("DownloadReport");
 
 /*
  * ---------------------------------------------------------------------------
- * Warehouse downloads
+ * Warehouse views
  * -------------------------------------------------------------------------
  */
 
-\App::$slim->map(['GET','POST'], '/warehouse/', '\BO\Zmsstatistic\WarehouseIndex')
+\App::$slim->get('/warehouse/', '\BO\Zmsstatistic\WarehouseIndex')
     ->setName("WarehouseIndex");
 
-\App::$slim->map(['GET','POST'], '/warehouse/{subject}/', '\BO\Zmsstatistic\WarehouseSubject')
+\App::$slim->get('/warehouse/{subject}/', '\BO\Zmsstatistic\WarehouseSubject')
     ->setName("WarehouseSubject");
 
-\App::$slim->map(['GET','POST'], '/warehouse/{subject}/{subjectid}/', '\BO\Zmsstatistic\WarehousePeriod')
+\App::$slim->get('/warehouse/{subject}/{subjectid}/', '\BO\Zmsstatistic\WarehousePeriod')
     ->setName("WarehousePeriod");
 
-\App::$slim->map(['GET','POST'], '/warehouse/{subject}/{subjectid}/{period}/', '\BO\Zmsstatistic\WarehouseReport')
+\App::$slim->get('/warehouse/{subject}/{subjectid}/{period}/', '\BO\Zmsstatistic\WarehouseReport')
     ->setName("WarehouseReport");
+
+\App::$slim->get('/warehouse/download/{subject}/{subjectid}/', '\BO\Zmsstatistic\DownloadRawPeriodList')
+    ->setName("DownloadRawPeriodList");
+
+\App::$slim->get('/warehouse/download/{subject}/{subjectid}/{period}/', '\BO\Zmsstatistic\DownloadRawReport')
+    ->setName("DownloadRawReport");
 
 /*
  * ---------------------------------------------------------------------------

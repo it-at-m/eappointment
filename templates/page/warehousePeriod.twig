@@ -1,48 +1,42 @@
 {% extends "layout/main.twig" %}
 {% block content %}
-<div class="counter-view" data-includeurl="{{ includeUrl() }}" data-selected-date="{{ selectedDate }}" data-selected-process="{{ waitingnumber }}" data-selected-time="{{ selectedTime }}">
+<div class="counter-view" data-includeurl="{{ includeUrl() }}">
         <div class="report-index">
-            <h1>Übersicht verfügbarer Zeit-Perioden</h1>
+            <h1>{% trans %}Übersicht verfügbarer Zeit-Perioden{% endtrans %}</h1>
 
             {% embed "block/report/board.twig" with {'class': 'report-board'} %}
             {% block board_title %}
-                Kategorie: waitingnumber
+                {% trans %}Kategorie{% endtrans %}: {{ category }}
             {% endblock %}
             {% block board_header_right %}
             {% endblock %}
             {% block board_body %}
                 <table class="report-board--table report-board--text">
                     <thead>
-                        <th>Period</th>
-                        <th>XLSX-Download</th>
-                        <th>CSV-Download</th>
+                        <th>{% trans %}Zeitraum{% endtrans %}</th>
+                        <th>{% trans %}XLSX-Download{% endtrans %}</th>
+                        <th>{% trans %}CSV-Download{% endtrans %}</th>
                     </thead>
                     <tbody>
+                    {% for period in periodList.data %}
                         <tr>
-                            <td><a href="{{ urlGet('WarehouseReport', {'subject': 'waitingnumber', 'subjectid': 140, 'period': '2016'}, {}) }}">2016</a></td>
-                            <td><a href="#" target="_blank" title="Download">Download XLSX</a></td>
-                            <td><a href="#" target="_blank" title="Download">Download CSV</a></td>
+                            <td>
+                                <a href="{{ urlGet('WarehouseReport', {'subject': category, 'subjectid': subjectId, 'period': period|first}, {}) }}">
+                                    {% if period|first|length > 4 %}
+                                    {{ period|first }}
+                                    {% else %}
+                                    {{ period|first }}
+                                    {% endif %}
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{{ urlGet('DownloadRawReport', {'subject': category, 'subjectid': subjectId, 'period': period|first}, {'type':'xlsx'}) }}" target="_blank" title="Download">Download XLSX</a>
+                            </td>
+                            <td>
+                                <a href="{{ urlGet('DownloadRawReport', {'subject': category, 'subjectid': subjectId, 'period': period|first}, {'type':'csv'}) }}" target="_blank" title="Download">Download CSV</a>
+                            </td>
                         </tr>
-                        <tr>
-                            <td><a href="{{ urlGet('WarehouseReport', {'subject': 'waitingnumber', 'subjectid': 140, 'period': '2016-07'}, {}) }}">2016-07</a></td>
-                            <td><a href="#" target="_blank" title="Download">Download XLSX</a></td>
-                            <td><a href="#" target="_blank" title="Download">Download CSV</a></td>
-                        </tr>
-                        <tr>
-                            <td><a href="{{ urlGet('WarehouseReport', {'subject': 'waitingnumber', 'subjectid': 140, 'period': '2016-06'}, {}) }}">2016-06</a></td>
-                            <td><a href="#" target="_blank" title="Download">Download XLSX</a></td>
-                            <td><a href="#" target="_blank" title="Download">Download CSV</a></td>
-                        </tr>
-                        <tr>
-                            <td><a href="{{ urlGet('WarehouseReport', {'subject': 'waitingnumber', 'subjectid': 140, 'period': '2016-05'}, {}) }}">2016-05</a></td>
-                            <td><a href="#" target="_blank" title="Download">Download XLSX</a></td>
-                            <td><a href="#" target="_blank" title="Download">Download CSV</a></td>
-                        </tr>
-                        <tr>
-                            <td><a href="{{ urlGet('WarehouseReport', {'subject': 'waitingnumber', 'subjectid': 140, 'period': '2016-04'}, {}) }}">2016-04</a></td>
-                            <td><a href="#" target="_blank" title="Download">Download XLSX</a></td>
-                            <td><a href="#" target="_blank" title="Download">Download CSV</a></td>
-                        </tr>
+                    {% endfor %}
                     </tbody>
                 </table>
             {% endblock %}

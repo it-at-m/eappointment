@@ -1,4 +1,5 @@
 {% extends "layout/main.twig" %}
+{% use "block/report/advancedInfo.twig" %}
 {% block content %}
 <div class="counter-view" data-includeurl="{{ includeUrl() }}">
         <div class="report-index">
@@ -81,6 +82,7 @@
                     </table>
                 {% endblock %}
             {% endembed %}
+            {{ block('advanceInfoClient') }}
             {% endif %}
         </div>
     </div>

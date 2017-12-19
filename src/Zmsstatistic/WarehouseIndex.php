@@ -26,8 +26,6 @@ class WarehouseIndex extends BaseController
                 )
             );
         }
-        var_dump($warehouse = \App::$http->readGetResult('/warehouse/')
-          ->getEntity());
         $warehouse = \App::$http->readGetResult('/warehouse/')
           ->getEntity()
           ->toHashed()

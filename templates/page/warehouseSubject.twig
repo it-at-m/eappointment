@@ -1,34 +1,29 @@
 {% extends "layout/main.twig" %}
 {% block content %}
-<div class="counter-view" data-includeurl="{{ includeUrl() }}" data-selected-date="{{ selectedDate }}" data-selected-process="{{ waitingnumber }}" data-selected-time="{{ selectedTime }}">
+<div class="counter-view" data-includeurl="{{ includeUrl() }}">
         <div class="report-index">
-            <h1>Übersicht verfügbarer IDs</h1>
+            <h1>{% trans %}Übersicht verfügbarer IDs{% endtrans %}</h1>
 
             {% embed "block/report/board.twig" with {'class': 'report-board'} %}
             {% block board_title %}
-                Kategorie: waitingnumber
+                {% trans %}Kategorie{% endtrans %}: {{ category }}
             {% endblock %}
             {% block board_body %}
                 <table class="report-board--table">
                     <thead>
-                        <th>ID of a scope</th>
-                        <th>periodstart</th>
-                        <th>periodend</th>
-                        <th>description</th>
+                        {% for entry in dictionary %}
+                            <th>{{ entry.description }}</th>
+                        {% endfor %}
                     </thead>
                     <tbody>
+                    {% for entry in subjectList.data %}
                         <tr>
-                            <td><a href="{{ urlGet('WarehousePeriod', {'subject': 'waitingnumber', 'subjectid': 140}, {}) }}">140</a></td>
-                            <td>2011-01-01</td>
-                            <td>2017-11-08</td>
-                            <td>Bürgeramt Hohenzollerndamm</td>
+                            <td><a href="{{ urlGet('WarehousePeriod', {'subject': category, 'subjectid': entry.subject }, {}) }}">{{ entry.subject }}</a></td>
+                            <td>{{ entry.periodstart|date("d.m.Y") }}</td>
+                            <td>{{ entry.periodend|date("d.m.Y") }}</td>
+                            <td>{{ entry.description }}</td>
                         </tr>
-                        <tr>
-                            <td><a href="{{ urlGet('WarehousePeriod', {'subject': 'waitingnumber', 'subjectid': 141}, {}) }}">141</a></td>
-                            <td>2011-01-01</td>
-                            <td>2017-11-08</td>
-                            <td>{{workstation.scope.contact.name}} {{workstation.scope.shortName}}</td>
-                        </tr>
+                    {% endfor %}
                     </tbody>
                 </table>
             {% endblock %}
