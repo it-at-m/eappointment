@@ -148,6 +148,14 @@ class Exchange extends Schema\Entity
         return null;
     }
 
+    public function toHashed(array $hashfields = [])
+    {
+        $entity = clone $this;
+        $entity->data = $this->getHashData($hashfields);
+        unset($entity->dictionary);
+        return $entity;
+    }
+
     public function getHashData(array $hashfields = [], $first = false)
     {
         $hash = [];
@@ -165,15 +173,6 @@ class Exchange extends Schema\Entity
             }
         }
         return ($first) ? reset($hash) : $hash;
-    }
-
-    public function getJoinedHashData()
-    {
-        $hashData['firstDay'] = $this->firstDay;
-        $hashData['lastDay'] = $this->lastDay;
-        $hashData['period'] = $this->period;
-        $hashData['data'] = $this->getHashData();
-        return $hashData;
     }
 
     public function toGrouped(array $fields, array $hashfields)
@@ -206,5 +205,28 @@ class Exchange extends Schema\Entity
             return $this->getHashData($hashfields, true);
         }
         return $list;
+    }
+
+    public function getRightFromString($string)
+    {
+        $right = [];
+        $rightArr = explode('.', $string);
+        $right[$rightArr[0]][$rightArr[1]] = $rightArr[2];
+        return $right;
+    }
+
+    public function withRightsFromUseraccount($useraccount)
+    {
+        $entity = clone $this;
+        $entity->data = [];
+        foreach ($this->data as $entry) {
+            if (isset($entry['right'])) {
+                $right = $this->getRightFromString($entry['right']);
+                if ($useraccount->hasRights([$right['useraccount']['rights']])) {
+                    $entity->data[] = $entry;
+                }
+            }
+        }
+        return $entity;
     }
 }
