@@ -19,13 +19,13 @@ class ExchangeClientscope extends Base
         s.`standortid` as subjectid,
         #date
         DATE_FORMAT(s.`datum`, :groupby) as date,
-        MIN(notification.total) as notificationscount,
+        IF(MIN(notification.total), MIN(notification.total), 0) as notificationscount,
         0 as notificationscost,
-        MIN(clientscount.total) as clientscount,
-        MIN(clientscount.missed) as missed,
-        MIN(clientscount.withappointment) as withappointment,
-        MIN(clientscount.missedwithappointment) as missedwithappointment,
-        MIN(requestscount.total) as requestcount
+        IF(MIN(clientscount.total),MIN(clientscount.total),0) as clientscount,
+        IF(MIN(clientscount.missed),MIN(clientscount.missed),0) as missed,
+        IF(MIN(clientscount.withappointment),MIN(clientscount.withappointment),0) as withappointment,
+        IF(MIN(clientscount.missedwithappointment),MIN(clientscount.missedwithappointment),0) as missedwithappointment,
+        IF(MIN(requestscount.total),MIN(requestscount.total),0) as requestcount
 
     FROM '. self::TABLE .' AS s
         LEFT JOIN (
@@ -91,20 +91,6 @@ class ExchangeClientscope extends Base
               SELECT
                 `StandortID`,
                 DATE_FORMAT(`Datum`,"%Y-%m") AS date
-              FROM '. self::TABLE .'
-            ) s ON scope.`StandortID` = s.`standortid`
-        WHERE scope.`StandortID` = :scopeid
-        GROUP BY date
-        ORDER BY date ASC
-    ';
-
-    const QUERY_PERIODLIST_YEAR = '
-        SELECT date
-        FROM '. Scope::TABLE .' AS scope
-            INNER JOIN (
-              SELECT
-                `StandortID`,
-                DATE_FORMAT(`Datum`,"%Y") AS date
               FROM '. self::TABLE .'
             ) s ON scope.`StandortID` = s.`standortid`
         WHERE scope.`StandortID` = :scopeid

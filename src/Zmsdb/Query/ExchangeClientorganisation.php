@@ -18,13 +18,13 @@ class ExchangeClientorganisation extends Base
     SELECT
         s.`organisationsid` as subjectid,
         DATE_FORMAT(s.`datum`, :groupby) as date,
-        ANY_VALUE(notification.total) as notificationscount,
+        IF(MIN(notification.total), MIN(notification.total), 0) as notificationscount,
         0 as notificationscost,
-        ANY_VALUE(clientscount.total) as clientscount,
-        ANY_VALUE(clientscount.missed) as missed,
-        ANY_VALUE(clientscount.withappointment) as withappointment,
-        ANY_VALUE(clientscount.missedwithappointment) as missedwithappointment,
-        ANY_VALUE(requestscount.total) as requestcount
+        IF(MIN(clientscount.total),MIN(clientscount.total),0) as clientscount,
+        IF(MIN(clientscount.missed),MIN(clientscount.missed),0) as missed,
+        IF(MIN(clientscount.withappointment),MIN(clientscount.withappointment),0) as withappointment,
+        IF(MIN(clientscount.missedwithappointment),MIN(clientscount.missedwithappointment),0) as missedwithappointment,
+        IF(MIN(requestscount.total),MIN(requestscount.total),0) as requestcount
 
     FROM '. self::TABLE .' AS s
         LEFT JOIN (
@@ -105,21 +105,6 @@ class ExchangeClientorganisation extends Base
                 organisationsid,
                 DATE_FORMAT(`datum`,"%Y-%m") AS date
               FROM '. self::TABLE .'
-            ) s ON s.organisationsid = o.`OrganisationsID`
-        WHERE o.`OrganisationsID` = :organisationid
-        GROUP BY date
-        ORDER BY date ASC
-    ';
-
-    const QUERY_PERIODLIST_YEAR = '
-        SELECT date
-        FROM '. Organisation::TABLE .' AS o
-            INNER JOIN (
-              SELECT
-                organisationsid,
-                DATE_FORMAT(`datum`,"%Y") AS date
-              FROM '. self::TABLE .'
-              WHERE StandortID <> 0 AND Datum <> "0000-00-00"
             ) s ON s.organisationsid = o.`OrganisationsID`
         WHERE o.`OrganisationsID` = :organisationid
         GROUP BY date

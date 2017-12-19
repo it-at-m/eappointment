@@ -35,6 +35,6 @@ class ExchangeClientorganisationTest extends Base
         $query = new Query();
         $entity = $query->readPeriodList(71);
         $this->assertEntity("\\BO\\Zmsentities\\Exchange", $entity);
-        $this->assertEquals(17, count($entity->data));
+        $this->assertEquals(2, count($entity->data));
     }
 }

@@ -17,13 +17,13 @@ class ExchangeClientdepartment extends Base
     SELECT
         s.`behoerdenid` as subjectid,
         DATE_FORMAT(s.`datum`, :groupby) as date,
-        MIN(notification.total) as notificationscount,
+        IF(MIN(notification.total), MIN(notification.total), 0) as notificationscount,
         0 as notificationscost,
-        MIN(clientscount.total) as clientscount,
-        MIN(clientscount.missed) as missed,
-        MIN(clientscount.withappointment) as withappointment,
-        MIN(clientscount.missedwithappointment) as missedwithappointment,
-        MIN(requestscount.total) as requestcount
+        IF(MIN(clientscount.total),MIN(clientscount.total),0) as clientscount,
+        IF(MIN(clientscount.missed),MIN(clientscount.missed),0) as missed,
+        IF(MIN(clientscount.withappointment),MIN(clientscount.withappointment),0) as withappointment,
+        IF(MIN(clientscount.missedwithappointment),MIN(clientscount.missedwithappointment),0) as missedwithappointment,
+        IF(MIN(requestscount.total),MIN(requestscount.total),0) as requestcount
 
     FROM '. self::TABLE .' AS s
         LEFT JOIN (
@@ -100,20 +100,6 @@ class ExchangeClientdepartment extends Base
               SELECT
                 behoerdenid,
                 DATE_FORMAT(`datum`,"%Y-%m") AS date
-              FROM '. self::TABLE .'
-            ) s ON s.behoerdenid = d.BehoerdenID
-        WHERE d.`BehoerdenID` = :departmentid
-        GROUP BY date
-        ORDER BY date ASC
-    ';
-
-    const QUERY_PERIODLIST_YEAR = '
-        SELECT date
-        FROM '. Department::TABLE .' AS d
-            INNER JOIN (
-              SELECT
-                behoerdenid,
-                DATE_FORMAT(`datum`,"%Y") AS date
               FROM '. self::TABLE .'
             ) s ON s.behoerdenid = d.BehoerdenID
         WHERE d.`BehoerdenID` = :departmentid

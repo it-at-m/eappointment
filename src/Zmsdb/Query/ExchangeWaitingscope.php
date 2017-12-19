@@ -45,24 +45,24 @@ class ExchangeWaitingscope extends Base
     ";
 
     const QUERY_READ_DAY = '
-        SELECT *, datum as date FROM ' . self::TABLE . '
+        SELECT *, datum as datum FROM ' . self::TABLE . '
         WHERE `standortid` = :scopeid
             AND `datum` BETWEEN :datestart AND :dateend
-        GROUP BY `date`
-        ORDER BY `date` ASC
+        GROUP BY `datum`
+        ORDER BY `datum` ASC
     ';
 
     //PLEASE REMEMBER THE REALY COOL DYNAMIC VERSION
     const QUERY_READ_MONTH = "
         SELECT
-      		DATE_FORMAT(`datum`, '%Y-%m') as date,
+      		DATE_FORMAT(`datum`, '%Y-%m') as datum,
       		". self::WAITING_VALUES ."
       	FROM ". self::TABLE ."
       	WHERE
       		`standortid` = :scopeid AND
       		`datum` BETWEEN :datestart AND :dateend
-      	GROUP BY date
-      	ORDER BY date ASC
+      	GROUP BY DATE_FORMAT(`datum`, '%Y-%m')
+      	ORDER BY DATE_FORMAT(`datum`, '%Y-%m') ASC
     ";
 
     const QUERY_READ_QUARTER = "
@@ -95,7 +95,7 @@ class ExchangeWaitingscope extends Base
         )
             maxAndminDate ON maxAndminDate.`scopeid` = scope.`StandortID`
         GROUP BY scope.`StandortID`
-        ORDER BY scope.`StandortID` ASC
+        ORDER BY scope.`StandortID` ASC, periodstart DESC
     ';
 
     const QUERY_PERIODLIST_DAY = '
@@ -108,14 +108,6 @@ class ExchangeWaitingscope extends Base
 
     const QUERY_PERIODLIST_MONTH = '
         SELECT DISTINCT DATE_FORMAT(`datum`,"%Y-%m") AS date
-        FROM ' . self::TABLE . ' AS w
-        WHERE `standortid` = :scopeid
-        ORDER BY `datum` ASC
-    ';
-
-    const QUERY_PERIODLIST_YEAR = '
-        SELECT DISTINCT
-            DATE_FORMAT(`datum`,"%Y") AS date
         FROM ' . self::TABLE . ' AS w
         WHERE `standortid` = :scopeid
         ORDER BY `datum` ASC

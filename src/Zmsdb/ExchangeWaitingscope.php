@@ -15,11 +15,11 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
         $entity = new Exchange();
         $entity->setPeriod($datestart, $dateend, $period);
         $entity->addDictionaryEntry('subjectid', 'string', 'ID of a scope', 'scope.id');
-        $entity->addDictionaryEntry('date');
-        $entity->addDictionaryEntry('hour');
-        $entity->addDictionaryEntry('waitingcount');
-        $entity->addDictionaryEntry('waitingtime');
-        $entity->addDictionaryEntry('waitingcalculated');
+        $entity->addDictionaryEntry('date', 'string', 'date of report entry');
+        $entity->addDictionaryEntry('hour', 'string', 'hour of report entry');
+        $entity->addDictionaryEntry('waitingcount', 'number', 'amount of waiting clients');
+        $entity->addDictionaryEntry('waitingtime', 'number', 'real waitingtime');
+        $entity->addDictionaryEntry('waitingcalculated', 'number', 'calculated waitingtime');
         $subjectIdList = explode(',', $subjectid);
 
         foreach ($subjectIdList as $subjectid) {
@@ -58,10 +58,10 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
         $raw = $this->getReader()->fetchAll(Query\ExchangeWaitingscope::QUERY_SUBJECTS, []);
         $entity = new Exchange();
         $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable());
-        $entity->addDictionaryEntry('subject', 'string', 'ID of a scope', 'scope.id');
-        $entity->addDictionaryEntry('periodstart');
-        $entity->addDictionaryEntry('periodend');
-        $entity->addDictionaryEntry('description');
+        $entity->addDictionaryEntry('subject', 'string', 'Standort ID', 'scope.id');
+        $entity->addDictionaryEntry('periodstart', 'string', 'Datum von');
+        $entity->addDictionaryEntry('periodend', 'string', 'Datum bis');
+        $entity->addDictionaryEntry('description', 'string', 'Standort Beschreibung');
         foreach ($raw as $entry) {
             $entity->addDataSet(array_values($entry));
         }
@@ -70,26 +70,29 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
 
     public function readPeriodList($subjectid, $period = 'day')
     {
-        $years = $this->getReader()->fetchAll(
-            constant("\BO\Zmsdb\Query\ExchangeWaitingscope::QUERY_PERIODLIST_YEAR"),
-            [
-                'scopeid' => $subjectid,
-            ]
-        );
-        $months = $this->getReader()->fetchAll(
+        $entity = new Exchange();
+        $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable(), $period);
+        $entity->addDictionaryEntry('period');
+
+        $montsList = $this->getReader()->fetchAll(
             constant("\BO\Zmsdb\Query\ExchangeWaitingscope::QUERY_PERIODLIST_MONTH"),
             [
                 'scopeid' => $subjectid,
             ]
         );
-        $raw = array_merge($years, $months);
-        sort($raw);
+        $raw = [];
+        foreach ($montsList as $month) {
+            $date = new \DateTimeImmutable($month['date']);
+            $raw[$date->format('Y')][] = $month['date'];
+            rsort($raw[$date->format('Y')]);
+        }
+        krsort($raw);
 
-        $entity = new Exchange();
-        $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable(), $period);
-        $entity->addDictionaryEntry('period');
-        foreach ($raw as $entry) {
-            $entity->addDataSet(array_values($entry));
+        foreach ($raw as $year => $months) {
+            $entity->addDataSet([$year]);
+            foreach ($months as $month) {
+                $entity->addDataSet([$month]);
+            }
         }
         return $entity;
     }

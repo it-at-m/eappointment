@@ -43,13 +43,4 @@ class ExchangeNotificationscope extends Base
         GROUP BY date
         ORDER BY date ASC
     ';
-
-    const QUERY_PERIODLIST_YEAR = '
-        SELECT
-            DATE_FORMAT(n.datum,"%Y") AS date
-        FROM '. self::TABLE .' AS n
-        WHERE n.`StandortID` = :scopeid
-        GROUP BY date
-        ORDER BY date ASC
-    ';
 }
