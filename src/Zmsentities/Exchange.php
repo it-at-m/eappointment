@@ -206,27 +206,4 @@ class Exchange extends Schema\Entity
         }
         return $list;
     }
-
-    public function getRightFromString($string)
-    {
-        $right = [];
-        $rightArr = explode('.', $string);
-        $right[$rightArr[0]][$rightArr[1]] = $rightArr[2];
-        return $right;
-    }
-
-    public function withRightsFromUseraccount($useraccount)
-    {
-        $entity = clone $this;
-        $entity->data = [];
-        foreach ($this->data as $entry) {
-            if (isset($entry['right'])) {
-                $right = $this->getRightFromString($entry['right']);
-                if ($useraccount->hasRights([$right['useraccount']['rights']])) {
-                    $entity->data[] = $entry;
-                }
-            }
-        }
-        return $entity;
-    }
 }
