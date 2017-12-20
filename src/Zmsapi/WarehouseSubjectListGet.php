@@ -21,14 +21,16 @@ class WarehouseSubjectListGet extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights('scope');
+        $workstation = (new Helper\User($request, 2))->checkRights('scope');
 
         $message = Response\Message::create($request);
         $subjectsList = (new Query)->readSubjectsList();
         if (! $subjectsList) {
             throw new Exception\Warehouse\ReportNotFound();
         }
-        $message->data = $subjectsList;
+        $message->data = (new Helper\ExchangeAccessFilter($subjectsList, $workstation))
+          ->getFilteredEntity()
+          ->withLessData();
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message, $message->getStatuscode());
