@@ -11,47 +11,47 @@ class Warehouse extends Base
         [
             'subject' => 'waitingscope',
             'description' => 'Wartestatistik Standort',
-            'right' => 'useraccount.rights.scope'
+            'right' => 'scope'
         ],
         [
             'subject' => 'waitingdepartment',
             'description' => 'Wartestatistik Behörde',
-            'right' => 'useraccount.rights.department'
+            'right' => 'department'
         ],
         [
             'subject' => 'waitingorganisation',
             'description' => 'Wartestatistik Organisation',
-            'right' => 'useraccount.rights.organisation'
+            'right' => 'organisation'
         ],
         [
             'subject' => 'clientscope',
             'description' => 'Kundenstatistik Standort',
-            'right' => 'useraccount.rights.scope'
+            'right' => 'scope'
         ],
         [
             'subject' => 'clientdepartment',
             'description' => 'Kundenstatistik Behörde',
-            'right' => 'useraccount.rights.department'
+            'right' => 'department'
         ],
         [
             'subject' => 'clientorganisation',
             'description' => 'Kundenstatistik Organisation',
-            'right' => 'useraccount.rights.organisation'
+            'right' => 'organisation'
         ],
         [
             'subject' => 'notificationscope',
             'description' => 'SMS-Statistik Standort',
-            'right' => 'useraccount.rights.scope'
+            'right' => 'scope'
         ],
         [
             'subject' => 'notificationdepartment',
             'description' => 'SMS-Statistik Behörde',
-            'right' => 'useraccount.rights.department'
+            'right' => 'department'
         ],
         [
             'subject' => 'notificationorganisation',
             'description' => 'SMS-Statistik Organisation',
-            'right' => 'useraccount.rights.organisation'
+            'right' => 'organisation'
         ],
         [
             'subject' => 'requestscope',
@@ -75,7 +75,7 @@ class Warehouse extends Base
         $entity = (new Exchange)->withLessData();
         $entity->addDictionaryEntry('subject', 'string', 'subject name');
         $entity->addDictionaryEntry('description', 'string', 'subject description');
-        $entity->addDictionaryEntry('right', 'string', 'useraccount right for this subject');
+        $entity->addDictionaryEntry('right', 'string', 'useraccount right for this subject', 'useraccount.rights');
         foreach ($this->subjects as $subject) {
             $entity->addDataSet(array_values($subject));
         }
