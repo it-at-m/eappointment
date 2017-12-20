@@ -57,7 +57,7 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/report/waiting/organisation/[{period}/]', '\BO\Zmsstatistic\ReportWaitingOrganisation')
     ->setName("ReportWaitingOrganisation");
 
-\App::$slim->get('/report/download/{category}/{subject}/{period}/', '\BO\Zmsstatistic\DownloadReport')
+\App::$slim->get('/report/download/{period}/', '\BO\Zmsstatistic\DownloadReport')
     ->setName("DownloadReport");
 
 /*
@@ -81,8 +81,8 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/warehouse/download/{subject}/{subjectid}/', '\BO\Zmsstatistic\DownloadRawPeriodList')
     ->setName("DownloadRawPeriodList");
 
-\App::$slim->get('/warehouse/download/{subject}/{subjectid}/{period}/', '\BO\Zmsstatistic\DownloadRawReport')
-    ->setName("DownloadRawReport");
+\App::$slim->get('/warehouse/download/{subject}/{subjectid}/{period}/', '\BO\Zmsstatistic\DownloadWarehouseReport')
+    ->setName("DownloadWarehouseReport");
 
 /*
  * ---------------------------------------------------------------------------

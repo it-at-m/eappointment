@@ -27,6 +27,7 @@ class ReportClientIndex extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        $validator = $request->getAttribute('validator');
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $department = \App::$http->readGetResult('/scope/' . $workstation->scope['id'] . '/department/')->getEntity();
         $organisation = \App::$http->readGetResult('/department/' .$department->id . '/organisation/')->getEntity();
@@ -57,6 +58,15 @@ class ReportClientIndex extends BaseController
                     'error' => 'login_failed'
                 )
             );
+        }
+
+        $type = $validator->getParameter('type')->isString()->getValue();
+        if ($type) {
+            return DownloadReport::readResponse($request, $response, [
+                'notificationReport' => $exchangeNotification,
+                'clientReport' => $exchangeClient,
+                'period' => $args['period']
+            ]);
         }
 
         return \BO\Slim\Render::withHtml(
