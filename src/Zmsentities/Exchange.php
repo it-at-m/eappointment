@@ -59,9 +59,15 @@ class Exchange extends Schema\Entity
     public function withLessData()
     {
         $entity = clone $this;
-        unset($entity['firstDay']);
-        unset($entity['lastDay']);
-        unset($entity['period']);
+        if (isset($entity['firstDay'])) {
+            unset($entity['firstDay']);
+        }
+        if (isset($entity['lastDay'])) {
+            unset($entity['lastDay']);
+        }
+        if (isset($entity['period'])) {
+            unset($entity['period']);
+        }
         return $entity;
     }
 
