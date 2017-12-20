@@ -13,7 +13,8 @@ class ExchangeAccessFilter
     protected static $filterList = [
         'scope.id' => 'getFilteredEntityByScope',
         'department.id' => 'getFilteredEntityByDepartment',
-        'organisation.id' => 'getFilteredEntityByOrganisation'
+        'organisation.id' => 'getFilteredEntityByOrganisation',
+        'useraccount.rights' => 'getFilteredEntityByUseraccountRights'
     ];
 
     protected static $exchangeEntity = null;
@@ -45,6 +46,13 @@ class ExchangeAccessFilter
         }
 
         return static::$filteredEntity;
+    }
+
+    protected static function getFilteredEntityByUseraccountRights($right, $filteredKey)
+    {
+        if (! static::$workstation->getUseraccount()->hasRights([$right])) {
+            unset(static::$filteredEntity->data[$filteredKey]);
+        }
     }
 
     protected static function getFilteredEntityByScope($entityId, $filteredKey)
