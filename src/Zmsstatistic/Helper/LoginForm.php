@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @package 115Mandant
+ * @package zmsstatistic
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */

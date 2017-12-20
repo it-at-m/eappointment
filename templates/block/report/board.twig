@@ -7,9 +7,9 @@
 
 {% block board_header_right %}
     {% if download == "raw" %}
-        <a href="{{ urlGet('DownloadRawReport', {'subject': category, 'subjectid': subjectid, 'period': period}, {'type':'xlsx'}) }}" target="_blank" title="Download" class="btn btn--bigicon download">⤓</a>
+        <a href="{{ urlGet('DownloadWarehouseReport', {'category': category, 'subject': subject, 'period': period}, {'type':'xlsx'}) }}" target="_blank" title="Download" class="btn btn--bigicon download">⤓</a>
     {% else %}
-        <a href="{{ urlGet('DownloadReport', {'category': category, 'subject': subject, 'period': period}, {'type':'xlsx'}) }}" target="_blank" title="Download" class="btn btn--bigicon download">⤓</a>
+        <a href="{{ urlGet("Report%s"|format(source.entity), {'period': period}, {'type':'xlsx'}) }}" target="_blank" title="Download" class="btn btn--bigicon download">⤓</a>
     {% endif %}
 
 {% endblock %}
