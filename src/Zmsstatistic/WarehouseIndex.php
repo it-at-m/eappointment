@@ -28,8 +28,7 @@ class WarehouseIndex extends BaseController
         }
         $warehouse = \App::$http->readGetResult('/warehouse/')
           ->getEntity()
-          ->toHashed()
-          ->withRightsFromUseraccount($workstation->getUseraccount());
+          ->toHashed();
 
         return \BO\Slim\Render::withHtml(
             $response,
