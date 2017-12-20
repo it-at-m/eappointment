@@ -16,30 +16,12 @@ class ExchangeTest extends EntityCommonTests
         $this->assertTrue($entity->isValid());
     }
 
-    public function testJoinedHash()
+    public function testHashed()
     {
         $entity = (new $this->entityclass())->getExample()->toHashed();
         $this->assertEquals('test', $entity['data'][0]['name']);
         $this->assertEquals('test2', $entity['data'][1]['name']);
         $this->assertEquals('day', $entity['period']);
-    }
-
-    public function testHashedWithRights()
-    {
-        $now = new \DateTimeImmutable('2016-04-01 11:55:00');
-        $useraccount = (new \BO\Zmsentities\Useraccount)->getExample();
-        $entity = (new $this->entityclass());
-        $entity->setPeriod($now, $now);
-        $entity->addDictionaryEntry('subject', 'string', 'subject name');
-        $entity->addDictionaryEntry('description', 'string', 'subject description');
-        $entity->addDictionaryEntry('right', 'string', 'useraccount right for this subject');
-        $entity->addDataSet(['waitingscope', 'Wartestatistik Standort', 'useraccount.rights.scope']);
-        $entity->addDataSet(['waitingdepartment', 'Wartestatistik Behörde', 'useraccount.rights.department']);
-        $entity->addDataSet(['waitingorganisation', 'Wartestatistik Organisation', 'useraccount.rights.organisation']);
-
-        $entity = $entity->toHashed()->withRightsFromUseraccount($useraccount);
-        $this->assertEquals('waitingscope', $entity['data'][0]['subject']);
-        $this->assertEquals(1, count($entity['data']));
     }
 
     public function testWithCalculatedTotals()
