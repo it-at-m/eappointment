@@ -37,6 +37,9 @@ class Index extends BaseController
                     throw $exception;
                 } elseif ($exception->template == 'BO\Zmsapi\Exception\Useraccount\AuthKeyFound') {
                     throw $exception;
+                } elseif ($exception->template == 'BO\Zmsapi\Exception\Useraccount\InvalidCredentials') {
+                    $exception->data['source'] = 'login';
+                    throw $exception;
                 }
             }
             if (array_key_exists('authkey', $workstation)) {

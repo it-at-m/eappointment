@@ -48,35 +48,7 @@ class LoginForm
             $collection['scope'] = Validator::param('scope')
                 ->isNumber('Bitte wählen Sie einen Standort aus');
         }
-
-        if (! Validator::param('appointmentsOnly')->isDeclared()->hasFailed()) {
-            $collection['appointmentsOnly'] = Validator::param('appointmentsOnly')
-                ->isNumber();
-        }
-
-        // workstation
-        if (! Validator::param('workstation')->isDeclared()->hasFailed()) {
-            $collection['workstation'] = Validator::param('workstation')
-                 ->isString('Bitte wählen Sie einen Arbeitsplatz oder den Tresen aus')
-                 ->isSmallerThan(5, "Die Arbeitsplatz-Bezeichnung sollte 5 Zeichen nicht überschreiten");
-        }
-        // hint
-        if (! Validator::param('hint')->isDeclared()->hasFailed()) {
-            $collection['hint'] = Validator::param('hint')
-                ->isString();
-        }
-
         // return validated collection
-        $collection = Validator::collection($collection);
-        return $collection;
-    }
-
-    public static function fromQuickLogin()
-    {
-        $loginData = static::fromLoginParameters();
-        $additionalData = static::fromAdditionalParameters();
-        $collection = array_merge($loginData->getValues(), $additionalData->getValues());
-        $collection['redirectUrl'] = Validator::param('url')->isString();
         $collection = Validator::collection($collection);
         return $collection;
     }
@@ -85,10 +57,7 @@ class LoginForm
     {
         if (isset($workstation->useraccount)) {
             $formData = $data->getValues();
-            $workstation->setValidatedName($formData);
-            $workstation->setValidatedHint($formData);
             $workstation->setValidatedScope($formData);
-            $workstation->setValidatedAppointmentsOnly($formData);
             unset($workstation->useraccount['departments']);
             $result = \App::$http->readPostResult('/workstation/', $workstation)->getEntity();
         }
