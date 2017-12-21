@@ -16,7 +16,7 @@
             {% endembed %}
 
             {% if exchangeWaiting %}
-                {% embed "block/report/board.twig" with {'class': 'report-board'} %}
+                {% embed "block/report/board.twig" with {'source':source, 'class': 'report-board'} %}
                 {% block board_body %}
                     {% if exchangeWaiting.period == "day" %}
                         {% set startDate = "%s-%s-%s"|format(exchangeWaiting.firstDay.year, exchangeWaiting.firstDay.month, exchangeWaiting.firstDay.day) %}

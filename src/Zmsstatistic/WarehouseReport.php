@@ -6,6 +6,8 @@
 
 namespace BO\Zmsstatistic;
 
+use BO\Zmsstatistic\Download\WarehouseReport as Download;
+
 class WarehouseReport extends BaseController
 {
     /**
@@ -17,6 +19,7 @@ class WarehouseReport extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        $validator = $request->getAttribute('validator');
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         if (!$workstation->hasId()) {
             return \BO\Slim\Render::redirect(
@@ -29,6 +32,12 @@ class WarehouseReport extends BaseController
         $report = \App::$http
           ->readGetResult('/warehouse/'. $args['subject'] .'/'. $args['subjectid'] .'/'. $args['period'] .'/')
           ->getEntity();
+
+        $type = $validator->getParameter('type')->isString()->getValue();
+        if ($type) {
+            $args['report'] = $report;
+            return (new Download(\App::$slim->getContainer()))->readResponse($request, $response, $args);
+        }
 
         return \BO\Slim\Render::withHtml(
             $response,

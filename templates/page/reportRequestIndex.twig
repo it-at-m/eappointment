@@ -12,7 +12,7 @@
                 </ul>
                 {% endblock %}
             {% endembed %}
-            {% embed "block/report/board.twig" with {'class': 'report-board'} %}
+            {% embed "block/report/board.twig" with {'source':source, 'class': 'report-board'} %}
             {% block board_body %}
                 <table class="report-board--table report-board--narrow">
                     <thead>
