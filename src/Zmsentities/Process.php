@@ -431,7 +431,7 @@ class Process extends Schema\Entity
     public function toQueue(\DateTimeInterface $dateTime)
     {
         $queue = new Queue($this->queue);
-        $queue->withAppointment = ($this->getAppointments()->getFirst()->hasTime()) ? true : false;
+        $queue->withAppointment = ($this->getFirstAppointment()->hasTime()) ? true : false;
         $queue->waitingTime = ($queue->waitingTime) ? $queue->waitingTime : 0;
         if ($queue->withAppointment) {
             $queue->number = $this->id;
