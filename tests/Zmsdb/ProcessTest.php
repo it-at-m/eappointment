@@ -358,7 +358,7 @@ class ProcessTest extends Base
                         "callCountMax"=>"0",
                         "firstNumber"=>"1000",
                         "lastNumber"=>"1999",
-                        "processingTimeAverage"=>"00:15:00",
+                        "processingTimeAverage"=>"15",
                         "publishWaitingTimeEnabled"=>"1",
                         "statisticsEnabled"=>"1"
                     ],

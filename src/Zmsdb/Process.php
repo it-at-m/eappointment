@@ -104,6 +104,9 @@ class Process extends Base implements Interfaces\ResolveReferences
         $query->addValuesUpdateProcess($process, $dateTime);
         $this->writeItem($query);
         Log::writeLogEntry("CREATE (Process::writeNewProcess) $process ", $process->id);
+        if (!$process->toQueue($dateTime)->withAppointment) {
+            (new ExchangeWaitingscope())->writeWaitingTimeCalculated($process->scope, $dateTime);
+        }
         return $process;
     }
 

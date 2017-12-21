@@ -55,14 +55,14 @@ class ExchangeWaitingscope extends Base
     //PLEASE REMEMBER THE REALY COOL DYNAMIC VERSION
     const QUERY_READ_MONTH = "
         SELECT
-      		DATE_FORMAT(`datum`, '%Y-%m') as datum,
-      		". self::WAITING_VALUES ."
-      	FROM ". self::TABLE ."
-      	WHERE
-      		`standortid` = :scopeid AND
-      		`datum` BETWEEN :datestart AND :dateend
-      	GROUP BY DATE_FORMAT(`datum`, '%Y-%m')
-      	ORDER BY DATE_FORMAT(`datum`, '%Y-%m') ASC
+            DATE_FORMAT(`datum`, '%Y-%m') as datum,
+            ". self::WAITING_VALUES ."
+        FROM ". self::TABLE ."
+        WHERE
+            `standortid` = :scopeid AND
+            `datum` BETWEEN :datestart AND :dateend
+        GROUP BY DATE_FORMAT(`datum`, '%Y-%m')
+        ORDER BY DATE_FORMAT(`datum`, '%Y-%m') ASC
     ";
 
     const QUERY_READ_QUARTER = "
@@ -112,4 +112,58 @@ class ExchangeWaitingscope extends Base
         WHERE `standortid` = :scopeid
         ORDER BY `datum` ASC
     ';
+
+    const QUERY_CREATE = '
+        INSERT INTO ' . self::TABLE . ' SET
+            `standortid` = :scopeid,
+            `datum` = :date
+    ';
+
+    /**
+     * For backward compatibility on db table optimization, we have to convert the field name
+     * Drawback: No prepared statement using the date
+     */
+    public static function getQuerySelectByDateTime(\DateTimeInterface $date)
+    {
+        $query = sprintf(
+            "SELECT
+                `zeit_ab_%s` AS waitingcalculated,
+                `wartende_ab_%s` AS waitingcount,
+                `echte_zeit_ab_%s` AS waitingtime
+             FROM %s
+             WHERE `standortid` = :scopeid
+                AND `datum` = :date
+                AND :hour IS NOT NULL
+            ",
+            $date->format('H'),
+            $date->format('H'),
+            $date->format('H'),
+            self::TABLE
+        );
+        return $query;
+    }
+
+    /**
+     * For backward compatibility on db table optimization, we have to convert the field name
+     * Drawback: No prepared statement using the date
+     */
+    public static function getQueryUpdateByDateTime(\DateTimeInterface $date)
+    {
+        $query = sprintf(
+            "UPDATE %s
+             SET
+                `zeit_ab_%s`= :waitingcalculated,
+                `wartende_ab_%s` = :waitingcount,
+                `echte_zeit_ab_%s` = :waitingtime
+             WHERE `standortid` = :scopeid
+                AND `datum` = :date
+                AND :hour IS NOT NULL
+            ",
+            self::TABLE,
+            $date->format('H'),
+            $date->format('H'),
+            $date->format('H')
+        );
+        return $query;
+    }
 }

@@ -96,16 +96,77 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
         }
         return $entity;
     }
-/*
- * @todo ...
-    public function writeWaitingTimeCalculated(ScopeEntity $scope, \DateTimeInterface $date)
+
+    /**
+     * fetch entry by scope and date or create an entry, if it does not exists
+     * the returned entry is save for updating
+     */
+    public function readByDateTime(\BO\Zmsentities\Scope $scope, \DateTimeInterface $date)
+    {
+        $sql = Query\ExchangeWaitingscope::getQuerySelectByDateTime($date);
+        $existingEntry = $this->getReader()->fetchOne(
+            $sql,
+            [
+                'scopeid' => $scope->id,
+                'date' => $date->format('Y-m-d'),
+                'hour' => $date->format('H')
+            ]
+        );
+        if (!$existingEntry) {
+            $insert = $this->getWriter()->prepare(Query\ExchangeWaitingscope::QUERY_CREATE);
+            $insert->execute([
+                'scopeid' => $scope->id,
+                'date' => $date->format('Y-m-d'),
+            ]);
+            $existingEntry = $this->readByDateTime($scope, $date);
+        }
+        return $existingEntry;
+    }
+
+    /**
+     * Write calculated waiting time and count of queued processes into statistic
+     */
+    public function writeWaitingTimeCalculated(\BO\Zmsentities\Scope $scope, \DateTimeInterface $date)
     {
         $queueList = (new Scope())->readQueueListWithWaitingTime($scope, $date);
-        $existingEntry = $this->getReader()->fetchAll(Query\ExchangeWaiting::QUERY_READ, [
+        $existingEntry = $this->readByDateTime($scope, $date);
+        $queueEntry = $queueList->getFakeOrLastWaitingnumber();
+        $waitingCalculated = $existingEntry['waitingcalculated'] > $queueEntry['waitingTimeEstimate'] ?
+            $existingEntry['waitingcalculated']
+            : $queueEntry['waitingTimeEstimate'];
+        $waitingCount = $queueList->getQueuePositionByNumber($queueEntry->number);
+        $waitingCount = $existingEntry['waitingcount'] > $waitingCount ? $existingEntry['waitingcount'] : $waitingCount;
+        $update = $this->getWriter()->prepare(Query\ExchangeWaitingscope::getQueryUpdateByDateTime($date));
+        $update->execute([
+            'waitingcalculated' => $waitingCalculated,
+            'waitingcount' => $waitingCount,
+            'waitingtime' => $existingEntry['waitingtime'],
             'scopeid' => $scope->id,
-            'datestart' => $date->format('Y-m-d'),
-            'dateend' => $date->format('Y-m-d'),
+            'date' => $date->format('Y-m-d'),
+            'hour' => $date->format('H')
         ]);
+        return $this;
     }
-*/
+
+    /**
+     * Write real waiting time into statistics
+     */
+    public function writeWaitingTime(
+        \BO\Zmsentities\Process $process,
+        \DateTimeInterface $date
+    ) {
+        $waitingTime = floor(($date->getTimestamp() - $process->toQueue($date)->arrivalTime) / 60);
+        $existingEntry = $this->readByDateTime($process->scope, $date);
+        $waitingTime = $existingEntry['waitingtime'] > $waitingTime ? $existingEntry['waitingtime'] : $waitingTime;
+        $update = $this->getWriter()->prepare(Query\ExchangeWaitingscope::getQueryUpdateByDateTime($date));
+        $update->execute([
+            'waitingcalculated' => $existingEntry['waitingcalculated'],
+            'waitingcount' => $existingEntry['waitingcount'],
+            'waitingtime' => $waitingTime,
+            'scopeid' => $process->scope->id,
+            'date' => $date->format('Y-m-d'),
+            'hour' => $date->format('H')
+        ]);
+        return $this;
+    }
 }
