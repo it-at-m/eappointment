@@ -140,7 +140,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         $entity->withAppointment = false;
         $entity->destination = (string)$this->getProcessTimeAverage();
         $entity->destinationHint = (string)$this->getWorkstationCount();
-        $entity->arrivalTime = $dateTime->modify('+24 hours')->getTimestamp();
+        $entity->arrivalTime = $dateTime->getTimestamp();
         $queueList->addEntity($entity);
         return $queueList;
     }

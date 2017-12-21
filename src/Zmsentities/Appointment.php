@@ -31,6 +31,9 @@ class Appointment extends Schema\Entity
 
     public function hasTime()
     {
+        if ($this->date == 0) {
+            return false;
+        }
         $time = $this->toDateTime();
         return ('00:00' != $time->format('H:i'));
     }
