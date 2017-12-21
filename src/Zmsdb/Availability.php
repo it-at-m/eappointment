@@ -83,7 +83,7 @@ class Availability extends Base implements Interfaces\ResolveReferences
             }
             if ($reserveEntityIds) {
                 // This can produce deadlocks:
-                $this->getReader()->exec(Query\Availability::TEMPORARY_DELETE);
+                $this->getWriter()->exec(Query\Availability::TEMPORARY_DELETE);
             }
         }
         // End remove
