@@ -4,12 +4,6 @@
     {% trans %}Auswertung{% endtrans %}
 {% endblock %}
 
-
 {% block board_header_right %}
-    {% if download == "raw" %}
-        <a href="{{ urlGet('DownloadWarehouseReport', {'category': category, 'subject': subject, 'period': period}, {'type':'xlsx'}) }}" target="_blank" title="Download" class="btn btn--bigicon download">⤓</a>
-    {% else %}
-        <a href="{{ urlGet("Report%s"|format(source.entity), {'period': period}, {'type':'xlsx'}) }}" target="_blank" title="Download" class="btn btn--bigicon download">⤓</a>
-    {% endif %}
-
+    <a href="{{ urlGet(currentRoute().name, currentRoute().params, {'type':'xlsx'}) }}" target="_blank" title="Download" class="btn btn--bigicon download">⤓</a>
 {% endblock %}

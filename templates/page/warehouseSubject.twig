@@ -4,7 +4,7 @@
         <div class="report-index">
             <h1>{% trans %}Übersicht verfügbarer IDs{% endtrans %}</h1>
 
-            {% embed "block/report/board.twig" with {'class': 'report-board'} %}
+            {% embed "block/report/board.twig" with {'class': 'report-board', 'download':'raw'} %}
             {% block board_title %}
                 {% trans %}Kategorie{% endtrans %}: {{ category }}
             {% endblock %}

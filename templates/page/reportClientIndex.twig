@@ -15,7 +15,7 @@
                 {% endblock %}
             {% endembed %}
             {% if exchangeNotification and exchangeClient %}
-            {% embed "block/report/board.twig" with {'class': 'report-board'} %}
+            {% embed "block/report/board.twig" with {'source':source, 'class': 'report-board'} %}
                 {% block board_title %}
                     {{ parent() }}: {{ title }}
                 {% endblock %}

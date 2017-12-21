@@ -29,6 +29,15 @@ class ReportClientIndex extends BaseController
     ) {
         $validator = $request->getAttribute('validator');
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        if (!$workstation->hasId()) {
+            return \BO\Slim\Render::redirect(
+                'index',
+                array(
+                    'error' => 'login_failed'
+                )
+            );
+        }
+
         $department = \App::$http->readGetResult('/scope/' . $workstation->scope['id'] . '/department/')->getEntity();
         $organisation = \App::$http->readGetResult('/department/' .$department->id . '/organisation/')->getEntity();
 
@@ -51,22 +60,15 @@ class ReportClientIndex extends BaseController
               ->toHashed();
         }
 
-        if (!$workstation->hasId()) {
-            return \BO\Slim\Render::redirect(
-                'index',
-                array(
-                    'error' => 'login_failed'
-                )
-            );
-        }
-
         $type = $validator->getParameter('type')->isString()->getValue();
         if ($type) {
-            return DownloadReport::readResponse($request, $response, [
-                'notificationReport' => $exchangeNotification,
-                'clientReport' => $exchangeClient,
-                'period' => $args['period']
-            ]);
+            $args['category'] = 'clientscope';
+            $args['reports'][] = $exchangeNotification;
+            $args['reports'][] = $exchangeClient;
+            $args['scope'] = $workstation->scope;
+            $args['department'] = $department;
+            $args['organisation'] = $organisation;
+            return (new Download\ClientScope(\App::$slim->getContainer()))->readResponse($request, $response, $args);
         }
 
         return \BO\Slim\Render::withHtml(

@@ -57,9 +57,6 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/report/waiting/organisation/[{period}/]', '\BO\Zmsstatistic\ReportWaitingOrganisation')
     ->setName("ReportWaitingOrganisation");
 
-\App::$slim->get('/report/download/{period}/', '\BO\Zmsstatistic\DownloadReport')
-    ->setName("DownloadReport");
-
 /*
  * ---------------------------------------------------------------------------
  * Warehouse views
@@ -77,12 +74,6 @@ use \Psr\Http\Message\ResponseInterface;
 
 \App::$slim->get('/warehouse/{subject}/{subjectid}/{period}/', '\BO\Zmsstatistic\WarehouseReport')
     ->setName("WarehouseReport");
-
-\App::$slim->get('/warehouse/download/{subject}/{subjectid}/', '\BO\Zmsstatistic\DownloadRawPeriodList')
-    ->setName("DownloadRawPeriodList");
-
-\App::$slim->get('/warehouse/download/{subject}/{subjectid}/{period}/', '\BO\Zmsstatistic\DownloadWarehouseReport')
-    ->setName("DownloadWarehouseReport");
 
 /*
  * ---------------------------------------------------------------------------
