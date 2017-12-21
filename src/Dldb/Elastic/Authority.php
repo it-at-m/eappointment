@@ -28,7 +28,7 @@ class Authority extends Base
         $filter = null;
 
         if ($servicelist && count($servicelist)) {
-            $filter = new \Elastica\Filter\Terms('services.service', $servicelist);
+            $filter = new \Elastica\Filter\Terms('services.service', (array)$servicelist);
             $filter->setExecution('and');
             $query->setPostFilter($filter);
         }
