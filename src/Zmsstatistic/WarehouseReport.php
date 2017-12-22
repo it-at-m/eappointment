@@ -35,6 +35,7 @@ class WarehouseReport extends BaseController
 
         $type = $validator->getParameter('type')->isString()->getValue();
         if ($type) {
+            $args['category'] = 'raw-'. $args['subject'];
             $args['report'] = $report;
             return (new Download(\App::$slim->getContainer()))->readResponse($request, $response, $args);
         }

@@ -28,14 +28,21 @@ class ReportWaitingDepartment extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        $validator = $request->getAttribute('validator');
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        if (!$workstation->hasId()) {
+            return \BO\Slim\Render::redirect(
+                'index',
+                array(
+                  'error' => 'login_failed'
+                )
+            );
+        }
         $department = \App::$http->readGetResult('/scope/' . $workstation->scope['id'] . '/department/')->getEntity();
         $organisation = \App::$http->readGetResult('/department/' . $department->id . '/organisation/')->getEntity();
-
         $waitingPeriod = \App::$http
           ->readGetResult('/warehouse/waitingdepartment/' . $department->id . '/')
           ->getEntity();
-
         $exchangeWaiting = null;
         if (isset($args['period'])) {
             $exchangeWaiting = \App::$http
@@ -46,13 +53,13 @@ class ReportWaitingDepartment extends BaseController
             ->withMaxAndAverageFromWaitingTime();
         }
 
-        if (!$workstation->hasId()) {
-            return \BO\Slim\Render::redirect(
-                'index',
-                array(
-                  'error' => 'login_failed'
-                )
-            );
+        $type = $validator->getParameter('type')->isString()->getValue();
+        if ($type) {
+            $args['category'] = 'waitingscope';
+            $args['reports'][] = $exchangeWaiting;
+            $args['department'] = $department;
+            $args['organisation'] = $organisation;
+            return (new Download\WaitingReport(\App::$slim->getContainer()))->readResponse($request, $response, $args);
         }
 
         return \BO\Slim\Render::withHtml(

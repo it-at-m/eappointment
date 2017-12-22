@@ -68,7 +68,7 @@ class ReportClientIndex extends BaseController
             $args['scope'] = $workstation->scope;
             $args['department'] = $department;
             $args['organisation'] = $organisation;
-            return (new Download\ClientScope(\App::$slim->getContainer()))->readResponse($request, $response, $args);
+            return (new Download\ClientReport(\App::$slim->getContainer()))->readResponse($request, $response, $args);
         }
 
         return \BO\Slim\Render::withHtml(
