@@ -15,10 +15,10 @@ class Db
         $startTime = microtime(true);
         //var_dump($pdo->fetchPairs('SHOW STATUS'));
         //var_dump($pdo->fetchAll('SHOW TABLES;'));
-        $sqlFile = fopen($file, 'r');
+        $sqlFile = gzopen($file, 'r');
         echo "Importing " . basename($file) . "\n";
         $query = '';
-        while ($line = fgets($sqlFile)) {
+        while ($line = gzgets($sqlFile)) {
             $query .= $line;
             if (false !== strpos($line, ';')) {
                 try {
@@ -32,6 +32,7 @@ class Db
                 }
             }
         }
+        gzclose($sqlFile);
         $time = round(microtime(true) - $startTime, 3);
         echo "\nTook $time seconds\n";
     }
@@ -62,7 +63,7 @@ class Db
         $pdo = self::startUsingDatabase('information_schema');
         $pdo->exec("CREATE DATABASE IF NOT EXISTS `$dbname_zms`;");
 
-        self::startExecuteSqlFile($fixtures . '/mysql_zmsbo.sql');
+        self::startExecuteSqlFile($fixtures . '/mysql_zmsbo.sql.gz');
     }
 
     public static function startConfigDataImport()
