@@ -27,14 +27,22 @@ class ReportClientDepartment extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        $validator = $request->getAttribute('validator');
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        if (!$workstation->hasId()) {
+            return \BO\Slim\Render::redirect(
+                'index',
+                array(
+                    'error' => 'login_failed'
+                )
+            );
+        }
+
         $department = \App::$http->readGetResult('/scope/' . $workstation->scope['id'] . '/department/')->getEntity();
         $organisation = \App::$http->readGetResult('/department/' .$department->id . '/organisation/')->getEntity();
-
         $clientPeriod = \App::$http
           ->readGetResult('/warehouse/clientdepartment/' . $department->id . '/')
           ->getEntity();
-
         $exchangeClient = null;
         $exchangeNotification = null;
         if (isset($args['period'])) {
@@ -50,13 +58,14 @@ class ReportClientDepartment extends BaseController
             ->toHashed();
         }
 
-        if (!$workstation->hasId()) {
-            return \BO\Slim\Render::redirect(
-                'index',
-                array(
-                    'error' => 'login_failed'
-                )
-            );
+        $type = $validator->getParameter('type')->isString()->getValue();
+        if ($type) {
+            $args['category'] = 'clientdepartment';
+            $args['reports'][] = $exchangeNotification;
+            $args['reports'][] = $exchangeClient;
+            $args['department'] = $department;
+            $args['organisation'] = $organisation;
+            return (new Download\ClientReport(\App::$slim->getContainer()))->readResponse($request, $response, $args);
         }
 
         return \BO\Slim\Render::withHtml(

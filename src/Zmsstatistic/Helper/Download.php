@@ -31,6 +31,14 @@ class Download
         return $this;
     }
 
+    public function writeDownload($response)
+    {
+        $response->getBody()->write($this->getWriter()->save('php://output'));
+        return $response
+            ->withHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            ->withHeader('Content-Disposition', sprintf('attachment; filename="%s.%s"', $this->title, $this->type));
+    }
+
     public function getTitle()
     {
         return $this->title;

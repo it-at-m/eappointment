@@ -28,6 +28,7 @@ class ReportWaitingOrganisation extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        $validator = $request->getAttribute('validator');
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         if (!$workstation->hasId()) {
             return \BO\Slim\Render::redirect(
@@ -37,14 +38,11 @@ class ReportWaitingOrganisation extends BaseController
                 )
             );
         }
-
         $department = \App::$http->readGetResult('/scope/' . $workstation->scope['id'] . '/department/')->getEntity();
         $organisation = \App::$http->readGetResult('/department/' . $department->id . '/organisation/')->getEntity();
-
         $waitingPeriod = \App::$http
           ->readGetResult('/warehouse/waitingorganisation/' . $organisation->id . '/')
           ->getEntity();
-
         $exchangeWaiting = null;
         if (isset($args['period'])) {
             $exchangeWaiting = \App::$http
@@ -53,6 +51,14 @@ class ReportWaitingOrganisation extends BaseController
             ->toGrouped($this->groupfields, $this->hashset)
             ->withMaxByHour($this->hashset)
             ->withMaxAndAverageFromWaitingTime();
+        }
+
+        $type = $validator->getParameter('type')->isString()->getValue();
+        if ($type) {
+            $args['category'] = 'waitingscope';
+            $args['reports'][] = $exchangeWaiting;
+            $args['organisation'] = $organisation;
+            return (new Download\WaitingReport(\App::$slim->getContainer()))->readResponse($request, $response, $args);
         }
 
         return \BO\Slim\Render::withHtml(

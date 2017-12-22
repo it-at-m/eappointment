@@ -16,7 +16,7 @@ use \BO\Zmsstatistic\Helper\OrganisationData;
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
-class WarehouseReport extends \BO\Zmsstatistic\BaseController
+class WarehouseReport extends Base
 {
     /**
      * @SuppressWarnings(Param)
@@ -27,34 +27,21 @@ class WarehouseReport extends \BO\Zmsstatistic\BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $title = 'statistic_'. $args['subject'] .'_'. $args['subjectid'] .'_'. $args['period'];
+        $title = 'raw_statistic_'. $args['subject'] .'_'. $args['subjectid'] .'_'. $args['period'];
         $download = (new Download($request))->setSpreadSheet($title);
-        $spreadsheet = $this->writeInfoHeader(
-            $args['report'],
-            $args['subject'],
-            $args['subjectid'],
-            $download->getSpreadSheet()
-        );
+        $spreadsheet = $download->getSpreadSheet();
+        $spreadsheet = $this->writeRawInfoHeader($args, $spreadsheet);
         $spreadsheet = $this->writeDictionaryData($args['report'], $spreadsheet);
         $spreadsheet = $this->writeRawReport($args['report'], $spreadsheet);
 
-        $response->getBody()->write($download->getWriter()->save('php://output'));
-        return $response
-            ->withHeader(
-                'Content-Type',
-                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-            )
-            ->withHeader(
-                'Content-Disposition',
-                sprintf('attachment; filename="%s.%s"', $download->getTitle(), $download->getType())
-            );
+        return $download->writeDownload($response);
     }
 
-    protected function writeInfoHeader(ReportEntity $report, $subject, $subjectid, Spreadsheet $spreadsheet)
+    protected function writeRawInfoHeader($args, Spreadsheet $spreadsheet)
     {
         $sheet = $spreadsheet->getActiveSheet();
-        $data = $this->getOrganisationInfo($subject, $subjectid);
-        $infoData[] = Report::$subjectTranslations[$subject];
+        $data = $this->getOrganisationInfo($args['subject'], $args['subjectid']);
+        $infoData[] = static::$subjectTranslations[$args['category']];
         if (isset($data['organisation'])) {
             $infoData[] = $data['organisation']['name'];
         }
@@ -67,8 +54,8 @@ class WarehouseReport extends \BO\Zmsstatistic\BaseController
         $infoData = array_chunk($infoData, 1);
         $sheet->fromArray($infoData, null, 'A'. $sheet->getHighestRow());
 
-        $firstDay = $report->firstDay->toDateTime()->format('d.m.Y');
-        $lastDay = $report->lastDay->toDateTime()->format('d.m.Y');
+        $firstDay = $args['report']->firstDay->toDateTime()->format('d.m.Y');
+        $lastDay = $args['report']->lastDay->toDateTime()->format('d.m.Y');
         $range = array('Zeitraum:', $firstDay, 'bis', $lastDay);
         $sheet->fromArray($range, null, 'A'. ($sheet->getHighestRow() + 1));
         return $spreadsheet;
