@@ -46,6 +46,11 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
             ]),
             'scope' => new Scope([
                 'id' => $scopeId,
+                'preferences' => [
+                    'queue' => [
+                        'processingTimeAverage' => 10,
+                    ]
+                ]
             ])
         ]);
         User::$workstationResolved = 2;
