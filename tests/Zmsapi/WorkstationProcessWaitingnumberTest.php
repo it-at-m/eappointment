@@ -21,7 +21,7 @@ class WorkstationProcessWaitingnumberTest extends Base
             '__body' => '{
                 "id": '. self::PROCESS_ID .',
                 "authKey": "'. self::AUTHKEY .'",
-                "scope": {"id": 146}
+                "scope": {"id": 146, "preferences":{"queue":{"processingTimeAverage":10}}}
             }'
         ], []);
         $this->assertContains('process.json', (string)$response->getBody());

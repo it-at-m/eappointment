@@ -20,7 +20,7 @@ class WorkstationProcessDeleteTest extends Base
         User::$workstation->process->authKey = self::AUTHKEY;
         $response = $this->render([], [], []);
         $this->assertContains('workstation.json', (string)$response->getBody());
-        $this->assertNotContains('process', (string)$response->getBody());
+        $this->assertNotContains('"process"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
