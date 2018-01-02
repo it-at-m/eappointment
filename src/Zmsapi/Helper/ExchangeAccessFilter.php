@@ -23,10 +23,13 @@ class ExchangeAccessFilter
 
     protected static $workstation = null;
 
+    protected static $organisationList = null;
+
     public function __construct($exchangeEntity, $workstation)
     {
         static::$exchangeEntity = $exchangeEntity;
         static::$workstation = $workstation;
+        static::$organisationList = $this->getOrganisationListByDepartments();
     }
 
     /**
@@ -76,7 +79,7 @@ class ExchangeAccessFilter
     protected static function getFilteredEntityByOrganisation($entityId, $filteredKey)
     {
         if (static::$workstation->getUseraccount()->hasRights(['organisation'])) {
-            if (! static::getOrganisationListByDepartments()->hasEntity($entityId)) {
+            if (! static::$organisationList->hasEntity($entityId)) {
                 unset(static::$filteredEntity->data[$filteredKey]);
             }
         }
