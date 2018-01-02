@@ -120,6 +120,23 @@ class Exchange extends Schema\Entity
         return $entity;
     }
 
+    public function withRequestsSum($keysToCalculate = ['requestscount'])
+    {
+        $entity = clone $this;
+        $sum = [];
+        foreach ($entity->data as $name => $entry) {
+            foreach ($entry as $dateItem) {
+                foreach ($dateItem as $key => $value) {
+                    if (is_numeric($value) && in_array($key, $keysToCalculate)) {
+                        $sum[$name] += $value;
+                    }
+                }
+            }
+        }
+        $entity->data['sum'] = $sum;
+        return $entity;
+    }
+
     public function withMaxAndAverageFromWaitingTime()
     {
         $entity = clone $this;
