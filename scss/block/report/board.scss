@@ -36,6 +36,9 @@
                     border-left: 0 none;
                     border-top: 0 none;
                     white-space: nowrap;
+                    &:last-child() {
+                        border-right: 0 none;
+                    }
             }
         }
         tbody {
@@ -49,6 +52,11 @@
                     border-left: 0 none;
                     border-top: 0 none;
                     white-space: nowrap;
+                    &.report-board--long-text {
+                        width:25%;
+                        white-space:normal;
+                        line-height:1.4em;
+                    }
                 }
 
                 td {
@@ -61,7 +69,9 @@
                     &[data-value="0"], .ausgegraut {
                         color: $greyMiddle;
                     }
-
+                    &:last-child() {
+                        border-right: 0 none;
+                    }
                 }
 
                 &:nth-child(odd) {
@@ -74,7 +84,14 @@
                 }
                 &:nth-child(even) {
                     td, th {
+
                     }
+                }
+
+                &:last-child() {
+                  td, th {
+                      border-bottom: 0 none;
+                  }
                 }
 
                 &.report-board--empty td {

@@ -5346,6 +5346,8 @@ hr {
     border-left: 0 none;
     border-top: 0 none;
     white-space: nowrap; }
+    .report-board .report-board--table thead th:last-child {
+      border-right: 0 none; }
   .report-board .report-board--table tbody tr th {
     width: 15%;
     color: #444444;
@@ -5353,6 +5355,10 @@ hr {
     border-left: 0 none;
     border-top: 0 none;
     white-space: nowrap; }
+    .report-board .report-board--table tbody tr th.report-board--long-text {
+      width: 25%;
+      white-space: normal;
+      line-height: 1.4em; }
   .report-board .report-board--table tbody tr td {
     text-align: right;
     border-left: 0 none;
@@ -5361,10 +5367,14 @@ hr {
       background: #D2D2D2; }
     .report-board .report-board--table tbody tr td[data-value="0"], .report-board .report-board--table tbody tr td .ausgegraut {
       color: #909090; }
+    .report-board .report-board--table tbody tr td:last-child {
+      border-right: 0 none; }
   .report-board .report-board--table tbody tr:nth-child(odd) td, .report-board .report-board--table tbody tr:nth-child(odd) th {
     background: #F0F0F0; }
     .report-board .report-board--table tbody tr:nth-child(odd) td.report-board--summary, .report-board .report-board--table tbody tr:nth-child(odd) th.report-board--summary {
       background: #D2D2D2; }
+  .report-board .report-board--table tbody tr:last-child td, .report-board .report-board--table tbody tr:last-child th {
+    border-bottom: 0 none; }
   .report-board .report-board--table tbody tr.report-board--empty td {
     background: #FFFFFF;
     border: 0 none; }

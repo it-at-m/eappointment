@@ -6,7 +6,7 @@
 
 namespace BO\Zmsstatistic;
 
-class ReportRequestIndex extends BaseController
+class ReportRequestOrganisation extends BaseController
 {
     protected $hashset = [
         'requestscount'
@@ -37,14 +37,14 @@ class ReportRequestIndex extends BaseController
             );
         }
         $department = \App::$http->readGetResult('/scope/' . $workstation->scope['id'] . '/department/')->getEntity();
-        $organisation = \App::$http->readGetResult('/department/' .$department->id . '/organisation/')->getEntity();
+        $organisation = \App::$http->readGetResult('/department/'. $department->id .'/organisation/')->getEntity();
         $requestPeriod = \App::$http
-          ->readGetResult('/warehouse/requestscope/' . $workstation->scope['id'] . '/')
+          ->readGetResult('/warehouse/requestorganisation/' . $organisation->id . '/')
           ->getEntity();
         $exchangeRequest = null;
         if (isset($args['period'])) {
             $exchangeRequest = \App::$http
-            ->readGetResult('/warehouse/requestscope/' . $workstation->scope['id'] . '/'. $args['period']. '/')
+            ->readGetResult('/warehouse/requestorganisation/' . $organisation->id . '/'. $args['period']. '/')
             ->getEntity()
             ->toGrouped($this->groupfields, $this->hashset)
             ->withRequestsSum();
@@ -52,10 +52,8 @@ class ReportRequestIndex extends BaseController
 
         $type = $validator->getParameter('type')->isString()->getValue();
         if ($type) {
-            $args['category'] = 'requestscope';
+            $args['category'] = 'requestorganisation';
             $args['reports'][] = $exchangeRequest;
-            $args['scope'] = $workstation->scope;
-            $args['department'] = $department;
             $args['organisation'] = $organisation;
             return (new Download\RequestReport(\App::$slim->getContainer()))->readResponse($request, $response, $args);
         }
@@ -64,8 +62,8 @@ class ReportRequestIndex extends BaseController
             $response,
             'page/reportRequestIndex.twig',
             array(
-              'title' => 'Dienstleistungsstatistik Standort',
-              'activeScope' => 'active',
+              'title' => 'Dienstleistungsstatistik Bezirk',
+              'activeOrganisation' => 'active',
               'menuActive' => 'request',
               'department' => $department,
               'organisation' => $organisation,
@@ -73,7 +71,7 @@ class ReportRequestIndex extends BaseController
               'showAll' => 1,
               'period' => $args['period'],
               'exchangeRequest' => $exchangeRequest,
-              'source' => ['entity' => 'RequestIndex'],
+              'source' => ['entity' => 'RequestOrganisation'],
               'workstation' => $workstation->getArrayCopy()
             )
         );

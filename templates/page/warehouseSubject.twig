@@ -6,7 +6,7 @@
 
             {% embed "block/report/board.twig" with {'class': 'report-board', 'download':'raw'} %}
             {% block board_title %}
-                {% trans %}Kategorie{% endtrans %}: {{ category }}
+                {% trans %}Kategorie{% endtrans %}: {{ categoryName|trans }}
             {% endblock %}
             {% block board_body %}
                 <table class="report-board--table">

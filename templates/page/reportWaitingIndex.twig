@@ -66,7 +66,7 @@
                                     {% elseif exchangeWaiting.period == "month" %}
                                         {% set date = startDate|date('Y') ~"-"~ "%02d"|format(date) %}
                                     {% endif %}
-                                    <td class="statistik">
+                                    <td>
                                         <br />
                                         <span class="{% if not exchangeWaiting.data[date].max %}ausgegraut{% endif %}">{{ exchangeWaiting.data[date].max|default("-") }}</span><br>
                                         <span class="{% if not exchangeWaiting.data[date].max %}ausgegraut{% endif %}">{{ exchangeWaiting.data[date].average|default("-") }}</span>
@@ -75,7 +75,7 @@
                             </tr>
                             {% for hour in 6..21 %}
                                 <tr>
-                                    <th class="statistik">
+                                    <th>
                                         {% trans %}Maxima{% endtrans %} {{ hour }} - {{ hour + 1 }} {% trans %}Uhr{% endtrans %} <br>
                                         {% trans %}berechnete Zeit{% endtrans %}<br>
                                         {% trans %}Wartende{% endtrans %}<br>

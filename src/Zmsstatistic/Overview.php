@@ -22,11 +22,14 @@ class Overview extends BaseController
         $organisation = \App::$http->readGetResult('/department/' .$department->id . '/organisation/')->getEntity();
 
         $waitingperiod = \App::$http
-          ->readGetResult('/warehouse/waitingscope/' . $workstation->scope['id'] . '/')
-          ->getEntity();
+            ->readGetResult('/warehouse/waitingscope/' . $workstation->scope['id'] . '/')
+            ->getEntity();
         $clientperiod = \App::$http
-          ->readGetResult('/warehouse/clientscope/' . $workstation->scope['id'] . '/')
-          ->getEntity();
+            ->readGetResult('/warehouse/clientscope/' . $workstation->scope['id'] . '/')
+            ->getEntity();
+        $requestperiod = \App::$http
+            ->readGetResult('/warehouse/requestscope/' . $workstation->scope['id'] . '/')
+            ->getEntity();
 
         if (!$workstation->hasId()) {
             return \BO\Slim\Render::redirect(
@@ -47,6 +50,7 @@ class Overview extends BaseController
                 'organisation' => $organisation,
                 'waitingperiod' => $waitingperiod,
                 'clientperiod' => $clientperiod,
+                'requestperiod' => $requestperiod,
                 'scopeId' => $workstation->scope['id'],
                 'showAll' => 0
             )
