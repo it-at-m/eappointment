@@ -19,8 +19,10 @@ class Healthcheck extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $status = (new Query())->readEntity();
+        $response = \BO\Zmsclient\Status::testStatus($response, function () {
+            return (new Query())->readEntity();
+        });
         $response = \BO\Slim\Render::withLastModified($response, time(), '0');
-        return \BO\Zmsclient\Status::testStatus($response, $status);
+        return $response;
     }
 }
