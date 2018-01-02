@@ -20,7 +20,8 @@ class Base extends \BO\Zmsstatistic\BaseController
 {
     public static $ignoreColumns = [
         'subjectid',
-        'max'
+        'max',
+        'sum'
     ];
     public static $subjectTranslations = [
         'waitingscope' => 'Wartesituation',

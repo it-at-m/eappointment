@@ -6,6 +6,8 @@
 
 namespace BO\Zmsstatistic;
 
+use BO\Zmsstatistic\Download\Base;
+
 class WarehousePeriod extends BaseController
 {
     /**
@@ -38,6 +40,7 @@ class WarehousePeriod extends BaseController
                 'menuActive' => 'warehouse',
                 'periodList' => $periodList,
                 'category' => $args['subject'],
+                'categoryName' => Base::$subjectTranslations[$args['subject']],
                 'subjectId' => $args['subjectid'],
                 'workstation' => $workstation->getArrayCopy()
             )
