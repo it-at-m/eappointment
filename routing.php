@@ -3390,7 +3390,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/scope/{id}/process/status/{status}/":
  *      get:
  *          summary: Get a list of processes by scope and status (pending for example)
- *          x-since: 2.12
+ *          x-since: 2.14
  *          tags:
  *              - scope
  *              - process
@@ -4388,6 +4388,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/warehouse/":
  *      get:
  *          summary: Get a list of available subjects
+ *          x-since: 2.15
  *          tags:
  *              - exchange
  *          parameters:
@@ -4417,6 +4418,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/warehouse/{subject}/":
  *      get:
  *          summary: Get a list of available subject IDs
+ *          x-since: 2.15
  *          tags:
  *              - exchange
  *          parameters:
@@ -4451,6 +4453,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/warehouse/{subject}/{subjectId}/":
  *      get:
  *          summary: Get a list of available time periods on subject
+ *          x-since: 2.15
  *          tags:
  *              - exchange
  *          parameters:
@@ -4490,6 +4493,7 @@ use \Psr\Http\Message\ResponseInterface;
  *  "/warehouse/{subject}/{subjectId}/{period}/":
  *      get:
  *          summary: Get a set of data for statistical usage
+ *          x-since: 2.15
  *          tags:
  *              - exchange
  *          parameters:
