@@ -109,6 +109,18 @@ class DayList extends Base implements JsonUnindexed
         return false;
     }
 
+    public function getFirstBookableDay()
+    {
+        foreach ($this as $day) {
+            $day = new Day($day);
+            if ($day->isBookable()) {
+                return $day->toDateTime();
+            }
+        }
+        return null;
+    }
+
+
     public function toSortedByHour()
     {
         $list = array();
