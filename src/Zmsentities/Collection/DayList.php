@@ -85,10 +85,17 @@ class DayList extends Base implements JsonUnindexed
         return $dayList->sortByCustomKey('day');
     }
 
-    /*
-     * There is a collection function sortByCustomKey, that does the same !!!
-     *
-     */
+    public function setSortByDate()
+    {
+        $this->uasort(function ($dayA, $dayB) {
+            return (
+                (new \DateTimeImmutable($dayA['year'].'-'.$dayA['month'].'-'.$dayA['day'])) >
+                (new \DateTimeImmutable($dayB['year'].'-'.$dayB['month'].'-'.$dayB['day']))
+            );
+        });
+        return $this;
+    }
+
     public function setSort($property = 'day')
     {
         $this->uasort(function ($dayA, $dayB) use ($property) {
