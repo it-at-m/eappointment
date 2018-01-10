@@ -105,5 +105,6 @@ class SessionHandler implements \SessionHandlerInterface
          * $this->sessionName
          * ));
          */
+        return true;
     }
 }
