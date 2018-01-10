@@ -34,7 +34,7 @@ class ValidMail extends \BO\Mellon\ValidString
         $this->validated = true;
         if ($this->value) {
             $domain = substr($this->value, strpos($this->value, '@') + 1);
-            $hasDNS = checkdnsrr($domain);
+            $hasDNS = checkdnsrr($domain, 'ANY');
             if (false === $hasDNS) {
                 $this->setFailure($message);
             }
