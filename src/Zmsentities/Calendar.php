@@ -48,12 +48,12 @@ class Calendar extends Schema\Entity
         $dateTime = Helper\DateTime::create()->setTimezone($timeZone)->setTimestamp($date);
         $firstDay = $dateTime->setTime(0, 0, 0);
         $lastDay = $dateTime->modify('last day of next month')->setTime(23, 59, 59);
-        $this->firstDay = array (
+        $this->firstDay = array(
             'year' => $firstDay->format('Y'),
             'month' => $firstDay->format('m'),
             'day' => $firstDay->format('d')
         );
-        $this->lastDay = array (
+        $this->lastDay = array(
             'year' => $lastDay->format('Y'),
             'month' => $lastDay->format('m'),
             'day' => $lastDay->format('d')
@@ -149,7 +149,7 @@ class Calendar extends Schema\Entity
      */
     public function getProviderList()
     {
-        $list = array ();
+        $list = array();
         foreach ($this->providers as $provider) {
             $list[] = $provider['id'];
         }
@@ -161,7 +161,7 @@ class Calendar extends Schema\Entity
         if (!$this->days instanceof Collection\DayList) {
             $this->days = new Collection\DayList($this->days);
         }
-        return $this->days;
+        return $this->days->setSortByDate();
     }
 
     /**
@@ -215,7 +215,7 @@ class Calendar extends Schema\Entity
     {
         if (isset($this['firstDay'])) {
             $dateTime = $this->getDateTimeFromDate(
-                array (
+                array(
                     'year' => $this['firstDay']['year'],
                     'month' => $this['firstDay']['month'],
                     'day' => $this['firstDay']['day']
@@ -231,7 +231,7 @@ class Calendar extends Schema\Entity
     {
         if (isset($this['lastDay'])) {
             $dateTime = $this->getDateTimeFromDate(
-                array (
+                array(
                     'year' => $this['lastDay']['year'],
                     'month' => $this['lastDay']['month'],
                     'day' => $this['lastDay']['day']
