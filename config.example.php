@@ -67,5 +67,6 @@ class App extends \BO\Zmsapi\Application
 }
 
 // Uncomment the following line for testing data with vendor/bin/importTestData
-// App::$now = new DateTimeImmutable('2016-04-01 11:55:00', new DateTimeZone('Europe/Berlin'));
-
+if (getenv('ZMS_TIMEADJUST')) {
+    App::$now = new DateTimeImmutable(date(getenv('ZMS_TIMEADJUST')), new DateTimeZone('Europe/Berlin'));
+}
