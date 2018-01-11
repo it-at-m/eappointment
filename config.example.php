@@ -19,3 +19,7 @@ class App extends \BO\Zmsstatistic\Application
         //CURLOPT_VERBOSE => true,
     ];
 }
+
+if (getenv('ZMS_TIMEADJUST')) {
+    App::$now = new DateTimeImmutable(date(getenv('ZMS_TIMEADJUST')), new DateTimeZone('Europe/Berlin'));
+}
