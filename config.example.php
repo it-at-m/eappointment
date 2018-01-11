@@ -19,5 +19,6 @@ class App extends \BO\Zmsticketprinter\Application
     ];
 }
 
-// uncomment for testing
-// App::$now = new DateTimeImmutable('2016-04-01 11:55:00', new DateTimeZone('Europe/Berlin'));
+if (getenv('ZMS_TIMEADJUST')) {
+    App::$now = new DateTimeImmutable(date(getenv('ZMS_TIMEADJUST')), new DateTimeZone('Europe/Berlin'));
+}
