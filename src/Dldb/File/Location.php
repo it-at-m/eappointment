@@ -13,7 +13,6 @@ use \BO\Dldb\Collection\Locations as Collection;
  */
 class Location extends Base
 {
-
     protected function parseData($data)
     {
         $itemList = new Collection();
@@ -68,6 +67,8 @@ class Location extends Base
         $locationlist = new Collection(array_filter((array) $locationlist, function ($item) use ($query) {
             return false !== strpos($item['name'], $query);
         }));
-        return $locationlist;
+        return $this->access()
+            ->fromAuthority()
+            ->fromLocationResults($locationlist);
     }
 }

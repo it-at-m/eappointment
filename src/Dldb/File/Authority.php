@@ -13,7 +13,6 @@ use \BO\Dldb\Collection\Authorities as Collection;
  */
 class Authority extends Base
 {
-
     protected function parseData($data)
     {
         $itemList = new Collection();
@@ -52,6 +51,21 @@ class Authority extends Base
             }
         }
         return $authoritylist;
+    }
+
+    /**
+     * Take an file search result and return a authority list
+     *
+     * @return Collection\Authorities
+     */
+    public function fromLocationResults($resultList)
+    {
+        $authorityList = new Collection();
+        foreach ($resultList as $result) {
+            $location = new \BO\Dldb\Entity\Location($result);
+            $authorityList->addLocation($location);
+        }
+        return $authorityList;
     }
 
     /**

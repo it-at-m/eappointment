@@ -13,7 +13,6 @@ use \BO\Dldb\Collection\Services as Collection;
  */
 class Service extends Base
 {
-
     protected function parseData($data)
     {
         $itemList = new Collection();
@@ -24,6 +23,18 @@ class Service extends Base
             }
         }
         return $itemList;
+    }
+
+    /**
+     *
+     * @SuppressWarnings(Param)
+     * @return Collection
+     */
+    public function searchAll($querystring, $service_csv = '', $location_csv = '')
+    {
+        $service_csv = (! $service_csv) ? $this->getItemList()->getCSV() : $service_csv;
+        $servicelist = (! $location_csv) ? $this->fetchCombinations($service_csv) : $this->fetchList($location_csv);
+        return $servicelist;
     }
 
     /**
