@@ -37,6 +37,8 @@ class Language
         $this->setCurrentLocale();
         if (! self::$translator) {
             self::$translator = $this->setTranslator();
+        } else {
+            self::$translator->setLocale($this->current);
         }
     }
 
