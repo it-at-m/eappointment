@@ -81,6 +81,9 @@ class RequestReport extends Base
         $sheet->fromArray($reportHeader, null, 'A'. ($sheet->getHighestRow() + 2));
     }
 
+    /**
+     * @SuppressWarnings(Unused)
+     */
     public function writeReportData(ReportEntity $report, $sheet, $datePatternCol1, $datePatternCol2)
     {
         $reportData = [];
