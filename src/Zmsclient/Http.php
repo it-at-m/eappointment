@@ -100,9 +100,12 @@ class Http
      */
     public function getAuthorizedRequest(\Psr\Http\Message\RequestInterface $request)
     {
+        $userInfo = $request->getUri()->getUserInfo();
         $xAuthKey = Auth::getKey();
-        if (null !== $xAuthKey) {
+        if (null !== $xAuthKey && ! $userInfo) {
             $request = $request->withHeader('X-Authkey', $xAuthKey);
+        } elseif ($userInfo) {
+            $request = $request->withHeader('Authorization', 'Basic '. base64_encode($userInfo));
         }
         return $request;
     }
