@@ -17,7 +17,6 @@ use \Psr\Http\Message\ResponseInterface;
   */
 class TwigExceptionHandler
 {
-
     public static function withHtml(
         RequestInterface $request,
         ResponseInterface $response,
@@ -80,6 +79,7 @@ class TwigExceptionHandler
         if (\App::DEBUG && isset($exception->request)) {
             $request = $exception->request;
         }
+        $request = $request->withUri($request->getUri()->withUserInfo(''));
         if (isset($exception->response)) {
             $response = $exception->response;
             $responsedata = (string)$response->getBody();
