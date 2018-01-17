@@ -35,6 +35,18 @@ class Service extends Base
         return count($locationcompare) == count($locationsfound);
     }
 
+    public function hasLocation($location_csv)
+    {
+        $service = $this->getArrayCopy();
+        $locationcompare = explode(',', $location_csv);
+        foreach ($service['locations'] as $locationinfo) {
+            if (in_array($locationinfo['location'], $locationcompare)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public function hasAppointments($external = false)
     {
         foreach ($this['locations'] as $location) {
