@@ -3,6 +3,7 @@
 
     <div class="navigation">
         <ul class="nav">
+            {% if workstation %}
             <li>
                 <h3 class="navigation__title">Statistik</h3>
                 <ul>
@@ -11,6 +12,7 @@
                     </li>
                 </ul>
             </li>
+            {% endif %}
             {% if workstation.scope.id %}
             <li>
                 <h3 class="navigation__title">Auswertungen</h3>

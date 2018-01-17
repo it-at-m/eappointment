@@ -1890,7 +1890,7 @@ html {
 /**
  * The list-bare object simply removes any indents and bullet points from lists.
  */
-.list-bare, .navigation ul {
+.list-bare, .navigation ul, .metalinks ul {
   margin: 0;
   padding: 0;
   list-style: none; }
@@ -5183,6 +5183,27 @@ hr {
   background-color: #D2D2D2;
   margin: 0;
   padding: 0.5em 0em 0.5em 0.6em; }
+
+.metalinks ul li {
+  padding-left: 1.5em;
+  margin-bottom: 1.429em; }
+  .metalinks ul li .title {
+    margin: 0;
+    font-weight: normal; }
+  .metalinks ul li::before {
+    margin-left: -1.3em;
+    float: left; }
+  .metalinks ul li.support:before {
+    content: "⍰"; }
+  .metalinks ul li.manual:before {
+    content: "📖"; }
+  .metalinks ul li.version:before {
+    content: "ℹ"; }
+  .metalinks ul li.logo {
+    padding-left: 1.429em;
+    font-size: 80%; }
+    .metalinks ul li.logo img.logo {
+      max-width: 100%; }
 
 .breadcrumb {
   margin-bottom: 1em; }

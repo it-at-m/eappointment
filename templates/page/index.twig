@@ -2,17 +2,13 @@
 {% use "block/header/pageheader.twig" %}
 {% use "block/navigation/navigation.twig" %}
 {% block title %}Anmeldung{% endblock %}
-{% block pageheader %}
-    {{ parent() }}
-{% endblock %}
-
-{% block navigation -%}
-    {% include "block/navigation/index.twig" %}
-    {% include "block/metalinks/metalinks.twig" %}
-{%- endblock %}
 
 {% block pageheader_middle %}
+    {% if workstation %}
+        {{ parent() }}
+    {% else %}
     <span class="sitename">Statistik - Anmeldung für Behördenmitarbeiter</span>
+        {% endif %}
 {% endblock %}
 
 {% block pageheader_right %}
@@ -21,12 +17,17 @@
 {% block content %}
 	{{ parent() }}
     <div class="lineup--login">
+        {% if workstation %}
+        <div class="lineup_actor--left">
+            {% include "block/index/logout.twig" %}
+        </div>
+        {% else %}
         <div class="lineup_actor--left">
             {% include "block/index/welcome.twig" %}
         </div>
         <div class="lineup_actor--right">
             {% include "block/index/loginform.twig" %}
         </div>
+        {% endif %}
     </div>
-    {% include "block/index/versioninfo.twig" %}
 {% endblock %}
