@@ -32,9 +32,19 @@ class Service extends Base
      */
     public function searchAll($querystring, $service_csv = '', $location_csv = '')
     {
-        $service_csv = (! $service_csv) ? $this->getItemList()->getCSV() : $service_csv;
-        $servicelist = (! $location_csv) ? $this->fetchCombinations($service_csv) : $this->fetchList($location_csv);
-        return $servicelist;
+        $locationsCsvByUser = ($location_csv) ? true : false;
+        $location_csv = (! $location_csv) ? $this->fetchLocationCsv($service_csv) : $location_csv;
+        $serviceList = $this->fetchList($location_csv);
+        if ($querystring) {
+            $serviceList = new Collection(array_filter((array) $serviceList, function ($item) use ($querystring) {
+                $length = (3 < strlen($querystring)) ? strlen($querystring) : 3;
+                $nameMatch = preg_match('/['. $querystring .']{'. $length .',}/i', $item['name']);
+                $keywordMatch = preg_match('/['. $querystring .']{'. $length .',}/i', $item['meta']['keywords']);
+                return ($nameMatch ||$keywordMatch);
+            }));
+        }
+        $serviceList = $serviceList->sortByName();
+        return ($locationsCsvByUser) ? $serviceList->containsLocation($location_csv) : $serviceList;
     }
 
     /**
@@ -47,7 +57,7 @@ class Service extends Base
         if ($location_csv) {
             $servicelist = new Collection(array_filter((array) $servicelist, function ($item) use ($location_csv) {
                 $service = new Entity($item);
-                return $service->containsLocation($location_csv);
+                return $service->hasLocation($location_csv);
             }));
         }
         return $servicelist;

@@ -23,6 +23,6 @@ class Sorter
             'ß' => 'ss',
             '€' => 'E',
         ));
-        return $string;
+        return strtolower($string);
     }
 }
