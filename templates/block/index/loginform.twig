@@ -10,12 +10,13 @@
             <form action="./" method="POST">
                 <fieldset>
                     {{ formgroup(
-                        {"label": "Nutzername:", "errors": loginData.loginName.messages},
+                        {"label": "Nutzername:", "errors": loginfailed ? ["falsches Nutzerkonto oder falsches Passwort?"]  : loginData.loginName.messages},
                         [{
                             "type":"input",
                             "parameter": {
                                 "name": "loginName",
                                 "maxlength": "20",
+                                "value": loginData.loginName.value,
                                 "accesskey": "n",
                             }
                         }]
