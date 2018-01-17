@@ -5,6 +5,7 @@ namespace BO\Zmsapi\Helper;
 use \BO\Slim\Render;
 use \BO\Zmsdb\Useraccount;
 use \BO\Zmsdb\Workstation;
+use \BO\Zmsapi\Helper\UserAuth;
 
 /**
  *
@@ -27,10 +28,10 @@ class User
 
     public static function readWorkstation($resolveReferences = 0)
     {
+        $request = (static::$request) ? static::$request : Render::$request;
         if (! static::$workstation) {
-            $xAuthKey = static::getXAuthKey();
-            $useraccount = (new Useraccount())->readEntityByAuthKey($xAuthKey);
-            if ($useraccount->hasId()) {
+            $useraccount = UserAuth::getUseraccountByAuthMethod($request);
+            if ($useraccount && $useraccount->hasId()) {
                 static::$workstation = (new Workstation())->readEntity($useraccount->id, $resolveReferences);
                 if ($resolveReferences < 1) {
                     static::$workstation->useraccount = $useraccount;
@@ -115,22 +116,6 @@ class User
         return $userAccount->hasId();
     }
 
-    public static function getXAuthKey()
-    {
-        $request = (static::$request) ? static::$request : Render::$request;
-        $xAuthKey = $request->getHeader('X-AuthKey');
-        if (!$xAuthKey) {
-            $cookies = $request->getCookieParams();
-            if (array_key_exists('Zmsclient', $cookies)) {
-                $xAuthKey = $cookies['Zmsclient'];
-            }
-        } else {
-            $xAuthKey = current($xAuthKey);
-        }
-        return $xAuthKey;
-    }
-
-
     public static function testWorkstationIsOveraged($workstation)
     {
         if ($workstation->hasId() && $workstation->getUseraccount()->isOveraged(\App::$now)) {
@@ -146,16 +131,5 @@ class User
         $organisation->departments = $organisation->getDepartmentList()->withAccess($userAccount);
         $department = $organisation->departments->getEntity($departmentId);
         return $department;
-    }
-
-    public static function testUseraccountExists($loginName, $password, $input)
-    {
-        $query = new Useraccount();
-        if (! $query->readIsUserExisting($loginName) || 0 == count($input)) {
-            throw new \BO\Zmsapi\Exception\Useraccount\UseraccountNotFound();
-        }
-        if (! $query->readIsUserExisting($loginName, $password)) {
-            throw new \BO\Zmsapi\Exception\Useraccount\InvalidCredentials();
-        }
     }
 }

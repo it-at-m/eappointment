@@ -36,6 +36,38 @@ class WorkstationGetTest extends Base
         $this->assertContains('testadmin', (string)$response->getBody());
     }
 
+    public function testReadWorkstationByBasicAuth()
+    {
+        $response = $this->render([], [
+            '__header' => [
+                'Authorization' => 'Basic dGVzdGFkbWluOjFwYWxtZTE=',
+            ],
+            '__userinfo' => [
+                'username' => 'testadmin',
+                'password' => 'vorschau'
+            ],
+            'resolveReferences' => 0
+        ], []);
+        $this->assertContains('workstation.json', (string)$response->getBody());
+        $this->assertContains('testadmin', (string)$response->getBody());
+    }
+
+    public function testReadWorkstationByWrongBasicAuth()
+    {
+        $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingLogin');
+        $this->expectExceptionCode(401);
+        $response = $this->render([], [
+            '__header' => [
+                'Authorization' => 'Basic dGVzdGFkbWluOjFwYWxtZTE=',
+            ],
+            '__userinfo' => [
+                'username' => 'unittest',
+                'password' => 'unittest'
+            ],
+            'resolveReferences' => 0
+        ], []);
+    }
+
     public function testNotFound()
     {
         $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingLogin');

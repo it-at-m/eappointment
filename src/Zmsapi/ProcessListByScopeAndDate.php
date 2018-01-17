@@ -22,7 +22,7 @@ class ProcessListByScopeAndDate extends BaseController
         array $args
     ) {
         (new Helper\User($request))->checkRights('basic');
-        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $dateTime = new \BO\Zmsentities\Helper\DateTime($args['date']);
         $dateTime = $dateTime->modify(\App::$now->format('H:i'));
 
@@ -31,11 +31,7 @@ class ProcessListByScopeAndDate extends BaseController
         if (! $scope) {
             throw new Exception\Scope\ScopeNotFound();
         }
-        $queueList = $query->readQueueListWithWaitingTime(
-            $scope,
-            $dateTime,
-            $resolveReferences ? $resolveReferences : 1
-        );
+        $queueList = $query->readQueueListWithWaitingTime($scope, $dateTime, $resolveReferences);
 
         $message = Response\Message::create($request);
         $message->data = $queueList->toProcessList()->withResolveLevel($resolveReferences);

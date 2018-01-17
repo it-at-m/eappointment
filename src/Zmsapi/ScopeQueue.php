@@ -32,10 +32,7 @@ class ScopeQueue extends BaseController
             throw new Exception\Scope\ScopeNotFound();
         }
         $scope = $query->readWithWorkstationCount($scope->id, $dateTime);
-        $queueList = $query->readQueueListWithWaitingTime(
-            $scope,
-            $dateTime
-        )->withPickupDestination($scope);
+        $queueList = $query->readQueueListWithWaitingTime($scope, $dateTime)->withPickupDestination($scope);
 
         $message = Response\Message::create($request);
         if ((new Helper\User($request))->hasRights()) {

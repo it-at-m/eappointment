@@ -16,7 +16,19 @@ class ProcessAddLogTest extends Base
         $response = $this->render(['id' => self::PROCESS_ID], [
             '__body' => $this->readFixture('GetMimepart.json')
         ], []);
+        $this->assertContains("MTA successful", (string)$response->getBody());
         $this->assertContains("mimepart.json", (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
+    }
+
+    public function testHasError()
+    {
+        $this->setWorkstation()->getUseraccount()->setRights('superuser');
+        $response = $this->render(['id' => self::PROCESS_ID], [
+            '__body' => $this->readFixture('GetMimepart.json'),
+            'error' => 1
+        ], []);
+        $this->assertContains("MTA failed", (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
