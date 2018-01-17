@@ -16,6 +16,15 @@ class IndexTest extends Base
 
     public function testRendering()
     {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'response' => $this->readFixture("GET_Workstation_UserAccountMissingLogin.json")
+                ]
+            ]
+        );
         $response = $this->render($this->arguments, [], []);
         $this->assertContains('Anmeldung', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
@@ -25,6 +34,11 @@ class IndexTest extends Base
     {
         $this->setApiCalls(
             [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'response' => $this->readFixture("GET_Workstation_UserAccountMissingLogin.json")
+                ],
                 [
                     'function' => 'readPostResult',
                     'url' => '/workstation/login/',
@@ -48,6 +62,11 @@ class IndexTest extends Base
         $this->setApiCalls(
             [
                 [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'response' => $this->readFixture("GET_Workstation_UserAccountMissingLogin.json")
+                ],
+                [
                     'function' => 'readPostResult',
                     'url' => '/workstation/login/',
                     'exception' => $exception
@@ -67,6 +86,11 @@ class IndexTest extends Base
         $this->setApiCalls(
             [
                 [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'response' => $this->readFixture("GET_Workstation_UserAccountMissingLogin.json")
+                ],
+                [
                     'function' => 'readPostResult',
                     'url' => '/workstation/login/',
                     'exception' => $exception
@@ -78,6 +102,15 @@ class IndexTest extends Base
 
     public function testLoginValidationError()
     {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'response' => $this->readFixture("GET_Workstation_UserAccountMissingLogin.json")
+                ]
+            ]
+        );
         $response = $this->render($this->arguments, [
             'loginName' => 'testadmin',
             'login_form_validate' => 1
