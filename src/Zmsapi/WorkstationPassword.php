@@ -25,7 +25,7 @@ class WorkstationPassword extends BaseController
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $useraccount = new \BO\Zmsentities\Useraccount($input);
         $useraccount->testValid();
-        Helper\User::testUseraccountExists($workstation->getUseraccount()->id, $useraccount->password, $input);
+        Helper\UserAuth::testUseraccountExists($workstation->getUseraccount()->id, $useraccount->password);
         if ($useraccount->changePassword) {
             $useraccount->password = reset($useraccount->changePassword);
         }

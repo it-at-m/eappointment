@@ -31,7 +31,7 @@ class WorkstationLogin extends BaseController
         $useraccount = new \BO\Zmsentities\Useraccount($input);
         $useraccount->testValid();
 
-        Helper\User::testUseraccountExists($useraccount->id, $useraccount->password, $input);
+        Helper\UserAuth::testUseraccountExists($useraccount->id, $useraccount->password);
         $workstation = (new Helper\User($request, $resolveReferences))->readWorkstation();
         Helper\User::testWorkstationIsOveraged($workstation);
 

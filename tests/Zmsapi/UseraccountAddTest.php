@@ -35,6 +35,33 @@ class UseraccountAddTest extends Base
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
+    public function testAlreadyExists()
+    {
+        $this->expectException('\BO\Zmsapi\Exception\Useraccount\UseraccountAlreadyExists');
+        $this->expectExceptionCode(404);
+        $this->setWorkstation()->getUseraccount()->setRights('useraccount');
+        $this->render([], [
+            '__body' => '{
+                "rights": {
+                "availability": "1",
+                "basic": "1",
+                "cluster": "1",
+                "department": "1",
+                "organisation": "1",
+                "scope": "1",
+                "sms": "1",
+                "superuser": "1",
+                "ticketprinter": "1",
+                "useraccount": "1"
+              },
+              "departments": [
+                  {"id": 74}
+              ],
+              "id": "testadmin"
+            }'
+        ], []);
+    }
+
     public function testMissingLogin()
     {
         $this->setExpectedException('BO\Zmsentities\Exception\UserAccountMissingLogin');

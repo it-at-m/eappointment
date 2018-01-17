@@ -65,4 +65,41 @@ class UseraccountUpdateTest extends Base
             '__body' => '[]'
         ], []);
     }
+
+    public function testInvalidInput()
+    {
+        $this->setWorkstation()->getUseraccount()->setRights('useraccount');
+        $this->expectException('BO\Zmsapi\Exception\Useraccount\UseraccountInvalidInput');
+        $this->expectExceptionCode(404);
+        $this->render(['loginname' => 'testadmin'], [
+            '__body' => '[]'
+        ], []);
+    }
+
+    public function testAlreadyExists()
+    {
+        $this->setWorkstation()->getUseraccount()->setRights('useraccount');
+        $this->expectException('\BO\Zmsapi\Exception\Useraccount\UseraccountAlreadyExists');
+        $this->expectExceptionCode(404);
+        $this->render(['loginname' => 'berlinonline'], [
+            '__body' => '{
+                "rights": {
+                "availability": "1",
+                "basic": "1",
+                "cluster": "1",
+                "department": "1",
+                "organisation": "1",
+                "scope": "1",
+                "sms": "1",
+                "superuser": "1",
+                "ticketprinter": "1",
+                "useraccount": "1"
+              },
+              "departments": [
+                  {"id": 74}
+              ],
+              "id": "testadmin"
+            }'
+        ], []);
+    }
 }

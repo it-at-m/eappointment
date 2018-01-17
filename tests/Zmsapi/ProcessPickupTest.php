@@ -118,4 +118,17 @@ class ProcessPickupTest extends Base
             }'
         ], []);
     }
+
+    public function testInvalidProcess()
+    {
+        $workstation = $this->setWorkstation(138, 'berlinonline', 141);
+        $workstation['queue']['clusterEnabled'] = 1;
+        $this->expectException('\BO\Zmsapi\Exception\Process\ProcessInvalid');
+        $this->expectExceptionCode(400);
+        $response = $this->render([], [
+            '__body' => '{
+                "id": 10029
+            }'
+        ], []);
+    }
 }
