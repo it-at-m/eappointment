@@ -25,4 +25,13 @@ class ProcessListByScopeAndDateTest extends Base
         $this->expectExceptionCode(404);
         $this->render(['id' => 999, 'date' => '2016-04-01'], [], []);
     }
+
+    public function testWithResolveReferencesZero()
+    {
+        $this->setWorkstation();
+        User::$workstation->useraccount->setRights('scope');
+        $response = $this->render(['id' => 141, 'date' => '2016-04-01'], [], ['resolveReferences' => 0]);
+        $this->assertContains('process.json', (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
+    }
 }
