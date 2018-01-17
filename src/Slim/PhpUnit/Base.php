@@ -176,6 +176,14 @@ abstract class Base extends \PHPUnit_Framework_TestCase
                 $request = $request->withAddedHeader($key, $value);
             }
         }
+        if (array_key_exists('__userinfo', $parameters)) {
+            $request = $request->withUri($request
+                ->getUri()
+                ->withUserInfo($parameters['__userinfo']['username'], $parameters['__userinfo']['password'])
+            );
+        }
+
+
         return $request;
     }
 
