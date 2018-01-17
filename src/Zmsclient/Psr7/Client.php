@@ -33,10 +33,14 @@ class Client implements ClientInterface
 
     public static function getClient($curlopts)
     {
-        $curlopts = $curlopts + self::$curlopt;
+        $curlopts = $curlopts + static::$curlopt;
+        if (!isset($curlopts[CURLOPT_USERAGENT])) {
+            $curlopts[CURLOPT_USERAGENT] =
+                'Client' . (defined("\App::IDENTIFIER") ? constant("\App::IDENTIFIER") : 'ZMS');
+        }
         if (null === static::$curlClient) {
             $curl = Curl::createFromDefaults();
-            $curl->setOptions(static::$curlopt);
+            $curl->setOptions($curlopts);
             $transport = new Transport($curl);
             static::$curlClient = $transport;
         }
