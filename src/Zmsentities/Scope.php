@@ -57,10 +57,7 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
     public function getPreference($preferenceKey, $index, $isBool = false)
     {
         $preference = $this->toProperty()->preferences->$preferenceKey->$index->get();
-        if (!$isBool && $preference) {
-            return $preference;
-        }
-        return ($isBool && $preference) ? 1 : 0;
+        return ($isBool ) ? ($preference ? 1 : 0) : $preference;
     }
 
     public function getStatus($statusKey, $index)
