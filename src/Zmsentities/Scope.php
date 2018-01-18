@@ -114,6 +114,18 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
         return $workstationCount;
     }
 
+    /**
+    * Get last bookable end date  of a scope
+    *
+    * @return \DateTimeImmutable $scopeEndDate
+    */
+    public function getBookableEndDate(\DateTimeInterface $now)
+    {
+        $now = Helper\DateTime::create($now);
+        $scopeEndDate = $this->toProperty()->preferences->appointment->endInDaysDefault->get();
+        return ($scopeEndDate) ? $now->modify('+' . $scopeEndDate . 'days') : $now;
+    }
+
     public function updateStatusQueue(\DateTimeInterface $dateTime)
     {
         $lastQueueUpdateDate = Helper\DateTime::create()
