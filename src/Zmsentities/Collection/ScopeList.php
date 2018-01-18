@@ -13,6 +13,21 @@ class ScopeList extends Base
         return (1 == count($this) && $scope->getAlternateRedirectUrl()) ? $scope->getAlternateRedirectUrl() : null;
     }
 
+    /**
+    * Get longest bookable end date of a scope in scopelist
+    *
+    * @return \DateTimeImmutable $date
+    */
+    public function getGreatestBookableEnd($now)
+    {
+        $date = $now;
+        foreach ($this as $scope) {
+            $endDate = $scope->getBookableEndDate($now);
+            $date = ($endDate > $date) ? $endDate : $date;
+        }
+        return $date;
+    }
+
     public function withoutDublicates($scopeList = null)
     {
         $collection = new self();
