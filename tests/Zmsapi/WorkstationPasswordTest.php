@@ -97,8 +97,8 @@ class WorkstationPasswordTest extends Base
     {
         $workstation = $this->setWorkstation();
         $workstation->getUseraccount()->id = 'unittest';
-        $this->expectException('\BO\Zmsapi\Exception\Useraccount\UseraccountNotFound');
-        $this->expectExceptionCode(404);
+        $this->expectException('\BO\Zmsapi\Exception\Useraccount\InvalidCredentials');
+        $this->expectExceptionCode(401);
         $this->render([], [
             '__body' => '{
                 "id": "unittest",

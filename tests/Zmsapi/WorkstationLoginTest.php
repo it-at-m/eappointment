@@ -51,8 +51,8 @@ class WorkstationLoginTest extends Base
 
     public function testNotFound()
     {
-        $this->expectException('\BO\Zmsapi\Exception\Useraccount\UseraccountNotFound');
-        $this->expectExceptionCode(404);
+        $this->expectException('\BO\Zmsapi\Exception\Useraccount\InvalidCredentials');
+        $this->expectExceptionCode(401);
         $this->render([], [
             '__body' => '{
                 "id": "unittest",
