@@ -4,7 +4,7 @@ namespace BO\Zmsentities\Schema;
 
 use \League\JsonGuard\ValidationError;
 
-class Validator extends \League\JsonGuard\Validator
+class Validator
 {
     protected $schemaObject;
 
@@ -61,7 +61,7 @@ class Validator extends \League\JsonGuard\Validator
         return (isset($pointer[1])) ? $pointer[1] : $pointer[0];
     }
 
-	/**
+    /**
      * on error see merge conflict with c05b7e5fca6b52fc8d0936f4fbb653f3cad8f06b
      */
     public function getTranslatedPointer(ValidationError $error)
