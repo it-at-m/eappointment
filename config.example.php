@@ -9,7 +9,6 @@ class App extends \BO\Zmsmessaging\Application
 
     // Uncomment the following lines on debugging
     const DEBUG = false;
-    const MONOLOG_LOGLEVEL = \Monolog\Logger::DEBUG;
 
     // http curl options
     public static $http_curl_config = array(
