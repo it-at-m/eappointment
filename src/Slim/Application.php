@@ -24,6 +24,7 @@ class Application
      * Flag to enable debugging mode for application
      */
     const DEBUG = false;
+    const DEBUGLEVEL = 'WARNING';
 
     /**
      * Settings for region
@@ -89,8 +90,6 @@ class Application
      * Logging PSR3 compatible
      */
     public static $log = null;
-
-    const MONOLOG_LOGLEVEL = \Monolog\Logger::WARNING;
 
     /**
      * @var \BO\Slim\Language $language

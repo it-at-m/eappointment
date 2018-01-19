@@ -46,11 +46,28 @@ class Bootstrap
         \App::$now = (! \App::$now) ? new \DateTimeImmutable() : \App::$now;
     }
 
+    protected static $debuglevels = array(
+        'DEBUG'     => \Monolog\Logger::DEBUG,
+        'INFO'      => \Monolog\Logger::INFO,
+        'NOTICE'    => \Monolog\Logger::NOTICE,
+        'WARNING'   => \Monolog\Logger::WARNING,
+        'ERROR'     => \Monolog\Logger::ERROR,
+        'CRITICAL'  => \Monolog\Logger::CRITICAL,
+        'ALERT'     => \Monolog\Logger::ALERT,
+        'EMERGENCY' => \Monolog\Logger::EMERGENCY,
+    );
+
+    protected function parseDebugLevel($level)
+    {
+        return isset($this->debuglevels[$level]) ? $this->debuglevels[$level] : $this->debuglevels['DEBUG'];
+    }
+
     protected function configureLogger(
-        $level = \App::MONOLOG_LOGLEVEL,
+        $level = \App::DEBUGLEVEL,
         $identifier = \App::IDENTIFIER
     ) {
         \App::$log = new \Monolog\Logger($identifier);
+        $level = $this->parseDebugLevel($level);
         $handler = new \Monolog\Handler\ErrorLogHandler(\Monolog\Handler\ErrorLogHandler::OPERATING_SYSTEM, $level);
         $handler->setFormatter(new \Monolog\Formatter\JsonFormatter());
         \App::$log->pushHandler($handler);
@@ -60,7 +77,7 @@ class Bootstrap
     {
         // configure slim
         \App::$slim = new SlimApp(array(
-            'debug' => \App::SLIM_DEBUG,
+            'debug' => \App::DEBUG,
             'cache' => function () {
                 return new \Slim\HttpCache\CacheProvider();
             },
@@ -69,7 +86,7 @@ class Bootstrap
                 'displayErrorDetails' => true,
                 'logger' => [
                     'name' => 'slim-app',
-                    'level' => \App::MONOLOG_LOGLEVEL,
+                    'level' => $this->parseDebugLevel(\App::DEBUGLEVEL),
                 ],
             ],
         ));
@@ -105,7 +122,7 @@ class Bootstrap
             \App::APP_PATH  . \App::TEMPLATE_PATH,
             [
                 'cache' => self::readCacheDir(),
-                'debug' => \App::SLIM_DEBUG,
+                'debug' => \App::DEBUG,
             ]
         );
         return $view;

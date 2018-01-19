@@ -80,7 +80,8 @@ class App extends \BO\MyApp\Application
 {
     const SLIM_DEBUG = true;
     const TEMPLATE_PATH = '/templates/';
-    const MONOLOG_LOGLEVEL = \Monolog\Logger::WARNING;
+    const DEBUG = false;
+    const DEBUGLEVEL = 'WARNING';
 }
 ```
 
