@@ -34,9 +34,6 @@ class UserAuth
     public static function testUseraccountExists($loginName = false, $password = false)
     {
         $query = new Useraccount();
-        if (! $query->readIsUserExisting($loginName)) {
-            throw new \BO\Zmsapi\Exception\Useraccount\UseraccountNotFound();
-        }
         if (! $query->readIsUserExisting($loginName, $password)) {
             throw new \BO\Zmsapi\Exception\Useraccount\InvalidCredentials();
         }
