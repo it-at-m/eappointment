@@ -33,7 +33,7 @@ class SchemaValidation extends \Exception
         return $this;
     }
 
-	/**
+    /**
     * Merge conflict, on error see commit c05b7e5fca6b52fc8d0936f4fbb653f3cad8f06b
     */
     public function setData()

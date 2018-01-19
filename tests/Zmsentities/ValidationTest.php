@@ -44,8 +44,8 @@ class ValidationTest extends Base
         } catch (\BO\Zmsentities\Exception\SchemaValidation $exception) {
             $errorList = $exception->getValidationErrorList();
             // merge conflict, the following two lines might fail??
-            $this->assertEquals('Passwortwiederholung', $errorList[0]->getPointer());
-            $this->assertEquals('Passwortwiederholung', $errorList[1]->getPointer());
+            $this->assertEquals('Passwortwiederholung', $errorList[0]->getDataPath());
+            $this->assertEquals('Passwortwiederholung', $errorList[1]->getDataPath());
             $this->assertContains('Zeichen', $errorList[0]->getMessage());
             $this->assertContains('identisch', $errorList[1]->getMessage());
         }
