@@ -282,7 +282,7 @@ class Scope extends Base implements MappingInterface
         $data['ausgabeschaltername'] = $entity->getPreference('pickup', 'alternateName');
         $data['defaultabholerstandort'] = $entity->getPreference('pickup', 'isDefault', true);
         $data['anzahlwiederaufruf'] = $entity->getPreference('queue', 'callCountMax');
-        $data['aufrufanzeigetext'] = $entity->getPreference('queue', 'callDisplayText');
+        $data['aufrufanzeigetext'] = $entity->getPreference('queue', 'callDisplayText', false, '');
         $data['startwartenr'] = $entity->getPreference('queue', 'firstNumber');
         $data['endwartenr'] = $entity->getPreference('queue', 'lastNumber');
         $data['wartenummernkontingent'] = $entity->getPreference('queue', 'maxNumberContingent');
@@ -293,7 +293,7 @@ class Scope extends Base implements MappingInterface
         $data['kundenbefragung'] = $entity->getPreference('survey', 'enabled', true);
         $data['kundenbef_label'] = $entity->getPreference('survey', 'label');
         $data['smswmsbestaetigung'] = $entity->getPreference('ticketprinter', 'confirmationEnabled', true);
-        $data['wartenrhinweis'] = $entity->getPreference('ticketprinter', 'deactivatedText');
+        $data['wartenrhinweis'] = $entity->getPreference('ticketprinter', 'deactivatedText', false, '');
         $data['smsnachtrag'] = $entity->getPreference('ticketprinter', 'notificationsAmendmentEnabled', true);
         $data['smswarteschlange'] = $entity->getPreference('ticketprinter', 'notificationsEnabled', true);
         $data['smskioskangebotsfrist'] = $entity->getPreference('ticketprinter', 'notificationsDelay');
