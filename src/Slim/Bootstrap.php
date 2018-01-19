@@ -11,6 +11,7 @@ namespace BO\Slim;
  * Bootstrapping connects the classes, so coupling should be ignored
  *
  */
+
 class Bootstrap
 {
     protected static $instance = null;
@@ -50,10 +51,9 @@ class Bootstrap
         $identifier = \App::IDENTIFIER
     ) {
         \App::$log = new \Monolog\Logger($identifier);
-        \App::$log->pushHandler(new \Monolog\Handler\ErrorLogHandler(
-            \Monolog\Handler\ErrorLogHandler::OPERATING_SYSTEM,
-            $level
-        ));
+        $handler = new \Monolog\Handler\ErrorLogHandler(\Monolog\Handler\ErrorLogHandler::OPERATING_SYSTEM, $level);
+        $handler->setFormatter(new \Monolog\Formatter\JsonFormatter());
+        \App::$log->pushHandler($handler);
     }
 
     protected function configureSlim()
