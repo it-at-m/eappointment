@@ -45,8 +45,6 @@ class Application
      */
     public static $log = null;
 
-    const MONOLOG_LOGLEVEL = \Monolog\Logger::WARNING;
-
     public static function getNow()
     {
         if (\App::$now instanceof \DateTimeInterface) {
