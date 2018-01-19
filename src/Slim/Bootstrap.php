@@ -59,7 +59,7 @@ class Bootstrap
 
     protected function parseDebugLevel($level)
     {
-        return isset($this->debuglevels[$level]) ? $this->debuglevels[$level] : $this->debuglevels['DEBUG'];
+        return isset(static::$debuglevels[$level]) ? static::$debuglevels[$level] : static::$debuglevels['DEBUG'];
     }
 
     protected function configureLogger(
