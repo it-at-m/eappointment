@@ -36,7 +36,7 @@ class SessionHuman extends SessionContainer
         if (! $this->isOrigin('captcha')) {
             foreach ($requiredSteps as $stepName) {
                 if (!$this->hasStep($stepName)) {
-                    \App::$log->error(
+                    \App::$log->notice(
                         "[Human " . session_id() . "] Missing step $stepName on " . self::getFromServer('SCRIPT_NAME')
                     );
                     $this->writeRedirectCaptcha($stepName);
