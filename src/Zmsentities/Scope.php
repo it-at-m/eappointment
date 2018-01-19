@@ -54,9 +54,9 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
         return $this->toProperty()->preferences->notifications->headsUpContent->get();
     }
 
-    public function getPreference($preferenceKey, $index, $isBool = false)
+    public function getPreference($preferenceKey, $index, $isBool = false, $default = null)
     {
-        $preference = $this->toProperty()->preferences->$preferenceKey->$index->get();
+        $preference = $this->toProperty()->preferences->$preferenceKey->$index->get($default);
         return ($isBool ) ? ($preference ? 1 : 0) : $preference;
     }
 
