@@ -31,12 +31,15 @@ class TwigExceptionHandler
         }
         $extendedInfo = self::getExtendedExceptionInfo($exception, $request);
         if ($status >= 500 || $status < 400 || !$status) {
+            \App::$log->critical("PHP Fatal Exception #{$extendedInfo['uniqueid']}", $extendedInfo);
+            /*
             \App::$log->critical(
                 "PHP Fatal Exception #{$extendedInfo['uniqueid']}"
                 . " in {$extendedInfo['file']} +{$extendedInfo['line']} : " .
                 $exception->getMessage()
                 . " || Trace: " . str_replace("\n", " ||  ", substr($exception->getTraceAsString(), 0, 1024))
             );
+            */
         }
         $response = Render::withLastModified($response, time(), '0');
         return Render::withHtml(
