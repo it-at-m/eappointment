@@ -34,7 +34,7 @@ class ScopeListByProvider extends BaseController
         $message->data = $scopeList;
 
         $response = Render::withLastModified($response, time(), '0');
-        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+        $response = Render::withJson($response, $message, 200);
         return $response;
     }
 }
