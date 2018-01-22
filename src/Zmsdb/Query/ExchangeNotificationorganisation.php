@@ -12,6 +12,7 @@ class ExchangeNotificationorganisation extends Base
     const QUERY_READ_REPORT = '
         SELECT
             o.`OrganisationsID` as subjectid,
+            DATE_FORMAT(n.`Datum`, :groupby) as date,
             o.`Organisationsname` as organisationname,
             d.`Name` as departmentname,
             CONCAT(s.`Bezeichnung`, " ", s.`standortkuerzel`) AS scopename,
@@ -23,9 +24,9 @@ class ExchangeNotificationorganisation extends Base
                 s.`StandortID` = n.`StandortID` AND
                 n.`Datum` BETWEEN :datestart AND :dateend
         WHERE
-            o.`OrganisationsID` = :organisationid
-        GROUP BY scopename
-        ORDER BY scopename
+            o.`OrganisationsID` = :organisationid AND n.`Datum` IS NOT NULL
+        GROUP BY date
+        ORDER BY date, departmentname, scopename
     ';
 
     const QUERY_SUBJECTS = '
