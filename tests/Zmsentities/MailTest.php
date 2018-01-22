@@ -23,6 +23,8 @@ class MailTest extends EntityCommonTests
         $collection->addEntity($entity);
         $this->assertEntityList($this->entityclass, $collection);
         $this->assertTrue($collection->hasEntity(1234), "Missing Test Entity with ID 1234 in collection");
+        $filterProcess = $collection->withProcess('123456');
+        $this->assertCount(1, $filterProcess);
     }
 
     public function testMultiPart()
