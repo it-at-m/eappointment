@@ -18,14 +18,10 @@
 	{% endif %}
 
     {{ block(buttonDisplay) }}
-
 	{% if
 	    waitingTime > (scope.preferences.ticketprinter.notificationsDelay)|round() and
-	    scope.preferences.ticketprinter.notificationsAmendmentEnabled and
 	    scope.preferences.ticketprinter.notificationsEnabled
 	%}
 	{{ block("button_append_notification") }}
 	{% endif %}
 {% endblock %}
-
-
