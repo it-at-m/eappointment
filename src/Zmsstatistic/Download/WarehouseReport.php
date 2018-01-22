@@ -30,8 +30,8 @@ class WarehouseReport extends Base
         $title = 'raw_statistic_'. $args['subject'] .'_'. $args['subjectid'] .'_'. $args['period'];
         $download = (new Download($request))->setSpreadSheet($title);
         $spreadsheet = $download->getSpreadSheet();
-        $spreadsheet = $this->writeRawInfoHeader($args, $spreadsheet);
-        $spreadsheet = $this->writeDictionaryData($args['report'], $spreadsheet);
+        //$spreadsheet = $this->writeRawInfoHeader($args, $spreadsheet);
+        //$spreadsheet = $this->writeDictionaryData($args['report'], $spreadsheet);
         $spreadsheet = $this->writeRawReport($args['report'], $spreadsheet);
 
         return $download->writeDownload($response);
@@ -96,7 +96,7 @@ class WarehouseReport extends Base
                 $reportData[$row][] = (is_numeric($item)) ? (string)($item) : $item;
             }
         }
-        $sheet->fromArray($reportData, null, 'A'. ($sheet->getHighestRow() + 2));
+        $sheet->fromArray($reportData, null, 'A'. ($sheet->getHighestRow()));
         return $spreadsheet;
     }
 
