@@ -6,14 +6,22 @@ use \BO\Zmsentities\Exchange;
 
 class ExchangeNotificationdepartment extends Base
 {
+    protected $groupBy = array(
+        'month' => '%Y-%m',
+        'day' => '%Y-%m-%d',
+        'hour' => '%H-%i'
+    );
+
     public function readEntity(
         $subjectid,
         \DateTimeInterface $datestart,
-        \DateTimeInterface $dateend
+        \DateTimeInterface $dateend,
+        $period = 'day'
     ) {
         $entity = new Exchange();
         $entity->setPeriod($datestart, $dateend);
         $entity->addDictionaryEntry('subjectid', 'string', 'ID of a department', 'department.id');
+        $entity->addDictionaryEntry('date', 'string', 'Date of entry');
         $entity->addDictionaryEntry('organisationname', 'string', 'name of the organisation');
         $entity->addDictionaryEntry('departmentname', 'string', 'name of the department');
         $entity->addDictionaryEntry('scopename', 'string', 'name of the scope');
@@ -29,6 +37,7 @@ class ExchangeNotificationdepartment extends Base
                         'departmentid' => $subjectid,
                         'datestart' => $datestart->format('Y-m-d'),
                         'dateend' => $dateend->format('Y-m-d'),
+                        'groupby' => $this->groupBy[$period]
                     ]
                 );
             foreach ($raw as $entry) {
