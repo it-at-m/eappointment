@@ -12,6 +12,7 @@ class ExchangeNotificationscope extends Base
     const QUERY_READ_REPORT = '
       SELECT
           s.`StandortID` as subjectid,
+          DATE_FORMAT(n.`Datum`, :groupby) as date,
           o.Organisationsname as organisationname,
           d.Name as departmentname,
           CONCAT(s.`Bezeichnung`, " ", s.`standortkuerzel`) AS scopename,
@@ -21,6 +22,7 @@ class ExchangeNotificationscope extends Base
           LEFT JOIN '. Department::TABLE .' d ON d.BehoerdenID = s.BehoerdenID
           LEFT JOIN '. Organisation::TABLE .' o ON o.OrganisationsID = d.OrganisationsID
       WHERE n.`StandortID` = :scopeid AND n.`Datum` BETWEEN :datestart AND :dateend
+      GROUP BY DATE_FORMAT(n.`Datum`, :groupby)
     ';
 
     const QUERY_SUBJECTS = '
