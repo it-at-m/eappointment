@@ -2474,6 +2474,7 @@
 		},
 		"post": {
 			"summary": "Update a process but does not send any mails or notifications on status changes",
+			"description": "Attention - An empty list in \"requests\" does not delete the associated requests as expected. To delete the requests, create a dummy request with an ID of \"-1\" and create a one item list with this request into the process. This is required to delete the associated requests.",
 			"tags": [
 				"process"
 			],
@@ -4242,10 +4243,10 @@
 			}
 		}
 	},
-	"/scope/{id}/process/{status}/": {
+	"/scope/{id}/process/status/{status}/": {
 		"get": {
 			"summary": "Get a list of processes by scope and status (pending for example)",
-			"x-since": 2.12,
+			"x-since": 2.14,
 			"tags": [
 				"scope",
 				"process"
@@ -5385,6 +5386,7 @@
 	"/warehouse/": {
 		"get": {
 			"summary": "Get a list of available subjects",
+			"x-since": 2.15,
 			"tags": [
 				"exchange"
 			],
@@ -5420,6 +5422,7 @@
 	"/warehouse/{subject}/": {
 		"get": {
 			"summary": "Get a list of available subject IDs",
+			"x-since": 2.15,
 			"tags": [
 				"exchange"
 			],
@@ -5462,6 +5465,7 @@
 	"/warehouse/{subject}/{subjectId}/": {
 		"get": {
 			"summary": "Get a list of available time periods on subject",
+			"x-since": 2.15,
 			"tags": [
 				"exchange"
 			],
@@ -5475,7 +5479,7 @@
 				},
 				{
 					"name": "subjectId",
-					"description": "A reference ID for the subject, an \"_\" means getting all available IDs or no ID necessary",
+					"description": "A reference ID for the subject, an \"_\" means no ID necessary",
 					"in": "path",
 					"required": true,
 					"type": "string"
@@ -5511,6 +5515,7 @@
 	"/warehouse/{subject}/{subjectId}/{period}/": {
 		"get": {
 			"summary": "Get a set of data for statistical usage",
+			"x-since": 2.15,
 			"tags": [
 				"exchange"
 			],
@@ -5524,7 +5529,7 @@
 				},
 				{
 					"name": "subjectId",
-					"description": "A reference ID for the subject, an \"_\" means getting all available IDs or no ID necessary",
+					"description": "A reference ID for the subject, an \"_\" means no ID necessary",
 					"in": "path",
 					"required": true,
 					"type": "string"
