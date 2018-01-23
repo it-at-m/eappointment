@@ -31,7 +31,24 @@ class ValidationTest extends Base
                     $error['messages']
                 );
             }
+            $this->assertEquals(400, $exception->getCode());
+        }
+    }
 
+    public function testTestValidObjectReference()
+    {
+        $entity = (new \BO\Zmsentities\Scope())->getExample();
+        $entity['contact']['email'] = "test.de";
+        try {
+            $entity->testValid('de_DE', 1);
+            $this->fail("Expected exception SchemaValidation not thrown");
+        } catch (\BO\Zmsentities\Exception\SchemaValidation $exception) {
+            foreach ($exception->data as $error) {
+                $this->assertContains(
+                    'Die E-Mail Adresse muss eine valide E-Mail im Format max@mustermann.de sein',
+                    $error['messages']
+                );
+            }
             $this->assertEquals(400, $exception->getCode());
         }
     }

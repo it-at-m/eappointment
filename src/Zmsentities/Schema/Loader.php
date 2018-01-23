@@ -29,6 +29,7 @@ class Loader
         $schema->setJsonObject($object);
         return $schema;
     }
+
     public static function asJson($schemaFilename)
     {
         if (!$schemaFilename) {
