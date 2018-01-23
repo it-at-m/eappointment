@@ -6,10 +6,14 @@
             {% embed "block/report/period.twig" with {"source":source, "items": waitingPeriod, "selected": period} %}
                 {% block breadcrumb %}
                 <ul class="report-period--breadcrumb">
+                    {% set arguments = {} %}
+                    {% if period %}
+                        {% set arguments = {"period": period} %}
+                    {% endif %}
                     <li class="report-period--subject">{{ title|trans }}</li>
-                    <li><a class="{{ activeOrganisation }}" href="{{ urlGet("ReportWaitingOrganisation", {}, {}) }}">{{ organisation.name }}</a></li>
-                    <li><a class="{{ activeDepartment }}" href="{{ urlGet("ReportWaitingDepartment", {}, {}) }}">{{ department.name }}</a></li>
-                    <li><a class="{{ activeScope }}" href="{{ urlGet("ReportWaitingIndex", {}, {}) }}">{{workstation.scope.contact.name}} {{workstation.scope.shortName}}</a></li>
+                    <li><a class="{{ activeOrganisation }}" href="{{ urlGet("ReportWaitingOrganisation", arguments, {}) }}">{{ organisation.name }}</a></li>
+                    <li><a class="{{ activeDepartment }}" href="{{ urlGet("ReportWaitingDepartment", arguments, {}) }}">{{ department.name }}</a></li>
+                    <li><a class="{{ activeScope }}" href="{{ urlGet("ReportWaitingIndex", arguments, {}) }}">{{workstation.scope.contact.name}} {{workstation.scope.shortName}}</a></li>
                 </ul>
                 </ul>
                 {% endblock %}
