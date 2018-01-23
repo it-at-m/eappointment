@@ -33,7 +33,6 @@ class UseraccountEdit extends BaseController
         $input = $request->getParsedBody();
         if (is_array($input) && array_key_exists('id', $input)) {
             $entity = (new Entity($input))->withCleanedUpFormData();
-            $entity->withPassword($input);
             $entity = \App::$http->readPostResult('/useraccount/'. $userAccountName .'/', $entity)->getEntity();
 
             return \BO\Slim\Render::redirect(

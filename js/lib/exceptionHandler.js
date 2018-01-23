@@ -9,7 +9,6 @@ class ExceptionHandler {
         this.callback = options.callback;
         this.bindEvents();
         this.render();
-        console.log(this);
     }
 
     render() {
