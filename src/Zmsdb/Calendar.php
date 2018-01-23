@@ -27,7 +27,8 @@ class Calendar extends Base
         $calendar = $this->readResolvedRequests($calendar);
         $calendar = $this->readResolvedScopeReferences($calendar);
         if (count($calendar->scopes) < 1) {
-            throw new Exception\CalendarWithoutScopes("No scopes found");
+            unset($calendar['processing']);
+            throw new Exception\CalendarWithoutScopes("No scopes resolved in $calendar");
         }
         $calendar = $this->readResolvedDays($calendar, $freeProcessesDate, $now, $slotType, $slotsRequired);
         unset($calendar['processing']);
