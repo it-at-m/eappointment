@@ -2,7 +2,7 @@
 
 namespace BO\Zmsentities\Exception;
 
-use \League\JsonGuard\ErrorCode;
+use \BO\Zmsentities\Schema\Validator;
 
 /**
  * example class to generate an exception
@@ -13,16 +13,11 @@ class SchemaValidation extends \Exception
 
     public $data = [];
 
-
-    protected $validationErrorList = [];
-
     protected $schemaName = '';
 
     public function setValidationError(array $validationErrorList)
     {
-        $this->validationErrorList = $validationErrorList;
-        $this->setMessages();
-        $this->setData();
+        $this->setMessages($validationErrorList);
         return $this;
     }
 
@@ -33,54 +28,18 @@ class SchemaValidation extends \Exception
         return $this;
     }
 
-    /**
-    * Merge conflict, on error see commit c05b7e5fca6b52fc8d0936f4fbb653f3cad8f06b
-    */
-    public function setData()
+    public function getMessages()
     {
-        foreach ($this->validationErrorList as $error) {
-            $pointer = $error->getSchemaPath();
-            if (! isset($this->data[$pointer]['messages'])) {
-                $this->data[$pointer]['messages'] = array();
-            }
-            if (! in_array($error->getMessage(), $this->data[$pointer]['messages'])) {
-                $this->data[$pointer]['messages'][] = $error->getMessage();
-            }
-            $this->data[$pointer]['failed'] = 1;
-        }
+        return $this->messages;
     }
 
-    public function getValidationErrorList()
+    protected function setMessages($validationErrorList)
     {
-        return $this->validationErrorList;
-    }
-
-    public function setMessages()
-    {
-        $messages = [];
-        foreach ($this->validationErrorList as $error) {
-            $messages[] = $this->getErrorMessage($error);
+        foreach ($validationErrorList as $error) {
+            $this->data[$error->getDataPath()]['messages'][$error->getKeyword()] = $error->getMessage();
+            $this->data[$error->getDataPath()]['pointer'] = Validator::getOriginPointer($error);
+            $this->data[$error->getDataPath()]['failed'] = 1;
         }
-        $this->message = implode("\n", $messages);
         return $this;
-    }
-
-    public function getErrorMessage(\League\JsonGuard\ValidationError $error)
-    {
-        $message = $this->schemaName . '';
-        $message .= $error->getSchemaPath() . '';
-        //$message .= $error->getKeyword();
-        $message .= ' ';
-        $message .= $error->getDataPath();
-        $message .= '=';
-        $message .= var_export($error->getCause(), true);
-        $message .= ' ';
-        $message .= $error->getMessage();
-        //$message .= ' (';
-        //$message .= var_export($error->getConstraints(), true);
-        //$message .= ')';
-        //$message .= var_export($error->toArray(), true);
-
-        return $message;
     }
 }
