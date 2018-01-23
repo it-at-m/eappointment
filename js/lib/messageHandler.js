@@ -20,7 +20,6 @@ class MessageHandler {
                 content = message.get(0).outerHTML;
             }
         }
-
         if (content.length == 0) {
             new ExceptionHandler(this.$main, {'message': this.message});
         } else {
