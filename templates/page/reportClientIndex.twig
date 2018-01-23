@@ -6,10 +6,14 @@
             {% embed "block/report/period.twig" with {"source":source, "items": clientperiod, "selected": period} %}
                 {% block breadcrumb %}
                 <ul class="report-period--breadcrumb">
+                    {% set arguments = {} %}
+                    {% if period %}
+                        {% set arguments = {"period": period} %}
+                    {% endif %}
                     <li class="report-period--subject">{{ title|trans }}</li>
-                    <li><a class="{{ activeOrganisation }}" href="{{ urlGet("ReportClientOrganisation", {}, {}) }}">{{ organisation.name }}</a></li>
-                    <li><a class="{{ activeDepartment }}" href="{{ urlGet("ReportClientDepartment", {}, {}) }}">{{ department.name }}</a></li>
-                    <li><a class="{{ activeScope }}" href="{{ urlGet("ReportClientIndex", {}, {}) }}">{{workstation.scope.contact.name}} {{workstation.scope.shortName}}</a></li>
+                    <li><a class="{{ activeOrganisation }}" href="{{ urlGet("ReportClientOrganisation", arguments, {}) }}">{{ organisation.name }}</a></li>
+                    <li><a class="{{ activeDepartment }}" href="{{ urlGet("ReportClientDepartment", arguments, {}) }}">{{ department.name }}</a></li>
+                    <li><a class="{{ activeScope }}" href="{{ urlGet("ReportClientIndex", arguments, {}) }}">{{workstation.scope.contact.name}} {{workstation.scope.shortName}}</a></li>
                 </ul>
                 </ul>
                 {% endblock %}
@@ -17,7 +21,20 @@
             {% if exchangeNotification and exchangeClient %}
             {% embed "block/report/board.twig" with {'source':source, 'class': 'report-board'} %}
                 {% block board_title %}
-                    {{ parent() }}: {{ title }}
+                    {% set tableName = workstation.scope.contact.name %}
+                    {% set tablePeriod = period|localizeddate("MEDIUM","none",NULL,NULL,"MMMM Y") %}
+                    {% if 4 == period|length %}
+                        {% set periodName = "Kalenderjahr " %}
+                        {% set tablePeriod = periodName|trans ~ period %}
+                    {% endif %}
+
+                    {% if activeDepartment %}
+                        {% set tableName = department.name %}
+                    {% elseif activeOrganisation %}
+                        {% set tableName = organisation.name %}
+                    {% endif %}
+
+                    {{ parent() }} für {{ tableName }} {% trans %}im Zeitraum{% endtrans %} {{ tablePeriod }}
                 {% endblock %}
                 {% block board_body %}
                     <table class="report-board--table">

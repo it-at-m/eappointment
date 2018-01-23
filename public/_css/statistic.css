@@ -4942,7 +4942,7 @@ a {
   a:hover, a:focus {
     text-decoration: underline; }
   a.active {
-    text-decoration: underline; }
+    font-weight: bold; }
 
 p {
   margin: 0 0 1em 0; }
