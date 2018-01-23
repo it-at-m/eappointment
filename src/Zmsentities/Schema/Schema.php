@@ -17,6 +17,40 @@ class Schema extends \ArrayObject
         parent::__construct($input, $flags, $iterator_class);
     }
 
+    public function withResolvedReferences($resolveLevel)
+    {
+        if ($resolveLevel > 0) {
+            $schema = clone $this;
+            $schema = $this->resolveReferences($schema, $resolveLevel);
+            return $schema;
+        }
+        return $this;
+    }
+
+    protected function resolveKey($key, $value, $resolveLevel)
+    {
+        //error_log("Resolve($resolveLevel) Key = " . $key . " -> " . gettype($value));
+        if (is_array($value)) {
+            $value = $this->resolveReferences($value, $resolveLevel);
+        } elseif ($key === '$ref' && $value{0} != '#') {
+            //error_log("Load $value");
+            $value = Loader::asArray($value)->withResolvedReferences($resolveLevel - 1);
+        }
+        return $value;
+    }
+
+    protected function resolveReferences($hash, $resolveLevel)
+    {
+        foreach ($hash as $key => $value) {
+            $hash[$key] = $this->resolveKey($key, $value, $resolveLevel);
+            if ($hash[$key] instanceof self) {
+                // Schema from Loader::asArray() is returned, we guess $key is '$ref' and should be replaced
+                return $hash[$key]->getArrayCopy();
+            }
+        }
+        return $hash;
+    }
+
     public function toJsonObject($keepEmpty = false)
     {
         if (null !== $this->asObject) {
