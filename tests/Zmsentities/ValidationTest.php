@@ -25,10 +25,13 @@ class ValidationTest extends Base
             $entity->testValid();
             $this->fail("Expected exception SchemaValidation not thrown");
         } catch (\BO\Zmsentities\Exception\SchemaValidation $exception) {
-            $this->assertContains(
-                'Die E-Mail Adresse muss eine valide E-Mail im Format max@mustermann.de sein',
-                $exception->getMessage()
-            );
+            foreach ($exception->data as $error) {
+                $this->assertContains(
+                    'Die E-Mail Adresse muss eine valide E-Mail im Format max@mustermann.de sein',
+                    $error['messages']
+                );
+            }
+
             $this->assertEquals(400, $exception->getCode());
         }
     }
@@ -42,12 +45,11 @@ class ValidationTest extends Base
             $entity->testValid();
             $this->fail("Expected exception SchemaValidation not thrown");
         } catch (\BO\Zmsentities\Exception\SchemaValidation $exception) {
-            $errorList = $exception->getValidationErrorList();
+            $errorList = $exception->data;
             // merge conflict, the following two lines might fail??
-            $this->assertEquals('Passwortwiederholung', $errorList[0]->getDataPath());
-            $this->assertEquals('Passwortwiederholung', $errorList[1]->getDataPath());
-            $this->assertContains('Zeichen', $errorList[0]->getMessage());
-            $this->assertContains('identisch', $errorList[1]->getMessage());
+            $this->assertEquals('Passwortwiederholung', key($errorList));
+            $this->assertArrayHasKey('minLength', $errorList['Passwortwiederholung']['messages']);
+            $this->assertArrayHasKey('format', $errorList['Passwortwiederholung']['messages']);
         }
     }
 }

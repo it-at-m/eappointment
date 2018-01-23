@@ -55,10 +55,15 @@ class Validator
         return ($message) ? $message : $error->getMessage();
     }
 
-    public function getOriginPointer(ValidationError $error)
+    public static function getOriginPointer(ValidationError $error)
     {
         $pointer = explode('/', $error->getSchemaPath());
-        return (isset($pointer[1])) ? $pointer[1] : $pointer[0];
+        $key = array_search('properties', $pointer, true);
+        if ($key !== false) {
+            $pointer = array_values(array_slice($pointer, $key + 1, null, true));
+        }
+
+        return $pointer[0];
     }
 
     /**
@@ -67,7 +72,7 @@ class Validator
     public function getTranslatedPointer(ValidationError $error)
     {
         $property = new \BO\Zmsentities\Helper\Property($error->getSchema());
-        return $property['x-locale'][$this->locale]->pointer->get($this->getOriginPointer($error));
+        return $property['x-locale'][$this->locale]->pointer->get(static::getOriginPointer($error));
     }
 
     public function registerFormatExtension($name, $extension)
