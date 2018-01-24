@@ -22,6 +22,7 @@ class Schema extends \ArrayObject
         if ($resolveLevel > 0) {
             $schema = clone $this;
             $schema = $this->resolveReferences($schema, $resolveLevel);
+            $schema->setJsonObject(json_decode(json_encode($schema->toSanitizedArray(true))));
             return $schema;
         }
         return $this;
