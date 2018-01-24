@@ -20,6 +20,7 @@ class TicketprinterByScope extends BaseController
     ) {
         Helper\HomeUrl::create($request);
 
+        $config = \App::$http->readGetResult('/config/')->getEntity();
         $validator = $request->getAttribute('validator');
         $defaultTemplate = $validator->getParameter("template")
             ->isPath()
@@ -51,6 +52,7 @@ class TicketprinterByScope extends BaseController
                 'waitingClients' => $estimatedData['amountBefore'],
                 'waitingTime' => $estimatedData['waitingTimeEstimate'],
                 'buttonDisplay' => $template->getButtonTemplateType($ticketprinter),
+                'config' => $config
             )
         );
     }

@@ -11,11 +11,5 @@
 
 	{% set buttonLabelPrefix = "Wartenummer für " %}
 	{{ block(buttonDisplay) }}
-
-	{% if
-	    estimatedData.waitingTimeEstimate > (scope.preferences.ticketprinter.notificationsDelay)|round() and
-	    scope.preferences.ticketprinter.notificationsEnabled
-	%}
 	{{ block("button_append_notification") }}
-	{% endif %}
 {% endblock %}

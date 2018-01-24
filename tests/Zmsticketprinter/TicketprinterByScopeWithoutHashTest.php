@@ -38,6 +38,11 @@ class TicketprinterByScopeWithoutHashTest extends Base
                 'function' => 'readGetResult',
                 'url' => '/scope/312/queue/',
                 'response' => $this->readFixture("GET_queuelist_312.json"),
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/config/',
+                'response' => $this->readFixture("GET_config.json"),
             ]
         ];
     }

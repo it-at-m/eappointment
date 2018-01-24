@@ -2,7 +2,7 @@
 
 namespace BO\Zmsticketprinter\Tests;
 
-class ProcessByScopeTest extends Base
+class ProcessByScopeWithNotificationTest extends Base
 {
     protected $classname = "Process";
 
@@ -15,13 +15,13 @@ class ProcessByScopeTest extends Base
         return [
             [
                 'function' => 'readGetResult',
-                'url' => '/ticketprinter/71ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2/',
-                'response' => $this->readFixture("GET_ticketprinter.json"),
+                'url' => '/ticketprinter/ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2/',
+                'response' => $this->readFixture("GET_ticketprinter_buttonlist_single_notification.json"),
             ],
             [
                 'function' => 'readGetResult',
-                'url' => '/scope/141/waitingnumber/71ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2/',
-                'response' => $this->readFixture("GET_process_100044_57c2.json"),
+                'url' => '/scope/141/waitingnumber/ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2/',
+                'response' => $this->readFixture("GET_process_100044_57c2_with_notifications.json"),
             ],
             [
                 'function' => 'readGetResult',
@@ -46,11 +46,11 @@ class ProcessByScopeTest extends Base
     {
         $response = $this->render([], [
             '__cookie' => [
-                'Ticketprinter' => '71ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2',
+                'Ticketprinter' => 'ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2',
             ],
             'scopeId' => 141,
         ], [ ]);
-        $this->assertContains('Es warten', (string) $response->getBody());
-        $this->assertContains('Ihre Wartenummer wird gedruckt', (string) $response->getBody());
+        $this->assertContains('Wünschen Sie eine SMS-Benachrichtigung', (string) $response->getBody());
+        $this->assertContains('30 Minuten vor ihrem Aufruf?', (string) $response->getBody());
     }
 }

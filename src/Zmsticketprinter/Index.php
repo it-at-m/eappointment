@@ -20,6 +20,7 @@ class Index extends BaseController
         array $args
     ) {
         Helper\HomeUrl::create($request);
+        $config = \App::$http->readGetResult('/config/')->getEntity();
         $validator = $request->getAttribute('validator');
         $defaultTemplate = $validator->getParameter("template")
             ->isPath()
@@ -50,6 +51,7 @@ class Index extends BaseController
                 'ticketprinter' => $ticketprinter,
                 'organisation' => $organisation,
                 'buttonDisplay' => $template->getButtonTemplateType($ticketprinter),
+                'config' => $config
             )
         );
     }

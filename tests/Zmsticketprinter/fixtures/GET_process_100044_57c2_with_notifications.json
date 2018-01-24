@@ -109,7 +109,7 @@
           "confirmationEnabled": "0",
           "deactivatedText": "",
           "notificationsAmendmentEnabled": "0",
-          "notificationsEnabled": "0",
+          "notificationsEnabled": "1",
           "notificationsDelay": "0"
         },
         "workstation": {

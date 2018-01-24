@@ -28,6 +28,11 @@ class HomeUrlTest extends Base
                 'function' => 'readPostResult',
                 'url' => '/ticketprinter/',
                 'response' => $this->readFixture("GET_ticketprinter_buttonlist_multi.json"),
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/config/',
+                'response' => $this->readFixture("GET_config.json"),
             ]
         ];
     }
