@@ -22,18 +22,18 @@ class ScopeUpdate extends BaseController
         array $args
     ) {
         $input = Validator::input()->isJson()->assertValid()->getValue();
-        $entity = new \BO\Zmsentities\Scope($input);
-        $entity->testValid();
-        $scope = (new Scope)->readEntity($args['id'], 0);
+        $scope = (new Scope)->readEntity($args['id'], 1);
         if (! $scope) {
             throw new Exception\Scope\ScopeNotFound();
-        }(new Helper\User($request, 2))->checkRights(
+        }
+        $scope->addData($input)->testValid('de_DE', 1);
+        (new Helper\User($request, 2))->checkRights(
             'scope',
             new \BO\Zmsentities\Useraccount\EntityAccess($scope)
         );
 
         $message = Response\Message::create($request);
-        $message->data = (new Scope)->updateEntity($scope->id, $entity);
+        $message->data = (new Scope)->updateEntity($scope->id, $scope);
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message, $message->getStatuscode());
