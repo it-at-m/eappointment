@@ -36,9 +36,11 @@ class SchemaValidation extends \Exception
     protected function setMessages($validationErrorList)
     {
         foreach ($validationErrorList as $error) {
-            $this->data[$error->getDataPath()]['messages'][$error->getKeyword()] = $error->getMessage();
-            $this->data[$error->getDataPath()]['pointer'] = Validator::getOriginPointer($error);
-            $this->data[$error->getDataPath()]['failed'] = 1;
+            $pointer = Validator::getOriginPointer($error);
+            $this->data[$pointer]['messages'][$error->getKeyword()] = $error->getMessage();
+            $this->data[$pointer]['headline'] = $error->getDataPath();
+            $this->data[$pointer]['failed'] = 1;
+            $this->data[$pointer]['data'] = $error->getData();
         }
         return $this;
     }

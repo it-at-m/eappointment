@@ -136,4 +136,22 @@ class Schema extends \ArrayObject
         }
         return $property->get([]);
     }
+
+    public function withoutRefs()
+    {
+        return $this->getWithoutRefs(clone $this);
+    }
+
+    protected function getWithoutRefs($data)
+    {
+        foreach ($data as $key => $value) {
+            if (is_array($value)) {
+                $data[$key] = $this->getWithoutRefs($value);
+            }
+            if ($key === '$ref') {
+                unset($data[$key]);
+            }
+        }
+        return $data;
+    }
 }

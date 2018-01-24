@@ -58,12 +58,11 @@ class Validator
     public static function getOriginPointer(ValidationError $error)
     {
         $pointer = explode('/', $error->getSchemaPath());
-        $key = array_search('properties', $pointer, true);
-        if ($key !== false) {
-            $pointer = array_values(array_slice($pointer, $key + 1, null, true));
+        $keys = array_keys($pointer, 'properties', true);
+        if (0 < count($keys)) {
+            $pointer = array_values(array_slice($pointer, end($keys) + 1, null, true));
         }
-
-        return $pointer[0];
+        return reset($pointer);
     }
 
     /**

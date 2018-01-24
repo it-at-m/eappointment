@@ -64,9 +64,9 @@ class ValidationTest extends Base
         } catch (\BO\Zmsentities\Exception\SchemaValidation $exception) {
             $errorList = $exception->data;
             // merge conflict, the following two lines might fail??
-            $this->assertEquals('Passwortwiederholung', key($errorList));
-            $this->assertArrayHasKey('minLength', $errorList['Passwortwiederholung']['messages']);
-            $this->assertArrayHasKey('format', $errorList['Passwortwiederholung']['messages']);
+            $this->assertEquals('changePassword', key($errorList));
+            $this->assertArrayHasKey('minLength', $errorList['changePassword']['messages']);
+            $this->assertArrayHasKey('format', $errorList['changePassword']['messages']);
         }
     }
 }
