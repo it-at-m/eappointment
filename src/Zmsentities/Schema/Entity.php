@@ -82,7 +82,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
     private function getValidator($locale = 'de_DE', $resolveLevel = 0)
     {
         $jsonSchema = self::readJsonSchema($resolveLevel)->withResolvedReferences($resolveLevel);
-        $data = new Schema($this);
+        $data = (new Schema($this))->withoutRefs();
         if (array_key_exists('$schema', $data)) {
             unset($data['$schema']);
         }
