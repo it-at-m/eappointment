@@ -43,10 +43,14 @@
     	    estimatedData.waitingTimeEstimate > (scope.preferences.ticketprinter.notificationsDelay)|round() and
     	    process.scope.preferences.ticketprinter.notificationsEnabled
     	%}
+		{% set headsUpTime = config.notifications.erinnerungsvorlauf %}
+		{% if process.scope.preferences.notifications.headsUpTime %}
+			{% set headsUpTime = process.scope.preferences.notifications.headsUpTime %}
+		{% endif %}
         <p>Wartenummer wird im Anschluss ausgedruckt.</p>
         <span>
             Wünschen Sie eine SMS-Benachrichtigung<br/>
-            {{ process.scope.preferences.notifications.headsUpTime }} Minuten vor ihrem Aufruf?
+            {{ headsUpTime }} Minuten vor ihrem Aufruf?
         </span>
 
     		<form action="{{ urlGet('Notification', {}, {}) }}" method="post" id="postNotification">

@@ -78,11 +78,18 @@
 {% block button_append_notification %}
 	{% from 'element/helper/form.twig' import formbutton, hiddenfield %}
 	{% set label = "Handynummer nachträglich eintragen" %}
-	{% if not scopeId %}
-		{% set scopeId = ticketprinter.buttons|first.scope.id %}
+	{% set notificationsDelay = config.notifications.benachrichtigungsfrist|round() %}
+	{% if scope.preferences.ticketprinter.notificationsDelay %}
+		{% set notificationsDelay = scope.preferences.ticketprinter.notificationsDelay|round() %}
 	{% endif %}
-    <form action="{{ urlGet('NotificationAmendment', {}, {}) }}" method="post">
-        {{ hiddenfield({ "name": "scopeId", "value": scopeId }) }}
-        {{ formbutton({ "type":"submit", "class": "buttonTelefonnummernachtragen", "name": "appendNotifcation", "label":label|trans, "value": label|trans }) }}
-    </form>
+	{% if waitingTime|round() > notificationsDelay and scope.preferences.ticketprinter.notificationsAmendmentEnabled %}
+		{% if not scopeId %}
+			{% set scopeId = ticketprinter.buttons|first.scope.id %}
+		{% endif %}
+		<form action="{{ urlGet('NotificationAmendment', {}, {}) }}" method="post">
+			{{ hiddenfield({ "name": "scopeId", "value": scopeId }) }}
+			{{ formbutton({ "type":"submit", "class": "buttonTelefonnummernachtragen", "name": "appendNotifcation", "label":label|trans, "value": label|trans }) }}
+		</form>
+	{% endif %}
+
 {% endblock %}

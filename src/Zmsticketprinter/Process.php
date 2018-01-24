@@ -21,6 +21,7 @@ class Process extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        $config = \App::$http->readGetResult('/config/')->getEntity();
         $validator = $request->getAttribute('validator');
         $scopeId = $validator->getParameter('scopeId')->isNumber()->getValue();
         $clusterId = $validator->getParameter('clusterId')->isNumber()->getValue();
@@ -54,7 +55,8 @@ class Process extends BaseController
                 )->getEntity(),
                 'process' => $process,
                 'queueList' => $queueList,
-                'estimatedData' => $estimatedData
+                'estimatedData' => $estimatedData,
+                'config' => $config
             )
         );
     }

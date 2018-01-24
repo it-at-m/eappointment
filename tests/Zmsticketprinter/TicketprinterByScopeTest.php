@@ -38,6 +38,11 @@ class TicketprinterByScopeTest extends Base
                 'function' => 'readGetResult',
                 'url' => '/scope/312/queue/',
                 'response' => $this->readFixture("GET_queuelist_312.json"), //Bürgeramt 1 in Köpenick
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/config/',
+                'response' => $this->readFixture("GET_config.json"),
             ]
         ];
     }
@@ -53,5 +58,6 @@ class TicketprinterByScopeTest extends Base
         ], [ ]);
         $this->assertContains('Wartenummer für', (string) $response->getBody());
         $this->assertContains('Köpenick', (string) $response->getBody());
+        $this->assertNotContains('Handynummer nachträglich eintragen', (string) $response->getBody());
     }
 }
