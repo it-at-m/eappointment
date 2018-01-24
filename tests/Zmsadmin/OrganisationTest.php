@@ -70,7 +70,7 @@ class OrganisationTest extends Base
             ),
             'save' => 'save'
         ], [], 'POST');
-        $this->assertRedirect($response, '/organisation/71/?confirm_success=1459504500');
+        $this->assertRedirect($response, '/organisation/71/?success=organisation_saved');
         $this->assertEquals(302, $response->getStatusCode());
     }
 }

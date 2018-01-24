@@ -10,6 +10,7 @@ class View extends BaseView {
     constructor (element, options) {
         super(element);
         this.$main = $(element);
+        this.form = this.$main.find('form');
         this.includeUrl = options.includeUrl || "";
         this.onSaveProcess = options.onSaveProcess || (() => {});
         this.dataUrl = options.dataUrl;
@@ -20,7 +21,7 @@ class View extends BaseView {
 
     save (ev) {
         console.log("Save Button clicked", ev);
-        const sendData = this.$main.find('form').serialize();
+        const sendData = this.form.serialize();
         return this.loadCall(this.dataUrl, 'POST', sendData);
     }
 
@@ -65,7 +66,7 @@ class View extends BaseView {
     loadErrorCallback(err) {
         if (err.message && err.message.includes('data-exception-errorlist')) {
             let exceptionData = $(err.message).find('[data-exception-errorlist]').data('exception-errorlist');
-            new FormValidationView(this.$main.find('form'), {
+            new FormValidationView(this.form, {
                 responseJson: exceptionData
             });
         }

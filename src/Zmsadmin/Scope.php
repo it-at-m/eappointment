@@ -10,9 +10,6 @@ namespace BO\Zmsadmin;
 use BO\Zmsentities\Scope as Entity;
 use BO\Mellon\Validator;
 
-/**
- * Handle requests concerning services
- */
 class Scope extends BaseController
 {
 
@@ -26,7 +23,7 @@ class Scope extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
-        $confirm_success = $request->getAttribute('validator')->getParameter('confirm_success')->isString()->getValue();
+        $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         $providerAssigned = \App::$http->readGetResult(
             '/provider/dldb/',
             array(
@@ -48,17 +45,13 @@ class Scope extends BaseController
         $callDisplayImage = \App::$http->readGetResult('/scope/'. $entityId .'/imagedata/calldisplay/')->getEntity();
         $input = $request->getParsedBody();
         if (is_array($input) && array_key_exists('save', $input)) {
-            $entity = (new Entity($input))->withCleanedUpFormData();
-            $entity->id = $entityId;
-            $entity = \App::$http->readPostResult('/scope/' . $entity->id . '/', $entity)->getEntity();
-            if (isset($input['removeImage']) && $input['removeImage']) {
-                \App::$http->readDeleteResult('/scope/'. $entityId .'/imagedata/calldisplay/');
-            } else {
-                (new Helper\FileUploader($request, 'uploadCallDisplayImage'))->writeUploadToScope($entityId);
+            $result = $this->testUpdateEntity($input, $entityId);
+            if ($result instanceof Entity) {
+                $this->writeUploadedImage($request, $entityId, $input);
+                return \BO\Slim\Render::redirect('scope', ['id' => $entityId], [
+                    'success' => 'scope_saved'
+                ]);
             }
-            return \BO\Slim\Render::redirect('scope', ['id' => $entityId], [
-                'confirm_success' => \App::$now->getTimeStamp()
-            ]);
         }
 
         return \BO\Slim\Render::withHtml(
@@ -68,7 +61,7 @@ class Scope extends BaseController
                 'title' => 'Standort',
                 'menuActive' => 'owner',
                 'workstation' => $workstation,
-                'scope' => $entity->getArrayCopy(),
+                'scope' => $entity,
                 'organisation' => $organisation,
                 'department' => $department,
                 'providerList' => array(
@@ -76,8 +69,32 @@ class Scope extends BaseController
                     'assigned' => $providerAssigned
                 ),
                 'callDisplayImage' => $callDisplayImage,
-                'confirm_success' => $confirm_success,
+                'success' => $success
             )
         );
+    }
+
+    protected function testUpdateEntity($input, $entityId)
+    {
+        $entity = (new Entity($input))->withCleanedUpFormData();
+        $entity->id = $entityId;
+        try {
+            $entity = \App::$http->readPostResult('/scope/' . $entity->id . '/', $entity)->getEntity();
+        } catch (\BO\Zmsclient\Exception $exception) {
+            if ('BO\\Zmsentities\\Exception\\SchemaValidation' == $exception->template) {
+                return $exception->data;
+            }
+            throw $exception;
+        }
+        return $entity;
+    }
+
+    protected function writeUploadedImage(\Psr\Http\Message\RequestInterface $request, $entityId, $input)
+    {
+        if (isset($input['removeImage']) && $input['removeImage']) {
+            \App::$http->readDeleteResult('/scope/'. $entityId .'/imagedata/calldisplay/');
+        } else {
+            (new Helper\FileUploader($request, 'uploadCallDisplayImage'))->writeUploadToScope($entityId);
+        }
     }
 }

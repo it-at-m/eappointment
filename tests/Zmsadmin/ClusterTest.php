@@ -119,7 +119,7 @@ class ClusterTest extends Base
                 )
             )
         ], [], 'POST');
-        $this->assertRedirect($response, '/department/74/cluster/109/?confirm_success=1459504500');
+        $this->assertRedirect($response, '/department/74/cluster/109/?success=cluster_saved');
         $this->assertEquals(302, $response->getStatusCode());
     }
 
@@ -247,7 +247,7 @@ class ClusterTest extends Base
             'save' => 'save',
             'removeImage' => 1
         ], [], 'POST');
-        $this->assertRedirect($response, '/department/74/cluster/109/?confirm_success=1459504500');
+        $this->assertRedirect($response, '/department/74/cluster/109/?success=cluster_saved');
         $this->assertEquals(302, $response->getStatusCode());
     }
 }

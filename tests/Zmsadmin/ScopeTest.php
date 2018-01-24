@@ -142,7 +142,7 @@ class ScopeTest extends Base
                 )
             ]
         ], [], 'POST');
-        $this->assertRedirect($response, '/scope/141/?confirm_success=1459504500');
+        $this->assertRedirect($response, '/scope/141/?success=scope_saved');
         $this->assertEquals(302, $response->getStatusCode());
     }
 
@@ -298,7 +298,7 @@ class ScopeTest extends Base
             'save' => 'save',
             'removeImage' => 1
         ], [], 'POST');
-        $this->assertRedirect($response, '/scope/141/?confirm_success=1459504500');
+        $this->assertRedirect($response, '/scope/141/?success=scope_saved');
         $this->assertEquals(302, $response->getStatusCode());
     }
 

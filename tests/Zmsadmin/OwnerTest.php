@@ -65,7 +65,7 @@ class OwnerTest extends Base
             ),
             'save' => 'save'
         ], [], 'POST');
-        $this->assertRedirect($response, '/owner/23/?confirm_success=1459504500');
+        $this->assertRedirect($response, '/owner/23/?success=owner_saved');
         $this->assertEquals(302, $response->getStatusCode());
     }
 }

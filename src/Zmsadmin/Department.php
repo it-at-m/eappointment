@@ -21,7 +21,7 @@ class Department extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
-        $confirm_success = $request->getAttribute('validator')->getParameter('confirm_success')->isString()->getValue();
+        $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         $entityId = Validator::value($args['id'])->isNumber()->getValue();
         $entity = \App::$http->readGetResult('/department/'. $entityId .'/', ['resolveReferences' => 1])->getEntity();
         $organisation = \App::$http->readGetResult('/department/' . $entityId . '/organisation/')->getEntity();
@@ -37,7 +37,7 @@ class Department extends BaseController
                 $entity
             )->getEntity();
             return \BO\Slim\Render::redirect('department', ['id' => $entityId], [
-                'confirm_success' => \App::$now->getTimeStamp()
+                'success' => 'department_saved'
             ]);
         }
 
@@ -50,7 +50,7 @@ class Department extends BaseController
                 'organisation' => $organisation,
                 'department' => (new Schema($entity))->toSanitizedArray(),
                 'menuActive' => 'owner',
-                'confirm_success' => $confirm_success,
+                'success' => $success,
             )
         );
     }

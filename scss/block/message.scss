@@ -9,7 +9,7 @@ $messagePadding:                0.75em 1em 1em 1em;
     border:             1px solid darken($messageBackgroundColor,10%);
     background-color:   $messageBackgroundColor;
     padding:            $messagePadding;
-    margin:             1em 0;
+    margin:             0 0 1em 0;
     display:            block;
     .title {
         margin-top:     0;
@@ -38,5 +38,41 @@ $messagePadding:                0.75em 1em 1em 1em;
 .message-success {
     @extend .message;
     border-color:       darken($messageSuccessBackgroundColor,10%);
-    background-color:   $messageSuccessBackgroundColor
+    background-color:   $messageSuccessBackgroundColor;
+}
+
+.message-success.dialog {
+      @extend
+        .board_body--maxHeight,
+        .board;
+
+    background-color: transparent;
+    border-color: transparent;
+
+    .header {
+        background-color:   darken($messageSuccessBackgroundColor,40%);
+    }
+
+    .body {
+        border-color:       darken($messageSuccessBackgroundColor,10%);
+        background-color:   $messageSuccessBackgroundColor;
+    }
+}
+
+.message-error.schemavalidation {
+      @extend
+        .board_body--maxHeight,
+        .board;
+
+    background-color: transparent;
+    border-color: transparent;
+
+    .header {
+        background-color:   darken($messageErrorBackgroundColor,40%);
+    }
+
+    .body {
+        border-color:       darken($messageErrorBackgroundColor,1%);
+        background-color:   $messageErrorBackgroundColor;
+    }
 }

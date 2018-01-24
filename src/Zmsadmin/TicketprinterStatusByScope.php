@@ -21,7 +21,7 @@ class TicketprinterStatusByScope extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
-        $confirm_success = $request->getAttribute('validator')->getParameter('confirm_success')->isString()->getValue();
+        $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
 
         $scopeId = Validator::value($args['id'])->isNumber()->getValue();
         $scope = \App::$http->readGetResult('/scope/' . $scopeId . '/')->getEntity();
@@ -36,10 +36,10 @@ class TicketprinterStatusByScope extends BaseController
                 }
             }
             $scope->preferences['ticketprinter']['deactivatedText'] = $input['hinweis'];
-            $scope = \App::$http->readPostResult('/scope/' . $scope->id . '/', $scope)
-                    ->getEntity();
+            $scope = \App::$http->readPostResult('/scope/' . $scope->id . '/', $scope)->getEntity();
+
             return \BO\Slim\Render::redirect('ticketprinterStatusByScope', ['id' => $scopeId], [
-                'confirm_success' => \App::$now->getTimeStamp()
+                'success' => 'ticketprinter_saved'
             ]);
         }
 
@@ -51,7 +51,7 @@ class TicketprinterStatusByScope extends BaseController
                 'menuActive' => 'ticketprinterStatus',
                 'workstation' => $workstation,
                 'scope' => $scope->getArrayCopy(),
-                'confirm_success' => $confirm_success,
+                'success' => $success
             )
         );
     }

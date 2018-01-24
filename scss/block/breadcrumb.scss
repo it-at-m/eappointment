@@ -1,6 +1,6 @@
 .breadcrumb {
-    @extend 
-        .list-inline, 
+    @extend
+        .list-inline,
         .list-inline--delimited;
         > li + li {
             &:before {

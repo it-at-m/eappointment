@@ -93,7 +93,7 @@ class DayoffByYearTest extends Base
             ),
             'save' => 'save'
         ], [], 'POST');
-        $this->assertRedirect($response, '/dayoff/2016/?confirm_success=1459504500');
+        $this->assertRedirect($response, '/dayoff/2016/?success=dayoff_saved');
         $this->assertEquals(302, $response->getStatusCode());
     }
 }

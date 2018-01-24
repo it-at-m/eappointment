@@ -136,6 +136,11 @@ select > option {
         .append + .prepend {
             margin-left:    1em;
         }
+
+        .form-input-description {
+            line-height:    1.4em;
+            margin-top:     5px;
+        }
     }
     .group_control {
     }
