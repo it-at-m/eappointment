@@ -27,11 +27,23 @@ class ScopeUpdateTest extends Base
 
     public function testUnvalidInput()
     {
+        // unvalid email
         $this->setWorkstation()->getUseraccount()->setRights('scope');
         $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
         $this->expectExceptionCode(400);
         $this->render(['id' => 141], [
-            '__body' => '{}'
+            '__body' => '{
+              "$schema": "https://schema.berlin.de/queuemanagement/scope.json",
+              "id": "141",
+              "hint": "Nr. wird zum Termin aufgerufen",
+              "shortName": "",
+              "contact": {
+                  "name": "Bürgeramt Heerstraße",
+                  "street": "Heerstr. 12, 14052 Berlin",
+                  "email": "test",
+                  "country": "Germany"
+              }
+            }'
         ], []);
     }
 
