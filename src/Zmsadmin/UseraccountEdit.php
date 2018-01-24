@@ -25,25 +25,21 @@ class UseraccountEdit extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $userAccountName = Validator::value($args['loginname'])->isString()->getValue();
-        $confirm_success = $request->getAttribute('validator')->getParameter('confirm_success')->isString()->getValue();
+        $confirmSuccess = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         $userAccount = \App::$http->readGetResult('/useraccount/'. $userAccountName .'/')->getEntity();
         $workstation->getUseraccount()->hasEditAccess($userAccount);
         $ownerList = \App::$http->readGetResult('/owner/', ['resolveReferences' => 2])->getCollection();
 
         $input = $request->getParsedBody();
         if (is_array($input) && array_key_exists('id', $input)) {
-            $entity = (new Entity($input))->withCleanedUpFormData();
-            $entity = \App::$http->readPostResult('/useraccount/'. $userAccountName .'/', $entity)->getEntity();
-
-            return \BO\Slim\Render::redirect(
-                'useraccountEdit',
-                array(
-                    'loginname' => $entity->id
-                ),
-                array(
-                    'confirm_success' => \App::$now->getTimeStamp()
-                )
-            );
+            $result = $this->writepdatedEntity($input, $userAccountName);
+            if ($result instanceof Entity) {
+                return \BO\Slim\Render::redirect(
+                    'useraccountEdit',
+                    array('loginname' => $result->id),
+                    array('success' => 'useraccount_saved')
+                );
+            }
         }
 
         return \BO\Slim\Render::withHtml(
@@ -52,11 +48,19 @@ class UseraccountEdit extends BaseController
             array(
                 'debug' => \App::DEBUG,
                 'userAccount' => $userAccount,
-                'confirm_success' => $confirm_success,
+                'success' => $confirmSuccess,
                 'ownerList' => $ownerList ? $ownerList->toDepartmentListByOrganisationName() : [],
                 'workstation' => $workstation,
                 'title' => 'Nutzer: Einrichtung und Administration','menuActive' => 'useraccount'
             )
         );
+    }
+
+    protected function writepdatedEntity($input, $userAccountName)
+    {
+        $entity = (new Entity($input))->withCleanedUpFormData();
+        $entity->withPassword($input);
+        $entity = \App::$http->readPostResult('/useraccount/'. $userAccountName .'/', $entity)->getEntity();
+        return $entity;
     }
 }

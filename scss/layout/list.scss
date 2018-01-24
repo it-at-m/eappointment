@@ -2,7 +2,7 @@ $formErrorColor:        #a94442 !default;
 
 /* UL */
 ul {
-    margin:                 0;
+    margin:                 0 0 0.5em;
     padding-left:           1.5em;
     li {
         margin:             0.1em 0;
@@ -77,8 +77,12 @@ dl {
 .list-error {
     li {
         color:              $formErrorColor;
-        font-size:          0.9em;
         line-height:        1.2em;
         letter-spacing:     normal;
     }
+}
+
+.list-error .headline {
+    color:              $formErrorColor;
+    line-height:        1.2em;
 }

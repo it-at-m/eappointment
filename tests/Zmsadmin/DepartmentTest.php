@@ -97,7 +97,7 @@ class DepartmentTest extends Base
             ),
             'save' => 'save'
         ], [], 'POST');
-        $this->assertRedirect($response, '/department/74/?confirm_success=1459504500');
+        $this->assertRedirect($response, '/department/74/?success=department_saved');
         $this->assertEquals(302, $response->getStatusCode());
     }
 }

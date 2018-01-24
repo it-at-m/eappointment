@@ -21,18 +21,17 @@ class Profile extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-        $confirmSuccess = $request->getAttribute('validator')->getParameter('confirm_success')->isString()->getValue();
+        $confirmSuccess = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         $entity = new Entity($workstation->useraccount);
         $input = $request->getParsedBody();
 
         if (is_array($input) && array_key_exists('id', $input)) {
-            $entity = (new Entity($input))->withCleanedUpFormData();
-            $entity->withPassword($input);
-            $entity = \App::$http->readPostResult('/workstation/password/', $entity)
-                    ->getEntity();
-            return \BO\Slim\Render::redirect('profile', [], [
-                'confirm_success' => \App::$now->getTimeStamp()
-            ]);
+            $result = $this->writeUpdatedEntity($input);
+            if ($result instanceof Entity) {
+                return \BO\Slim\Render::redirect('profile', [], [
+                    'success' => 'password_changed'
+                ]);
+            }
         }
 
         return \BO\Slim\Render::withHtml(
@@ -43,8 +42,16 @@ class Profile extends BaseController
                 'menuActive' => 'profile',
                 'workstation' => $workstation,
                 'useraccount' => $entity->getArrayCopy(),
-                'confirm_success' => $confirmSuccess
+                'success' => $confirmSuccess
             )
         );
+    }
+
+    protected function writeUpdatedEntity($input)
+    {
+        $entity = (new Entity($input))->withCleanedUpFormData();
+        $entity->withPassword($input);
+        $entity = \App::$http->readPostResult('/workstation/password/', $entity)->getEntity();
+        return $entity;
     }
 }

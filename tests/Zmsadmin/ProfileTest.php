@@ -42,7 +42,7 @@ class ProfileTest extends Base
                 [
                     'function' => 'readPostResult',
                     'url' => '/workstation/password/',
-                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                    'response' => $this->readFixture("GET_useraccount_testuser.json")
                 ]
             ]
         );
@@ -52,7 +52,7 @@ class ProfileTest extends Base
             'changePassword' => ['myPassword', 'myPassword'],
             'save' => 'save'
         ], [], 'POST');
-        $this->assertRedirect($response, '/profile/?confirm_success=1459504500');
+        $this->assertRedirect($response, '/profile/?success=password_changed');
         $this->assertEquals(302, $response->getStatusCode());
     }
 

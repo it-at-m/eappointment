@@ -23,7 +23,7 @@ class Owner extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
-        $confirm_success = $request->getAttribute('validator')->getParameter('confirm_success')->isString()->getValue();
+        $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         $entityId = Validator::value($args['id'])->isNumber()->getValue();
         $entity = \App::$http->readGetResult('/owner/' . $entityId . '/')->getEntity();
 
@@ -39,7 +39,7 @@ class Owner extends BaseController
                     'id' => $entityId
                 ],
                 [
-                    'confirm_success' => \App::$now->getTimeStamp()
+                    'success' => 'owner_saved'
                 ]
             );
         }
@@ -51,7 +51,7 @@ class Owner extends BaseController
                 'title' => 'Kunde','workstation' => $workstation->getArrayCopy(),'menuActive' => 'owner',
                 'owner' => $entity->getArrayCopy(),
                 'workstation' => $workstation->getArrayCopy(),
-                'confirm_success' => $confirm_success
+                'success' => $success
             )
         );
     }

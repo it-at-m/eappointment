@@ -21,7 +21,7 @@ class UseraccountAdd extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
-        $confirmSuccess = $request->getAttribute('validator')->getParameter('confirm_success')->isString()->getValue();
+        $confirmSuccess = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         $ownerList = \App::$http->readGetResult('/owner/', ['resolveReferences' => 2])->getCollection();
 
         $input = $request->getParsedBody();
@@ -36,7 +36,7 @@ class UseraccountAdd extends BaseController
                     'loginname' => $entity->id
                 ),
                 array(
-                    'confirm_success' => \App::$now->getTimeStamp()
+                    'success' => 'useraccount_added'
                 )
             );
         }
@@ -47,7 +47,7 @@ class UseraccountAdd extends BaseController
             array(
             'ownerList' => $ownerList->toDepartmentListByOrganisationName(),
             'workstation' => $workstation,
-            'confirm_success' => $confirmSuccess,
+            'success' => $confirmSuccess,
             'action' => 'add',
             'title' => 'Nutzer: Einrichtung und Administration',
             'menuActive' => 'useraccount'

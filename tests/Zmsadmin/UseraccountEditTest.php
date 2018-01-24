@@ -88,7 +88,7 @@ class UseraccountEditTest extends Base
             ),
             'save' => 'save'
         ], [], 'POST');
-        $this->assertRedirect($response, '/useraccount/testuser/?confirm_success=1459504500');
+        $this->assertRedirect($response, '/useraccount/testuser/?success=useraccount_saved');
         $this->assertEquals(302, $response->getStatusCode());
     }
 

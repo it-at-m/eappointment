@@ -66,7 +66,7 @@ class TicketprinterStatusByScopeTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, [], 'POST');
-        $this->assertRedirect($response, '/scope/141/ticketprinter/?confirm_success=1459504500');
+        $this->assertRedirect($response, '/scope/141/ticketprinter/?success=ticketprinter_saved');
         $this->assertEquals(302, $response->getStatusCode());
     }
 }
