@@ -8,4 +8,6 @@ namespace BO\Zmsentities\Exception;
 class ScopeMissingProvider extends \Exception
 {
     protected $code = 500;
+
+    public $data = [];
 }
