@@ -23,7 +23,9 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
         if ($providerId) {
             return $providerId;
         }
-        throw new Exception\ScopeMissingProvider("No reference to a provider found");
+        $exception = new Exception\ScopeMissingProvider("No reference to a provider found for scope");
+        $exception->data['scope'] = $this->getArrayCopy();
+        throw $exception;
     }
 
     public function getDayoffList()
@@ -57,7 +59,7 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
     public function getPreference($preferenceKey, $index, $isBool = false, $default = null)
     {
         $preference = $this->toProperty()->preferences->$preferenceKey->$index->get($default);
-        return ($isBool ) ? ($preference ? 1 : 0) : $preference;
+        return ($isBool) ? ($preference ? 1 : 0) : $preference;
     }
 
     public function getStatus($statusKey, $index)
