@@ -21,6 +21,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -69,6 +70,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -109,6 +111,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -152,6 +155,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -357,6 +361,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -412,6 +417,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -452,6 +458,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -485,6 +492,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"x-since": 2.12,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
@@ -532,6 +540,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"x-since": 2.12,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
@@ -585,6 +594,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"x-since": 2.12,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
@@ -636,6 +646,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"x-since": 2.12,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
@@ -741,6 +752,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"x-since": 2.12,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
@@ -866,6 +878,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"x-since": 2.12,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
@@ -900,6 +913,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -951,6 +965,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -1041,6 +1056,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -1095,6 +1111,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -1133,6 +1150,7 @@
 			"parameters": [
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -1185,6 +1203,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -1240,6 +1259,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -1280,6 +1300,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -1325,6 +1346,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -1378,6 +1400,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -1421,6 +1444,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -1479,6 +1503,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -1537,6 +1562,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -1588,6 +1614,7 @@
 			"parameters": [
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -1629,6 +1656,7 @@
 			"parameters": [
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -1687,6 +1715,7 @@
 			"parameters": [
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -1735,6 +1764,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -1780,6 +1810,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -1804,6 +1835,7 @@
 			"parameters": [
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -1852,6 +1884,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -1883,6 +1916,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -1907,6 +1941,7 @@
 			"parameters": [
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -1955,6 +1990,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -1997,6 +2033,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -2052,6 +2089,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -2096,6 +2134,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -2138,6 +2177,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -2174,6 +2214,7 @@
 			"parameters": [
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -2222,6 +2263,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -2277,6 +2319,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -2317,6 +2360,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -2395,6 +2439,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -2896,6 +2941,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -2940,6 +2986,7 @@
 			"parameters": [
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -2992,6 +3039,7 @@
 			"parameters": [
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -3084,6 +3132,7 @@
 			"parameters": [
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -3129,6 +3178,27 @@
 					"schema": {
 						"$ref": "schema/process.json"
 					}
+				},
+				{
+					"name": "X-Authkey",
+					"description": "optional authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string",
+					"required": false
+				},
+				{
+					"name": "slotsRequired",
+					"description": "On default, the required slots are calculated by fetching preferences for a provider on how much slots each request should take. Priviliged users can change the required slots. To enable this parameter, a X-Authkey header is required.",
+					"in": "query",
+					"type": "integer",
+					"required": false
+				},
+				{
+					"name": "slotType",
+					"description": "On default, the slotType is 'public'. A scope can have non public appointments for booking. This is a reserve for internal use. Only priviliged users can change the slot type. To enable this parameter, a X-Authkey header is required.",
+					"in": "query",
+					"type": "string",
+					"required": false
 				}
 			],
 			"responses": {
@@ -3213,6 +3283,7 @@
 			"parameters": [
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -3265,6 +3336,7 @@
 			"parameters": [
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -3316,6 +3388,7 @@
 			"parameters": [
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -3431,7 +3504,8 @@
 				},
 				{
 					"name": "X-Authkey",
-					"description": "authentication key to identify user for testing access rights",
+					"required": false,
+					"description": "authentication key to identify user for testing access rights. Without key, informations are shortened",
 					"in": "header",
 					"type": "string"
 				},
@@ -3764,7 +3838,8 @@
 			"parameters": [
 				{
 					"name": "X-Authkey",
-					"description": "authentication key to identify user for testing access rights",
+					"required": false,
+					"description": "authentication key to identify user for testing access rights. Without key, informations are shortened",
 					"in": "header",
 					"type": "string"
 				},
@@ -3815,7 +3890,8 @@
 				},
 				{
 					"name": "X-Authkey",
-					"description": "authentication key to identify user for testing access rights",
+					"required": false,
+					"description": "authentication key to identify user for testing access rights. Without key, informations are shortened",
 					"in": "header",
 					"type": "string"
 				},
@@ -3870,6 +3946,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -3913,6 +3990,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -3946,6 +4024,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -3996,6 +4075,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -4042,6 +4122,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -4095,6 +4176,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -4148,6 +4230,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -4208,6 +4291,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -4268,6 +4352,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -4320,6 +4405,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -4361,6 +4447,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -4404,6 +4491,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -4448,6 +4536,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"x-since": 2.12,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
@@ -4510,6 +4599,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"x-since": 2.12,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
@@ -4644,6 +4734,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -4676,6 +4767,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -4725,6 +4817,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"x-since": 2.12,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
@@ -5168,6 +5261,7 @@
 			"parameters": [
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -5231,6 +5325,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -5273,6 +5368,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -5328,6 +5424,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -5368,6 +5465,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -5393,6 +5491,7 @@
 			"parameters": [
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -5436,6 +5535,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -5486,6 +5586,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -5543,6 +5644,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -5578,6 +5680,7 @@
 			"parameters": [
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -5626,6 +5729,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -5755,6 +5859,7 @@
 				},
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
@@ -5833,6 +5938,7 @@
 			"parameters": [
 				{
 					"name": "X-Authkey",
+					"required": true,
 					"description": "authentication key to identify user for testing access rights",
 					"in": "header",
 					"type": "string"
