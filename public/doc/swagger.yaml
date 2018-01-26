@@ -1,8 +1,23 @@
 swagger: '2.0'
 info:
-  version: 1.0.0
-  title: ZMS Neo API
-  description: Access to the backend function of the time management system called ZMS
+  version: 2.15.0
+  title: ZMS (human waiting queue management) API
+  x-logo: 
+    url: "/terminvereinbarung/api/2/doc/logo.png"
+  description: |
+      The ZMS system is intended to manage human waiting queues. It has the following features:
+      
+       * make appointments via a calender and initiate a process to manage an appointment
+       * import requests (services) and providers (locations) from external sources
+       * manage scopes for appointments, including a four level hierarchy of owner->organisation->department->scope
+       * manage opening hours including closed days
+       * login-system with different access levels
+       * pickup for documents
+       * ticketprinter support for customers without appointments (authenticated, lockable, timeable)
+       * calldisplay support
+       * collecting statistics like waiting time or served clients per day
+
+       This documentation covers the API-level access to these features.
   termsOfService: 'http://service.berlin.de/terminvereinbarung/'
   contact:
     name: Mathias Fischer
@@ -21,7 +36,10 @@ produces:
 securityDefinitions:
   httpauth:
     type: basic
-    description: 'The API uses two systems of authentication. An application uses basic authentication via HTTP to identify. According to the application settings, there might be different rights to use API methods. The user managment via the entity "useraccount" works with the Header "X-Authkey". With the methods in the path "/workstation", a valid "X-Authkey" is generated. Further rights depend on the settings for the authorized useraccount.'
+    description: |
+        The API uses two variants of authentication. An application can use basic authentication via HTTP for identification. As an alternative, there is a header with the name "X-Authkey". This key can be optained by accessing "/workstation/login/".
+        
+        According to the application settings, there might be different rights to use API methods. Further rights depend on the settings for the authorized useraccount.
 security:
     - httpauth: []
 paths:
