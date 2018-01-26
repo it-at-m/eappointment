@@ -28,7 +28,7 @@ $messagePadding:                0.75em 1em 1em 1em;
     //border-color:       darken($messageInfoBackgroundColor,40%);
     background-color:   $messageInfoBackgroundColor;
 }
-
+‚
 .message-error {
     @extend .message;
     border-color:       darken($messageErrorBackgroundColor,10%);
@@ -56,23 +56,5 @@ $messagePadding:                0.75em 1em 1em 1em;
     .body {
         border-color:       darken($messageSuccessBackgroundColor,10%);
         background-color:   $messageSuccessBackgroundColor;
-    }
-}
-
-.message-error.schemavalidation {
-      @extend
-        .board_body--maxHeight,
-        .board;
-
-    background-color: transparent;
-    border-color: transparent;
-
-    .header {
-        background-color:   darken($messageErrorBackgroundColor,40%);
-    }
-
-    .body {
-        border-color:       darken($messageErrorBackgroundColor,1%);
-        background-color:   $messageErrorBackgroundColor;
     }
 }

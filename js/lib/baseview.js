@@ -2,7 +2,7 @@ import window from "window"
 import $ from "jquery";
 import ErrorHandler from './errorHandler';
 import ExceptionHandler from './exceptionHandler';
-import { lightbox } from './utils';
+//import { lightbox } from './utils';
 import { noOp } from './utils'
 
 const loaderHtml = '<div class="loader"><div class="spinner"></div></div>'
@@ -32,6 +32,20 @@ class BaseView extends ErrorHandler {
         loaderContainer.prepend(loaderHtml);
     }
 
+    hideSpinner(container = null)
+    {
+        var loaderContainer = this.$main.find('.body').first();
+        if (container !== null) {
+            if (loaderContainer.length < 1)
+                loaderContainer = container;
+        } else {
+            if (loaderContainer.length < 1)
+                loaderContainer = this.$main;
+        }
+        loaderContainer.find('.loader').detach();
+    }
+
+    /*
     loadContent(url, method = 'GET', data = null, container = null, spinner = true) {
         if (spinner) {
             this.showSpinner(container);
@@ -75,7 +89,47 @@ class BaseView extends ErrorHandler {
 
         return this.loadPromise;
     }
+    */
 
+    loadContent(url, method = 'GET', data = null, container = null, spinner = true) {
+        if (spinner) {
+            this.showSpinner(container);
+        }
+        if (container !== null) {
+            this.$main = container;
+        }
+
+        const ajaxSettings = {
+            method
+        };
+
+        if (method === 'POST' || method === 'PUT') {
+            ajaxSettings.data = data;
+        }
+
+        this.loadPromise = new Promise((resolve, reject) => {
+            $.ajax(url, ajaxSettings).done(responseData => {
+                this.$main.html(responseData);
+                resolve(responseData);
+            }).fail(err => {
+                let isException = err.responseText.toLowerCase().includes('exception');
+                if (err.status >= 400 && isException) {
+                    new ExceptionHandler(this.$main, {
+                        code: err.status,
+                        message: err.responseText
+                    });
+                    this.hideSpinner();
+                } else {
+                    console.log('XHR load error', url, err);
+                    reject(err);
+                }
+            })
+        })
+
+        return this.loadPromise;
+    }
+
+    /*
     loadCall(url, method = 'GET', data = null) {
 
         const ajaxSettings = {
@@ -110,6 +164,36 @@ class BaseView extends ErrorHandler {
             })
         })
     }
+        */
+
+    loadCall(url, method = 'GET', data = null, spinner = false) {
+        if (spinner) {
+            this.showSpinner();
+        }
+        const ajaxSettings = {
+            method
+        };
+        if (method === 'POST' || method === 'PUT') {
+            ajaxSettings.data = data;
+        }
+        return new Promise((resolve, reject) => {
+            $.ajax(url, ajaxSettings).done(responseData => {
+                resolve(responseData);
+            }).fail(err => {
+                let isException = err.responseText.toLowerCase().includes('exception');
+                if (err.status >= 400 && isException) {
+                    new ExceptionHandler(this.$main, {
+                        code: err.status,
+                        message: err.responseText
+                    });
+                    this.hideSpinner();
+                } else {
+                    console.log('XHR load error', url, err);
+                    reject(err);
+                }
+            })
+        })
+    }
 
     destroy() {
         this.$main.off().empty();
@@ -121,7 +205,7 @@ class BaseView extends ErrorHandler {
     }
 
     cleanReload () {
-        location.assign(window.location);
+        window.location.assign(window.location);
     }
 
     locationLoad (url) {

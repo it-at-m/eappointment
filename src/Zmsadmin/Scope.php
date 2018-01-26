@@ -69,7 +69,8 @@ class Scope extends BaseController
                     'assigned' => $providerAssigned
                 ),
                 'callDisplayImage' => $callDisplayImage,
-                'success' => $success
+                'success' => $success,
+                'exception' => (isset($result)) ? $result : null
             )
         );
     }
@@ -81,8 +82,11 @@ class Scope extends BaseController
         try {
             $entity = \App::$http->readPostResult('/scope/' . $entity->id . '/', $entity)->getEntity();
         } catch (\BO\Zmsclient\Exception $exception) {
-            if ('BO\\Zmsentities\\Exception\\SchemaValidation' == $exception->template) {
-                return $exception->data;
+            if ('' != $exception->template) {
+                return [
+                  'template' => strtolower($exception->template),
+                  'data' => $exception->data
+                ];
             }
             throw $exception;
         }

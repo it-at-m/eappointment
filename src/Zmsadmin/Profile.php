@@ -42,7 +42,8 @@ class Profile extends BaseController
                 'menuActive' => 'profile',
                 'workstation' => $workstation,
                 'useraccount' => $entity->getArrayCopy(),
-                'success' => $confirmSuccess
+                'success' => $confirmSuccess,
+                'exception' => (isset($result)) ? $result : null
             )
         );
     }
@@ -51,7 +52,17 @@ class Profile extends BaseController
     {
         $entity = (new Entity($input))->withCleanedUpFormData();
         $entity->withPassword($input);
-        $entity = \App::$http->readPostResult('/workstation/password/', $entity)->getEntity();
+        try {
+            $entity = \App::$http->readPostResult('/workstation/password/', $entity)->getEntity();
+        } catch (\BO\Zmsclient\Exception $exception) {
+            if ('' != $exception->template) {
+                return [
+                  'template' => strtolower($exception->template),
+                  'data' => $exception->data
+                ];
+            }
+            throw $exception;
+        }
         return $entity;
     }
 }

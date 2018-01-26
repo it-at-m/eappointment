@@ -1,4 +1,5 @@
-import $ from 'jquery';
+import $ from 'jquery'
+import FormValidationView from './formValidationHandler'
 
 class ExceptionHandler {
 
@@ -14,9 +15,10 @@ class ExceptionHandler {
     render() {
         var message = $(this.message).filter('div.exception');
         if (message.length == 0) {
-            message = $(this.message).find('div.exception').get(0).outerHTML;
+            message = $(this.message).find('div.exception');
         }
-        this.$main.html(message);
+        this.$main.find('.dialog','.exception').remove();
+        this.$main.find('.body').prepend(message.get(0).outerHTML);
     }
 
     bindEvents() {
