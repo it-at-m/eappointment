@@ -1,5 +1,4 @@
 import $ from 'jquery'
-import FormValidationView from './formValidationHandler'
 
 class ExceptionHandler {
 

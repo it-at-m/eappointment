@@ -59,9 +59,10 @@ class View extends BaseView {
                         }
                     } else if (buttonUrl) {
                         this.loadByCallbackUrl(buttonUrl);
-                        return callback();
+                        callback();
                     }
                     destroyLightbox();
+                    callback();
                 }
             })
         }
