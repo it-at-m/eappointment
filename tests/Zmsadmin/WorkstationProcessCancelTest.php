@@ -47,6 +47,6 @@ class WorkstationProcessCancelTest extends Base
             ]
         );
         $response = $this->render($this->arguments, ['noredirect' => 1], []);
-        $this->assertContains('workstation.json', (string)$response);
+        $this->assertEquals('', (string)$response->getBody());
     }
 }
