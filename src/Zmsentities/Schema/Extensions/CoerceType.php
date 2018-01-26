@@ -31,8 +31,10 @@ final class CoerceType implements \League\JsonGuard\ConstraintInterface
 
     private function toCoercedType($value, $type)
     {
-        if ($type === 'number' && (!is_int($value) || !is_float($value))) {
+        if ($type === 'number') {
             $value = $this->toNumber($value);
+        } elseif ($type === 'string') {
+            $value = $this->toString($value);
         } elseif ($type === 'integer' && !is_int($value)) {
             $value = $this->toNumber($value);
         } elseif ($type === 'boolean' && ($value !== true || $value !== false)) {
@@ -43,12 +45,26 @@ final class CoerceType implements \League\JsonGuard\ConstraintInterface
 
     private function toNumber($value)
     {
-        if ($value === true) {
+        if (is_int($value) || is_float($value)) {
+            //do nothing
+        } elseif ($value === true) {
             $value  = 1;
-        } elseif ($value === false) {
+        } elseif ($value === false || $value === null) {
             $value = 0;
         } elseif (is_numeric($value)) {
             $value = (int)$value;
+        }
+        return $value;
+    }
+
+    private function toString($value)
+    {
+        if (is_string($value)) {
+            //do nothing
+        } elseif ($value === true) {
+            $value  = "1";
+        } elseif ($value === false || $value === null) {
+            $value = "";
         }
         return $value;
     }
