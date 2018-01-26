@@ -37,6 +37,7 @@ class Useraccount extends Base
     public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $useraccount, $resolveReferences)
     {
         if (0 < $resolveReferences && $useraccount->toProperty()->id->get()) {
+            // TODO subtract -1 from resolveReference, but check calling functions!
             $useraccount->departments = $this->readAssignedDepartmentList($useraccount, $resolveReferences);
         }
         return $useraccount;
@@ -99,7 +100,8 @@ class Useraccount extends Base
         $query->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
             ->addConditionXauthKey($xAuthKey);
-        return ($xAuthKey) ? $this->fetchOne($query, new Entity()) : new Entity();
+        $entity = ($xAuthKey) ? $this->fetchOne($query, new Entity()) : new Entity();
+        return $this->readResolvedReferences($entity, $resolveReferences);
     }
 
     public function readEntityByUserId($userId, $resolveReferences = 0)
@@ -108,7 +110,8 @@ class Useraccount extends Base
         $query->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
             ->addConditionUserId($userId);
-        return ($userId) ? $this->fetchOne($query, new Entity()) : new Entity();
+        $entity = ($userId) ? $this->fetchOne($query, new Entity()) : new Entity();
+        return $this->readResolvedReferences($entity, $resolveReferences);
     }
 
     public function readCollectionByDepartmentId($departmentId, $resolveReferences = 0)
@@ -121,10 +124,7 @@ class Useraccount extends Base
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
             foreach ($result as $entity) {
-                if ($entity instanceof Entity) {
-                    $entity->departments = $this->readAssignedDepartmentList($entity, $resolveReferences - 1);
-                    $collection->addEntity($entity);
-                }
+                $collection->addEntity($this->readResolvedReferences($entity, $resolveReferences));
             }
         }
         return $collection;
