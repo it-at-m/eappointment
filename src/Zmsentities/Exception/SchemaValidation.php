@@ -28,11 +28,6 @@ class SchemaValidation extends \Exception
         return $this;
     }
 
-    public function getMessages()
-    {
-        return $this->messages;
-    }
-
     protected function setMessages($validationErrorList)
     {
         foreach ($validationErrorList as $error) {
@@ -42,6 +37,10 @@ class SchemaValidation extends \Exception
             $this->data[$pointer]['failed'] = 1;
             $this->data[$pointer]['data'] = $error->getData();
         }
+
+        $this->message = (! $this->message)
+          ? '[property '. $error->getDataPath() .'] '. json_encode($this->data[$pointer]['messages'], 1) :
+          $this->message;
         return $this;
     }
 }

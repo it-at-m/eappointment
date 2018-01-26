@@ -44,7 +44,7 @@ class Availability extends Schema\Entity
     public function getDefaults()
     {
         return [
-            'id' => null,
+            'id' => 0,
             'weekday' => array_fill_keys(self::$weekdayNameList, 0),
             'repeat' => [
                 'afterWeeks' => 1,
@@ -342,7 +342,7 @@ class Availability extends Schema\Entity
     public function isBookable(\DateTimeInterface $bookableDate, \DateTimeInterface $now)
     {
         $bookableCurrentTime = $bookableDate->modify($now->format('H:i:s'));
-            Helper\DateTime::create($bookableDate)->getTimestamp() + Helper\DateTime::create($now)->getSecondsOfDay();
+        Helper\DateTime::create($bookableDate)->getTimestamp() + Helper\DateTime::create($now)->getSecondsOfDay();
         $startDate = $this->getBookableStart($now)->modify('00:00:00');
         if ($bookableCurrentTime->getTimestamp() < $startDate->getTimestamp()) {
             //error_log("START " . $bookableCurrentTime->format('c').'<'.$startDate->format('c'). " " . $this);

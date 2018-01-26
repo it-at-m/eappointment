@@ -38,7 +38,12 @@ class Session extends Schema\Entity
                     'origin' => '',
                     'remoteAddress' => '',
                     'referer' => '',
-                    'step' => array()
+                    'step' => array(
+                      'dayselect' => 0,
+                      'timeselect' => 0,
+                      'register' => 0,
+                      'confirm' => 0
+                    )
                 ],
                 'status' => 'start',
                 'X-Authkey' => '',
