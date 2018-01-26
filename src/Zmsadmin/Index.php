@@ -25,28 +25,25 @@ class Index extends BaseController
         } catch (\Exception $workstationexception) {
             $workstation = null;
         }
-        $form = LoginForm::fromLoginParameters();
-        $validate = Validator::param('login_form_validate')->isBool()->getValue();
-        $loginData = ($validate) ? $form->getStatus() : null;
-        if ($loginData && !$form->hasFailed()) {
-            return $this->testLogin($loginData, $response);
+        $input = $request->getParsedBody();
+        if (is_array($input) && array_key_exists('loginName', $input)) {
+            return $this->testLogin($input, $response);
         }
         return \BO\Slim\Render::withHtml(
             $response,
             'page/index.twig',
             array(
                 'title' => 'Anmeldung',
-                'workstation' => $workstation,
-                'loginData' => $loginData
+                'workstation' => $workstation
             )
         );
     }
 
-    protected function testLogin($loginData, $response)
+    protected function testLogin($input, $response)
     {
         $userAccount = new \BO\Zmsentities\Useraccount(array(
-            'id' => $loginData['loginName']['value'],
-            'password' => $loginData['password']['value'],
+            'id' => $input['loginName'],
+            'password' => $input['password'],
             'departments' => array('id' => 0) // required in schema validation
         ));
         try {
@@ -56,10 +53,19 @@ class Index extends BaseController
                 return \BO\Slim\Render::redirect('workstationSelect', array(), array());
             }
         } catch (\BO\Zmsclient\Exception $exception) {
-            if ($exception->template == 'BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn') {
-                \BO\Zmsclient\Auth::setKey($exception->data['authkey']);
-                throw $exception;
-            } elseif ($exception->template == 'BO\Zmsapi\Exception\Useraccount\AuthKeyFound') {
+            if ('BO\Zmsentities\Exception\SchemaValidation' == $exception->template) {
+                $exceptionData = [
+                  'template' => 'bo\zmsapi\exception\useraccount\invalidcredentials'
+                ];
+                $exceptionData['data']['password']['messages'] = [
+                    'Der Nutzername oder das Passwort wurden falsch eingegeben'
+                ];
+            } elseif ('' != $exception->template) {
+                $exceptionData = [
+                  'template' => strtolower($exception->template),
+                  'data' => $exception->data
+                ];
+            } else {
                 throw $exception;
             }
         }
@@ -70,7 +76,7 @@ class Index extends BaseController
                 'title' => 'Anmeldung gescheitert',
                 'loginfailed' => true,
                 'workstation' => null,
-                'loginData' => $loginData
+                'exception' => $exceptionData
             )
         );
     }

@@ -32,7 +32,7 @@ class UseraccountEdit extends BaseController
 
         $input = $request->getParsedBody();
         if (is_array($input) && array_key_exists('id', $input)) {
-            $result = $this->writepdatedEntity($input, $userAccountName);
+            $result = $this->writeUpdatedEntity($input, $userAccountName);
             if ($result instanceof Entity) {
                 return \BO\Slim\Render::redirect(
                     'useraccountEdit',
@@ -51,16 +51,27 @@ class UseraccountEdit extends BaseController
                 'success' => $confirmSuccess,
                 'ownerList' => $ownerList ? $ownerList->toDepartmentListByOrganisationName() : [],
                 'workstation' => $workstation,
-                'title' => 'Nutzer: Einrichtung und Administration','menuActive' => 'useraccount'
+                'title' => 'Nutzer: Einrichtung und Administration','menuActive' => 'useraccount',
+                'exception' => (isset($result)) ? $result : null
             )
         );
     }
 
-    protected function writepdatedEntity($input, $userAccountName)
+    protected function writeUpdatedEntity($input, $userAccountName)
     {
         $entity = (new Entity($input))->withCleanedUpFormData();
         $entity->withPassword($input);
-        $entity = \App::$http->readPostResult('/useraccount/'. $userAccountName .'/', $entity)->getEntity();
+        try {
+            $entity = \App::$http->readPostResult('/useraccount/'. $userAccountName .'/', $entity)->getEntity();
+        } catch (\BO\Zmsclient\Exception $exception) {
+            if ('' != $exception->template) {
+                return [
+                  'template' => strtolower($exception->template),
+                  'data' => $exception->data
+                ];
+            }
+            throw $exception;
+        }
         return $entity;
     }
 }

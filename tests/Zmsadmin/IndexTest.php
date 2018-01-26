@@ -51,13 +51,28 @@ class IndexTest extends Base
         $this->assertEquals(302, $response->getStatusCode());
     }
 
+    public function testAlreadyLoggedIn()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, [], []);
+        $this->assertContains('Willkommen zurück', (string)$response->getBody());
+    }
+
     public function testLoginFailed()
     {
-        $this->expectException('\BO\Zmsclient\Exception');
-
         $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn';
-        $exception->data = json_decode($this->readFixture("GET_Workstation_Resolved2.json"), 1)['data'];
+        $exception->template = 'BO\Zmsapi\Exception\Useraccount\InvalidCredentials';
+        $exception->data['password']['messages'] = [
+            'Der Nutzername oder das Passwort wurden falsch eingegeben'
+        ];
 
         $this->setApiCalls(
             [
@@ -73,49 +88,11 @@ class IndexTest extends Base
                 ]
             ]
         );
-        $this->render($this->arguments, $this->parameters, [], 'POST');
-        $this->assertEquals('8520c285985b5bd209a0110442dc4e45', \BO\Zmsclient\Auth::getKey());
-    }
-
-    public function testLoginFailedAuthKeyFound()
-    {
-        $this->expectException('\BO\Zmsclient\Exception');
-        $exception = new \BO\Zmsclient\Exception();
-        $exception->template = 'BO\Zmsapi\Exception\Useraccount\AuthKeyFound';
-
-        $this->setApiCalls(
-            [
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/workstation/',
-                    'response' => $this->readFixture("GET_Workstation_UserAccountMissingLogin.json")
-                ],
-                [
-                    'function' => 'readPostResult',
-                    'url' => '/workstation/login/',
-                    'exception' => $exception
-                ]
-            ]
+        $response = $this->render($this->arguments, $this->parameters, [], 'POST');
+        $this->assertContains(
+            'Das eingegebene Passwort und der Nutzername passen nicht zusammen',
+            (string)$response->getBody()
         );
-        $this->render($this->arguments, $this->parameters, [], 'POST');
-    }
-
-    public function testLoginValidationError()
-    {
-        $this->setApiCalls(
-            [
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/workstation/',
-                    'response' => $this->readFixture("GET_Workstation_UserAccountMissingLogin.json")
-                ]
-            ]
-        );
-        $response = $this->render($this->arguments, [
-            'loginName' => 'testadmin',
-            'login_form_validate' => 1
-        ], [], 'POST');
-        $this->assertContains('Es muss ein Passwort eingegeben werden', (string)$response->getBody());
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertContains('form-group has-error', (string)$response->getBody());
     }
 }

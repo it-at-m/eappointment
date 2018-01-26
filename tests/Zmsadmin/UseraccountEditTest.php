@@ -95,10 +95,9 @@ class UseraccountEditTest extends Base
     // passwords not equal
     public function testRenderingSaveFailedValidation()
     {
-        $this->expectException('\BO\Zmsclient\Exception');
         $exception = new \BO\Zmsclient\Exception();
         $exception->template = 'BO\Zmsentities\Exception\Schemavalidation';
-        $exception->data = json_decode($this->readFixture("GET_useraccount_testuser.json"), 1)['data'];
+        $exception->data['changePassword']['messages'] = ['Die Länge des Passworts muss mindestens 6 Zeichen betragen'];
 
         \App::$now = new \DateTimeImmutable('2016-04-01 11:55:00', new \DateTimeZone('Europe/Berlin'));
         $this->setApiCalls(
@@ -127,7 +126,7 @@ class UseraccountEditTest extends Base
                 ]
             ]
         );
-        $this->render($this->arguments, [
+        $response = $this->render($this->arguments, [
             'id' => 'unittest',
             'changePassword' => array(
                 'passwort',
@@ -145,14 +144,19 @@ class UseraccountEditTest extends Base
             ),
             'save' => 'save'
         ], [], 'POST');
+
+        $this->assertContains('board exception', (string)$response->getBody());
+        $this->assertContains('Passworts muss mindestens 6 Zeichen betragen', (string)$response->getBody());
     }
 
     // no department selected
     public function testRenderingSaveFailedNoDepartment()
     {
-        $this->expectException('\BO\Zmsclient\Exception');
         $exception = new \BO\Zmsclient\Exception();
         $exception->template = 'BO\Zmsentities\Exception\Schemavalidation';
+        $exception->data['departments[][id]']['messages'] = [
+          'Es muss mindestens eine Behörde oder systemübergreifend ausgewählt werden'
+        ];
 
         \App::$now = new \DateTimeImmutable('2016-04-01 11:55:00', new \DateTimeZone('Europe/Berlin'));
         $this->setApiCalls(
@@ -181,7 +185,7 @@ class UseraccountEditTest extends Base
                 ]
             ]
         );
-        $this->render($this->arguments, [
+        $response = $this->render($this->arguments, [
             'id' => 'unittest',
             'changePassword' => array(
                 '',
@@ -195,5 +199,11 @@ class UseraccountEditTest extends Base
             ),
             'save' => 'save'
         ], [], 'POST');
+
+        $this->assertContains('board exception', (string)$response->getBody());
+        $this->assertContains(
+            'Es muss mindestens eine Behörde oder systemübergreifend ausgewählt werden',
+            (string)$response->getBody()
+        );
     }
 }

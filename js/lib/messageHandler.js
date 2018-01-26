@@ -6,7 +6,7 @@ class MessageHandler {
     constructor (element, options) {
         this.$main = $(element)
         this.message = options.message;
-        this.callback = options.callback;
+        this.callback = options.callback || (() => {});
         this.bindEvents();
         this.render();
         console.log(this);
@@ -21,9 +21,9 @@ class MessageHandler {
             }
         }
         if (content.length == 0) {
-            new ExceptionHandler(this.$main, {'message': this.message});
+            new ExceptionHandler(this.$main, {'message': this.message, 'callback': this.callback});
         } else {
-            this.$main.html(content);
+            this.$main.find('.body').prepend(content);
         }
     }
 
