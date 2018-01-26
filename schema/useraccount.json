@@ -164,15 +164,6 @@
       "description": "list of assigned departments",
       "items": {
         "$ref": "department.json"
-      },
-      "minItems": 1,
-      "x-locale": {
-        "de_DE": {
-          "pointer": "Behördenauswahl",
-          "messages": {
-            "minItems": "Es muss mindestens eine Behörde oder systemübergreifend ausgewählt werden"
-          }
-        }
       }
     }
   }
