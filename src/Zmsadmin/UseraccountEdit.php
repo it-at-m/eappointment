@@ -67,6 +67,7 @@ class UseraccountEdit extends BaseController
             if ('' != $exception->template) {
                 return [
                   'template' => strtolower($exception->template),
+                  'include' => true,
                   'data' => $exception->data
                 ];
             }
