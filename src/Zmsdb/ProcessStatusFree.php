@@ -47,7 +47,12 @@ class ProcessStatusFree extends Process
     /**
      * Insert a new process if there are free slots
      *
-     * @SuppressWarnings("unused")
+     * @param \BO\Zmsentities\Process $process
+     * @param \DateTimeInterface $now
+     * @param String $slotType
+     * @param Int $slotsRequired we cannot use process.appointments.0.slotCount, because setting slotsRequired is
+     *        a priviliged operation. Just using the input would be a security flaw to get a wider selection of times
+     *        If slotsRequired = 0, readFreeProcesses() uses the slotsRequired based on request-provider relation
      */
     public function writeEntityReserved(
         \BO\Zmsentities\Process $process,
@@ -62,11 +67,6 @@ class ProcessStatusFree extends Process
             throw new Exception\Process\ProcessReserveFailed();
         }
         $slotList = (new Slot)->readByAppointment($appointment);
-        /*
-        if (!$slotList->isAvailableForAll($slotType)) {
-            throw new Exception\Process\ProcessReserveFailed("Could not reserve multiple slots");
-        }
-        */
         foreach ($slotList as $slot) {
             if ($process->id > 99999) {
                 $newProcess = clone $process;

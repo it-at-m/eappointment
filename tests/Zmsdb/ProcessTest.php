@@ -61,6 +61,21 @@ class ProcessTest extends Base
         $process = $query->writeEntityReserved($process, $now);
     }
 
+    public function testExceptionFollowingSlotsReserved()
+    {
+        $this->setExpectedException('\BO\Zmsdb\Exception\Process\ProcessReserveFailed');
+
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $query = new ProcessStatusFree();
+        $mulitpleSlots = $this->getTestProcessEntity();
+        $mulitpleSlots->getFirstAppointment()->slotCount = 10;
+        $later = $this->getTestProcessEntity();
+        $later->getFirstAppointment()->date = $later->getFirstAppointment()->date + (60 * 25);
+        $process = $query->writeEntityReserved($later, $now);
+        $process = $query->writeEntityReserved($later, $now);
+        $process = $query->writeEntityReserved($mulitpleSlots, $now, 'public', 10);
+    }
+
     public function testExceptionSQLUpdateFailed()
     {
         $now = new \DateTimeImmutable("2016-04-01 11:55");
