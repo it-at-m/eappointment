@@ -35,7 +35,11 @@ class UserAuth
     {
         $query = new Useraccount();
         if (! $query->readIsUserExisting($loginName, $password)) {
-            throw new \BO\Zmsapi\Exception\Useraccount\InvalidCredentials();
+            $exception = new \BO\Zmsapi\Exception\Useraccount\InvalidCredentials();
+            $exception->data['password']['messages'] = [
+                'Der Nutzername oder das Passwort wurden falsch eingegeben'
+            ];
+            throw $exception;
         }
         return true;
     }

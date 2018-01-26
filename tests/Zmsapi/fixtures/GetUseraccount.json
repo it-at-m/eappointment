@@ -13,5 +13,10 @@
   },
   "id": "testadmin",
   "password": "vorschau",
-  "lastLogin": 1447926465
+  "lastLogin": 1447926465,
+  "departments": [
+    {
+      "id": 1
+    }
+  ]
 }

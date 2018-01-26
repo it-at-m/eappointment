@@ -54,10 +54,7 @@ class WorkstationLoginTest extends Base
         $this->expectException('\BO\Zmsapi\Exception\Useraccount\InvalidCredentials');
         $this->expectExceptionCode(401);
         $this->render([], [
-            '__body' => '{
-                "id": "unittest",
-                "password": "unittest"
-            }'
+            '__body' => $this->readFixture('GetUseraccount_unknown.json')
         ], []);
     }
 }
