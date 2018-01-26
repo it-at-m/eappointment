@@ -26,10 +26,10 @@ class WorkstationProcessCancel extends BaseController
         $noRedirect = $validator->getParameter('noredirect')->isNumber()->getValue();
 
         if ($workstation->process['id']) {
-            $result = \App::$http->readDeleteResult('/workstation/process/')->getEntity();
+            \App::$http->readDeleteResult('/workstation/process/')->getEntity();
         }
         if (1 == $noRedirect) {
-            return $result;
+            return $response;
         }
         return \BO\Slim\Render::redirect(
             'workstationProcessCallButton',

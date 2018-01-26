@@ -17,13 +17,18 @@ class MessageHandler {
         if (content.length == 0) {
             var message = $(this.message).find('div.dialog');
             if (message.length > 0) {
-                content = message.get(0).outerHTML;
+                content = message;
             }
         }
         if (content.length == 0) {
             new ExceptionHandler(this.$main, {'message': this.message, 'callback': this.callback});
         } else {
-            this.$main.find('.body').prepend(content);
+            if ($(this.$main.get(0)).hasClass('lightbox__content')) {
+                this.$main.html(content.get(0).outerHTML);
+            } else {
+                this.$main.find('.body').append(content.get(0).outerHTML);
+            }
+
         }
     }
 

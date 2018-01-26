@@ -3,7 +3,6 @@ import $ from "jquery"
 import FreeProcessList from './free-process-list'
 import FormButtons from './form-buttons'
 import { lightbox } from '../../lib/utils'
-import FormValidationView from '../../lib/formValidationHandler'
 import MessageHandler from '../../lib/messageHandler'
 import ActionHandler from "./action"
 import RequestList from "./requests"
@@ -60,19 +59,6 @@ class View extends BaseView {
             this.bindEvents();
         }).catch(err => this.loadErrorCallback(err));
         return this.loadPromise;
-    }
-
-    cleanReload () {
-        this.selectedProcess = null;
-        this.load().then(() => {
-            this.bindEvents();
-            $('textarea.maxchars').each(function() {
-                maxChars(this);
-            });
-            this.RequestList.loadList();
-            this.FormButtons.load();
-            this.$main.find('[name="familyName"]').focus();
-        });
     }
 
     bindEvents() {
@@ -157,11 +143,7 @@ class View extends BaseView {
     }
 
     loadErrorCallback(err) {
-        if (err.status == 428)
-            new FormValidationView(this.$main.find('.appointment-form form'), {
-                responseJson: err.responseJSON
-            });
-        else if (err.message.toLowerCase().includes('exception')) {
+        if (err.message.toLowerCase().includes('exception')) {
             let exceptionType = $(err.message).filter('.exception').data('exception');
             if (exceptionType === 'reservation-failed') {
                 this.FreeProcessList.loadList();
