@@ -170,7 +170,7 @@
         "de_DE": {
           "pointer": "Behördenauswahl",
           "messages": {
-            "min_items": "Es muss mindestens eine Behörde oder systemübergreifend ausgewählt werden"
+            "minItems": "Es muss mindestens eine Behörde oder systemübergreifend ausgewählt werden"
           }
         }
       }
