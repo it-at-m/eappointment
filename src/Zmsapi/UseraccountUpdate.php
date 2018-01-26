@@ -32,7 +32,7 @@ class UseraccountUpdate extends BaseController
         }
 
         $entity = new \BO\Zmsentities\Useraccount($input);
-        $entity->testValid();
+        $entity->testValid('de_DE', 1);
 
         if ($args['loginname'] != $entity->id && (new Useraccount)->readIsUserExisting($entity->id)) {
             throw new Exception\Useraccount\UseraccountAlreadyExists();

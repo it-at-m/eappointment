@@ -25,7 +25,10 @@ class WorkstationPasswordTest extends Base
                 },
                 "id": "testadmin",
                 "password": "vorschau",
-                "changePassword": ["testPassword","testPassword"]
+                "changePassword": ["testPassword","testPassword"],
+                "departments": [
+                    {"id":1}
+                ]
             }'
         ], []);
         $this->assertContains('useraccount.json', (string)$response->getBody());
@@ -40,7 +43,10 @@ class WorkstationPasswordTest extends Base
         $this->render([], [
             '__body' => '{
                 "id": "testadmin",
-                "password": "vorschau2"
+                "password": "vorschau2",
+                "departments": [
+                    {"id":1}
+                ]
             }'
         ], []);
     }
@@ -100,10 +106,7 @@ class WorkstationPasswordTest extends Base
         $this->expectException('\BO\Zmsapi\Exception\Useraccount\InvalidCredentials');
         $this->expectExceptionCode(401);
         $this->render([], [
-            '__body' => '{
-                "id": "unittest",
-                "password": "testPassword"
-            }'
+            '__body' => $this->readFixture('GetUseraccount_unknown.json')
         ], []);
     }
 }
