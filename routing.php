@@ -39,6 +39,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  in: query
  *                  type: integer
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -75,6 +76,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                      items:
  *                          $ref: "schema/availability.json"
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -114,6 +116,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  schema:
  *                      $ref: "schema/availability.json"
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -148,6 +151,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -305,6 +309,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -349,6 +354,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  schema:
  *                      $ref: "schema/cluster.json"
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -383,6 +389,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -412,6 +419,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
+ *                  required: true
  *                  x-since: 2.12
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
@@ -450,6 +458,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
+ *                  required: true
  *                  x-since: 2.12
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
@@ -492,6 +501,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
+ *                  required: true
  *                  x-since: 2.12
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
@@ -533,6 +543,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
+ *                  required: true
  *                  x-since: 2.12
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
@@ -617,6 +628,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
+ *                  required: true
  *                  x-since: 2.12
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
@@ -723,6 +735,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
+ *                  required: true
  *                  x-since: 2.12
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
@@ -753,6 +766,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -794,6 +808,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -866,6 +881,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -909,6 +925,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                      items:
  *                          $ref: "schema/dayoff.json"
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -940,6 +957,7 @@ use \Psr\Http\Message\ResponseInterface;
  *              - department
  *          parameters:
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -981,6 +999,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -1025,6 +1044,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  schema:
  *                      $ref: "schema/department.json"
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -1059,6 +1079,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -1096,6 +1117,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  schema:
  *                      $ref: "schema/scope.json"
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -1138,6 +1160,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  schema:
  *                      $ref: "schema/cluster.json"
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -1173,6 +1196,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -1219,6 +1243,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -1265,6 +1290,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -1306,6 +1332,7 @@ use \Psr\Http\Message\ResponseInterface;
  *              - log
  *          parameters:
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -1341,6 +1368,7 @@ use \Psr\Http\Message\ResponseInterface;
  *              - log
  *          parameters:
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -1386,6 +1414,7 @@ use \Psr\Http\Message\ResponseInterface;
  *              - mail
  *          parameters:
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -1426,6 +1455,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  schema:
  *                      $ref: "schema/mail.json"
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -1462,6 +1492,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -1485,6 +1516,7 @@ use \Psr\Http\Message\ResponseInterface;
  *              - notification
  *          parameters:
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -1526,6 +1558,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  schema:
  *                      $ref: "schema/notification.json"
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -1553,6 +1586,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -1576,6 +1610,7 @@ use \Psr\Http\Message\ResponseInterface;
  *              - owner
  *          parameters:
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -1614,6 +1649,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -1658,6 +1694,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  schema:
  *                      $ref: "schema/owner.json"
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -1696,6 +1733,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  schema:
  *                      $ref: "schema/owner.json"
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -1731,6 +1769,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -1766,6 +1805,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  schema:
  *                      $ref: "schema/organisation.json"
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -1797,6 +1837,7 @@ use \Psr\Http\Message\ResponseInterface;
  *              - organisation
  *          parameters:
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -1835,6 +1876,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -1879,6 +1921,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  schema:
  *                      $ref: "schema/organisation.json"
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -1913,6 +1956,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -1978,6 +2022,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  schema:
  *                      $ref: "schema/department.json"
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -2377,6 +2422,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -2413,6 +2459,7 @@ use \Psr\Http\Message\ResponseInterface;
  *              - process
  *          parameters:
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -2487,6 +2534,7 @@ use \Psr\Http\Message\ResponseInterface;
  *              - process
  *          parameters:
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -2525,6 +2573,21 @@ use \Psr\Http\Message\ResponseInterface;
  *                  in: body
  *                  schema:
  *                      $ref: "schema/process.json"
+ *              -   name: X-Authkey
+ *                  description: optional authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *                  required: false
+ *              -   name: slotsRequired
+ *                  description: "On default, the required slots are calculated by fetching preferences for a provider on how much slots each request should take. Priviliged users can change the required slots. To enable this parameter, a X-Authkey header is required."
+ *                  in: query
+ *                  type: integer
+ *                  required: false
+ *              -   name: slotType
+ *                  description: "On default, the slotType is 'public'. A scope can have non public appointments for booking. This is a reserve for internal use. Only priviliged users can change the slot type. To enable this parameter, a X-Authkey header is required."
+ *                  in: query
+ *                  type: string
+ *                  required: false
  *          responses:
  *              200:
  *                  description: get a list of processes
@@ -2592,6 +2655,7 @@ use \Psr\Http\Message\ResponseInterface;
  *              - process
  *          parameters:
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -2633,6 +2697,7 @@ use \Psr\Http\Message\ResponseInterface;
  *              - process
  *          parameters:
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -2673,6 +2738,7 @@ use \Psr\Http\Message\ResponseInterface;
  *              - process
  *          parameters:
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -2714,6 +2780,7 @@ use \Psr\Http\Message\ResponseInterface;
  *              - workstation
  *          parameters:
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -2805,7 +2872,8 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
- *                  description: authentication key to identify user for testing access rights
+ *                  required: false
+ *                  description: authentication key to identify user for testing access rights. Without key, informations are shortened
  *                  in: header
  *                  type: string
  *              -   name: resolveReferences
@@ -3071,7 +3139,8 @@ use \Psr\Http\Message\ResponseInterface;
  *              - scope
  *          parameters:
  *              -   name: X-Authkey
- *                  description: authentication key to identify user for testing access rights
+ *                  required: false
+ *                  description: authentication key to identify user for testing access rights. Without key, informations are shortened
  *                  in: header
  *                  type: string
  *              -   name: resolveReferences
@@ -3111,7 +3180,8 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
- *                  description: authentication key to identify user for testing access rights
+ *                  required: false
+ *                  description: authentication key to identify user for testing access rights. Without key, informations are shortened
  *                  in: header
  *                  type: string
  *              -   name: resolveReferences
@@ -3151,6 +3221,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -3191,6 +3262,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -3228,6 +3300,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -3270,6 +3343,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -3312,6 +3386,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -3359,6 +3434,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -3406,6 +3482,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -3447,6 +3524,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -3482,6 +3560,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -3517,6 +3596,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -3553,6 +3633,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
+ *                  required: true
  *                  x-since: 2.12
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
@@ -3602,6 +3683,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
+ *                  required: true
  *                  x-since: 2.12
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
@@ -3714,6 +3796,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -3742,6 +3825,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -3781,6 +3865,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
+ *                  required: true
  *                  x-since: 2.12
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
@@ -3898,6 +3983,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  schema:
  *                      $ref: "schema/scope.json"
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -3934,6 +4020,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: integer
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -4208,6 +4295,7 @@ use \Psr\Http\Message\ResponseInterface;
  *              - useraccount
  *          parameters:
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -4257,6 +4345,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: string
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -4296,6 +4385,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  schema:
  *                      $ref: "schema/useraccount.json"
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -4336,6 +4426,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  schema:
  *                      $ref: "schema/useraccount.json"
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -4370,6 +4461,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: string
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -4393,6 +4485,7 @@ use \Psr\Http\Message\ResponseInterface;
  *              - exchange
  *          parameters:
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -4428,6 +4521,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: string
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -4468,6 +4562,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: string
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -4513,6 +4608,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: string
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -4542,6 +4638,7 @@ use \Psr\Http\Message\ResponseInterface;
  *              - workstation
  *          parameters:
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -4581,6 +4678,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  schema:
  *                      $ref: "schema/workstation.json"
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -4686,6 +4784,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  type: string
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
@@ -4751,6 +4850,7 @@ use \Psr\Http\Message\ResponseInterface;
  *              - workstation
  *          parameters:
  *              -   name: X-Authkey
+ *                  required: true
  *                  description: authentication key to identify user for testing access rights
  *                  in: header
  *                  type: string
