@@ -37,10 +37,17 @@ class ScopeAvailabilityDay extends BaseController
     protected static function getAvailabilityData($scope_id, $dateString)
     {
         $dateTime = new \BO\Zmsentities\Helper\DateTime($dateString);
-        $availabilityList = \App::$http
-            ->readGetResult('/scope/' . intval($scope_id) . '/availability/', ['reserveEntityIds' => 1])
-            ->getCollection()
-            ->withDateTime($dateTime);
+        try {
+            $availabilityList = \App::$http
+                ->readGetResult('/scope/' . intval($scope_id) . '/availability/', ['reserveEntityIds' => 1])
+                ->getCollection()
+                ->withDateTime($dateTime);
+        } catch (\BO\Zmsclient\Exception $exception) {
+            if ($exception->template != 'BO\Zmsapi\Exception\Availability\AvailabilityNotFound') {
+                throw $exception;
+            }
+            $availabilityList = new \BO\Zmsentities\Collection\AvailabilityList();
+        }
         $processList = \App::$http
             ->readGetResult('/scope/' . intval($scope_id) . '/process/' . $dateTime->format('Y-m-d') . '/')
             ->getCollection();
