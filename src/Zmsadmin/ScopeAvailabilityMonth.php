@@ -31,10 +31,17 @@ class ScopeAvailabilityMonth extends BaseController
         $dateTime = (isset($args['date'])) ? new \BO\Zmsentities\Helper\DateTime($args['date']) : \App::$now;
         $scopeId = Validator::value($args['id'])->isNumber()->getValue();
         $scope = \App::$http->readGetResult('/scope/'. $scopeId .'/', ['resolveReferences' => 1])->getEntity();
-        $availabilityList = \App::$http->readGetResult(
-            '/scope/'. $scopeId .'/availability/',
-            ['resolveReferences' => 2]
-        )->getCollection();
+        try {
+            $availabilityList = \App::$http->readGetResult(
+                '/scope/'. $scopeId .'/availability/',
+                ['resolveReferences' => 2]
+            )->getCollection();
+        } catch (\BO\Zmsclient\Exception $exception) {
+            if ($exception->template != 'BO\Zmsapi\Exception\Availability\AvailabilityNotFound') {
+                throw $exception;
+            }
+            $availabilityList = new \BO\Zmsentities\Collection\AvailabilityList();
+        }
         $calendar = new Calendar();
         $calendar->firstDay->setDateTime($dateTime->modify('first day of this month'));
         $calendar->lastDay->setDateTime($dateTime->modify('last day of this month'));
@@ -45,7 +52,6 @@ class ScopeAvailabilityMonth extends BaseController
             if ($exception->template != 'BO\Zmsapi\Exception\Calendar\AppointmentsMissed') {
                 throw $exception;
             }
-            // TODO Berechne die Tage im Kalendar
         }
         $month = $calendar->getMonthList()->getFirst();
 
