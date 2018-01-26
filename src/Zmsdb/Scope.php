@@ -277,6 +277,8 @@ class Scope extends Base
 
     public function readQueueListWithWaitingTime($scope, $dateTime, $resolveReferences = 0)
     {
+        $timeAverage = $scope->getPreference('queue', 'processingTimeAverage');
+        $scope = (! $timeAverage) ? (new Scope)->readEntity($scope->id) : $scope;
         $queueList = $this->readQueueList($scope->id, $dateTime, $resolveReferences);
         $timeAverage = $scope->getPreference('queue', 'processingTimeAverage');
         $workstationCount = $scope->getCalculatedWorkstationCount();
