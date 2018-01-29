@@ -2,6 +2,7 @@
 
 module.exports = [
     "moment",
+    "moment/locale/de",
     "babel-polyfill",
     "jquery",
     "react-dom",
