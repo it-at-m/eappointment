@@ -19,9 +19,9 @@
                 {% endblock %}
             {% endembed %}
 
-            {% if exchangeWaiting %}
-                {% embed "block/report/board.twig" with {'source':source, 'class': 'report-board'} %}
+            {% embed "block/report/board.twig" with {'source':source, 'class': 'report-board', "selected": period} %}
                 {% block board_body %}
+                {% if selected %}
                     {% if exchangeWaiting.period == "day" %}
                         {% set startDate = "%s-%s-%s"|format(exchangeWaiting.firstDay.year, exchangeWaiting.firstDay.month, exchangeWaiting.firstDay.day) %}
                         {% set endDate = "%s-%s-%s"|format(exchangeWaiting.lastDay.year, exchangeWaiting.lastDay.month, exchangeWaiting.lastDay.day) %}
@@ -108,9 +108,13 @@
                             {% endfor %}
                         </tbody>
                     </table>
+                    {% else %}
+                        {{ block("board_body_noperiod") }}
+                    {% endif %}
                 {% endblock %}
-                {% endembed %}
-                {{ block("advancedInfoWaiting") }}
+            {% endembed %}
+            {% if period %}
+            {{ block("advancedInfoWaiting") }}
             {% endif %}
         </div>
     </div>
