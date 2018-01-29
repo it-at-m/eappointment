@@ -148,7 +148,9 @@ class Workstation extends Schema\Entity
             $process = $this->process;
         }
         if (! $scopeList->hasEntity($process->getScopeId())) {
-            throw new Exception\WorkstationProcessMatchScopeFailed();
+            $exception = new Exception\WorkstationProcessMatchScopeFailed();
+            $exception->data = $process;
+            throw $exception;
         }
     }
 
