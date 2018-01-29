@@ -27,11 +27,16 @@ class WorkstationProcess extends BaseController
     ) {
         $workstation = (new Helper\User($request, 1))->checkRights();
         $process = $workstation->process;
-        if (!$process || !$process->hasId()) {
-            $input = Validator::input()->isJson()->assertValid()->getValue();
-            $entity = new \BO\Zmsentities\Process($input);
+        $input = Validator::input()->isJson()->assertValid()->getValue();
+        $entity = new \BO\Zmsentities\Process($input);
+        if (!$process || !$process->hasId() || $process->id == $entity->id) {
             $process = (new Process)->readEntity($entity['id'], new \BO\Zmsdb\Helper\NoAuth());
             $this->testProcess($process);
+            $workstation->testMatchingProcessScope($workstation->getScopeList(), $process);
+        } else {
+            $exception = new Exception\Workstation\WorkstationHasAssignedProcess();
+            $exception->data = $process;
+            throw $exception;
         }
 
         $process->setCallTime(\App::$now);

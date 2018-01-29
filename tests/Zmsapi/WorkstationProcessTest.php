@@ -8,9 +8,9 @@ class WorkstationProcessTest extends Base
 {
     protected $classname = "WorkstationProcess";
 
-    const PROCESS_ID = 82252;
+    const PROCESS_ID = 11468;
 
-    const AUTHKEY = '12a2';
+    const AUTHKEY = '74b1';
 
     public function testRendering()
     {
@@ -31,14 +31,12 @@ class WorkstationProcessTest extends Base
         User::$workstation->process = (new \BO\Zmsentities\Process())->getExample();
         User::$workstation->process->id = self::PROCESS_ID;
         User::$workstation->process->authKey = self::AUTHKEY;
+        $this->expectException('\BO\Zmsapi\Exception\Workstation\WorkstationHasAssignedProcess');
         $response = $this->render([], [
             '__body' => '{
                 "id": 10029
             }'
         ], []);
-        $this->assertContains("82252", (string)$response->getBody());
-        $this->assertContains('workstation.json', (string)$response->getBody());
-        $this->assertTrue(200 == $response->getStatusCode());
     }
 
     public function testProcessAlreadyCalled()

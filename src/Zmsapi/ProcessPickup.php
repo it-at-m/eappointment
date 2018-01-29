@@ -36,8 +36,9 @@ class ProcessPickup extends BaseController
             $process->addData($input);
             $process = (new Query())->updateEntity($process, \App::$now);
         } elseif ($entity->hasQueueNumber()) {
+            // Allow waitingnumbers over 1000 with the fourth parameter
             $process = ProcessStatusQueued::init()
-                ->readByQueueNumberAndScope($entity['queue']['number'], $workstation->scope['id']);
+                ->readByQueueNumberAndScope($entity['queue']['number'], $workstation->scope['id'], 0, 100000000);
             if (! $process->id) {
                 $workstation = (new \BO\Zmsdb\Workstation)->readResolvedReferences($workstation, 1);
                 $process = (new Query())->writeNewPickup($workstation->scope, \App::$now, $entity['queue']['number']);
@@ -48,6 +49,11 @@ class ProcessPickup extends BaseController
             throw new Exception\Process\ProcessInvalid();
         }
         $workstation->testMatchingProcessScope($workstation->getScopeList($cluster), $process);
+        if ($workstation->process && $workstation->process->hasId() && $workstation->process->id != $process->id) {
+            $exception = new Exception\Workstation\WorkstationHasAssignedProcess();
+            $exception->data = $workstation->process;
+            throw $exception;
+        }
         (new \BO\Zmsdb\Workstation)->writeAssignedProcess($workstation, $process, \App::$now);
 
         $message = Response\Message::create($request);
