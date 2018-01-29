@@ -122,7 +122,10 @@ class BaseView extends ErrorHandler {
     }
 
     cleanReload () {
-        window.location.assign(window.location);
+        window.setTimeout(() => {
+            console.log("Clean reload %o", window.location.href);
+            window.location.assign(window.location.href)
+        }, 400);
     }
 
     locationLoad (url) {
