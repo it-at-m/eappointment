@@ -60,6 +60,9 @@ class Index extends BaseController
                 $exceptionData['data']['password']['messages'] = [
                     'Der Nutzername oder das Passwort wurden falsch eingegeben'
                 ];
+            } elseif ('BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn' == $exception->template) {
+                \BO\Zmsclient\Auth::setKey($exception->data['authkey']);
+                throw $exception;
             } elseif ('' != $exception->template) {
                 $exceptionData = [
                   'template' => strtolower($exception->template),
