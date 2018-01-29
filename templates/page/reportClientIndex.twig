@@ -18,25 +18,9 @@
                 </ul>
                 {% endblock %}
             {% endembed %}
-            {% if exchangeNotification and exchangeClient %}
-            {% embed "block/report/board.twig" with {'source':source, 'class': 'report-board'} %}
-                {% block board_title %}
-                    {% set tableName = workstation.scope.contact.name %}
-                    {% set tablePeriod = period|localizeddate("MEDIUM","none",NULL,NULL,"MMMM Y") %}
-                    {% if 4 == period|length %}
-                        {% set periodName = "Kalenderjahr " %}
-                        {% set tablePeriod = periodName|trans ~ period %}
-                    {% endif %}
-
-                    {% if activeDepartment %}
-                        {% set tableName = department.name %}
-                    {% elseif activeOrganisation %}
-                        {% set tableName = organisation.name %}
-                    {% endif %}
-
-                    {{ parent() }} für {{ tableName }} {% trans %}im Zeitraum{% endtrans %} {{ tablePeriod }}
-                {% endblock %}
+            {% embed "block/report/board.twig" with {'source':source, 'class': 'report-board', "selected": period} %}
                 {% block board_body %}
+                {% if selected %}
                     <table class="report-board--table">
                         <thead>
                             <th colspan="2">{% trans %}Organisation{% endtrans %}</th>
@@ -97,8 +81,12 @@
                             {% endfor %}
                         </tbody>
                     </table>
+                {% else %}
+                    {{ block("board_body_noperiod") }}
+                {% endif %}
                 {% endblock %}
             {% endembed %}
+            {% if period %}
             {{ block('advanceInfoClient') }}
             {% endif %}
         </div>
