@@ -27,7 +27,6 @@ class WorkstationProcessCalled extends BaseController
             $process = new \BO\Zmsentities\Process(['id' => $processId]);
             $workstation = \App::$http->readPostResult('/workstation/process/called/', $process)->getEntity();
         }
-        $workstation->testMatchingProcessScope((new Helper\ClusterHelper($workstation))->getScopeList());
 
         $excludedIds = $validator->getParameter('exclude')->isString()->getValue();
         if ($excludedIds) {

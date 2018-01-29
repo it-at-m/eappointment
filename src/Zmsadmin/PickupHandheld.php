@@ -19,9 +19,13 @@ class PickupHandheld extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $input = $request->getParsedBody();
-        $selectedProcess = (is_array($input) && array_key_exists('selectedprocess', $input)) ?
-            $this->readPickupProcess($input['selectedprocess']) :
-            null;
+        if ($workstation->process && $workstation->process->hasId()) {
+            $selectedProcess = $workstation->process;
+        } else {
+            $selectedProcess = (is_array($input) && array_key_exists('selectedprocess', $input)) ?
+                $this->readPickupProcess($input['selectedprocess']) :
+                null;
+        }
         $processList = \App::$http->readGetResult('/workstation/process/pickup/', ['resolveReferences' => 1])
             ->getCollection();
         $department = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/department/')->getEntity();
