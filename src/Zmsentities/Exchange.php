@@ -154,7 +154,7 @@ class Exchange extends Schema\Entity
                 }
             }
             $entity->data[$date]['max'] = $maxima;
-            $entity->data[$date]['average'] = floor($total / $count);
+            $entity->data[$date]['average'] = (! $total || ! $count) ? 0 : floor($total / $count);
         }
         return $entity;
     }
