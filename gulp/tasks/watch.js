@@ -20,7 +20,8 @@ gulp.task('watch', function() {
 //        'js/**/*.js'
 //        ], ['js']);
     gulp.watch([
-        'public/_js/index.js'
+        'public/_js/index.js',
+        'public/_js/reactcomponents.js'
         ], ['buildinfo']);
     //bundler.plugin(watchify);
     //var watcher = watchify(bundler);
