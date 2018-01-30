@@ -24,7 +24,7 @@
         "ts": 0,
         "origin": "captcha",
         "remoteAddress": "127.0.0.1",
-        "referer": "termin",
+        "referer": "dayselect",
         "step": {
           "dayselect": 1
         }
@@ -149,7 +149,7 @@
                 "register": {
                   "type": "number"
                 },
-                "confirm": {
+                "summary": {
                   "type": "number"
                 }
               }

@@ -14,4 +14,16 @@ class Request extends Schema\Entity
         $additionalData['name'] = $this['name'];
         return parent::withReference($additionalData);
     }
+
+    public function hasAppointmentFromProviderData()
+    {
+        if (isset($this['data']) && isset($this['data']['locations'])) {
+            foreach ($this['data']['locations'] as $provider) {
+                if (! $provider['appointment']['external'] && $provider['appointment']['allowed']) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }

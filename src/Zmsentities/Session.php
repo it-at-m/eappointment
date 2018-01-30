@@ -42,7 +42,7 @@ class Session extends Schema\Entity
                       'dayselect' => 0,
                       'timeselect' => 0,
                       'register' => 0,
-                      'confirm' => 0
+                      'summary' => 0
                     )
                 ],
                 'status' => 'start',
