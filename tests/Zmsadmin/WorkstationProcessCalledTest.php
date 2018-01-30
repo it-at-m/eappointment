@@ -29,11 +29,6 @@ class WorkstationProcessCalledTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/scope/141/cluster/',
-                    'response' => $this->readFixture("GET_cluster_109.json")
-                ],
-                [
-                    'function' => 'readGetResult',
                     'url' => '/scope/141/queue/',
                     'response' => $this->readFixture("GET_scope_141_queuelist.json")
                 ],
@@ -75,11 +70,6 @@ class WorkstationProcessCalledTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
                     'response' => $this->readFixture("GET_scope_141.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/cluster/',
-                    'response' => $this->readFixture("GET_cluster_109.json")
                 ],
                 [
                     'function' => 'readGetResult',
