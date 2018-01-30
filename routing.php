@@ -2978,7 +2978,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  description: "request id for source does not exists"
  */
 \App::$slim->get('/provider/{source}/request/{csv:[0-9,]{3,}}/',
-    '\BO\Zmsapi\ProviderList')
+    '\BO\Zmsapi\ProviderByRequestList')
     ->setName("ProviderByRequestList");
 
 /**
