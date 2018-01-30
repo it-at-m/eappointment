@@ -44,7 +44,7 @@ class Index2ButtonsTest extends Base
                 'Ticketprinter' => '71ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2',
             ],
             'ticketprinter' => [
-                'buttonlist' => 's141,c110'
+                'buttonlist' => 's141'
             ]
         ], [ ]);
         $this->assertContains('wartebuttonbereich_zweizeilig_tief', (string) $response->getBody());

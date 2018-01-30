@@ -15,7 +15,7 @@ class IndexCustomizedByDepartmentTest extends Base
         return [
             [
                 'function' => 'readGetResult',
-                'url' => '/cluster/283/organisation/',
+                'url' => '/scope/637/organisation/',
                 'parameters' => ['resolveReferences' => 2],
                 'response' => $this->readFixture("GET_organisation_70.json"),
             ],
@@ -44,7 +44,7 @@ class IndexCustomizedByDepartmentTest extends Base
                 'Ticketprinter' => '71ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2',
             ],
             'ticketprinter' => [
-                'buttonlist' => 'c283'
+                'buttonlist' => 's637'
             ]
         ], [ ]);
         $this->assertContains('customized', (string) $response->getBody());

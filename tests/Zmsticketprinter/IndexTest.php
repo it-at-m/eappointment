@@ -44,7 +44,7 @@ class IndexTest extends Base
                 'Ticketprinter' => '71ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2',
             ],
             'ticketprinter' => [
-                'buttonlist' => 's141,c110,l[http://www.berlin.de/|Portal berlin.de]'
+                'buttonlist' => 's141,l[http://www.berlin.de/|Portal berlin.de]'
             ]
         ], [ ]);
         $this->assertContains('fordern Sie eine Wartenummer', (string) $response->getBody());
