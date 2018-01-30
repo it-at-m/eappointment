@@ -20,7 +20,7 @@
 {% endblock %}
 
 {% block board_header_right %}
-    {% if selected %}
+    {% if selected or download %}
         <a href="{{ urlGet(currentRoute().name, currentRoute().params, {'type':'xlsx'}) }}" target="_blank" title="Download" class="btn btn--bigicon download">⤓</a>
     {% endif %}
 {% endblock %}
