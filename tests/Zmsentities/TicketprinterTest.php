@@ -38,6 +38,5 @@ class TicketprinterTest extends EntityCommonTests
         $entity = (new $this->entityclass())->getExample();
         $ticketprinter = $entity->toStructuredButtonList();
         $this->assertEquals(1, $ticketprinter->getScopeList()->count());
-        $this->assertEquals(1, $ticketprinter->getClusterList()->count());
     }
 }
