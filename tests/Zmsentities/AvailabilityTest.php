@@ -388,13 +388,13 @@ class AvailabilityTest extends EntityCommonTests
         $this->assertFalse($entityOH->isOpened($time, 'appointment'));
     }
 
-    public function testUnopenedNoWeek()
+    public function testOneTimer()
     {
         $time = new \DateTimeImmutable(self::DEFAULT_TIME);
         $entityOH = $this->getExampleWithTypeOpeningHours($time);
         $entityOH->offsetSet('endTime', '13:00:00');
         $entityOH->offsetSet('repeat', array('afterWeeks' => 0, 'weekOfMonth' => 0));
-        $this->assertFalse($entityOH->isOpened($time));
+        $this->assertTrue($entityOH->isOpened($time));
     }
 
     /**
