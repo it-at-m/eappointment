@@ -19,6 +19,12 @@ class Department extends Schema\Entity implements Useraccount\AccessInterface
         ];
     }
 
+    public function hasNotificationEnabled()
+    {
+        $prefs = $this->getNotificationPreferences();
+        return ($prefs['identification'] && $prefs['enabled']);
+    }
+
     public function getNotificationPreferences()
     {
         return $this->toProperty()->preferences->notifications->get();
