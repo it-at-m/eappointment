@@ -4,6 +4,11 @@ namespace BO\Zmsticketprinter\Tests;
 
 class IndexCustomizedByClusterTest extends Base
 {
+    public function testRendering()
+    {
+    }
+
+    /* cluster not allowed anymore as button (2018-01-30, Abnahme mit TE)
     protected $classname = "Index";
 
     protected $arguments = [ ];
@@ -49,4 +54,5 @@ class IndexCustomizedByClusterTest extends Base
         ], [ ]);
         $this->assertContains('customized', (string) $response->getBody());
     }
+    */
 }
