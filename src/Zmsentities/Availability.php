@@ -237,6 +237,9 @@ class Availability extends Schema\Entity
         ) {
             return true;
         }
+        if (!$this['repeat']['weekOfMonth'] && !$this['repeat']['afterWeeks']) {
+            return true;
+        }
         return false;
     }
 
