@@ -163,7 +163,7 @@ class TicketPrinterConfigView extends Component {
             <div>
                 <h2>{department.name}</h2>
                 {this.renderScopes(department.scopes)}
-                {this.renderClusters(department.clusters)}
+                {/* this.renderClusters(department.clusters) */}
             </div>
         )
     }

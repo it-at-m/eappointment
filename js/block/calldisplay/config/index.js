@@ -93,14 +93,14 @@ class CallDisplayConfigView extends Component {
     }
 
     showItem(item) {
-        const items = this.state.selectedItems.filter(i => i.id !== item.id)
+        const items = this.state.selectedItems.filter(i => i.id !== item.id || (i.id == item.id && i.type !== item.type))
         const newItem = Object.assign({}, item)
         items.push(newItem)
         this.setState({ selectedItems: items })
     }
 
     hideItem(item) {
-        const items = this.state.selectedItems.filter(i => i.id !== item.id)
+        const items = this.state.selectedItems.filter(i => i.id !== item.id || (i.id == item.id && i.type !== item.type))
         this.setState({ selectedItems: items })
     }
 
