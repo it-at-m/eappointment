@@ -65,4 +65,14 @@ class RequestList extends Base
         }
         return $requestList;
     }
+
+    public function hasAppointmentFromProviderData()
+    {
+        foreach ($this as $entity) {
+            if ($entity->hasAppointmentFromProviderData()) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
