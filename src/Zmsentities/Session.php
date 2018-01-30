@@ -194,7 +194,7 @@ class Session extends Schema\Entity
 
     public function hasConfirmationNotification()
     {
-        return ($this->toProperty()->content->basket->confirmationNotification->get()) ? true : false;
+        return ($this->toProperty()->content->confirmationNotification->get()) ? true : false;
     }
 
     /**
