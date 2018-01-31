@@ -21,6 +21,8 @@ class Status
             }
         }
         if ($status) {
+            $result = self::getDldbUpdateStats($status);
+
             if ($status['mail']['oldestSeconds'] > 300) {
                 $result = "WARN - Oldest mail with age in seconds: " . $status['mail']['oldestSeconds'];
             } elseif ($status['notification']['oldestSeconds'] > 300) {
@@ -38,5 +40,18 @@ class Status
         $response->getBody()->write($result);
         $response = $response->withHeader('Content-Type', 'text/plain');
         return $response;
+    }
+
+    public static function getDldbUpdateStats($status)
+    {
+        $result = '';
+        $now = new \DateTimeImmutable();
+        $lastDldbUpdate = new \DateTimeImmutable($status['sources']['dldb']['last']);
+        if (($lastDldbUpdate->getTimestamp() + 7200) < $now->getTimestamp()) {
+            $result = "WARN - Last DLDB Import is more then 2 hours ago";
+        } elseif (($lastDldbUpdate->getTimestamp() + 14400) < $now->getTimestamp()) {
+            $result = "CRIT - Last DLDB Import is more then 4 hours ago";
+        }
+        return $result;
     }
 }
