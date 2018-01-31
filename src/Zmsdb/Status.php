@@ -25,7 +25,25 @@ class Status extends Base
         $entity['processes'] = $this->readProcessStats();
         $entity['mail'] = $this->readMailStats();
         $entity['notification'] = $this->readNotificationStats();
+        $entity['sources']['dldb']['last'] = $this->readDdldUpdateStats();
         return $entity;
+    }
+
+    /**
+     * Get the information on dldb update status
+     *
+     * @return Array
+     */
+    protected function readDdldUpdateStats()
+    {
+        $stats = $this->getReader()->fetchOne(
+            'SELECT
+                value
+            FROM config
+            WHERE name = "sources_dldb_last"
+            '
+        );
+        return $stats['value'];
     }
 
     /**
