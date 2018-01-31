@@ -45,7 +45,26 @@ class Dldb extends \BO\Zmsdb\Base
             echo "RequestProvider: Took $time seconds\n";
         }
 
+        $startTime = microtime(true);
+        $this->writeDldbImportTime();
+        $time = round(microtime(true) - $startTime, 3);
+        if ($verbose) {
+            echo "LastImportTimeToConfig: Took $time seconds\n";
+        }
+
         \BO\Zmsdb\Connection\Select::writeCommit();
+    }
+
+    public function writeDldbImportTime()
+    {
+        $sql = 'REPLACE INTO `config` SET
+            `name`=:name,
+            `value`=:last_import_date;
+        ';
+        $query = $this->getWriter()->prepare($sql);
+        $query->bindValue('name', 'sources_dldb_last');
+        $query->bindValue('last_import_date', date('c'));
+        $query->execute();
     }
 
     public function replaceRequestProvider($providerList)
