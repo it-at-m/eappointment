@@ -60,7 +60,7 @@ class Download
             $this->writer = IOFactory::createWriter($this->spreadsheet, 'Csv')
               ->setUseBOM(true)
               ->setSheetIndex(0)
-              ->setExcelCompatibility(true);
+              ->setDelimiter(';');
         }
         if ('xlsx' == $this->type) {
             $this->writer = IOFactory::createWriter($this->spreadsheet, 'Xlsx');
