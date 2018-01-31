@@ -123,7 +123,7 @@ class Workstation extends Base implements MappingInterface
 
     public function addConditionWorkstationIsNotCounter()
     {
-        $this->query->where('workstation.Arbeitsplatznr', '<>', 0);
+        $this->query->where('workstation.Arbeitsplatznr', '>', 0);
         return $this;
     }
 
