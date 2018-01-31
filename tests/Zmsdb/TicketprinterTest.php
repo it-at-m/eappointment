@@ -32,11 +32,6 @@ class TicketprinterTest extends Base
         $input['buttonlist'] = 's141';
         $entity = $query->readByButtonList($input->toStructuredButtonList(), $now);
         $this->assertEquals('Bürgeramt', $entity->contact['name']);
-
-        $input = $this->getTestEntity();
-        $input['buttonlist'] = 'c109';
-        $entity = $query->readByButtonList($input->toStructuredButtonList(), $now);
-        $this->assertEquals('Bürgeramt Heerstraße', $entity->contact['name']);
     }
 
     public function testReadByHash()
@@ -55,8 +50,8 @@ class TicketprinterTest extends Base
         $input = $this->getTestEntity()->toStructuredButtonList();
         $entity = $query->readByButtonList($input, $now);
         $this->assertEquals('Bürgeramt', $entity->buttons[0]['name']);
-        $this->assertEquals('cluster', $entity->buttons[1]['type']);
-        $this->assertEquals('https://service.berlin.de', $entity->buttons[2]['url']);
+        //$this->assertEquals('cluster', $entity->buttons[1]['type']);
+        $this->assertEquals('https://service.berlin.de', $entity->buttons[1]['url']);
     }
 
     public function testUnvalidButtonListNoCluster()
@@ -114,6 +109,7 @@ class TicketprinterTest extends Base
         $query->readByButtonList($input->toStructuredButtonList(), $now);
     }
 
+    /*
     public function testUnvalidDisabledByScopeInCluster()
     {
         $this->expectException('\BO\Zmsdb\Exception\Ticketprinter\DisabledByScope');
@@ -124,6 +120,7 @@ class TicketprinterTest extends Base
         $input['buttonlist'] = $buttonlist;
         $query->readByButtonList($input->toStructuredButtonList(), $now);
     }
+    */
 
     public function testReadByButtonListClusterFailed()
     {
@@ -132,7 +129,7 @@ class TicketprinterTest extends Base
         $now = new \DateTimeImmutable("2016-04-01 11:55");
         $query = new Query();
         $input = $this->getTestEntity();
-        $input->buttonlist = 's141,c999,l[https://service.berlin.de|Service Berlin]';
+        $input->buttonlist = 's999,l[https://service.berlin.de|Service Berlin]';
         $query->readByButtonList($input->toStructuredButtonList(), $now);
     }
 
@@ -165,7 +162,7 @@ class TicketprinterTest extends Base
     protected function getTestEntity()
     {
         return new Entity(array(
-            "buttonlist" => "s141,c60,l[https://service.berlin.de|Service Berlin]",
+            "buttonlist" => "s141,l[https://service.berlin.de|Service Berlin]",
             "enabled" => true,
             "hash" => "e744a234c1",
             "id" => 1234,
