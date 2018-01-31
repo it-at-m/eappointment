@@ -381,7 +381,9 @@ class Process extends Base implements Interfaces\ResolveReferences
     {
         if ($process->requests && count($process->requests)) {
             // Beware of resolveReferences=0 to not delete the existing requests
-            $this->deleteRequestsForProcessId($process->id);
+            if (0 < $process->id) {
+                $this->deleteRequestsForProcessId($process->id);
+            }
             $query = new Query\XRequest(Query\Base::INSERT);
             foreach ($process->requests as $request) {
                 if ($request->id >= 0) { // allow deleting requests with a -1 request
