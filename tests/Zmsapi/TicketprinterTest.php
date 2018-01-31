@@ -54,7 +54,7 @@ class TicketprinterTest extends Base
     {
         $response = $this->render([], [
             '__body' => '{
-                "buttonlist": "s141,c110,l[http://www.berlin.de/|Portal+Berlin.de]",
+                "buttonlist": "s141,l[http://www.berlin.de/|Portal+Berlin.de]",
                 "enabled": true,
                 "hash": "ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2",
                 "id": 1,
@@ -82,6 +82,7 @@ class TicketprinterTest extends Base
         ], []);
     }
 
+    /*
     public function testFromButtonListClusterFailed()
     {
         $this->expectException('\BO\Zmsapi\Exception\Ticketprinter\UnvalidButtonList');
@@ -97,6 +98,7 @@ class TicketprinterTest extends Base
             }'
         ], []);
     }
+    */
 
     public function testDisabledTicketprinter()
     {
@@ -131,7 +133,7 @@ class TicketprinterTest extends Base
         $this->expectExceptionCode(403);
         $this->render([], [
             '__body' => '{
-                "buttonlist": "s141,c110,l[http://www.berlin.de/|Portal+Berlin.de]",
+                "buttonlist": "s141,l[http://www.berlin.de/|Portal+Berlin.de]",
                 "hash": "ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2",
                 "id": 1234
             }'
@@ -150,7 +152,7 @@ class TicketprinterTest extends Base
         $this->expectExceptionCode(404);
         $this->render([], [
             '__body' => '{
-                "buttonlist": "s141,c110,l[http://www.berlin.de/|Portal+Berlin.de]",
+                "buttonlist": "s141,l[http://www.berlin.de/|Portal+Berlin.de]",
                 "hash": "1234567890098765432"
             }'
         ], []);
