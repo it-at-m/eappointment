@@ -97,6 +97,7 @@ class SlotList extends Base
                                 )
                             )
                         )
+                        OR (o.allexWochen = 0 AND o.jedexteWoche = 0)
                     )
 
                     -- ignore slots out of date range
