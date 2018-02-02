@@ -63,6 +63,25 @@ class DepartmentList extends Base implements JsonUnindexed
         return $list;
     }
 
+    public function withMatchingScopes(ScopeList $scopeList)
+    {
+        $list = new static();
+        foreach ($this as $department) {
+            $entity = clone $department;
+            $entity->scopes = new ScopeList();
+            $departmentScopeList = $department->getScopeList()->withUniqueScopes();
+            foreach ($scopeList as $scope) {
+                if ($departmentScopeList->hasEntity($scope->id)) {
+                    $entity->scopes->addEntity($scope);
+                }
+            }
+            if ($entity->scopes->count()) {
+                $list->addEntity($entity);
+            }
+        }
+        return $list;
+    }
+
     public function sortByName()
     {
         parent::sortByName();
