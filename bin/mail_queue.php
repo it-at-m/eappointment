@@ -16,12 +16,12 @@ if (preg_grep('#--?v(erbose)?#', $argv)) {
         if (isset($mail['errorInfo'])) {
             echo "\033[01;31mERROR OCCURED: ". $mail['errorInfo'] ."\033[0m \n";
         } else {
-            print_r($mail->Body);
+            //print_r($mail->Body);
             echo "\033[01;32mTest mail with ID ". $mail['id'] ." successfully \033[0m \n";
             //echo "MIME: ". trim($mail['mime']) ."\n";
             echo "RECIPIENTS: ". json_encode($mail['recipients']) ."\n";
             echo "CUSTOM HEADERS: ". json_encode($mail['customHeaders']) ."\n";
-            echo "\033[01;31mDELETE NOTICE: Items will not be deleted in verbose mode \033[0m \n\n";
+            //echo "\033[01;31mDELETE NOTICE: Items will not be deleted in verbose mode \033[0m \n\n";
         }
     }
 }

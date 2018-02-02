@@ -11,14 +11,11 @@ class ExceptionsCatchTest extends Base
         $this->setApiCalls(
             [
                 [
-                    'function' => 'readPostResult',
-                    'url' => '/workstation/login/',
-                    'response' => $this->readFixture("GET_workstation.json")
-                ],
-                [
-                    'function' => 'readPostResult',
-                    'url' => '/workstation/',
-                    'response' => $this->readFixture("GET_workstation.json")
+                    'function' => 'setUserInfo',
+                    'parameters' => [
+                        '_system_messenger',
+                        'zmsmessaging'
+                    ]
                 ],
                 [
                     'function' => 'readPostResult',
@@ -31,11 +28,6 @@ class ExceptionsCatchTest extends Base
                     'url' => '/mails/',
                     'response' => $this->readFixture("GET_mails_queue_no_mail.json"),
                 ],
-                [
-                    'function' => 'readDeleteResult',
-                    'url' => '/workstation/_system_messenger/',
-                    'response' => $this->readFixture("GET_mail.json")
-                ]
             ]
         );
 
@@ -50,14 +42,11 @@ class ExceptionsCatchTest extends Base
         $this->setApiCalls(
             [
                 [
-                    'function' => 'readPostResult',
-                    'url' => '/workstation/login/',
-                    'response' => $this->readFixture("GET_workstation.json")
-                ],
-                [
-                    'function' => 'readPostResult',
-                    'url' => '/workstation/',
-                    'response' => $this->readFixture("GET_workstation.json")
+                    'function' => 'setUserInfo',
+                    'parameters' => [
+                        '_system_messenger',
+                        'zmsmessaging'
+                    ]
                 ],
                 [
                     'function' => 'readPostResult',
@@ -70,11 +59,6 @@ class ExceptionsCatchTest extends Base
                     'url' => '/notification/',
                     'response' => $this->readFixture("GET_notifications_queue_no_mail.json"),
                 ],
-                [
-                    'function' => 'readDeleteResult',
-                    'url' => '/workstation/_system_messenger/',
-                    'response' => $this->readFixture("GET_notification.json")
-                ]
             ]
         );
 
@@ -89,14 +73,11 @@ class ExceptionsCatchTest extends Base
         $this->setApiCalls(
             [
                 [
-                    'function' => 'readPostResult',
-                    'url' => '/workstation/login/',
-                    'response' => $this->readFixture("GET_workstation.json")
-                ],
-                [
-                    'function' => 'readPostResult',
-                    'url' => '/workstation/',
-                    'response' => $this->readFixture("GET_workstation.json")
+                    'function' => 'setUserInfo',
+                    'parameters' => [
+                        '_system_messenger',
+                        'zmsmessaging'
+                    ]
                 ],
                 [
                     'function' => 'readPostResult',
@@ -114,11 +95,6 @@ class ExceptionsCatchTest extends Base
                     'url' => '/mails/1234/',
                     'response' => $this->readFixture("GET_mail.json")
                 ],
-                [
-                    'function' => 'readDeleteResult',
-                    'url' => '/workstation/_system_messenger/',
-                    'response' => $this->readFixture("GET_mail.json")
-                ]
             ]
         );
 
@@ -133,14 +109,11 @@ class ExceptionsCatchTest extends Base
         $this->setApiCalls(
             [
                 [
-                    'function' => 'readPostResult',
-                    'url' => '/workstation/login/',
-                    'response' => $this->readFixture("GET_workstation.json")
-                ],
-                [
-                    'function' => 'readPostResult',
-                    'url' => '/workstation/',
-                    'response' => $this->readFixture("GET_workstation.json")
+                    'function' => 'setUserInfo',
+                    'parameters' => [
+                        '_system_messenger',
+                        'zmsmessaging'
+                    ]
                 ],
                 [
                     'function' => 'readPostResult',
@@ -158,11 +131,6 @@ class ExceptionsCatchTest extends Base
                     'url' => '/notification/1234/',
                     'response' => $this->readFixture("GET_notification.json")
                 ],
-                [
-                    'function' => 'readDeleteResult',
-                    'url' => '/workstation/_system_messenger/',
-                    'response' => $this->readFixture("GET_notification.json")
-                ]
             ]
         );
         \App::$messaging = new \BO\Zmsmessaging\Notification();

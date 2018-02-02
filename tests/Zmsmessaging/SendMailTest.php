@@ -11,14 +11,11 @@ class SendMailTest extends Base
         $this->setApiCalls(
             [
                 [
-                    'function' => 'readPostResult',
-                    'url' => '/workstation/login/',
-                    'response' => $this->readFixture("GET_workstation.json")
-                ],
-                [
-                    'function' => 'readPostResult',
-                    'url' => '/workstation/',
-                    'response' => $this->readFixture("GET_workstation.json")
+                    'function' => 'setUserInfo',
+                    'parameters' => [
+                        '_system_messenger',
+                        'zmsmessaging'
+                    ]
                 ],
                 [
                     'function' => 'readPostResult',
@@ -30,11 +27,6 @@ class SendMailTest extends Base
                     'url' => '/mails/',
                     'response' => $this->readFixture("GET_mails_queue.json"),
                 ],
-                [
-                    'function' => 'readDeleteResult',
-                    'url' => '/workstation/_system_messenger/',
-                    'response' => $this->readFixture("GET_mail.json")
-                ]
             ]
         );
 
@@ -55,25 +47,17 @@ class SendMailTest extends Base
         $this->setApiCalls(
             [
                 [
-                    'function' => 'readPostResult',
-                    'url' => '/workstation/login/',
-                    'response' => $this->readFixture("GET_workstation.json")
-                ],
-                [
-                    'function' => 'readPostResult',
-                    'url' => '/workstation/',
-                    'response' => $this->readFixture("GET_workstation.json")
+                    'function' => 'setUserInfo',
+                    'parameters' => [
+                        '_system_messenger',
+                        'zmsmessaging'
+                    ]
                 ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/mails/',
                     'response' => $this->readFixture("GET_queue_empty.json"),
                 ],
-                [
-                    'function' => 'readDeleteResult',
-                    'url' => '/workstation/_system_messenger/',
-                    'response' => $this->readFixture("GET_mail.json")
-                ]
             ]
         );
         \App::$messaging = new \BO\Zmsmessaging\Mail();

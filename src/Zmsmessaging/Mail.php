@@ -60,7 +60,6 @@ class Mail extends BaseController
                 'errorInfo' => 'No mail entry found in Database...'
             );
         }
-        $this->writeLogout();
         return $resultList;
     }
 

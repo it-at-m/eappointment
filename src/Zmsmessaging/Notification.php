@@ -59,7 +59,6 @@ class Notification extends BaseController
                 'errorInfo' => 'No notification entry found in Database...'
             );
         }
-        $this->writeLogout();
         return $resultList;
     }
 

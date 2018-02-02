@@ -10,14 +10,11 @@ class DeleteMailsFailedTest extends Base
     {
         return [
             [
-                'function' => 'readPostResult',
-                'url' => '/workstation/login/',
-                'response' => $this->readFixture("GET_workstation.json")
-            ],
-            [
-                'function' => 'readPostResult',
-                'url' => '/workstation/',
-                'response' => $this->readFixture("GET_workstation.json")
+                'function' => 'setUserInfo',
+                'parameters' => [
+                    '_system_messenger',
+                    'zmsmessaging'
+                ]
             ],
             [
                 'function' => 'readGetResult',

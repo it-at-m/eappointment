@@ -17,33 +17,7 @@ class BaseController
 
     public function __construct()
     {
-        $this->workstation = $this->writeLogin();
-    }
-
-    protected function writeLogin()
-    {
-        $userAccount = new \BO\Zmsentities\Useraccount(array(
-            'id' => '_system_messenger',
-            'password' => 'zmsmessaging'
-        ));
-        try {
-            $workstation = \App::$http
-                ->readPostResult('/workstation/login/', $userAccount)->getEntity();
-        } catch (\BO\Zmsclient\Exception $exception) {
-            //ignore double login exception on quick login
-            $workstation = new \BO\Zmsentities\Workstation($exception->data);
-        }
-
-        if (array_key_exists('authkey', $workstation)) {
-            \BO\Zmsclient\Auth::setKey($workstation->authkey);
-        }
-        $workstation = \App::$http->readPostResult('/workstation/', $workstation)->getEntity();
-        return $workstation;
-    }
-
-    protected function writeLogout()
-    {
-        \App::$http->readDeleteResult('/workstation/_system_messenger/');
+        \App::$http->setUserInfo('_system_messenger', 'zmsmessaging');
     }
 
     protected function sendMailer(\BO\Zmsentities\Schema\Entity $entity, $mailer = null, $action = false)

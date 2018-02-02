@@ -19,7 +19,7 @@ if (preg_grep('#--?v(erbose)?#', $argv)) {
             echo "\033[01;32mTest notification with ID ". $notification['id'] ." successfully \033[0m \n";
             echo "RECIPIENTS: ". json_encode($notification['recipients']) ."\n";
             echo "MIME: ". trim($notification['mime']) ."\n";
-            echo "\033[01;31mDELETE NOTICE: Items will not be deleted in verbose mode \033[0m \n\n";
+            //echo "\033[01;31mDELETE NOTICE: Items will not be deleted in verbose mode \033[0m \n\n";
         } else {
             $item = new \BO\Zmsentities\Notification($notification['item']);
             $preferences = (new \BO\Zmsentities\Config())->getNotificationPreferences();
