@@ -20,7 +20,7 @@ class CalendarTest extends Base
         $this->setExpectedException('\BO\Zmsdb\Exception\CalendarWithoutScopes');
         $now = new \DateTimeImmutable("2016-04-01 11:55");
         $input = $this->getTestEntity();
-        $entity = (new Query())->readResolvedEntity($input, $now);
+        (new Query())->readResolvedEntity($input, $now);
     }
 
     public function testWithScope()
@@ -80,6 +80,21 @@ class CalendarTest extends Base
         // free day test
         // not implemented yet $this->assertEquals(0, $entity->getDay(2016, 5, 5)['freeAppointments']['public']);
         //var_dump(\BO\Zmsdb\Connection\Select::getReadConnection()->getProfiler()->getProfiles());
+    }
+
+    public function testZwickauerDamm()
+    {
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $input = $this->getTestEntity();
+        $input->addProvider('dldb', 122296); // Bürgeramt Zwickauer Damm
+        $entity = (new Query())->readResolvedEntity($input, $now);
+        $this->assertEntity("\\BO\\Zmsentities\\Calendar", $entity);
+        $this->assertTrue($entity->hasDay(2016, 4, 25), "Missing 2016-04-25 in dataset");
+        $this->assertEquals(
+            0,
+            $entity->getDay(2016, 4, 25)['freeAppointments']['public'],
+            "Opening Hour 'einmaliger Termin' failed"
+        );
     }
 
     public function testOverallDayOff()
