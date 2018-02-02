@@ -212,15 +212,14 @@ class Process extends Base implements Interfaces\ResolveReferences
         return $this->readList($statement, $resolveReferences);
     }
 
-    public function readSearch($queryString, $resolveReferences = 0)
+    public function readSearch($queryString, $resolveReferences = 0, $limit = 100)
     {
         $query = new Query\Process(Query\Base::SELECT);
         $query
             ->addResolvedReferences($resolveReferences)
-            ->addResolvedReferences($resolveReferences)
             ->addEntityMapping()
             ->addConditionAssigned()
-            ->addLimit(100)
+            ->addLimit($limit)
             ;
         if (preg_match('#^\d+$#', $queryString)) {
             $query->addConditionProcessId($queryString);
