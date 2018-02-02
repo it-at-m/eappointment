@@ -43,6 +43,7 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
         foreach ($this->getApiCalls() as $options) {
             $parameters = isset($options['parameters']) ? $options['parameters'] : null;
             $function = $options['function'];
+            error_log("Add mockup $function");
             if ($function == 'readGetResult' || $function == 'readDeleteResult') {
                 $function = $mock->__call(
                     $function,
@@ -64,6 +65,13 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
                         $parameters
                     ]
                 );
+            } else {
+                $function = $mock->__call(
+                    $function,
+                    [
+                        $parameters
+                    ]
+                );
             }
             if (isset($options['exception'])) {
                 $function->will(new \Prophecy\Promise\ThrowPromise($options['exception']));
@@ -75,6 +83,8 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
                             static::createBasicRequest()
                         )
                     );
+            } else {
+                $function->shouldBeCalled();
             }
         }
         $api = $mock->reveal();
