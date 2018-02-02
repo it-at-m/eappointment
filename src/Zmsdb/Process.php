@@ -118,8 +118,8 @@ class Process extends Base implements Interfaces\ResolveReferences
     {
         $query = new Query\Process(Query\Base::SELECT);
         $newProcessId = 100000;
-        if ($this->getReader()->fetchValue($query->getFirstSixDigitProcessId())) {
-            $newProcessId = $this->getReader()->fetchValue($query->getQueryNewProcessId());
+        if ($this->getWriter()->fetchValue($query->getFirstSixDigitProcessId())) {
+            $newProcessId = $this->getWriter()->fetchValue($query->getQueryNewProcessId());
         }
         return $newProcessId;
     }
