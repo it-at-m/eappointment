@@ -61,12 +61,18 @@ class Http
         $user = parse_url($baseUrl, PHP_URL_USER);
         $pass = parse_url($baseUrl, PHP_URL_PASS);
         if ($user) {
-            $this->uri = $this->uri->withUserInfo($user, $pass);
+            $this->setUserInfo($user, $pass);
         }
         if (null === $client) {
             $client = new Psr7\Client();
         }
         $this->client = $client;
+    }
+
+    public function setUserInfo($user, $pass)
+    {
+        $this->uri = $this->uri->withUserInfo($user, $pass);
+        return $this;
     }
 
     /**
