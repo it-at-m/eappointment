@@ -10,14 +10,11 @@ class SendNotificationTest extends Base
     {
         $this->setApiCalls([
             [
-                'function' => 'readPostResult',
-                'url' => '/workstation/login/',
-                'response' => $this->readFixture("GET_workstation.json")
-            ],
-            [
-                'function' => 'readPostResult',
-                'url' => '/workstation/',
-                'response' => $this->readFixture("GET_workstation.json")
+                'function' => 'setUserInfo',
+                'parameters' => [
+                    '_system_messenger',
+                    'zmsmessaging'
+                ]
             ],
             [
                 'function' => 'readGetResult',
@@ -29,11 +26,6 @@ class SendNotificationTest extends Base
                 'url' => '/log/process/123456/',
                 'response' => $this->readFixture("POST_log.json")
             ],
-            [
-                'function' => 'readDeleteResult',
-                'url' => '/workstation/_system_messenger/',
-                'response' => $this->readFixture("GET_mail.json")
-            ]
         ]);
         \App::$messaging = new \BO\Zmsmessaging\Notification();
         $resultList = \App::$messaging->initQueueTransmission();

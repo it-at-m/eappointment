@@ -67,6 +67,11 @@ abstract class Base extends TestCase
                         $parameters
                     ]
                 );
+            } else {
+                $function = $mock->__call(
+                    $function,
+                    $parameters
+                );
             }
             if (isset($options['exception'])) {
                 $function->will(new \Prophecy\Promise\ThrowPromise($options['exception']));
@@ -78,6 +83,8 @@ abstract class Base extends TestCase
                             $this->getRequest()
                         )
                     );
+            } else {
+                $function->shouldBeCalled();
             }
         }
         $api = $mock->reveal();
