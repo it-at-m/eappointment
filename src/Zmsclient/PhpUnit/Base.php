@@ -43,7 +43,6 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
         foreach ($this->getApiCalls() as $options) {
             $parameters = isset($options['parameters']) ? $options['parameters'] : null;
             $function = $options['function'];
-            error_log("Add mockup $function");
             if ($function == 'readGetResult' || $function == 'readDeleteResult') {
                 $function = $mock->__call(
                     $function,
