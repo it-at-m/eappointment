@@ -40,4 +40,23 @@ class OrganisationList extends Base
         }
         return $this;
     }
+
+    public function withMatchingDepartments(DepartmentList $departmentList)
+    {
+        $list = new static();
+        foreach ($this as $organisation) {
+            $entity = clone $organisation;
+            $entity->departments = new DepartmentList();
+            $departmentMatchList = $organisation->getDepartmentList();
+            foreach ($departmentList as $department) {
+                if ($departmentMatchList->hasEntity($department->id)) {
+                    $entity->departments->addEntity($department);
+                }
+            }
+            if ($entity->departments->count()) {
+                $list->addEntity($entity);
+            }
+        }
+        return $list;
+    }
 }
