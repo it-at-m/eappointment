@@ -1,6 +1,8 @@
 <?php
 namespace BO\Zmsentities\Collection;
 
+use \BO\Zmsentities\Helper\Sorter;
+
 class ProcessList extends Base
 {
     const ENTITY_CLASS = '\BO\Zmsentities\Process';
@@ -19,6 +21,17 @@ class ProcessList extends Base
     {
         $this->uasort(function ($a, $b) {
             return ($a->queue['arrivalTime'] - $b->queue['arrivalTime']);
+        });
+        return $this;
+    }
+
+    public function sortByClientName()
+    {
+        $this->uasort(function ($a, $b) {
+            return strcmp(
+                Sorter::toSortableString($a->getFirstClient()['familyName']),
+                Sorter::toSortableString($b->getFirstClient()['familyName'])
+            );
         });
         return $this;
     }
