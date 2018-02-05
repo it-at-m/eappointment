@@ -46,6 +46,17 @@ class Base extends \ArrayObject
         return $this;
     }
 
+    public function sortByContactName()
+    {
+        $this->uasort(function ($a, $b) {
+            return strcmp(
+                Sorter::toSortableString(ucfirst($a->contact['name'])),
+                Sorter::toSortableString(ucfirst($b->contact['name']))
+            );
+        });
+        return $this;
+    }
+
     public function sortByCustomKey($key)
     {
         $this->uasort(function ($a, $b) use ($key) {
