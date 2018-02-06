@@ -35,6 +35,17 @@ class DayTest extends EntityCommonTests
         //test hash cache
         $collection->getDay('2016', '11', '18');
         $this->assertEquals($collection->getDay('2016', '11', '18'), $collection['18-11-2016']);
+
+        $this->assertEquals('2015-11-18', $collection->getFirstBookableDay()->format('Y-m-d'));
+    }
+
+    public function testGetFirstBookableDayFailed()
+    {
+        $entity = $this->getExample();
+        $entity->status = 'notBookable';
+        $collection = new $this->collectionclass();
+        $collection->addEntity($entity);
+        $this->assertEquals(null, $collection->getFirstBookableDay());
     }
 
     public function testWithProcessListSortedByHour()

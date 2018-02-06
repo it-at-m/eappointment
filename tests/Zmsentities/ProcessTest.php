@@ -312,6 +312,11 @@ class ProcessTest extends EntityCommonTests
         $queueList = $collection->toQueueList($now);
         $this->assertEquals('queued', $queueList->getFirst()->status);
         $this->assertEquals('1447869171', $queueList->getFirst()->arrivalTime);
+
+        $entity3 = $this->getExample();
+        $entity3->getFirstClient()['familyName'] = 'Anton Beta';
+        $collection->addEntity($entity3);
+        $this->assertEquals('Anton Beta', $collection->sortByClientName()->getFirst()->getFirstClient()['familyName']);
     }
 
     public function testProcessListByStatusAndTime()
