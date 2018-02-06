@@ -96,6 +96,12 @@ class WorkstationTest extends EntityCommonTests
         $this->assertEquals(null, $entity->testDepartmentList());
     }
 
+    public function testGetScopeListFromAssignedDepartments()
+    {
+        $entity = $this->getExample();
+        $this->assertEquals(1, $entity->getScopeListFromAssignedDepartments()->count());
+    }
+
     public function testGetDepartmentListFailed()
     {
         $this->setExpectedException('\BO\Zmsentities\Exception\WorkstationMissingAssignedDepartments');

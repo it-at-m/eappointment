@@ -347,6 +347,7 @@ class Availability extends Schema\Entity
         $bookableCurrentTime = $bookableDate->modify($now->format('H:i:s'));
         Helper\DateTime::create($bookableDate)->getTimestamp() + Helper\DateTime::create($now)->getSecondsOfDay();
         $startDate = $this->getBookableStart($now)->modify('00:00:00');
+
         if ($bookableCurrentTime->getTimestamp() < $startDate->getTimestamp()) {
             //error_log("START " . $bookableCurrentTime->format('c').'<'.$startDate->format('c'). " " . $this);
             return false;

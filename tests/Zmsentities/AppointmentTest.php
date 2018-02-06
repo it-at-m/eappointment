@@ -75,4 +75,12 @@ class AppointmentTest extends EntityCommonTests
         $this->assertTrue($collection->hasAppointment($entity));
         $this->assertFalse($collection->hasAppointment($entity2));
     }
+
+    public function testHasTime()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $this->assertTrue($entity->hasTime());
+        $entity->date = 0;
+        $this->assertFalse($entity->hasTime());
+    }
 }

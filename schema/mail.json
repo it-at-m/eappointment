@@ -103,12 +103,10 @@
             "status": "confirmed"
         },
         "subject": "Example Mail",
-        "client": [
-            {
-                "familyName": "Max Mustermann",
-                "email": "max@service.berlin.de"
-            }
-        ]
+        "client": {
+            "familyName": "Max Mustermann",
+            "email": "max@service.berlin.de"
+        }
     },
     "required": [
         "department",

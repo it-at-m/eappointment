@@ -193,6 +193,7 @@ class Useraccount extends Schema\Entity
             }
             $this->changePassword = $input['changePassword'];
         }
+        return $this;
     }
 
     public function withDepartmentList()
@@ -215,7 +216,10 @@ class Useraccount extends Schema\Entity
         if (isset($this['password']) && '' == $this['password'] && false === $keepPassword) {
             unset($this['password']);
         }
-        if ($this['changePassword'] && 0 == count(array_filter($this['changePassword'])) && false === $keepPassword) {
+        if (isset($this['changePassword']) &&
+            0 == count(array_filter($this['changePassword'])) &&
+            false === $keepPassword
+        ) {
             unset($this['changePassword']);
         }
 

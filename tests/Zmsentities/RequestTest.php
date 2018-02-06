@@ -38,4 +38,17 @@ class RequestTest extends EntityCommonTests
         $this->assertTrue(array_key_exists('Meldewesen und Ordnung', $groupList));
         $this->assertEntityList('\BO\Zmsentities\Request', $groupList['Meldewesen und Ordnung']);
     }
+
+    public function testHasAppointmentsFromProviderData()
+    {
+        $entity = $this->getExample();
+        $this->assertTrue($entity->hasAppointmentFromProviderData());
+    }
+
+    public function testHasAppointmentsFromProviderDataFailed()
+    {
+        $entity = $this->getExample();
+        unset($entity->data);
+        $this->assertFalse($entity->hasAppointmentFromProviderData());
+    }
 }

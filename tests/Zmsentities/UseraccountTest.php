@@ -163,4 +163,31 @@ class UseraccountTest extends EntityCommonTests
         $entity->changePassword = array();
         $this->assertFalse(array_key_exists('save', $entity->withCleanedUpFormData()));
     }
+
+    public function testWithPassword()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $input = [
+            'password' => 'unittest',
+            'changePassword' => [
+                'unittest2', 'unittest2'
+            ]
+        ];
+        $entity->withPassword($input);
+        $this->assertEquals('unittest', $entity->password);
+        $this->assertEquals(2, count($entity->changePassword));
+    }
+
+    public function testWithPasswordChange()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $input = [
+            'changePassword' => [
+                'unittest2', 'unittest2'
+            ]
+        ];
+        $entity->withPassword($input);
+        $this->assertEquals('unittest2', $entity->password);
+        $this->assertEquals(2, count($entity->changePassword));
+    }
 }
