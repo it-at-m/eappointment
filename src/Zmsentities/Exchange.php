@@ -73,9 +73,11 @@ class Exchange extends Schema\Entity
 
     public function getPositionByName($name)
     {
-        foreach ($this->dictionary as $entry) {
-            if (isset($entry['variable']) && $entry['variable'] == $name) {
-                return $entry['position'];
+        if (isset($this->dictionary)) {
+            foreach ($this->dictionary as $entry) {
+                if (isset($entry['variable']) && $entry['variable'] == $name) {
+                    return $entry['position'];
+                }
             }
         }
         return false;
@@ -85,19 +87,21 @@ class Exchange extends Schema\Entity
     {
         $entity = clone $this;
         $namePosition = $this->getPositionByName($dateName);
-        $totals = array_fill(0, count($entity->data[0]), '');
-        $totals[$namePosition] = 'totals';
-        foreach ($keysToCalculate as $name) {
-            $calculatePosition = $this->getPositionByName($name);
-            foreach ($this->data as $item) {
-                foreach ($item as $position => $data) {
-                    if (is_numeric($data) && $calculatePosition == $position) {
-                        $totals[$position] += $data;
+        if ($namePosition) {
+            $totals = array_fill(0, count($entity->data[0]), '');
+            $totals[$namePosition] = 'totals';
+            foreach ($keysToCalculate as $name) {
+                $calculatePosition = $this->getPositionByName($name);
+                foreach ($this->data as $item) {
+                    foreach ($item as $position => $data) {
+                        if (is_numeric($data) && $calculatePosition == $position) {
+                            $totals[$position] += $data;
+                        }
                     }
                 }
             }
+            $entity->addDataSet($totals);
         }
-        $entity->addDataSet($totals);
         return $entity;
     }
 
@@ -125,6 +129,7 @@ class Exchange extends Schema\Entity
         $entity = clone $this;
         $sum = [];
         foreach ($entity->data as $name => $entry) {
+            $sum[$name] = 0;
             foreach ($entry as $dateItem) {
                 foreach ($dateItem as $key => $value) {
                     if (is_numeric($value) && in_array($key, $keysToCalculate)) {

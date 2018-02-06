@@ -193,6 +193,31 @@ class AvailabilityTest extends EntityCommonTests
         );
     }
 
+    public function testIsBookableByScopeEnd()
+    {
+        $time = new \DateTimeImmutable(self::DEFAULT_TIME);
+        $entity = new $this->entityclass();
+        $entity->bookable['startInDays'] = null;
+        $entity->bookable['endInDays'] = null;
+        $entity['scope'] = (new \BO\Zmsentities\Scope())->getExample();
+        $this->assertTrue(
+            $entity->isBookable($time->modify("+1month"), $time),
+            'Availability endInDays is before startInDays'
+        );
+    }
+
+    public function testIsBookableOnEndDate()
+    {
+        $time = new \DateTimeImmutable('2016-02-01 11:00');
+        $entityOH = $this->getExampleWithTypeOpeningHours($time);
+        $entityOH->bookable['startInDays'] = 0;
+        $entityOH->bookable['endInDays'] = 29;
+        $this->assertFalse(
+            $entityOH->isBookable($time->modify("+1month"), $time),
+            'Availability endInDays is before startInDays'
+        );
+    }
+
     public function testSlotList()
     {
         $slotListResult = new \BO\Zmsentities\Collection\SlotList(

@@ -26,6 +26,14 @@ class NotificationTest extends EntityCommonTests
         );
     }
 
+    public function testGetRecipientFailed()
+    {
+        $this->expectException('\BO\Zmsentities\Exception\NotificationMissedNumber');
+        $entity = (new $this->entityclass())->getExample();
+        unset($entity->client);
+        $entity->getRecipient();
+    }
+
     public function testToCustomMessageEntity()
     {
         $entity = (new $this->entityclass())->getExample();

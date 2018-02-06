@@ -113,4 +113,19 @@ class MailTest extends EntityCommonTests
         $entity->withDepartment($department);
         $this->assertEquals('Flughafen Schönefeld, Landebahn', $entity->department->getContact()->name);
     }
+
+    public function testGetRecipient()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $this->assertEquals('max@service.berlin.de', $entity->getRecipient());
+    }
+
+    public function testGetRecipientFailed()
+    {
+        $this->expectException('BO\Zmsentities\Exception\MailMissedAddress');
+        $entity = (new $this->entityclass())->getExample();
+        unset($entity->process);
+        unset($entity->client);
+        $entity->getRecipient();
+    }
 }

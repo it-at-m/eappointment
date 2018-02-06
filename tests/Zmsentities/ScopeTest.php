@@ -23,6 +23,8 @@ class ScopeTest extends EntityCommonTests
         $this->assertEquals('Bürgeramt', $entity->getScopeInfo(), 'Scope Info is not available');
         $this->assertEquals('dritte Tür rechts', $entity->getScopeHint(), 'Scope hint (from hint) is not available');
         $this->assertContains('Flughafen', (string)$entity, 'Contact name not available');
+        $this->assertFalse($entity->hasEmailFrom());
+        $this->assertTrue($entity->hasNotifcationEnabled());
     }
 
     public function testWithCleanedUpFormData()
@@ -72,6 +74,20 @@ class ScopeTest extends EntityCommonTests
         $entity->status['queue']['workstationCount'] = 0;
         $entity->status['queue']['ghostWorkstationCount'] = 2;
         $this->assertEquals(2, $entity->getCalculatedWorkstationCount());
+    }
+
+    public function testGetBookableEndDate()
+    {
+        $now = new \DateTimeImmutable(self::DEFAULT_TIME);
+
+        //with endInDays from scope
+        $entity = (new $this->entityclass())->getExample();
+        $this->assertEquals('2016-05-31', $entity->getBookableEndDate($now)->format('Y-m-d'));
+
+        //without endInDays from scope
+        $entity = (new $this->entityclass())->getExample();
+        unset($entity->preferences['appointment']['endInDaysDefault']);
+        $this->assertEquals('2016-04-01', $entity->getBookableEndDate($now)->format('Y-m-d'));
     }
 
     public function testGetWaitingTimeFromQueueList()

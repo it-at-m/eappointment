@@ -39,4 +39,13 @@ class TicketprinterTest extends EntityCommonTests
         $ticketprinter = $entity->toStructuredButtonList();
         $this->assertEquals(1, $ticketprinter->getScopeList()->count());
     }
+
+    public function testGetClusterList()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $cluster = (new \BO\Zmsentities\Cluster)->getExample();
+        $entity['buttons'][] = ['type' => 'cluster', 'cluster'=> $cluster];
+        $clusterList = $entity->getClusterList();
+        $this->assertEquals(1, $clusterList->count());
+    }
 }

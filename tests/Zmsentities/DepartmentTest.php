@@ -19,6 +19,7 @@ class DepartmentTest extends EntityCommonTests
         $this->assertTrue(4 == count($entity->getNotificationPreferences()), 'preferences not accessible');
         $this->assertContains('Flughafen Schönefeld', $entity->getContactPerson(), 'getting contact person failed');
         $this->assertTrue(15831 == $entity->getContact()->postalCode, 'contact not accessible');
+        $this->assertTrue($entity->hasNotificationEnabled());
     }
 
     public function testClusterDuplicates()

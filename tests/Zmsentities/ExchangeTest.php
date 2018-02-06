@@ -51,6 +51,68 @@ class ExchangeTest extends EntityCommonTests
         );
     }
 
+    public function testWithoutCalculatedTotals()
+    {
+        $now = new \DateTimeImmutable('2016-04-01 11:55:00');
+        $entity = (new $this->entityclass());
+        $entity->setPeriod($now, $now);
+        $entity->addDictionaryEntry('id', 'number');
+        $entity->addDictionaryEntry('date', 'date');
+        $entity->addDictionaryEntry('wrongname', 'string', 'Naming');
+        $entity->addDictionaryEntry('count', 'number', 'value');
+        $entity->addDataSet([1, '2016-04-01', 'Test', 1]);
+        $entity->addDataSet([2, '2016-04-02', 'Test', 2]);
+        $this->assertTrue(null === $entity->withCalculatedTotals(['count'])->getCalculatedTotals()[0]);
+    }
+
+    public function testGroupedWithMaxByHours()
+    {
+        $now = new \DateTimeImmutable('2016-04-01 11:55:00');
+        $entity = (new $this->entityclass());
+        $entity->setPeriod($now, $now->modify('+1day'), 'day');
+        $entity->addDictionaryEntry('subjectid', 'string', 'ID of a scope');
+        $entity->addDictionaryEntry('date', 'string', 'date of report entry');
+        $entity->addDictionaryEntry('hour', 'string', 'hour of report entry');
+        $entity->addDictionaryEntry('waitingcount', 'number', 'amount of waiting clients');
+        $entity->addDictionaryEntry('waitingtime', 'number', 'real waitingtime');
+        $entity->addDictionaryEntry('waitingcalculated', 'number', 'calculated waitingtime');
+
+        $entity->addDataSet([141, '2016-04-01', '8', 1, 2, 3]);
+        $entity->addDataSet([141, '2016-04-01', '9', 2, 3, 4]);
+        $entity->addDataSet([141, '2016-04-02', '8', 3, 7, 10]);
+        $entity->addDataSet([141, '2016-04-02', '9', 5, 8, 11]);
+        $entity = $entity
+            ->toGrouped(['date','hour'], ['waitingcount','waitingtime','waitingcalculated'])
+            ->withMaxByHour(['waitingcount','waitingtime','waitingcalculated'])
+            ->withMaxAndAverageFromWaitingTime();
+        $this->assertArrayHasKey('2016-04-01', $entity->data);
+        $this->assertArrayHasKey('max', $entity->data);
+        $this->assertEquals(7, $entity->data['max'][8]['waitingtime']);
+        $this->assertEquals(5, $entity->data['max'][9]['waitingcount']);
+    }
+
+    public function testGroupedWithRequestsSum()
+    {
+        $now = new \DateTimeImmutable('2016-04-01 11:55:00');
+        $entity = (new $this->entityclass());
+        $entity->setPeriod($now, $now->modify('+1day'), 'day');
+        $entity->addDictionaryEntry('subjectid', 'string', 'ID of a scope');
+        $entity->addDictionaryEntry('date', 'string', 'Date of entry');
+        $entity->addDictionaryEntry('name', 'string', 'Name of request');
+        $entity->addDictionaryEntry('requestscount', 'number', 'Amount of requests');
+
+        $entity->addDataSet([141, '2016-04-01', 'Dienstleistung wurde nicht erfasst', 25]);
+        $entity->addDataSet([141, '2016-04-01', 'Dienstleistung konnte nicht erbracht werden', 2]);
+        $entity->addDataSet([141, '2016-04-01', 'Personalausweis beantragen', 14]);
+        $entity->addDataSet([141, '2016-04-02', 'Personalausweis beantragen', 17]);
+
+        $entity = $entity
+            ->toGrouped(['name','date'], ['requestscount'])
+            ->withRequestsSum();
+        $this->assertArrayHasKey('sum', $entity->data);
+        $this->assertEquals(31, $entity->data['sum']['Personalausweis beantragen']);
+    }
+
     public function testPeriod()
     {
         $now = new \DateTimeImmutable('2016-04-01 11:55:00');
