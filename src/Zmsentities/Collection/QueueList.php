@@ -207,6 +207,21 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         return $queueList;
     }
 
+    /**
+     * @param array $statusList of excepted strings in process.status
+     *
+     */
+    public function withoutStatus(array $statusList)
+    {
+        $queueList = new self();
+        foreach ($this as $entity) {
+            if ($entity->toProperty()->status->isAvailable() && ! in_array($entity->status, $statusList)) {
+                $queueList->addEntity(clone $entity);
+            }
+        }
+        return $queueList;
+    }
+
     public function withShortNameDestinationHint(\BO\Zmsentities\Cluster $cluster, \BO\Zmsentities\Scope $scope)
     {
         $queueList = clone $this;

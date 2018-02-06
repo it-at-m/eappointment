@@ -31,6 +31,7 @@ class QueueListTest extends EntityCommonTests
         $this->assertEquals(1, $collection->withOutAppointment()->count());
 
         $this->assertEquals(1, $collection->withStatus(['called'])->count());
+        $this->assertEquals(0, $collection->withoutStatus(['called','confirmed'])->count());
 
         $withWaitingTime = $collection->withEstimatedWaitingTime(10, 1, $now);
         $estimatedWaitingData = $withWaitingTime->getEstimatedWaitingTime(10, 1, $now);
