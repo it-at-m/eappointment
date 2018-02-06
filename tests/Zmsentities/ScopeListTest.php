@@ -4,6 +4,8 @@ namespace BO\Zmsentities\Tests;
 
 class ScopeListTest extends EntityCommonTests
 {
+    const DEFAULT_TIME = '2016-04-01 11:50:00';
+
     public $entityclass = '\BO\Zmsentities\Scope';
 
     public $collectionclass = '\BO\Zmsentities\Collection\ScopeList';
@@ -55,6 +57,15 @@ class ScopeListTest extends EntityCommonTests
         $collection->addEntity($entity);
         $lessDataCollection = $collection->withLessData();
         $this->assertFalse(array_key_exists('preferences', $lessDataCollection->getFirst()));
+    }
+
+    public function testGetGreatestBookableEnd()
+    {
+        $now = new \DateTimeImmutable(self::DEFAULT_TIME);
+        $entity = (new $this->entityclass())->getExample();
+        $collection = new $this->collectionclass();
+        $collection->addEntity($entity);
+        $this->assertEquals('2016-05-31', $collection->getGreatestBookableEnd($now)->format('Y-m-d'));
     }
 
     public function testSortByContactName()

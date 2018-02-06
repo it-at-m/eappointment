@@ -50,6 +50,17 @@ class QueueListTest extends EntityCommonTests
         $this->assertEquals(null, $collection->getQueuePositionByNumber(999));
     }
 
+    public function testGetLastWaitingNumber()
+    {
+        $withAppointment = (new $this->entityclass())->getExample();
+        $withoutAppointment = (clone $withAppointment);
+        $withAppointment->withAppointment = true;
+        $collection = new $this->collectionclass();
+        $collection->addEntity($withAppointment);
+        $collection->addEntity($withoutAppointment);
+        $this->assertEquals(123, $collection->getFakeOrLastWaitingnumber()->number);
+    }
+
     public function testWithEstimatedWaitingTimeFailed()
     {
         $this->expectException('\Exception');

@@ -39,10 +39,33 @@ class RequestTest extends EntityCommonTests
         $this->assertEntityList('\BO\Zmsentities\Request', $groupList['Meldewesen und Ordnung']);
     }
 
+    public function testWithCountList()
+    {
+        $collection = new $this->collectionclass();
+        $entity = $this->getExample();
+        $collection->addEntity($entity);
+        $countList = ['120335' => 3];
+        $this->assertEquals(3, $collection->withCountList($countList)->count());
+    }
+
+    public function testWithCountListFailed()
+    {
+        $this->expectException('\BO\Zmsentities\Exception\RequestListMissing');
+        $collection = new $this->collectionclass();
+        $entity = $this->getExample();
+        $collection->addEntity($entity);
+        $countList = ['999999' => 3];
+        $collection->withCountList($countList)->count();
+    }
+
     public function testHasAppointmentsFromProviderData()
     {
         $entity = $this->getExample();
         $this->assertTrue($entity->hasAppointmentFromProviderData());
+
+        $collection = new $this->collectionclass();
+        $collection->addEntity($entity);
+        $this->assertTrue($collection->hasAppointmentFromProviderData());
     }
 
     public function testHasAppointmentsFromProviderDataFailed()
@@ -50,5 +73,9 @@ class RequestTest extends EntityCommonTests
         $entity = $this->getExample();
         unset($entity->data);
         $this->assertFalse($entity->hasAppointmentFromProviderData());
+
+        $collection = new $this->collectionclass();
+        $collection->addEntity($entity);
+        $this->assertFalse($collection->hasAppointmentFromProviderData());
     }
 }

@@ -68,6 +68,12 @@ class DepartmentTest extends EntityCommonTests
         $this->assertEquals(2, $collection->getFirst()->scopes->count());
         $collection = $collection->withOutClusterDuplicates();
         $this->assertEquals(0, $collection->getFirst()->scopes->count());
+
+
+        $matchingScopeList = new ScopeList();
+        $matchingScopeList->addEntity(new Scope(['id' => 123]));
+        $this->assertEquals(0, $collection->withMatchingScopes($matchingScopeList)->count());
+        $this->assertEquals(1, $collection->withMatchingScopes($entity['scopes'])->count());
     }
 
     public function testCollectionSortByName()
