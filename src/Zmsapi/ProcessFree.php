@@ -22,6 +22,7 @@ class ProcessFree extends BaseController
     ) {
         $slotsRequired = Validator::param('slotsRequired')->isNumber()->getValue();
         $slotType = Validator::param('slotType')->isString()->getValue();
+        $keepLessData = Validator::param('keepLessData')->isArray()->setDefault([])->getValue();
         if ($slotType || $slotsRequired) {
             (new Helper\User($request))->checkRights();
         } else {
@@ -34,7 +35,7 @@ class ProcessFree extends BaseController
         $message = Response\Message::create($request);
         $message->data = (new Query())
             ->readFreeProcesses($calendar, \App::getNow(), $slotType, $slotsRequired)
-            ->withLessData(['provider'])
+            ->withLessData($keepLessData)
         ;
 
         $response = Render::withLastModified($response, time(), '0');
