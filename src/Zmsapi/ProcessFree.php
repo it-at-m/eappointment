@@ -34,7 +34,7 @@ class ProcessFree extends BaseController
         $message = Response\Message::create($request);
         $message->data = (new Query())
             ->readFreeProcesses($calendar, \App::getNow(), $slotType, $slotsRequired)
-            ->withLessData()
+            ->withLessData(['provider'])
         ;
 
         $response = Render::withLastModified($response, time(), '0');
