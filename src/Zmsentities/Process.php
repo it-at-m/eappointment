@@ -357,27 +357,32 @@ class Process extends Schema\Entity
      * Reduce data of dereferenced entities to a required minimum
      *
      */
-    public function withLessData()
+    public function withLessData(array $keepArray = [])
     {
         $entity = clone $this;
 
-        foreach ($entity['appointments'] as $appointment) {
-            if ($appointment->toProperty()->scope->isAvailable()) {
-                $scopeId = $appointment['scope']['id'];
-                unset($appointment['scope']);
-                if ($scopeId != $entity->toProperty()->scope->id->get()) {
-                    $appointment['scope'] = ['id' => $scopeId];
+        if (! in_array('availability', $keepArray)) {
+            foreach ($entity['appointments'] as $appointment) {
+                if ($appointment->toProperty()->scope->isAvailable()) {
+                    $scopeId = $appointment['scope']['id'];
+                    unset($appointment['scope']);
+                    if ($scopeId != $entity->toProperty()->scope->id->get()) {
+                        $appointment['scope'] = ['id' => $scopeId];
+                    }
+                }
+                if ($appointment->toProperty()->availability->isAvailable()) {
+                    unset($appointment['availability']);
                 }
             }
-            if ($appointment->toProperty()->availability->isAvailable()) {
-                unset($appointment['availability']);
-            }
         }
+
         unset($entity['createTimestamp']);
         unset($entity['createIP']);
+
         if ($entity->toProperty()->scope->status->isAvailable()) {
             unset($entity['scope']['status']);
         }
+
         if ($entity->status == 'free') {
             // delete keys
             foreach ([
@@ -385,7 +390,7 @@ class Process extends Schema\Entity
                 'queue',
                 'requests',
             ] as $key) {
-                if ($entity->toProperty()->$key->isAvailable()) {
+                if (! in_array($key, $keepArray) && $entity->toProperty()->$key->isAvailable()) {
                     unset($entity[$key]);
                 }
             }
@@ -397,19 +402,19 @@ class Process extends Schema\Entity
                 'archiveId',
                 'reminderTimestamp',
             ] as $key) {
-                if ($entity->toProperty()->$key->isAvailable() && !$entity[$key]) {
+                if (! in_array($key, $keepArray) && $entity->toProperty()->$key->isAvailable() && !$entity[$key]) {
                     unset($entity[$key]);
                 }
             }
-            if ($entity->toProperty()->scope->provider->data->isAvailable()) {
+            if (! in_array('provider', $keepArray) && $entity->toProperty()->scope->provider->data->isAvailable()) {
                 unset($entity['scope']['provider']['data']);
             }
         }
 
-        if ($entity->toProperty()->scope->dayoff->isAvailable()) {
+        if (! in_array('dayoff', $keepArray) && $entity->toProperty()->scope->dayoff->isAvailable()) {
             unset($entity['scope']['dayoff']);
         }
-        if ($entity->toProperty()->scope->preferences->isAvailable()) {
+        if (! in_array('scope', $keepArray) && $entity->toProperty()->scope->preferences->isAvailable()) {
             unset($entity['scope']['preferences']);
         }
         return $entity;
