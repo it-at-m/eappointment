@@ -167,14 +167,17 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
      * Reduce data of dereferenced entities to a required minimum
      *
      */
-    public function withLessData()
+    public function withLessData(array $keepArray = [])
     {
         $entity = clone $this;
-        if ($entity->toProperty()->dayoff->isAvailable()) {
+        if (! in_array('dayoff', $keepArray) && $entity->toProperty()->dayoff->isAvailable()) {
             unset($entity['dayoff']);
         }
         unset($entity['status']);
-        unset($entity['preferences']);
+        if (! in_array('preferences', $keepArray)) {
+            unset($entity['preferences']);
+        }
+
         return $entity;
     }
 

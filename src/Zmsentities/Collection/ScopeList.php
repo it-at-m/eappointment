@@ -58,11 +58,11 @@ class ScopeList extends Base
         return $this;
     }
 
-    public function withLessData()
+    public function withLessData(array $keepArray = [])
     {
         $scopeList = new self();
         foreach ($this as $scope) {
-            $scopeList->addEntity(clone $scope->withLessData());
+            $scopeList->addEntity(clone $scope->withLessData($keepArray));
         }
         return $scopeList;
     }

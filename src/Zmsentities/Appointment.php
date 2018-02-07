@@ -106,7 +106,9 @@ class Appointment extends Schema\Entity
     {
         $time = $this->getStartTime();
         $availability = $this->getAvailability();
-        return $time->modify('+' . $availability->slotTimeInMinutes . ' minutes');
+        return ($availability->slotTimeInMinutes)
+          ? $time->modify('+' . $availability->slotTimeInMinutes . ' minutes')
+          : $time;
     }
 
     public function setDateByString($dateString, $format = 'Y-m-d H:i')

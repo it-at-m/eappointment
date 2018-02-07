@@ -165,11 +165,11 @@ class Base extends \ArrayObject
      * Reduce items data of dereferenced entities to a required minimum
      *
      */
-    public function withLessData()
+    public function withLessData(array $keepArray = [])
     {
         $list = new static();
         foreach ($this as $key => $item) {
-            $list[$key] = $item->withLessData();
+            $list[$key] = $item->withLessData($keepArray);
         }
         return $list;
     }
