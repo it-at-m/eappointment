@@ -2,6 +2,8 @@
 
 namespace BO\Zmsentities;
 
+use \BO\Zmsentities\Helper\Messaging;
+
 class Mail extends Schema\Entity
 {
     const PRIMARY = 'id';
@@ -91,7 +93,7 @@ class Mail extends Schema\Entity
         ));
         $entity->multipart[] = new Mimepart(array(
             'mime' => 'text/plain',
-            'content' => Helper\Messaging::getPlainText($message),
+            'content' => Messaging::getPlainText($message),
             'base64' => false
         ));
         return $entity;
@@ -100,10 +102,11 @@ class Mail extends Schema\Entity
     public function toResolvedEntity(Process $process, Config $config, $initator = null)
     {
         $entity = clone $this;
-        $icsRequired = (in_array($process->status, Helper\Messaging::$icsRequiredForStatus));
-        $content = Helper\Messaging::getMailContent($process, $config, $initator);
+        $status = Messaging::getMessagingStatus($process);
+        $icsRequired = (in_array($status, Messaging::$icsRequiredForStatus));
+        $content = Messaging::getMailContent($process, $config, $initator);
         $entity->process = $process;
-        $entity->subject = Helper\Messaging::getMailSubject($process, $config, $initator);
+        $entity->subject = Messaging::getMailSubject($process, $config, $initator);
         $entity->createIP = $process->createIP;
 
         if (! isset($entity['client'])) {
@@ -117,13 +120,13 @@ class Mail extends Schema\Entity
         ));
         $entity->multipart[] = new Mimepart(array(
             'mime' => 'text/plain',
-            'content' => Helper\Messaging::getPlainText($content),
+            'content' => Messaging::getPlainText($content),
             'base64' => false
         ));
         if ($icsRequired and $process->getAppointments()->getFirst()->hasTime()) {
             $entity->multipart[] = new Mimepart(array(
                 'mime' => 'text/calendar',
-                'content' => Helper\Messaging::getMailIcs($process, $config)->getContent(),
+                'content' => Messaging::getMailIcs($process, $config)->getContent(),
                 'base64' => false
             ));
         }
