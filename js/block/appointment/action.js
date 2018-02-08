@@ -157,7 +157,6 @@ class View extends BaseView {
 
     abort (ev) {
         console.log("Abort Button clicked");
-        this.selectedProcess = null;
         if (ev) {
             ev.preventDefault();
             ev.stopPropagation();

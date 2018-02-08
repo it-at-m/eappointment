@@ -134,6 +134,7 @@ class View extends BaseView {
         this.selectedProcess = null;
         this.loadAppointmentForm();
         this.loadQueueTable();
+        this.loadCalendar();
     }
 
     onQueueProcess () {
@@ -148,10 +149,12 @@ class View extends BaseView {
     }
 
     onSaveProcess (processId) {
+        this.selectedProcess = null;
         if (processId)
             this.selectedProcess = processId;
         this.loadAppointmentForm();
         this.loadQueueTable();
+        this.loadCalendar();
     }
 
     onNextProcess() {
