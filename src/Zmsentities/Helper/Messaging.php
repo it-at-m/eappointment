@@ -15,6 +15,7 @@ class Messaging
 {
     public static $icsRequiredForStatus = [
         'confirmed',
+        'appointment',
         'deleted'
     ];
 
@@ -97,13 +98,7 @@ class Messaging
 
     protected static function getTemplateByProcessStatus($type, Process $process)
     {
-        $status = $process->status;
-        if ('confirmed' == $status &&  $process->toProperty()->queue->withAppointment->get()) {
-            $status = 'appointment';
-        }
-        if ('finished' == $status &&  $process->getFirstClient()->hasSurveyAccepted()) {
-            $status = 'survey';
-        }
+        $status = self::getMessagingStatus($process);
         $template = null;
         if (array_key_exists($type, self::$templates)) {
             if (array_key_exists($status, self::$templates[$type])) {
@@ -111,6 +106,20 @@ class Messaging
             }
         }
         return $template;
+    }
+
+    public static function getMessagingStatus($process)
+    {
+        $status = $process->status;
+        if (('confirmed' == $status || 'queued' == $status) &&
+              $process->toProperty()->queue->withAppointment->get()
+          ) {
+            $status = 'appointment';
+        }
+        if ('finished' == $status &&  $process->getFirstClient()->hasSurveyAccepted()) {
+            $status = 'survey';
+        }
+        return $status;
     }
 
     public static function getMailSubject(Process $process, Config $config, $initiator = null)
