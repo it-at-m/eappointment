@@ -14,7 +14,7 @@ var bundlercreate = function (filename) {
                 minify: true
             }),
             transform_babelify.configure({
-                'presets': ['es2015', 'react'],
+                'presets': ['env', 'react'],
                 'plugins': []
             }),
             transform_shim

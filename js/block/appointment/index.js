@@ -86,10 +86,7 @@ class View extends BaseView {
             event.preventDefault();
             event.stopPropagation();
             this.ActionHandler.reserve(event).then((response) => {
-                let selectedProcess = $(response).filter('[data-process]').data('process');
-                this.loadMessage(response, () => {
-                    this.onSaveProcess(selectedProcess)
-                });
+                this.loadMessage(response, this.onSaveProcess)
             }).catch(err => this.loadErrorCallback(err));
         }).on('click', '.form-actions button.process-queue', (event) => {
             event.preventDefault();
@@ -111,7 +108,8 @@ class View extends BaseView {
             }).catch(err => this.loadErrorCallback(err));
         }).on('click', '.form-actions button.process-abort', (event) => {
             this.ActionHandler.abort(event);
-            this.cleanReload();
+            this.selectedProcess = null;
+            this.load();
         }).on('click', '.form-actions button.process-save', (event) => {
             event.preventDefault();
             event.stopPropagation();
