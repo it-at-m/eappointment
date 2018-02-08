@@ -50,6 +50,9 @@ class MailTest extends EntityCommonTests
             'Mimepart content is not plain text'
         );
         $this->assertContains('BEGIN:VCALENDAR', $resolvedEntity->getIcsPart(), 'Mimepart content is not plain text');
+        // test if appointment date formatted correct
+        $this->assertContains('Mi. 18. November 2015 um 18:52 Uhr', $resolvedEntity->getIcsPart());
+        $this->assertContains('DTSTART;TZID=Europe/Berlin:20151118T185251', $resolvedEntity->getIcsPart());
     }
 
     public function testMailWithInitiator()

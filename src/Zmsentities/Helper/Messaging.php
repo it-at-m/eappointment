@@ -141,9 +141,9 @@ class Messaging
         $icsString = self::twigView()->render(
             'messaging/' . $template,
             array(
-                'date' => $appointment->toDateTime(),
-                'startTime' => $appointment->getStartTime(),
-                'endTime' => $appointment->getEndTime(),
+                'date' => $appointment->toDateTime()->format('U'),
+                'startTime' => $appointment->getStartTime()->format('U'),
+                'endTime' => $appointment->getEndTime()->format('U'),
                 'process' => $process,
                 'timestamp' => (!$now) ? time() : $now,
                 'message' => trim($plainContent)
