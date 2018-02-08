@@ -99,7 +99,7 @@ class Workstation extends Schema\Entity
 
     public function getVariantName()
     {
-        return (0 == $this->name) ? 'counter' : 'workstation';
+        return (! $this->name) ? 'counter' : 'workstation';
     }
 
     public function getName()
