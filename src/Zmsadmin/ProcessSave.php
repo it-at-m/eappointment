@@ -34,7 +34,7 @@ class ProcessSave extends BaseController
         $process = \App::$http->readGetResult('/process/'. $processId .'/')->getEntity();
         $dateTime = (new \DateTimeImmutable())->setTimestamp($process->getFirstAppointment()->date);
         $input = $request->getParsedBody();
-        if ('queued' != $process->status) {
+        if ($process->toProperty()->queue->withAppointment->get()) {
             $validationList = FormValidation::fromAdminParameters($process->scope['preferences']);
             if ($validationList->hasFailed()) {
                 return \BO\Slim\Render::withJson(
