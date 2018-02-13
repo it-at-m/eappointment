@@ -3,6 +3,10 @@ namespace BO\Zmsentities\Collection;
 
 use \BO\Zmsentities\Helper\Sorter;
 
+/**
+ * @SuppressWarnings(Public)
+ *
+ */
 class ProcessList extends Base
 {
     const ENTITY_CLASS = '\BO\Zmsentities\Process';
@@ -17,7 +21,7 @@ class ProcessList extends Base
         return $list;
     }
 
-    protected function sortByArrivalTime()
+    public function sortByArrivalTime()
     {
         $this->uasort(function ($a, $b) {
             return ($a->queue['arrivalTime'] - $b->queue['arrivalTime']);
