@@ -23,7 +23,7 @@ class ConfigInfoTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/config/',
-                    'response' => $this->readFixture("GET_Config.json")
+                    'response' => $this->readFixture("GET_config.json")
                 ]
             ]
         );
