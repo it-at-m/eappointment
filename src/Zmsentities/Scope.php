@@ -31,6 +31,7 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
     public function getDayoffList()
     {
         if (!$this->dayoff instanceof Collection\DayoffList) {
+            $this->dayoff = (! $this->dayoff) ? [] : $this->dayoff;
             $this->dayoff = new Collection\DayoffList($this->dayoff);
             foreach ($this->dayoff as $key => $dayoff) {
                 if (!$dayoff instanceof Dayoff) {

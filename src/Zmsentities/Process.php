@@ -127,19 +127,29 @@ class Process extends Schema\Entity
     public function withUpdatedData($formData, $requestData, \DateTimeInterface $dateTime, $scope = null)
     {
         $this->scope = ($scope) ? $scope : $this->scope;
-        if ($dateTime) {
-            $this->addAppointment(
-                (new Appointment())
-                    ->addDate($dateTime->getTimestamp())
-                    ->addScope($this->scope['id'])
-                    ->addSlotCount($requestData['slotCount'])
-            );
-        }
+        $this->addAppointmentFromRequest($requestData, $dateTime);
         $requestCsv = isset($requestData['requests']) ? implode(',', $requestData['requests']) : 0;
         $this->updateRequests('dldb', $requestCsv);
         $this->addClientFromForm($formData);
         $this->addReminderTimestamp($requestData, $dateTime);
         $this->amendment = (array_key_exists('amendment', $formData)) ? trim($formData['amendment']['value']) : null;
+        return $this;
+    }
+
+    public function addAppointmentFromRequest($requestData, \DateTimeInterface $dateTime)
+    {
+        $this->appointments = null;
+        if (isset($requestData['selecteddate'])) {
+            $dateTime = new \DateTime($requestData['selecteddate']);
+        }
+        if (isset($requestData['time'])) {
+            $time = explode('-', $requestData['time']);
+            $dateTime->setTime($time[0], $time[1]);
+        }
+        $this->addAppointment((new Appointment)
+            ->addDate($dateTime->getTimestamp())
+            ->addScope($this->scope['id'])
+            ->addSlotCount($requestData['slotCount']));
         return $this;
     }
 
