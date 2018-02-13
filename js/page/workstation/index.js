@@ -7,8 +7,6 @@ import QueueView from '../../block/queue'
 import CalendarView from '../../block/calendar'
 import ClientNextView from '../../block/process/next'
 import ActionHandler from "../../block/appointment/action"
-import FreeProcessList from "../../block/appointment/free-process-list"
-import FormButtons from '../../block/appointment/form-buttons'
 
 class View extends BaseView {
 
@@ -19,13 +17,14 @@ class View extends BaseView {
         this.selectedDate = options['selected-date'];
         this.selectedTime = options['selected-time'];
         this.selectedProcess = options['selected-process'];
+        this.selectedScope=0;
         this.calledProcess = options['called-process'];
         this.ActionHandler = (new ActionHandler(this.$main.find('[data-appointment-form]'), options));
         this.slotType = 'intern';
         this.slotsRequired = 0;
         this.reloadTimer;
         this.lastReload = 0;
-        this.bindPublicMethods('loadAllPartials', 'onDatePick', 'onDateToday', 'onNextProcess','onDeleteProcess','onEditProcess','onSaveProcess','onQueueProcess');
+        this.bindPublicMethods('loadAllPartials', 'onAbortProcess', 'onChangeScope', 'onDatePick', 'onDateToday', 'onNextProcess','onDeleteProcess','onEditProcess','onSaveProcess','onQueueProcess');
         this.$.ready(() => {
             this.loadData;
             this.setLastReload();
@@ -78,56 +77,46 @@ class View extends BaseView {
     }
 
     onDatePick(date, full = false) {
-        this.selectedProcess = null;
         this.selectedDate = date;
+        this.$main.data('selected-date', date);
         if (full) {
             this.loadAllPartials();
         } else {
-            this.loadCalendar()
-            this.loadClientNext()
+            this.loadCalendar();
+            this.loadClientNext();
             this.loadQueueTable();
             this.ActionHandler.setSelectedDate(date);
-            (new FormButtons(this.$main.find('[data-form-buttons]'), {
-                "includeUrl": this.includeUrl,
-                "selectedDate": this.selectedDate,
-                "selectedProcess": this.selectedProcess
-            })).load();
-            (new FreeProcessList(this.$main.find('[data-free-process-list]'), {
-                "includeUrl": this.includeUrl,
-                "slotType": this.slotType,
-                "selectedDate": this.selectedDate,
-                "selectedTime": this.selectedTime,
-                "slotsRequired": this.slotsRequired
-            })).loadList();
-            console.log(this.$main.find('[name="familyName"]'));
+            this.loadAppointmentForm(true, true);
+            this.$main.find('.appointment-form .switchcluster select').val(this.selectedScope);
             this.$main.find('[name="familyName"]').focus();
         }
     }
 
+    onChangeScope(scopeId) {
+        this.selectedScope = scopeId;
+        this.loadCalendar();
+        this.loadAppointmentForm(true, true);
+        //this.$main.find('.appointment-form .switchcluster select').val(this.selectedScope);
+    }
+
     onDateToday(date, full = false) {
+        this.onDatePick(date, full);
+    }
+
+    onSaveProcess (processId, event) {
         this.selectedProcess = null;
-        this.selectedDate = date;
-        if (full) {
-            this.loadAllPartials();
-        } else {
-            this.loadCalendar()
-            this.loadClientNext()
-            this.loadQueueTable();
-            this.ActionHandler.setSelectedDate(date);
-            (new FormButtons(this.$main.find('[data-form-buttons]'), {
-                "includeUrl": this.includeUrl,
-                "selectedDate": this.selectedDate,
-                "selectedProcess": this.selectedProcess
-            })).load();
-            (new FreeProcessList(this.$main.find('[data-free-process-list]'), {
-                "includeUrl": this.includeUrl,
-                "slotType": this.slotType,
-                "selectedDate": this.selectedDate,
-                "selectedTime": this.selectedTime,
-                "slotsRequired": this.slotsRequired
-            })).loadList();
-            this.$main.find('[name="familyName"]').focus();
-        }
+        if (processId)
+            this.selectedProcess = processId;
+        this.loadAppointmentForm();
+        this.loadQueueTable();
+        this.loadCalendar();
+    }
+
+    onAbortProcess(event) {
+        this.ActionHandler.abort(event);
+        this.selectedProcess = null;
+        this.$main.data('selected-process', '');
+        this.loadAppointmentForm();
     }
 
     onDeleteProcess () {
@@ -148,28 +137,19 @@ class View extends BaseView {
         this.loadAppointmentForm();
     }
 
-    onSaveProcess (processId) {
-        this.selectedProcess = null;
-        if (processId)
-            this.selectedProcess = processId;
-        this.loadAppointmentForm();
-        this.loadQueueTable();
-        this.loadCalendar();
-    }
-
     onNextProcess() {
         this.calledProcess = null;
         this.loadQueueTable();
     }
 
     loadAllPartials() {
-        this.selectedProcess = null;
-        return Promise.all([
+        let promise = Promise.all([
             this.loadCalendar(),
             this.loadClientNext(),
             this.loadAppointmentForm(),
             this.loadQueueTable()
         ])
+        return promise;
     }
 
     loadReloadPartials() {
@@ -180,6 +160,8 @@ class View extends BaseView {
     loadCalendar (showLoader = true) {
         return new CalendarView(this.$main.find('[data-calendar]'), {
             selectedDate: this.selectedDate,
+            selectedScope: this.selectedScope,
+            selectedProcess: this.selectedProcess,
             slotsRequired: this.slotsRequired,
             slotType: this.slotType,
             onDatePick: this.onDatePick,
@@ -199,21 +181,26 @@ class View extends BaseView {
         })
     }
 
-    loadAppointmentForm(showLoader = true) {
+    loadAppointmentForm(showLoader = true, constructOnly = false) {
         return new AppointmentView(this.$main.find('[data-appointment-form]'), {
             source: 'workstation',
             selectedDate: this.selectedDate,
             selectedTime: this.selectedTime,
             selectedProcess: this.selectedProcess,
+            selectedScope: this.selectedScope,
             includeUrl: this.includeUrl,
             slotsRequired: this.slotsRequired,
             slotType: this.slotType,
             onDatePick: this.onDatePick,
             onDateToday: this.onDateToday,
             onDeleteProcess: this.onDeleteProcess,
+            onEditProcess: this.onEditProcess,
             onQueueProcess: this.onQueueProcess,
             onSaveProcess: this.onSaveProcess,
-            showLoader: showLoader
+            onChangeScope: this.onChangeScope,
+            onAbortProcess: this.onAbortProcess,
+            showLoader: showLoader,
+            constructOnly: constructOnly
         })
     }
 

@@ -9,6 +9,8 @@ namespace BO\Zmsadmin\Helper;
 
 use \BO\Zmsentities\Process as Entity;
 
+use \BO\Zmsentities\Collection\ScopeList;
+
 class AppointmentFormHelper
 {
     public static function writeReservedProcess(Entity $process)
@@ -52,9 +54,11 @@ class AppointmentFormHelper
         return $process;
     }
 
-    public static function writeQueuedProcess($input, $workstation, \DateTimeImmutable $dateTime)
+    public static function writeQueuedProcess($request, $workstation, \DateTimeImmutable $dateTime)
     {
-        $scope = (new ClusterHelper($workstation))->getPreferedScopeByCluster();
+        $input = $request->getParsedBody();
+        $scopeId = (isset($input['scope'])) ? $input['scope'] : 0;
+        $scope = static::readPreferedScope($request, $scopeId, $workstation);
         $isOpened = \App::$http
             ->readGetResult('/scope/'. $scope->id .'/availability/')
             ->getCollection()
@@ -70,7 +74,7 @@ class AppointmentFormHelper
         return $process;
     }
 
-    public static function readFreeProcessList($request, $workstation)
+    public static function readFreeProcessList($request, $workstation, $scope = null)
     {
         $validator = $request->getAttribute('validator');
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
@@ -79,9 +83,32 @@ class AppointmentFormHelper
         $slotsRequired = $validator->getParameter('slotsrequired')->isNumber()->getValue();
         $slotsRequired = ($slotsRequired) ? $slotsRequired : 0;
         $calendar = new Calendar($selectedDate);
-        $scopeList = (new ClusterHelper($workstation))->getScopeList();
+        $scopeList = ($scope) ? (new ScopeList)->addEntity($scope) : (new ClusterHelper($workstation))->getScopeList();
         $freeProcessList = $calendar->readAvailableSlotsFromDayAndScopeList($scopeList, $slotType, $slotsRequired);
-        return ($freeProcessList) ? $freeProcessList->toProcessListByTime()->sortByTimeKey() : null;
+        return ($freeProcessList) ? $freeProcessList : null;
+    }
+
+    public static function readPreferedScope($request, $scopeId, $workstation)
+    {
+        $validator = $request->getAttribute('validator');
+        $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
+        $selectedDate = (new \DateTimeImmutable($selectedDate))->getTimestamp();
+        $scope = new \BO\Zmsentities\Scope($workstation->scope);
+        $clusterHelper = new ClusterHelper($workstation);
+        if ($scopeId > 0) {
+            $scope = \App::$http->readGetResult('/scope/'. $scopeId .'/', ['resolveReferences' => 1])->getEntity();
+        } elseif ($clusterHelper->isClusterEnabled() &&
+            null === static::readFreeProcessList($request, $workstation, $scope)
+        ) {
+            $scopeList = $clusterHelper->getScopeList();
+            foreach ($scopeList as $scope) {
+                $freeProcessList = static::readFreeProcessList($request, $workstation, $scope);
+                if (null !== $freeProcessList && isset($freeProcessList[$selectedDate])) {
+                    return $scope;
+                }
+            }
+        }
+        return $scope;
     }
 
     protected static function updateMailAndNotification($formData, Entity $process)

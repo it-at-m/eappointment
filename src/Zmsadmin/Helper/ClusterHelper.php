@@ -80,21 +80,7 @@ class ClusterHelper
         return $process;
     }
 
-    public static function getPreferedScopeByCluster()
-    {
-        $scope = new \BO\Zmsentities\Scope(static::$workstation->scope);
-        if (static::isClusterEnabled()) {
-            try {
-                $scope = \App::$http
-                    ->readGetResult('/scope/prefered/cluster/'. static::$cluster['id'] .'/', ['resolveReferences' => 0])
-                    ->getEntity();
-            } catch (\BO\Zmsclient\Exception $exception) {
-            }
-        }
-        return $scope;
-    }
-
-    protected static function isClusterEnabled()
+    public static function isClusterEnabled()
     {
         return (static::$workstation->queue['clusterEnabled'] && static::$cluster);
     }

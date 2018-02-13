@@ -2,8 +2,6 @@ import BaseView from "../../lib/baseview"
 import $ from "jquery"
 import FreeProcessList from './free-process-list'
 import FormButtons from './form-buttons'
-import { lightbox } from '../../lib/utils'
-import MessageHandler from '../../lib/messageHandler'
 import ActionHandler from "./action"
 import RequestList from "./requests"
 import maxChars from '../../element/form/maxChars'
@@ -13,34 +11,49 @@ class View extends BaseView {
     constructor (element, options) {
         super(element);
         this.$main = $(element);
+        this.options = options;
         this.selectedDate = options.selectedDate;
         this.selectedTime = options.selectedTime;
         this.includeUrl = options.includeUrl || "";
         this.showLoader = options.showLoader || false;
         this.selectedProcess = options.selectedProcess;
+        this.selectedScope = options.selectedScope;
+        this.onChangeScope = options.onChangeScope || (() => {});
+        this.onAbortProcess = options.onAbortProcess || (() => {});
         this.onDeleteProcess = options.onDeleteProcess || (() => {});
         this.onSaveProcess = options.onSaveProcess || (() => {});
         this.onEditProcess = options.onEditProcess || (() => {});
         this.onQueueProcess = options.onQueueProcess || (() => {});
         this.onDatePick = options.onDatePick || (() => {});
-        this.FreeProcessList = new FreeProcessList(this.$main.find('[data-free-process-list]'), options);
-        this.FormButtons = new FormButtons(this.$main.find('[data-form-buttons]'), options);
         this.ActionHandler = new ActionHandler(element, options);
-        this.RequestList = new RequestList(element, options);
+        this.FormButtons = new FormButtons(this.$main, this.options);
+        this.RequestList = new RequestList(this.$main, this.options);
         $.ajaxSetup({ cache: false });
-        this.load().then(() => {
-            this.bindEvents();
-            $('textarea.maxchars').each(function() {
-                maxChars(this);
-            });
+
+        if (! options.constructOnly) {
+          this.load().then(() => {
+              this.loadAppointmentFormParts();
+          });
+        } else {
+          this.loadAppointmentFormParts();
+        }
+    }
+
+    loadAppointmentFormParts() {
+        this.FreeProcessList = new FreeProcessList(this.$main.find('[data-free-process-list]'), this.options);
+        this.FreeProcessList.loadList().then(() => {
             this.RequestList.loadList();
             this.FormButtons.load();
-            this.$main.find('[name="familyName"]').focus();
+            this.bindEvents();
         });
+        $('textarea.maxchars').each(function() {
+            maxChars(this);
+        });
+        this.$main.find('[name="familyName"]').focus();
     }
 
     load() {
-        const url = `${this.includeUrl}/appointmentForm/?selecteddate=${this.selectedDate}&selectedprocess=${this.selectedProcess}`
+        const url = `${this.includeUrl}/appointmentForm/?selecteddate=${this.selectedDate}&selectedprocess=${this.selectedProcess}&selectedscope=${this.selectedScope}`
         this.loadPromise = this.loadContent(url, 'GET', null, null, this.showLoader).catch(err => this.loadErrorCallback(err));
         return this.loadPromise;
     }
@@ -51,7 +64,7 @@ class View extends BaseView {
     }
 
     loadNew () {
-        const url = `${this.includeUrl}/appointmentForm/?selectedprocess=${this.selectedProcess}&new=1&selecteddate=${this.selectedDate}`
+        const url = `${this.includeUrl}/appointmentForm/?selectedprocess=${this.selectedProcess}&new=1&selecteddate=${this.selectedDate}&selectedscope=${this.selectedScope}`
         this.loadPromise = this.loadContent(url).then(() => {
             this.RequestList.loadList();
             this.FreeProcessList.loadList();
@@ -107,9 +120,7 @@ class View extends BaseView {
                 this.loadMessage(response, this.onDeleteProcess);
             }).catch(err => this.loadErrorCallback(err));
         }).on('click', '.form-actions button.process-abort', (event) => {
-            this.ActionHandler.abort(event);
-            this.selectedProcess = null;
-            this.load();
+            this.onAbortProcess();
         }).on('click', '.form-actions button.process-save', (event) => {
             event.preventDefault();
             event.stopPropagation();
@@ -120,43 +131,12 @@ class View extends BaseView {
             event.preventDefault()
             event.stopPropagation()
             this.ActionHandler.printWaitingNumber();
+        }).on('change', '.appointment-form .switchcluster select', (event) => {
+            this.onChangeScope(event.target.value);
         })
     }
 
-    loadMessage (response, callback) {
-        this.$main.find('.form-actions').hide();
-        const { lightboxContentElement, destroyLightbox } = lightbox(this.$main, () => {callback()})
-        new MessageHandler(lightboxContentElement, {
-            message: response,
-            callback: (ActionHandler, buttonUrl) => {
-                if (ActionHandler) {
-                    this.ActionHandler[ActionHandler]()
-                } else if (buttonUrl) {
-                    this.loadByCallbackUrl(buttonUrl);
-                }
-                callback();
-                destroyLightbox();
-                this.cleanReload();
-            }})
-    }
 
-    loadErrorCallback(err) {
-        if (err.message.toLowerCase().includes('exception')) {
-            let exceptionType = $(err.message).filter('.exception').data('exception');
-            if (exceptionType === 'reservation-failed') {
-                this.FreeProcessList.loadList();
-                this.FormButtons.load();
-            }
-            else if (exceptionType === 'process-not-found')
-                this.cleanReload()
-            else {
-                this.load();
-                console.log('EXCEPTION thrown: ' + exceptionType);
-            }
-        }
-        else
-            console.log('Ajax error', err);
-    }
 }
 
 export default View;

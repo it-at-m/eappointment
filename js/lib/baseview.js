@@ -2,7 +2,8 @@ import window from "window"
 import $ from "jquery";
 import ErrorHandler from './errorHandler';
 import ExceptionHandler from './exceptionHandler';
-//import { lightbox } from './utils';
+import MessageHandler from './messageHandler';
+import { lightbox } from './utils';
 import { noOp } from './utils'
 
 const loaderHtml = '<div class="loader"><div class="spinner"></div></div>'
@@ -130,6 +131,33 @@ class BaseView extends ErrorHandler {
 
     locationLoad (url) {
         window.location.href = url;
+    }
+
+    loadMessage (response, callback) {
+        this.$main.find('.form-actions').hide();
+        const { lightboxContentElement, destroyLightbox } = lightbox(this.$main, () => {callback()})
+        new MessageHandler(lightboxContentElement, {
+            message: response,
+            callback: (ActionHandler, buttonUrl) => {
+                if (ActionHandler) {
+                    this.ActionHandler[ActionHandler]()
+                } else if (buttonUrl) {
+                    this.loadByCallbackUrl(buttonUrl);
+                }
+                callback();
+                destroyLightbox();
+                this.cleanReload();
+            }})
+    }
+
+    loadErrorCallback(err) {
+        if (err.message.toLowerCase().includes('exception')) {
+            let exceptionType = $(err.message).filter('.exception').data('exception');
+            this.load();
+            console.log('EXCEPTION thrown: ' + exceptionType);
+        }
+        else
+            console.log('Ajax error', err);
     }
 
 }

@@ -102,6 +102,10 @@ class View extends BaseView {
 
     save (ev) {
         console.log("Save Button clicked", ev);
+        if (ev) {
+            ev.preventDefault();
+            ev.stopPropagation();
+        }
         let initiator = (this.source == "counter") ? "Tresen" : "Arbeitsplatz";
         const sendData = this.$main.find('form').serialize();
         const url = `${this.includeUrl}/process/${this.selectedProcess}/save/?initiator=${initiator}`;
@@ -165,6 +169,7 @@ class View extends BaseView {
 
     setSelectedDate (date) {
         this.$main.find('.add-date-picker input#process_date').val(moment(date, 'YYYY-MM-DD').format('DD.MM.YYYY'));
+        this.$main.find('input#process_selected_date').val(moment(date, 'YYYY-MM-DD').format('YYYY-MM-DD'));
         this.removeCalendarOverlay();
     }
 

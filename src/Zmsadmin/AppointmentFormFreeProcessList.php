@@ -23,7 +23,20 @@ class AppointmentFormFreeProcessList extends BaseController
         $validator = $request->getAttribute('validator');
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
         $selectedTime = $validator->getParameter('selectedtime')->isString()->getValue();
-        $freeProcessList = Helper\AppointmentFormHelper::readFreeProcessList($request, $workstation);
+        $selectedScopeId = $validator->getParameter('selectedscope')->isNumber()->getValue();
+        $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
+        $selectedProcess = ($selectedProcessId) ?
+            \App::$http->readGetResult('/process/'. $selectedProcessId .'/')->getEntity() : null;
+        $scope = Helper\AppointmentFormHelper::readPreferedScope($request, $selectedScopeId, $workstation);
+        $freeProcessList = Helper\AppointmentFormHelper::readFreeProcessList($request, $workstation, $scope);
+        if ($freeProcessList && $selectedProcess &&
+            $selectedDate == $selectedProcess->getFirstAppointment()->toDateTime()->format('Y-m-d')
+          ) {
+            $entity = new \BO\Zmsentities\Process();
+            $entity->appointments->addEntity($selectedProcess->getFirstAppointment());
+            $freeProcessList->addEntity($entity);
+        }
+        $freeProcessList = ($freeProcessList) ? $freeProcessList->toProcessListByTime()->sortByTimeKey() : null;
 
         return \BO\Slim\Render::withHtml(
             $response,
@@ -32,6 +45,8 @@ class AppointmentFormFreeProcessList extends BaseController
                 'selectedDate' => $selectedDate,
                 'selectedTime' => $selectedTime,
                 'freeProcessList' => $freeProcessList,
+                'selectedScope' => $scope,
+                'selectedProcess' => $selectedProcess
             )
         );
     }

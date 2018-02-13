@@ -112,12 +112,6 @@ class ProcessQueueTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/scope/prefered/cluster/109/',
-                    'parameters' => ['resolveReferences' => 0],
-                    'response' => $this->readFixture("GET_scope_141.json")
-                ],
-                [
-                    'function' => 'readGetResult',
                     'url' => '/scope/141/availability/',
                     'response' => $this->readFixture("GET_availabilityList_141.json")
                 ],
@@ -130,6 +124,12 @@ class ProcessQueueTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/process/100011/8d11/confirmation/notification/',
                     'response' => $this->readFixture("POST_notification.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/process/status/free/',
+                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0],
+                    'response' => $this->readFixture("GET_freeprocesslist_20160527.json")
                 ]
             ]
         );
