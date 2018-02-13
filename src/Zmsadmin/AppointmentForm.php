@@ -26,24 +26,28 @@ class AppointmentForm extends BaseController
         $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
         $selectedProcess = ($selectedProcessId) ?
             \App::$http->readGetResult('/process/'. $selectedProcessId .'/')->getEntity() : null;
-
+        $selectedScopeId = $validator->getParameter('selectedscope')->isNumber()->getValue();
+        if ($selectedProcess) {
+            $selectedScopeId = $selectedProcess->getFirstAppointment()->getScope()->getId();
+        }
+        $preferedScope = Helper\AppointmentFormHelper::readPreferedScope($request, $selectedScopeId, $workstation);
         $requestList = (new Helper\ClusterHelper($workstation))->getRequestList();
-        $freeProcessList = Helper\AppointmentFormHelper::readFreeProcessList($request, $workstation);
-        $scope = (new Helper\ClusterHelper($workstation))->getPreferedScopeByCluster();
-        $department = \App::$http->readGetResult('/scope/' . $scope->id . '/department/')->getEntity();
-
+        $department = \App::$http->readGetResult('/scope/' . $workstation->scope['id'] . '/department/')->getEntity();
+        $cluster = (new Helper\ClusterHelper($workstation))->getEntity();
         return \BO\Slim\Render::withHtml(
             $response,
             'block/appointment/form.twig',
             array(
                 'workstation' => $workstation,
-                'scope' => $scope,
+                'scope' => $workstation->scope,
+                'selectedScopeId' => $selectedScopeId,
+                'preferedScope' => $preferedScope,
+                'cluster' => $cluster,
                 'department' => $department,
                 'selectedProcess' => $selectedProcess,
                 'selectedDate' => ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d'),
                 'selectedTime' => ($selectedTime) ? $selectedTime : null,
                 'requestList' => (count($requestList)) ? $requestList->sortByName() : null,
-                'freeProcessList' => $freeProcessList,
                 'isNew' => ($validator->getParameter('new')->isNumber()->getValue() == 1)
             )
         );

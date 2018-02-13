@@ -80,7 +80,7 @@ class PickupHandheldTest extends Base
             'selectedprocess' => 82252
         ], [], 'POST');
         $this->assertContains('pickup-handheld-view', (string)$response->getBody());
-        $this->assertContains('data-selectedprocess=82252', (string)$response->getBody());
+        $this->assertContains('data-selectedprocess="82252"', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -130,7 +130,7 @@ class PickupHandheldTest extends Base
             'selectedprocess' => 999999
         ], [], 'POST');
         $this->assertContains('pickup-handheld-view', (string)$response->getBody());
-        $this->assertContains('data-selectedprocess=82252', (string)$response->getBody());
+        $this->assertContains('data-selectedprocess="82252"', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 }

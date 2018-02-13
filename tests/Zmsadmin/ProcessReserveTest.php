@@ -14,6 +14,7 @@ class ProcessReserveTest extends Base
         'familyName' => 'Test BO',
         'telephone' => '1234567890',
         'email' => 'zmsbo@berlinonline.de',
+        'scope' => 141,
         'requests' => [120703]
     ];
 
@@ -34,6 +35,12 @@ class ProcessReserveTest extends Base
                     'url' => '/process/status/reserved/',
                     'parameters' => ['slotType' => 'intern'],
                     'response' => $this->readFixture("GET_process_100005_95a3_reserved.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_scope_141.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -67,6 +74,12 @@ class ProcessReserveTest extends Base
                     'url' => '/process/status/reserved/',
                     'parameters' => ['slotType' => 'intern'],
                     'response' => $this->readFixture("GET_process_194104_2b88_notification.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_scope_141.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -108,6 +121,12 @@ class ProcessReserveTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
+                    'url' => '/scope/141/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_scope_141.json")
+                ],
+                [
+                    'function' => 'readGetResult',
                     'url' => '/scope/141/cluster/',
                     'response' => $this->readFixture("GET_cluster_109.json")
                 ]
@@ -117,6 +136,7 @@ class ProcessReserveTest extends Base
             'slotCount' => 1,
             'telephone' => '1234567890',
             'email' => 'zmsbo@berlinonline.de',
+            'scope' => 141,
             'requests' => [120703]
         ], [], 'POST');
         $this->assertContains('"failed":true', (string)$response->getBody());

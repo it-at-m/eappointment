@@ -12,6 +12,7 @@ class ProcessSaveTest extends Base
         'slotCount' => 1,
         'familyName' => 'Test BO',
         'telephone' => '1234567890',
+        'scope' => 141,
         'requests' => [120703]
     ];
 
@@ -31,6 +32,17 @@ class ProcessSaveTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/process/82252/',
                     'response' => $this->readFixture("GET_process_82252_12a2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_scope_141.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/cluster/',
+                    'response' => $this->readFixture("GET_cluster_109.json")
                 ],
                 [
                     'function' => 'readPostResult',
@@ -87,12 +99,24 @@ class ProcessSaveTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/process/82252/',
                     'response' => $this->readFixture("GET_process_82252_12a2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/cluster/',
+                    'response' => $this->readFixture("GET_cluster_109.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_scope_141.json")
                 ]
             ]
         );
         $response = $this->render($this->arguments, [
             'telephone' => '1234567890',
-            'email' => 'zmsbo@berlinonline.de'
+            'email' => 'zmsbo@berlinonline.de',
+            'scope' => 141
         ], [], 'POST');
         $this->assertContains('"failed":true', (string)$response->getBody());
         $this->assertEquals(428, $response->getStatusCode());

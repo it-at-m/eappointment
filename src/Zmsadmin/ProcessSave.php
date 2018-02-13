@@ -14,11 +14,10 @@ use BO\Zmsentities\Helper\ProcessFormValidation as FormValidation;
 use BO\Zmsadmin\Helper\ProcessUpdateHelper;
 
 /**
- * Delete a process
+ * Update a process
  */
 class ProcessSave extends BaseController
 {
-
     /**
      * @SuppressWarnings(Param)
      * @return String
@@ -28,26 +27,12 @@ class ProcessSave extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $processId = Validator::value($args['id'])->isNumber()->getValue();
-        $initiator = Validator::param('initiator')->isString()->getValue();
         $process = \App::$http->readGetResult('/process/'. $processId .'/')->getEntity();
-        $dateTime = (new \DateTimeImmutable())->setTimestamp($process->getFirstAppointment()->date);
         $input = $request->getParsedBody();
-        if ($process->toProperty()->queue->withAppointment->get()) {
-            $validationList = FormValidation::fromAdminParameters($process->scope['preferences']);
-            if ($validationList->hasFailed()) {
-                return \BO\Slim\Render::withJson(
-                    $response,
-                    $validationList->getStatus(),
-                    428
-                );
-            }
-            $formData = $validationList->getStatus();
-            $process->withUpdatedData($formData, $input, $dateTime, $process->scope);
-            $process = Helper\AppointmentFormHelper::writeUpdatedProcess($formData, $process, $initiator);
-        } else {
-            $process = Helper\AppointmentFormHelper::writeUpdateQueuedProcess($input, $process, $initiator);
+        $result = $this->writeSavedProcess($request, $response, $process, $input);
+        if ($result instanceof \Psr\Http\Message\ResponseInterface) {
+            return $result;
         }
 
         return \BO\Slim\Render::withHtml(
@@ -57,5 +42,30 @@ class ProcessSave extends BaseController
                 'process' => $process
             )
         );
+    }
+
+    protected function writeSavedProcess($request, $response, $process, $input)
+    {
+        $initiator = Validator::param('initiator')->isString()->getValue();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        $dateTime = (new \DateTime())->setTimestamp($process->getFirstAppointment()->date);
+        if ($process->toProperty()->queue->withAppointment->get()) {
+            $scope = Helper\AppointmentFormHelper::readPreferedScope($request, $input['scope'], $workstation);
+            $validationList = FormValidation::fromAdminParameters($scope['preferences']);
+            if ($validationList->hasFailed()) {
+                return \BO\Slim\Render::withJson(
+                    $response,
+                    $validationList->getStatus(),
+                    428
+                );
+            }
+
+            $formData = $validationList->getStatus();
+            $process->withUpdatedData($formData, $input, $dateTime, $scope);
+            $process = Helper\AppointmentFormHelper::writeUpdatedProcess($formData, $process, $initiator);
+        } else {
+            $process = Helper\AppointmentFormHelper::writeUpdateQueuedProcess($input, $process, $initiator);
+        }
+        return $process;
     }
 }

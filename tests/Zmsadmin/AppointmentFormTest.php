@@ -34,12 +34,6 @@ class AppointmentFormTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/request/',
                     'response' => $this->readFixture("GET_scope_141_requestlist.json")
-                ],
-                [
-                    'function' => 'readPostResult',
-                    'url' => '/process/status/free/',
-                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0],
-                    'response' => $this->readFixture("GET_freeprocesslist_empty.json")
                 ]
             ]
         );
@@ -64,12 +58,6 @@ class AppointmentFormTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/scope/prefered/cluster/109/',
-                    'parameters' => ['resolveReferences' => 0],
-                    'response' => $this->readFixture("GET_scope_141.json")
-                ],
-                [
-                    'function' => 'readGetResult',
                     'url' => '/scope/141/department/',
                     'response' => $this->readFixture("GET_department_74.json")
                 ],
@@ -79,11 +67,6 @@ class AppointmentFormTest extends Base
                     'response' => $this->readFixture("GET_cluster_109_requestlist.json")
                 ],
                 [
-                    'function' => 'readGetResult',
-                    'url' => '/process/100044/',
-                    'response' => $this->readFixture("GET_process_100044_57c2.json")
-                ],
-                [
                     'function' => 'readPostResult',
                     'url' => '/process/status/free/',
                     'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0],
@@ -91,8 +74,8 @@ class AppointmentFormTest extends Base
                 ]
             ]
         );
-        $response = $this->render([], ['selectedprocess' => 100044]);
-        $this->assertContains('Terminvereinbarung Aktualisieren', (string)$response->getBody());
+        $response = $this->render([], []);
+        $this->assertContains('Alle Standorte: Bürgeramt Heerstraße', (string)$response->getBody());
     }
 
     public function testSelectedProcess()
@@ -104,6 +87,12 @@ class AppointmentFormTest extends Base
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_scope_141.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -124,18 +113,11 @@ class AppointmentFormTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/request/',
                     'response' => $this->readFixture("GET_scope_141_requestlist.json")
-                ],
-                [
-                    'function' => 'readPostResult',
-                    'url' => '/process/status/free/',
-                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0],
-                    'response' => $this->readFixture("GET_freeprocesslist_20160527.json")
                 ]
             ]
         );
         $response = $this->render([], ['selectedprocess' => 100044]);
         $this->assertContains('Terminvereinbarung Aktualisieren', (string)$response->getBody());
-        $this->assertContains('<strong>Datum:</strong> 30.05.2016', (string)$response->getBody());
     }
 
     public function testSelectedDate()
@@ -162,12 +144,6 @@ class AppointmentFormTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/request/',
                     'response' => $this->readFixture("GET_scope_141_requestlist.json")
-                ],
-                [
-                    'function' => 'readPostResult',
-                    'url' => '/process/status/free/',
-                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0],
-                    'response' => $this->readFixture("GET_freeprocesslist_20160527.json")
                 ]
             ]
         );
@@ -185,6 +161,12 @@ class AppointmentFormTest extends Base
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_Workstation_clusterEnabled.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_scope_141.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -211,16 +193,10 @@ class AppointmentFormTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/process/100044/',
                     'response' => $this->readFixture("GET_process_100044_57c2.json")
-                ],
-                [
-                    'function' => 'readPostResult',
-                    'url' => '/process/status/free/',
-                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0],
-                    'response' => $this->readFixture("GET_freeprocesslist_20160527.json")
                 ]
             ]
         );
         $response = $this->render([], ['selectedprocess' => 100044]);
-        $this->assertContains('data-preferedScope=141', (string)$response->getBody());
+        $this->assertContains('data-selected-scope="141"', (string)$response->getBody());
     }
 }

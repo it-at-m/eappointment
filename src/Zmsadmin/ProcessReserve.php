@@ -35,8 +35,8 @@ class ProcessReserve extends BaseController
         $dateTime = \DateTime::createFromFormat('Y-m-d H:i', $selectedDate .' '. $selectedTime);
         $input = $request->getParsedBody();
         $process = new \BO\Zmsentities\Process();
-        $scope = (new Helper\ClusterHelper($workstation))->getPreferedScopeByCluster();
         if ($selectedDate && $selectedTime && is_array($input)) {
+            $scope = Helper\AppointmentFormHelper::readPreferedScope($request, $input['scope'], $workstation);
             $validationList = FormValidation::fromAdminParameters($scope['preferences']);
             if ($validationList->hasFailed()) {
                 return \BO\Slim\Render::withJson(

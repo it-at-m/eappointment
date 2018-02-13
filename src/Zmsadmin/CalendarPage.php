@@ -26,11 +26,14 @@ class CalendarPage extends BaseController
 
         $slotType = $validator->getParameter('slottype')->isString()->getValue();
         $slotsRequired = $validator->getParameter('slotsrequired')->isNumber()->getValue();
+        $selectedScopeId = $validator->getParameter('selectedscope')->isNumber()->getValue();
 
-        $scope = new Scope($workstation->scope);
+        $scope = Helper\AppointmentFormHelper::readPreferedScope($request, $selectedScopeId, $workstation);
         $calendar = new Helper\Calendar($selectedDate);
 
-        $scopeList = (new Helper\ClusterHelper($workstation))->getScopeList();
+        $scopeList = ($selectedScopeId)
+            ? (new \BO\Zmsentities\Collection\ScopeList)->addEntity($scope)
+            : (new Helper\ClusterHelper($workstation))->getScopeList();
 
         return \BO\Slim\Render::withHtml(
             $response,
@@ -42,6 +45,7 @@ class CalendarPage extends BaseController
                 'selectedYear' => $calendar->getDateTime()->format('Y'),
                 'selectedWeek' => $calendar->getDateTime()->format('W'),
                 'dayoffList' => $scope->getDayoffList(),
+                'scopeList' => $scopeList,
                 'monthList' => $calendar->readMonthListByScopeList($scopeList, $slotType, $slotsRequired)
             )
         );
