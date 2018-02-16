@@ -43,12 +43,13 @@ class ProcessQueue extends BaseController
             );
         }
 
-        $result = Helper\AppointmentFormHelper::writeQueuedProcess($request, $workstation, \App::$now);
-        return \BO\Slim\Render::withHtml(
-            $response,
-            'block/appointment/waitingnumber.twig',
+        $process = Helper\AppointmentFormHelper::writeQueuedProcess($request, $workstation, \App::$now);
+        return \BO\Slim\Render::redirect(
+            'appointment_form',
+            array(),
             array(
-                'process' => $result
+                'selectedprocess' => $process->getId(),
+                'success' => 'process_queued'
             )
         );
     }

@@ -1,10 +1,7 @@
 /* global window */
 import BaseView from "../../lib/baseview"
 import $ from "jquery"
-import { lightbox } from '../../lib/utils'
 import ActionHandler from "../appointment/action"
-import MessageHandler from '../../lib/messageHandler';
-import DialogHandler from '../../lib/dialogHandler';
 
 class View extends BaseView {
 
@@ -20,6 +17,8 @@ class View extends BaseView {
         this.onDeleteProcess = options.onDeleteProcess || (() => {});
         this.onEditProcess = options.onEditProcess || (() => {});
         this.onNextProcess = options.onNextProcess || (() => {});
+        this.onResetProcess = options.onResetProcess || (() => {});
+        this.onSendCustomMail = options.onSendCustomMail || (() => {});
         this.bindPublicMethods('load');
         $.ajaxSetup({ cache: false });
         this.bindEvents();
@@ -36,68 +35,6 @@ class View extends BaseView {
         this.load().then(() => {
             this.bindEvents();
         });
-    }
-
-    loadErrorCallback(err) {
-        if (err.message) {
-            let exceptionType = $(err.message).find('.exception').data('exception');
-            if (exceptionType === 'process-not-found')
-                this.cleanReload()
-            else {
-                this.load();
-                console.log('EXCEPTION thrown: ' + exceptionType);
-            }
-        }
-        else
-            console.log('Ajax error', err);
-    }
-
-    loadMessage (response, callback) {
-        if (response) {
-            const { lightboxContentElement, destroyLightbox } = lightbox(this.$main, () => {callback()});
-            new MessageHandler(lightboxContentElement, {
-                message: response,
-                callback: (ActionHandler, buttonUrl, ev) => {
-                    if (ActionHandler) {
-                        let promise = this.ActionHandler[ActionHandler](ev);
-                        if (promise instanceof Promise) {
-                            promise
-                                .then((response) => {this.loadMessage(response, callback)})
-                                .catch(err => this.loadErrorCallback(err))
-                        } else {
-                            callback();
-                        }
-                    } else if (buttonUrl) {
-                        this.loadByCallbackUrl(buttonUrl);
-                        callback();
-                    }
-                    destroyLightbox();
-                }
-            })
-        }
-    }
-
-    loadDialog (response, callback) {
-        const { lightboxContentElement, destroyLightbox } = lightbox(this.$main, () => {callback()})
-        new DialogHandler(lightboxContentElement, {
-            response: response,
-            callback: (message) => {
-                if (message) {
-                    if ($(message).find('.dialog form').length > 0) {
-                        this.loadDialog(message, callback);
-                    }
-                    else {
-                        this.loadMessage(message, callback);
-                    }
-                }
-                destroyLightbox();
-            }
-        })
-    }
-
-    loadByCallbackUrl(url) {
-        this.loadPromise = this.loadContent(url).catch(err => this.loadErrorCallback(err));
-        return this.loadPromise;
     }
 
     bindEvents() {
@@ -118,16 +55,9 @@ class View extends BaseView {
         }).on('click', 'a.process-edit', (ev) => {
             this.onEditProcess($(ev.target).data('id'))
         }).on('click', 'a.process-reset', (ev) => {
-            this.ActionHandler.reset(ev).catch(err => this.loadErrorCallback(err)).then((response) => {
-                this.loadMessage(response, this.onDeleteProcess);
-            });
+            this.onResetProcess(this.$main, ev);
         }).on('click', 'a.process-delete', (ev) => {
-            const id  = $(ev.target).data('id')
-            const name  = $(ev.target).data('name')
-            var confirmDelete = this.loadCall(`${this.includeUrl}/dialog/?template=confirm_delete&parameter[id]=${id}&parameter[name]=${name}`);
-            confirmDelete.catch(err => this.loadErrorCallback(err)).then((response) => {
-                this.loadMessage(response, this.onDeleteProcess);
-            });
+            this.onDeleteProcess(this.$main, ev, 'confirm');
         }).on('click', '.queue-table .calendar-navigation .pagedaylink', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
@@ -148,10 +78,7 @@ class View extends BaseView {
                 this.loadMessage(response, this.load);
             });
         }).on('click', '.process-custom-mail-send', (ev) => {
-            const url = `${this.includeUrl}/mail/`;
-            this.ActionHandler.sendMail(ev, url).catch(err => this.loadErrorCallback(err)).then((response) => {
-                this.loadDialog(response, this.load);
-            });
+            this.onSendCustomMail(this.$main, ev);
         }).on('click', '.process-custom-notification-send', (ev) => {
             const url = `${this.includeUrl}/notification/`;
             this.ActionHandler.sendNotification(ev, url).catch(err => this.loadErrorCallback(err)).then((response) => {

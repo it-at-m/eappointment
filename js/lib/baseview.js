@@ -3,6 +3,7 @@ import $ from "jquery";
 import ErrorHandler from './errorHandler';
 import ExceptionHandler from './exceptionHandler';
 import MessageHandler from './messageHandler';
+import DialogHandler from './dialogHandler';
 import { lightbox } from './utils';
 import { noOp } from './utils'
 
@@ -47,11 +48,12 @@ class BaseView extends ErrorHandler {
     }
 
     loadContent(url, method = 'GET', data = null, container = null, spinner = true) {
-        if (spinner) {
-            this.showSpinner(container);
-        }
         if (container !== null) {
             this.$main = container;
+        }
+
+        if (spinner) {
+            this.showSpinner(container);
         }
 
         const ajaxSettings = {
@@ -79,8 +81,8 @@ class BaseView extends ErrorHandler {
                     reject(err);
                 }
             })
-        })
-
+        });
+        DialogHandler.hideMessages();
         return this.loadPromise;
     }
 
@@ -94,6 +96,7 @@ class BaseView extends ErrorHandler {
         if (method === 'POST' || method === 'PUT') {
             ajaxSettings.data = data;
         }
+        DialogHandler.hideMessages();
         return new Promise((resolve, reject) => {
             $.ajax(url, ajaxSettings).done(responseData => {
                 resolve(responseData);
@@ -110,7 +113,7 @@ class BaseView extends ErrorHandler {
                     reject(err);
                 }
             })
-        })
+        });
     }
 
     destroy() {
@@ -138,16 +141,30 @@ class BaseView extends ErrorHandler {
         const { lightboxContentElement, destroyLightbox } = lightbox(this.$main, () => {callback()})
         new MessageHandler(lightboxContentElement, {
             message: response,
-            callback: (ActionHandler, buttonUrl) => {
-                if (ActionHandler) {
-                    this.ActionHandler[ActionHandler]()
-                } else if (buttonUrl) {
-                    this.loadByCallbackUrl(buttonUrl);
-                }
+            callback: () => {
                 callback();
                 destroyLightbox();
-                this.cleanReload();
-            }})
+            }
+        })
+    }
+
+    loadDialog (response, callback) {
+        const { lightboxContentElement, destroyLightbox } = lightbox(this.$main, () => {callback()})
+        new DialogHandler(lightboxContentElement, {
+            response: response,
+            callback: (message) => {
+                if (message) {
+                    if ($(message).find('.dialog form').length > 0) {
+                        this.loadDialog(message, callback);
+                    }
+                    else {
+                        this.loadMessage(message, callback);
+                    }
+                }
+                destroyLightbox();
+            },
+            loader: this.loadCall
+        })
     }
 
     loadErrorCallback(err) {
@@ -159,7 +176,6 @@ class BaseView extends ErrorHandler {
         else
             console.log('Ajax error', err);
     }
-
 }
 
 export default BaseView;

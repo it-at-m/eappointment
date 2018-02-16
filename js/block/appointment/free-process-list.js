@@ -18,19 +18,10 @@ class View extends BaseView {
     }
 
     loadList() {
-        const url = `${this.includeUrl}/appointmentForm/processlist/free/?selecteddate=${this.selectedDate}&selectedtime=${this.selectedTime}&slottype=${this.slotType}&slotsrequired=${this.slotsRequired}&selectedscope=${this.selectedScope}&selectedprocess=${this.selectedProcess}`
-        return this.loadContent(url, 'GET', null, null, false).catch(err => this.loadErrorCallback(err.source, err.url));
-    }
-
-    loadErrorCallback(source, url) {
-        if (source == 'button') {
-            return this.loadContent(url)
-        } else if (source == 'lightbox') {
-            console.log('lightbox closed without action call');
-        } else {
-            const defaultUrl = `${this.includeUrl}/counter/`
-            return this.loadContent(defaultUrl)
-        }
+        const slotsCount = $('#appointmentForm_slotCount').val();
+        console.log('TODO: MATCH Slot Count with available free Processes', slotsCount);
+        const url = `${this.includeUrl}/appointmentForm/processlist/free/?selecteddate=${this.selectedDate}&selectedtime=${this.selectedTime}&slottype=${this.slotType}&slotsrequired=${this.slotsRequired}&slotscount=${slotsCount}&selectedscope=${this.selectedScope}&selectedprocess=${this.selectedProcess}`
+        return this.loadContent(url, 'GET', null, null, false).catch(err => this.loadErrorCallback(err));
     }
 }
 

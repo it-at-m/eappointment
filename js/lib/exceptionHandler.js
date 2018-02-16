@@ -13,22 +13,25 @@ class ExceptionHandler {
 
     render() {
         var $message = $(this.message).filter('div.exception');
+        this.$messageElement = $($message.get(0).outerHTML);
         if ($message.length == 0) {
             $message = $(this.message).find('div.exception');
         }
         this.$main.find('.dialog','.exception').remove();
-        this.$messageElement = $($message.get(0).outerHTML)
         this.$main.find('.body').first().prepend(this.$messageElement);
         var $buttons = this.$messageElement.find('.btn');
         if ($buttons.length == 0) {
             $buttons = $('<a class="btn button-cancel right">X</a>');
-            this.$messageElement.append($buttons);
+            this.$messageElement.find('.header').append($buttons);
         }
         $buttons.on('click', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
             this.callback($(ev.target).attr('href'));
         })
+        setTimeout(() => {
+            this.closeException();
+        },8000)
     }
 
     closeException() {

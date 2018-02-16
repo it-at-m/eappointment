@@ -25,6 +25,7 @@ class AppointmentFormFreeProcessList extends BaseController
         $selectedTime = $validator->getParameter('selectedtime')->isString()->getValue();
         $selectedScopeId = $validator->getParameter('selectedscope')->isNumber()->getValue();
         $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
+        $slotsCount = $validator->getParameter('slotscount')->isNumber()->getValue();
         $selectedProcess = ($selectedProcessId) ?
             \App::$http->readGetResult('/process/'. $selectedProcessId .'/')->getEntity() : null;
         $scope = Helper\AppointmentFormHelper::readPreferedScope($request, $selectedScopeId, $workstation);
@@ -32,9 +33,10 @@ class AppointmentFormFreeProcessList extends BaseController
         if ($freeProcessList && $selectedProcess &&
             $selectedDate == $selectedProcess->getFirstAppointment()->toDateTime()->format('Y-m-d')
           ) {
-            $entity = new \BO\Zmsentities\Process();
-            $entity->appointments->addEntity($selectedProcess->getFirstAppointment());
-            $freeProcessList->addEntity($entity);
+            $dateTime = $selectedProcess->getFirstAppointment()->toDateTime();
+            $freeProcessList->setTempAppointmentToProcess($dateTime, $selectedScopeId);
+        } elseif (! $freeProcessList && $selectedProcess && $selectedProcess->queue->withAppointment) {
+            $freeProcessList = (new \BO\Zmsentities\Collection\ProcessList())->addEntity($selectedProcess);
         }
         $freeProcessList = ($freeProcessList) ? $freeProcessList->toProcessListByTime()->sortByTimeKey() : null;
 

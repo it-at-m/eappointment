@@ -13,21 +13,14 @@ use \BO\Zmsentities\Collection\ScopeList;
 
 class AppointmentFormHelper
 {
-    public static function writeReservedProcess(Entity $process)
-    {
-        $process = \App::$http
-            ->readPostResult('/process/status/reserved/', $process, ['slotType' => 'intern'])->getEntity();
-        return $process;
-    }
-
-    public static function writeUpdatedProcess($formData, Entity $process, $initiator)
+    public static function writeUpdatedProcess($input, Entity $process, $initiator)
     {
         $process = \App::$http->readPostResult(
             '/process/'. $process->id .'/'. $process->authKey .'/',
             $process,
             ['initiator' => $initiator]
         )->getEntity();
-        static::updateMailAndNotification($formData, $process);
+        static::updateMailAndNotification($input, $process);
         return $process;
     }
 
@@ -42,15 +35,6 @@ class AppointmentFormHelper
             ['initiator' => $initiator]
         )->getEntity();
         static::updateMailAndNotification($input, $process);
-        return $process;
-    }
-
-    public static function writeConfirmedProcess($formData, Entity $process)
-    {
-        $process = \App::$http->readPostResult('/process/status/confirmed/', $process)->getEntity();
-        if ('confirmed' == $process->status) {
-            static::updateMailAndNotification($formData, $process);
-        }
         return $process;
     }
 
@@ -111,7 +95,7 @@ class AppointmentFormHelper
         return $scope;
     }
 
-    protected static function updateMailAndNotification($formData, Entity $process)
+    public static function updateMailAndNotification($formData, Entity $process)
     {
         if (isset($formData['sendMailConfirmation'])) {
             $mailConfirmation = $formData['sendMailConfirmation'];

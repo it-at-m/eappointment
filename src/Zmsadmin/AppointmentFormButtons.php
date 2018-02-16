@@ -20,6 +20,7 @@ class AppointmentFormButtons extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $validator = $request->getAttribute('validator');
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
+        $freeProcessListLength = $validator->getParameter('freeprocesslistlength')->isNumber()->getValue();
         $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
         $selectedProcess = ($selectedProcessId) ?
             \App::$http->readGetResult('/process/'. $selectedProcessId .'/')->getEntity() : null;
@@ -30,6 +31,7 @@ class AppointmentFormButtons extends BaseController
             array(
                 'workstation' => $workstation,
                 'selectedProcess' => $selectedProcess,
+                'freeProcessListLength' => $freeProcessListLength,
                 'selectedDate' => ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d'),
             )
         );

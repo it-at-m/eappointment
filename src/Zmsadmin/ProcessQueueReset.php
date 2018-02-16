@@ -34,13 +34,13 @@ class ProcessQueueReset extends BaseController
         }
         $queuedProcess = \App::$http->readPostResult('/process/status/queued/', $selectedProcess)->getEntity();
 
-        return \BO\Slim\Render::withHtml(
-            $response,
-            'block/process/queued.twig',
+        return \BO\Slim\Render::redirect(
+            'queue_table',
             array(
-                'title' => 'Termin zurücksetzen',
-                'process' => $queuedProcess,
-                'workstation' => $workstation
+              'date' => $selectedDate
+            ),
+            array(
+                'success' => 'process_reset_queued'
             )
         );
     }

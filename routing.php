@@ -209,10 +209,10 @@ use \Psr\Http\Message\ResponseInterface;
  * -------------------------------------------------------------------------
  */
 
- \App::$slim->post('/process/{date:\d\d\d\d-\d\d-\d\d}/{time:\d\d-\d\d}/reserve/', '\BO\Zmsadmin\ProcessReserve')
+ \App::$slim->post('/process/reserve/', '\BO\Zmsadmin\ProcessReserve')
      ->setName("processReserve");
 
- \App::$slim->map(['GET','POST'], '/process/{date:\d\d\d\d-\d\d-\d\d}/queue/', '\BO\Zmsadmin\ProcessQueue')
+ \App::$slim->map(['GET','POST'], '/process/queue/', '\BO\Zmsadmin\ProcessQueue')
      ->setName("processQueue");
 
  \App::$slim->get('/process/queue/reset/', '\BO\Zmsadmin\ProcessQueueReset')
@@ -221,7 +221,7 @@ use \Psr\Http\Message\ResponseInterface;
  \App::$slim->post('/process/{id:\d+}/save/', '\BO\Zmsadmin\ProcessSave')
      ->setName("processSave");
 
- \App::$slim->delete('/process/{id:\d+}/delete/', '\BO\Zmsadmin\ProcessDelete')
+ \App::$slim->get('/process/{id:\d+}/delete/', '\BO\Zmsadmin\ProcessDelete')
     ->setName("processDelete");
 
 
@@ -351,7 +351,7 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/calendarPage/[{date:\d}/]', '\BO\Zmsadmin\CalendarPage')
     ->setName("counter_calendar_page");
 
-\App::$slim->get('/appointmentForm/', '\BO\Zmsadmin\AppointmentForm')
+\App::$slim->map(['GET', 'POST'], '/appointmentForm/', '\BO\Zmsadmin\AppointmentForm')
     ->setName("appointment_form");
 
 \App::$slim->get('/appointmentForm/processlist/free/', '\BO\Zmsadmin\AppointmentFormFreeProcessList')

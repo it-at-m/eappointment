@@ -1,15 +1,15 @@
 import $ from 'jquery';
-import BaseView from './baseview'
 import ExceptionHandler from './exceptionHandler'
 import maxChars from '../element/form/maxChars'
 
-class DialogHandler extends BaseView {
+class DialogHandler {
 
     constructor (element, options) {
-        super(element, options);
-        this.$main = $(element)
+        this.$main = $(element);
         this.response = options.response;
-        this.callback = options.callback;
+        this.callback = options.callback || (() => {});
+        this.nextCall = options.nextCall || (() => {});
+        this.loader = options.loader || (() => {});
         this.bindEvents();
         this.render();
     }
@@ -44,12 +44,26 @@ class DialogHandler extends BaseView {
                 {'name': 'dialog', 'value':1}
             );
             const url = this.$main.find('form').attr('action');
-            this.loadCall(url, 'POST', $.param(sendData)).then((response) => this.callback(response));
+            this.loader(url, 'POST', $.param(sendData)).then((response) => this.callback(response));
         }).on('click', '.button-cancel', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
             this.callback()
-        });
+        }).on('click', '.button-call', (ev) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            this.nextCall()
+        });;
+    }
+
+    static hideMessages()
+    {
+        let message = $.find('.message');
+        if (message.length) {
+            setTimeout(() => {
+                $(message).not('.message-keep').fadeOut().remove();
+            },5000)
+        }
     }
 }
 

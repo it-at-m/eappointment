@@ -4,6 +4,18 @@
         .board;
     .header {
         background-color: $red;
+
+        .btn {
+            background-color:$white;
+            color:$red;
+            height: 31px;
+            line-height: 1em;
+            position: absolute;
+            right: -5px;
+            top: 1px;
+            width: 31px;
+            opacity: 0.98;
+        }
     }
     .body {
 

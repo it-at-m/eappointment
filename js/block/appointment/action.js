@@ -1,4 +1,3 @@
-/* global window */
 import BaseView from "../../lib/baseview"
 import $ from "jquery"
 import moment from 'moment'
@@ -20,30 +19,6 @@ class View extends BaseView {
     addnew (ev) {
         console.log("New Button clicked", ev);
         this.loadNew();
-    }
-
-    queue (ev) {
-        console.log("Queue Button clicked", ev);
-        this.selectedDate = moment(this.$main.find('form #process_date').val(), 'DD.MM.YYYY').format('YYYY-MM-DD');
-        const sendData = this.$main.find('form').serialize();
-        const url = `${this.includeUrl}/process/${this.selectedDate}/queue/`;
-        return this.loadCall(url, 'POST', sendData);
-    }
-
-    printWaitingNumber () {
-        let selectedDate = moment(this.$main.find('form #process_date').val(), 'DD.MM.YYYY').format('YYYY-MM-DD');
-        let selectedProcess = this.$main.find('[data-id]').data('id');
-        window.open(`${this.includeUrl}/process/${selectedDate}/queue/?print=1&selectedprocess=${selectedProcess}`)
-    }
-
-    delete (ev) {
-        console.log("Delete Button clicked", ev);
-        ev.preventDefault();
-        ev.stopPropagation();
-        let initiator = (this.source == "counter") ? "Tresen" : "Arbeitsplatz";
-        const id  = $(ev.target).data('id')
-        const url = `${this.includeUrl}/process/${id}/delete/?initiator=${initiator}`;
-        return this.loadCall(url, 'DELETE');
     }
 
     finishList(ev) {
@@ -77,13 +52,11 @@ class View extends BaseView {
         return this.loadCall(url, 'DELETE');
     }
 
-    reserve (ev) {
-        console.log("Reserve Button clicked", ev);
-        this.selectedDate = moment(this.$main.find('form #process_date').val(), 'DD.MM.YYYY').format('YYYY-MM-DD');
-        this.selectedTime = this.$main.find('form #process_time').val();
-        const sendData = this.$main.find('form').serialize();
-        const url = `${this.includeUrl}/process/${this.selectedDate}/${this.selectedTime}/reserve/`;
-        return this.loadCall(url, 'POST', sendData);
+    stopEvent (ev) {
+        if (ev) {
+            ev.preventDefault();
+            ev.stopPropagation();
+        }
     }
 
     pickup (ev) {
@@ -98,18 +71,6 @@ class View extends BaseView {
     pickupDirect (processId) {
         const url = `${this.includeUrl}/pickup/call/${processId}/`
         return this.loadCall(url);
-    }
-
-    save (ev) {
-        console.log("Save Button clicked", ev);
-        if (ev) {
-            ev.preventDefault();
-            ev.stopPropagation();
-        }
-        let initiator = (this.source == "counter") ? "Tresen" : "Arbeitsplatz";
-        const sendData = this.$main.find('form').serialize();
-        const url = `${this.includeUrl}/process/${this.selectedProcess}/save/?initiator=${initiator}`;
-        return this.loadCall(url, 'POST', sendData);
     }
 
     sendNotificationReminder (ev) {
@@ -157,14 +118,6 @@ class View extends BaseView {
         }
         const url = `${this.includeUrl}/workstation/process/cancel/?noredirect=1`;
         return this.loadCall(url);
-    }
-
-    abort (ev) {
-        console.log("Abort Button clicked");
-        if (ev) {
-            ev.preventDefault();
-            ev.stopPropagation();
-        }
     }
 
     setSelectedDate (date) {

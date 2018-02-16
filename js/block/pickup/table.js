@@ -1,9 +1,6 @@
 import BaseView from "../../lib/baseview"
 import $ from "jquery"
-import { lightbox } from '../../lib/utils'
 import ActionHandler from "../appointment/action"
-import MessageHandler from '../../lib/messageHandler';
-import DialogHandler from '../../lib/dialogHandler';
 
 class View extends BaseView {
 
@@ -29,66 +26,6 @@ class View extends BaseView {
                 this.loadMessage(response, this.onPickupCallProcess);
             });
         }
-    }
-
-    loadErrorCallback(err) {
-        if (err.message) {
-            let exceptionType = $(err.message).find('.exception').data('exception');
-            console.log('EXCEPTION thrown: ' + exceptionType);
-        }
-        else {
-            console.log('Ajax error', err);
-        }
-        this.ActionHandler.cancel().then(this.cleanReload());
-    }
-
-    loadMessage (response, callback) {
-        if (response) {
-            const { lightboxContentElement, destroyLightbox } = lightbox(this.$main, () => {callback()});
-            new MessageHandler(lightboxContentElement, {
-                message: response,
-                callback: (buttonAction, buttonUrl, ev) => {
-                    if (buttonAction) {
-                        let promise = this.ActionHandler[buttonAction](ev);
-                        if (promise instanceof Promise) {
-                            promise
-                                .then((response) => {this.loadMessage(response, callback)})
-                                .catch(err => this.loadErrorCallback(err))
-                        } else if ('abort' != ActionHandler) {
-                            callback();
-                        }
-                    } else if (buttonUrl) {
-                        this.loadByCallbackUrl(buttonUrl);
-                        callback();
-                    }
-                    destroyLightbox();
-                    callback();
-                }
-            })
-        }
-    }
-
-    loadDialog (response, callback) {
-        const { lightboxContentElement, destroyLightbox } = lightbox(this.$main, () => {callback()})
-        new DialogHandler(lightboxContentElement, {
-            response: response,
-            callback: (message) => {
-                if (message) {
-                    if ($(message).find('.dialog form').length > 0) {
-                        this.loadDialog(message, callback);
-                    }
-                    else {
-                        this.loadMessage(message, callback);
-                    }
-                }
-                destroyLightbox();
-            }
-        })
-    }
-
-    loadByCallbackUrl(url) {
-        this.loadPromise = this.loadCall(url).catch(err => this.loadErrorCallback(err));
-        return this.loadPromise;
     }
 
     bindEvents() {
