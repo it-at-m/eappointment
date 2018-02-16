@@ -104,6 +104,24 @@ class ProcessList extends Base
         return $appointmentList;
     }
 
+    public function setTempAppointmentToProcess($dateTime, $scopeId)
+    {
+        $addedAppointment = false;
+        $appointment = (new \BO\Zmsentities\Appointment)->addDate($dateTime->getTimestamp())->addScope($scopeId);
+        foreach ($this as $process) {
+            if ($process->hasAppointment($dateTime->getTimestamp(), $scopeId) && ! $addedAppointment) {
+                $process->appointments->addEntity($appointment);
+                $addedAppointment = true;
+            }
+        }
+        if (! $addedAppointment) {
+            $entity = new \BO\Zmsentities\Process();
+            $entity->addAppointment($appointment);
+            $this->addEntity($entity);
+        }
+        return $this;
+    }
+
     public function toQueueList($now)
     {
         $queueList = new QueueList();

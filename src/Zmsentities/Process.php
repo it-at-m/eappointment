@@ -124,15 +124,15 @@ class Process extends Schema\Entity
         return ('' != $this->toProperty()->scope->contact->email->get());
     }
 
-    public function withUpdatedData($formData, $requestData, \DateTimeInterface $dateTime, $scope = null)
+    public function withUpdatedData($requestData, \DateTimeInterface $dateTime, $scope = null)
     {
         $this->scope = ($scope) ? $scope : $this->scope;
         $this->addAppointmentFromRequest($requestData, $dateTime);
         $requestCsv = isset($requestData['requests']) ? implode(',', $requestData['requests']) : 0;
         $this->updateRequests('dldb', $requestCsv);
-        $this->addClientFromForm($formData);
+        $this->addClientFromForm($requestData);
         $this->addReminderTimestamp($requestData, $dateTime);
-        $this->amendment = (array_key_exists('amendment', $formData)) ? trim($formData['amendment']['value']) : null;
+        $this->amendment = (array_key_exists('amendment', $requestData)) ? trim($requestData['amendment']) : null;
         return $this;
     }
 
@@ -142,8 +142,8 @@ class Process extends Schema\Entity
         if (isset($requestData['selecteddate'])) {
             $dateTime = new \DateTime($requestData['selecteddate']);
         }
-        if (isset($requestData['time'])) {
-            $time = explode('-', $requestData['time']);
+        if (isset($requestData['selectedtime'])) {
+            $time = explode('-', $requestData['selectedtime']);
             $dateTime->setTime($time[0], $time[1]);
         }
         $this->addAppointment((new Appointment)
@@ -153,11 +153,10 @@ class Process extends Schema\Entity
         return $this;
     }
 
-    public function addClientFromForm($formData)
+    public function addClientFromForm($requestData)
     {
         $client = new Client();
-        foreach ($formData as $key => $item) {
-            $value = (isset($item['value'])) ? $item['value'] : $item;
+        foreach ($requestData as $key => $value) {
             if (null !== $value && array_key_exists($key, $client)) {
                 $client[$key] = $value;
             }
