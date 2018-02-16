@@ -12,19 +12,8 @@ class View extends BaseView {
         super(element);
         this.$main = $(element);
         this.options = options;
-        this.selectedDate = options.selectedDate;
-        this.selectedTime = options.selectedTime;
-        this.includeUrl = options.includeUrl || "";
-        this.showLoader = options.showLoader || false;
-        this.selectedProcess = options.selectedProcess;
-        this.selectedScope = options.selectedScope;
-        this.onChangeScope = options.onChangeScope || (() => {});
-        this.onAbortProcess = options.onAbortProcess || (() => {});
-        this.onDeleteProcess = options.onDeleteProcess || (() => {});
-        this.onSaveProcess = options.onSaveProcess || (() => {});
-        this.onEditProcess = options.onEditProcess || (() => {});
-        this.onQueueProcess = options.onQueueProcess || (() => {});
-        this.onDatePick = options.onDatePick || (() => {});
+        this.setOptions();
+        this.setCallbacks();
         this.ActionHandler = new ActionHandler(element, options);
         this.FormButtons = new FormButtons(this.$main, this.options);
         this.RequestList = new RequestList(this.$main, this.options);
@@ -39,17 +28,27 @@ class View extends BaseView {
         }
     }
 
-    loadAppointmentFormParts() {
-        this.FreeProcessList = new FreeProcessList(this.$main.find('[data-free-process-list]'), this.options);
-        this.FreeProcessList.loadList().then(() => {
-            this.RequestList.loadList();
-            this.FormButtons.load();
-            this.bindEvents();
-        });
-        $('textarea.maxchars').each(function() {
-            maxChars(this);
-        });
-        this.$main.find('[name="familyName"]').focus();
+    setOptions()
+    {
+        this.selectedDate = this.options.selectedDate;
+        this.selectedTime = this.options.selectedTime;
+        this.includeUrl = this.options.includeUrl || "";
+        this.showLoader = this.options.showLoader || false;
+        this.selectedProcess = this.options.selectedProcess;
+        this.selectedScope = this.options.selectedScope;
+    }
+
+    setCallbacks()
+    {
+        this.onChangeScope = this.options.onChangeScope || (() => {});
+        this.onAbortProcess = this.options.onAbortProcess || (() => {});
+        this.onDeleteProcess = this.options.onDeleteProcess || (() => {});
+        this.onSaveProcess = this.options.onSaveProcess || (() => {});
+        this.onEditProcess = this.options.onEditProcess || (() => {});
+        this.onQueueProcess = this.options.onQueueProcess || (() => {});
+        this.onDatePick = this.options.onDatePick || (() => {});
+        this.onAbortMessage = this.options.onAbortMessage || (() => {});
+        this.onPrintWaitingNumber = this.options.onPrintWaitingNumber || (() => {});
     }
 
     load() {
@@ -58,20 +57,18 @@ class View extends BaseView {
         return this.loadPromise;
     }
 
-    loadByCallbackUrl(url) {
-        this.loadPromise = this.loadContent(url).catch(err => this.loadErrorCallback(err));
-        return this.loadPromise;
-    }
-
-    loadNew () {
-        const url = `${this.includeUrl}/appointmentForm/?selectedprocess=${this.selectedProcess}&new=1&selecteddate=${this.selectedDate}&selectedscope=${this.selectedScope}`
-        this.loadPromise = this.loadContent(url).then(() => {
+    loadAppointmentFormParts() {
+        this.FreeProcessList = new FreeProcessList(this.$main.find('[data-free-process-list]'), this.options);
+        this.FreeProcessList.loadList().then(() => {
             this.RequestList.loadList();
-            this.FreeProcessList.loadList();
             this.FormButtons.load();
             this.bindEvents();
-        }).catch(err => this.loadErrorCallback(err));
-        return this.loadPromise;
+            this.bindButtonEvents();
+        });
+        $('textarea.maxchars').each(function() {
+            maxChars(this);
+        });
+        this.$main.find('[name="familyName"]').focus();
     }
 
     bindEvents() {
@@ -95,44 +92,28 @@ class View extends BaseView {
             console.log('slots changed manualy');
             this.RequestList.slotCount = this.$main.find('select#appointmentForm_slotCount').val();
             this.FreeProcessList.loadList();
-        }).on('click', '.form-actions button.process-reserve', (event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            this.ActionHandler.reserve(event).then((response) => {
-                this.loadMessage(response, this.onSaveProcess)
-            }).catch(err => this.loadErrorCallback(err));
-        }).on('click', '.form-actions button.process-queue', (event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            this.ActionHandler.queue(event).then((response) => {
-                this.loadMessage(response, this.onQueueProcess);
-            }).catch(err => this.loadErrorCallback(err));
-        }).on('click', '.form-actions button.process-new', (event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            this.loadNew();
-        }).on('click', '.form-actions button.process-edit', (event) => {
-            this.onEditProcess($(event.target).data('id'))
-        }).on('click', '.form-actions button.process-delete', (event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            this.ActionHandler.delete(event).then((response) => {
-                this.loadMessage(response, this.onDeleteProcess);
-            }).catch(err => this.loadErrorCallback(err));
-        }).on('click', '.form-actions button.process-abort', (event) => {
-            this.onAbortProcess();
-        }).on('click', '.form-actions button.process-save', (event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            this.ActionHandler.save(event).then((response) => {
-                this.loadMessage(response, this.onSaveProcess);
-            }).catch(err => this.loadErrorCallback(err));
-        }).on('click', '[data-button-print]', (event) => {
-            event.preventDefault()
-            event.stopPropagation()
-            this.ActionHandler.printWaitingNumber();
         }).on('change', '.appointment-form .switchcluster select', (event) => {
             this.onChangeScope(event.target.value);
+        })
+    }
+
+    bindButtonEvents() {
+        this.$main.on('click', '.form-actions button.process-reserve', (event) => {
+            this.onSaveProcess(this.$main, event, 'reserve');
+        }).on('click', '.form-actions button.process-save', (event) => {
+            this.onSaveProcess(this.$main, event);
+        }).on('click', '.form-actions button.process-queue', (event) => {
+            this.onQueueProcess(this.$main, event);
+        }).on('click', '.form-actions button.process-copy', (event) => {
+            this.onSaveProcess(this.$main, event, 'reserve');
+        }).on('click', '.form-actions button.process-delete', (event) => {
+            this.onDeleteProcess(this.$main, event)
+        }).on('click', '.form-actions button.process-abort', (event) => {
+            this.onAbortProcess(this.$main, event);
+        }).on('click', '[data-action-abort]', (event) => {
+            this.onAbortMessage(event);
+        }).on('click', '[data-action-printWaitingNumber]', (event) => {
+            this.onPrintWaitingNumber(event);
         })
     }
 

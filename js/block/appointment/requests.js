@@ -4,7 +4,7 @@ import $ from "jquery"
 class View extends BaseView {
 
     constructor (element, options) {
-        super(element, options);
+        super(element);
         this.selectedProcess = options.selectedProcess;
         this.serviceList = [];
         this.serviceListSelected = [];
@@ -75,7 +75,7 @@ class View extends BaseView {
     }
 
     calculateSlotCount () {
-        var slotCount = 0;
+        var slotCount = 1;
         var selectedSlots = this.$main.find('.checkboxdeselect label:visible input:checkbox').map(function() {
             return $(this).data('slots');
         }).toArray();
@@ -84,7 +84,7 @@ class View extends BaseView {
                 slotCount += selectedSlots[i];
             }
         this.slotCount = slotCount;
-        this.$main.find('#appointmentForm_slotCount option:eq(' + this.slotCount +')').prop('selected', true)
+        this.$main.find('#appointmentForm_slotCount').val(this.slotCount)
     }
 }
 

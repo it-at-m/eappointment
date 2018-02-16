@@ -13,7 +13,7 @@ use BO\Slim\Render;
 use BO\Zmsentities\Helper\ProcessFormValidation as FormValidation;
 
 /**
- * Delete a process
+ * Reserve a process
  */
 class ProcessReserve extends BaseController
 {
@@ -28,34 +28,30 @@ class ProcessReserve extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-
-        $selectedDate = Validator::value($args['date'])->isString()->getValue();
-        $selectedTime = Validator::value($args['time'])->isString()->getValue();
-        $selectedTime = $selectedTime ? str_replace('-', ':', $selectedTime) : '00:00:00';
-        $dateTime = \DateTime::createFromFormat('Y-m-d H:i', $selectedDate .' '. $selectedTime);
-        $input = $request->getParsedBody();
+        $input = $request->getParams();
         $process = new \BO\Zmsentities\Process();
-        if ($selectedDate && $selectedTime && is_array($input)) {
-            $scope = Helper\AppointmentFormHelper::readPreferedScope($request, $input['scope'], $workstation);
-            $validationList = FormValidation::fromAdminParameters($scope['preferences']);
-            if ($validationList->hasFailed()) {
-                return \BO\Slim\Render::withJson(
-                    $response,
-                    $validationList->getStatus(),
-                    428
-                );
-            }
-            $formData = $validationList->getStatus();
-            $process->withUpdatedData($formData, $input, $dateTime, $scope);
-            $process = Helper\AppointmentFormHelper::writeReservedProcess($process);
-            $process = Helper\AppointmentFormHelper::writeConfirmedProcess($formData, $process);
+
+        $selectedTime = str_replace('-', ':', $input['selectedtime']);
+        $dateTime = \DateTime::createFromFormat('Y-m-d H:i', $input['selecteddate'] .' '. $selectedTime);
+        $scope = Helper\AppointmentFormHelper::readPreferedScope($request, $input['scope'], $workstation);
+        $process->withUpdatedData($input, $dateTime, $scope);
+        $process = \App::$http
+            ->readPostResult('/process/status/reserved/', $process, ['slotType' => 'intern'])
+            ->getEntity();
+        $process = \App::$http->readPostResult('/process/status/confirmed/', $process)->getEntity();
+        $queryParams = [];
+        if ('confirmed' == $process->status) {
+            Helper\AppointmentFormHelper::updateMailAndNotification($input, $process);
+            $queryParams = array(
+                'selectedprocess' => $process->getId(),
+                'success' => 'process_reserved'
+            );
         }
-        return \BO\Slim\Render::withHtml(
-            $response,
-            'block/process/reserved.twig',
-            array(
-                'process' => $process
-            )
+
+        return \BO\Slim\Render::redirect(
+            'appointment_form',
+            array(),
+            $queryParams
         );
     }
 }

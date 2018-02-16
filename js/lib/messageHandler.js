@@ -8,8 +8,7 @@ class MessageHandler {
         this.message = options.message;
         this.callback = options.callback || (() => {});
         this.bindEvents();
-        this.render();
-        console.log(this);
+        this.render()
     }
 
     render() {

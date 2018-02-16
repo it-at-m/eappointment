@@ -30,16 +30,17 @@ class ProcessSave extends BaseController
         $processId = Validator::value($args['id'])->isNumber()->getValue();
         $process = \App::$http->readGetResult('/process/'. $processId .'/')->getEntity();
         $input = $request->getParsedBody();
-        $result = $this->writeSavedProcess($request, $response, $process, $input);
-        if ($result instanceof \Psr\Http\Message\ResponseInterface) {
-            return $result;
-        }
+        $process = $this->writeSavedProcess($request, $response, $process, $input);
+        $success = ($process->toProperty()->queue->withAppointment->get()) ?
+          'process_updated' :
+          'process_withoutappointment_updated';
 
-        return \BO\Slim\Render::withHtml(
-            $response,
-            'block/process/updated.twig',
+        return \BO\Slim\Render::redirect(
+            'appointment_form',
+            array(),
             array(
-                'process' => $process
+                'selectedprocess' => $process->getId(),
+                'success' => $success
             )
         );
     }
@@ -48,21 +49,11 @@ class ProcessSave extends BaseController
     {
         $initiator = Validator::param('initiator')->isString()->getValue();
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-        $dateTime = (new \DateTime())->setTimestamp($process->getFirstAppointment()->date);
         if ($process->toProperty()->queue->withAppointment->get()) {
+            $dateTime = (new \DateTime())->setTimestamp($process->getFirstAppointment()->date);
             $scope = Helper\AppointmentFormHelper::readPreferedScope($request, $input['scope'], $workstation);
-            $validationList = FormValidation::fromAdminParameters($scope['preferences']);
-            if ($validationList->hasFailed()) {
-                return \BO\Slim\Render::withJson(
-                    $response,
-                    $validationList->getStatus(),
-                    428
-                );
-            }
-
-            $formData = $validationList->getStatus();
-            $process->withUpdatedData($formData, $input, $dateTime, $scope);
-            $process = Helper\AppointmentFormHelper::writeUpdatedProcess($formData, $process, $initiator);
+            $process->withUpdatedData($input, $dateTime, $scope);
+            $process = Helper\AppointmentFormHelper::writeUpdatedProcess($input, $process, $initiator);
         } else {
             $process = Helper\AppointmentFormHelper::writeUpdateQueuedProcess($input, $process, $initiator);
         }

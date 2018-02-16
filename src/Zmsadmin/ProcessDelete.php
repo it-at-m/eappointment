@@ -47,11 +47,12 @@ class ProcessDelete extends BaseController
             \App::$http->readPostResult('/process/'. $process->id .'/'. $authKey .'/delete/notification/', $process);
         }
 
-        return \BO\Slim\Render::withHtml(
-            $response,
-            'block/process/deleted.twig',
+        return \BO\Slim\Render::redirect(
+            'appointment_form',
+            array(),
             array(
-                'process' => $process
+                'selectedprocess' => $process->getId(),
+                'success' => 'process_deleted'
             )
         );
     }
