@@ -28,9 +28,9 @@ class Notification extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
 
         $dialog = Validator::param('dialog')->isNumber()->getValue();
-        $success = Validator::param('result')->isString()->getValue();
+        $success = Validator::param('success')->isString()->getValue();
+        $error = Validator::param('error')->isString()->getValue();
         $sendStatus = Validator::param('status')->isString()->isBiggerThan(2)->getValue();
-        $source = Validator::param('source')->isString()->getValue();
 
         $department = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/department/')->getEntity();
         $config = \App::$http->readGetResult('/config/')->getEntity();
@@ -38,16 +38,19 @@ class Notification extends BaseController
         $process = $this->getProcessWithStatus($sendStatus);
         $formResponse = $this->getValidatedResponse($input, $process, $config, $department);
         if ($formResponse instanceof Entity) {
+            $query = [
+                'selectedprocess' => $process->id,
+                'dialog' => $dialog,
+                'status' => $sendStatus
+            ];
+            $message = ($formResponse->hasId())
+                ? ['success' => 'notification_sent']
+                : ['error' => 'notification_failed'];
+            $query = array_merge($message, $query);
             return \BO\Slim\Render::redirect(
                 'notification',
                 [],
-                [
-                    'selectedprocess' => $process->id,
-                    'dialog' => $dialog,
-                    'status' => $sendStatus,
-                    'result' => ($formResponse->hasId()) ? 'success' : 'error',
-                    'source' => $input['submit']
-                ]
+                $query
             );
         }
 
@@ -60,11 +63,11 @@ class Notification extends BaseController
                 'workstation' => $workstation,
                 'department' => $department,
                 'process' => $process,
+                'success' => $success,
+                'error' => $error,
                 'status' => $sendStatus,
                 'dialog' => $dialog,
-                'result' => $success,
                 'form' => $formResponse,
-                'source' => $source,
                 'redirect' => $workstation->getVariantName()
             )
         );

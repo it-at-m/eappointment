@@ -29,31 +29,11 @@ class View extends BaseView {
 
     bindEvents() {
         this.$main.on('click', '.calendar-page .body a', (ev) => {
-            ev.preventDefault();
-            ev.stopPropagation();
-            const selectedDate = $(ev.target).attr('data-date');
-            console.log('date selected', selectedDate)
-            let processAlreadySelected = $.find('[data-selectedprocess]');
-            if ($(processAlreadySelected).data('selectedprocess'))
-                this.onDatePick(selectedDate, true);
-            else
-                this.onDatePick(selectedDate);
+            this.onDatePick(this.$main, ev);
         }).on('click', '.calendar-navigation .pagemonthlink', (ev) => {
-            ev.preventDefault();
-            ev.stopPropagation();
-            this.selectedDate = $(ev.target).attr('data-date');
-            console.log('month selected', this.selectedDate)
-            this.load();
+            this.onDatePick(this.$main, ev);
         }).on('click', '.calendar-navigation .today', (ev) => {
-            ev.preventDefault();
-            ev.stopPropagation();
-            const selectedDate = $(ev.target).attr('data-date');
-            console.log('today selected', selectedDate)
-            let processAlreadySelected = $.find('[data-selectedprocess]');
-            if ($(processAlreadySelected).data('selectedprocess'))
-                this.onDatePick(selectedDate, true);
-            else
-                this.onDatePick(selectedDate);
+            this.onDateToday(this.$main, ev);
         })
     }
 }

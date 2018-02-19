@@ -2,7 +2,6 @@ import BaseView from "../../lib/baseview"
 import $ from "jquery"
 import FreeProcessList from './free-process-list'
 import FormButtons from './form-buttons'
-import ActionHandler from "./action"
 import RequestList from "./requests"
 import maxChars from '../../element/form/maxChars'
 
@@ -14,9 +13,8 @@ class View extends BaseView {
         this.options = options;
         this.setOptions();
         this.setCallbacks();
-        this.ActionHandler = new ActionHandler(element, options);
-        this.FormButtons = new FormButtons(this.$main, this.options);
-        this.RequestList = new RequestList(this.$main, this.options);
+        this.FormButtons = new FormButtons(element, this.options);
+        this.RequestList = new RequestList(element, this.options);
         $.ajaxSetup({ cache: false });
 
         if (! options.constructOnly) {
@@ -49,6 +47,7 @@ class View extends BaseView {
         this.onDatePick = this.options.onDatePick || (() => {});
         this.onAbortMessage = this.options.onAbortMessage || (() => {});
         this.onPrintWaitingNumber = this.options.onPrintWaitingNumber || (() => {});
+        this.onSelectDateWithOverlay = this.options.onSelectDateWithOverlay || (() => {});
     }
 
     load() {
@@ -87,7 +86,7 @@ class View extends BaseView {
             this.RequestList.updateLists();
             this.FreeProcessList.loadList();
         }).on('click', '.add-date-picker', () => {
-            this.ActionHandler.selectDateWithOverlay();
+            this.onSelectDateWithOverlay();
         }).on('change', 'select#appointmentForm_slotCount', () => {
             console.log('slots changed manualy');
             this.RequestList.slotCount = this.$main.find('select#appointmentForm_slotCount').val();

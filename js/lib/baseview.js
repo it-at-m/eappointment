@@ -138,32 +138,27 @@ class BaseView extends ErrorHandler {
 
     loadMessage (response, callback) {
         this.$main.find('.form-actions').hide();
-        const { lightboxContentElement, destroyLightbox } = lightbox(this.$main, () => {callback()})
+        const { lightboxContentElement, destroyLightbox } = lightbox(this.$main, () => {callback()});
         new MessageHandler(lightboxContentElement, {
             message: response,
             callback: () => {
                 callback();
                 destroyLightbox();
-            }
+            },
+            handleLightbox: destroyLightbox
         })
     }
 
     loadDialog (response, callback) {
-        const { lightboxContentElement, destroyLightbox } = lightbox(this.$main, () => {callback()})
+        const { lightboxContentElement, destroyLightbox } = lightbox(this.$main, () => {destroyLightbox()});
         new DialogHandler(lightboxContentElement, {
             response: response,
-            callback: (message) => {
-                if (message) {
-                    if ($(message).find('.dialog form').length > 0) {
-                        this.loadDialog(message, callback);
-                    }
-                    else {
-                        this.loadMessage(message, callback);
-                    }
-                }
+            callback: () => {
+                callback();
                 destroyLightbox();
             },
-            loader: this.loadCall
+            loader: this.loadCall,
+            handleLightbox: destroyLightbox
         })
     }
 

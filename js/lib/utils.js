@@ -87,6 +87,13 @@ export const lightbox = (parentElement, onBackgroundClick) => {
 
 export const noOp = () => {}
 
+export const stopEvent = (ev) => {
+    if (ev) {
+        ev.preventDefault();
+        ev.stopPropagation();
+    }
+}
+
 export const getUrlParameters = () => {
     return document.location.search.replace(/^\?/, "")
                    .split("&")

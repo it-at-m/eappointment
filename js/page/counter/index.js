@@ -1,15 +1,14 @@
 /* global window */
 import BaseView from '../../lib/baseview'
+import { stopEvent } from '../../lib/utils'
 import $ from 'jquery'
+import moment from 'moment'
 import settings from '../../settings'
 import AppointmentView from '../../block/appointment'
 import AppointmentTimesView from '../../block/appointment/times'
 import QueueView from '../../block/queue'
 import QueueInfoView from '../../block/queue/info'
 import CalendarView from '../../block/calendar'
-import ActionHandler from "../../block/appointment/action"
-import FreeProcessList from "../../block/appointment/free-process-list"
-import FormButtons from '../../block/appointment/form-buttons'
 
 class View extends BaseView {
 
@@ -20,12 +19,33 @@ class View extends BaseView {
         this.selectedDate = options['selected-date'];
         this.selectedTime = options['selected-time'];
         this.selectedProcess = options['selected-process'];
-        this.ActionHandler = (new ActionHandler(this.$main.find('[data-appointment-form]'), options));
         this.slotType = 'intern';
         this.slotsRequired = 0;
         this.reloadTimer;
         this.lastReload = 0;
-        this.bindPublicMethods('loadAllPartials', 'onDatePick', 'onNextProcess', 'onDateToday', 'onGhostWorkstationChange','onDeleteProcess','onEditProcess','onSaveProcess','onQueueProcess');
+        this.bindPublicMethods(
+            'loadAllPartials',
+            'onAbortMessage',
+            'onAbortProcess',
+            'onChangeScope',
+            'onPrintWaitingNumber',
+            'onDatePick',
+            'onDateToday',
+            'onSelectDateWithOverlay',
+            'onNextProcess',
+            'onDeleteProcess',
+            'onConfirm',
+            'onEditProcess',
+            'onSaveProcess',
+            'onQueueProcess',
+            'onResetProcess',
+            'onSendCustomMail',
+            'onSendCustomNotification',
+            'onSendNotificationReminder',
+            'onReloadQueueTable',
+            'onChangeTableView',
+            'onGhostWorkstationChange'
+        );
         this.$.ready(() => {
             this.loadData;
             this.setLastReload();
@@ -77,89 +97,201 @@ class View extends BaseView {
         }, 1000);
     }
 
-    onDatePick(date, full = false) {
-        this.selectedProcess = null;
-        this.selectedDate = date;
-        if (full) {
-            this.loadAllPartials();
-        } else {
-            this.loadCalendar(),
-            this.loadQueueTable(),
-            this.loadQueueInfo(),
-            this.loadAppointmentTimes()
-            this.ActionHandler.setSelectedDate(date);
-            (new FormButtons(this.$main.find('[data-form-buttons]'), {
-                "includeUrl": this.includeUrl,
-                "selectedDate": this.selectedDate,
-                "selectedProcess": this.selectedProcess
-            })).load();
-            (new FreeProcessList(this.$main.find('[data-free-process-list]'), {
-                "includeUrl": this.includeUrl,
-                "slotType": this.slotType,
-                "selectedDate": this.selectedDate,
-                "selectedTime": this.selectedTime,
-                "slotsRequired": this.slotsRequired
-            })).loadList();
+    onDatePick($container, event) {
+        stopEvent(event);
+        this.selectedDate = $(event.target).attr('data-date');
+        $container.removeClass('lightbox');
+        $container.removeClass('lightbox__content');
+        $container.data('selecteddate', this.selectedDate);
+        if (this.selectedProcess) {
+            this.loadCalendar();
+            this.loadQueueTable();
+            this.loadQueueInfo();
+            this.loadAppointmentForm(true, true);
+            this.loadAppointmentTimes();
+            this.$main.find('.add-date-picker input#process_date').val(moment(this.selectedDate, 'YYYY-MM-DD').format('DD.MM.YYYY'));
+            this.$main.find('input#process_selected_date').val(moment(this.selectedDate, 'YYYY-MM-DD').format('YYYY-MM-DD'));
+            this.$main.find('.appointment-form .switchcluster select').val(this.selectedScope);
             this.$main.find('[name="familyName"]').focus();
-        }
+          } else {
+              this.loadAllPartials();
+          }
+
     }
 
-    onDateToday(date, full = false) {
+    onSelectDateWithOverlay() {
+        const container = $.find('[data-calendar]');
+        $(container).find('.calendar').addClass('lightbox__content');
+        $(container).addClass('lightbox').on('click', () => {
+            $(container).removeClass('lightbox');
+            $(container).removeClass('lightbox__content');
+        });
+    }
+
+    onChangeScope(scopeId) {
+        this.selectedScope = scopeId;
+        this.loadCalendar();
+        this.loadAppointmentForm(true, true);
+        //this.$main.find('.appointment-form .switchcluster select').val(this.selectedScope);
+    }
+
+    onChangeTableView ($container, event, $element) {
+        const pathName = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/')).split('/').pop();
+        $element.val(pathName);
+        $(event.target).closest('form').submit();
+    }
+
+    onDateToday($container, event) {
+        this.onDatePick($container, event)
+    }
+
+    onSaveProcess ($container, event, action = 'update') {
+        stopEvent(event);
+        this.selectedProcess = $(event.target).data('id');
+        const sendData = $container.find('form').serializeArray();
+        sendData.push({name: action, value: 1});
+        sendData.push({name: 'selectedprocess', value: this.selectedProcess});
+        sendData.push({name: 'initiator', value: this.initiator});
+        this.loadContent(`${this.includeUrl}/appointmentForm/`, 'POST', sendData, $container).then(() => {
+            this.loadAppointmentForm(true, true, $container);
+            this.loadQueueTable();
+            this.loadCalendar();
+        });
+    }
+
+    onAbortProcess($container, event) {
+        stopEvent(event);
         this.selectedProcess = null;
-        this.selectedDate = date;
-        if (full) {
-            this.loadAllPartials();
+        this.loadAppointmentForm(true, false, $container);
+    }
+
+    onAbortMessage(event)
+    {
+        stopEvent(event);
+        $(event.target).closest('.message').fadeOut().remove();
+    }
+
+    onDeleteProcess ($container, event) {
+        const processId  = $(event.target).data('id');
+        if ($container) {
+            return this.loadContent(`${this.includeUrl}/appointmentForm/`, 'POST', {'delete': 1, 'processId': processId, 'initiator': this.initiator}, $container).then(() => {
+                  this.loadAppointmentForm(true, true, $container);
+                  this.loadQueueTable();
+                  this.loadCalendar();
+            });
         } else {
-            this.loadCalendar(),
-            this.loadQueueTable(),
-            this.loadQueueInfo(),
-            this.loadAppointmentTimes()
-            this.ActionHandler.setSelectedDate(date);
-            (new FormButtons(this.$main.find('[data-form-buttons]'), {
-                "includeUrl": this.includeUrl,
-                "selectedDate": this.selectedDate,
-                "selectedProcess": this.selectedProcess
-            })).load();
-            (new FreeProcessList(this.$main.find('[data-free-process-list]'), {
-                "includeUrl": this.includeUrl,
-                "slotType": this.slotType,
-                "selectedDate": this.selectedDate,
-                "selectedTime": this.selectedTime,
-                "slotsRequired": this.slotsRequired
-            })).loadList();
-            this.$main.find('[name="familyName"]').focus();
+          return this.loadCall(`${this.includeUrl}/appointmentForm/`, 'POST', {'delete': 1, 'processId': processId, 'initiator': this.initiator}).then((response) => {
+                this.loadMessage(response, () => {
+                    this.loadQueueTable();
+                    this.loadCalendar();
+                });
+          });
         }
+
+    }
+
+    onConfirm(event, template, callback)
+    {
+      stopEvent(event);
+      this.selectedProcess = null;
+      const processId  = $(event.target).data('id');
+      const name  = $(event.target).data('name');
+      this.loadCall(`${this.includeUrl}/dialog/?template=${template}&parameter[id]=${processId}&parameter[name]=${name}`).then((response) => {
+          this.loadDialog(response, callback);
+      });
+    }
+
+    onQueueProcess ($container, event) {
+        stopEvent(event);
+        const sendData = $container.find('form').serializeArray();
+        sendData.push({name: 'queue', value: 1});
+        this.loadContent(`${this.includeUrl}/appointmentForm/`, 'POST', sendData, $container).then(() => {
+            this.loadAppointmentForm(true, true, $container);
+            this.loadQueueTable();
+            this.loadCalendar();
+        });
+    }
+
+    onResetProcess ($container, event) {
+        let selectedProcess = $(event.target).data('id');
+        this.loadContent(`${this.includeUrl}/process/queue/reset/?selectedprocess=${selectedProcess}&selecteddate=${this.selectedDate}`, 'GET', null, $container);
+    }
+
+    onEditProcess (event) {
+        this.selectedProcess = $(event.target).data('id');
+        this.loadAppointmentForm();
     }
 
     onNextProcess() {
+        this.calledProcess = null;
         this.loadQueueTable();
     }
 
-    onDeleteProcess () {
-        this.selectedProcess = null;
-        this.loadAppointmentForm();
-        this.loadQueueTable();
-        this.loadCalendar();
-    }
-
-    onQueueProcess () {
-        this.selectedProcess = null;
-        this.loadAppointmentForm();
+    onReloadQueueTable(event) {
+        stopEvent(event);
         this.loadQueueTable();
     }
 
-    onEditProcess (processId) {
-        this.selectedProcess = processId;
-        this.loadAppointmentForm();
+    onPrintWaitingNumber (event) {
+        stopEvent(event);
+        const processId  = $(event.target).data('id');
+        $(event.target).closest('.message').fadeOut().remove();
+        window.open(`${this.includeUrl}/process/queue/?print=1&selectedprocess=${processId}`)
     }
 
-    onSaveProcess (processId) {
-        this.selectedProcess = null;
-        if (processId)
-            this.selectedProcess = processId;
-        this.loadAppointmentForm();
-        this.loadQueueTable();
-        this.loadCalendar();
+    onSendCustomMail ($container, event) {
+        stopEvent(event);
+        const processId = $(event.target).data('process');
+        const sendStatus = $(event.target).data('status');
+        this.loadCall(`${this.includeUrl}/mail/?selectedprocess=${processId}&status=${sendStatus}&dialog=1`).then((response) => {
+            this.loadDialog(response, (() => {
+                const sendData = $('.dialog form').serializeArray();
+                sendData.push(
+                    {'name': 'submit', 'value':'form'},
+                    {'name': 'dialog', 'value':1}
+                );
+                this.loadCall(`${this.includeUrl}/mail/`, 'POST', $.param(sendData)).then(
+                    (response) => this.loadMessage(response, () => {
+                        this.loadQueueTable();
+                    })
+                );
+            }))
+        });
+    }
+
+    onSendCustomNotification ($container, event) {
+        stopEvent(event);
+        const processId = $(event.target).data('process');
+        const sendStatus = $(event.target).data('status');
+        this.loadCall(`${this.includeUrl}/notification/?selectedprocess=${processId}&status=${sendStatus}&dialog=1`).then((response) => {
+            this.loadDialog(response, (() => {
+                const sendData = $('.dialog form').serializeArray();
+                sendData.push(
+                    {'name': 'submit', 'value':'form'},
+                    {'name': 'dialog', 'value':1}
+                );
+                this.loadCall(`${this.includeUrl}/notification/`, 'POST', $.param(sendData)).then(
+                    (response) => this.loadMessage(response, () => {
+                        this.loadQueueTable();
+                    })
+                );
+            }))
+        });
+    }
+
+    onSendNotificationReminder (event) {
+        stopEvent(event);
+        const processId = $(event.target).data('process');
+        const sendData = {
+            'selectedprocess': processId,
+            'status': 'queued',
+            'submit': 'reminder'
+        }
+        this.loadCall(`${this.includeUrl}/notification/`, 'POST', $.param(sendData)).then(
+            (response) => this.loadMessage(response, () => {
+                this.loadQueueTable();
+            })
+        );
     }
 
     onGhostWorkstationChange() {
@@ -176,46 +308,55 @@ class View extends BaseView {
         ])
     }
 
+    loadReloadPartials() {
+        if (this.$main.find('.lightbox').length == 0)
+            this.loadQueueTable(false);
+    }
+
     loadCalendar (showLoader = true) {
-        return new CalendarView(this.$main.find('[data-calendar]'), {
+        return new CalendarView($.find('[data-calendar]'), {
             selectedDate: this.selectedDate,
+            selectedScope: this.selectedScope,
+            selectedProcess: this.selectedProcess,
             slotsRequired: this.slotsRequired,
             slotType: this.slotType,
             onDatePick: this.onDatePick,
             onDateToday: this.onDateToday,
             includeUrl: this.includeUrl,
+            onAbortMessage: this.onAbortMessage,
             showLoader: showLoader
         })
     }
 
-    loadReloadPartials() {
-        if (this.$main.find('.lightbox').length == 0) {
-            this.loadQueueTable(false);
-            this.loadQueueInfo(false);
-        }
-    }
-
-    loadAppointmentForm(showLoader = true) {
-        return new AppointmentView(this.$main.find('[data-appointment-form]'), {
-            source: 'counter',
+    loadAppointmentForm(showLoader = true, constructOnly = false, $container = null) {
+        if (null === $container)
+            $container = $.find('[data-appointment-form]');
+        return new AppointmentView($container, {
             selectedDate: this.selectedDate,
             selectedTime: this.selectedTime,
             selectedProcess: this.selectedProcess,
+            selectedScope: this.selectedScope,
             includeUrl: this.includeUrl,
             slotsRequired: this.slotsRequired,
             slotType: this.slotType,
             onDatePick: this.onDatePick,
             onDateToday: this.onDateToday,
             onDeleteProcess: this.onDeleteProcess,
+            onEditProcess: this.onEditProcess,
             onQueueProcess: this.onQueueProcess,
             onSaveProcess: this.onSaveProcess,
-            showLoader: showLoader
+            onChangeScope: this.onChangeScope,
+            onAbortProcess: this.onAbortProcess,
+            onPrintWaitingNumber: this.onPrintWaitingNumber,
+            onAbortMessage: this.onAbortMessage,
+            onSelectDateWithOverlay: this.onSelectDateWithOverlay,
+            showLoader: showLoader,
+            constructOnly: constructOnly
         })
     }
 
     loadQueueTable (showLoader = true) {
-        return new QueueView(this.$main.find('[data-queue-table]'), {
-            source: 'counter',
+        return new QueueView($.find('[data-queue-table]'), {
             selectedDate: this.selectedDate,
             includeUrl: this.includeUrl,
             onDatePick: this.onDatePick,
@@ -223,6 +364,14 @@ class View extends BaseView {
             onDeleteProcess: this.onDeleteProcess,
             onEditProcess: this.onEditProcess,
             onNextProcess: this.onNextProcess,
+            onResetProcess: this.onResetProcess,
+            onAbortMessage: this.onAbortMessage,
+            onSendCustomMail: this.onSendCustomMail,
+            onSendCustomNotification: this.onSendCustomNotification,
+            onSendNotificationReminder: this.onSendNotificationReminder,
+            onChangeTableView: this.onChangeTableView,
+            onConfirm: this.onConfirm,
+            onReloadQueueTable: this.onReloadQueueTable,
             showLoader: showLoader
         })
     }

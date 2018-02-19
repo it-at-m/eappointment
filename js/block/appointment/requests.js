@@ -5,11 +5,12 @@ class View extends BaseView {
 
     constructor (element, options) {
         super(element);
+        this.$main = $(element);
         this.selectedProcess = options.selectedProcess;
         this.serviceList = [];
         this.serviceListSelected = [];
         this.slotCount = 0;
-        console.log('Component: RequestList actions', this, options);
+        //console.log('Component: RequestList actions', this, options);
     }
 
     loadList () {
@@ -44,7 +45,7 @@ class View extends BaseView {
 
     readList ()
     {
-        this.$main.find('.checkboxselect input:checked').each((index, element) => {
+        this.$main.find('.checkboxselect input:checked, .checkboxselect input:hidden').each((index, element) => {
             if ($.inArray($(element).val(), this.serviceListSelected) === -1)
                 this.addServiceToList ($(element), this.serviceListSelected)
         });

@@ -1,50 +1,72 @@
 import BaseView from "../../lib/baseview"
 import $ from "jquery"
-import ActionHandler from "../appointment/action"
 
 class View extends BaseView {
 
     constructor (element, options) {
         super(element, options);
-        console.log('Component: Pickup Table', this, options);
-        this.ActionHandler = new ActionHandler(element, options);
-        this.includeUrl = options.includeUrl || "";
-        this.onFinishProcess = options.onFinishProcess || (() => {});
-        this.onPickupCallProcess = options.onPickupCallProcess || (() => {});
-        this.onMailSent = options.onMailSent || (() => {});
-        this.onNotificationSent = options.onNotificationSent || (() => {});
-        this.bindPublicMethods('bindEvents');
+        this.setOptions(options);
+        this.setCallbacks(options);
+        this.bindPublicMethods('load');
         $.ajaxSetup({ cache: false });
-        this.loadDirectCall();
         this.bindEvents();
+        this.load();
     }
 
-    loadDirectCall() {
+    setOptions(options) {
+        this.includeUrl = options.includeUrl || "";
+    }
+
+    setCallbacks(options) {
+        this.onChangeTableView = options.onChangeTableView;
+        this.onConfirm = options.onConfirm;
+        this.onFinishProcess = options.onFinishProcess;
+        this.onPickupCallProcess = options.onPickupCallProcess;
+        this.onMailSent = options.onMailSent;
+        this.onNotificationSent = options.onNotificationSent;
+    }
+
+    load() {
         const processId = this.$main.find('[data-selectedprocess]').data('selectedprocess');
         if (processId) {
-            this.ActionHandler.pickupDirect(processId).catch(err => this.loadErrorCallback(err)).then((response) => {
+            this.pickupDirect(processId).catch(err => this.loadErrorCallback(err)).then((response) => {
                 this.loadMessage(response, this.onPickupCallProcess);
             });
+        } else {
+            return this.loadContent(`${this.includeUrl}/pickup/queue/`, 'GET').catch(err => this.loadErrorCallback(err));
         }
+
+    }
+
+    pickup (ev) {
+        console.log("Pickup Button clicked", ev);
+        ev.preventDefault();
+        ev.stopPropagation();
+        const processId  = $(ev.target).data('id')
+        const url = `${this.includeUrl}/pickup/call/${processId}/`
+        return this.loadCall(url);
+    }
+
+    pickupDirect (processId) {
+        const url = `${this.includeUrl}/pickup/call/${processId}/`
+        return this.loadCall(url);
     }
 
     bindEvents() {
-        this.$main.off('click').on('change', '.switchcluster select', (ev) => {
-            $(ev.target).closest('form').submit();
+        this.$main.off('click').on('change', '.pickup-table .switchcluster select', (ev) => {
+            this.onChangeTableView(ev);
         }).on('click', 'a.process-finish', (ev) => {
-            const id  = $(ev.target).data('id')
-            const name  = $(ev.target).data('name')
-            var confirmFinish = this.loadCall(`${this.includeUrl}/dialog/?template=confirm_finish&parameter[id]=${id}&parameter[name]=${name}`);
-            confirmFinish.catch(err => this.loadErrorCallback(err)).then((response) => {
-                this.loadMessage(response, this.onFinishProcess);
-            });
+            this.onConfirm(ev, "confirm_finish", () => {this.onFinishProcess(ev)});
+
+
+
         }).on('click', 'a.process-finish-list', () => {
             var confirmFinishList = this.loadCall(`${this.includeUrl}/dialog/?template=confirm_finish_list`);
             confirmFinishList.catch(err => this.loadErrorCallback(err)).then((response) => {
                 this.loadMessage(response, this.onFinishProcess);
             });
         }).on('click', 'a.process-pickup', (ev) => {
-            this.ActionHandler.pickup(ev).then((response) => {
+            this.pickup(ev).then((response) => {
                 this.loadMessage(response, this.onPickupCallProcess);
             }).catch(err => this.loadErrorCallback(err));
         }).on('click', '.process-notification-send', (ev) => {
