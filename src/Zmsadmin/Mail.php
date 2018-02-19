@@ -23,8 +23,9 @@ class Mail extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $selectedProcessId = Validator::param('selectedprocess')->isNumber()->getValue();
+        $success = Validator::param('success')->isString()->getValue();
+        $error = Validator::param('error')->isString()->getValue();
         $dialog = Validator::param('dialog')->isNumber()->getValue();
-        $success = Validator::param('result')->isString()->getValue();
         $sendStatus = Validator::param('status')->isString()->isBiggerThan(2)->getValue();
         $department = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/department/')->getEntity();
         $formResponse = null;
@@ -36,15 +37,17 @@ class Mail extends BaseController
             $process->status = ($sendStatus) ? $sendStatus : $process->status;
             $formResponse = $this->writeValidatedMail($process, $department);
             if ($formResponse instanceof Entity) {
+                $query = [
+                    'selectedprocess' => $process->id,
+                    'dialog' => $dialog,
+                    'status' => $sendStatus,
+                ];
+                $message = ($formResponse->hasId()) ? ['success' => 'mail_sent'] : ['error' => 'mail_failed'];
+                $query = array_merge($message, $query);
                 return \BO\Slim\Render::redirect(
                     'mail',
                     [],
-                    [
-                        'selectedprocess' => $process->id,
-                        'dialog' => $dialog,
-                        'status' => $sendStatus,
-                        'result' => ($formResponse->hasId()) ? 'success' : 'error'
-                    ]
+                    $query
                 );
             }
         }
@@ -58,9 +61,10 @@ class Mail extends BaseController
                 'workstation' => $workstation,
                 'department' => $department,
                 'process' => $process,
+                'success' => $success,
+                'error' => $error,
                 'status' => $sendStatus,
                 'dialog' => $dialog,
-                'result' => $success,
                 'form' => $formResponse,
                 'redirect' => $workstation->getVariantName()
             )

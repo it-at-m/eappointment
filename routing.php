@@ -182,6 +182,9 @@ use \Psr\Http\Message\ResponseInterface;
  \App::$slim->get('/pickup/', '\BO\Zmsadmin\Pickup')
      ->setName("pickup");
 
+ \App::$slim->get('/pickup/queue/', '\BO\Zmsadmin\PickupQueue')
+     ->setName("pickup_queue");
+
  \App::$slim->delete('/pickup/delete/{id:\d+}/', '\BO\Zmsadmin\PickupDelete')
      ->setName("pickup_delete");
 

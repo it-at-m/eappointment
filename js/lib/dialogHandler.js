@@ -8,8 +8,8 @@ class DialogHandler {
         this.$main = $(element);
         this.response = options.response;
         this.callback = options.callback || (() => {});
-        this.nextCall = options.nextCall || (() => {});
         this.loader = options.loader || (() => {});
+        this.handleLightbox = options.handleLightbox || (() => {});
         this.bindEvents();
         this.render();
     }
@@ -22,7 +22,6 @@ class DialogHandler {
                 content = message.get(0).outerHTML;
             }
         }
-
         if (content.length == 0) {
             new ExceptionHandler(this.$main, {'message': this.response});
         } else {
@@ -35,25 +34,15 @@ class DialogHandler {
     }
 
     bindEvents() {
-        this.$main.off().on('click', '.button-submit', (ev) => {
+        this.$main.off().on('click', '.button-ok', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
-            const sendData = this.$main.find('form').serializeArray();
-            sendData.push(
-                {'name': 'submit', 'value':'form'},
-                {'name': 'dialog', 'value':1}
-            );
-            const url = this.$main.find('form').attr('action');
-            this.loader(url, 'POST', $.param(sendData)).then((response) => this.callback(response));
-        }).on('click', '.button-cancel', (ev) => {
+            this.callback();
+        }).on('click', '.button-abort', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
-            this.callback()
-        }).on('click', '.button-call', (ev) => {
-            ev.preventDefault();
-            ev.stopPropagation();
-            this.nextCall()
-        });;
+            this.handleLightbox();
+        });
     }
 
     static hideMessages()

@@ -7,6 +7,7 @@ class MessageHandler {
         this.$main = $(element)
         this.message = options.message;
         this.callback = options.callback || (() => {});
+        this.handleLightbox = options.handleLightbox || (() => {});
         this.bindEvents();
         this.render()
     }
@@ -32,10 +33,14 @@ class MessageHandler {
     }
 
     bindEvents() {
-        this.$main.off().on('click', '.btn', (ev) => {
+        this.$main.off().on('click', '.button-ok', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
-            this.callback($(ev.target).data('action'), $(ev.target).attr('href'), ev);
+            this.callback();
+        }).on('click', '.button-abort', (ev) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            this.handleLightbox();
         });
     }
 }
