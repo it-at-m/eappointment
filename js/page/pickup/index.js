@@ -1,5 +1,5 @@
 import BaseView from '../../lib/baseview'
-import { stopEvent, showSpinner } from '../../lib/utils'
+import { stopEvent, showSpinner, hideSpinner } from '../../lib/utils'
 import PickupTableView from '../../block/pickup/table'
 import $ from 'jquery'
 
@@ -9,7 +9,7 @@ class View extends BaseView {
     constructor (element, options) {
         super(element);
         this.$main = $(element);
-        this.element = $(element);
+        this.selectedProcess = options['selected-process'];
         this.includeUrl = options.includeurl;
         this.bindPublicMethods(
             'bindEvents',
@@ -19,9 +19,12 @@ class View extends BaseView {
             'onFinishProcess',
             'onFinishProcessList',
             'onPickupCall',
-            'onMailSent',
             'onNotificationSent',
-            'onCancelProcess'
+            'onNotificationCustomSent',
+            'onMailSent',
+            'onMailCustomSent',
+            'onCancelProcess',
+            'onProcessNotFound'
         );
         this.loadAllPartials().then(() => this.bindEvents());
     }
@@ -43,23 +46,27 @@ class View extends BaseView {
       });
     }
 
-    onFinishProcess (event) {
-        stopEvent(event);
-        showSpinner(this.$main);
-        const processId  = $(event.target).data('id');
-        this.loadCall(`${this.includeUrl}/pickup/delete/${processId}/`, 'DELETE').then((response) => {
-              this.loadMessage(response, () => {
-                  this.loadAllPartials();
-              });
-        });
-    }
-
     onCancelProcess (event) {
+        this.selectedProcess = null;
         stopEvent(event);
         return this.loadCall(`${this.includeUrl}/pickup/call/cancel/`).then((response) => {
             this.loadMessage(response, () => {
                 this.loadAllPartials();
             });
+        });
+    }
+
+    onFinishProcess (event, processId) {
+        this.selectedProcess = null;
+        if (event) {
+            stopEvent(event);
+            processId  = $(event.target).data('id')
+        }
+        showSpinner(this.$main);
+        this.loadCall(`${this.includeUrl}/pickup/delete/${processId}/`, 'DELETE').then((response) => {
+              this.loadMessage(response, () => {
+                  this.loadAllPartials();
+              });
         });
     }
 
@@ -87,21 +94,85 @@ class View extends BaseView {
         return deleteFromQueue();
     }
 
-    onPickupCall(event, callback) {
-        stopEvent(event);
-        const processId  = $(event.target).data('id')
+    onPickupCall(event, callback, processId) {
+        if (event) {
+            stopEvent(event);
+            processId  = $(event.target).data('id')
+        }
         return this.loadCall(`${this.includeUrl}/pickup/call/${processId}/`).then((response) => {
                 this.loadDialog(response, callback);
             }
         );
     }
 
-    onMailSent () {
-        this.cleanReload()
+    onMailSent (event) {
+        stopEvent(event);
+        showSpinner(this.$main);
+        const processId = $(event.target).data('process');
+        this.loadCall(`${this.includeUrl}/pickup/mail/?selectedprocess=${processId}`).then(
+            (response) => this.loadMessage(response, () => {
+                this.loadAllPartials();
+            })
+        );
     }
 
-    onNotificationSent () {
-        this.cleanReload()
+    onMailCustomSent (event) {
+        stopEvent(event);
+        const processId = $(event.target).data('process');
+        const sendStatus = $(event.target).data('status');
+        this.loadCall(`${this.includeUrl}/mail/?selectedprocess=${processId}&status=${sendStatus}&dialog=1`).then((response) => {
+            this.loadDialog(response, (() => {
+                showSpinner(this.$main);
+                const sendData = $('.dialog form').serializeArray();
+                sendData.push(
+                    {'name': 'submit', 'value':'form'},
+                    {'name': 'dialog', 'value':1}
+                );
+                this.loadCall(`${this.includeUrl}/mail/`, 'POST', $.param(sendData)).then(
+                    (response) => this.loadMessage(response, () => {
+                        this.loadAllPartials();
+                    })
+                );
+            }))
+        });
+    }
+
+    onNotificationSent (event) {
+        stopEvent(event);
+        showSpinner(this.$main);
+        const processId = $(event.target).data('process');
+        this.loadCall(`${this.includeUrl}/pickup/notification/?selectedprocess=${processId}`).then(
+            (response) => this.loadMessage(response, () => {
+                this.loadAllPartials();
+            })
+        );
+    }
+
+    onNotificationCustomSent (event) {
+        stopEvent(event);
+        const processId = $(event.target).data('process');
+        const sendStatus = $(event.target).data('status');
+        this.loadCall(`${this.includeUrl}/notification/?selectedprocess=${processId}&status=${sendStatus}&dialog=1`).then((response) => {
+            this.loadDialog(response, (() => {
+                showSpinner(this.$main);
+                const sendData = $('.dialog form').serializeArray();
+                sendData.push(
+                    {'name': 'submit', 'value':'form'},
+                    {'name': 'dialog', 'value':1}
+                );
+                this.loadCall(`${this.includeUrl}/notification/`, 'POST', $.param(sendData)).then(
+                    (response) => this.loadMessage(response, () => {
+                        this.loadAllPartials();
+                    })
+                );
+            }))
+        });
+    }
+
+    onProcessNotFound () {
+        this.selectedProcess = null;
+        console.log("NOT FOUND");
+        this.loadAllPartials();
     }
 
     loadAllPartials() {
@@ -112,17 +183,22 @@ class View extends BaseView {
     }
 
     loadPickupTable () {
+        hideSpinner(this.$main);
         return new PickupTableView(this.$main, {
             source: 'pickup',
             includeUrl: this.includeUrl,
+            selectedProcess: this.selectedProcess,
             onChangeTableView: this.onChangeTableView,
             onConfirm: this.onConfirm,
             onFinishProcess: this.onFinishProcess,
             onFinishProcessList: this.onFinishProcessList,
             onPickupCall: this.onPickupCall,
-            onMailSent: this.onMailSent,
             onNotificationSent: this.onNotificationSent,
-            onCancelProcess: this.onCancelProcess
+            onNotificationCustomSent: this.onNotificationCustomSent,
+            onMailSent: this.onMailSent,
+            onMailCustomSent: this.onMailCustomSent,
+            onCancelProcess: this.onCancelProcess,
+            onProcessNotFound: this.onProcessNotFound
         })
     }
 

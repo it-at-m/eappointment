@@ -26,21 +26,15 @@ class PickupHandheld extends BaseController
                 $this->readPickupProcess($input['selectedprocess']) :
                 null;
         }
-        $processList = \App::$http->readGetResult('/workstation/process/pickup/', ['resolveReferences' => 1])
-            ->getCollection();
-        $department = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/department/')->getEntity();
 
         return \BO\Slim\Render::withHtml(
             $response,
             'page/pickupHandheld.twig',
             array(
               'title' => 'Abholer verwalten',
-              'menuActive' => 'pickup',
               'workstation' => $workstation->getArrayCopy(),
-              'department' => $department,
-              'cluster' => (new Helper\ClusterHelper($workstation))->getEntity(),
-              'processList' => $processList,
-              'selectedProcess' => $selectedProcess
+              'menuActive' => 'pickup',
+              'selectedProcess' => ($selectedProcess) ? $selectedProcess->getId() : null
             )
         );
     }

@@ -21,15 +21,9 @@ class View extends BaseView {
 
     setCallbacks(options) {
         this.onChangeTableView = options.onChangeTableView;
-        this.onConfirm = options.onConfirm;
         this.onPickupCall = options.onPickupCall;
         this.onFinishProcess = options.onFinishProcess;
         this.onCancelProcess = options.onCancelProcess;
-        this.onFinishProcessList = options.onFinishProcessList;
-        this.onNotificationSent = options.onNotificationSent;
-        this.onNotificationCustomSent = options.onNotificationCustomSent;
-        this.onMailSent = options.onMailSent;
-        this.onMailCustomSent = options.onMailCustomSent;
         this.onProcessNotFound = options.onProcessNotFound;
     }
 
@@ -41,28 +35,14 @@ class View extends BaseView {
                 }, this.selectedProcess);
             });
         } else {
-            this.loadContent(`${this.includeUrl}/pickup/queue/`, 'GET');
+            this.loadContent(`${this.includeUrl}/pickup/queue/?handheld=1`, 'GET');
         }
 
     }
 
     bindEvents() {
-        this.$main.off('click').on('change', '.pickup-table .switchcluster select', (ev) => {
-            this.onChangeTableView(ev);
-        }).on('click', 'a.process-finish', (ev) => {
-            this.onConfirm(ev, "confirm_finish", () => {this.onFinishProcess(ev)});
-        }).on('click', 'a.process-finish-list', (ev) => {
-            this.onConfirm(ev, "confirm_finish_list", () => {this.onFinishProcessList(ev)});
-        }).on('click', 'a.process-pickup', (ev) => {
+        this.$main.off('click').on('click', 'a.process-pickup', (ev) => {
             this.onPickupCall(ev, () => {this.onFinishProcess(ev)});
-        }).on('click', '.process-notification-send', (ev) => {
-            this.onNotificationSent(ev);
-        }).on('click', '.process-custom-notification-send', (ev) => {
-            this.onNotificationCustomSent(ev);
-        }).on('click', '.process-mail-send', (ev) => {
-            this.onMailSent(ev);
-        }).on('click', '.process-custom-mail-send', (ev) => {
-            this.onMailCustomSent(ev);
         });
     }
 }

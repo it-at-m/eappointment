@@ -16,6 +16,7 @@ class DialogHandler {
     }
 
     render() {
+        DialogHandler.hideMessages(true);
         var content = $(this.response).filter('div.dialog');
         if (content.length == 0) {
             var message = $(this.response).find('div.dialog');
@@ -31,7 +32,7 @@ class DialogHandler {
 
         $('textarea.maxchars').each(function() {
             maxChars(this);
-        })
+        });
     }
 
     bindEvents() {

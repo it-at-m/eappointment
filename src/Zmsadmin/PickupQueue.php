@@ -17,14 +17,23 @@ class PickupQueue extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        $department = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/department/')->getEntity();
         $processList = \App::$http->readGetResult('/workstation/process/pickup/', ['resolveReferences' => 1])
             ->getCollection();
 
+        $validator = $request->getAttribute('validator');
+        $handheld = $validator->getParameter('handheld')->isNumber()->setDefault(0)->getValue();
+        $template = ($handheld) ? 'table-handheld' : 'table';
+
         return \BO\Slim\Render::withHtml(
             $response,
-            'block/pickup/table.twig',
+            'block/pickup/'. $template .'.twig',
             array(
-              'processList' => $processList
+              'workstation' => $workstation,
+              'department' => $department,
+              'processList' => $processList,
+              'cluster' => (new Helper\ClusterHelper($workstation))->getEntity()
             )
         );
     }
