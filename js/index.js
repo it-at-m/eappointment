@@ -19,8 +19,9 @@ import EmergencyView from './block/emergency'
 import CounterView from './page/counter'
 import WorkstationView from './page/workstation'
 import PickupView from './page/pickup'
+import PickupHandheldView from './page/pickup/handheld'
+import PickupKeyboardHandheldView from "./page/pickup/keyboard-handheld"
 import StatisticView from './page/statistic'
-import PickupKeyboardHandheldView from "./block/pickup/keyboard-handheld"
 
 import ScopeSelectView from './block/scopeselectform'
 //import AvailabilityDayPage from './page/availabilityDay'
@@ -41,7 +42,6 @@ window.$ = $;
 moment.locale('de')
 
 // Init Views
-$('.pickup-keyboard-handheld').each(function() { new PickupKeyboardHandheldView(this);});
 $('.emergency').each(function() {
     new EmergencyView(this, getDataAttributes(this));
 })
@@ -62,9 +62,17 @@ $('[data-scope-select-form]').each(function() {
     new ScopeSelectView(this, getDataAttributes(this));
 })
 
-$('.pickup-view, .pickup-handheld-view').each(function() {
+$('.pickup-view').each(function() {
     new PickupView(this, getDataAttributes(this));
 })
+
+$('.pickup-handheld-view').each(function() {
+    new PickupHandheldView(this, getDataAttributes(this));
+})
+
+$('.pickup-keyboard-handheld').each(function() {
+    new PickupKeyboardHandheldView(this);
+});
 
 $('.client-processed').each(function() {
     new StatisticView(this, getDataAttributes(this));

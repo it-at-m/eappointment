@@ -17,19 +17,19 @@ class Pickup extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
-        $department = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/department/')->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        $validator = $request->getAttribute('validator');
+        $selectedProcess = $validator->getParameter('selectedprocess')->isString()->getValue();
 
         return \BO\Slim\Render::withHtml(
             $response,
             'page/pickup.twig',
             array(
               'title' => 'Abholer verwalten',
+              'workstation' => $workstation,
               'menuActive' => 'pickup',
-              'workstation' => $workstation->getArrayCopy(),
-              'department' => $department,
               'source' => 'pickup',
-              'cluster' => (new Helper\ClusterHelper($workstation))->getEntity()
+              'selectedProcess' => $selectedProcess
             )
         );
     }

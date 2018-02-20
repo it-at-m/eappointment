@@ -5,6 +5,7 @@ class View extends BaseView {
 
     constructor (element, options) {
         super(element, options);
+        this.$main = $(element);
         this.setOptions(options);
         this.setCallbacks(options);
         this.bindPublicMethods('load');
@@ -15,6 +16,7 @@ class View extends BaseView {
 
     setOptions(options) {
         this.includeUrl = options.includeUrl || "";
+        this.selectedProcess = options.selectedProcess;
     }
 
     setCallbacks(options) {
@@ -24,25 +26,24 @@ class View extends BaseView {
         this.onFinishProcess = options.onFinishProcess;
         this.onCancelProcess = options.onCancelProcess;
         this.onFinishProcessList = options.onFinishProcessList;
-        this.onMailSent = options.onMailSent;
         this.onNotificationSent = options.onNotificationSent;
+        this.onNotificationCustomSent = options.onNotificationCustomSent;
+        this.onMailSent = options.onMailSent;
+        this.onMailCustomSent = options.onMailCustomSent;
+        this.onProcessNotFound = options.onProcessNotFound;
     }
 
     load() {
-        const processId = this.$main.find('[data-selectedprocess]').data('selectedprocess');
-        if (processId) {
-            this.pickupDirect(processId).catch(err => this.loadErrorCallback(err)).then((response) => {
-                this.loadMessage(response, this.onPickupCallProcess);
+        if (this.selectedProcess) {
+            this.loadCall(`${this.includeUrl}/pickup/call/${this.selectedProcess}/`).then(() => {
+                this.onPickupCall(null, () => {
+                    this.onFinishProcess(null, this.selectedProcess);
+                }, this.selectedProcess);
             });
         } else {
-            return this.loadContent(`${this.includeUrl}/pickup/queue/`, 'GET').catch(err => this.loadErrorCallback(err));
+            this.loadContent(`${this.includeUrl}/pickup/queue/`, 'GET');
         }
 
-    }
-
-    pickupDirect (processId) {
-        const url = `${this.includeUrl}/pickup/call/${processId}/`
-        return this.loadCall(url);
     }
 
     bindEvents() {
@@ -54,31 +55,14 @@ class View extends BaseView {
             this.onConfirm(ev, "confirm_finish_list", () => {this.onFinishProcessList(ev)});
         }).on('click', 'a.process-pickup', (ev) => {
             this.onPickupCall(ev, () => {this.onFinishProcess(ev)});
-
         }).on('click', '.process-notification-send', (ev) => {
-            const url = `${this.includeUrl}/pickup/notification/`;
-            this.ActionHandler.sendNotification(ev, url).then((response) => {
-                this.loadMessage(response, this.onNotificationSent);
-            }).catch(err => this.loadErrorCallback(err));
+            this.onNotificationSent(ev);
         }).on('click', '.process-custom-notification-send', (ev) => {
-            const url = `${this.includeUrl}/notification/`;
-            this.ActionHandler.sendNotification(ev, url).then((response) => {
-                this.loadDialog(response, this.onNotificationSent);
-            }).catch(err => this.loadErrorCallback(err));
+            this.onNotificationCustomSent(ev);
         }).on('click', '.process-mail-send', (ev) => {
-            const url = `${this.includeUrl}/pickup/mail/`;
-            this.ActionHandler.sendMail(ev, url)
-                .then((response) => {
-                    this.loadMessage(response, this.onMailSent)
-                })
-                .catch(err => this.loadErrorCallback(err));
+            this.onMailSent(ev);
         }).on('click', '.process-custom-mail-send', (ev) => {
-            const url = `${this.includeUrl}/mail/`;
-            this.ActionHandler.sendMail(ev, url)
-                .then((response) => {
-                    this.loadDialog(response, this.onMailSent)
-                })
-                .catch(err => this.loadErrorCallback(err));
+            this.onMailCustomSent(ev);
         });
     }
 }

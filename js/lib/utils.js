@@ -77,6 +77,10 @@ export const lightbox = (parentElement, onBackgroundClick) => {
         ev.stopPropagation();
     })
 
+
+    if ($(parentElement).find('.lightbox').length) {
+        $(parentElement).find('.lightbox').remove();
+    }
     $(parentElement).append(lightboxElement)
 
     return {

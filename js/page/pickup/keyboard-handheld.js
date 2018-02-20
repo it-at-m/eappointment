@@ -1,4 +1,3 @@
-
 import BaseView from '../../lib/baseview';
 import $ from "jquery";
 
@@ -7,13 +6,21 @@ class View extends BaseView {
 
     constructor (element) {
         super(element);
+        this.$main = $(element);
         this.minNumberLength = 5;
         this.bindPublicMethods('appendNumber', 'deleteNumber', 'clearNumbers', 'checkNumber');
-        console.log("Found pickup-keyboard-handheld");
-        this.$.find('button.ziffer').on('click', this.appendNumber);
-        this.$.find('button.deleteNumber').on('click', this.deleteNumber);
-        this.$.find('button.clearNumbers').on('click', this.clearNumbers);
+        this.bindEvents();
         this.$numberInput = this.$.find('#Nummer');
+    }
+
+    bindEvents() {
+      this.$main.off('click').on('click', 'button.ziffer', (event) => {
+          this.appendNumber(event)
+      }).on('click', 'button.deleteNumber', () => {
+          this.deleteNumber()
+      }).on('click', 'button.clearNumbers', () => {
+          this.clearNumbers()
+      });
     }
 
     appendNumber (event) {

@@ -54,7 +54,6 @@ class BaseView extends ErrorHandler {
                 }
             })
         });
-        DialogHandler.hideMessages();
         return this.loadPromise;
     }
 
@@ -68,7 +67,6 @@ class BaseView extends ErrorHandler {
         if (method === 'POST' || method === 'PUT') {
             ajaxSettings.data = data;
         }
-        DialogHandler.hideMessages();
         return new Promise((resolve, reject) => {
             $.ajax(url, ajaxSettings).done(responseData => {
                 resolve(responseData);
@@ -111,7 +109,10 @@ class BaseView extends ErrorHandler {
 
     loadMessage (response, callback) {
         this.$main.find('.form-actions').hide();
-        const { lightboxContentElement, destroyLightbox } = lightbox(this.$main, () => {callback()});
+        const { lightboxContentElement, destroyLightbox } = lightbox(this.$main, () => {
+            destroyLightbox();
+            callback();
+        });
         new MessageHandler(lightboxContentElement, {
             message: response,
             callback: () => {

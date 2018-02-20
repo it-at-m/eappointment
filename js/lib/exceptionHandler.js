@@ -30,7 +30,8 @@ class ExceptionHandler {
             ev.preventDefault();
             ev.stopPropagation();
             var callback = $(ev.target).data('callback');
-            this.callback = this.parent[callback];
+            if (this.parent[callback])
+                this.callback = this.parent[callback];
             this.callback(ev);
         })
         /*setTimeout(() => {

@@ -28,9 +28,8 @@ class MessageHandler {
             if ($(this.$main.get(0)).hasClass('lightbox__content')) {
                 this.$main.html(content.get(0).outerHTML);
             } else {
-                this.$main.find('.body').append(content.get(0).outerHTML);
+                this.$main.find('.body').prepend(content.get(0).outerHTML);
             }
-
         }
     }
 
