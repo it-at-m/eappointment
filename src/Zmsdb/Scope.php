@@ -96,6 +96,7 @@ class Scope extends Base
                     $scopeList->addEntity($entity);
                 } else {
                     if ($entity instanceof Entity) {
+                        $entity = $this->readResolvedReferences($entity, $resolveReferences);
                         $scopeList->addEntity($entity);
                     }
                 }
@@ -132,6 +133,7 @@ class Scope extends Base
                     $scopeList->addEntity($entity);
                 } else {
                     if ($entity instanceof Entity) {
+                        $entity = $this->readResolvedReferences($entity, $resolveReferences);
                         $scopeList->addEntity($entity);
                     }
                 }
@@ -150,6 +152,7 @@ class Scope extends Base
         if (count($result)) {
             foreach ($result as $entity) {
                 if ($entity instanceof Entity) {
+                    $entity = $this->readResolvedReferences($entity, $resolveReferences);
                     $scopeList->addEntity($entity);
                 }
             }
@@ -169,7 +172,7 @@ class Scope extends Base
     public function readIsOpened($scopeId, $now)
     {
         $isOpened = false;
-        $availabilityList = (new Availability())->readOpeningHoursListByDate($scopeId, $now);
+        $availabilityList = (new Availability())->readOpeningHoursListByDate($scopeId, $now, 2);
         if ($availabilityList->isOpened($now)) {
             $isOpened = true;
         }

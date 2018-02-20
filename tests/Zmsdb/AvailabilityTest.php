@@ -28,7 +28,7 @@ class AvailabilityTest extends Base
     public function testEndAvailability()
     {
         $query = new Query();
-        $entity = $query->readEntity(64054, 0); //Egon-Erwin-Kisch scope#135 for monday
+        $entity = $query->readEntity(64054, 2); //Egon-Erwin-Kisch scope#135 for monday
         $dateTime = new DateTime("2016-05-30 10:00");
         $now = new \DateTimeImmutable("2016-04-01 11:55");
         $this->assertFalse(
