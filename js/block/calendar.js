@@ -17,7 +17,7 @@ class View extends BaseView {
         this.bindPublicMethods('load');
         $.ajaxSetup({ cache: false });
         this.bindEvents();
-        console.log('Component: Calendar', this, options);
+        //console.log('Component: Calendar', this, options);
         this.load();
     }
 

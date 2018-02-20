@@ -206,6 +206,9 @@ use \Psr\Http\Message\ResponseInterface;
  \App::$slim->get('/pickup/call/{id:\d+}/', '\BO\Zmsadmin\PickupCall')
      ->setName("pickup_call");
 
+ \App::$slim->get('/pickup/call/cancel/', '\BO\Zmsadmin\PickupCallCancel')
+     ->setName("pickup_call_cancel");
+
 /*
  * ---------------------------------------------------------------------------
  * Process

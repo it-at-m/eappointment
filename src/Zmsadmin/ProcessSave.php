@@ -30,7 +30,7 @@ class ProcessSave extends BaseController
         $processId = Validator::value($args['id'])->isNumber()->getValue();
         $process = \App::$http->readGetResult('/process/'. $processId .'/')->getEntity();
         $input = $request->getParsedBody();
-        $process = $this->writeSavedProcess($request, $response, $process, $input);
+        $process = $this->writeSavedProcess($request, $process, $input);
         $success = ($process->toProperty()->queue->withAppointment->get()) ?
           'process_updated' :
           'process_withoutappointment_updated';
@@ -45,7 +45,7 @@ class ProcessSave extends BaseController
         );
     }
 
-    protected function writeSavedProcess($request, $response, $process, $input)
+    protected function writeSavedProcess($request, $process, $input)
     {
         $initiator = Validator::param('initiator')->isString()->getValue();
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();

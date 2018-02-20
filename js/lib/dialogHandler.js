@@ -8,6 +8,7 @@ class DialogHandler {
         this.$main = $(element);
         this.response = options.response;
         this.callback = options.callback || (() => {});
+        this.parent = options.parent;
         this.loader = options.loader || (() => {});
         this.handleLightbox = options.handleLightbox || (() => {});
         this.bindEvents();
@@ -37,21 +38,29 @@ class DialogHandler {
         this.$main.off().on('click', '.button-ok', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
-            this.callback();
+            this.callback(ev);
         }).on('click', '.button-abort', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
             this.handleLightbox();
+        }).on('click', '.button-callback', (ev) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            var callback = $(ev.target).data('callback');
+            this.callback = this.parent[callback];
+            this.callback(ev);
         });
     }
 
-    static hideMessages()
+    static hideMessages(instant = false)
     {
-        let message = $.find('.message');
-        if (message.length) {
+        let message = $.find('.message, .dialog');
+        if (message.length && ! instant) {
             setTimeout(() => {
                 $(message).not('.message-keep').fadeOut().remove();
             },5000)
+        } else if (message.length && instant) {
+            $(message).not('.message-keep').fadeOut().remove();
         }
     }
 }

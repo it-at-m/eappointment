@@ -20,8 +20,10 @@ class View extends BaseView {
     setCallbacks(options) {
         this.onChangeTableView = options.onChangeTableView;
         this.onConfirm = options.onConfirm;
+        this.onPickupCall = options.onPickupCall;
         this.onFinishProcess = options.onFinishProcess;
-        this.onPickupCallProcess = options.onPickupCallProcess;
+        this.onCancelProcess = options.onCancelProcess;
+        this.onFinishProcessList = options.onFinishProcessList;
         this.onMailSent = options.onMailSent;
         this.onNotificationSent = options.onNotificationSent;
     }
@@ -38,15 +40,6 @@ class View extends BaseView {
 
     }
 
-    pickup (ev) {
-        console.log("Pickup Button clicked", ev);
-        ev.preventDefault();
-        ev.stopPropagation();
-        const processId  = $(ev.target).data('id')
-        const url = `${this.includeUrl}/pickup/call/${processId}/`
-        return this.loadCall(url);
-    }
-
     pickupDirect (processId) {
         const url = `${this.includeUrl}/pickup/call/${processId}/`
         return this.loadCall(url);
@@ -57,18 +50,11 @@ class View extends BaseView {
             this.onChangeTableView(ev);
         }).on('click', 'a.process-finish', (ev) => {
             this.onConfirm(ev, "confirm_finish", () => {this.onFinishProcess(ev)});
-
-
-
-        }).on('click', 'a.process-finish-list', () => {
-            var confirmFinishList = this.loadCall(`${this.includeUrl}/dialog/?template=confirm_finish_list`);
-            confirmFinishList.catch(err => this.loadErrorCallback(err)).then((response) => {
-                this.loadMessage(response, this.onFinishProcess);
-            });
+        }).on('click', 'a.process-finish-list', (ev) => {
+            this.onConfirm(ev, "confirm_finish_list", () => {this.onFinishProcessList(ev)});
         }).on('click', 'a.process-pickup', (ev) => {
-            this.pickup(ev).then((response) => {
-                this.loadMessage(response, this.onPickupCallProcess);
-            }).catch(err => this.loadErrorCallback(err));
+            this.onPickupCall(ev, () => {this.onFinishProcess(ev)});
+
         }).on('click', '.process-notification-send', (ev) => {
             const url = `${this.includeUrl}/pickup/notification/`;
             this.ActionHandler.sendNotification(ev, url).then((response) => {

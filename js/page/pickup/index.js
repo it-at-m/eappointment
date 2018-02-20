@@ -1,5 +1,5 @@
 import BaseView from '../../lib/baseview'
-import { stopEvent } from '../../lib/utils'
+import { stopEvent, showSpinner } from '../../lib/utils'
 import PickupTableView from '../../block/pickup/table'
 import $ from 'jquery'
 
@@ -8,6 +8,7 @@ class View extends BaseView {
 
     constructor (element, options) {
         super(element);
+        this.$main = $(element);
         this.element = $(element);
         this.includeUrl = options.includeurl;
         this.bindPublicMethods(
@@ -16,9 +17,11 @@ class View extends BaseView {
             'onConfirm',
             'loadPickupTable',
             'onFinishProcess',
-            'onPickupCallProcess',
+            'onFinishProcessList',
+            'onPickupCall',
             'onMailSent',
-            'onNotificationSent'
+            'onNotificationSent',
+            'onCancelProcess'
         );
         this.loadAllPartials().then(() => this.bindEvents());
     }
@@ -42,17 +45,55 @@ class View extends BaseView {
 
     onFinishProcess (event) {
         stopEvent(event);
+        showSpinner(this.$main);
         const processId  = $(event.target).data('id');
         this.loadCall(`${this.includeUrl}/pickup/delete/${processId}/`, 'DELETE').then((response) => {
               this.loadMessage(response, () => {
                   this.loadAllPartials();
               });
         });
-
     }
 
-    onPickupCallProcess () {
-        this.cleanReload()
+    onCancelProcess (event) {
+        stopEvent(event);
+        return this.loadCall(`${this.includeUrl}/pickup/call/cancel/`).then((response) => {
+            this.loadMessage(response, () => {
+                this.loadAllPartials();
+            });
+        });
+    }
+
+    onFinishProcessList(event) {
+        stopEvent(event);
+        showSpinner(this.$main);
+        var idList = this.$main.find(".process-finish").map((index, item) => {
+            return $(item).data('id');
+        }).get();
+        var deleteFromQueue = () => {
+            let processId = idList.shift();
+            if (processId) {
+                let url = `${this.includeUrl}/pickup/delete/${processId}/`;
+                if (idList.length == 0) {
+                    url = url + "?list=1";
+                    return this.loadCall(url, 'DELETE').then((response) => {
+                        this.loadMessage(response, () => {
+                            this.loadAllPartials();
+                        });
+                    });
+                }
+                return this.loadCall(url, 'DELETE').then(deleteFromQueue);
+            }
+        }
+        return deleteFromQueue();
+    }
+
+    onPickupCall(event, callback) {
+        stopEvent(event);
+        const processId  = $(event.target).data('id')
+        return this.loadCall(`${this.includeUrl}/pickup/call/${processId}/`).then((response) => {
+                this.loadDialog(response, callback);
+            }
+        );
     }
 
     onMailSent () {
@@ -77,9 +118,11 @@ class View extends BaseView {
             onChangeTableView: this.onChangeTableView,
             onConfirm: this.onConfirm,
             onFinishProcess: this.onFinishProcess,
-            onPickupCallProcess: this.onPickupCallProcess,
+            onFinishProcessList: this.onFinishProcessList,
+            onPickupCall: this.onPickupCall,
             onMailSent: this.onMailSent,
-            onNotificationSent: this.onNotificationSent
+            onNotificationSent: this.onNotificationSent,
+            onCancelProcess: this.onCancelProcess
         })
     }
 

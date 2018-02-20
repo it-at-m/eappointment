@@ -99,11 +99,29 @@ export const getUrlParameters = () => {
                    .split("&")
                    .reduce((carry, current) => {
                        const [key, value] = current.split('=')
-
                        if (key) {
                            return Object.assign({}, carry, {[key]: value})
                        } else {
                            return carry
                        }
                    }, {})
+}
+
+export const showSpinner = ($container = null) => {
+    var loaderContainer = $('#main');
+    if ($container !== null) {
+        loaderContainer = $container.find('.body').first();
+    }
+    loaderContainer.prepend('<div class="loader"><div class="spinner"></div></div>');
+}
+
+export const hideSpinner = ($container = null) => {
+    var loaderContainer = $('#main');
+    if ($container !== null) {
+        loaderContainer = $container.find('.body').first();
+        loaderContainer.find('.loader').detach();
+    } else {
+      loaderContainer.find('.loader').first().detach();
+    }
+
 }

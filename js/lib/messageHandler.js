@@ -1,5 +1,6 @@
 import $ from 'jquery';
 import ExceptionHandler from './exceptionHandler'
+import DialogHandler from './dialogHandler'
 
 class MessageHandler {
 
@@ -23,6 +24,7 @@ class MessageHandler {
         if (content.length == 0) {
             new ExceptionHandler(this.$main, {'message': this.message, 'callback': this.callback});
         } else {
+            DialogHandler.hideMessages(true);
             if ($(this.$main.get(0)).hasClass('lightbox__content')) {
                 this.$main.html(content.get(0).outerHTML);
             } else {

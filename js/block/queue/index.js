@@ -61,7 +61,7 @@ class View extends BaseView {
         }).on('click', '.queue-table .calendar-navigation .today', (ev) => {
             this.onDateToday($(ev.target).attr('data-date'), this)
         }).on('click', '.queue-table .process-notification-send', (ev) => {
-            this.onConfirm(ev, "confirm_notification_reminder", () => {this.onSendNotificationReminder(ev)});
+            this.onConfirm(ev, "confirm_notification_reminder", () => {this.onSendNotificationReminder(this.$main, ev)});
         }).on('click', '.process-custom-mail-send', (ev) => {
             this.onSendCustomMail(this.$main, ev);
         }).on('click', '.process-custom-notification-send', (ev) => {
