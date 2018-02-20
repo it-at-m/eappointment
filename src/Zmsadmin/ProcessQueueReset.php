@@ -26,13 +26,13 @@ class ProcessQueueReset extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $validator = $request->getAttribute('validator');
         $processId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
+        $selectedDate = $validator->getParameter('selecteddate')->isNumber()->getValue();
         if ($processId) {
             $selectedProcess = \App::$http->readGetResult('/process/'. $processId .'/')->getEntity();
         }
-        $queuedProcess = \App::$http->readPostResult('/process/status/queued/', $selectedProcess)->getEntity();
+        \App::$http->readPostResult('/process/status/queued/', $selectedProcess);
 
         return \BO\Slim\Render::redirect(
             'queue_table',

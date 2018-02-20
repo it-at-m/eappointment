@@ -48,7 +48,8 @@ class AppointmentFormFreeProcessList extends BaseController
                 'selectedTime' => $selectedTime,
                 'freeProcessList' => $freeProcessList,
                 'selectedScope' => $scope,
-                'selectedProcess' => $selectedProcess
+                'selectedProcess' => $selectedProcess,
+                'slotsCount' => $slotsCount
             )
         );
     }

@@ -1,6 +1,6 @@
 /* global window */
 import BaseView from '../../lib/baseview'
-import { stopEvent } from '../../lib/utils'
+import { stopEvent, showSpinner, hideSpinner } from '../../lib/utils'
 import $ from 'jquery'
 import moment from 'moment'
 import settings from '../../settings'
@@ -180,10 +180,12 @@ class View extends BaseView {
                   this.loadCalendar();
             });
         } else {
+          showSpinner($container);
           return this.loadCall(`${this.includeUrl}/appointmentForm/`, 'POST', {'delete': 1, 'processId': processId, 'initiator': this.initiator}).then((response) => {
                 this.loadMessage(response, () => {
                     this.loadQueueTable();
                     this.loadCalendar();
+                    hideSpinner();
                 });
           });
         }
@@ -203,6 +205,7 @@ class View extends BaseView {
 
     onQueueProcess ($container, event) {
         stopEvent(event);
+        showSpinner($container);
         const sendData = $container.find('form').serializeArray();
         sendData.push({name: 'queue', value: 1});
         this.loadContent(`${this.includeUrl}/appointmentForm/`, 'POST', sendData, $container).then(() => {
@@ -245,6 +248,7 @@ class View extends BaseView {
         const sendStatus = $(event.target).data('status');
         this.loadCall(`${this.includeUrl}/mail/?selectedprocess=${processId}&status=${sendStatus}&dialog=1`).then((response) => {
             this.loadDialog(response, (() => {
+                showSpinner($container);
                 const sendData = $('.dialog form').serializeArray();
                 sendData.push(
                     {'name': 'submit', 'value':'form'},
@@ -265,6 +269,7 @@ class View extends BaseView {
         const sendStatus = $(event.target).data('status');
         this.loadCall(`${this.includeUrl}/notification/?selectedprocess=${processId}&status=${sendStatus}&dialog=1`).then((response) => {
             this.loadDialog(response, (() => {
+                showSpinner($container);
                 const sendData = $('.dialog form').serializeArray();
                 sendData.push(
                     {'name': 'submit', 'value':'form'},
@@ -281,6 +286,7 @@ class View extends BaseView {
 
     onSendNotificationReminder (event) {
         stopEvent(event);
+        showSpinner();
         const processId = $(event.target).data('process');
         const sendData = {
             'selectedprocess': processId,

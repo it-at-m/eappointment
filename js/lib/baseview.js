@@ -4,10 +4,8 @@ import ErrorHandler from './errorHandler';
 import ExceptionHandler from './exceptionHandler';
 import MessageHandler from './messageHandler';
 import DialogHandler from './dialogHandler';
-import { lightbox } from './utils';
+import { lightbox, showSpinner, hideSpinner } from './utils';
 import { noOp } from './utils'
-
-const loaderHtml = '<div class="loader"><div class="spinner"></div></div>'
 
 class BaseView extends ErrorHandler {
 
@@ -19,33 +17,7 @@ class BaseView extends ErrorHandler {
         this.loadPromise = Promise.reject(null).catch(noOp);
     }
 
-    showSpinner(container = null)
-    {
-        var loaderContainer = this.$main.find('.body').first();
-        if (container !== null) {
-            if (loaderContainer.length < 1)
-                loaderContainer = container;
-        } else {
-            if (loaderContainer.length < 1)
-                loaderContainer = this.$main;
-        }
 
-
-        loaderContainer.prepend(loaderHtml);
-    }
-
-    hideSpinner(container = null)
-    {
-        var loaderContainer = this.$main.find('.body').first();
-        if (container !== null) {
-            if (loaderContainer.length < 1)
-                loaderContainer = container;
-        } else {
-            if (loaderContainer.length < 1)
-                loaderContainer = this.$main;
-        }
-        loaderContainer.find('.loader').detach();
-    }
 
     loadContent(url, method = 'GET', data = null, container = null, spinner = true) {
         if (container !== null) {
@@ -53,7 +25,7 @@ class BaseView extends ErrorHandler {
         }
 
         if (spinner) {
-            this.showSpinner(container);
+            showSpinner(this.$main);
         }
 
         const ajaxSettings = {
@@ -75,7 +47,7 @@ class BaseView extends ErrorHandler {
                         code: err.status,
                         message: err.responseText
                     });
-                    this.hideSpinner();
+                    hideSpinner(this.$main);
                 } else {
                     console.log('XHR load error', url, err);
                     reject(err);
@@ -88,7 +60,7 @@ class BaseView extends ErrorHandler {
 
     loadCall(url, method = 'GET', data = null, spinner = false) {
         if (spinner) {
-            this.showSpinner();
+            showSpinner(this.$main);
         }
         const ajaxSettings = {
             method
@@ -105,9 +77,10 @@ class BaseView extends ErrorHandler {
                 if (err.status >= 400 && isException) {
                     new ExceptionHandler(this.$main, {
                         code: err.status,
-                        message: err.responseText
+                        message: err.responseText,
+                        parent: this
                     });
-                    this.hideSpinner();
+                    hideSpinner(this.$main);
                 } else {
                     console.log('XHR load error', url, err);
                     reject(err);
@@ -157,6 +130,7 @@ class BaseView extends ErrorHandler {
                 callback();
                 destroyLightbox();
             },
+            parent: this,
             loader: this.loadCall,
             handleLightbox: destroyLightbox
         })
