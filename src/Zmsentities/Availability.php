@@ -4,6 +4,7 @@ namespace BO\Zmsentities;
 
 /**
  * @SuppressWarnings(Complexity)
+ * @SuppressWarnings(Coupling)
  * @SuppressWarnings(PublicMethod)
  *
  */
@@ -208,6 +209,8 @@ class Availability extends Schema\Entity
                     return true;
                 }
             }
+        } else {
+            throw new Exception\DayoffMissing();
         }
         return false;
     }
@@ -246,7 +249,6 @@ class Availability extends Schema\Entity
     /**
      * Get DateTimeInterface for start time of availability
      *
-     * @todo add $now parameter
      * @return \DateTimeInterface
      */
     public function getStartDateTime()
@@ -262,7 +264,6 @@ class Availability extends Schema\Entity
     /**
      * Get DateTimeInterface for end time of availability
      *
-     * @todo add $now parameter
      * @return \DateTimeInterface
      */
     public function getEndDateTime()

@@ -40,6 +40,9 @@ class AvailabilityTest extends EntityCommonTests
             ->format('H:i');
         $entity['weekday']['friday'] = 1;
         $entity['repeat']['afterWeeks'] = 2;
+        $entity['scope'] = new \BO\Zmsentities\Scope([
+            'dayoff' => new \BO\Zmsentities\Collection\DayoffList(),
+        ]);
 
         $this->assertTrue($entity->getDuration() == 60, "Availability duration does not match");
         $this->assertFalse(
@@ -101,6 +104,9 @@ class AvailabilityTest extends EntityCommonTests
         $entity['endDate'] = $time->modify("+2month")->getTimestamp();
         $entity['weekday']['friday'] = 1;
         $entity['repeat']['afterWeeks'] = 2;
+        $entity['scope'] = new \BO\Zmsentities\Scope([
+            'dayoff' => new \BO\Zmsentities\Collection\DayoffList(),
+        ]);
         $collection = new $this->collectionclass();
         $collection->addEntity($entity);
         $collection = $collection->withCalculatedSlots();

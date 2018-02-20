@@ -181,7 +181,7 @@ class ProcessTest extends EntityCommonTests
             'requests' => [120335,120697]
         ];
         $scope = (new \BO\Zmsentities\Scope)->getExample();
-        $entity->withUpdatedData($formCollection->getStatus(), $input, $now, $scope);
+        $entity->withUpdatedData($input, $now, $scope);
         $this->assertTrue($entity->requests->hasEntity(120335));
         $this->assertTrue($entity->requests->hasEntity(120697));
         $this->assertEquals(1451648940, $entity->reminderTimestamp);
