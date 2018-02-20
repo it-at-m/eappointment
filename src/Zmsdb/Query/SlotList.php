@@ -12,6 +12,39 @@ use BO\Zmsentities\Slot;
  */
 class SlotList extends Base
 {
+    const SLOTQUERY = '
+        SELECT
+          IF((public - IFNULL(confirmed, 0)) > 0, public - IFNULL(confirmed, 0), 0 ) free_public,
+          IF((callcenter - IFNULL(confirmed, 0)) > 0, callcenter - IFNULL(confirmed, 0), 0 ) free_callcenter, 
+          IFNULL(intern - confirmed, intern) free_intern,
+          s.*, p.* 
+        FROM (
+        SELECT SUM(type = "public") public,
+               SUM(type = "callcenter" OR type = "public") callcenter,
+               COUNT(type) intern,
+               scopeID,
+               year,
+               month,
+               day
+        FROM slot
+        WHERE 
+          year = 2016
+          AND month = 5
+        GROUP BY scopeID,
+                 year,
+                 month,
+                 day
+        ) AS s 
+        LEFT JOIN (
+        SELECT COUNT(*) confirmed, YEAR(Datum) as year, MONTH(Datum) as month, DAY(Datum) as day, StandortID as scopeID
+        FROM buerger
+        WHERE 
+          YEAR(Datum) = 2016
+          AND MONTH(Datum) = 5
+        GROUP BY Datum, StandortID
+        ) AS p ON s.year = p.year AND s.month = p.month AND s.day = p.day AND s.scopeID = p.scopeID
+    ';
+
     const QUERY = 'SELECT
 
             -- collect some important settings, especially from the scope, use the appointment key
@@ -253,7 +286,9 @@ class SlotList extends Base
             }
             $this->availability = new \BO\Zmsentities\Availability($availability);
         }
-        $this->availability['scope'] = $this->scope;
+        if (null !== $this->scope) {
+            $this->availability['scope'] = $this->scope;
+        }
         return $this;
     }
 

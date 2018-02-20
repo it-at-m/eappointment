@@ -52,6 +52,8 @@ class SlotListTest extends Base
             'appointment__date' => '1459846800',
             'appointment__scope__id' => '141',
             'appointment__scope__preferences__appointment__multipleSlotsEnabled' => '0',
+            'appointment__scope__dayoff__0__date' => '1463868000',
+            'appointment__scope__dayoff__0__name' => 'Dummy freier Tag',
             'day' => '5',
             'month' => '4',
             'year' => '2016',
@@ -82,6 +84,8 @@ class SlotListTest extends Base
             'availability__workstationCount__intern' => '3',
             'availability__bookable__startInDays' => '0',
             'availability__bookable__endInDays' => '60',
+            'availability__scope__dayoff__0__date' => '1463868000',
+            'availability__scope__dayoff__0__name' => 'Dummy freier Tag',
         );
     }
 

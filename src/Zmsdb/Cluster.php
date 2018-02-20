@@ -146,7 +146,7 @@ class Cluster extends Base
         $cluster = $this->readEntity($clusterId, 1);
         if ($cluster && $cluster->toProperty()->scopes->get()) {
             foreach ($cluster->scopes as $scope) {
-                $availabilityList = (new Availability())->readOpeningHoursListByDate($scope['id'], $dateTime);
+                $availabilityList = (new Availability())->readOpeningHoursListByDate($scope['id'], $dateTime, 2);
                 if ($availabilityList->isOpened($dateTime)) {
                     $scopeList->addEntity($scope);
                 }
