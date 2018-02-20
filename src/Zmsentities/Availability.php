@@ -246,6 +246,7 @@ class Availability extends Schema\Entity
     /**
      * Get DateTimeInterface for start time of availability
      *
+     * @todo add $now parameter
      * @return \DateTimeInterface
      */
     public function getStartDateTime()
@@ -261,6 +262,7 @@ class Availability extends Schema\Entity
     /**
      * Get DateTimeInterface for end time of availability
      *
+     * @todo add $now parameter
      * @return \DateTimeInterface
      */
     public function getEndDateTime()
