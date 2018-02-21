@@ -53,11 +53,8 @@ class ProcessDeleteTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains(
-            'Der Termin mit der Nummer 82252 (Name: H52452625) wurde erfolgreich entfernt.',
-            (string)$response->getBody()
-        );
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertRedirect($response, '/appointmentForm/?selectedprocess=82252&success=process_deleted');
+        $this->assertEquals(302, $response->getStatusCode());
     }
 
     public function testDeleteWithoutAppointmentAndNotificationDisabled()
@@ -93,16 +90,9 @@ class ProcessDeleteTest extends Base
                 ]
             ]
         );
-        $response = $this->render(
-            ['id' => '100632'],
-            $this->parameters,
-            []
-        );
-        $this->assertContains(
-            'erfolgreich entfernt',
-            (string)$response->getBody()
-        );
-        $this->assertEquals(200, $response->getStatusCode());
+        $response = $this->render(['id' => '100632'], $this->parameters, []);
+        $this->assertRedirect($response, '/appointmentForm/?selectedprocess=100632&success=process_deleted');
+        $this->assertEquals(302, $response->getStatusCode());
     }
 
     public function testDeleteFailed()
@@ -136,11 +126,6 @@ class ProcessDeleteTest extends Base
                 ]
             ]
         );
-        $response = $this->render(['id' => 100044], $this->parameters, []);
-        $this->assertContains(
-            'Der Termin mit der Nummer 82252 (Name: H52452625) wurde erfolgreich entfernt.',
-            (string)$response->getBody()
-        );
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->render(['id' => 100044], $this->parameters, []);
     }
 }

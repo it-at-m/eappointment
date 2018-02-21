@@ -366,7 +366,7 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/appointmentForm/buttons/', '\BO\Zmsadmin\AppointmentFormButtons')
     ->setName("appointment_form_buttons");
 
-\App::$slim->get('/queueTable/[{date:\d}/]', '\BO\Zmsadmin\QueueTable')
+\App::$slim->get('/queueTable/', '\BO\Zmsadmin\QueueTable')
     ->setName("queue_table");
 
 \App::$slim->get('/dialog/', '\BO\Zmsadmin\Helper\DialogHandler')

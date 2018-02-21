@@ -197,6 +197,352 @@ class AppointmentFormTest extends Base
             ]
         );
         $response = $this->render([], ['selectedprocess' => 100044]);
-        $this->assertContains('data-selected-scope="141"', (string)$response->getBody());
+        $this->assertContains('value="141"', (string)$response->getBody());
+    }
+
+    public function testWithUpdateSuccess()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/cluster/',
+                    'response' => $this->readFixture("GET_cluster_109.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/department/',
+                    'response' => $this->readFixture("GET_department_74.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/request/',
+                    'response' => $this->readFixture("GET_scope_141_requestlist.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/100044/',
+                    'response' => $this->readFixture("GET_process_100044_57c2.json")
+                ]
+            ]
+        );
+        $response = $this->render([], ['selectedprocess' => 100044, 'success' => 'process_updated']);
+        $this->assertContains(
+            'Der Termin mit der Nummer 100044 wurde erfolgreich aktualisiert.',
+            (string)$response->getBody()
+        );
+    }
+
+    public function testWithDeleteSuccess()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/cluster/',
+                    'response' => $this->readFixture("GET_cluster_109.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/department/',
+                    'response' => $this->readFixture("GET_department_74.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/request/',
+                    'response' => $this->readFixture("GET_scope_141_requestlist.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/100044/',
+                    'response' => $this->readFixture("GET_process_100044_57c2.json")
+                ]
+            ]
+        );
+        $response = $this->render([], ['selectedprocess' => 100044, 'success' => 'process_deleted']);
+        $this->assertContains(
+            'Der Termin mit der Nummer 100044 wurde erfolgreich entfernt.',
+            (string)$response->getBody()
+        );
+    }
+
+    public function testWithQueuedSuccess()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/cluster/',
+                    'response' => $this->readFixture("GET_cluster_109.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/department/',
+                    'response' => $this->readFixture("GET_department_74.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/request/',
+                    'response' => $this->readFixture("GET_scope_141_requestlist.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/100044/',
+                    'response' => $this->readFixture("GET_process_100044_57c2.json")
+                ]
+            ]
+        );
+        $response = $this->render([], ['selectedprocess' => 100044, 'success' => 'process_queued']);
+        $this->assertContains('Die Wartenummer für "BO" lautet: 11', (string)$response->getBody());
+        $this->assertContains('Wartenummer drucken', (string)$response->getBody());
+    }
+
+    public function testWithReservedSuccess()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/cluster/',
+                    'response' => $this->readFixture("GET_cluster_109.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/department/',
+                    'response' => $this->readFixture("GET_department_74.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/request/',
+                    'response' => $this->readFixture("GET_scope_141_requestlist.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/100044/',
+                    'response' => $this->readFixture("GET_process_100044_57c2.json")
+                ]
+            ]
+        );
+        $response = $this->render([], ['selectedprocess' => 100044, 'success' => 'process_reserved']);
+        $this->assertContains(
+            'Der Termin mit der Nummer 100044 wurde erfolgreich angelegt.',
+            (string)$response->getBody()
+        );
+    }
+
+    public function testWithReserveSubmit()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_scope_141.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/cluster/',
+                    'response' => $this->readFixture("GET_cluster_109.json")
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, [
+            'slotCount' => 1,
+            'scope' => 141,
+            'requests' => [120703],
+            'selecteddate' => '2016-04-01',
+            'selectedtime' => '11-55',
+            'familyName' => 'Unittest',
+            'reserve' => 1
+        ], [], 'POST');
+        $this->assertRedirect($response, '/process/reserve/', 307);
+        $this->assertEquals(307, $response->getStatusCode());
+    }
+
+    public function testWithSaveSubmit()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_scope_141.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/cluster/',
+                    'response' => $this->readFixture("GET_cluster_109.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/100044/',
+                    'response' => $this->readFixture("GET_process_100044_57c2.json")
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, [
+            'slotCount' => 1,
+            'scope' => 141,
+            'requests' => [120703],
+            'selecteddate' => '2016-04-01',
+            'selectedtime' => '11-55',
+            'selectedprocess' => 100044,
+            'familyName' => 'Unittest',
+            'update' => 1
+        ], [], 'POST');
+        $this->assertRedirect($response, '/process/100044/save/', 307);
+        $this->assertEquals(307, $response->getStatusCode());
+    }
+
+    public function testWithQueueSubmit()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_scope_141.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/cluster/',
+                    'response' => $this->readFixture("GET_cluster_109.json")
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, [
+            'slotCount' => 1,
+            'scope' => 141,
+            'requests' => [120703],
+            'selecteddate' => '2016-04-01',
+            'selectedtime' => '11-55',
+            'familyName' => 'Unittest',
+            'queue' => 1
+        ], [], 'POST');
+        $this->assertRedirect($response, '/process/queue/', 307);
+        $this->assertEquals(307, $response->getStatusCode());
+    }
+
+    public function testWithDeleteSubmit()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_scope_141.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/cluster/',
+                    'response' => $this->readFixture("GET_cluster_109.json")
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, [
+            'processId' => 100044,
+            'scope' => 141,
+            'delete' => 1
+        ], [], 'POST');
+        $this->assertRedirect($response, '/process/100044/delete/');
+        $this->assertEquals(302, $response->getStatusCode());
+    }
+
+    public function testSubmitValidationFailed()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_scope_141.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/cluster/',
+                    'response' => $this->readFixture("GET_cluster_109.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/department/',
+                    'response' => $this->readFixture("GET_department_74.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/request/',
+                    'response' => $this->readFixture("GET_scope_141_requestlist.json")
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, [
+            'slotCount' => 1,
+            'scope' => 141,
+            'requests' => [120703],
+            'selecteddate' => '2016-04-01',
+            'selectedtime' => '11-55',
+            'reserve' => 1
+        ], [], 'POST');
+        $this->assertContains('has-error', (string)$response->getBody());
+        $this->assertContains('Es muss ein aussagekräftiger Name eingegeben werden', (string)$response->getBody());
+        $this->assertEquals(200, $response->getStatusCode());
     }
 }

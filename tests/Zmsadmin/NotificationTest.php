@@ -51,7 +51,7 @@ class NotificationTest extends Base
         $response = $this->render($this->arguments, $this->parameters, [], 'POST');
         $this->assertRedirect(
             $response,
-            '/notification/?selectedprocess='. $this->selectedProcess .'&result=success&source=form'
+            '/notification/?success=notification_sent&selectedprocess='. $this->selectedProcess
         );
         $this->assertEquals(302, $response->getStatusCode());
     }
@@ -123,7 +123,7 @@ class NotificationTest extends Base
         $response = $this->render($this->arguments, $parameters, [], 'POST');
         $this->assertRedirect(
             $response,
-            '/notification/?selectedprocess='. $this->selectedProcess .'&dialog=1&result=success&source=form'
+            '/notification/?success=notification_sent&selectedprocess='. $this->selectedProcess .'&dialog=1'
         );
         $this->assertEquals(302, $response->getStatusCode());
     }
@@ -164,7 +164,7 @@ class NotificationTest extends Base
         $response = $this->render($this->arguments, $parameters, [], 'POST');
         $this->assertRedirect(
             $response,
-            '/notification/?selectedprocess='. $this->selectedProcess .'&status=queued&result=success&source=reminder'
+            '/notification/?success=notification_sent&selectedprocess='. $this->selectedProcess .'&status=queued'
         );
         $this->assertEquals(302, $response->getStatusCode());
     }

@@ -7,7 +7,8 @@ class ProcessQueueResetTest extends Base
     protected $arguments = [];
 
     protected $parameters = [
-        'selectedprocess' => 82252
+        'selectedprocess' => 82252,
+        'selecteddate' => '2016-04-01'
     ];
 
     protected $classname = "ProcessQueueReset";
@@ -35,10 +36,10 @@ class ProcessQueueResetTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains(
-            'Der Termin mit der Nummer 82252 (Name: H52452625) wurde erfolgreich zum Aufruf zurückgesetzt.',
-            (string)$response->getBody()
+        $this->assertRedirect(
+            $response,
+            '/queueTable/?selecteddate=2016-04-01&selectedprocess=82252&success=process_reset_queued'
         );
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(302, $response->getStatusCode());
     }
 }
