@@ -1,4 +1,4 @@
-import BaseView from '../lib/baseview'
+import BaseView from '../../lib/baseview'
 import $ from 'jquery'
 
 class View extends BaseView {

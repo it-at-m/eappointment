@@ -1,7 +1,7 @@
-import BaseView from '../lib/baseview'
+import BaseView from '../../lib/baseview'
 import $ from 'jquery'
-import { deepGet, tryJson, noOp } from '../lib/utils'
-import { playSound } from '../lib/audio'
+import { deepGet, tryJson, noOp } from '../../lib/utils'
+import { playSound } from '../../lib/audio'
 
 const DEFAULT_REFRESH_INTERVAL = 5
 
