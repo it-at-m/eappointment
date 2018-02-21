@@ -11,6 +11,8 @@ use \BO\Zmsentities\Process as Entity;
 
 use \BO\Zmsentities\Collection\ScopeList;
 
+use BO\Zmsentities\Helper\ProcessFormValidation as FormValidation;
+
 class AppointmentFormHelper
 {
     public static function writeUpdatedProcess($input, Entity $process, $initiator)
@@ -128,6 +130,65 @@ class AppointmentFormHelper
             \App::$http->readPostResult(
                 '/process/'. $process->id .'/'. $process->authKey .'/confirmation/mail/',
                 $process
+            );
+        }
+    }
+
+    protected static function getValidatedForm($request, $workstation)
+    {
+        $input = $request->getParsedBody();
+        $scope = static::readPreferedScope($request, $input['scope'], $workstation);
+        $validationList = FormValidation::fromAdminParameters($scope['preferences']);
+        return $validationList;
+    }
+
+    public static function readSelectedProcess($request)
+    {
+        $validator = $request->getAttribute('validator');
+        $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
+        return ($selectedProcessId) ?
+            \App::$http->readGetResult('/process/'. $selectedProcessId .'/')->getEntity() :
+            null;
+    }
+
+    public static function handlePostRequests($request, $workstation, $selectedProcess)
+    {
+        $input = $request->getParsedBody();
+        $validatedForm = static::getValidatedForm($request, $workstation);
+        if ($validatedForm->hasFailed() && ! isset($input['delete']) && ! isset($input['queue'])) {
+            return $validatedForm;
+        }
+        if (isset($input['reserve'])) {
+            return \BO\Slim\Render::redirect(
+                'processReserve',
+                array(),
+                array(),
+                307
+            );
+        }
+        if (isset($input['update'])) {
+            return \BO\Slim\Render::redirect(
+                'processSave',
+                array(
+                  'id' => $selectedProcess->getId()
+                ),
+                array(),
+                307
+            );
+        }
+        if (isset($input['queue'])) {
+            return \BO\Slim\Render::redirect(
+                'processQueue',
+                array(),
+                array(),
+                307
+            );
+        }
+        if (isset($input['delete'])) {
+            return \BO\Slim\Render::redirect(
+                'processDelete',
+                array('id' => $input['processId']),
+                array()
             );
         }
     }

@@ -45,7 +45,7 @@ class MailTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, [], 'POST');
-        $this->assertRedirect($response, '/mail/?selectedprocess='. $this->selectedProcess .'&result=success');
+        $this->assertRedirect($response, '/mail/?success=mail_sent&selectedprocess='. $this->selectedProcess);
         $this->assertEquals(302, $response->getStatusCode());
     }
 
@@ -104,7 +104,10 @@ class MailTest extends Base
         );
         $parameters = array_merge(['dialog' => 1], $this->parameters);
         $response = $this->render($this->arguments, $parameters, [], 'POST');
-        $this->assertRedirect($response, '/mail/?selectedprocess='. $this->selectedProcess .'&dialog=1&result=success');
+        $this->assertRedirect(
+            $response,
+            '/mail/?success=mail_sent&selectedprocess='. $this->selectedProcess .'&dialog=1'
+        );
         $this->assertEquals(302, $response->getStatusCode());
     }
 

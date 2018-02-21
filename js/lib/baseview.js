@@ -39,6 +39,7 @@ class BaseView extends ErrorHandler {
         this.loadPromise = new Promise((resolve, reject) => {
             $.ajax(url, ajaxSettings).done(responseData => {
                 this.$main.html(responseData);
+                DialogHandler.hideMessages();
                 resolve(responseData);
             }).fail(err => {
                 let isException = err.responseText.toLowerCase().includes('exception');

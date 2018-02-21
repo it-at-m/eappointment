@@ -86,8 +86,8 @@ class ProcessQueueTest extends Base
             'headsUpTime' => 3600,
             'requests' => [120703]
         ], [], 'POST');
-        $this->assertContains('Die Wartenummer für "Test BO" lautet: 5', (string)$response->getBody());
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertRedirect($response, '/appointmentForm/?selectedprocess=100011&success=process_queued');
+        $this->assertEquals(302, $response->getStatusCode());
     }
 
     public function testRenderingWithoutAppointmentFromCluster()
@@ -143,8 +143,8 @@ class ProcessQueueTest extends Base
             'headsUpTime' => 3600,
             'requests' => [120703]
         ], [], 'POST');
-        $this->assertContains('Die Wartenummer für "Test BO" lautet: 5', (string)$response->getBody());
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertRedirect($response, '/appointmentForm/?selectedprocess=100011&success=process_queued');
+        $this->assertEquals(302, $response->getStatusCode());
     }
 
     public function testRenderingNotOpened()
@@ -196,7 +196,7 @@ class ProcessQueueTest extends Base
             'headsUpTime' => 3600,
             'requests' => [120703]
         ], [], 'POST');
-        $this->assertContains('Die Wartenummer für "Test BO" lautet: 5', (string)$response->getBody());
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertRedirect($response, '/appointmentForm/?selectedprocess=100011&success=process_queued');
+        $this->assertEquals(302, $response->getStatusCode());
     }
 }

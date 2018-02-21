@@ -53,8 +53,8 @@ class ProcessSaveTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, [], 'POST');
-        $this->assertContains('Termin aktualisiert', (string)$response->getBody());
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertRedirect($response, '/appointmentForm/?selectedprocess=82252&success=process_updated');
+        $this->assertEquals(302, $response->getStatusCode());
     }
 
     public function testWithQueuedProcess()
@@ -81,44 +81,10 @@ class ProcessSaveTest extends Base
             ]
         );
         $response = $this->render(['id' => 100011], $this->parameters, [], 'POST');
-        $this->assertContains('Termin aktualisiert', (string)$response->getBody());
-        $this->assertEquals(200, $response->getStatusCode());
-    }
-
-    public function testRenderingValidationFailed()
-    {
-        $this->setApiCalls(
-            [
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
-                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/process/82252/',
-                    'response' => $this->readFixture("GET_process_82252_12a2.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/cluster/',
-                    'response' => $this->readFixture("GET_cluster_109.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/',
-                    'parameters' => ['resolveReferences' => 1],
-                    'response' => $this->readFixture("GET_scope_141.json")
-                ]
-            ]
+        $this->assertRedirect(
+            $response,
+            '/appointmentForm/?selectedprocess=100011&success=process_withoutappointment_updated'
         );
-        $response = $this->render($this->arguments, [
-            'telephone' => '1234567890',
-            'email' => 'zmsbo@berlinonline.de',
-            'scope' => 141
-        ], [], 'POST');
-        $this->assertContains('"failed":true', (string)$response->getBody());
-        $this->assertEquals(428, $response->getStatusCode());
+        $this->assertEquals(302, $response->getStatusCode());
     }
 }

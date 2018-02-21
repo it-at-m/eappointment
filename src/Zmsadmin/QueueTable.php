@@ -26,7 +26,9 @@ class QueueTable extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $department = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/department/')->getEntity();
         $validator = $request->getAttribute('validator');
+        $success = $validator->getParameter('success')->isString()->getValue();
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
+        $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
         $clusterHelper = (new Helper\ClusterHelper($workstation));
         $processList = $clusterHelper->getProcessList($selectedDate);
         $queueList = new QueueList();
@@ -35,6 +37,9 @@ class QueueTable extends BaseController
             $queueList = $this->toProcessListByStatus($processList, $selectedDate, ['confirmed', 'queued', 'reserved']);
             $queueListMissed = $this->toProcessListByStatus($processList, $selectedDate, ['missed']);
         }
+        $changedProcess = ($selectedProcessId)
+          ? \App::$http->readGetResult('/process/'. $selectedProcessId .'/')->getEntity()
+          : null;
 
         return \BO\Slim\Render::withHtml(
             $response,
@@ -47,6 +52,8 @@ class QueueTable extends BaseController
                 'cluster' => $clusterHelper->getEntity(),
                 'processList' => $queueList,
                 'processListMissed' => $queueListMissed,
+                'changedProcess' => $changedProcess,
+                'success' => $success
                 //'debug' => \App::DEBUG
             )
         );

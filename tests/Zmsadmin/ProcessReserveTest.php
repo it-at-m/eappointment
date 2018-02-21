@@ -4,18 +4,15 @@ namespace BO\Zmsadmin\Tests;
 
 class ProcessReserveTest extends Base
 {
-    protected $arguments = [
-        'date' => '2016-04-01',
-        'time' => '11-55'
-    ];
-
     protected $parameters = [
         'slotCount' => 1,
         'familyName' => 'Test BO',
         'telephone' => '1234567890',
         'email' => 'zmsbo@berlinonline.de',
         'scope' => 141,
-        'requests' => [120703]
+        'requests' => [120703],
+        'selecteddate' => '2016-04-01',
+        'selectedtime' => '11-55'
     ];
 
     protected $classname = "ProcessReserve";
@@ -55,8 +52,8 @@ class ProcessReserveTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, [], 'POST');
-        $this->assertContains('Reservierung erfolgreich', (string)$response->getBody());
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertRedirect($response, '/appointmentForm/?selectedprocess=100005&success=process_reserved');
+        $this->assertEquals(302, $response->getStatusCode());
     }
 
     public function testWithConfirmations()
@@ -105,41 +102,7 @@ class ProcessReserveTest extends Base
         );
         $paremeters = array_merge($this->parameters, array('sendConfirmation' => 1, 'sendMailConfirmation' => 1));
         $response = $this->render($this->arguments, $paremeters, [], 'POST');
-        $this->assertContains('Reservierung erfolgreich', (string)$response->getBody());
-        $this->assertEquals(200, $response->getStatusCode());
-    }
-
-    public function testRenderingValidationFailed()
-    {
-        $this->setApiCalls(
-            [
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
-                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/',
-                    'parameters' => ['resolveReferences' => 1],
-                    'response' => $this->readFixture("GET_scope_141.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/cluster/',
-                    'response' => $this->readFixture("GET_cluster_109.json")
-                ]
-            ]
-        );
-        $response = $this->render($this->arguments, [
-            'slotCount' => 1,
-            'telephone' => '1234567890',
-            'email' => 'zmsbo@berlinonline.de',
-            'scope' => 141,
-            'requests' => [120703]
-        ], [], 'POST');
-        $this->assertContains('"failed":true', (string)$response->getBody());
-        $this->assertEquals(428, $response->getStatusCode());
+        $this->assertRedirect($response, '/appointmentForm/?selectedprocess=194104&success=process_reserved');
+        $this->assertEquals(302, $response->getStatusCode());
     }
 }

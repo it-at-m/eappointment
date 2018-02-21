@@ -50,7 +50,8 @@ class PickupMailTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('
+        $this->assertContains(
+            '
             Der Termin mit der Nummer 82252 wurde zur Abholung per E-Mail informiert',
             (string)$response->getBody()
         );

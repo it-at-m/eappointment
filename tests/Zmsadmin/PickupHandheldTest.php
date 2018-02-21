@@ -19,22 +19,6 @@ class PickupHandheldTest extends Base
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 1],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/workstation/process/pickup/',
-                    'parameters' => ['resolveReferences' => 1],
-                    'response' => $this->readFixture("GET_freeprocesslist_empty.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/department/',
-                    'response' => $this->readFixture("GET_department_74.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/cluster/',
-                    'response' => $this->readFixture("GET_cluster_109.json")
                 ]
             ]
         );
@@ -55,22 +39,6 @@ class PickupHandheldTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/workstation/process/pickup/',
-                    'parameters' => ['resolveReferences' => 1],
-                    'response' => $this->readFixture("GET_freeprocesslist_empty.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/department/',
-                    'response' => $this->readFixture("GET_department_74.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/cluster/',
-                    'response' => $this->readFixture("GET_cluster_109.json")
-                ],
-                [
-                    'function' => 'readGetResult',
                     'url' => '/process/82252/',
                     'response' => $this->readFixture("GET_process_82252_12a2.json")
                 ]
@@ -80,7 +48,7 @@ class PickupHandheldTest extends Base
             'selectedprocess' => 82252
         ], [], 'POST');
         $this->assertContains('pickup-handheld-view', (string)$response->getBody());
-        $this->assertContains('data-selectedprocess="82252"', (string)$response->getBody());
+        $this->assertContains('data-selected-process="82252"', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -100,22 +68,6 @@ class PickupHandheldTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/workstation/process/pickup/',
-                    'parameters' => ['resolveReferences' => 1],
-                    'response' => $this->readFixture("GET_freeprocesslist_empty.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/department/',
-                    'response' => $this->readFixture("GET_department_74.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/cluster/',
-                    'response' => $this->readFixture("GET_cluster_109.json")
-                ],
-                [
-                    'function' => 'readGetResult',
                     'url' => '/process/999999/',
                     'exception' => $exception
                 ],
@@ -130,7 +82,7 @@ class PickupHandheldTest extends Base
             'selectedprocess' => 999999
         ], [], 'POST');
         $this->assertContains('pickup-handheld-view', (string)$response->getBody());
-        $this->assertContains('data-selectedprocess="82252"', (string)$response->getBody());
+        $this->assertContains('data-selected-process="82252"', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 }
