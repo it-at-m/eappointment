@@ -237,10 +237,7 @@ class View extends BaseView {
         stopEvent(event);
         const processId  = $(event.target).data('id');
         $(event.target).closest('.message').fadeOut().remove();
-        setTimeout(() => {
-            window.open(`${this.includeUrl}/process/queue/?print=1&selectedprocess=${processId}`);
-        }, 1000);
-
+        window.open(`${this.includeUrl}/process/queue/?print=1&selectedprocess=${processId}`)
     }
 
     onSendCustomMail ($container, event) {
