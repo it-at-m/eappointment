@@ -158,7 +158,7 @@ class Process extends Schema\Entity
         $client = new Client();
         foreach ($requestData as $key => $value) {
             if (null !== $value && array_key_exists($key, $client)) {
-                $client[$key] = $value;
+                $client[$key] = (isset($value['value'])) ? $value['value'] : $value;
             }
         }
         $this->clients = array();
