@@ -17,7 +17,7 @@ class View extends BaseView {
         this.bindPublicMethods('bindEvents','loadClientNext','setTimeSinceCall', 'loadCalled', 'loadProcessing');
         $.ajaxSetup({ cache: false });
         this.bindEvents();
-        console.log('Component: Client', this, options);
+        //console.log('Component: Client', this, options);
         if (this.processId)
             this.loadCall();
         else
