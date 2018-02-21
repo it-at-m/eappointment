@@ -37,7 +37,7 @@ class WorkstationInfo
     public static function getAvailabilityByScopeAndDateTime($scopeId, $dateTime)
     {
         $collection = \App::$http
-            ->readGetResult('/scope/'. $scopeId . '/availability/')
+            ->readGetResult('/scope/'. $scopeId . '/availability/', ['resolveReferences' => 2])
             ->getCollection();
         return ($collection) ? $collection->withDateTime($dateTime)->getArrayCopy() : [];
     }

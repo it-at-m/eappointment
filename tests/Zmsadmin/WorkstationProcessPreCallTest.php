@@ -35,6 +35,7 @@ class WorkstationProcessPreCallTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/availability/',
+                    'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_scope_141_availability.json")
                 ],
                 [
