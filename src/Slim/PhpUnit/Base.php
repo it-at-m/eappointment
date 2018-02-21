@@ -196,9 +196,9 @@ abstract class Base extends \PHPUnit_Framework_TestCase
         $validator->makeInstance();
     }
 
-    public function assertRedirect($response, $uri)
+    public function assertRedirect($response, $uri, $status = 302)
     {
-        $this->assertResponseHasStatus($response, 302);
+        $this->assertResponseHasStatus($response, $status);
         $this->assertMessageHasHeaders($response, [
             'Location' => $uri,
         ]);
