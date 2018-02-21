@@ -62,7 +62,8 @@ class ProcessQueueTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/availability/',
-                    'response' => $this->readFixture("GET_availabilityList_141.json")
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_scope_141_availability.json")
                 ],
                 [
                     'function' => 'readPostResult',
@@ -113,7 +114,8 @@ class ProcessQueueTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/availability/',
-                    'response' => $this->readFixture("GET_availabilityList_141.json")
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_scope_141_availability.json")
                 ],
                 [
                     'function' => 'readPostResult',
@@ -172,7 +174,8 @@ class ProcessQueueTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/availability/',
-                    'response' => $this->readFixture("GET_availabilityList_141.json")
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_scope_141_availability.json")
                 ],
                 [
                     'function' => 'readPostResult',

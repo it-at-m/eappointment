@@ -46,7 +46,7 @@ class AppointmentFormHelper
         $scopeId = (isset($input['scope'])) ? $input['scope'] : 0;
         $scope = static::readPreferedScope($request, $scopeId, $workstation);
         $isOpened = \App::$http
-            ->readGetResult('/scope/'. $scope->id .'/availability/')
+            ->readGetResult('/scope/'. $scope->id .'/availability/', ['resolveReferences' => 2])
             ->getCollection()
             ->isOpened(\App::$now);
         $notice = (! $isOpened) ? 'Außerhalb der Öffnungszeiten gebucht! ' : '';

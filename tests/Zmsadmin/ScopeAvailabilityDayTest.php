@@ -31,8 +31,8 @@ class ScopeAvailabilityDayTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/availability/',
-                    'parameters' => ['reserveEntityIds' => 1],
-                    'response' => $this->readFixture("GET_availabilityList_141.json")
+                    'parameters' => ['reserveEntityIds' => 1, 'resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_scope_141_availability.json")
                 ],
                 [
                     'function' => 'readGetResult',
