@@ -171,7 +171,6 @@ class View extends BaseView {
 
     onProcessNotFound () {
         this.selectedProcess = null;
-        console.log("NOT FOUND");
         this.loadAllPartials();
     }
 

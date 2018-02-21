@@ -10,24 +10,13 @@ class View extends BaseView {
         this.showLoader = options.showLoader || false;
         this.bindPublicMethods('load');
         $.ajaxSetup({ cache: false });
-        console.log('Component: Appointment Times', this, options);
+        //console.log('Component: Appointment Times', this, options);
         this.load();
     }
 
     load() {
         const url = `${this.includeUrl}/counter/appointmentTimes/?selecteddate=${this.selectedDate}`
-        return this.loadContent(url, 'GET', null, null, this.showLoader).catch(err => this.loadErrorCallback(err.source, err.url));
-    }
-
-    loadErrorCallback(source, url) {
-        if (source == 'button') {
-            return this.loadContent(url)
-        } else if (source == 'lightbox') {
-            console.log('lightbox closed without action call');
-        } else {
-            const defaultUrl = `${this.includeUrl}/counter/`
-            return this.loadContent(defaultUrl)
-        }
+        return this.loadContent(url, 'GET', null, null, this.showLoader);
     }
 }
 

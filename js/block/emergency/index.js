@@ -31,7 +31,7 @@ class View extends BaseView {
 
         this.render()
         this.refresh()
-        console.log('Component: Emergency', this)
+        //console.log('Component: Emergency', this)
     }
 
     invalidateRefreshId() {

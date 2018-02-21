@@ -299,13 +299,12 @@ class View extends BaseView {
     }
 
     loadAllPartials() {
-        let promise = Promise.all([
+        return Promise.all([
             this.loadCalendar(),
-            this.loadClientNext(),
+            this.loadQueueTable(),
             this.loadAppointmentForm(),
-            this.loadQueueTable()
-        ])
-        return promise;
+            this.loadClientNext()
+        ]);
     }
 
     loadReloadPartials() {

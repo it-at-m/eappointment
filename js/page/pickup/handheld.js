@@ -1,66 +1,15 @@
-import BaseView from '../../lib/baseview'
+import Pickup from '../pickup'
+import $ from 'jquery'
 import { hideSpinner } from '../../lib/utils'
 import PickupHandheldView from '../../block/pickup/handheld'
 
-
-class View extends BaseView {
-
+class View extends Pickup {
     constructor (element, options) {
-        super(element);
+        super(element, options);
         this.$main = $(element);
-        this.selectedProcess = options['selected-process'];
-        this.includeUrl = options.includeurl;
-        this.bindPublicMethods(
-            'bindEvents',
-            'onFinishProcess',
-            'onPickupCall',
-            'onCancelProcess',
-            'onProcessNotFound'
-        );
-        this.loadAllPartials().then(() => this.bindEvents());
     }
 
     bindEvents() {}
-
-    onCancelProcess (event) {
-        this.selectedProcess = null;
-        stopEvent(event);
-        return this.loadCall(`${this.includeUrl}/pickup/call/cancel/`).then((response) => {
-            this.loadMessage(response, () => {
-                this.loadAllPartials();
-            });
-        });
-    }
-
-    onFinishProcess (event, processId) {
-        this.selectedProcess = null;
-        if (event) {
-            stopEvent(event);
-            processId  = $(event.target).data('id')
-        }
-        showSpinner(this.$main);
-        this.loadCall(`${this.includeUrl}/pickup/delete/${processId}/`, 'DELETE').then((response) => {
-              this.loadMessage(response, () => {
-                  this.loadAllPartials();
-              });
-        });
-    }
-
-    onPickupCall(event, callback, processId) {
-        if (event) {
-            stopEvent(event);
-            processId  = $(event.target).data('id')
-        }
-        return this.loadCall(`${this.includeUrl}/pickup/call/${processId}/`).then((response) => {
-                this.loadDialog(response, callback);
-            }
-        );
-    }
-
-    onProcessNotFound () {
-        this.selectedProcess = null;
-        this.loadAllPartials();
-    }
 
     loadAllPartials() {
         let promise = Promise.all([

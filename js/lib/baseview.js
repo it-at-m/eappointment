@@ -17,8 +17,6 @@ class BaseView extends ErrorHandler {
         this.loadPromise = Promise.reject(null).catch(noOp);
     }
 
-
-
     loadContent(url, method = 'GET', data = null, container = null, spinner = true) {
         if (container !== null) {
             this.$main = container;
