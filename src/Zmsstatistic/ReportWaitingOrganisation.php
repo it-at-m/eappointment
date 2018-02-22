@@ -29,24 +29,13 @@ class ReportWaitingOrganisation extends BaseController
         array $args
     ) {
         $validator = $request->getAttribute('validator');
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-        if (!$workstation->hasId()) {
-            return \BO\Slim\Render::redirect(
-                'index',
-                array(
-                  'error' => 'login_failed'
-                )
-            );
-        }
-        $department = \App::$http->readGetResult('/scope/' . $workstation->scope['id'] . '/department/')->getEntity();
-        $organisation = \App::$http->readGetResult('/department/' . $department->id . '/organisation/')->getEntity();
         $waitingPeriod = \App::$http
-          ->readGetResult('/warehouse/waitingorganisation/' . $organisation->id . '/')
+          ->readGetResult('/warehouse/waitingorganisation/' . $this->organisation->id . '/')
           ->getEntity();
         $exchangeWaiting = null;
         if (isset($args['period'])) {
             $exchangeWaiting = \App::$http
-            ->readGetResult('/warehouse/waitingorganisation/' . $organisation->id . '/'. $args['period']. '/')
+            ->readGetResult('/warehouse/waitingorganisation/' . $this->organisation->id . '/'. $args['period']. '/')
             ->getEntity()
             ->toGrouped($this->groupfields, $this->hashset)
             ->withMaxByHour($this->hashset)
@@ -57,7 +46,7 @@ class ReportWaitingOrganisation extends BaseController
         if ($type) {
             $args['category'] = 'waitingscope';
             $args['reports'][] = $exchangeWaiting;
-            $args['organisation'] = $organisation;
+            $args['organisation'] = $this->organisation;
             return (new Download\WaitingReport(\App::$slim->getContainer()))->readResponse($request, $response, $args);
         }
 
@@ -68,14 +57,14 @@ class ReportWaitingOrganisation extends BaseController
               'title' => 'Wartestatistik Standort',
               'activeOrganisation' => 'active',
               'menuActive' => 'waiting',
-              'department' => $department,
-              'organisation' => $organisation,
+              'department' => $this->department,
+              'organisation' => $this->organisation,
               'waitingPeriod' => $waitingPeriod,
               'showAll' => 1,
               'period' => $args['period'],
               'exchangeWaiting' => $exchangeWaiting,
               'source' => ['entity' => 'WaitingOrganisation'],
-              'workstation' => $workstation->getArrayCopy()
+              'workstation' => $this->workstation->getArrayCopy()
             )
         );
     }

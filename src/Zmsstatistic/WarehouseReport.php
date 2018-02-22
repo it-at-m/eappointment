@@ -20,15 +20,6 @@ class WarehouseReport extends BaseController
         array $args
     ) {
         $validator = $request->getAttribute('validator');
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-        if (!$workstation->hasId()) {
-            return \BO\Slim\Render::redirect(
-                'index',
-                array(
-                    'error' => 'login_failed'
-                )
-            );
-        }
         $report = \App::$http
           ->readGetResult('/warehouse/'. $args['subject'] .'/'. $args['subjectid'] .'/'. $args['period'] .'/')
           ->getEntity();
@@ -51,7 +42,7 @@ class WarehouseReport extends BaseController
               'categoryName' => Download::$subjectTranslations[$args['subject']],
               'subjectid' => $args['subjectid'],
               'period' => $args['period'],
-              'workstation' => $workstation->getArrayCopy()
+              'workstation' => $this->workstation->getArrayCopy()
             )
         );
     }

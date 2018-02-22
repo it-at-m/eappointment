@@ -197,7 +197,7 @@ select,
 .input--size-4,
 .input--size-3,
 .input--size-2,
-.input--size-1, .list-tablelist_cell, .lineup .lineup_actor, .lineup--statistic .lineup_actor--left, .lineup--statistic .lineup_actor--right, .lineup--login .lineup_actor--left, .lineup--login .lineup_actor--right {
+.input--size-1, .list-tablelist_cell, .lineup .lineup_actor, .lineup--statistic .lineup_actor--left, .lineup--statistic .lineup_actor--right, .lineup--login .lineup_actor--left, .lineup--login .lineup_actor--right, .lineup--login .lineup_actor--full {
   display: inline-block;
   /* [1] */
   padding-left: 1.429em;
@@ -254,7 +254,7 @@ select,
   .input--size-2, #main-body >
   .input--size-2, .grid--rev >
   .input--size-1, #main-body >
-  .input--size-1, .grid--rev > .list-tablelist_cell, #main-body > .list-tablelist_cell, .lineup .grid--rev > .lineup_actor, .lineup #main-body > .lineup_actor, .lineup--statistic .grid--rev > .lineup_actor--left, .lineup--statistic #main-body > .lineup_actor--left, .lineup--statistic .grid--rev > .lineup_actor--right, .lineup--statistic #main-body > .lineup_actor--right, .lineup--login .grid--rev > .lineup_actor--left, .lineup--login #main-body > .lineup_actor--left, .lineup--login .grid--rev > .lineup_actor--right, .lineup--login #main-body > .lineup_actor--right {
+  .input--size-1, .grid--rev > .list-tablelist_cell, #main-body > .list-tablelist_cell, .lineup .grid--rev > .lineup_actor, .lineup #main-body > .lineup_actor, .lineup--statistic .grid--rev > .lineup_actor--left, .lineup--statistic #main-body > .lineup_actor--left, .lineup--statistic .grid--rev > .lineup_actor--right, .lineup--statistic #main-body > .lineup_actor--right, .lineup--login .grid--rev > .lineup_actor--left, .lineup--login #main-body > .lineup_actor--left, .lineup--login .grid--rev > .lineup_actor--right, .lineup--login #main-body > .lineup_actor--right, .lineup--login .grid--rev > .lineup_actor--full, .lineup--login #main-body > .lineup_actor--full {
     direction: ltr;
     text-align: left; }
 
@@ -312,7 +312,7 @@ select,
   .input--size-2, .grid--full >
   .input--size-1, #main-header >
   .input--size-1, .list-tablelist_row >
-  .input--size-1, .grid--full > .list-tablelist_cell, #main-header > .list-tablelist_cell, .list-tablelist_row > .list-tablelist_cell, .lineup .grid--full > .lineup_actor, .lineup #main-header > .lineup_actor, .lineup .list-tablelist_row > .lineup_actor, .lineup--statistic .grid--full > .lineup_actor--left, .lineup--statistic #main-header > .lineup_actor--left, .lineup--statistic .list-tablelist_row > .lineup_actor--left, .lineup--statistic .grid--full > .lineup_actor--right, .lineup--statistic #main-header > .lineup_actor--right, .lineup--statistic .list-tablelist_row > .lineup_actor--right, .lineup--login .grid--full > .lineup_actor--left, .lineup--login #main-header > .lineup_actor--left, .lineup--login .list-tablelist_row > .lineup_actor--left, .lineup--login .grid--full > .lineup_actor--right, .lineup--login #main-header > .lineup_actor--right, .lineup--login .list-tablelist_row > .lineup_actor--right {
+  .input--size-1, .grid--full > .list-tablelist_cell, #main-header > .list-tablelist_cell, .list-tablelist_row > .list-tablelist_cell, .lineup .grid--full > .lineup_actor, .lineup #main-header > .lineup_actor, .lineup .list-tablelist_row > .lineup_actor, .lineup--statistic .grid--full > .lineup_actor--left, .lineup--statistic #main-header > .lineup_actor--left, .lineup--statistic .list-tablelist_row > .lineup_actor--left, .lineup--statistic .grid--full > .lineup_actor--right, .lineup--statistic #main-header > .lineup_actor--right, .lineup--statistic .list-tablelist_row > .lineup_actor--right, .lineup--login .grid--full > .lineup_actor--left, .lineup--login #main-header > .lineup_actor--left, .lineup--login .list-tablelist_row > .lineup_actor--left, .lineup--login .grid--full > .lineup_actor--right, .lineup--login #main-header > .lineup_actor--right, .lineup--login .list-tablelist_row > .lineup_actor--right, .lineup--login .grid--full > .lineup_actor--full, .lineup--login #main-header > .lineup_actor--full, .lineup--login .list-tablelist_row > .lineup_actor--full {
     padding-left: 0; }
 
 /**
@@ -336,7 +336,7 @@ select,
   .input--size-4, .grid--right >
   .input--size-3, .grid--right >
   .input--size-2, .grid--right >
-  .input--size-1, .grid--right > .list-tablelist_cell, .lineup .grid--right > .lineup_actor, .lineup--statistic .grid--right > .lineup_actor--left, .lineup--statistic .grid--right > .lineup_actor--right, .lineup--login .grid--right > .lineup_actor--left, .lineup--login .grid--right > .lineup_actor--right {
+  .input--size-1, .grid--right > .list-tablelist_cell, .lineup .grid--right > .lineup_actor, .lineup--statistic .grid--right > .lineup_actor--left, .lineup--statistic .grid--right > .lineup_actor--right, .lineup--login .grid--right > .lineup_actor--left, .lineup--login .grid--right > .lineup_actor--right, .lineup--login .grid--right > .lineup_actor--full {
     text-align: left; }
 
 /**
@@ -361,7 +361,7 @@ select,
   .input--size-4, .grid--center >
   .input--size-3, .grid--center >
   .input--size-2, .grid--center >
-  .input--size-1, .grid--center > .list-tablelist_cell, .lineup .grid--center > .lineup_actor, .lineup--statistic .grid--center > .lineup_actor--left, .lineup--statistic .grid--center > .lineup_actor--right, .lineup--login .grid--center > .lineup_actor--left, .lineup--login .grid--center > .lineup_actor--right {
+  .input--size-1, .grid--center > .list-tablelist_cell, .lineup .grid--center > .lineup_actor, .lineup--statistic .grid--center > .lineup_actor--left, .lineup--statistic .grid--center > .lineup_actor--right, .lineup--login .grid--center > .lineup_actor--left, .lineup--login .grid--center > .lineup_actor--right, .lineup--login .grid--center > .lineup_actor--full {
     text-align: left; }
 
 /**
@@ -384,7 +384,7 @@ select, .grid--middle >
 .input--size-4, .grid--middle >
 .input--size-3, .grid--middle >
 .input--size-2, .grid--middle >
-.input--size-1, .grid--middle > .list-tablelist_cell, .lineup .grid--middle > .lineup_actor, .lineup--statistic .grid--middle > .lineup_actor--left, .lineup--statistic .grid--middle > .lineup_actor--right, .lineup--login .grid--middle > .lineup_actor--left, .lineup--login .grid--middle > .lineup_actor--right {
+.input--size-1, .grid--middle > .list-tablelist_cell, .lineup .grid--middle > .lineup_actor, .lineup--statistic .grid--middle > .lineup_actor--left, .lineup--statistic .grid--middle > .lineup_actor--right, .lineup--login .grid--middle > .lineup_actor--left, .lineup--login .grid--middle > .lineup_actor--right, .lineup--login .grid--middle > .lineup_actor--full {
   vertical-align: middle; }
 
 .grid--bottom > .grid__item, #main-header .grid--bottom > .left, #main-header .grid--bottom > .middle, #main-header .grid--bottom > .right, #main-body .grid--bottom > #sidebar, #main-body .grid--bottom > #mainbar, .form--horizontal .form-group.grid--bottom > label, #main-header form .form-group.grid--bottom > label, .loginform form .form-group.grid--bottom > label, .form--horizontal .form-group--nomaxwidth .controls.grid--bottom > label, .form-group--nomaxwidth .form--horizontal .controls.grid--bottom > label, #main-header form .form-group--nomaxwidth .controls.grid--bottom > label, .form-group--nomaxwidth #main-header form .controls.grid--bottom > label, .loginform form .form-group--nomaxwidth .controls.grid--bottom > label, .form-group--nomaxwidth .loginform form .controls.grid--bottom > label,
@@ -403,7 +403,7 @@ select, .grid--bottom >
 .input--size-4, .grid--bottom >
 .input--size-3, .grid--bottom >
 .input--size-2, .grid--bottom >
-.input--size-1, .grid--bottom > .list-tablelist_cell, .lineup .grid--bottom > .lineup_actor, .lineup--statistic .grid--bottom > .lineup_actor--left, .lineup--statistic .grid--bottom > .lineup_actor--right, .lineup--login .grid--bottom > .lineup_actor--left, .lineup--login .grid--bottom > .lineup_actor--right {
+.input--size-1, .grid--bottom > .list-tablelist_cell, .lineup .grid--bottom > .lineup_actor, .lineup--statistic .grid--bottom > .lineup_actor--left, .lineup--statistic .grid--bottom > .lineup_actor--right, .lineup--login .grid--bottom > .lineup_actor--left, .lineup--login .grid--bottom > .lineup_actor--right, .lineup--login .grid--bottom > .lineup_actor--full {
   vertical-align: bottom; }
 
 /**
@@ -427,7 +427,7 @@ select, .grid--bottom >
   .input--size-4, .grid--narrow >
   .input--size-3, .grid--narrow >
   .input--size-2, .grid--narrow >
-  .input--size-1, .grid--narrow > .list-tablelist_cell, .lineup .grid--narrow > .lineup_actor, .lineup--statistic .grid--narrow > .lineup_actor--left, .lineup--statistic .grid--narrow > .lineup_actor--right, .lineup--login .grid--narrow > .lineup_actor--left, .lineup--login .grid--narrow > .lineup_actor--right {
+  .input--size-1, .grid--narrow > .list-tablelist_cell, .lineup .grid--narrow > .lineup_actor, .lineup--statistic .grid--narrow > .lineup_actor--left, .lineup--statistic .grid--narrow > .lineup_actor--right, .lineup--login .grid--narrow > .lineup_actor--left, .lineup--login .grid--narrow > .lineup_actor--right, .lineup--login .grid--narrow > .lineup_actor--full {
     padding-left: 0.7145em; }
 
 /**
@@ -451,7 +451,7 @@ select, .grid--bottom >
   .input--size-4, .grid--wide >
   .input--size-3, .grid--wide >
   .input--size-2, .grid--wide >
-  .input--size-1, .grid--wide > .list-tablelist_cell, .lineup .grid--wide > .lineup_actor, .lineup--statistic .grid--wide > .lineup_actor--left, .lineup--statistic .grid--wide > .lineup_actor--right, .lineup--login .grid--wide > .lineup_actor--left, .lineup--login .grid--wide > .lineup_actor--right {
+  .input--size-1, .grid--wide > .list-tablelist_cell, .lineup .grid--wide > .lineup_actor, .lineup--statistic .grid--wide > .lineup_actor--left, .lineup--statistic .grid--wide > .lineup_actor--right, .lineup--login .grid--wide > .lineup_actor--left, .lineup--login .grid--wide > .lineup_actor--right, .lineup--login .grid--wide > .lineup_actor--full {
     padding-left: 2.858em; }
 
 /*------------------------------------*    $WIDTHS
@@ -585,7 +585,7 @@ select,
   .input--size-8,
   .input--size-7,
   .input--size-6,
-  .input--size-5, .list-tablelist_cell, .lineup--statistic .lineup_actor--left, .lineup--statistic .lineup_actor--right, .lineup--login .lineup_actor--left, .lineup--login .lineup_actor--right {
+  .input--size-5, .list-tablelist_cell, .lineup--statistic .lineup_actor--left, .lineup--statistic .lineup_actor--right, .lineup--login .lineup_actor--left, .lineup--login .lineup_actor--right, .lineup--login .lineup_actor--full {
     width: 100%; }
   /**
      * Halves
@@ -662,7 +662,7 @@ select,
   /**
      * Whole
      */
-  .lap--one-whole, .lineup--statistic .lineup_actor--left, .lineup--login .lineup_actor--left, .lineup--login .lineup_actor--right {
+  .lap--one-whole, .lineup--statistic .lineup_actor--left, .lineup--login .lineup_actor--left, .lineup--login .lineup_actor--right, .lineup--login .lineup_actor--full {
     width: 100%; }
   /**
      * Halves
@@ -3690,7 +3690,7 @@ select,
 .input--size-4,
 .input--size-3,
 .input--size-2,
-.input--size-1, .list-tablelist_cell, .lineup .lineup_actor, .lineup--statistic .lineup_actor--left, .lineup--statistic .lineup_actor--right, .lineup--login .lineup_actor--left, .lineup--login .lineup_actor--right {
+.input--size-1, .list-tablelist_cell, .lineup .lineup_actor, .lineup--statistic .lineup_actor--left, .lineup--statistic .lineup_actor--right, .lineup--login .lineup_actor--left, .lineup--login .lineup_actor--right, .lineup--login .lineup_actor--full {
   margin-right: -0.1em; }
 
 #main-header {

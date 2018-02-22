@@ -49,6 +49,12 @@
                     .lap--one-whole,
                     .palm--one-whole;
             }
+            &--full {
+                @extend
+                    .grid__item,
+                    .lap--one-whole,
+                    .palm--one-whole;
+            }
         }
     }
 }
