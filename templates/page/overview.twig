@@ -10,8 +10,12 @@
             {% embed "block/report/period.twig" with {"source":{"entity":"ClientIndex"}, "items": clientperiod} %}
                 {% block breadcrumb %}
                 <ul class="report-period--breadcrumb">
-                    <li><a href="{{ urlGet("ReportClientOrganisation", {}, {}) }}">{{organisation.name}}</a></li>
-                    <li><a href="{{ urlGet("ReportClientDepartment", {}, {}) }}">{{department.name}}</a></li>
+                    {% if organisation %}
+                        <li><a href="{{ urlGet("ReportClientOrganisation", {}, {}) }}">{{organisation.name}}</a></li>
+                    {% endif %}
+                    {% if department %}
+                        <li><a href="{{ urlGet("ReportClientDepartment", {}, {}) }}">{{department.name}}</a></li>
+                    {% endif %}
                     <li>{{workstation.scope.contact.name}} {{workstation.scope.shortName}}</li>
                 </ul>
                 {% endblock %}
@@ -21,8 +25,12 @@
             {% embed "block/report/period.twig" with {"source":{"entity":"RequestIndex"}, "items": requestperiod} %}
                 {% block breadcrumb %}
                 <ul class="report-period--breadcrumb">
-                    <li><a href="{{ urlGet("ReportRequestOrganisation", {}, {}) }}">{{organisation.name}}</a></li>
-                    <li><a href="{{ urlGet("ReportRequestDepartment", {}, {}) }}">{{department.name}}</a></li>
+                    {% if organisation %}
+                        <li><a href="{{ urlGet("ReportRequestOrganisation", {}, {}) }}">{{organisation.name}}</a></li>
+                    {% endif %}
+                    {% if department %}
+                        <li><a href="{{ urlGet("ReportRequestDepartment", {}, {}) }}">{{department.name}}</a></li>
+                    {% endif %}
                     <li>{{workstation.scope.contact.name}} {{workstation.scope.shortName}}</li>
                 </ul>
                 {% endblock %}
@@ -32,8 +40,12 @@
             {% embed "block/report/period.twig" with {"source":{"entity":"WaitingIndex"}, "items": waitingperiod} %}
                 {% block breadcrumb %}
                 <ul class="report-period--breadcrumb">
-                    <li><a href="{{ urlGet("ReportWaitingOrganisation", {}, {}) }}">{{organisation.name}}</a></li>
-                    <li><a href="{{ urlGet("ReportWaitingDepartment", {}, {}) }}">{{department.name}}</a></li>
+                    {% if organisation %}
+                        <li><a href="{{ urlGet("ReportWaitingOrganisation", {}, {}) }}">{{organisation.name}}</a></li>
+                    {% endif %}
+                    {% if department %}
+                        <li><a href="{{ urlGet("ReportWaitingDepartment", {}, {}) }}">{{department.name}}</a></li>
+                    {% endif %}
                     <li>{{workstation.scope.contact.name}} {{workstation.scope.shortName}}</li>
                 </ul>
                 {% endblock %}

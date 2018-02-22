@@ -20,11 +20,6 @@ class Index extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        try {
-            $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
-        } catch (\Exception $workstationexception) {
-            $workstation = null;
-        }
         $form = LoginForm::fromLoginParameters();
         $validate = Validator::param('login_form_validate')->isBool()->getValue();
         $loginData = ($validate) ? $form->getStatus() : null;
@@ -36,39 +31,8 @@ class Index extends BaseController
             'page/index.twig',
             array(
                 'title' => 'Anmeldung',
-                'workstation' => $workstation,
-                'loginData' => $loginData
-            )
-        );
-    }
-
-    protected function testLogin($loginData, $response)
-    {
-        $userAccount = new \BO\Zmsentities\Useraccount(array(
-            'id' => $loginData['loginName']['value'],
-            'password' => $loginData['password']['value']
-        ));
-        try {
-            $workstation = \App::$http->readPostResult('/workstation/login/', $userAccount)->getEntity();
-            if (array_key_exists('authkey', $workstation)) {
-                \BO\Zmsclient\Auth::setKey($workstation->authkey);
-                return \BO\Slim\Render::redirect('workstationSelect', array(), array());
-            }
-        } catch (\BO\Zmsclient\Exception $exception) {
-            if ($exception->template == 'BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn') {
-                \BO\Zmsclient\Auth::setKey($exception->data['authkey']);
-                throw $exception;
-            } elseif ($exception->template == 'BO\Zmsapi\Exception\Useraccount\AuthKeyFound') {
-                throw $exception;
-            }
-        }
-        return \BO\Slim\Render::withHtml(
-            $response,
-            'page/index.twig',
-            array(
-                'title' => 'Anmeldung gescheitert',
-                'loginfailed' => true,
-                'workstation' => null,
+                'loginfailed' => Validator::param('login_failed')->isBool()->getValue(),
+                'workstation' => $this->workstation,
                 'loginData' => $loginData
             )
         );

@@ -11,6 +11,7 @@ use \BO\Mellon\Validator;
 
 class WorkstationSelect extends BaseController
 {
+    protected $resolveLevel = 3;
     /**
      * @SuppressWarnings(Parameter)
      * @return String
@@ -20,11 +21,7 @@ class WorkstationSelect extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 3])->getEntity();
-        if (!$workstation->hasId()) {
-            return \BO\Slim\Render::redirect('index', array('error' => 'login_failed'));
-        }
-        $workstation->testDepartmentList();
+        $this->workstation->testDepartmentList();
 
         $input = $request->getParsedBody();
         $formData = [];
@@ -34,7 +31,7 @@ class WorkstationSelect extends BaseController
             $selectedDate = Validator::param('selectedDate')->isString()->getValue();
             $queryParams = ($selectedDate) ? array('date' => $selectedDate) : array();
             if (! $form->hasFailed()) {
-                LoginForm::writeWorkstationUpdate($form, $workstation);
+                LoginForm::writeWorkstationUpdate($form, $this->workstation);
                 return \BO\Slim\Render::redirect(
                     'Overview',
                     array(),
@@ -49,7 +46,7 @@ class WorkstationSelect extends BaseController
             array(
                 'title' => 'Standort und Arbeitsplatz auswählen',
                 'advancedData' => $formData,
-                'workstation' => $workstation,
+                'workstation' => $this->workstation,
                 'menuActive' => 'select',
                 'today' => \App::$now->format('Y-m-d')
             )

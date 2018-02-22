@@ -23,15 +23,7 @@ class Logout extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        try {
-            $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 0])->getEntity();
-            \App::$http->readDeleteResult('/workstation/login/'. $workstation->useraccount['id'] .'/')->getEntity();
-        } catch (\BO\Zmsclient\Exception $exception) {
-            if ("BO\Zmsentities\Exception\UseraccountMissingLogin" !== $exception->template) {
-                throw $exception;
-            }
-        }
-
+        \App::$http->readDeleteResult('/workstation/login/'. $this->workstation->useraccount['id'] .'/');
         return \BO\Slim\Render::redirect(
             'index',
             array(

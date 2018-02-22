@@ -20,25 +20,14 @@ class WarehouseSubject extends BaseController
         array $args
     ) {
         $validator = $request->getAttribute('validator');
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-        if (!$workstation->hasId()) {
-            return \BO\Slim\Render::redirect(
-                'index',
-                array(
-                    'error' => 'login_failed'
-                )
-            );
-        }
-        $department = \App::$http->readGetResult('/scope/' . $workstation->scope['id'] . '/department/')->getEntity();
-        $organisation = \App::$http->readGetResult('/department/' . $department->id . '/organisation/')->getEntity();
         $subjectList = \App::$http->readGetResult('/warehouse/'. $args['subject'] .'/')->getEntity();
 
         $type = $validator->getParameter('type')->isString()->getValue();
         if ($type) {
             $args['category'] = 'raw-'.$args['subject'];
             $args['reports'][] = $subjectList;
-            $args['department'] = $department;
-            $args['organisation'] = $organisation;
+            $args['department'] = $this->department;
+            $args['organisation'] = $this->organisation;
             return (new Download(\App::$slim->getContainer()))->readResponse($request, $response, $args);
         }
 
@@ -52,7 +41,7 @@ class WarehouseSubject extends BaseController
                 'subjectList' => $subjectList->toHashed(),
                 'category' => $args['subject'],
                 'categoryName' => Download::$subjectTranslations[$args['subject']],
-                'workstation' => $workstation->getArrayCopy()
+                'workstation' => $this->workstation->getArrayCopy()
             )
         );
     }

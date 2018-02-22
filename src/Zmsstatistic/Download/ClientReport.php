@@ -10,10 +10,6 @@ use \BO\Zmsentities\Exchange as ReportEntity;
 
 use \BO\Zmsstatistic\Helper\Download;
 
-use \BO\Zmsstatistic\Helper\Report;
-
-use \BO\Zmsstatistic\Helper\OrganisationData;
-
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 class ClientReport extends Base

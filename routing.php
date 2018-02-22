@@ -17,9 +17,6 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->map(['GET','POST'], '/', '\BO\Zmsstatistic\Index')
     ->setName("index");
 
-\App::$slim->get('/workstation/quicklogin/', '\BO\Zmsstatistic\QuickLogin')
-    ->setName("quickLogin");
-
 \App::$slim->get('/overview/', '\BO\Zmsstatistic\Overview')
     ->setName("Overview");
 

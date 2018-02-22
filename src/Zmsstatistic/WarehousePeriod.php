@@ -19,15 +19,6 @@ class WarehousePeriod extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-        if (!$workstation->hasId()) {
-            return \BO\Slim\Render::redirect(
-                'index',
-                array(
-                    'error' => 'login_failed'
-                )
-            );
-        }
         $periodList = \App::$http
           ->readGetResult('/warehouse/'. $args['subject'] .'/'. $args['subjectid'] .'/')
           ->getEntity();
@@ -42,7 +33,7 @@ class WarehousePeriod extends BaseController
                 'category' => $args['subject'],
                 'categoryName' => Base::$subjectTranslations[$args['subject']],
                 'subjectId' => $args['subjectid'],
-                'workstation' => $workstation->getArrayCopy()
+                'workstation' => $this->workstation->getArrayCopy()
             )
         );
     }

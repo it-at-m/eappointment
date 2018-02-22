@@ -8,6 +8,8 @@ namespace BO\Zmsstatistic;
 
 class Overview extends BaseController
 {
+    protected $resolveLevel = 3;
+
     /**
      * @SuppressWarnings(Param)
      * @return String
@@ -17,21 +19,17 @@ class Overview extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 3])->getEntity();
-        $department = \App::$http->readGetResult('/scope/' . $workstation->scope['id'] . '/department/')->getEntity();
-        $organisation = \App::$http->readGetResult('/department/' .$department->id . '/organisation/')->getEntity();
-
         $waitingperiod = \App::$http
-            ->readGetResult('/warehouse/waitingscope/' . $workstation->scope['id'] . '/')
+            ->readGetResult('/warehouse/waitingscope/' . $this->workstation->scope['id'] . '/')
             ->getEntity();
         $clientperiod = \App::$http
-            ->readGetResult('/warehouse/clientscope/' . $workstation->scope['id'] . '/')
+            ->readGetResult('/warehouse/clientscope/' . $this->workstation->scope['id'] . '/')
             ->getEntity();
         $requestperiod = \App::$http
-            ->readGetResult('/warehouse/requestscope/' . $workstation->scope['id'] . '/')
+            ->readGetResult('/warehouse/requestscope/' . $this->workstation->scope['id'] . '/')
             ->getEntity();
 
-        if (!$workstation->hasId()) {
+        if (!$this->workstation->hasId()) {
             return \BO\Slim\Render::redirect(
                 'index',
                 array(
@@ -45,13 +43,13 @@ class Overview extends BaseController
             'page/overview.twig',
             array(
                 'title' => 'Statistik',
-                'workstation' => $workstation->getArrayCopy(),
-                'department' => $department,
-                'organisation' => $organisation,
+                'workstation' => $this->workstation->getArrayCopy(),
+                'department' => $this->department,
+                'organisation' => $this->organisation,
                 'waitingperiod' => $waitingperiod,
                 'clientperiod' => $clientperiod,
                 'requestperiod' => $requestperiod,
-                'scopeId' => $workstation->scope['id'],
+                'scopeId' => $this->workstation->scope['id'],
                 'showAll' => 0
             )
         );

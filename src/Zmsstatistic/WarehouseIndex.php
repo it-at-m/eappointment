@@ -17,15 +17,6 @@ class WarehouseIndex extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-        if (!$workstation->hasId()) {
-            return \BO\Slim\Render::redirect(
-                'index',
-                array(
-                    'error' => 'login_failed'
-                )
-            );
-        }
         $warehouse = \App::$http->readGetResult('/warehouse/')
           ->getEntity()
           ->toHashed();
@@ -37,7 +28,7 @@ class WarehouseIndex extends BaseController
                 'title' => 'Kategorien',
                 'menuActive' => 'warehouse',
                 'warehouse' => $warehouse,
-                'workstation' => $workstation->getArrayCopy()
+                'workstation' => $this->workstation->getArrayCopy()
             )
         );
     }
