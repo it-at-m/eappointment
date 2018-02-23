@@ -2508,6 +2508,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
  *                  in: query
  *                  type: integer
+ *              -   name: keepLessData
+ *                  description: "Parameter for withLessData method to keep given values in response data"
+ *                  in: query
+ *                  type: array
  *          responses:
  *              200:
  *                  description: get a list of available processes, if no process found, return empty list
