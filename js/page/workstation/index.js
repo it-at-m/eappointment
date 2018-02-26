@@ -2,7 +2,6 @@
 import BaseView from '../../lib/baseview'
 import { stopEvent, showSpinner, hideSpinner } from '../../lib/utils'
 import $ from 'jquery'
-import moment from 'moment'
 import settings from '../../settings'
 import AppointmentView from '../../block/appointment'
 import QueueView from '../../block/queue'
@@ -44,14 +43,17 @@ class View extends BaseView {
             'onSendCustomNotification',
             'onSendNotificationReminder',
             'onReloadQueueTable',
-            'onChangeTableView'
+            'onChangeTableView',
+            'onChangeSlotCount'
         );
         this.$.ready(() => {
             this.setLastReload();
             this.setReloadTimer();
         });
         $.ajaxSetup({ cache: false });
-        this.loadAllPartials().then(() => this.bindEvents());
+        this.loadAllPartials().then(() => {
+            this.bindEvents();
+        });
         //console.log('Component: Workstation', this, options);
     }
 
@@ -102,19 +104,10 @@ class View extends BaseView {
         $container.removeClass('lightbox');
         $container.removeClass('lightbox__content');
         $container.data('selecteddate', this.selectedDate);
-        if (this.selectedProcess) {
-            this.loadCalendar();
-            this.loadClientNext();
-            this.loadQueueTable();
-            this.loadAppointmentForm(true, true);
-            this.$main.find('.add-date-picker input#process_date').val(moment(this.selectedDate, 'YYYY-MM-DD').format('DD.MM.YYYY'));
-            this.$main.find('input#process_selected_date').val(moment(this.selectedDate, 'YYYY-MM-DD').format('YYYY-MM-DD'));
-            this.$main.find('.appointment-form .switchcluster select').val(this.selectedScope);
-            this.$main.find('[name="familyName"]').focus();
-          } else {
-              this.loadAllPartials();
-          }
-
+        this.loadCalendar();
+        this.loadClientNext();
+        this.loadQueueTable();
+        this.loadAppointmentForm(true, true);
     }
 
     onSelectDateWithOverlay() {
@@ -126,11 +119,15 @@ class View extends BaseView {
         });
     }
 
+    onChangeSlotCount(event) {
+        this.slotsRequired = $(event.target).val();
+        this.loadCalendar();
+    }
+
     onChangeScope(scopeId) {
         this.selectedScope = scopeId;
         this.loadCalendar();
-        this.loadAppointmentForm(true, true);
-        //this.$main.find('.appointment-form .switchcluster select').val(this.selectedScope);
+        this.loadAppointmentForm();
     }
 
     onChangeTableView ($container, event, $element) {
@@ -360,9 +357,10 @@ class View extends BaseView {
             onPrintWaitingNumber: this.onPrintWaitingNumber,
             onAbortMessage: this.onAbortMessage,
             onSelectDateWithOverlay: this.onSelectDateWithOverlay,
+            onChangeSlotCount: this.onChangeSlotCount,
             showLoader: showLoader,
             constructOnly: constructOnly
-        })
+        });
     }
 
     loadQueueTable (showLoader = true) {

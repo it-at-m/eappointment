@@ -4,16 +4,16 @@ import $ from "jquery"
 class View extends BaseView {
 
     constructor (element, options) {
-        super(element);
+        super(element, options);
         this.$main = $(element);
         this.selectedProcess = options.selectedProcess;
         this.serviceList = [];
         this.serviceListSelected = [];
-        this.slotCount = 0;
+        this.initRequestView();
         //console.log('Component: RequestList actions', this, options);
     }
 
-    loadList () {
+    initRequestView () {
         if (this.selectedProcess)
             this.readList()
         else
@@ -47,23 +47,23 @@ class View extends BaseView {
     {
         this.$main.find('.checkboxselect input:checked, .checkboxselect input:hidden').each((index, element) => {
             if ($.inArray($(element).val(), this.serviceListSelected) === -1)
-                this.addServiceToList ($(element), this.serviceListSelected)
+                this.addServiceToList ($(element), 'serviceListSelected')
         });
         this.$main.find('.checkboxdeselect input:not(:checked)').each((index, element) => {
             if ($.inArray($(element).val(), this.serviceList) === -1)
-                this.addServiceToList ($(element), this.serviceList)
+                this.addServiceToList ($(element), 'serviceList')
         });
         this.updateLists();
     }
 
     addServiceToList (element, list) {
-        return list.push(element.val());
+        return this[list].push(element.val());
     }
 
     removeServiceFromList (element, list) {
-        for (var i = 0; i < list.length; i++)
-            if (list[i] === element.val()) {
-                return list.splice(i,1);
+        for (var i = 0; i < this[list].length; i++)
+            if (this[list][i] === element.val()) {
+                return this[list].splice(i,1);
             }
     }
 
@@ -73,6 +73,7 @@ class View extends BaseView {
             return $(this).val();
         }).toArray();
         this.serviceListSelected = [];
+        this.updateLists();
     }
 
     calculateSlotCount () {
@@ -84,8 +85,7 @@ class View extends BaseView {
             if (selectedSlots[i] > 0) {
                 slotCount += selectedSlots[i];
             }
-        this.slotCount = slotCount;
-        this.$main.find('#appointmentForm_slotCount').val(this.slotCount)
+        $('#appointmentForm_slotCount').val(slotCount).trigger('change');
     }
 }
 

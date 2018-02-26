@@ -23,7 +23,6 @@ class CalendarPage extends BaseController
 
         $validator = $request->getAttribute('validator');
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
-
         $slotType = $validator->getParameter('slottype')->isString()->getValue();
         $slotsRequired = $validator->getParameter('slotsrequired')->isNumber()->getValue();
         $selectedScopeId = $validator->getParameter('selectedscope')->isNumber()->getValue();
@@ -35,6 +34,7 @@ class CalendarPage extends BaseController
             ? (new \BO\Zmsentities\Collection\ScopeList)->addEntity($scope)
             : (new Helper\ClusterHelper($workstation))->getScopeList();
 
+        $slotsRequired = ($scope->getPreference('appointment', 'multipleSlotsEnabled')) ? $slotsRequired : 0;
         return \BO\Slim\Render::withHtml(
             $response,
             'block/calendar/calendarMonth.twig',
