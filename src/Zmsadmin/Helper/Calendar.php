@@ -69,7 +69,8 @@ class Calendar
                 $this->calendar,
                 [
                     'slotType' => $slotType,
-                    'slotsRequired' => $slotsRequired
+                    'slotsRequired' => $slotsRequired,
+                    'keepLessData' => ['availability']
                 ]
             )->getCollection();
         } catch (\BO\Zmsclient\Exception $exception) {

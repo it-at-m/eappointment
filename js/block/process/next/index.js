@@ -25,7 +25,6 @@ class View extends BaseView {
     }
 
     load() {
-        console.log('init load')
         this.cleanInstance();
         const url = `${this.includeUrl}/workstation/process/callbutton/`
         return this.loadInto(url).then(this.setTimeSinceCall);

@@ -5,31 +5,26 @@ class View extends BaseView {
 
     constructor (element, options) {
         super(element);
-        this.$parent = $(element);
-        this.selectedDate = options.selectedDate;
-        this.selectedProcess = options.selectedProcess || 0;
+        this.$main = $(element);
         this.includeUrl = options.includeUrl || "";
-        this.bindPublicMethods('load');
+        this.selectedDate = options.selectedDate;
+        this.selectedFreeProcessTime = options.selectedFreeProcessTime || "00-00";
+        this.selectedProcess = options.selectedProcess || 0;
+
+        this.bindPublicMethods('loadButtons');
         $.ajaxSetup({ cache: false });
     }
 
-    load() {
-        this.$main = this.$parent.find('[data-form-buttons]');
-        var freeProcessListLength = this.$parent.find('[data-free-process-list] option').length;
-        var selectedProcessList = this.$parent.find('[data-free-process-list] option').val();
-        if ("00-00" == selectedProcessList && 1 == freeProcessListLength && 0 == this.selectedProcess) {
-            freeProcessListLength  = 0;
-        }
-
-        const url = `${this.includeUrl}/appointmentForm/buttons/?selecteddate=${this.selectedDate}&selectedprocess=${this.selectedProcess}&freeprocesslistlength=${freeProcessListLength}`
+    loadButtons() {
+        const url = `${this.includeUrl}/appointmentForm/buttons/?selecteddate=${this.selectedDate}&selectedprocess=${this.selectedProcess}&selectedTime=${this.selectedFreeProcessTime}`
         return this.loadContent(url, 'GET', null, null, false)
-          .then(() => {this.toggleButtonDisabled(freeProcessListLength)})
+          .then(() => {this.toggleButtonDisabled()})
           .catch(err => this.loadErrorCallback(err.source, err.url)
         );
     }
 
-    toggleButtonDisabled(freeProcessListLength) {
-        if (0 == freeProcessListLength) {
+    toggleButtonDisabled() {
+        if (0 == this.freeProcessListLength) {
             this.$main.find('button').not('.process-abort, .process-queue').prop("disabled",true);
         }
     }

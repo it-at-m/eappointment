@@ -23,22 +23,10 @@ class AppointmentFormFreeProcessList extends BaseController
         $validator = $request->getAttribute('validator');
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
         $selectedTime = $validator->getParameter('selectedtime')->isString()->getValue();
-        $selectedScopeId = $validator->getParameter('selectedscope')->isNumber()->getValue();
         $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
-        $slotsCount = $validator->getParameter('slotscount')->isNumber()->getValue();
         $selectedProcess = ($selectedProcessId) ?
             \App::$http->readGetResult('/process/'. $selectedProcessId .'/')->getEntity() : null;
-        $scope = Helper\AppointmentFormHelper::readPreferedScope($request, $selectedScopeId, $workstation);
-        $freeProcessList = Helper\AppointmentFormHelper::readFreeProcessList($request, $workstation, $scope);
-        if ($freeProcessList && $selectedProcess &&
-            $selectedDate == $selectedProcess->getFirstAppointment()->toDateTime()->format('Y-m-d')
-          ) {
-            $dateTime = $selectedProcess->getFirstAppointment()->toDateTime();
-            $freeProcessList->setTempAppointmentToProcess($dateTime, $selectedScopeId);
-        } elseif (! $freeProcessList && $selectedProcess && $selectedProcess->queue->withAppointment) {
-            $freeProcessList = (new \BO\Zmsentities\Collection\ProcessList())->addEntity($selectedProcess);
-        }
-        $freeProcessList = ($freeProcessList) ? $freeProcessList->toProcessListByTime()->sortByTimeKey() : null;
+        $freeProcessList = Helper\AppointmentFormHelper::readFreeProcessList($request, $workstation);
 
         return \BO\Slim\Render::withHtml(
             $response,
@@ -47,9 +35,7 @@ class AppointmentFormFreeProcessList extends BaseController
                 'selectedDate' => $selectedDate,
                 'selectedTime' => $selectedTime,
                 'freeProcessList' => $freeProcessList,
-                'selectedScope' => $scope,
-                'selectedProcess' => $selectedProcess,
-                'slotsCount' => $slotsCount
+                'selectedProcess' => $selectedProcess
             )
         );
     }

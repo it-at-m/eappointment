@@ -27,7 +27,8 @@ class AppointmentForm extends BaseController
         $success = $validator->getParameter('success')->isString()->getValue();
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
         $selectedTime = $validator->getParameter('selectedtime')->isString()->getValue();
-
+        $selectedScope = $validator->getParameter('selectedscope')->isNumber()->getValue();
+        $selectedScope = \App::$http->readGetResult('/scope/'. $selectedScope .'/')->getEntity();
         if ($selectedProcess) {
             $selectedDate = $selectedProcess->getFirstAppointment()->toDateTime()->format('Y-m-d');
             $selectedTime = $selectedProcess->getFirstAppointment()->getStartTime()->format('H-i');
@@ -46,13 +47,14 @@ class AppointmentForm extends BaseController
         }
 
         $requestList = (new Helper\ClusterHelper($workstation))->getRequestList();
+        $freeProcessList = Helper\AppointmentFormHelper::readFreeProcessList($request, $workstation);
 
         return \BO\Slim\Render::withHtml(
             $response,
             'block/appointment/form.twig',
             array(
                 'workstation' => $workstation,
-                'scope' => $workstation->scope,
+                'scope' => ($selectedScope) ? $selectedScope : $workstation->scope,
                 'preferedScope' => $this->readPreferedScope($request, $workstation, $selectedProcess),
                 'cluster' => (new Helper\ClusterHelper($workstation))->getEntity(),
                 'department' =>
@@ -63,7 +65,8 @@ class AppointmentForm extends BaseController
                 'selectedTime' => ($selectedTime) ? $selectedTime : null,
                 'requestList' => (count($requestList)) ? $requestList->sortByName() : null,
                 'formData' => (isset($validatedForm)) ? $validatedForm->getStatus() : null,
-                'success' => $success
+                'success' => $success,
+                'freeProcessList' => $freeProcessList
             )
         );
     }
