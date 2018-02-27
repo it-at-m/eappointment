@@ -34,6 +34,7 @@ import { getDataAttributes } from './lib/utils'
 import scopeChangeProvider from './element/form/scope'
 import preventFormResubmit from './element/form/preventFormResubmit'
 import maxChars from './element/form/maxChars'
+import DialogHandler from './lib/dialogHandler'
 
 
 // Bind jQuery on $ for testing
@@ -92,6 +93,7 @@ $('.scope-form-update').each(function() {
 
 printScopeAppointmentsByDay()
 printWaitingNumber()
+DialogHandler.hideMessages()
 
 // Say hello
 console.log("Welcome to the ZMS admin interface...");

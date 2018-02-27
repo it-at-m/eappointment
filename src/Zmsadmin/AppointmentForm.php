@@ -27,8 +27,8 @@ class AppointmentForm extends BaseController
         $success = $validator->getParameter('success')->isString()->getValue();
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
         $selectedTime = $validator->getParameter('selectedtime')->isString()->getValue();
-        $selectedScope = $validator->getParameter('selectedscope')->isNumber()->getValue();
-        $selectedScope = \App::$http->readGetResult('/scope/'. $selectedScope .'/')->getEntity();
+        $selectedScope = $this->getSelectedScope($validator, $workstation);
+
         if ($selectedProcess) {
             $selectedDate = $selectedProcess->getFirstAppointment()->toDateTime()->format('Y-m-d');
             $selectedTime = $selectedProcess->getFirstAppointment()->getStartTime()->format('H-i');
@@ -54,7 +54,7 @@ class AppointmentForm extends BaseController
             'block/appointment/form.twig',
             array(
                 'workstation' => $workstation,
-                'scope' => ($selectedScope) ? $selectedScope : $workstation->scope,
+                'scope' => $selectedScope,
                 'preferedScope' => $this->readPreferedScope($request, $workstation, $selectedProcess),
                 'cluster' => (new Helper\ClusterHelper($workstation))->getEntity(),
                 'department' =>
@@ -79,5 +79,17 @@ class AppointmentForm extends BaseController
             $selectedScopeId = $selectedProcess->getFirstAppointment()->getScope()->getId();
         }
         return Helper\AppointmentFormHelper::readPreferedScope($request, $selectedScopeId, $workstation);
+    }
+
+    protected function getSelectedScope($validator, $workstation)
+    {
+        $selectedScope = $validator->getParameter('selectedscope')->isNumber()->getValue();
+        if ($selectedScope) {
+            $selectedScope = \App::$http
+              ->readGetResult('/scope/'. $selectedScope .'/', ['resolveReferences' => 1])
+              ->getEntity();
+        }
+
+        return ($selectedScope && $selectedScope->hasId()) ? $selectedScope : $workstation->scope;
     }
 }

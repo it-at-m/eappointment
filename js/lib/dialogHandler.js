@@ -1,6 +1,7 @@
 import $ from 'jquery';
 import ExceptionHandler from './exceptionHandler'
 import maxChars from '../element/form/maxChars'
+import settings from '../settings'
 
 class DialogHandler {
 
@@ -59,7 +60,7 @@ class DialogHandler {
         if (message.length && ! instant) {
             setTimeout(() => {
                 $(message).not('.message-keep').fadeOut().remove();
-            },5000)
+            }, settings.hideMessageTime * 1000)
         } else if (message.length && instant) {
             $(message).not('.message-keep').fadeOut().remove();
         }

@@ -11,7 +11,6 @@ use \Prophecy\Argument;
 
 abstract class Base extends \BO\Zmsclient\PhpUnit\Base
 {
-
     protected $namespace = '\\BO\\Zmsadmin\\';
 
     public function readFixture($filename)

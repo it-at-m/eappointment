@@ -130,7 +130,7 @@ class ProcessQueueTest extends Base
                 [
                     'function' => 'readPostResult',
                     'url' => '/process/status/free/',
-                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0],
+                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0, 'keepLessData' => ['availability']],
                     'response' => $this->readFixture("GET_freeprocesslist_20160527.json")
                 ]
             ]

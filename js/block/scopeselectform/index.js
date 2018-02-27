@@ -10,7 +10,7 @@ class View extends BaseView {
         this.today = this.options.today
         this.scopeId = null
         this.bindEvents();
-        console.log('Component: LoginForm', this, options);
+        //console.log('Component: LoginForm', this, options);
         this.update()
     }
 
@@ -27,7 +27,6 @@ class View extends BaseView {
             this.downloadAppointments()
         }).on('change', 'select[name=scope]', (ev)=> {
             this.scopeId = ev.target.value
-            console.log(this.scopeId)
             this.update()
         })
     }

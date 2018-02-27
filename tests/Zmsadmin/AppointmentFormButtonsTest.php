@@ -24,10 +24,10 @@ class AppointmentFormButtonsTest extends Base
             ]
         );
         $response = $this->render([], ['selecteddate' => '2016-04-01'], []);
-        $this->assertContains('Spontankunde', (string)$response->getBody());
+        $this->assertContains('Spontankunden hinzufügen', (string)$response->getBody());
     }
 
-    public function testWithSelectedDate()
+    public function testWithSelectedDateWithTime()
     {
         $this->setApiCalls(
             [
@@ -39,7 +39,7 @@ class AppointmentFormButtonsTest extends Base
                 ]
             ]
         );
-        $response = $this->render([], ['selecteddate' => '2016-05-27'], []);
+        $response = $this->render([], ['selecteddate' => '2016-05-27', 'selectedTime' => '08-00'], []);
         $this->assertContains('Termin reservieren', (string)$response->getBody());
     }
 
