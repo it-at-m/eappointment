@@ -58,7 +58,6 @@ class View extends RequestView {
             this.assigneMainFormValues();
             this.loadRequestList().loadPromise.then(() => {
                 this.bindEvents();
-                this.bindButtonEvents();
                 this.$main.find('select#process_time').trigger('change');
             });
         });
@@ -68,12 +67,9 @@ class View extends RequestView {
         this.assigneMainFormValues();
         this.loadRequestList().loadPromise.then(() => {
             this.loadFreeProcessList().loadList().then(() => {
-              this.bindEvents();
-              this.$main.find('select#process_time').trigger('change');
+                this.bindEvents();
                 this.selectedFreeProcessTime = this.$main.find('[data-free-process-list] option').val();
-                this.loadFormButtons().loadButtons().then(() => {
-                    this.bindButtonEvents();
-                });
+                this.$main.find('select#process_time').trigger('change');
             })
         });
     }
@@ -82,7 +78,7 @@ class View extends RequestView {
     {
         this.$main.find('.add-date-picker input#process_date').val(moment(this.selectedDate, 'YYYY-MM-DD').format('DD.MM.YYYY'));
         this.$main.find('input#process_selected_date').val(moment(this.selectedDate, 'YYYY-MM-DD').format('YYYY-MM-DD'));
-        //this.$main.find('.appointment-form .switchcluster select').val(this.selectedScope);
+        this.$main.find('.appointment-form .switchcluster select').val(this.selectedScope);
         this.$main.find('[name="familyName"]').focus();
     }
 
@@ -114,13 +110,6 @@ class View extends RequestView {
         });
     }
 
-    setSelectedScopeFromFreeProcess(event) {
-        this.selectedScope = $(event.target).find('option:selected').data('scope') || 0;
-        if (0 < this.selectedScope) {
-            this.$main.find('.appointment-form .switchcluster select').val(this.selectedScope);
-        }
-    }
-
     bindEvents() {
         this.$main.off().on('change', '.checkboxselect input:checkbox', (event) => {
             this.onAddRequest(event);
@@ -133,14 +122,10 @@ class View extends RequestView {
         }).on('click', '.add-date-picker', () => {
             this.onSelectDateWithOverlay();
         }).on('change', '.appointment-form .switchcluster select', (event) => {
-            this.onChangeScope(event.target.value);
+            this.onChangeScope(event);
         }).on('change', 'select#process_time', (event) => {
             this.onChangeProcessTime(event);
-        });
-    }
-
-    bindButtonEvents() {
-        this.$main.on('click', '.form-actions button.process-reserve', (event) => {
+        }).on('click', '.form-actions button.process-reserve', (event) => {
             this.onSaveProcess(this.$main, event, 'reserve');
         }).on('click', '.form-actions button.process-save', (event) => {
             this.onSaveProcess(this.$main, event);
@@ -156,7 +141,7 @@ class View extends RequestView {
             this.onAbortMessage(event);
         }).on('click', '[data-action-printWaitingNumber]', (event) => {
             this.onPrintWaitingNumber(event);
-        })
+        });
     }
 
     onClearRequestList() {
@@ -186,9 +171,8 @@ class View extends RequestView {
 
     onChangeProcessTime(event) {
         this.selectedFreeProcessTime = $(event.target).val();
-        this.setSelectedScopeFromFreeProcess(event);
         this.loadFormButtons().loadButtons().then(() => {
-            this.bindButtonEvents();
+            this.bindEvents();
         });
     }
 }

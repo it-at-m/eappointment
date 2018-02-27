@@ -32,4 +32,10 @@ class ConfigInfoTest extends Base
         $this->assertContains("Sie sind in Kürze an der Reihe.", (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
+
+    public function testTemplatePath()
+    {
+        $path = \BO\Zmsadmin\Helper\TemplateFinder::getTemplatePath();
+        $this->assertContains('src/Zmsadmin/Helper/../../../templates', $path);
+    }
 }

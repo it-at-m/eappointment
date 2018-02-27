@@ -52,7 +52,10 @@ class ProcessReserveTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, [], 'POST');
-        $this->assertRedirect($response, '/appointmentForm/?selectedprocess=100005&success=process_reserved');
+        $this->assertRedirect(
+            $response,
+            '/appointmentForm/?selectedprocess=100005&selectedscope=141&success=process_reserved'
+        );
         $this->assertEquals(302, $response->getStatusCode());
     }
 
@@ -102,7 +105,10 @@ class ProcessReserveTest extends Base
         );
         $paremeters = array_merge($this->parameters, array('sendConfirmation' => 1, 'sendMailConfirmation' => 1));
         $response = $this->render($this->arguments, $paremeters, [], 'POST');
-        $this->assertRedirect($response, '/appointmentForm/?selectedprocess=194104&success=process_reserved');
+        $this->assertRedirect(
+            $response,
+            '/appointmentForm/?selectedprocess=194104&selectedscope=141&success=process_reserved'
+        );
         $this->assertEquals(302, $response->getStatusCode());
     }
 }

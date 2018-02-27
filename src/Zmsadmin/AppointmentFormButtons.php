@@ -31,7 +31,7 @@ class AppointmentFormButtons extends BaseController
             array(
                 'workstation' => $workstation,
                 'selectedProcess' => $selectedProcess,
-                'selectedTime' => $selectedTime,
+                'selectedTime' => $selectedTime = ($selectedTime) ? $selectedTime : '00-00',
                 'selectedDate' => ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d'),
             )
         );

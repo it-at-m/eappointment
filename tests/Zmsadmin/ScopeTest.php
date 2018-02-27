@@ -302,6 +302,60 @@ class ScopeTest extends Base
         $this->assertEquals(302, $response->getStatusCode());
     }
 
+    public function testSaveSuccessMessage()
+    {
+        \App::$now = new \DateTimeImmutable('2016-04-01 11:55:00', new \DateTimeZone('Europe/Berlin'));
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/provider/dldb/',
+                    'parameters' => ['isAssigned' => true],
+                    'response' => $this->readFixture("GET_providerlist_assigned.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/provider/dldb/',
+                    'parameters' => ['isAssigned' => false],
+                    'response' => $this->readFixture("GET_providerlist_notassigned.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_scope_141.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/department/',
+                    'response' => $this->readFixture("GET_department_74.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/organisation/',
+                    'response' => $this->readFixture("GET_organisation_71_resolved3.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/imagedata/calldisplay/',
+                    'response' => $this->readFixture("GET_imagedata_empty.json")
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, ['success' => 'scope_saved'], []);
+        $this->assertContains(
+            'Der Standort wurde am 01.04.2016 um 11:55 Uhr erfolgreich aktualisiert.',
+            (string)$response->getBody()
+        );
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
     public function testTwigExceptionHandler()
     {
         //$response = \BO\Zmsadmin\Helper\TwigExceptionHandler::withHtml($request, $response, $exception, $status);

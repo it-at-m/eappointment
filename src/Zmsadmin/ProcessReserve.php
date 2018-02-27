@@ -44,6 +44,7 @@ class ProcessReserve extends BaseController
             Helper\AppointmentFormHelper::updateMailAndNotification($input, $process);
             $queryParams = array(
                 'selectedprocess' => $process->getId(),
+                'selectedscope' => $scope->getId(),
                 'success' => 'process_reserved'
             );
         }

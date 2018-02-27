@@ -16,7 +16,7 @@ class View extends BaseView {
         this.selectedDate = options['selected-date'];
         this.selectedTime = options['selected-time'];
         this.selectedProcess = options['selected-process'];
-        this.selectedScope=0;
+        this.selectedScope = options['selected-scope'] || 0;
         this.calledProcess = options['called-process'];
         this.slotType = 'intern';
         this.slotsRequired = 0;
@@ -124,8 +124,9 @@ class View extends BaseView {
         this.loadCalendar();
     }
 
-    onChangeScope(scopeId) {
-        this.selectedScope = scopeId;
+    onChangeScope(event) {
+        stopEvent(event);
+        this.selectedScope = $(event.target).val();
         this.loadCalendar();
         this.loadAppointmentForm();
     }
@@ -178,6 +179,7 @@ class View extends BaseView {
           showSpinner();
           return this.loadCall(`${this.includeUrl}/appointmentForm/`, 'POST', {'delete': 1, 'processId': processId, 'initiator': this.initiator}).then((response) => {
                 this.loadMessage(response, () => {
+                    this.loadAppointmentForm(true, true);
                     this.loadQueueTable();
                     this.loadCalendar();
                     hideSpinner();
