@@ -97,6 +97,22 @@ class CalendarTest extends Base
         );
     }
 
+    public function testMultipleSlots()
+    {
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $input = $this->getTestEntity();
+        $input->addProvider('dldb', 122271); // Bürgeramt Biesdorf Center
+        $input->addRequest('dldb', 120335);
+        $entity = (new Query())->readResolvedEntity($input, $now);
+        $this->assertEntity("\\BO\\Zmsentities\\Calendar", $entity);
+        $this->assertTrue($entity->hasDay(2016, 5, 25), "Missing 2016-05-25 in dataset");
+        $this->assertEquals(
+            20,
+            $entity->getDay(2016, 5, 26)['freeAppointments']['public'],
+            "wrong calculated slotsRequired or constraint is ignored"
+        );
+    }
+
     public function testOverallDayOff()
     {
         $freeProcessesDate = new \DateTimeImmutable("2016-05-16");
@@ -125,7 +141,7 @@ class CalendarTest extends Base
             "requests" => [
                 [
                     "source" => "dldb",
-                    "id" => "120703",
+                    "id" => "120703", // Personalausweis beantragen
                     ],
                 ],
         ));
