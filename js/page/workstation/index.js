@@ -143,12 +143,13 @@ class View extends BaseView {
 
     onSaveProcess ($container, event, action = 'update') {
         stopEvent(event);
-        this.selectedProcess = null;
+        this.selectedProcess = $(event.target).data('id');
         const sendData = $container.find('form').serializeArray();
         sendData.push({name: action, value: 1});
-        sendData.push({name: 'selectedprocess', value: $(event.target).data('id')});
+        sendData.push({name: 'selectedprocess', value: this.selectedProcess});
         sendData.push({name: 'initiator', value: this.initiator});
         this.loadContent(`${this.includeUrl}/appointmentForm/`, 'POST', sendData, $container).then(() => {
+            //this.selectedProcess = null;
             this.loadAppointmentForm(true, true, $container);
             this.loadQueueTable();
             this.loadCalendar();
