@@ -23,20 +23,19 @@ class Application extends \BO\Slim\Application
      * language preferences
      */
     public static $locale = 'de';
-
     public static $supportedLanguages = array(
-        // Default language
-        'de' => array(
-            'name'    => 'Deutsch',
-            'locale'  => 'de_DE.utf-8',
-            'default' => true,
-        ),
-        // Other languages
-        'en' => array(
-            'name'    => 'English',
-            'locale'  => 'en_GB.utf-8',
-        )
-    );
+         // Default language
+         'de' => array(
+             'name'    => 'Deutsch',
+             'locale'  => 'de_DE.utf-8',
+             'default' => true,
+         ),
+         // Other languages
+         'en' => array(
+             'name'    => 'English',
+             'locale'  => 'en_GB.utf-8',
+         )
+     );
 
     /*
      * -----------------------------------------------------------------------

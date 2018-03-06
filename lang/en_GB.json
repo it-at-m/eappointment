@@ -1,0 +1,13 @@
+{
+  "header": {
+    "placenumber": "Place"
+  },
+  "languageswitch": {
+    "title": "Language",
+    "choose": "choose language",
+    "languages": {
+      "de": "German",
+      "en": "English"
+    }
+  }
+}
