@@ -138,6 +138,11 @@ class TwigExtension extends \Twig_Extension
         return \App::$language->getCurrentLanguage();
     }
 
+    public function currentLocale()
+    {
+        return \App::$language->getCurrentLocale();
+    }
+
     public function currentVersion()
     {
         $version = Version::getString();
