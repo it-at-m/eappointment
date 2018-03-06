@@ -43,6 +43,7 @@ class TwigExtension extends \Twig_Extension
             new \Twig_SimpleFunction('baseUrl', array($this, 'baseUrl')),
             new \Twig_SimpleFunction('currentLang', array($this, 'currentLang')),
             new \Twig_SimpleFunction('currentRoute', array($this, 'currentRoute')),
+            new \Twig_SimpleFunction('currentLocale', array($this, 'currentLocale')),
             new \Twig_SimpleFunction('currentVersion', array($this, 'currentVersion')),
             new \Twig_SimpleFunction('formatDateTime', array($this, 'formatDateTime')),
             new \Twig_SimpleFunction('toGermanDateFromTs', array($this, 'toGermanDateFromTs')),
