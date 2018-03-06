@@ -33,7 +33,7 @@ class ProcessQueueTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('Ihr Termin ist am', (string)$response->getBody());
+        $this->assertContains('Ihr Termin ist am', (string)$response->getBody());
         $this->assertContains('Fr. 01. April 2016 um', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }

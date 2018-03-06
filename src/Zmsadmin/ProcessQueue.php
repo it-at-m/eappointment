@@ -29,7 +29,6 @@ class ProcessQueue extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $validator = $request->getAttribute('validator');
-
         $process = $this->readSelectedProcessWithWaitingnumber($validator);
         if ($process instanceof \BO\Zmsentities\Process) {
             return \BO\Slim\Render::withHtml(

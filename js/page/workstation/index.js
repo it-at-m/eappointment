@@ -148,11 +148,13 @@ class View extends BaseView {
         sendData.push({name: action, value: 1});
         sendData.push({name: 'selectedprocess', value: this.selectedProcess});
         sendData.push({name: 'initiator', value: this.initiator});
-        this.loadContent(`${this.includeUrl}/appointmentForm/`, 'POST', sendData, $container).then(() => {
-            //this.selectedProcess = null;
-            this.loadAppointmentForm(true, true, $container);
-            this.loadQueueTable();
-            this.loadCalendar();
+        this.loadContent(`${this.includeUrl}/appointmentForm/`, 'POST', sendData, $container).then((response) => {
+            if (false === response.toLowerCase().includes('has-error')) {
+                this.selectedProcess = null;
+                this.loadAppointmentForm(true, true, $container);
+                this.loadQueueTable();
+                this.loadCalendar();
+            }
         });
     }
 
