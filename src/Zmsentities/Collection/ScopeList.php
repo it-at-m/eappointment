@@ -2,10 +2,13 @@
 namespace BO\Zmsentities\Collection;
 
 use \BO\Zmsentities\Helper\Sorter;
+use \BO\Zmsentities\Scope;
 
 class ScopeList extends Base
 {
     const ENTITY_CLASS = '\BO\Zmsentities\Scope';
+
+    protected $slotsByID = [];
 
     public function getAlternateRedirectUrl()
     {
@@ -78,5 +81,36 @@ class ScopeList extends Base
             );
         });
         return $this;
+    }
+
+    public function withProviderID($source, $providerID)
+    {
+        $list = new ScopeList();
+        foreach ($this as $scope) {
+            if ($scope->provider['source'] == $source && $scope->provider['id'] == $providerID) {
+                $list->addEntity(clone $scope);
+            }
+        }
+        return $list;
+    }
+
+    public function addRequiredSlots($source, $providerID, $slotsRequired)
+    {
+        $scopeList = $this->withProviderID($source, $providerID);
+        foreach ($scopeList as $scope) {
+            if (!isset($this->slotsByID[$scope->id])) {
+                $this->slotsByID[$scope->id] = 0;
+            }
+            $this->slotsByID[$scope->id] += $slotsRequired;
+        }
+        return $this;
+    }
+
+    public function getRequiredSlotsByScope(Scope $scope)
+    {
+        if (isset($this->slotsByID[$scope->id])) {
+            return $this->slotsByID[$scope->id];
+        }
+        return 0;
     }
 }

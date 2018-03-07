@@ -76,4 +76,14 @@ class Day extends Schema\Entity
         }
         return $this;
     }
+
+    public function withAddedDay(Day $day)
+    {
+        $merged = clone $this;
+        if (!$merged->freeAppointments instanceof Slot) {
+            $merged->freeAppointments = new Slot($merged->freeAppointments);
+        }
+        $merged->freeAppointments = $merged->freeAppointments->withAddedSlot($day->freeAppointments);
+        return $merged;
+    }
 }
