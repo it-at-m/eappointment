@@ -17,21 +17,17 @@ class Calendar extends Base
         $slotType = 'public',
         $slotsRequired = 0
     ) {
-        $calendar['processing'] = [];
         $calendar['freeProcesses'] = new \BO\Zmsentities\Collection\ProcessList();
         $calendar['scopes'] = $calendar->getScopeList();
-        $calendar['processing']['slotlist'] = new SlotList();
         $calendar = $this->readResolvedScopes($calendar);
         $calendar = $this->readResolvedProviders($calendar);
         $calendar = $this->readResolvedClusters($calendar);
         $calendar = $this->readResolvedRequests($calendar);
         $calendar = $this->readResolvedScopeReferences($calendar);
         if (count($calendar->scopes) < 1) {
-            unset($calendar['processing']);
             throw new Exception\CalendarWithoutScopes("No scopes resolved in $calendar");
         }
         $calendar = $this->readResolvedDays($calendar, $freeProcessesDate, $now, $slotType, $slotsRequired);
-        unset($calendar['processing']);
         return $calendar;
     }
 
@@ -66,17 +62,18 @@ class Calendar extends Base
     protected function readResolvedRequests(Entity $calendar)
     {
         $requestReader = new Request($this->getWriter(), $this->getReader());
-        if (! isset($calendar['processing']['slotinfo'])) {
-            $calendar['processing']['slotinfo'] = [];
-        }
+        //if (! isset($calendar['processing']['slotinfo'])) {
+        //    $calendar['processing']['slotinfo'] = [];
+        //}
         foreach ($calendar['requests'] as $key => $request) {
             $request = $requestReader->readEntity('dldb', $request['id']);
             $calendar['requests'][$key] = $request;
             foreach ($requestReader->readSlotsOnEntity($request) as $slotinfo) {
-                if (! isset($calendar['processing']['slotinfo'][$slotinfo['provider__id']])) {
-                    $calendar['processing']['slotinfo'][$slotinfo['provider__id']] = 0;
-                }
-                $calendar['processing']['slotinfo'][$slotinfo['provider__id']] += $slotinfo['slots'];
+                //if (! isset($calendar['processing']['slotinfo'][$slotinfo['provider__id']])) {
+                //    $calendar['processing']['slotinfo'][$slotinfo['provider__id']] = 0;
+                //}
+                //$calendar['processing']['slotinfo'][$slotinfo['provider__id']] += $slotinfo['slots'];
+                $calendar->scopes->addRequiredSlots('dldb', $slotinfo['provider__id'], $slotinfo['slots']);
             }
         }
         return $calendar;
@@ -119,98 +116,9 @@ class Calendar extends Base
         $slotType,
         $slotsRequiredForce
     ) {
-        $querySlotList = new SlotList();
-        $query = SlotList::getQuery();
-        $monthList = $calendar->getMonthList();
-        $statement = $this->getReader()->prepare($query);
-        foreach ($monthList as $month) {
-            $monthDateTime = $calendar->getDateTimeFromDate($month);
-            foreach ($calendar->scopes as $scope) {
-                if ($freeProcessesDate) {
-                    $statement->execute(SlotList::getParametersDay($scope['id'], $freeProcessesDate, $now));
-                } else {
-                    $statement->execute(SlotList::getParametersMonth($scope['id'], $monthDateTime, $now));
-                }
-
-                if (! $slotsRequiredForce && array_key_exists(
-                    $scope->getProviderId(),
-                    $calendar['processing']['slotinfo']
-                )) {
-                    $slotsRequired = $calendar['processing']['slotinfo'][$scope->getProviderId()];
-                } elseif ($slotsRequiredForce) {
-                    $slotsRequired = $slotsRequiredForce;
-                } else {
-                    $slotsRequired = 1;
-                }
-                while ($slotData = $statement->fetch(\PDO::FETCH_ASSOC)) {
-                    $calendar = $this->addDayInfoToCalendar(
-                        $calendar,
-                        $querySlotList->postProcess($slotData),
-                        $monthDateTime,
-                        $slotsRequired,
-                        $freeProcessesDate,
-                        $now,
-                        $scope,
-                        $slotType
-                    );
-                    //error_log("|".$slotData['slottime'].":".$slotData['slotdate'].":".$slotData['availability__id']);
-                }
-                // Process the last processed slotlist missed by addDayInfoToCalendar
-                $calendar = $this->addDayInfoToCalendar(
-                    $calendar,
-                    ['availability__id' => null],
-                    $monthDateTime,
-                    $slotsRequired,
-                    $freeProcessesDate,
-                    $now,
-                    $scope,
-                    $slotType
-                );
-                $calendar['processing']['slotlist'] = new SlotList();
-            }
-        }
-        return $calendar;
-    }
-
-    /**
-     * ATTENTION: performance critical function, keep highly optimized!
-     */
-    protected function addDayInfoToCalendar(
-        Entity $calendar,
-        array $slotData,
-        \DateTimeImmutable $monthDateTime,
-        $slotsRequired,
-        $freeProcessesDate,
-        $now,
-        \BO\Zmsentities\Scope $scope = null,
-        $slotType = 'public'
-    ) {
-        if (! $calendar['processing']['slotlist']->isSameAvailability($slotData)) {
-            $calendar['processing']['slotlist']->toReducedBySlots($slotsRequired);
-            $calendar['processing']['slotlist']->addToCalendar(
-                $calendar,
-                $now,
-                $freeProcessesDate,
-                $slotType,
-                $slotsRequired
-            );
-            if (null !== $slotData["availability__id"]) {
-                $calendar['processing']['slotlist'] = new SlotList(
-                    $slotData,
-                    ($freeProcessesDate) ?
-                        $freeProcessesDate->modify('00:00:00')
-                            : $monthDateTime->modify('first day of')->modify('00:00:00'),
-                    ($freeProcessesDate) ?
-                        $freeProcessesDate->modify('23:59:59')
-                            : $monthDateTime->modify('last day of')->modify('23:59:59'),
-                    $now,
-                    null,
-                    $scope
-                );
-            }
-        } elseif ($slotData['availability__id'] !== null) { //avoid two empty scopes in a row
-            $calendar['processing']['slotlist']->addQueryData($slotData);
-        }
+        $dayList = (new Day())->readByCalendar($calendar, $now);
+        $calendar->days = $dayList;
+        var_dump("$calendar");
         return $calendar;
     }
 }
