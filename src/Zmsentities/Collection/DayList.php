@@ -11,7 +11,7 @@ class DayList extends Base implements JsonUnindexed
      * ATTENTION: Performance critical, keep highly optimized
      *
      */
-    public function getDay($year, $month, $dayNumber)
+    public function getDay($year, $month, $dayNumber, $createDay = true)
     {
         $dateHash = "$dayNumber-$month-$year";
         if (array_key_exists($dateHash, $this)) {
@@ -28,13 +28,16 @@ class DayList extends Base implements JsonUnindexed
                 return $day;
             }
         }
-        $day  = new \BO\Zmsentities\Day([
-            'year' => $year,
-            'month' => $month,
-            'day' => $dayNumber
-        ]);
-        $this[$dateHash] = $day;
-        return $day;
+        if ($createDay) {
+            $day  = new \BO\Zmsentities\Day([
+                'year' => $year,
+                'month' => $month,
+                'day' => $dayNumber
+            ]);
+            $this[$dateHash] = $day;
+            return $day;
+        }
+        return null;
     }
 
     public function getDayByDateTime(\DateTimeInterface $datetime)
@@ -50,14 +53,8 @@ class DayList extends Base implements JsonUnindexed
 
     public function hasDay($year, $month, $dayNumber)
     {
-        $result = false;
-        foreach ($this as $day) {
-            $day = new \BO\Zmsentities\Day($day);
-            if ($day->year == $year && $day->month == $month && $day->day == $dayNumber) {
-                $result = true;
-            }
-        }
-        return $result;
+        $day = $this->getDay($year, $month, $dayNumber, false);
+        return ($day === null) ? false : true;
     }
 
     public function getMonthIndex()
@@ -83,6 +80,26 @@ class DayList extends Base implements JsonUnindexed
             }
         }
         return $dayList->sortByCustomKey('day');
+    }
+
+    public function setStatusByType($slotType, \DateTimeInterface $dateTime)
+    {
+        foreach ($this as $day) {
+            $day->getWithStatus($slotType, $dateTime);
+        }
+        return $this;
+    }
+
+    public function withAddedDayList(DayList $dayList)
+    {
+        $merged = new DayList();
+        foreach ($dayList as $day) {
+            if (!$day instanceof Day) {
+                $day = new Day($day);
+            }
+            $merged->addEntity($day->withAddedDay($this->getDayByDay($day)));
+        }
+        return $merged;
     }
 
     public function setSortByDate()

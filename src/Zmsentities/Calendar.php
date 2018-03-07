@@ -347,4 +347,16 @@ class Calendar extends Schema\Entity
 
         return $entity;
     }
+
+    public function __toString()
+    {
+        $string = '';
+        foreach ($this->days as $day) {
+            $string .= "$day\n";
+        }
+        foreach ($this->scopes as $scope) {
+            $string .= "$scope\n";
+        }
+        return $string;
+    }
 }
