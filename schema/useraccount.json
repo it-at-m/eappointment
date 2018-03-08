@@ -18,7 +18,8 @@
   },
   "required": [
     "id",
-    "rights"
+    "rights",
+    "email"
   ],
   "additionalProperties": false,
   "properties": {
