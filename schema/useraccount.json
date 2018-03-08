@@ -4,6 +4,7 @@
   "example": {
     "lastLogin": 1447926465,
     "id": "johndoe",
+    "email": "johndoe@berlinonline.de",
     "password": "secret",
     "rights": {
       "scope": true,
@@ -36,6 +37,19 @@
           "messages": {
             "minLength": "Es muss ein aussagekräftiger Nutzername eingegeben werden",
             "maxLength": "Der Nutzername sollte 40 Zeichen nicht überschreiten"
+          }
+        }
+      }
+    },
+    "email": {
+      "type": "string",
+      "default": "",
+      "pattern": "^[a-zA-Z0-9_\\-\\.]{2,}@[a-zA-Z0-9_\\-\\.]{2,}\\.[a-z]{2,}$|^$",
+      "x-locale": {
+        "de_DE": {
+          "pointer": "Nutzer E-Mail",
+          "messages": {
+            "pattern": "Die E-Mail Adresse muss eine valide E-Mail im Format max@mustermann.de sein"
           }
         }
       }
