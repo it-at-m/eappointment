@@ -27,13 +27,13 @@ class Application extends \BO\Slim\Application
          // Default language
          'de' => array(
              'name'    => 'Deutsch',
-             'locale'  => 'de_DE.utf-8',
+             'locale'  => 'de_DE',
              'default' => true,
          ),
          // Other languages
          'en' => array(
              'name'    => 'English',
-             'locale'  => 'en_GB.utf-8',
+             'locale'  => 'en_GB',
          )
      );
 

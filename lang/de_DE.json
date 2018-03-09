@@ -1,6 +1,10 @@
 {
   "header": {
-    "placenumber": "Platz Nr."
+    "placenumber": "Platz Nr.",
+    "counter": "Tresen",
+    "scope": "Standort",
+    "logout": "Abmelden",
+    "profile": "Mein Profil"
   },
   "languageswitch": {
     "title": "Sprache",

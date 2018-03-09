@@ -44,7 +44,8 @@ class BaseView extends ErrorHandler {
                 if (err.status >= 400 && isException) {
                     new ExceptionHandler(this.$main, {
                         code: err.status,
-                        message: err.responseText
+                        message: err.responseText,
+                        parent: this
                     });
                     hideSpinner(this.$main);
                 } else {
