@@ -11,13 +11,14 @@
                 Sie sind bereits angemeldet. Sie können über die Navigation in die gewünschten Seitenbereiche einsteigen.
             </p>
             <p>
-            Möchten Sie sich als jemand anderes anmelden, <a href="{{ urlGet('logout', {'loginName' : workstation.loginName}, {}) }}">melden Sie sich zunächst über diesen Link ab</a>.
+            Möchten Sie sich als jemand anderes anmelden, <a href="{{ urlGet('logout', {'loginName' : workstation.loginName}, {}) }}">melden Sie sich zunächst über diesen Link ab</a>.<br />
+            Möchten Sie zurück zur Übersichtsseite, dann folgen Sie <a href="{{ urlGet('Overview', {}, {}) }}">diesem Link</a>.
             </p>
         {% endblock %}
 
 
         {% block board_footer %}
-            
+
         {% endblock %}
 
 {% endembed %}

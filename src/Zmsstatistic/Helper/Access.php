@@ -31,11 +31,22 @@ class Access extends \BO\Slim\Controller
 
     protected function readWorkstation($request)
     {
+        $workstation = $this->workstation;
         $path = $request->getUri()->getPath();
         if ('/' != $path) {
             $workstation = \App::$http
                 ->readGetResult('/workstation/', ['resolveReferences' => $this->resolveLevel])
                 ->getEntity();
+        } else {
+            try {
+                $workstation = \App::$http
+                    ->readGetResult('/workstation/', ['resolveReferences' => $this->resolveLevel])
+                    ->getEntity();
+            } catch (\BO\Zmsclient\Exception $exception) {
+                if ('BO\Zmsentities\Exception\UserAccountMissingLogin' != $exception->template) {
+                    throw $exception;
+                }
+            }
         }
         return $workstation;
     }
@@ -66,6 +77,11 @@ class Access extends \BO\Slim\Controller
         }
         if (false !== strpos($path, 'department') && ! $this->department) {
             throw new \BO\Zmsentities\Exception\UserAccountAccessRightsFailed();
+        }
+        if (! strpos($path, 'select') &&
+            (! isset($this->workstation['scope']) || ! isset($this->workstation['scope']['id']))
+        ) {
+            throw new \BO\Zmsentities\Exception\WorkstationMissingScope();
         }
     }
 

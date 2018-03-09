@@ -1,0 +1,19 @@
+{% extends "layout/main.twig" %}
+{% block content %}
+    {% embed "block/scaffholding/board.twig" with {'class': 'exception'} %}
+    {% from 'element/helper/form.twig' import errormessage %}
+        {% block board_title %}Es ist ein Fehler aufgetreten.{% endblock %}
+        {% block board_body %}
+            <h2>
+                Es ist ein Fehler aufgetreten.
+            </h2>
+            <p>
+            Es konnte kein zugewiesener Standort gefunden werden. Bitte wählen Sie zuerst einen Standort aus!
+            </p>
+            <ul>
+                <li><a href="{{ urlGet('workstationSelect', {}, {}) }}">Zurück zur Standortauswahl</a></li>
+            </ul>
+        {% endblock %}
+    {% endembed %}
+
+{% endblock %}
