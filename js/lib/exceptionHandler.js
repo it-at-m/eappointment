@@ -5,7 +5,7 @@ class ExceptionHandler {
     constructor (element, options) {
         this.$main = $(element)
         this.message = options.message;
-        this.parent = options.parent;
+        this.parent = options.parent || this.$main;
         this.code = options.code;
         this.callback = options.callback || this.closeException;
         this.bindEvents();
