@@ -20,11 +20,7 @@
 	{{ parent() }}
     <div class="lineup--workstation">
     	<div class="lineup_actor--full">
-            {% if workstation.scope.id %}
-                {% include "block/index/logout.twig" %}
-            {% else %}
-                {% include "block/workstation/selectform.twig" %}
-            {% endif %}
+            {% include "block/workstation/selectform.twig" %}
         </div>
     </div>
 {% endblock %}

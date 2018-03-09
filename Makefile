@@ -35,4 +35,4 @@ dev: # init development system
 	npm install
 
 coverage:
-	php vendor/bin/phpunit --coverage-html public/_tests/coverage/
+	php vendor/bin/phpunit tests/ --coverage-html public/_tests/coverage/
