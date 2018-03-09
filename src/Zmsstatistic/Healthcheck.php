@@ -8,16 +8,14 @@ namespace BO\Zmsstatistic;
 
 use BO\Slim\Render;
 
-/**
-  * Handle requests concerning services
-  *
-  */
 class Healthcheck extends BaseController
 {
+    protected $withAccess = false;
+    
     /**
      * @SuppressWarnings(UnusedFormalParameter)
      */
-    public function __invoke(
+    public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         array $args

@@ -17,6 +17,8 @@ class Access extends \BO\Slim\Controller
 
     protected $resolveLevel = 2;
 
+    protected $withAccess = true;
+
     protected function initAccessRights($request)
     {
         $this->workstation = $this->readWorkstation($request);
@@ -33,22 +35,10 @@ class Access extends \BO\Slim\Controller
     {
         $workstation = $this->workstation;
         $path = $request->getUri()->getPath();
-        if ('/' != $path) {
-            $workstation = \App::$http
-                ->readGetResult('/workstation/', ['resolveReferences' => $this->resolveLevel])
-                ->getEntity();
-        } else {
-            try {
-                $workstation = \App::$http
-                    ->readGetResult('/workstation/', ['resolveReferences' => $this->resolveLevel])
-                    ->getEntity();
-            } catch (\BO\Zmsclient\Exception $exception) {
-                if ('BO\Zmsentities\Exception\UserAccountMissingLogin' != $exception->template) {
-                    throw $exception;
-                }
-            }
-        }
-        return $workstation;
+        $workstation = \App::$http
+          ->readGetResult('/workstation/', ['resolveReferences' => $this->resolveLevel])
+          ->getEntity();
+        return ($workstation) ? $workstation : null;
     }
 
     protected function readDepartment()

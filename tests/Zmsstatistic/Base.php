@@ -9,6 +9,12 @@ namespace BO\Zmsstatistic\Tests;
 
 use \Prophecy\Argument;
 
+use BO\Zmsentities\Useraccount;
+
+use BO\Zmsentities\Workstation;
+
+use BO\Zmsentities\Scope;
+
 abstract class Base extends \BO\Zmsclient\PhpUnit\Base
 {
     protected $namespace = '\\BO\\Zmsstatistic\\';

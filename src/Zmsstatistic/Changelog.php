@@ -8,6 +8,7 @@ namespace BO\Zmsstatistic;
 
 class Changelog extends BaseController
 {
+    protected $withAccess = false;
     /**
      * @SuppressWarnings(Param)
      * @return String
