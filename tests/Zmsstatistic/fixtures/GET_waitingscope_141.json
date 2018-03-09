@@ -1,0 +1,99 @@
+{
+  "$schema": "https://localhost/terminvereinbarung/api/2/",
+  "meta": {
+    "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+    "error": false,
+    "generated": "2018-03-09T13:46:29+01:00",
+    "server": "Zmsapi-ENV (v2.15.03)"
+  },
+  "data": {
+    "$schema": "https://schema.berlin.de/queuemanagement/exchange.json",
+    "firstDay": {
+      "year": "2018",
+      "month": "03",
+      "day": "09",
+      "status": "notBookable",
+      "freeAppointments": {
+        "public": 0,
+        "intern": 0,
+        "callcenter": 0,
+        "type": "free"
+      }
+    },
+    "lastDay": {
+      "year": "2018",
+      "month": "03",
+      "day": "09",
+      "status": "notBookable",
+      "freeAppointments": {
+        "public": 0,
+        "intern": 0,
+        "callcenter": 0,
+        "type": "free"
+      }
+    },
+    "period": "month",
+    "dictionary": [
+      {
+        "position": 0,
+        "variable": "period",
+        "type": "string",
+        "description": "",
+        "reference": ""
+      }
+    ],
+    "data": [
+      [
+        2016
+      ],
+      [
+        "2016-03"
+      ],
+      [
+        "2016-02"
+      ],
+      [
+        "2016-01"
+      ],
+      [
+        2015
+      ],
+      [
+        "2015-12"
+      ],
+      [
+        "2015-11"
+      ],
+      [
+        "2015-10"
+      ],
+      [
+        "2015-09"
+      ],
+      [
+        "2015-08"
+      ],
+      [
+        "2015-07"
+      ],
+      [
+        "2015-06"
+      ],
+      [
+        "2015-05"
+      ],
+      [
+        "2015-04"
+      ],
+      [
+        "2015-03"
+      ],
+      [
+        "2015-02"
+      ],
+      [
+        "2015-01"
+      ]
+    ]
+  }
+}

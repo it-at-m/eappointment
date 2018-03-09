@@ -10,7 +10,7 @@
             <form action="./" method="POST">
                 <fieldset>
                     {{ formgroup(
-                        {"label": "Nutzername:", "errors": loginfailed ? ["falsches Nutzerkonto oder falsches Passwort?"]  : loginData.loginName.messages},
+                        {"label": "Nutzername:", "errors": loginfailed ? ["Das eingegebene Passwort und der Nutzername passen nicht zusammen"]  : loginData.loginName.messages},
                         [{
                             "type":"input",
                             "parameter": {

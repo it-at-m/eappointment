@@ -29,15 +29,6 @@ class Overview extends BaseController
             ->readGetResult('/warehouse/requestscope/' . $this->workstation->scope['id'] . '/')
             ->getEntity();
 
-        if (!$this->workstation->hasId()) {
-            return \BO\Slim\Render::redirect(
-                'index',
-                array(
-                    'error' => 'login_failed'
-                )
-            );
-        }
-
         return \BO\Slim\Render::withHtml(
             $response,
             'page/overview.twig',
