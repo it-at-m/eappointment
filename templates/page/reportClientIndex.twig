@@ -53,7 +53,7 @@
                         </thead>
                         <tbody>
                             <tr>
-                                {% set totaldate = period|localizeddate("MEDIUM","none",NULL,NULL,"MMMM Y") %}
+                                {% set totaldate = period|localizeddate("medium","none",NULL,NULL,"MMMM Y") %}
                                 {% if exchangeClient.period == "month" %}
                                 {% set totaldate = "Kalenderjahr " ~ period %}
                                 {% endif %}
@@ -66,10 +66,10 @@
                             </tr>
                             {% for item in exchangeClient.data  %}
                                 {% if not loop.last %}
-                                    {% set dateCol1 = item.date|localizeddate("MEDIUM","none",NULL,NULL,"ccc") %}
+                                    {% set dateCol1 = item.date|localizeddate("medium","none",NULL,NULL,"ccc") %}
                                     {% set dateCol2 = item.date|date("d.m.Y") %}
                                     {% if exchangeClient.period == "month" %}
-                                        {% set dateCol1 = item.date|localizeddate("MEDIUM","none",NULL,NULL,"MMMM") %}
+                                        {% set dateCol1 = item.date|localizeddate("medium","none",NULL,NULL,"MMMM") %}
                                         {% set dateCol2 = item.date|date("Y") %}
                                     {% endif %}
                                     <tr>

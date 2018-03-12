@@ -39,11 +39,14 @@ class ReportClientIndex extends BaseController
             $exchangeClient = \App::$http
               ->readGetResult('/warehouse/clientscope/' . $scopeId . '/'. $args['period']. '/')
               ->getEntity()
-              ->withCalculatedTotals($this->totals)
+              ->withCalculatedTotals($this->totals, 'date')
               ->toHashed();
 
             $exchangeNotification = \App::$http
-              ->readGetResult('/warehouse/notificationscope/' . $scopeId . '/'. $args['period']. '/')
+              ->readGetResult(
+                  '/warehouse/notificationscope/' . $scopeId . '/'. $args['period']. '/',
+                  ['groupby' => 'month']
+              )
               ->getEntity()
               ->toHashed();
         }
@@ -70,7 +73,7 @@ class ReportClientIndex extends BaseController
                 'organisation' => $this->organisation,
                 'clientperiod' => $clientPeriod,
                 'showAll' => 1,
-                'period' => $args['period'],
+                'period' => isset($args['period']) ? $args['period'] : null,
                 'exchangeClient' => $exchangeClient,
                 'exchangeNotification' => $exchangeNotification,
                 'source' => ['entity' => 'ClientIndex'],

@@ -2,7 +2,7 @@
 
 {% block board_title %}
     {% set tableName = workstation.scope.contact.name %}
-    {% set tablePeriod = period|localizeddate("MEDIUM","none",NULL,NULL,"MMMM Y") %}
+    {% set tablePeriod = period|localizeddate("medium","none",NULL,NULL,"MMMM Y") %}
     {% if 4 == period|length %}
         {% set periodName = "Kalenderjahr " %}
         {% set tablePeriod = periodName|trans ~ period %}

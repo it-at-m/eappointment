@@ -13,7 +13,7 @@ class OverviewTest extends Base
     public function testRendering()
     {
         $this->setApiCalls(
-          [
+            [
               [
                   'function' => 'readGetResult',
                   'url' => '/workstation/',
@@ -45,8 +45,8 @@ class OverviewTest extends Base
                   'url' => '/warehouse/requestscope/141/',
                   'response' => $this->readFixture("GET_requestscope_141.json")
               ]
-          ]
-      );
+            ]
+        );
         $response = $this->render([ ], ['__uri' => '/overview'], [ ]);
         $this->assertContains('Übersicht verfügbarer Statistik', (string) $response->getBody());
         $this->assertContains(

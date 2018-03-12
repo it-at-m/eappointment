@@ -31,10 +31,9 @@ class Access extends \BO\Slim\Controller
         $this->testAccessRights($request);
     }
 
-    protected function readWorkstation($request)
+    protected function readWorkstation()
     {
         $workstation = $this->workstation;
-        $path = $request->getUri()->getPath();
         $workstation = \App::$http
           ->readGetResult('/workstation/', ['resolveReferences' => $this->resolveLevel])
           ->getEntity();

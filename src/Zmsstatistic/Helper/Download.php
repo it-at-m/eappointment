@@ -85,7 +85,7 @@ class Download
             ->setSubject($subject)
             ->setDescription($description)
             ->setKeywords($keywords)
-            ->setCategory($this->subject);
+            ->setCategory($subject);
         return $this;
     }
 }
