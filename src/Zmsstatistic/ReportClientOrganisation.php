@@ -38,11 +38,14 @@ class ReportClientOrganisation extends BaseController
             $exchangeClient = \App::$http
             ->readGetResult('/warehouse/clientorganisation/' . $organisationId . '/'. $args['period']. '/')
             ->getEntity()
-            ->withCalculatedTotals($this->totals)
+            ->withCalculatedTotals($this->totals, 'date')
             ->toHashed();
 
             $exchangeNotification = \App::$http
-            ->readGetResult('/warehouse/notificationorganisation/' . $organisationId . '/'. $args['period']. '/')
+            ->readGetResult(
+                '/warehouse/notificationorganisation/' . $organisationId . '/'. $args['period']. '/',
+                ['groupby' => 'month']
+            )
             ->getEntity()
             ->toHashed();
         }
@@ -67,7 +70,7 @@ class ReportClientOrganisation extends BaseController
                 'organisation' => $this->organisation,
                 'clientperiod' => $clientPeriod,
                 'showAll' => 1,
-                'period' => $args['period'],
+                'period' => isset($args['period']) ? $args['period'] : null,
                 'exchangeClient' => $exchangeClient,
                 'exchangeNotification' => $exchangeNotification,
                 'source' => ['entity' => 'ClientOrganisation'],

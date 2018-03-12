@@ -55,7 +55,7 @@ class ClientReport extends Base
     public function writeReportHeader(ReportEntity $report, $sheet)
     {
         $reportHeader = [];
-        if ('totals' == end($report->data)['subjectid']) {
+        if ('totals' == end($report->data)['date']) {
             $reportHeader[] = null;
         }
         foreach (array_keys($report->data[0]) as $headline) {
@@ -68,7 +68,7 @@ class ClientReport extends Base
 
     public function writeTotalsRow(ReportEntity $report, $sheet, $datePatternTotals)
     {
-        if ('totals' == end($report->data)['subjectid']) {
+        if ('totals' == end($report->data)['date']) {
             $totals = array_pop($report->data);
             $dateString = $report->firstDay->year .'-'. $report->firstDay->month .'-'. $report->firstDay->day;
             $dateCol1 = ('MMMM' == $datePatternTotals) ?
