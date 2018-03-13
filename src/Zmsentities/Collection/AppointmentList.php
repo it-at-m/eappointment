@@ -35,4 +35,13 @@ class AppointmentList extends Base
         }
         return false;
     }
+
+    public function getCalculatedSlotCount()
+    {
+        $slotCount = 0;
+        foreach ($this as $appointmentItem) {
+            $slotCount += $appointmentItem->getSlotCount();
+        }
+        return $slotCount;
+    }
 }
