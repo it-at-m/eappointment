@@ -19,7 +19,7 @@ class ExchangeNotificationorganisation extends Base
         $period = 'day'
     ) {
         $entity = new Exchange();
-        $entity->setPeriod($datestart, $dateend);
+        $entity->setPeriod($datestart, $dateend, $period);
         $entity->addDictionaryEntry('subjectid', 'string', 'ID of a organisation', 'organisation.id');
         $entity->addDictionaryEntry('date', 'string', 'Date of entry');
         $entity->addDictionaryEntry('organisationname', 'string', 'name of the organisation');
