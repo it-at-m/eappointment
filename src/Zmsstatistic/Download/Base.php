@@ -72,7 +72,7 @@ class Base extends \BO\Zmsstatistic\BaseController
             $infoData[] = $args['department']['name'];
         }
         if (isset($args['scope'])) {
-            $infoData[] = $args['scope']['contact']['name'] .' '. $args['scope']['shortname'];
+            $infoData[] = $args['scope']['contact']['name'] .' '. $args['scope']['shortName'];
         }
         $infoData = array_chunk($infoData, 1);
         $sheet->fromArray($infoData, null, 'A'. $sheet->getHighestRow());

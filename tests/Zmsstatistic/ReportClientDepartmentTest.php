@@ -158,9 +158,8 @@ class ReportClientDepartmentTest extends Base
 
     public function testWithDownloadCSV()
     {
-        $this->setOutputCallback(function () {
-            $this->setApiCalls(
-                [
+        $this->setApiCalls(
+            [
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
@@ -193,19 +192,25 @@ class ReportClientDepartmentTest extends Base
                     'parameters' => ['groupby' => 'month'],
                     'response' => $this->readFixture("GET_notificationdepartment_74_042016.json")
                 ]
-                ]
-            );
-            $response = $this->render(
-                [
+            ]
+        );
+        ob_start();
+        $response = $this->render(
+            [
                 'period' => '2016-04'
-                ],
-                [
+            ],
+            [
                 '__uri' => '/report/client/department/2016-04/',
                 'type' => 'csv'
-                ],
-                [ ]
-            );
-            $this->assertContains('csv', $response->getHeaderLine('Content-Disposition'));
-        });
+            ],
+            [ ]
+        );
+        $output = ob_get_contents();
+        ob_end_clean();
+        $this->assertContains('csv', $response->getHeaderLine('Content-Disposition'));
+        $this->assertContains(
+            '"April";"2016";"Charlottenburg-Wilmersdorf";"Bürgeramt";"Bürgeramt Heerstraße ";"135";"";"";""',
+            $output
+        );
     }
 }

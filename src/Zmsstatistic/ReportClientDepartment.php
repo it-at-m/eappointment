@@ -31,22 +31,22 @@ class ReportClientDepartment extends BaseController
         $clientPeriod = \App::$http
           ->readGetResult('/warehouse/clientdepartment/' . $this->department->id . '/')
           ->getEntity();
+
         $exchangeClient = null;
         $exchangeNotification = null;
         if (isset($args['period'])) {
             $exchangeClient = \App::$http
-            ->readGetResult('/warehouse/clientdepartment/' . $this->department->id . '/'. $args['period']. '/')
-            ->getEntity()
-            ->withCalculatedTotals($this->totals, 'date')
-            ->toHashed();
+                ->readGetResult('/warehouse/clientdepartment/' . $this->department->id . '/'. $args['period']. '/')
+                ->getEntity()
+                ->withCalculatedTotals($this->totals, 'date')
+                ->toHashed();
 
             $exchangeNotification = \App::$http
-            ->readGetResult(
-                '/warehouse/notificationdepartment/' . $this->department->id . '/'. $args['period']. '/',
-                ['groupby' => 'month']
-            )
-            ->getEntity()
-            ->toHashed();
+                ->readGetResult(
+                    '/warehouse/notificationdepartment/' . $this->department->id . '/'. $args['period']. '/',
+                    ['groupby' => 'month'])
+                ->getEntity()
+                ->toHashed();
         }
 
         $type = $validator->getParameter('type')->isString()->getValue();
