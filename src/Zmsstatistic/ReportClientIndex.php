@@ -45,7 +45,8 @@ class ReportClientIndex extends BaseController
             $exchangeNotification = \App::$http
                 ->readGetResult(
                     '/warehouse/notificationscope/' . $scopeId . '/'. $args['period']. '/',
-                    ['groupby' => 'month'])
+                    ['groupby' => 'month']
+                )
                 ->getEntity()
                 ->toHashed();
         }

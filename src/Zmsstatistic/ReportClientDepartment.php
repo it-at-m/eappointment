@@ -44,7 +44,8 @@ class ReportClientDepartment extends BaseController
             $exchangeNotification = \App::$http
                 ->readGetResult(
                     '/warehouse/notificationdepartment/' . $this->department->id . '/'. $args['period']. '/',
-                    ['groupby' => 'month'])
+                    ['groupby' => 'month']
+                )
                 ->getEntity()
                 ->toHashed();
         }
