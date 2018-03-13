@@ -1,0 +1,171 @@
+{
+  "$schema": "https://localhost/terminvereinbarung/api/2/",
+  "meta": {
+    "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
+    "error": false,
+    "generated": "2018-03-13T15:48:48+01:00",
+    "server": "Zmsapi-ENV (v2.15.03)"
+  },
+  "data": {
+    "$schema": "https://schema.berlin.de/queuemanagement/exchange.json",
+    "firstDay": {
+      "year": "2016",
+      "month": "01",
+      "day": "01",
+      "status": "notBookable",
+      "freeAppointments": {
+        "public": 0,
+        "intern": 0,
+        "callcenter": 0,
+        "type": "free"
+      }
+    },
+    "lastDay": {
+      "year": "2016",
+      "month": "12",
+      "day": "31",
+      "status": "notBookable",
+      "freeAppointments": {
+        "public": 0,
+        "intern": 0,
+        "callcenter": 0,
+        "type": "free"
+      }
+    },
+    "period": "month",
+    "dictionary": [
+      {
+        "position": 0,
+        "variable": "subjectid",
+        "type": "string",
+        "description": "ID of a scope",
+        "reference": "scope.id"
+      },
+      {
+        "position": 1,
+        "variable": "date",
+        "type": "string",
+        "description": "Date of entry",
+        "reference": ""
+      },
+      {
+        "position": 2,
+        "variable": "name",
+        "type": "string",
+        "description": "Name of request",
+        "reference": ""
+      },
+      {
+        "position": 3,
+        "variable": "requestscount",
+        "type": "number",
+        "description": "Amount of requests",
+        "reference": ""
+      }
+    ],
+    "data": [
+      [
+        "141",
+        "2016-04",
+        "Dienstleistung wurde nicht erfasst",
+        "25"
+      ],
+      [
+        "141",
+        "2016-04",
+        "Dienstleistung konnte nicht erbracht werden",
+        "2"
+      ],
+      [
+        "141",
+        "2016-04",
+        "Anschriftenänderung in dem Fahrzeugschein bzw. der Zulassungsbescheinigung Teil I (ZBI)",
+        "2"
+      ],
+      [
+        "141",
+        "2016-04",
+        "Anwohner -/Bewohnerparkausweis - Antragstellung/Umschreibung/Verlängerung/Verlust",
+        "3"
+      ],
+      [
+        "141",
+        "2016-04",
+        "Ersterteilung einer Fahrerlaubnis",
+        "1"
+      ],
+      [
+        "141",
+        "2016-04",
+        "Erweiterung einer Fahrerlaubnis",
+        "1"
+      ],
+      [
+        "141",
+        "2016-04",
+        "Führungszeugnis",
+        "4"
+      ],
+      [
+        "141",
+        "2016-04",
+        "Internationaler Führerschein",
+        "5"
+      ],
+      [
+        "141",
+        "2016-04",
+        "Kinderreisepass beantragen / verlängern / aktualisieren",
+        "7"
+      ],
+      [
+        "141",
+        "2016-04",
+        "Meldebescheinigung beantragen",
+        "6"
+      ],
+      [
+        "141",
+        "2016-04",
+        "Personalausweis beantragen",
+        "14"
+      ],
+      [
+        "141",
+        "2016-04",
+        "Personalausweis vorläufig beantragen",
+        "1"
+      ],
+      [
+        "141",
+        "2016-04",
+        "Reisepass beantragen",
+        "23"
+      ],
+      [
+        "141",
+        "2016-04",
+        "Reisepass beantragen (vorläufiger Reisepass)",
+        "1"
+      ],
+      [
+        "141",
+        "2016-04",
+        "Übertragung einer Aufenthaltserlaubnis in einen neuen Pass",
+        "1"
+      ],
+      [
+        "141",
+        "2016-04",
+        "Umschreibung einer ausländischen Fahrerlaubnis aus einem EU-/EWR-Staat",
+        "1"
+      ],
+      [
+        "141",
+        "2016-04",
+        "Umtausch eines Kartenführerscheins",
+        "1"
+      ]
+    ]
+  }
+}

@@ -23,10 +23,11 @@ class Index extends BaseController
         array $args
     ) {
         try {
-            $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
+            $this->workstation = \App::$http->readGetResult('/workstation/')->getEntity();
         } catch (\Exception $workstationexception) {
-            $workstation = null;
+            $this->workstation = null;
         }
+
         $form = LoginForm::fromLoginParameters();
         $validate = Validator::param('login_form_validate')->isBool()->getValue();
         $loginData = ($validate) ? $form->getStatus() : null;
@@ -39,7 +40,7 @@ class Index extends BaseController
             array(
                 'title' => 'Anmeldung',
                 'loginfailed' => Validator::param('login_failed')->isBool()->getValue(),
-                'workstation' => $workstation,
+                'workstation' => $this->workstation,
                 'loginData' => $loginData
             )
         );

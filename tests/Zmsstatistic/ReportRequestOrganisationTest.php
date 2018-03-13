@@ -43,7 +43,10 @@ class ReportRequestOrganisationTest extends Base
             '<a class="active" href="/report/request/organisation/">Charlottenburg-Wilmersdorf</a>',
             (string) $response->getBody()
         );
-        $this->assertContains('<a href="/report/request/organisation/2016-04/">April</a>', (string) $response->getBody());
+        $this->assertContains(
+            '<a href="/report/request/organisation/2016-04/">April</a>',
+            (string) $response->getBody()
+        );
         $this->assertContains('Bitte wählen Sie eine Zeit aus.', (string) $response->getBody());
     }
 
@@ -186,5 +189,21 @@ class ReportRequestOrganisationTest extends Base
             '"Personalausweis beantragen";"14";"14";',
             $output
         );
+    }
+
+    public function testWithoutAccess()
+    {
+        $this->expectException('\BO\Zmsentities\Exception\UserAccountAccessRightsFailed');
+        $this->setApiCalls(
+            [
+              [
+                  'function' => 'readGetResult',
+                  'url' => '/workstation/',
+                  'parameters' => ['resolveReferences' => 2],
+                  'response' => $this->readFixture("GET_Workstation_BasicRights.json")
+              ]
+            ]
+        );
+        $this->render([ ], ['__uri' => '/report/request/organisation/'], [ ]);
     }
 }

@@ -39,16 +39,6 @@ class Download
             ->withHeader('Content-Disposition', sprintf('attachment; filename="%s.%s"', $this->title, $this->type));
     }
 
-    public function getTitle()
-    {
-        return $this->title;
-    }
-
-    public function getType()
-    {
-        return $this->type;
-    }
-
     public function getSpreadSheet()
     {
         return $this->spreadsheet;

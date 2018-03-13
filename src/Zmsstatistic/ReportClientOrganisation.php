@@ -63,7 +63,7 @@ class ReportClientOrganisation extends BaseController
             $response,
             'page/reportClientIndex.twig',
             array(
-                'title' => 'Kundenstatistik Organisation',
+                'title' => 'Kundenstatistik Bezirk',
                 'activeOrganisation' => 'active',
                 'menuActive' => 'client',
                 'department' => $this->department,

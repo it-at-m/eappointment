@@ -2,9 +2,9 @@
 
 namespace BO\Zmsstatistic\Tests;
 
-class ReportRequestDepartmentTest extends Base
+class ReportWaitingDepartmentTest extends Base
 {
-    protected $classname = "ReportRequestDepartment";
+    protected $classname = "ReportWaitingDepartment";
 
     protected $arguments = [ ];
 
@@ -32,18 +32,18 @@ class ReportRequestDepartmentTest extends Base
               ],
               [
                   'function' => 'readGetResult',
-                  'url' => '/warehouse/requestdepartment/74/',
-                  'response' => $this->readFixture("GET_requestdepartment_74.json")
+                  'url' => '/warehouse/waitingdepartment/74/',
+                  'response' => $this->readFixture("GET_waitingdepartment_74.json")
               ]
             ]
         );
         $response = $this->render([ ], [ ], [ ]);
-        $this->assertContains('Dienstleistungsstatistik Behörde', (string) $response->getBody());
+        $this->assertContains('Wartestatistik Behörde', (string) $response->getBody());
         $this->assertContains(
-            '<a class="active" href="/report/request/department/">Bürgeramt</a>',
+            '<a class="active" href="/report/waiting/department/">Bürgeramt</a>',
             (string) $response->getBody()
         );
-        $this->assertContains('<a href="/report/request/department/2016-04/">April</a>', (string) $response->getBody());
+        $this->assertContains('<a href="/report/waiting/department/2016-03/">März</a>', (string) $response->getBody());
         $this->assertContains('Charlottenburg-Wilmersdorf', (string) $response->getBody());
         $this->assertContains('Bitte wählen Sie eine Zeit aus.', (string) $response->getBody());
     }
@@ -70,26 +70,24 @@ class ReportRequestDepartmentTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/warehouse/requestdepartment/74/',
-                    'response' => $this->readFixture("GET_requestdepartment_74.json")
+                    'url' => '/warehouse/waitingdepartment/74/',
+                    'response' => $this->readFixture("GET_waitingdepartment_74.json")
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/warehouse/requestdepartment/74/2016-04/',
-                    'response' => $this->readFixture("GET_requestdepartment_74_042016.json")
+                    'url' => '/warehouse/waitingdepartment/74/2016-03/',
+                    'response' => $this->readFixture("GET_waitingdepartment_74_032016.json")
                 ]
             ]
         );
-        $response = $this->render(['period' => '2016-04'], [], []);
+        $response = $this->render(['period' => '2016-03'], [], []);
+        $this->assertContains('<th class="statistik">Mär</th>', (string) $response->getBody());
         $this->assertContains(
-            '<th class="statistik">Apr</th>',
+            'Auswertung für Bürgeramt im Zeitraum März 2016',
             (string) $response->getBody()
         );
-        $this->assertContains(
-            'Auswertung für Bürgeramt im Zeitraum April 2016',
-            (string) $response->getBody()
-        );
-        $this->assertContains('Reisepass beantragen', (string) $response->getBody());
+        $this->assertContains('532', (string) $response->getBody());
+        $this->assertContains('294', (string) $response->getBody());
     }
 
     public function testWithDownloadXLSX()
@@ -115,25 +113,17 @@ class ReportRequestDepartmentTest extends Base
                     ],
                     [
                         'function' => 'readGetResult',
-                        'url' => '/warehouse/requestdepartment/74/',
-                        'response' => $this->readFixture("GET_requestdepartment_74.json")
+                        'url' => '/warehouse/waitingdepartment/74/',
+                        'response' => $this->readFixture("GET_waitingdepartment_74.json")
                     ],
                     [
                         'function' => 'readGetResult',
-                        'url' => '/warehouse/requestdepartment/74/2016-04/',
-                        'response' => $this->readFixture("GET_requestdepartment_74_042016.json")
+                        'url' => '/warehouse/waitingdepartment/74/2016-03/',
+                        'response' => $this->readFixture("GET_waitingdepartment_74_032016.json")
                     ]
                 ]
             );
-            $response = $this->render(
-                [
-                    'period' => '2016-04'
-                ],
-                [
-                    'type' => 'xlsx'
-                ],
-                [ ]
-            );
+            $response = $this->render(['period' => '2016-03'], ['type' => 'xlsx'], []);
             $this->assertContains('xlsx', $response->getHeaderLine('Content-Disposition'));
         });
     }
@@ -160,31 +150,23 @@ class ReportRequestDepartmentTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/warehouse/requestdepartment/74/',
-                    'response' => $this->readFixture("GET_requestdepartment_74.json")
+                    'url' => '/warehouse/waitingdepartment/74/',
+                    'response' => $this->readFixture("GET_waitingdepartment_74.json")
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/warehouse/requestdepartment/74/2016-04/',
-                    'response' => $this->readFixture("GET_requestdepartment_74_042016.json")
+                    'url' => '/warehouse/waitingdepartment/74/2016-03/',
+                    'response' => $this->readFixture("GET_waitingdepartment_74_032016.json")
                 ]
             ]
         );
         ob_start();
-        $response = $this->render(
-            [
-                'period' => '2016-04'
-            ],
-            [
-                'type' => 'csv'
-            ],
-            [ ]
-        );
+        $response = $this->render(['period' => '2016-03'], ['type' => 'csv'], []);
         $output = ob_get_contents();
         ob_end_clean();
         $this->assertContains('csv', $response->getHeaderLine('Content-Disposition'));
         $this->assertContains(
-            '"Personalausweis beantragen";"14";"14";',
+            '"Tagesmaximum";"532";"414";"280";"160";"256";"437";"455";"202";"532";"359";"384";"417";"148";"375";"343";',
             $output
         );
     }
@@ -202,6 +184,6 @@ class ReportRequestDepartmentTest extends Base
               ]
             ]
         );
-        $this->render([ ], ['__uri' => '/report/request/department/'], [ ]);
+        $this->render([ ], ['__uri' => '/report/waiting/department/'], [ ]);
     }
 }

@@ -55,14 +55,14 @@ class ReportWaitingDepartment extends BaseController
             $response,
             'page/reportWaitingIndex.twig',
             array(
-              'title' => 'Wartestatistik Standort',
+              'title' => 'Wartestatistik Behörde',
               'activeDepartment' => 'active',
               'menuActive' => 'waiting',
               'department' => $this->department,
               'organisation' => $this->organisation,
               'waitingPeriod' => $waitingPeriod,
               'showAll' => 1,
-              'period' => $args['period'],
+              'period' => (isset($args['period'])) ? $args['period'] : null,
               'exchangeWaiting' => $exchangeWaiting,
               'source' => ['entity' => 'WaitingDepartment'],
               'workstation' => $this->workstation->getArrayCopy()

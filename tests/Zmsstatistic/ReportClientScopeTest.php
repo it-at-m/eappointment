@@ -86,21 +86,67 @@ class ReportClientScopeTest extends Base
                 ]
             ]
         );
-        $response = $this->render(
-            [
-            'period' => '2016-04'
-            ],
-            [
-            '__uri' => '/report/client/department/2016-04/'
-            ],
-            [ ]
-        );
+        $response = $this->render(['period' => '2016-04'], [ ], [ ]);
         $this->assertContains(
             '<td class="report-board--summary" colspan="2">April 2016</td>',
             (string) $response->getBody()
         );
         $this->assertContains(
             'Auswertung für Bürgeramt Heerstraße im Zeitraum April 2016',
+            (string) $response->getBody()
+        );
+        $this->assertContains('135', (string) $response->getBody());
+    }
+
+    public function testWithPeriodYear()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/department/',
+                    'response' => $this->readFixture("GET_department_74.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/department/74/organisation/',
+                    'response' => $this->readFixture("GET_organisation_71_resolved3.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/clientscope/141/',
+                    'response' => $this->readFixture("GET_clientscope_141.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/clientscope/141/2016/',
+                    'response' => $this->readFixture("GET_clientscope_141_2016.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/notificationscope/141/2016/',
+                    'parameters' => ['groupby' => 'month'],
+                    'response' => $this->readFixture("GET_notificationscope_141_2016.json")
+                ]
+            ]
+        );
+        $response = $this->render(['period' => '2016'], [ ], [ ]);
+        $this->assertContains(
+            '<td class="report-board--summary" colspan="2">Kalenderjahr 2016</td>',
+            (string) $response->getBody()
+        );
+        $this->assertContains(
+            'Auswertung für Bürgeramt Heerstraße im Zeitraum Kalenderjahr 2016',
+            (string) $response->getBody()
+        );
+        $this->assertContains(
+            '<td class="colWochenTag statistik">April</td>',
             (string) $response->getBody()
         );
         $this->assertContains('135', (string) $response->getBody());
@@ -215,5 +261,21 @@ class ReportClientScopeTest extends Base
             '"April";"2016";"Charlottenburg-Wilmersdorf";"Bürgeramt";"Bürgeramt Heerstraße ";"135";"";"";""',
             $output
         );
+    }
+
+    public function testWithoutSelectedScope()
+    {
+        $this->expectException('\BO\Zmsentities\Exception\WorkstationMissingScope');
+        $this->setApiCalls(
+            [
+              [
+                  'function' => 'readGetResult',
+                  'url' => '/workstation/',
+                  'parameters' => ['resolveReferences' => 2],
+                  'response' => $this->readFixture("GET_Workstation_withoutSelectedScope.json")
+              ]
+            ]
+        );
+        $this->render([ ], [ ], [ ]);
     }
 }
