@@ -78,6 +78,11 @@ class Appointment extends Schema\Entity
         return $this;
     }
 
+    public function getSlotCount()
+    {
+        return $this->slotCount;
+    }
+
     public function getAvailability()
     {
         $data = array();
