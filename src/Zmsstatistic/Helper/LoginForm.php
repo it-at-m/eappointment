@@ -39,16 +39,8 @@ class LoginForm
     public static function fromAdditionalParameters()
     {
         $collection = array();
-
-        // scope
-        if ('cluster' == Validator::param('scope')->isString()->getValue()) {
-            $collection['scope'] = Validator::param('scope')
-                ->isString('Bitte wählen Sie einen Standort aus');
-        } else {
-            $collection['scope'] = Validator::param('scope')
-                ->isNumber('Bitte wählen Sie einen Standort aus');
-        }
-        // return validated collection
+        $collection['scope'] = Validator::param('scope')
+          ->isNumber('Bitte wählen Sie einen Standort aus');
         $collection = Validator::collection($collection);
         return $collection;
     }

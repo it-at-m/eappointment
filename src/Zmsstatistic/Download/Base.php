@@ -8,8 +8,6 @@ namespace BO\Zmsstatistic\Download;
 
 use \BO\Zmsentities\Exchange as ReportEntity;
 
-use \BO\Zmsstatistic\Helper\Download;
-
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 class Base extends \BO\Zmsstatistic\BaseController
@@ -92,9 +90,12 @@ class Base extends \BO\Zmsstatistic\BaseController
         if (2 == count($dateArr)) {
             $dateString = $dateString .'-01';
         }
+        /* ignore because not in use now */
+        //@codeCoverageIgnoreStart
         if (1 == count($dateArr)) {
             $dateString = $dateString .'-01-01';
         }
+        //@codeCoverageIgnoreEnd
         return new \DateTime($dateString);
     }
 

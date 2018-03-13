@@ -188,4 +188,20 @@ class ReportRequestDepartmentTest extends Base
             $output
         );
     }
+
+    public function testWithoutAccess()
+    {
+        $this->expectException('\BO\Zmsentities\Exception\UserAccountAccessRightsFailed');
+        $this->setApiCalls(
+            [
+              [
+                  'function' => 'readGetResult',
+                  'url' => '/workstation/',
+                  'parameters' => ['resolveReferences' => 2],
+                  'response' => $this->readFixture("GET_Workstation_BasicRights.json")
+              ]
+            ]
+        );
+        $this->render([ ], ['__uri' => '/report/request/department/'], [ ]);
+    }
 }

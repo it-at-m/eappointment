@@ -38,7 +38,7 @@ class ReportClientOrganisationTest extends Base
             ]
         );
         $response = $this->render([ ], ['__uri' => '/report/client/department/'], [ ]);
-        $this->assertContains('Kundenstatistik Organisation', (string) $response->getBody());
+        $this->assertContains('Kundenstatistik Bezirk', (string) $response->getBody());
         $this->assertContains(
             '<a class="active" href="/report/client/organisation/">Charlottenburg-Wilmersdorf</a>',
             (string) $response->getBody()
@@ -219,5 +219,21 @@ class ReportClientOrganisationTest extends Base
             '"April";"2016";"Charlottenburg-Wilmersdorf";"Bürgeramt";"Bürgeramt Heerstraße ";"135";"";"";""',
             $output
         );
+    }
+
+    public function testWithoutAccess()
+    {
+        $this->expectException('\BO\Zmsentities\Exception\UserAccountAccessRightsFailed');
+        $this->setApiCalls(
+            [
+              [
+                  'function' => 'readGetResult',
+                  'url' => '/workstation/',
+                  'parameters' => ['resolveReferences' => 2],
+                  'response' => $this->readFixture("GET_Workstation_BasicRights.json")
+              ]
+            ]
+        );
+        $this->render([ ], ['__uri' => '/report/client/organisation/'], [ ]);
     }
 }

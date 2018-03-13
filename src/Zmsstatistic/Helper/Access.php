@@ -22,11 +22,9 @@ class Access extends \BO\Slim\Controller
     protected function initAccessRights($request)
     {
         $this->workstation = $this->readWorkstation($request);
-        if ($this->workstation && $this->workstation->scope['id']) {
+        if ($this->workstation && isset($this->workstation->scope['id'])) {
             $this->department = $this->readDepartment();
             $this->organisation = $this->readOrganisation();
-        } elseif (! $this->workstation || ! $this->workstation->hasId()) {
-            return \BO\Slim\Render::redirect('index', array('login_failed' => 1));
         }
         $this->testAccessRights($request);
     }
@@ -34,10 +32,8 @@ class Access extends \BO\Slim\Controller
     protected function readWorkstation()
     {
         $workstation = $this->workstation;
-        $workstation = \App::$http
-          ->readGetResult('/workstation/', ['resolveReferences' => $this->resolveLevel])
-          ->getEntity();
-        return ($workstation) ? $workstation : null;
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => $this->resolveLevel]);
+        return ($workstation) ? $workstation->getEntity() : null;
     }
 
     protected function readDepartment()
@@ -67,7 +63,7 @@ class Access extends \BO\Slim\Controller
         if (false !== strpos($path, 'department') && ! $this->department) {
             throw new \BO\Zmsentities\Exception\UserAccountAccessRightsFailed();
         }
-        if (! strpos($path, 'select') &&
+        if (false === strpos($path, 'select') && false === strpos($path, 'logout') &&
             (! isset($this->workstation['scope']) || ! isset($this->workstation['scope']['id']))
         ) {
             throw new \BO\Zmsentities\Exception\WorkstationMissingScope();
@@ -89,8 +85,6 @@ class Access extends \BO\Slim\Controller
         } catch (\BO\Zmsclient\Exception $exception) {
             if ($exception->template == 'BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn') {
                 \BO\Zmsclient\Auth::setKey($exception->data['authkey']);
-                throw $exception;
-            } elseif ($exception->template == 'BO\Zmsapi\Exception\Useraccount\AuthKeyFound') {
                 throw $exception;
             }
         }

@@ -11,7 +11,8 @@ namespace BO\Zmsstatistic;
  */
 class Status extends BaseController
 {
-
+    protected $withAccess = false;
+    
     /**
      * @SuppressWarnings(UnusedFormalParameter)
      * @return String

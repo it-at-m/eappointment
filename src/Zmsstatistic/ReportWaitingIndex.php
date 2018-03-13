@@ -63,7 +63,7 @@ class ReportWaitingIndex extends BaseController
               'organisation' => $this->organisation,
               'waitingPeriod' => $waitingPeriod,
               'showAll' => 1,
-              'period' => $args['period'],
+              'period' => (isset($args['period'])) ? $args['period'] : null,
               'exchangeWaiting' => $exchangeWaiting,
               'source' => ['entity' => 'WaitingIndex'],
               'workstation' => $this->workstation->getArrayCopy()

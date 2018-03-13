@@ -89,4 +89,28 @@ class IndexTest extends Base
         );
         $this->assertContains('form-group has-error', (string)$response->getBody());
     }
+
+    public function testDoubleLogin()
+    {
+        $this->expectException('\BO\Zmsclient\Exception');
+        $exception = new \BO\Zmsclient\Exception();
+        $exception->template = 'BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn';
+        $exception->data = json_decode($this->readFixture("GET_Workstation_Resolved2.json"), 1)['data'];
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/workstation/login/',
+                    'exception' => $exception
+                ]
+            ]
+        );
+        $this->render($this->arguments, $this->parameters, [], 'POST');
+        $this->assertEquals('8520c285985b5bd209a0110442dc4e45', \BO\Zmsclient\Auth::getKey());
+    }
 }
