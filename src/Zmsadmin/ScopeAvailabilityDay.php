@@ -96,7 +96,7 @@ class ScopeAvailabilityDay extends BaseController
     {
         return array_reduce($availabilityList->getArrayCopy(), function ($carry, $item) use ($processList) {
             $itemId = $item->id;
-            $busySlots = count($processList->withAvailability($item));
+            $busySlots = $processList->withAvailability($item)->getAppointmentList()->getCalculatedSlotCount();
             $carry[$itemId] = $busySlots;
             return $carry;
         }, []);
