@@ -55,7 +55,7 @@ class ClientReport extends Base
     public function writeReportHeader(ReportEntity $report, $sheet)
     {
         $reportHeader = [];
-        if ('totals' == end($report->data)['date']) {
+        if ('totals' == end($report->data)['date'] || 'month' == $report->period) {
             $reportHeader[] = null;
         }
         foreach (array_keys($report->data[0]) as $headline) {

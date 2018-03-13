@@ -37,18 +37,17 @@ class ReportClientIndex extends BaseController
         $exchangeNotification = null;
         if (isset($args['period'])) {
             $exchangeClient = \App::$http
-              ->readGetResult('/warehouse/clientscope/' . $scopeId . '/'. $args['period']. '/')
-              ->getEntity()
-              ->withCalculatedTotals($this->totals, 'date')
-              ->toHashed();
+                ->readGetResult('/warehouse/clientscope/' . $scopeId . '/'. $args['period']. '/')
+                ->getEntity()
+                ->withCalculatedTotals($this->totals, 'date')
+                ->toHashed();
 
             $exchangeNotification = \App::$http
-              ->readGetResult(
-                  '/warehouse/notificationscope/' . $scopeId . '/'. $args['period']. '/',
-                  ['groupby' => 'month']
-              )
-              ->getEntity()
-              ->toHashed();
+                ->readGetResult(
+                    '/warehouse/notificationscope/' . $scopeId . '/'. $args['period']. '/',
+                    ['groupby' => 'month'])
+                ->getEntity()
+                ->toHashed();
         }
 
         $type = $validator->getParameter('type')->isString()->getValue();

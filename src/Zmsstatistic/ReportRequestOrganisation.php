@@ -58,7 +58,7 @@ class ReportRequestOrganisation extends BaseController
               'organisation' => $this->organisation,
               'requestPeriod' => $requestPeriod,
               'showAll' => 1,
-              'period' => $args['period'],
+              'period' => (isset($args['period'])) ? $args['period'] : null,
               'exchangeRequest' => $exchangeRequest,
               'source' => ['entity' => 'RequestOrganisation'],
               'workstation' => $this->workstation->getArrayCopy()
