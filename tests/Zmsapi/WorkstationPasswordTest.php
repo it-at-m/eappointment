@@ -25,6 +25,7 @@ class WorkstationPasswordTest extends Base
                 },
                 "id": "testadmin",
                 "password": "vorschau",
+                "email": "unittest@berlinonline.de",
                 "changePassword": ["testPassword","testPassword"],
                 "departments": [
                     {"id":1}

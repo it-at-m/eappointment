@@ -27,6 +27,7 @@ class UseraccountAddTest extends Base
                   {"id": 74}
               ],
               "id": "unittest",
+              "email": "unittest@berlinonline.de",
               "lastLogin": 1459461600
             }'
         ], []);
