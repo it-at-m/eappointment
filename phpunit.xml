@@ -9,11 +9,11 @@
          processIsolation="false"
          stopOnFailure="true"
          syntaxCheck="false"
-         bootstrap="tests/bootstrap.php"
+         bootstrap="tests/Zmsstatistic/bootstrap.php"
 >
     <testsuites>
-        <testsuite name="zmsstatistic Test Suite">
-            <directory>./tests/zmsstatistic/</directory>
+        <testsuite name="Zmsstatistic Test Suite">
+            <directory>./tests/Zmsstatistic/</directory>
         </testsuite>
     </testsuites>
     <filter>
