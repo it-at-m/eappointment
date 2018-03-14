@@ -65,7 +65,7 @@ class Process extends Base implements MappingInterface
             ORDER BY A.`BuergerID` LIMIT 1 FOR UPDATE';
     }
 
-    public function getFirstSixDigitProcessId()
+    public function getLockProcessId()
     {
         return 'SELECT * FROM `' . self::getTablename() . '` A
             WHERE A.`BuergerID` = 100000 FOR UPDATE';
