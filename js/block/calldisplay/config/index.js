@@ -15,7 +15,6 @@ const readPropsCluster = cluster => {
 
 const readPropsScope = scope => {
     const { shortName, contact, id } = scope
-
     return {
         type: 'scope',
         id,
@@ -117,14 +116,13 @@ class CallDisplayConfigView extends Component {
         const prefix = item.type === 'cluster' ? 'Cluster: ' : ''
 
         const itemEnabled = this.state.selectedItems.reduce((carry, current) => {
-            return carry || current.id === item.id
+            return carry || (current.id === item.id && current.type === item.type)
         }, false)
-
         return (
             <div className="ticketprinter-config__item">
-                <label>{prefix}{text}</label>
-                <span>
-                    {this.renderCheckbox(itemEnabled, onChange)}
+              <label>{prefix}{text}</label>
+              <span>
+                {this.renderCheckbox(itemEnabled, onChange)}
                 </span>
             </div>
         )
@@ -134,9 +132,9 @@ class CallDisplayConfigView extends Component {
         if (scopes.length > 0) {
             return (
                 <div className="form-group">
-                    <Label>Standorte</Label>
-                    <Controls>
-                        {scopes.map(this.renderItem.bind(this))}
+                  <Label>Standorte</Label>
+                  <Controls>
+                    {scopes.map(this.renderItem.bind(this))}
                     </Controls>
                 </div>
             )
@@ -147,9 +145,9 @@ class CallDisplayConfigView extends Component {
         if (clusters.length > 0) {
             return (
                 <div className="form-group">
-                    <Label>Standort­gruppe</Label>
-                    <Controls>
-                        {clusters.map(this.renderItem.bind(this))}
+                  <Label>Standort­gruppe</Label>
+                  <Controls>
+                    {clusters.map(this.renderItem.bind(this))}
                     </Controls>
                 </div>
             )
@@ -159,9 +157,9 @@ class CallDisplayConfigView extends Component {
     renderDepartment(department) {
         return (
             <div>
-                <h2>{department.name}</h2>
-                {this.renderScopes(department.scopes)}
-                {this.renderClusters(department.clusters)}
+              <h2>{department.name}</h2>
+              {this.renderScopes(department.scopes)}
+              {this.renderClusters(department.clusters)}
             </div>
         )
     }
