@@ -26,6 +26,7 @@ class UseraccountUpdateTest extends Base
               "departments": [
                   {"id": 74}
               ],
+              "email": "unittest@berlinonline.de",
               "id": "unittest"
             }'
         ], []);
