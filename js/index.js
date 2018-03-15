@@ -30,6 +30,7 @@ import printScopeAppointmentsByDay from './page/scopeAppointmentsByDay/print'
 import printWaitingNumber from './page/waitingnumber/print'
 //import bindReact from './lib/bindReact.js'
 import { getDataAttributes } from './lib/utils'
+import { forceHttps } from './lib/utils'
 
 import scopeChangeProvider from './element/form/scope'
 import preventFormResubmit from './element/form/preventFormResubmit'
@@ -41,6 +42,9 @@ import DialogHandler from './lib/dialogHandler'
 window.$ = $;
 
 moment.locale('de')
+
+// Force https protocol
+forceHttps();
 
 // Init Views
 $('.emergency').each(function() {
@@ -91,9 +95,9 @@ $('.scope-form-update').each(function() {
     scopeChangeProvider(this);
 });
 
-printScopeAppointmentsByDay()
-printWaitingNumber()
-DialogHandler.hideMessages()
+printScopeAppointmentsByDay();
+printWaitingNumber();
+DialogHandler.hideMessages();
 
 // Say hello
 console.log("Welcome to the ZMS admin interface...");

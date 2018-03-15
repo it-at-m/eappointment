@@ -1,5 +1,8 @@
 import $ from 'jquery'
 import moment from 'moment'
+import MessageHandler from './messageHandler';
+import Baseview from './baseview';
+import settings from '../settings';
 
 export const timeToFloat = (time) => {
     const momentTime = moment(time, 'HH:mm:ss')
@@ -68,7 +71,7 @@ export const lightbox = (parentElement, onBackgroundClick) => {
     const lightboxContentElement = lightboxElement.find('.lightbox__content');
 
     lightboxElement.on('click', (ev) => {
-        console.log('background click', ev);
+        //console.log('background click', ev);
         ev.stopPropagation()
         ev.preventDefault()
         destroyLightbox()
@@ -109,6 +112,18 @@ export const getUrlParameters = () => {
                            return carry
                        }
                    }, {})
+}
+
+export const forceHttps = () => {
+    if (document.location.protocol !== "https:") {
+        const { lightboxContentElement, destroyLightbox } = lightbox(null, () => {destroyLightbox()});
+        Baseview.loadCallStatic(`${settings.includeUrl}/dialog/?template=force_https`).then((response) => {
+            Baseview.loadDialogStatic(response, () => {
+                document.location.href = "https://" + document.location.href.substring(document.location.protocol.length, document.location.href.length);
+            });
+        });
+    }
+
 }
 
 export const showSpinner = ($container = null) => {
