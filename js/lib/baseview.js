@@ -58,6 +58,10 @@ class BaseView extends ErrorHandler {
     }
 
     loadCall(url, method = 'GET', data = null, spinner = false) {
+        return BaseView.loadCallStatic(url, method, data, spinner);
+    }
+
+    static loadCallStatic(url, method = 'GET', data = null, spinner = false) {
         if (spinner) {
             showSpinner(this.$main);
         }
@@ -123,7 +127,11 @@ class BaseView extends ErrorHandler {
         })
     }
 
-    loadDialog (response, callback) {
+    loadDialog(response, callback) {
+        BaseView.loadDialogStatic(response, callback);
+    }
+
+    static loadDialogStatic (response, callback) {
         const { lightboxContentElement, destroyLightbox } = lightbox(this.$main, () => {destroyLightbox()});
         new DialogHandler(lightboxContentElement, {
             response: response,
