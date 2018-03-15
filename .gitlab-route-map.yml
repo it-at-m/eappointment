@@ -1,0 +1,3 @@
+# Coverage
+- source: public/_tests/coverage/(.+?\.html).*/
+  public: 'coverage/'
