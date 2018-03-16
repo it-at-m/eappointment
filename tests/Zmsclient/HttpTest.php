@@ -28,8 +28,7 @@ class HttpTest extends Base
 
     public function testMails()
     {
-        $this->writeTestLogin();
-        $http = $this->createHttpClient();
+        $http = $this->writeTestLogin();
         $entity = \BO\Zmsentities\Mail::createExample();
         $entity->process = $http->readGetResult('/process/82252/12a2/')->getEntity();
         $result = $http->readPostResult('/mails/', $entity, array('resolveReferences' => 0));
@@ -44,7 +43,7 @@ class HttpTest extends Base
         $result = $http->readDeleteResult("/mails/$mailId/", array('resolveReferences' => 0));
         $entity = $result->getEntity();
         $this->assertTrue($entity instanceof \BO\Zmsentities\Mail);
-        $this->writeTestLogout();
+        $this->writeTestLogout($http);
     }
 
     public function testHtml()
@@ -106,12 +105,11 @@ class HttpTest extends Base
             \BO\Zmsclient\Auth::setKey($workstation->authkey);
             $this->assertEquals($workstation->authkey, \BO\Zmsclient\Auth::getKey());
         }
-        return $workstation;
+        return $http;
     }
 
-    protected function writeTestLogout()
+    protected function writeTestLogout($http)
     {
-        $http = $this->createHttpClient();
         $http->readDeleteResult('/workstation/login/berlinonline/')->getEntity();
     }
 }
