@@ -28,7 +28,7 @@ class HomeUrl
         } elseif (!$homeUrl) {
             $homeUrl = $request->getRequestTarget();
         }
-        \App::$log->debug("HOMEURL", [$homeUrl, $request->getRequestTarget()]);
+        //\App::$log->debug("HOMEURL", [$homeUrl, $request->getRequestTarget()]);
         \BO\Zmsclient\Ticketprinter::setHomeUrl($homeUrl);
         return $homeUrl;
     }
