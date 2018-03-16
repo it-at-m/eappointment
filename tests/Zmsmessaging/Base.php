@@ -8,17 +8,6 @@ use BO\Zmsentities\Workstation;
 
 abstract class Base extends \BO\Zmsmessaging\PhpUnit\Base
 {
-    protected function setWorkstation()
-    {
-        User::$workstation = new Workstation([
-            'id' => 5118,
-            'useraccount' => new Useraccount([
-                'id' => '_system_messenger',
-            ])
-        ]);
-        return User::$workstation;
-    }
-
     protected function getResponse($content = '', $status = 200)
     {
         $response = new \BO\Zmsclient\Psr7\Response();
