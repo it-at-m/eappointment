@@ -36,7 +36,7 @@ class Index extends BaseController
                 array(
                     'scopeId' => $ticketprinter->buttons[0]['scope']['id']
                 ),
-                ($defaultTemplate->getValue() == 'default')? [] : ['template' => $defaultTemplate->getValue()]
+                $this->getQueryString($validator, $ticketprinter, $defaultTemplate)
             );
         }
         $template = (new Helper\TemplateFinder($defaultTemplate->getValue()))
@@ -54,5 +54,17 @@ class Index extends BaseController
                 'config' => $config
             )
         );
+    }
+
+    protected function getQueryString($validator, $ticketprinter, $defaultTemplate)
+    {
+        $query = ($defaultTemplate->getValue() == 'default') ? [] : ['template' => $defaultTemplate->getValue()];
+        if (isset($ticketprinter['home'])) {
+            $homeUrl = $validator::value($ticketprinter['home'])->isUrl()->getValue();
+            if ($homeUrl) {
+                $query['ticketprinter[home]'] = $homeUrl;
+            }
+        }
+        return $query;
     }
 }
