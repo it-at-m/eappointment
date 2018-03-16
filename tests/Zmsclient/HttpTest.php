@@ -88,7 +88,7 @@ class HttpTest extends Base
     protected function writeTestLogin()
     {
         $http = $this->createHttpClient();
-        $http->setUserInfo('berlinonline', '1palme1');
+        $http->setUserInfo('_system_messenger', 'zmsmessaging'); //only for api access test
         $userAccount = new \BO\Zmsentities\Useraccount(array(
             'id' => 'berlinonline',
             'password' => '1palme1'
