@@ -20,7 +20,7 @@
         "url": "/scope/141/",
         "scope": {
           "hint": "Bürgeramt | ",
-          "id": "312",
+          "id": "141",
           "contact": {
             "name": "Bürgeramt I in Köpenick",
             "street": "Alt-Köpenick 21, 12555 Berlin",
@@ -104,6 +104,7 @@
         "enabled": true,
         "name": "Bürgeramt Heerstraße"
       }
-    ]
+    ],
+    "home": "http://service.berlin.de/home/"
   }
 }
