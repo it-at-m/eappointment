@@ -8,4 +8,5 @@ set +a
 
 if [[ $ZMS_CRONROOT =~ ^1|on|true|yes$ ]]; then
     $BIN/deleteSessionData Zmsappointment 30 --commit
+    #$BIN/deleteReservedData 1 --commit
 fi
