@@ -39,6 +39,10 @@ class Config extends Schema\Entity
             ],
             'emergency' => [
                 'refreshInterval' => 5
+            ],
+            'support' => [
+                'E-Mail' => 'hotline@itdz-berlin.de',
+                'Telefon' => '(030) 9222-2000'
             ]
         ];
     }
