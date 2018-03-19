@@ -421,4 +421,23 @@ class Process extends Base implements Interfaces\ResolveReferences
         $statement = $this->fetchStatement($selectQuery);
         return $this->readList($statement, $resolveReferences);
     }
+
+    public function readExpiredReservationsList(
+        \DateTimeInterface $expirationDate,
+        $scopeId,
+        $limit = 500,
+        $resolveReferences = 0
+    ) {
+        $selectQuery = new Query\Process(Query\Base::SELECT);
+        $selectQuery
+            ->addEntityMapping()
+            ->addResolvedReferences($resolveReferences)
+            ->addConditionScopeId($scopeId)
+            ->addConditionIsReserved()
+            ->addConditionProcessDeleteInterval($expirationDate)
+            ->addConditionIgnoreSlots()
+            ->addLimit($limit);
+        $statement = $this->fetchStatement($selectQuery);
+        return $this->readList($statement, $resolveReferences);
+    }
 }
