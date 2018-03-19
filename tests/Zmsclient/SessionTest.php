@@ -10,7 +10,6 @@ class SessionTest extends Base
 
     const SESSION_ID = '0058pfv918e8ipmbadj05sm1e7';
 
-    /*
     public function testBasic()
     {
         $sessionHandler = $this->createSession();
@@ -33,7 +32,6 @@ class SessionTest extends Base
 
         $this->assertEquals(null, $sessionHandler->read(self::SESSION_ID));
     }
-    */
 
     public function testWriteFailed()
     {
