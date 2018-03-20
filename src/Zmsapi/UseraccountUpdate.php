@@ -10,6 +10,10 @@ use \BO\Slim\Render;
 use \BO\Mellon\Validator;
 use \BO\Zmsdb\Useraccount;
 
+/**
+ * @SuppressWarnings(Coupling)
+ * @return String
+ */
 class UseraccountUpdate extends BaseController
 {
     /**
@@ -32,14 +36,7 @@ class UseraccountUpdate extends BaseController
         }
 
         $entity = new \BO\Zmsentities\Useraccount($input);
-        $entity->testValid('de_DE', 1);
-        if (0 == count($entity->departments)) {
-            throw new Exception\Useraccount\UseraccountNoDepartments();
-        }
-
-        if ($args['loginname'] != $entity->id && (new Useraccount)->readIsUserExisting($entity->id)) {
-            throw new Exception\Useraccount\UseraccountAlreadyExists();
-        }
+        $this->testEntity($entity, $input, $args);
 
         $message = Response\Message::create($request);
         $message->data = (new Useraccount)->updateEntity($args['loginname'], $entity, $resolveReferences);
@@ -47,5 +44,25 @@ class UseraccountUpdate extends BaseController
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
         return $response;
+    }
+
+    protected function testEntity($entity, $input, $args)
+    {
+        try {
+            $entity->testValid('de_DE', 1);
+        } catch (\Exception $exception) {
+            $exception->data['input'] = $input;
+            throw $exception;
+        }
+
+        if (0 == count($entity->departments)) {
+            $exception = new Exception\Useraccount\UseraccountNoDepartments();
+            $exception->data['input'] = $input;
+            throw $exception;
+        }
+
+        if ($args['loginname'] != $entity->id && (new Useraccount)->readIsUserExisting($entity->id)) {
+            throw new Exception\Useraccount\UseraccountAlreadyExists();
+        }
     }
 }
