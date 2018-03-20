@@ -1,28 +1,28 @@
 /**
  * Import inuit css
  */
-@import "bower_components/inuit-defaults/settings.defaults";
+@import "vendor/bo/inuitcss/inuit-defaults/settings.defaults";
 /*
-// @import "bower_components/inuit-responsive-settings/_settings.responsive";
+// @import "vendor/bo/inuitcss/inuit-responsive-settings/_settings.responsive";
 // we use csswizardry to asign the responsive settings
 */
+
 @import "settings";
-@import "bower_components/csswizardry-grids/csswizardry-grids";
-@import "bower_components/inuit-functions/tools.functions";
-@import "bower_components/inuit-mixins/tools.mixins";
-@import "bower_components/inuit-normalize/generic.normalize";
-@import "bower_components/inuit-box-sizing/generic.box-sizing";
-@import "bower_components/inuit-headings/_base.headings";
-@import "bower_components/inuit-page/base.page";
-@import "bower_components/inuit-buttons/_objects.buttons";
-@import "bower_components/inuit-tables/_objects.tables.scss";
-@import "bower_components/inuit-list-bare/_objects.list-bare.scss";
-@import "bower_components/inuit-list-inline/_objects.list-inline.scss";
-@import "bower_components/inuit-clearfix/_trumps.clearfix";
-@import "bower_components/inuit-responsive-tools/_tools.responsive";
+@import "vendor/bo/inuitcss/csswizardry-grids/csswizardry-grids";
+@import "vendor/bo/inuitcss/inuit-functions/tools.functions";
+@import "vendor/bo/inuitcss/inuit-mixins/tools.mixins";
+@import "vendor/bo/inuitcss/inuit-normalize/generic.normalize";
+@import "vendor/bo/inuitcss/inuit-box-sizing/generic.box-sizing";
+@import "vendor/bo/inuitcss/inuit-headings/_base.headings";
+@import "vendor/bo/inuitcss/inuit-page/base.page";
+@import "vendor/bo/inuitcss/inuit-buttons/_objects.buttons";
+@import "vendor/bo/inuitcss/inuit-tables/_objects.tables.scss";
+@import "vendor/bo/inuitcss/inuit-list-bare/_objects.list-bare.scss";
+@import "vendor/bo/inuitcss/inuit-list-inline/_objects.list-inline.scss";
+@import "vendor/bo/inuitcss/inuit-clearfix/_trumps.clearfix";
+@import "vendor/bo/inuitcss/inuit-responsive-tools/_tools.responsive";
 
-@import "bower_components/magic/magic";
-
+@import "vendor/bo/inuitcss/magic/magic";
 
 /**
  * Import our css
