@@ -42,8 +42,6 @@ class ProcessTest extends EntityCommonTests
 
         $this->assertTrue(1447931730 == $entity->getReminderTimestamp(), 'reminder timestamp is not set');
 
-        $this->assertFalse($entity->isConfirmationSmsRequired(), 'Confirmation SMS should not be set to required');
-
         $this->assertContains('122305', (string)$entity, 'requests are not accessible');
 
         $this->assertTrue(2 == count($entity->getRequestIds()), 'requests are not accessible');
