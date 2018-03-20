@@ -1,4 +1,0 @@
-RewriteEngine On
-RewriteCond %{REQUEST_URI} !^_
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ^ /zmsadmin/index.php [QSA,L]
