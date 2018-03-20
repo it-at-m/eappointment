@@ -440,4 +440,20 @@ class Process extends Base implements Interfaces\ResolveReferences
         $statement = $this->fetchStatement($selectQuery);
         return $this->readList($statement, $resolveReferences);
     }
+
+    public function readNotificationReminderProcessList(
+        \DateTimeInterface $dateTime,
+        $limit = 500,
+        $resolveReferences = 0
+    ) {
+        $selectQuery = new Query\Process(Query\Base::SELECT);
+        $selectQuery
+            ->addEntityMapping()
+            ->addResolvedReferences($resolveReferences)
+            ->addConditionProcessReminderInterval($dateTime)
+            ->addConditionIgnoreSlots()
+            ->addLimit($limit);
+        $statement = $this->fetchStatement($selectQuery);
+        return $this->readList($statement, $resolveReferences);
+    }
 }
