@@ -184,8 +184,8 @@ class Availability extends Schema\Entity
      */
     public function hasDay(\DateTimeInterface $dateTime)
     {
-        $start = $this->getStartDateTime()->modify('0:00');
-        $end = $this->getEndDateTime();
+        $start = $this->getStartDateTime()->modify('0:00:00');
+        $end = $this->getEndDateTime()->modify('23:59:59');
         if ($dateTime->getTimestamp() < $start->getTimestamp() || $dateTime->getTimestamp() > $end->getTimestamp()) {
             // Out of date range
             return false;
