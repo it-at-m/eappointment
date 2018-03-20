@@ -408,7 +408,7 @@ class AvailabilityTest extends EntityCommonTests
         $entityOH->endTime = '11:00:00';
         $collection->addEntity($entityOH);
         $this->assertFalse($collection->isOpened($time));
-        $this->assertFalse($collection->isOpenedByDate($time));
+        $this->assertTrue($collection->isOpenedByDate($time), "Day should be covered although time is after endTime");
     }
 
     public function testUnopenedWrongType()
