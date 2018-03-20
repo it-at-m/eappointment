@@ -85,7 +85,18 @@ class Language
             $locale = $this->getDefault();
         }
         \Locale::setDefault($locale);
-        \setlocale(LC_ALL, $locale);
+        \setlocale(LC_ALL, $this->getLocaleList($locale));
+    }
+
+    protected function getLocaleList($locale)
+    {
+        $localeList[] = $this->getCurrentLanguage();
+        $localeList[] = $locale;
+        $suffixList = ['utf8', 'utf-8'];
+        foreach ($suffixList as $suffix) {
+            $localeList[] = $locale .'.'. $suffix;
+        }
+        return $localeList;
     }
 
     // Detect current language based on request URI or Parameter
