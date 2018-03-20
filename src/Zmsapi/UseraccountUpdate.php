@@ -31,9 +31,6 @@ class UseraccountUpdate extends BaseController
         }
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         $input = Validator::input()->isJson()->assertValid()->getValue();
-        if (0 == count($input)) {
-            throw new Exception\Useraccount\UseraccountInvalidInput();
-        }
 
         $entity = new \BO\Zmsentities\Useraccount($input);
         $this->testEntity($entity, $input, $args);
@@ -48,6 +45,9 @@ class UseraccountUpdate extends BaseController
 
     protected function testEntity($entity, $input, $args)
     {
+        if (0 == count($input)) {
+            throw new Exception\Useraccount\UseraccountInvalidInput();
+        }
         try {
             $entity->testValid('de_DE', 1);
         } catch (\Exception $exception) {
