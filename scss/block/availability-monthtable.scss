@@ -80,6 +80,18 @@ $calendarCircleConflictColor:                   #BE1522;
         &:hover {
             outline:                1px dotted $black;
             outline-offset:         -1px;
+
+            .icons .availability--list {
+                display: block;
+                position: relative;
+                top: 0;
+                left: 0;
+                z-index: 2;
+                padding: 0;
+                background: white;
+                font-size: 0.8em;
+                border: 0px;
+            }
         }
         .day {
             color:                  $baseTextColor;
@@ -111,6 +123,25 @@ $calendarCircleConflictColor:                   #BE1522;
             position:               absolute;
             top:                    3.8em;
             right:                  0.5em;
+
+            .availability--list {
+                display: none;
+
+                .availability--description {
+                    display: block;
+                    margin: 0.3em;
+                    padding: 0.3em;
+                }
+
+                .availability--openinghours {
+                    border: 1px solid $calendarCircleOpenColor;
+                }
+
+                .availability--appointment {
+                    border: 1px solid $calendarCircleAppointmentColor;
+                }
+            }
+
         }
         .holiday {
             position:               absolute;
