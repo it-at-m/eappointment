@@ -24,15 +24,9 @@ class UseraccountAdd extends BaseController
         (new Helper\User($request))->checkRights('useraccount');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         $input = Validator::input()->isJson()->assertValid()->getValue();
-        if (0 == count($input)) {
-            throw new Exception\Useraccount\UseraccountInvalidInput();
-        }
-        $entity = new \BO\Zmsentities\Useraccount($input);
-        $entity->testValid();
 
-        if ((new Useraccount)->readIsUserExisting($entity->id)) {
-            throw new Exception\Useraccount\UseraccountAlreadyExists();
-        }
+        $entity = new \BO\Zmsentities\Useraccount($input);
+        $this->testEntity($entity, $input);
 
         $message = Response\Message::create($request);
         $message->data = (new Useraccount)->writeEntity($entity, $resolveReferences);
@@ -40,5 +34,28 @@ class UseraccountAdd extends BaseController
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
         return $response;
+    }
+
+    protected function testEntity($entity, $input)
+    {
+        if (0 == count($input)) {
+            throw new Exception\Useraccount\UseraccountInvalidInput();
+        }
+        try {
+            $entity->testValid('de_DE', 1);
+        } catch (\Exception $exception) {
+            $exception->data['input'] = $input;
+            throw $exception;
+        }
+
+        if (0 == count($entity->departments)) {
+            $exception = new Exception\Useraccount\UseraccountNoDepartments();
+            $exception->data['input'] = $input;
+            throw $exception;
+        }
+
+        if ((new Useraccount)->readIsUserExisting($entity->id)) {
+            throw new Exception\Useraccount\UseraccountAlreadyExists();
+        }
     }
 }
