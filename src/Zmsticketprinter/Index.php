@@ -20,7 +20,7 @@ class Index extends BaseController
         array $args
     ) {
         Helper\HomeUrl::create($request);
-        $config = \App::$http->readGetResult('/config/')->getEntity();
+        $config = \App::$http->readGetResult('/config/', [], \App::SECURE_TOKEN)->getEntity();
         $validator = $request->getAttribute('validator');
         $defaultTemplate = $validator->getParameter("template")
             ->isPath()
