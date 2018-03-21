@@ -36,19 +36,25 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
     public function tearDown()
     {
     }
-
+    
+    /**
+     * @SuppressWarnings(Cyclomatic)
+     * @return String
+     */
     protected function getApiMockup()
     {
         $mock = $this->prophesize('BO\Zmsclient\Http');
         foreach ($this->getApiCalls() as $options) {
             $parameters = isset($options['parameters']) ? $options['parameters'] : null;
+            $xtoken = isset($options['xtoken']) ? $options['xtoken'] : null;
             $function = $options['function'];
             if ($function == 'readGetResult' || $function == 'readDeleteResult') {
                 $function = $mock->__call(
                     $function,
                     [
                         $options['url'],
-                        $parameters
+                        $parameters,
+                        $xtoken
                     ]
                 );
             } elseif ($function == 'readPostResult') {
