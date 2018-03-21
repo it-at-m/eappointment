@@ -146,6 +146,7 @@ class Availability extends Base implements MappingInterface
                         )
                     )
                 )
+                OR (availability.allexWochen = 0 AND availability.jedexteWoche = 0)
             ) AND 1
             "), '=', '1');
         return $this;
