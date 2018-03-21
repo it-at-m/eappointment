@@ -30,7 +30,7 @@ class TwigExceptionHandler
             $status = $exception->getCode();
         }
         $extendedInfo = self::getExtendedExceptionInfo($exception, $request);
-        if ($status >= 500 || $status < 400 || !$status) {
+        if ($status >= 500 || $status < 200 || !$status) {
             \App::$log->critical("PHP Fatal Exception #{$extendedInfo['uniqueid']}", $extendedInfo);
             /*
             \App::$log->critical(
