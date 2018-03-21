@@ -21,7 +21,7 @@ class Process extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $config = \App::$http->readGetResult('/config/')->getEntity();
+        $config = \App::$http->readGetResult('/config/', [], \App::SECURE_TOKEN)->getEntity();
         $validator = $request->getAttribute('validator');
         $scopeId = $validator->getParameter('scopeId')->isNumber()->getValue();
         $clusterId = $validator->getParameter('clusterId')->isNumber()->getValue();
