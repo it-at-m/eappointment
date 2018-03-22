@@ -3484,7 +3484,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                  description: status of process
  *                  in: path
  *                  required: true
- *                  type: integer
+ *                  type: string
  *              -   name: X-Authkey
  *                  required: true
  *                  description: authentication key to identify user for testing access rights
@@ -4080,6 +4080,46 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/scope/{id:\d{1,11}}/waitingnumber/{hash}/',
     '\BO\Zmsapi\TicketprinterWaitingnumberByScope')
     ->setName("TicketprinterWaitingnumberByScope");
+
+/**
+ *  @swagger
+ *  "/scope/{ids}/ticketprinter/":
+ *      get:
+ *          summary: Get a list of ticketprinter by scope id list
+ *          x-since: 2.10
+ *          tags:
+ *              - scope
+ *              - ticketprinter
+ *          parameters:
+ *              -   name: ids
+ *                  description: number of scopes as csv
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  x-since: 2.12
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: get a ticketprinter collection
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/ticketprinter.json"
+ *              404:
+ *                  description: "no ticketprinter found"
+ */
+\App::$slim->get('/scope/{ids}/ticketprinter/',
+    '\BO\Zmsapi\TicketprinterListByScopeList')
+    ->setName("TicketprinterListByScopeList");
 
 /**
 *  @swagger
