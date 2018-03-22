@@ -2,7 +2,7 @@
 <?php
 $dir = realpath(__DIR__);
 include($dir . '/cliEnv.php');
-$dates = preg_grep('#^\d\d\d\d#', $argv);
+$dates = preg_grep('#^\d\d\d\d-\d\d?-\d\d?#', $argv);
 if (preg_grep('#^--commit$#', $argv)) {
     $calculator = new \BO\Zmsdb\Helper\CalculateSlots(preg_grep('#^--?v(erbose)?$#', $argv));
     $calculator->writeCalculations(new \DateTimeImmutable(count($dates) ? array_shift($dates) : null));

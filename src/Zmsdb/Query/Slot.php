@@ -10,6 +10,8 @@ class Slot extends Base implements MappingInterface
      */
     const TABLE = 'slot';
 
+    const QUERY_LAST_CHANGED = 'SELECT MAX(updateTimestamp) AS dateString FROM slot;';
+
     const QUERY_INSERT_SLOT_PROCESS = '
         INSERT INTO slot_process
         SELECT 
