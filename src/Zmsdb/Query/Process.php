@@ -336,6 +336,10 @@ class Process extends Base implements MappingInterface
                     ->andWith('process.NutzerID', '!=', 0)
                     ->andWith('process.AbholortID', '=', 0);
             }
+            if ('processing' == $status) {
+                $query
+                    ->andWith('process.aufruferfolgreich', '!=', 0);
+            }
             if ('missed' == $status) {
                 $query->andWith('process.nicht_erschienen', '!=', 0);
             }
