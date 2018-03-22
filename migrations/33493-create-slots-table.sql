@@ -11,11 +11,11 @@ ALTER TABLE `buerger`
 
 UPDATE `buerger` SET updateTimestamp = NOW();
 
-ALTER TABLE `buerger`
+ALTER TABLE `feiertage`
     ADD COLUMN `updateTimestamp` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     ADD INDEX (`updateTimestamp`);
 
-UPDATE `buerger` SET updateTimestamp = NOW();
+UPDATE `feiertage` SET updateTimestamp = NOW();
 
 DROP TABLE IF EXISTS `slot`;
 CREATE TABLE `slot` ( 

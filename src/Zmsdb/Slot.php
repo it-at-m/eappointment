@@ -106,4 +106,13 @@ class Slot extends Base
             $ancestorLevel--;
         }
     }
+
+    public function readLastChangedTime()
+    {
+        $last = $this->getReader()
+            ->fetchOne(
+                Query\Slot::QUERY_LAST_CHANGED
+            );
+        return new \DateTimeImmutable($last['dateString']);
+    }
 }
