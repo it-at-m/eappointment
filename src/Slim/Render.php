@@ -58,6 +58,16 @@ class Render
         return self::$response;
     }
 
+    public static function withXml(ResponseInterface $response, $data, $status = 200)
+    {
+        \BO\Slim\Profiler::add("Controller");
+        $response = $response->withStatus($status);
+        $response = $response->withHeader('Content-Type', 'application/soap+xml');
+        $response->getBody()->write($data);
+        \BO\Slim\Profiler::add("Rendering");
+        return $response;
+    }
+
     public static function withJson(ResponseInterface $response, $data, $status = 200)
     {
         \BO\Slim\Profiler::add("Controller");
