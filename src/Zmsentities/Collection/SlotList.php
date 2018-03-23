@@ -113,6 +113,7 @@ class SlotList extends Base
         $sum = ($slot instanceof Slot) ? $slot : new Slot();
         $sum->type = Slot::SUM;
         foreach ($this as $slot) {
+            //error_log("$slot");
             $sum['public'] += $slot['public'];
             $sum['intern'] += $slot['intern'];
             $sum['callcenter'] += $slot['callcenter'];
@@ -192,16 +193,18 @@ class SlotList extends Base
     public function withReducedSlots($slotsRequired)
     {
         $slotList = clone $this;
-        $slotLength = count($slotList);
-        for ($slotIndex = 0; $slotIndex < $slotLength; $slotIndex ++) {
-            if ($slotIndex + $slotsRequired - 1 < $slotLength) {
-                for ($slotRelative = 1; $slotRelative < $slotsRequired; $slotRelative ++) {
-                    if ($slotIndex + $slotRelative < $slotLength) {
-                        $slotList->takeLowerSlotValue($slotIndex, $slotIndex + $slotRelative);
+        if ($slotsRequired > 1) {
+            $slotLength = count($slotList);
+            for ($slotIndex = 0; $slotIndex < $slotLength; $slotIndex ++) {
+                if ($slotIndex + $slotsRequired - 1 < $slotLength) {
+                    for ($slotRelative = 1; $slotRelative < $slotsRequired; $slotRelative ++) {
+                        if ($slotIndex + $slotRelative < $slotLength) {
+                            $slotList->takeLowerSlotValue($slotIndex, $slotIndex + $slotRelative);
+                        }
                     }
+                } else {
+                    $slotList->setEmptySlotValues($slotIndex);
                 }
-            } else {
-                $slotList->setEmptySlotValues($slotIndex);
             }
         }
         return $slotList;
