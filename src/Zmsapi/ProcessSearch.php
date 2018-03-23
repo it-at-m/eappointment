@@ -25,10 +25,12 @@ class ProcessSearch extends BaseController
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $lessResolvedData = Validator::param('lessResolvedData')->isNumber()->setDefault(0)->getValue();
         $limit = Validator::param('limit')->isNumber()->setDefault(100)->getValue();
-        $queryString = Validator::param('query')
-            ->isString()
-            ->getValue();
-        $processList = (new Process)->readSearch($queryString, $resolveReferences, $limit);
+
+        $parameters = $request->getParams();
+        unset($parameters['resolveReferences']);
+        unset($parameters['lessResolvedData']);
+        unset($parameters['limit']);
+        $processList = (new Process)->readSearch($parameters, $resolveReferences, $limit);
         if ($lessResolvedData) {
             $processList = $processList->withLessData();
         }
