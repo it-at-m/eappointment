@@ -117,7 +117,7 @@ class Calendar extends Base
         $freeProcessesDate,
         \DateTimeInterface $now,
         $slotType,
-        $slotsRequired
+        $slotsRequiredForce
     ) {
         $querySlotList = new SlotList();
         $query = SlotList::getQuery();
@@ -132,11 +132,13 @@ class Calendar extends Base
                     $statement->execute(SlotList::getParametersMonth($scope['id'], $monthDateTime, $now));
                 }
 
-                if (! $slotsRequired && array_key_exists(
+                if (! $slotsRequiredForce && array_key_exists(
                     $scope->getProviderId(),
                     $calendar['processing']['slotinfo']
                 )) {
                     $slotsRequired = $calendar['processing']['slotinfo'][$scope->getProviderId()];
+                } else {
+                    $slotsRequired = 1;
                 }
                 while ($slotData = $statement->fetch(\PDO::FETCH_ASSOC)) {
                     $calendar = $this->addDayInfoToCalendar(
