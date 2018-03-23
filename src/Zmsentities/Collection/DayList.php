@@ -157,4 +157,18 @@ class DayList extends Base implements JsonUnindexed
         }
         return $list;
     }
+
+    public function withDaysInDateRange(\DateTimeInterface $startDate, \DateTimeInterface $endDate)
+    {
+        $list = new self();
+        foreach ($this as $day) {
+            if (
+                $day->toDateTime() >= $startDate->modify('00:00:00') &&
+                $day->toDateTime() <= $endDate->modify('23:59:59')
+            ) {
+                $list->addEntity($day);
+            }
+        }
+        return $list;
+    }
 }
