@@ -157,7 +157,7 @@ class Process extends Base implements MappingInterface
             'clients__0__notificationsSendCount' => 'process.SMSverschickt',
             'clients__0__surveyAccepted' => 'process.zustimmung_kundenbefragung',
             'clients__0__telephone' => self::expression(
-                'IF(`process`.`telefonnummer_fuer_rueckfragen`,
+                'IF(`process`.`telefonnummer_fuer_rueckfragen`!="",
                     `process`.`telefonnummer_fuer_rueckfragen`,
                     `process`.`Telefonnummer`
                 )'
@@ -266,7 +266,9 @@ class Process extends Base implements MappingInterface
 
     public function addConditionScopeId($scopeId)
     {
-        $this->query->where('process.StandortID', '=', $scopeId);
+        $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($scopeId) {
+            $query->andWith('process.StandortID', '=', $scopeId);
+        });
         return $this;
     }
 
@@ -396,6 +398,28 @@ class Process extends Base implements MappingInterface
             $query->orWith('process.EMail', 'LIKE', "%$queryString%");
             $query->orWith('process.Telefonnummer', 'LIKE', "%$queryString%");
             $query->orWith('process.telefonnummer_fuer_rueckfragen', 'LIKE', "%$queryString%");
+        });
+        return $this;
+    }
+
+    public function addConditionName($name, $exactMatching = false)
+    {
+        if ($exactMatching) {
+            $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($name) {
+                $query->andWith('process.Name', '=', $name);
+            });
+        } else {
+            $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($name) {
+                $query->andWith('process.Name', 'LIKE', "%$name%");
+            });
+        }
+        return $this;
+    }
+
+    public function addConditionAmendment($amendment)
+    {
+        $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($amendment) {
+            $query->andWith('process.Anmerkung', 'LIKE', "%$amendment%");
         });
         return $this;
     }

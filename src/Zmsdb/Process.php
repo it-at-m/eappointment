@@ -213,22 +213,52 @@ class Process extends Base implements Interfaces\ResolveReferences
         return $this->readList($statement, $resolveReferences);
     }
 
-    public function readSearch($queryString, $resolveReferences = 0, $limit = 100)
+    public function readSearch(array $parameter, $resolveReferences = 0, $limit = 100)
     {
         $query = new Query\Process(Query\Base::SELECT);
         $query
             ->addResolvedReferences($resolveReferences)
             ->addEntityMapping()
             ->addConditionAssigned()
-            ->addLimit($limit)
-            ;
-        if (preg_match('#^\d+$#', $queryString)) {
-            $query->addConditionProcessId($queryString);
-        } else {
-            $query->addConditionSearch($queryString);
+            ->addLimit($limit);
+
+        if (isset($parameter['query'])) {
+            (preg_match('#^\d+$#', $parameter['query']))
+                ? $query->addConditionProcessId($parameter['query'])
+                : $query->addConditionSearch($parameter['query']);
+            unset($parameter['query']);
         }
+        if (count($parameter)) {
+            $query = $this->addSearchConditions($query, $parameter);
+        }
+
         $statement = $this->fetchStatement($query);
-        return $this->readList($statement, $resolveReferences);
+        $processList = $this->readList($statement, $resolveReferences);
+        if ($processList && isset($parameter['requestId']) && $parameter['requestId']) {
+            $processList = $processList->toProcessListByRequest($parameter['requestId']);
+        }
+        return $processList;
+    }
+
+    protected function addSearchConditions($query, $parameter)
+    {
+        if (isset($parameter['processId']) && $parameter['processId']) {
+            $query->addConditionProcessId($parameter['processId']);
+        }
+        if (isset($parameter['name']) && $parameter['name']) {
+            $exact = (isset($parameter['exact'])) ? $parameter['exact'] : false;
+            $query->addConditionName($parameter['name'], $exact);
+        }
+        if (isset($parameter['amendment']) && $parameter['amendment']) {
+            $query->addConditionAmendment($parameter['amendment']);
+        }
+        if (isset($parameter['scopeId']) && $parameter['scopeId']) {
+            $query->addConditionScopeId($parameter['scopeId']);
+        }
+        if (isset($parameter['authKey']) && $parameter['authKey']) {
+            $query->addConditionAuthKey($parameter['authKey']);
+        }
+        return $query;
     }
 
     /**
