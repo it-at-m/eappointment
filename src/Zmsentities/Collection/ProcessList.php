@@ -21,6 +21,17 @@ class ProcessList extends Base
         return $list;
     }
 
+    public function toProcessListByRequest($requestId)
+    {
+        $list = new self();
+        foreach ($this as $process) {
+            if (in_array($requestId, $process->getRequestIds())) {
+                $list->addEntity(clone $process);
+            }
+        }
+        return $list;
+    }
+
     public function sortByArrivalTime()
     {
         $this->uasort(function ($a, $b) {
