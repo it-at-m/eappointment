@@ -162,8 +162,7 @@ class DayList extends Base implements JsonUnindexed
     {
         $list = new self();
         foreach ($this as $day) {
-            if (
-                $day->toDateTime() >= $startDate->modify('00:00:00') &&
+            if ($day->toDateTime() >= $startDate->modify('00:00:00') &&
                 $day->toDateTime() <= $endDate->modify('23:59:59')
             ) {
                 $list->addEntity($day);
