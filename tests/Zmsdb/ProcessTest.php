@@ -73,6 +73,7 @@ class ProcessTest extends Base
         $later->getFirstAppointment()->date = $later->getFirstAppointment()->date + (60 * 25);
         $process = $query->writeEntityReserved($later, $now);
         $process = $query->writeEntityReserved($later, $now);
+        $process = $query->writeEntityReserved($later, $now);
         $process = $query->writeEntityReserved($mulitpleSlots, $now, 'public', 10);
     }
 
