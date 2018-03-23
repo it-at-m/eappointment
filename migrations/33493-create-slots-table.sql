@@ -30,7 +30,7 @@ CREATE TABLE `slot` (
     `public` TINYINT(5) UNSIGNED DEFAULT NULL, 
     `callcenter` TINYINT(5) UNSIGNED DEFAULT NULL, 
     `intern` TINYINT(5) UNSIGNED DEFAULT NULL, 
-    `status` ENUM("free", "cancelled") DEFAULT "free",
+    `status` ENUM("free", "full", "cancelled") DEFAULT "free",
     `slotTimeInMinutes` TINYINT(5) UNSIGNED DEFAULT NULL, 
     `createTimestamp` BIGINT(20),
     `updateTimestamp` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
