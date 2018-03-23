@@ -51,6 +51,11 @@ erhalten. Das ist wichtig, da das Datenvolumen bei durchaus einmal 50.000
 gebuchten Terminen für einen Abfrage recht hoch ist. Dieses Volumen sollte
 nicht über ein Netzwerk übertragen werden.
 
+Eine weitere Optimierung ist über den Status der Slots möglich. Mittels eines
+Updates lässt sich der Status eines Slots auf "full" setzen. Somit kann man die
+Menge der Slots eingrenzen, wenn man nach freien Terminen sucht. (Wie sieht es
+aus mit belegten Tagen, werden diese dann noch rot angezeigt oder weiß?)
+
 ## Synchronisierung der Daten
 
 Die Slot-Tabellen sind keine nativen Daten. Diese stellen eine Optimierung in
