@@ -293,10 +293,10 @@ class ProcessTest extends Base
     public function testSearch()
     {
         $query = new Query();
-        $processList = $query->readSearch("J51362");
+        $processList = $query->readSearch(['query' => 'J51362']);
         $this->assertEntityList("\\BO\\Zmsentities\\Process", $processList);
         $this->assertEquals(6, $processList->count());
-        $processList = $query->readSearch("10029");
+        $processList = $query->readSearch(['query' => '10029']);
         $this->assertEquals(1, $processList->count());
         $this->assertEquals(10029, $processList->getFirst()->id);
     }
