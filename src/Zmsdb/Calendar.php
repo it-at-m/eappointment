@@ -137,6 +137,8 @@ class Calendar extends Base
                     $calendar['processing']['slotinfo']
                 )) {
                     $slotsRequired = $calendar['processing']['slotinfo'][$scope->getProviderId()];
+                } elseif ($slotsRequiredForce) {
+                    $slotsRequired = $slotsRequiredForce;
                 } else {
                     $slotsRequired = 1;
                 }
