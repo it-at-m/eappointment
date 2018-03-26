@@ -98,6 +98,9 @@
       },
       "ticketprinter": {
         "deactivated": false
+      },
+      "availability": {
+        "isOpened": false
       }
     }
   },
@@ -503,6 +506,19 @@
                 "number"
               ],
               "description": "true if all ticket printers are disabled",
+              "default": false
+            }
+          }
+        },
+        "availability": {
+          "type": "object",
+          "properties": {
+            "isOpened": {
+              "type": [
+                "boolean",
+                "number"
+              ],
+              "description": "true if scope is opened",
               "default": false
             }
           }
