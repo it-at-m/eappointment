@@ -89,7 +89,7 @@ class Slot extends Schema\Entity
         $slot->type = 'sum';
         $slot->intern = (($slot->intern > 0) ? $slot->intern : 0) + (($this->intern > 0) ? $this->intern : 0);
         $slot->callcenter = $slot->callcenter + $this->callcenter;
-        $slot->public = $slot->public + $slot->public;
+        $slot->public = $slot->public + $this->public;
         return $slot;
     }
 
