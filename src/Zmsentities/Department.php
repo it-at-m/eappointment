@@ -53,6 +53,21 @@ class Department extends Schema\Entity implements Useraccount\AccessInterface
         return $this->dayoff;
     }
 
+    public function getClusterByScopeId($scopeId)
+    {
+        $selectedCluster = false;
+        foreach ($this->clusters as $cluster) {
+            $cluster = new Cluster($cluster);
+            foreach ($cluster['scopes'] as $clusterScope) {
+                if ($scopeId == $clusterScope['id']) {
+                    $selectedCluster = $cluster->getId();
+                    break;
+                }
+            }
+        }
+        return $selectedCluster;
+    }
+
     /**
      * Remove duplicate scopes from clusters
      * Move scopes to clusters to keep the same resolveReference Level
