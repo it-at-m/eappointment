@@ -30,6 +30,22 @@ class BAllTest extends Base
         $entity = (new Query())->readResolvedEntity($input, $now);
         $this->assertEquals(0, count($entity['freeProcesses']));
         //$this->dumpProfiler();
+        /*
+        $testExport = [];
+        foreach ($entity->days as $key => $day) {
+            $day->freeAppointments = $day->freeAppointments->getArrayCopy();
+            $testExport[$key] = $day->getArrayCopy();
+        }
+        var_export($testExport);
+         */
+        $dayList  = include('fixtures/BATest_daylist.php');
+        foreach ($entity->days as $key => $day) {
+            $testDay = new \BO\Zmsentities\Day($dayList[$key]);
+            $message = "Day $key has different value";
+            $this->assertEquals($testDay->freeAppointments->public, $day->freeAppointments->public, $message);
+            $this->assertEquals($testDay->freeAppointments->callcenter, $day->freeAppointments->callcenter, $message);
+            $this->assertEquals($testDay->freeAppointments->intern, $day->freeAppointments->intern, $message);
+        }
     }
 
     protected function getTestEntity()
