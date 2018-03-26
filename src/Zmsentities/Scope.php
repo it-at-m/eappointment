@@ -188,6 +188,12 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
         return $this;
     }
 
+    public function setStatusAvailability($key, $value)
+    {
+        $this->status['availability'][$key] = $value;
+        return $this;
+    }
+
     public function __toString()
     {
         $string = 'scope#';
