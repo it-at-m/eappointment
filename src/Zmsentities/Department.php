@@ -56,12 +56,14 @@ class Department extends Schema\Entity implements Useraccount\AccessInterface
     public function getClusterByScopeId($scopeId)
     {
         $selectedCluster = false;
-        foreach ($this->clusters as $cluster) {
-            $cluster = new Cluster($cluster);
-            foreach ($cluster['scopes'] as $clusterScope) {
-                if ($scopeId == $clusterScope['id']) {
-                    $selectedCluster = $cluster->getId();
-                    break;
+        if (isset($this->clusters)) {
+            foreach ($this->clusters as $cluster) {
+                $cluster = new Cluster($cluster);
+                foreach ($cluster['scopes'] as $clusterScope) {
+                    if ($scopeId == $clusterScope['id']) {
+                        $selectedCluster = $cluster->getId();
+                        break;
+                    }
                 }
             }
         }
