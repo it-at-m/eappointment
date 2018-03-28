@@ -33,15 +33,21 @@ class Scope extends Base
         return self::$cache[$cacheKey];
     }
 
-    public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $scope, $resolveReferences)
-    {
+    public function readResolvedReferences(
+        \BO\Zmsentities\Schema\Entity $scope,
+        $resolveReferences,
+        $getScopeIsOpened = false
+    ) {
         if (0 < $resolveReferences) {
             $scope['dayoff'] = (new DayOff())->readByScopeId($scope->id);
+        }
+        if ($getScopeIsOpened) {
+            $scope->setStatusAvailability('isOpened', $this->readIsOpened($scope->getId(), \App::$now));
         }
         return $scope;
     }
 
-    public function readByClusterId($clusterId, $resolveReferences = 0)
+    public function readByClusterId($clusterId, $resolveReferences = 0, $getScopeIsOpened = false)
     {
         $scopeList = new Collection();
         if ($resolveReferences > 0) {
@@ -68,7 +74,11 @@ class Scope extends Base
                     $scopeList->addEntity($entity);
                 } else {
                     if ($entity instanceof Entity) {
-                        $scopeList->addEntity($this->readResolvedReferences($entity, $resolveReferences - 1));
+                        $scopeList->addEntity($this->readResolvedReferences(
+                            $entity,
+                            $resolveReferences - 1,
+                            $getScopeIsOpened
+                        ));
                     }
                 }
             }
