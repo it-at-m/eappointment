@@ -17,6 +17,21 @@ class ScopeList extends Base
     }
 
     /**
+    * Get shortest bookable start date of a scope in scopelist
+    *
+    * @return \DateTimeImmutable $date
+    */
+    public function getShortestBookableStart($now)
+    {
+        $date = $now;
+        foreach ($this as $scope) {
+            $startDate = $scope->getBookableStartDate($now);
+            $date = ($startDate > $date) ? $startDate : $date;
+        }
+        return $date;
+    }
+
+    /**
     * Get longest bookable end date of a scope in scopelist
     *
     * @return \DateTimeImmutable $date
@@ -27,6 +42,42 @@ class ScopeList extends Base
         foreach ($this as $scope) {
             $endDate = $scope->getBookableEndDate($now);
             $date = ($endDate > $date) ? $endDate : $date;
+        }
+        return $date;
+    }
+
+    /**
+    * Get shortest bookable start date of a opened scope in scopelist
+    *
+    * @return \DateTimeImmutable $date, null
+    */
+    public function getShortestBookableStartOnOpenedScope($now)
+    {
+        $date = null;
+        foreach ($this as $scope) {
+            if ($scope->getStatus('availability', 'isOpened')) {
+                $date = $now;
+                $startDate = $scope->getBookableStartDate($date);
+                $date = ($startDate > $date) ? $startDate : $date;
+            }
+        }
+        return $date;
+    }
+
+    /**
+    * Get longest bookable end date of a opened scope in scopelist
+    *
+    * @return \DateTimeImmutable $date
+    */
+    public function getGreatestBookableEndOnOpenedScope($now)
+    {
+        $date = null;
+        foreach ($this as $scope) {
+            if ($scope->getStatus('availability', 'isOpened')) {
+                $date = $now;
+                $endDate = $scope->getBookableEndDate($date);
+                $date = ($endDate > $date) ? $endDate : $date;
+            }
         }
         return $date;
     }
@@ -112,5 +163,16 @@ class ScopeList extends Base
             return $this->slotsByID[$scope->id];
         }
         return 0;
+    }
+
+    public function hasOpenedScope()
+    {
+        $isOpened = false;
+        foreach ($this as $entity) {
+            if ($entity->getStatus('availability', 'isOpened')) {
+                $isOpened = true;
+            }
+        }
+        return $isOpened;
     }
 }
