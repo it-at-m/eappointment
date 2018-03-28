@@ -23,7 +23,8 @@ class ClusterGet extends BaseController
     ) {
         (new Helper\User($request))->checkRights('cluster');
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
-        $cluster = (new Query())->readEntity($args['id'], $resolveReferences);
+        $getScopeIsOpened = Validator::param('getIsOpened')->isNumber()->setDefault(0)->getValue();
+        $cluster = (new Query())->readEntity($args['id'], $resolveReferences, $getScopeIsOpened);
         if (! $cluster) {
             throw new Exception\Cluster\ClusterNotFound();
         }
