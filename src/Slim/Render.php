@@ -88,6 +88,15 @@ class Render
     }
 
     /**
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public static function xml($data, $status = 200)
+    {
+        self::$response = self::withXml(self::$response, $data, $status);
+        return self::$response;
+    }
+
+    /**
      * Add `Last-Modified` header to PSR7 response object
      *
      * @param  ResponseInterface $response A PSR7 response object
