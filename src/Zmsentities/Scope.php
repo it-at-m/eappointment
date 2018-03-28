@@ -115,7 +115,19 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
     }
 
     /**
-    * Get last bookable end date  of a scope
+    * Get last bookable start date of a scope
+    *
+    * @return \DateTimeImmutable $scopeEndDate
+    */
+    public function getBookableStartDate(\DateTimeInterface $now)
+    {
+        $now = Helper\DateTime::create($now);
+        $scopeStartDate = $this->toProperty()->preferences->appointment->startInDaysDefault->get();
+        return ($scopeStartDate) ? $now->modify('+' . $scopeStartDate . 'days') : $now;
+    }
+
+    /**
+    * Get last bookable end date of a scope
     *
     * @return \DateTimeImmutable $scopeEndDate
     */
