@@ -42,6 +42,22 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
         return $this->dayoff;
     }
 
+    public function getRequestList()
+    {
+        $requestList = new \BO\Zmsentities\Collection\RequestList();
+        if ($this->provider and isset($this->provider['data']['services'])) {
+            foreach ($this->provider['data']['services'] as $item) {
+                $request = new Request([
+                    'id' => $item['service'],
+                    'source' => 'dldb',
+                    'link' => $item['url']
+                ]);
+                $requestList->addEntity($request);
+            }
+        }
+        return $requestList;
+    }
+
     public function getNotificationPreferences()
     {
         return $this->toProperty()->preferences->notifications->get();
