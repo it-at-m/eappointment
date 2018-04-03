@@ -43,7 +43,7 @@ class Day extends Base
                     'scopeID' => $scope->id,
                     'year' => $dateTime->format('Y'),
                     'month' => $dateTime->format('m'),
-                    'slotsRequired' => $slotsRequired,
+                    'slotsRequired' => $slotsRequired ? round($slotsRequired, 0) : 1,
                 ]);
             }
         }

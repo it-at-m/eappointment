@@ -118,7 +118,7 @@ class Calendar extends Base
     ) {
         $dayList = (new Day())->readByCalendar($calendar, $now);
         $calendar->days = $dayList;
-        var_dump("$calendar");
+        //var_dump("$calendar");
         return $calendar;
     }
 }
