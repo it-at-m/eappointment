@@ -85,15 +85,16 @@ class CalendarTest extends Base
         //var_dump(json_encode($entity, JSON_PRETTY_PRINT));
         //$array = json_decode(json_encode($entity), 1);
         //var_dump($array['days']);
+        //var_dump("$entity");
         $this->assertEntity("\\BO\\Zmsentities\\Calendar", $entity);
         $this->assertTrue($entity->hasDay(2016, 5, 23), "Missing 2016-05-23 in dataset");
         $this->assertEquals(0, $entity->getDay(2016, 5, 23)['freeAppointments']['public']);
         $this->assertTrue($entity->hasDay(2016, 5, 27), "Missing 2016-05-27 in dataset");
         $this->assertEquals(2, $entity->getDay(2016, 5, 27)['freeAppointments']['public']);
         $this->assertEquals(72, $entity->getDay(2016, 5, 30)['freeAppointments']['public']);
-        $this->assertEquals(60, $entity->getDay(2016, 5, 31)['freeAppointments']['public']);
+        $this->assertFalse($entity->hasDay(2016, 5, 31), "Should not have 31.05. beeing 61 days in the future");
         // free day test
-        // not implemented yet $this->assertEquals(0, $entity->getDay(2016, 5, 5)['freeAppointments']['public']);
+        $this->assertEquals(0, $entity->getDay(2016, 5, 5)['freeAppointments']['public']);
         //var_dump(\BO\Zmsdb\Connection\Select::getReadConnection()->getProfiler()->getProfiles());
     }
 
