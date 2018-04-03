@@ -19,9 +19,15 @@ abstract class Base extends \PHPUnit_Framework_TestCase
         \BO\Zmsdb\Connection\Select::closeReadConnection();
     }
 
-    public function readFixture($filename)
+    protected function getFixturePath($filename)
     {
         $path = dirname(__FILE__) . '/fixtures/' . $filename;
+        return $path;
+    }
+
+    public function readFixture($filename)
+    {
+        $path = $this->getFixturePath($filename);
         if (!is_readable($path) || !is_file($path)) {
             throw new \Exception("Fixture $path is not readable");
         }

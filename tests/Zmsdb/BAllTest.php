@@ -8,13 +8,39 @@ use \BO\Zmsentities\Calendar as Entity;
 class BAllTest extends Base
 {
     public $fullProviderIdList = [
-        122210,122217,122219,122227,122231,122238,122243,122252,122260,122262,
+        122210,122217,122219,122227,122231,/*122238,*/122243,122252,122260,122262,
         122254,122271,122273,122277,122280,122282,122284,122291,122285,122286,
         122296,150230,122301,122297,122294,122312,122314,122304,122311,122309,
         317869,324433,325341,324434,122281,324414,122283,122279,122246,122251,
         122257,122208,122226
     ];
 
+    public function testSingle()
+    {
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        foreach ($this->fullProviderIdList as $providerId) {
+            $input = $this->getTestEntity();
+            $input->addProvider('dldb', $providerId);
+            $entity = (new Query())->readResolvedEntity($input, $now);
+            $this->assertEquals(0, count($entity['freeProcesses']));
+            //var_dump("$entity");
+            $this->writeTestExport($entity, 'provider' . $providerId . '_daylist.php');
+            $dayList  = include($this->getFixturePath('provider' . $providerId . '_daylist.php'));
+            foreach ($entity->days as $day) {
+                $key = str_pad($day->day, 2, '0', STR_PAD_LEFT)
+                    . "-"
+                    . str_pad($day->month, 2, '0', STR_PAD_LEFT)
+                    . "-$day->year";
+                $testDay = new \BO\Zmsentities\Day($dayList[$key]);
+                $message = "Day $key has different value on provider=$providerId for ";
+                $testSlots = $testDay->freeAppointments;
+                $daySlots = $day->freeAppointments;
+                $this->assertEquals($testSlots->intern, $daySlots->intern, $message . "intern");
+                $this->assertEquals($testSlots->callcenter, $daySlots->callcenter, $message . "callcenter");
+                $this->assertEquals($testSlots->public, $daySlots->public, $message . "public");
+            }
+        }
+    }
 
     /**
      * Test performance for "berlinweite Suche"
@@ -29,16 +55,10 @@ class BAllTest extends Base
         }
         $entity = (new Query())->readResolvedEntity($input, $now);
         $this->assertEquals(0, count($entity['freeProcesses']));
+        //var_dump("$entity");
         //$this->dumpProfiler();
-        /*
-        $testExport = [];
-        foreach ($entity->days as $key => $day) {
-            $day->freeAppointments = $day->freeAppointments->getArrayCopy();
-            $testExport[$key] = $day->getArrayCopy();
-        }
-        var_export($testExport);
-         */
-        $dayList  = include('fixtures/BATest_daylist.php');
+        $this->writeTestExport($entity, 'BATest_daylist.php');
+        $dayList  = include($this->getFixturePath('BATest_daylist.php'));
         foreach ($entity->days as $day) {
             $key = str_pad($day->day, 2, '0', STR_PAD_LEFT)
                 . "-"
@@ -46,11 +66,27 @@ class BAllTest extends Base
                 . "-$day->year";
             $testDay = new \BO\Zmsentities\Day($dayList[$key]);
             $message = "Day $key has different value for ";
-            $testAppointments = $testDay->freeAppointments;
-            $dayAppointments = $day->freeAppointments;
-            $this->assertEquals($testAppointments->intern, $dayAppointments->intern, $message . "intern");
-            $this->assertEquals($testAppointments->callcenter, $dayAppointments->callcenter, $message . "callcenter");
-            $this->assertEquals($testAppointments->public, $dayAppointments->public, $message . "public");
+            $testSlots = $testDay->freeAppointments;
+            $daySlots = $day->freeAppointments;
+            $this->assertEquals($testSlots->intern, $daySlots->intern, $message . "intern");
+            $this->assertEquals($testSlots->callcenter, $daySlots->callcenter, $message . "callcenter");
+            $this->assertEquals($testSlots->public, $daySlots->public, $message . "public");
+        }
+    }
+
+    protected function writeTestExport(Entity $entity, $filename)
+    {
+        if (getenv("BALL_EXPORT")) {
+            $testExport = [];
+            $export = "<?php\n\n// @codingStandardsIgnoreFile\nreturn ";
+            foreach ($entity->days as $key => $day) {
+                $day = clone $day;
+                $day->freeAppointments = $day->freeAppointments->getArrayCopy();
+                $testExport[$key] = $day->getArrayCopy();
+            }
+            $export .= var_export($testExport, true);
+            $export .= ";\n";
+            file_put_contents($this->getFixturePath($filename), $export);
         }
     }
 
