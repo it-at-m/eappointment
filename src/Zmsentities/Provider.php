@@ -12,8 +12,11 @@ class Provider extends Schema\Entity
     {
         $refString = '$ref';
         $providerId = isset($input['id']) ? $input['id'] : null;
-        $providerRef = isset($input[$refString]) ? $input[$refString] : null;
-        $providerId = ($providerId) ? $providerId : preg_replace('#^.*/(\d+)/$#', '$1', $providerRef);
+        if (isset($input[$refString]) && (!$providerId || !isset($input['source']))) {
+            $providerRef = $input[$refString];
+            $providerId = preg_replace('#^.*/(\d+)/$#', '$1', $providerRef);
+            $input['source'] = preg_replace('#^.*provider/([^/]+)/\d+/$#', '$1', $providerRef);
+        }
         $input['id'] = $providerId;
         parent::__construct($input, $flags, $iterator_class);
     }

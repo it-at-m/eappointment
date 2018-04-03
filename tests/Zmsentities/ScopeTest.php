@@ -39,8 +39,9 @@ class ScopeTest extends EntityCommonTests
     {
         $entity = (new $this->entityclass())->getExample();
         $this->assertEquals('123456', $entity->getProviderId(), 'ProviderId does not exists');
-        $entity->provider = array('$ref' => '/provider/123456/');
+        $entity->provider = array('$ref' => '/provider/dldb/123456/');
         $this->assertTrue('123456' == $entity->getProviderId(), 'ProviderId does not exists');
+        $this->assertEquals('dldb', $entity->getProvider()->source, 'ProviderId does not exists');
         $entity->provider = null;
         try {
             $entity->getProviderId();
