@@ -11,13 +11,15 @@ class Provider extends Schema\Entity
     public function __construct($input = null, $flags = \ArrayObject::ARRAY_AS_PROPS, $iterator_class = "ArrayIterator")
     {
         $refString = '$ref';
-        $providerId = isset($input['id']) ? $input['id'] : null;
-        if (isset($input[$refString]) && (!$providerId || !isset($input['source']))) {
+        if ((is_array($input) || $input instanceof \ArrayAccess)
+            && isset($input[$refString])
+            && (!isset($input['id']) || !isset($input['source']))
+        ) {
             $providerRef = $input[$refString];
             $providerId = preg_replace('#^.*/(\d+)/$#', '$1', $providerRef);
+            $input['id'] = $providerId;
             $input['source'] = preg_replace('#^.*provider/([^/]+)/\d+/$#', '$1', $providerRef);
         }
-        $input['id'] = $providerId;
         parent::__construct($input, $flags, $iterator_class);
     }
 

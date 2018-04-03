@@ -1,6 +1,9 @@
 <?php
 namespace BO\Zmsentities;
 
+/**
+ * @SuppressWarnings(Complexity)
+ */
 class Scope extends Schema\Entity implements Useraccount\AccessInterface
 {
     const PRIMARY = 'id';
@@ -19,7 +22,7 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
         if (!$this->provider instanceof Provider) {
             $this->provider = new Provider($this->provider);
         }
-        if (!$this->provider->id) {
+        if (!isset($this->provider['id']) || !$this->provider->id) {
             $exception = new Exception\ScopeMissingProvider("No reference to a provider found for scope");
             $exception->data['scope'] = $this->getArrayCopy();
             throw $exception;
