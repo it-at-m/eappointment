@@ -189,6 +189,7 @@ class Scope extends Base implements MappingInterface
             'status__queue__lastGivenNumberTimestamp' => 'scope.wartenrdatum',
             'status__ticketprinter__deactivated' => 'scope.wartenrsperre',
             'provider__id' => 'scope.InfoDienstleisterID',
+            'provider__source' => self::expression('"dldb"'),
             //'department__id' => 'scope.BehoerdenID'
         ];
     }
@@ -197,7 +198,7 @@ class Scope extends Base implements MappingInterface
     {
         return [
             //'department__$ref' => self::expression('CONCAT("/department/", `scope`.`BehoerdenID`, "/")'),
-            'provider__$ref' => self::expression('CONCAT("/provider/", `scope`.`InfoDienstleisterID`, "/")'),
+            'provider__$ref' => self::expression('CONCAT("/provider/dldb/", `scope`.`InfoDienstleisterID`, "/")'),
         ];
     }
 
