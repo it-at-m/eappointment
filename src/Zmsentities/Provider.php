@@ -15,8 +15,7 @@ class Provider extends Schema\Entity
         $providerRef = isset($input[$refString]) ? $input[$refString] : null;
         $providerId = ($providerId) ? $providerId : preg_replace('#^.*/(\d+)/$#', '$1', $providerRef);
         $input['id'] = $providerId;
-        parent::__construct($this->getDefaults(), $flags, $iterator_class);
-        $this->addData($input);
+        parent::__construct($input, $flags, $iterator_class);
     }
 
     public function hasRequest($requestId)
