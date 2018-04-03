@@ -38,7 +38,7 @@ class ScopeTest extends EntityCommonTests
     public function testProvider()
     {
         $entity = (new $this->entityclass())->getExample();
-        $this->assertTrue('123456' == $entity->getProviderId(), 'ProviderId does not exists');
+        $this->assertEquals('123456', $entity->getProviderId(), 'ProviderId does not exists');
         $entity->provider = array('$ref' => '/provider/123456/');
         $this->assertTrue('123456' == $entity->getProviderId(), 'ProviderId does not exists');
         $entity->provider = null;
@@ -133,5 +133,13 @@ class ScopeTest extends EntityCommonTests
         $this->assertEquals(1, $entity->getDayoffList()->count());
         $this->assertEntityList('\BO\Zmsentities\Dayoff', $entity->getDayoffList());
         $this->assertTrue(! array_key_exists('dayoff', $entity->withLessData()));
+    }
+
+    public function testRequestList()
+    {
+        $entity = $this->getExample();
+        $entity->provider['data']['services'] = array(array('service' => '1234'));
+        $requestList = $entity->getRequestList();
+        $this->assertTrue($requestList->hasRequests(1234), "Missing request in provider from scope");
     }
 }
