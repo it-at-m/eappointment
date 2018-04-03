@@ -12,7 +12,7 @@ class ProviderTest extends EntityCommonTests
     {
         $entity = (new $this->entityclass())->getExample();
         $this->assertFalse($entity->hasRequest('1234'), 'Request should not be existing');
-        $entity['data']['services'] = array('service' => '1234');
+        $entity['data']['services'] = array(array('service' => '1234'));
         $this->assertTrue($entity->hasRequest('1234'), 'Request should be existing');
     }
 
@@ -33,7 +33,7 @@ class ProviderTest extends EntityCommonTests
         $this->assertFalse($collection->hasRequest(1234), 'Provider list should not have a request with id 1234');
         $this->assertContains('21334', $collection->getIdsCsv(), 'Failed to get csv from ids in provider list');
 
-        $entity['data']['services'] = array('service' => '1234');
+        $entity['data']['services'] = array(array('service' => '1234'));
         $collection->addEntity($entity);
         $this->assertTrue($collection->hasRequest(1234), 'Provider list missed request with id 1234');
     }

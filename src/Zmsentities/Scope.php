@@ -14,18 +14,22 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
         ];
     }
 
+    public function getProvider()
+    {
+        if (!$this->provider instanceof Provider) {
+            $this->provider = new Provider($this->provider);
+        }
+        if (!$this->provider->id) {
+            $exception = new Exception\ScopeMissingProvider("No reference to a provider found for scope");
+            $exception->data['scope'] = $this->getArrayCopy();
+            throw $exception;
+        }
+        return $this->provider;
+    }
+
     public function getProviderId()
     {
-        $refString = '$ref';
-        $providerId = $this->toProperty()->provider->id->get();
-        $providerRef = $this->toProperty()->provider->$refString->get();
-        $providerId = ($providerId) ? $providerId : preg_replace('#^.*/(\d+)/$#', '$1', $providerRef);
-        if ($providerId) {
-            return $providerId;
-        }
-        $exception = new Exception\ScopeMissingProvider("No reference to a provider found for scope");
-        $exception->data['scope'] = $this->getArrayCopy();
-        throw $exception;
+        return $this->getProvider()->id;
     }
 
     public function getDayoffList()
@@ -44,18 +48,7 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
 
     public function getRequestList()
     {
-        $requestList = new \BO\Zmsentities\Collection\RequestList();
-        if ($this->provider and isset($this->provider['data']['services'])) {
-            foreach ($this->provider['data']['services'] as $item) {
-                $request = new Request([
-                    'id' => $item['service'],
-                    'source' => 'dldb',
-                    'link' => $item['url']
-                ]);
-                $requestList->addEntity($request);
-            }
-        }
-        return $requestList;
+        return $this->getProvider()->getRequestList();
     }
 
     public function getNotificationPreferences()
