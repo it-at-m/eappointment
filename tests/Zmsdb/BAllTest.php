@@ -39,12 +39,18 @@ class BAllTest extends Base
         var_export($testExport);
          */
         $dayList  = include('fixtures/BATest_daylist.php');
-        foreach ($entity->days as $key => $day) {
+        foreach ($entity->days as $day) {
+            $key = str_pad($day->day, 2, '0', STR_PAD_LEFT)
+                . "-"
+                . str_pad($day->month, 2, '0', STR_PAD_LEFT)
+                . "-$day->year";
             $testDay = new \BO\Zmsentities\Day($dayList[$key]);
-            $message = "Day $key has different value";
-            $this->assertEquals($testDay->freeAppointments->public, $day->freeAppointments->public, $message);
-            $this->assertEquals($testDay->freeAppointments->callcenter, $day->freeAppointments->callcenter, $message);
-            $this->assertEquals($testDay->freeAppointments->intern, $day->freeAppointments->intern, $message);
+            $message = "Day $key has different value for ";
+            $testAppointments = $testDay->freeAppointments;
+            $dayAppointments = $day->freeAppointments;
+            $this->assertEquals($testAppointments->intern, $dayAppointments->intern, $message . "intern");
+            $this->assertEquals($testAppointments->callcenter, $dayAppointments->callcenter, $message . "callcenter");
+            $this->assertEquals($testAppointments->public, $dayAppointments->public, $message . "public");
         }
     }
 
