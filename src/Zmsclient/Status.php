@@ -51,9 +51,9 @@ class Status
             $result = preg_grep('/./', $result);
             if (!count($result)) {
                 $result = "OK - "
-                    . $status['database']['threads']
-                    . " (".$status['database']['locks'].")"
-                    . " DB-Threads (Locked)"
+                    . "DB=" . $status['database']['nodeConnections'] . "%"
+                    . " Threads=".$status['database']['threads']
+                    . " Locks=".$status['database']['locks']
                     ;
             } else {
                 $result = implode('; ', $result);
