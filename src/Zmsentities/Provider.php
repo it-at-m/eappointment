@@ -8,7 +8,7 @@ class Provider extends Schema\Entity
 
     public static $schema = "provider.json";
 
-    public function __construct($input = null, $flags = \ArrayObject::ARRAY_AS_PROPS, $iterator_class = "ArrayIterator")
+    public function addData($input)
     {
         $refString = '$ref';
         if ((is_array($input) || $input instanceof \ArrayAccess)
@@ -20,7 +20,10 @@ class Provider extends Schema\Entity
             $input['id'] = $providerId;
             $input['source'] = preg_replace('#^.*provider/([^/]+)/\d+/$#', '$1', $providerRef);
         }
-        parent::__construct($input, $flags, $iterator_class);
+        if (isset($input[$refString])) {
+            unset($input[$refString]);
+        }
+        return parent::addData($input);
     }
 
     public function hasRequest($requestId)

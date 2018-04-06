@@ -14,13 +14,14 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
     {
         return [
             'id' => 0,
+            'provider' => new Provider(),
         ];
     }
 
     public function getProvider()
     {
         if (!$this->provider instanceof Provider) {
-            $this->provider = new Provider($this->provider);
+            $this->provider = new Provider($this->toProperty()->provider->get());
         }
         if (!isset($this->provider['id']) || !$this->provider->id) {
             $exception = new Exception\ScopeMissingProvider("No reference to a provider found for scope");
