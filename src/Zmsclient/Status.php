@@ -34,10 +34,10 @@ class Status
                     . $status['notification']['oldestSeconds'] . 's';
             }
             if ($status['database']['logbin'] != 'ON') {
-                //$result[] = "WARN - DB connection without replication log detected";
+                $result[] = "WARN - DB connection without replication log detected";
             }
             if ($status['database']['clusterStatus'] == 'OFF') {
-                //$result[] = "WARN - DB connection is not part of a galera cluster";
+                $result[] = "WARN - DB connection is not part of a galera cluster";
             }
             if ($status['database']['locks'] > 10) {
                 $result[] = "WARN - High amount of DB-Locks: ".$status['database']['locks'];
