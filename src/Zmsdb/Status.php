@@ -17,6 +17,9 @@ class Status extends Base
         $configVariables = $this->readConfigVariables();
         $statusVariables = $this->readStatusVariables();
         $nodeConnections = round($statusVariables['Threads_connected'] / $configVariables['max_connections'], 2);
+        $entity['database']['problems'] = $this->getConfigProblems($configVariables);
+        $entity['database']['locks'] = $this->readInnodbLocks();
+        $entity['database']['threads'] = $statusVariables['Threads_connected'];
         $entity['database']['nodeConnections'] = $nodeConnections;
         $entity['database']['clusterStatus'] =
             array_key_exists('wsrep_ready', $statusVariables) ? $statusVariables['wsrep_ready'] : 'OFF';
@@ -27,6 +30,19 @@ class Status extends Base
         $entity['notification'] = $this->readNotificationStats();
         $entity['sources']['dldb']['last'] = $this->readDdldUpdateStats();
         return $entity;
+    }
+
+    public function getConfigProblems($configVariables)
+    {
+        $problems = [];
+        if ($configVariables['tmp_table_size'] < 32000000) {
+            $problems[] = 'tmp_table_size should be at least 32MB';
+        }
+        if ($configVariables['max_heap_table_size'] < 32000000) {
+            $problems[] = 'max_heap_table_size should be at least 32MB';
+        }
+        $problems = implode('; ', $problems);
+        return $problems;
     }
 
     /**
@@ -62,6 +78,19 @@ class Status extends Base
             '
         );
         return $stats;
+    }
+
+    /**
+     * Get table locks
+     *
+     * @return Array
+     */
+    protected function readInnodbLocks()
+    {
+        $stats = $this->getReader()->fetchOne(
+            'SELECT COUNT(*) cnt FROM information_schema.innodb_trx WHERE trx_state = "LOCK WAIT";'
+        );
+        return $stats['cnt'];
     }
 
     /**
