@@ -34,10 +34,10 @@ class Status
                     . $status['notification']['oldestSeconds'] . 's';
             }
             if ($status['database']['logbin'] != 'ON') {
-                $result[] = "WARN - DB connection without replication log detected";
+                //$result[] = "WARN - DB connection without replication log detected";
             }
             if ($status['database']['clusterStatus'] == 'OFF') {
-                $result[] = "WARN - DB connection is not part of a galera cluster";
+                //$result[] = "WARN - DB connection is not part of a galera cluster";
             }
             if ($status['database']['locks'] > 10) {
                 $result[] = "WARN - High amount of DB-Locks: ".$status['database']['locks'];
@@ -48,10 +48,12 @@ class Status
             if ($status['database']['nodeConnections'] > 50) {
                 $result[] = "WARN - DB connected thread over 50% of available connections";
             }
+            $result = preg_grep('/./', $result);
             if (!count($result)) {
-                $result = "OK - DB-Threads(Locked)="
+                $result = "OK - "
                     . $status['database']['threads']
-                    . "(".$status['database']['locks'].")"
+                    . " (".$status['database']['locks'].")"
+                    . " DB-Threads (Locked)"
                     ;
             } else {
                 $result = implode('; ', $result);
