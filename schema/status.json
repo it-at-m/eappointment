@@ -104,9 +104,25 @@
           "type": "string",
           "description": "Status of database cluster health"
         },
+        "locks": {
+          "type": "number",
+          "description": "Number of locks for transactions on requested node."
+        },
+        "logbin": {
+          "type": "string",
+          "description": "Status of database replication"
+        },
         "nodeConnections": {
           "type": "number",
           "description": "Percentage of used connections on requested node."
+        },
+        "problems": {
+          "type": "string",
+          "description": "List of configuration problems on requested node.."
+        },
+        "threads": {
+          "type": "number",
+          "description": "Number of connected threads on requested node."
         }
       }
     },
