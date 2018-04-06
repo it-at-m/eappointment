@@ -31,6 +31,7 @@ class BAllTest extends Base
                     . "-"
                     . str_pad($day->month, 2, '0', STR_PAD_LEFT)
                     . "-$day->year";
+                $this->assertArrayHasKey($key, $dayList, "Day $key missing for provider=$providerId");
                 $testDay = new \BO\Zmsentities\Day($dayList[$key]);
                 $message = "Day $key has different value on provider=$providerId for ";
                 $testSlots = $testDay->freeAppointments;
