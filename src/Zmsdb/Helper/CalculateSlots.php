@@ -9,15 +9,19 @@ class CalculateSlots
 {
     protected $verbose = false;
 
+    protected $startTime;
+
     public function __construct($verbose = false)
     {
         $this->verbose = $verbose;
+        $this->startTime = microtime(true);
     }
 
     public function log($message)
     {
         if ($this->verbose) {
-            error_log("[CalculateSlots] $message");
+            $time = round(microtime(true) - $this->startTime, 3);
+            error_log(sprintf("[CalculateSlots %'.07s] %s", "$time", $message));
         }
         return $this;
     }
@@ -39,6 +43,8 @@ class CalculateSlots
                 $slotQuery->writeByAvailability($availability, $now);
             }
         }
+        $this->log("Update Slot-Process-Mapping");
+        $slotQuery->updateSlotProcessMapping();
         \BO\Zmsdb\Connection\Select::writeCommit();
     }
 }

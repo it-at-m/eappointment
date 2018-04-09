@@ -116,8 +116,8 @@ class Calendar extends Base
         $slotType,
         $slotsRequiredForce
     ) {
-        $dayList = (new Day())->readByCalendar($calendar, $now);
-        $calendar->days = $dayList;
+        $dayList = (new Day())->readByCalendar($calendar, $slotsRequiredForce);
+        $calendar->days = $dayList->setStatusByType($slotType, $now);
         //var_dump("$calendar");
         return $calendar;
     }

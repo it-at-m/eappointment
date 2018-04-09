@@ -30,15 +30,18 @@ class Day extends Base
         return $dayList;
     }
 
-    public function readByCalendar(\BO\Zmsentities\Calendar $calendar, \DateTimeInterface $now)
+    public function readByCalendar(\BO\Zmsentities\Calendar $calendar, $slotsRequiredForce = null)
     {
         // We use a temporary table, so we can use create and insert on a readonly connection
         $this->getReader()->exec(Query\Day::QUERY_CREATE_TEMPORARY_SCOPELIST);
         $monthList = $calendar->getMonthList();
+        $slotsRequired = $slotsRequiredForce;
         foreach ($monthList as $month) {
             $dateTime = $month->getFirstDay();
             foreach ($calendar->scopes as $scope) {
-                $slotsRequired = $calendar->scopes->getRequiredSlotsByScope($scope);
+                if (!$slotsRequiredForce) {
+                    $slotsRequired = $calendar->scopes->getRequiredSlotsByScope($scope);
+                }
                 $this->getReader()->perform(Query\Day::QUERY_INSERT_TEMPORARY_SCOPELIST, [
                     'scopeID' => $scope->id,
                     'year' => $dateTime->format('Y'),
@@ -55,7 +58,7 @@ class Day extends Base
         );
         foreach ($dayData as $day) {
             $day = new \BO\Zmsentities\Day($day);
-            $dayList->addEntity($day);
+            $dayList[$day->getDayHash()] = $day;
         }
         $this->getReader()->exec(Query\Day::QUERY_DROP_TEMPORARY_SCOPELIST);
         return $dayList;

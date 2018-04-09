@@ -562,18 +562,4 @@ return array (
       'type' => 'sum',
     ),
   ),
-  '31-05-2016' => 
-  array (
-    'year' => '2016',
-    'month' => '05',
-    'day' => '31',
-    'status' => 'bookable',
-    'freeAppointments' => 
-    array (
-      'public' => 101,
-      'intern' => 101,
-      'callcenter' => 101,
-      'type' => 'sum',
-    ),
-  ),
 );

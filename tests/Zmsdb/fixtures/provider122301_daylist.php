@@ -11,7 +11,7 @@ return array (
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => 0,
+      'intern' => -1,
       'callcenter' => 0,
       'type' => 'sum',
     ),
@@ -531,20 +531,6 @@ return array (
       'public' => 34,
       'intern' => 49,
       'callcenter' => 34,
-      'type' => 'sum',
-    ),
-  ),
-  '27-05-2016' => 
-  array (
-    'year' => '2016',
-    'month' => '05',
-    'day' => '27',
-    'status' => 'bookable',
-    'freeAppointments' => 
-    array (
-      'public' => 21,
-      'intern' => 44,
-      'callcenter' => 21,
       'type' => 'sum',
     ),
   ),

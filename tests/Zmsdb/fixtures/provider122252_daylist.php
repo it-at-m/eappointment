@@ -506,20 +506,6 @@ return array (
       'type' => 'sum',
     ),
   ),
-  '27-05-2016' => 
-  array (
-    'year' => '2016',
-    'month' => '05',
-    'day' => '27',
-    'status' => 'bookable',
-    'freeAppointments' => 
-    array (
-      'public' => 18,
-      'intern' => 214,
-      'callcenter' => 38,
-      'type' => 'sum',
-    ),
-  ),
   '26-05-2016' => 
   array (
     'year' => '2016',

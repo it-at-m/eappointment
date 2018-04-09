@@ -12,6 +12,9 @@ class Slot extends Base implements MappingInterface
 
     const QUERY_LAST_CHANGED = 'SELECT MAX(updateTimestamp) AS dateString FROM slot;';
 
+    const QUERY_LAST_CHANGED_AVAILABILITY = '
+        SELECT MAX(updateTimestamp) AS dateString FROM slot WHERE availabilityID = :availabilityID;';
+
     const QUERY_INSERT_SLOT_PROCESS = '
         INSERT INTO slot_process
         SELECT 
@@ -28,6 +31,12 @@ class Slot extends Base implements MappingInterface
           LEFT JOIN slot_process sp ON b.BuergerID = sp.processID
         WHERE
           sp.processID IS NULL
+    ';
+
+    const QUERY_DELETE_SLOT_PROCESS = '
+        DELETE sp 
+            FROM slot_process sp LEFT JOIN buerger b ON sp.processID = b.BuergerID
+            WHERE b.BuergerID IS NULL
     ';
 
     const QUERY_UPDATE_SLOT_STATUS = "
@@ -76,6 +85,10 @@ GROUP BY s.scopeID, s.year, s.month, s.day, s.time
     DELETE FROM slot_hiera WHERE slotID = :slotID
 ';
 
+    const QUERY_CANCEL_AVAILABILITY = '
+        UPDATE slot SET status = "cancelled" WHERE availabilityID = :availabilityID
+';
+
     public function getEntityMapping()
     {
         return [
@@ -97,6 +110,7 @@ GROUP BY s.scopeID, s.year, s.month, s.day, s.time
         $data['public'] = $availability->workstationCount['public'];
         $data['callcenter'] = $availability->workstationCount['callcenter'];
         $data['intern'] = $availability->workstationCount['intern'];
+        $data['status'] = $slot->status;
         $data['slotTimeInMinutes'] = $availability->slotTimeInMinutes;
         return $data;
     }
