@@ -534,34 +534,6 @@ return array (
       'type' => 'sum',
     ),
   ),
-  '30-05-2016' => 
-  array (
-    'year' => '2016',
-    'month' => '05',
-    'day' => '30',
-    'status' => 'bookable',
-    'freeAppointments' => 
-    array (
-      'public' => 85,
-      'intern' => 85,
-      'callcenter' => 85,
-      'type' => 'sum',
-    ),
-  ),
-  '31-05-2016' => 
-  array (
-    'year' => '2016',
-    'month' => '05',
-    'day' => '31',
-    'status' => 'bookable',
-    'freeAppointments' => 
-    array (
-      'public' => 77,
-      'intern' => 77,
-      'callcenter' => 77,
-      'type' => 'sum',
-    ),
-  ),
   '27-05-2016' => 
   array (
     'year' => '2016',
@@ -573,6 +545,20 @@ return array (
       'public' => 0,
       'intern' => 0,
       'callcenter' => 0,
+      'type' => 'sum',
+    ),
+  ),
+  '30-05-2016' => 
+  array (
+    'year' => '2016',
+    'month' => '05',
+    'day' => '30',
+    'status' => 'bookable',
+    'freeAppointments' => 
+    array (
+      'public' => 85,
+      'intern' => 85,
+      'callcenter' => 85,
       'type' => 'sum',
     ),
   ),

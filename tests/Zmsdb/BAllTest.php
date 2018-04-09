@@ -27,10 +27,7 @@ class BAllTest extends Base
             $this->writeTestExport($entity, 'provider' . $providerId . '_daylist.php');
             $dayList  = include($this->getFixturePath('provider' . $providerId . '_daylist.php'));
             foreach ($entity->days as $day) {
-                $key = str_pad($day->day, 2, '0', STR_PAD_LEFT)
-                    . "-"
-                    . str_pad($day->month, 2, '0', STR_PAD_LEFT)
-                    . "-$day->year";
+                $key = $day->getDayHash();
                 $this->assertArrayHasKey($key, $dayList, "Day $key missing for provider=$providerId");
                 $testDay = new \BO\Zmsentities\Day($dayList[$key]);
                 $message = "Day $key has different value on provider=$providerId for ";
@@ -72,6 +69,8 @@ class BAllTest extends Base
             $this->assertEquals($testSlots->intern, $daySlots->intern, $message . "intern");
             $this->assertEquals($testSlots->callcenter, $daySlots->callcenter, $message . "callcenter");
             $this->assertEquals($testSlots->public, $daySlots->public, $message . "public");
+            $this->assertEquals($testSlots->type, $daySlots->type, $message . "type");
+            $this->assertEquals($testDay->status, $day->status, $message . "status");
         }
     }
 
@@ -82,6 +81,11 @@ class BAllTest extends Base
             $export = "<?php\n\n// @codingStandardsIgnoreFile\nreturn ";
             foreach ($entity->days as $key => $day) {
                 $day = clone $day;
+                $day->month = str_pad($day->month, 2, '0', STR_PAD_LEFT);
+                $day->day = str_pad($day->day, 2, '0', STR_PAD_LEFT);
+                $day->freeAppointments->intern = intval($day->freeAppointments->intern);
+                $day->freeAppointments->public = intval($day->freeAppointments->public);
+                $day->freeAppointments->callcenter = intval($day->freeAppointments->callcenter);
                 $day->freeAppointments = $day->freeAppointments->getArrayCopy();
                 $testExport[$key] = $day->getArrayCopy();
             }

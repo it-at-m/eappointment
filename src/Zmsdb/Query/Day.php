@@ -95,6 +95,7 @@ class Day extends Base
                     SUM(public) AS freeAppointments__public,
                     SUM(callcenter) AS freeAppointments__callcenter,
                     SUM(intern) AS freeAppointments__intern,
+                    "sum" AS freeAppointments__type,
                     "bookable" AS status
         FROM
         (

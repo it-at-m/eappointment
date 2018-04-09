@@ -3,6 +3,7 @@ namespace BO\Zmsdb;
 
 use \BO\Zmsentities\Slot as Entity;
 use \BO\Zmsentities\Collection\SlotList as Collection;
+use \BO\Zmsentities\Availability as AvailabilityEntity;
 
 class Slot extends Base
 {
@@ -25,7 +26,7 @@ class Slot extends Base
 
     public function readByAvailability(
         \BO\Zmsentities\Slot $slot,
-        \BO\Zmsentities\Availability $availability,
+        AvailabilityEntity $availability,
         \DateTimeInterface $date
     ) {
         $data = array();
@@ -45,8 +46,22 @@ class Slot extends Base
 
     public function writeByAvailability(
         \BO\Zmsentities\Availability $availability,
-        \DateTimeInterface $now
+        \DateTimeInterface $now,
+        \BO\Zmsentities\Collection\DayoffList $changedDayoffList = null
     ) {
+        $slotLastChange = $this->readLastChangedTimeByAvailability($availability);
+        if (!$availability->isNewerThan($slotLastChange)) {
+            // TODO Check if there could be a difference in slots based on $slotLastChange, i.e. new day
+            return false;
+        }
+        // Order is import, the following cancels all slots
+        // and should only happen, if rebuild is triggered or not necessary
+        $this->getWriter()->perform(Query\Slot::QUERY_CANCEL_AVAILABILITY, [
+            'availabilityID' => $availability->id,
+        ]);
+        if ($availability->workstationCount['intern'] <= 0) {
+            return false;
+        }
         if ($availability->getEndDateTime()->getTimestamp() < $now->getTimestamp()) {
             return false;
         }
@@ -54,15 +69,14 @@ class Slot extends Base
         if ($availability->getStartDateTime()->getTimestamp() > $stopDate->getTimestamp()) {
             return false;
         }
+
         $slotlist = $availability->getSlotList();
         $time = $now;
         $status = false;
-        //TODO mark old slots by availability as cancelled if status=free
         do {
             if ($availability->hasDate($time, $now)) {
                 $ancestors = [];
                 foreach ($slotlist as $slot) {
-                    //$this->log("$slot");
                     $slot = clone $slot;
                     $slotID = $this->readByAvailability($slot, $availability, $time);
                     if ($slotID) {
@@ -71,6 +85,7 @@ class Slot extends Base
                     } else {
                         $query = new Query\Slot(Query\Base::INSERT);
                     }
+                    $slot->status = 'free';
                     $values = $query->reverseEntityMapping($slot, $availability, $time);
                     $values['createTimestamp'] = time();
                     $query->addValues($values);
@@ -114,5 +129,26 @@ class Slot extends Base
                 Query\Slot::QUERY_LAST_CHANGED
             );
         return new \DateTimeImmutable($last['dateString']);
+    }
+
+    protected function readLastChangedTimeByAvailability(AvailabilityEntity $availabiliy)
+    {
+        $last = $this->getReader()
+            ->fetchOne(
+                Query\Slot::QUERY_LAST_CHANGED_AVAILABILITY,
+                [
+                    'availabilityID' => $availabiliy->id,
+                ]
+            );
+        return new \DateTimeImmutable($last['dateString']);
+    }
+
+    public function updateSlotProcessMapping()
+    {
+        $this->getWriter()->perform(Query\Slot::QUERY_DELETE_SLOT_PROCESS, [
+        ]);
+        $this->getWriter()->perform(Query\Slot::QUERY_INSERT_SLOT_PROCESS, [
+        ]);
+        return $this;
     }
 }

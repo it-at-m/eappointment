@@ -43,6 +43,7 @@ class Availability extends Base implements MappingInterface
             'endTime' => self::expression(
                 'IF(`availability`.`Terminanfangszeit`, `availability`.`Terminendzeit`, `availability`.`Endzeit`)'
             ),
+            'lastChange' => 'availability.updateTimestamp',
             'multipleSlotsAllowed' => 'availability.erlaubemehrfachslots',
             'repeat__afterWeeks' => 'availability.allexWochen',
             'repeat__weekOfMonth' => 'availability.jedexteWoche',
@@ -260,7 +261,10 @@ class Availability extends Base implements MappingInterface
     {
         $data[$this->getPrefixed("startDate")] =
             (new \DateTime($data[$this->getPrefixed("startDate")]))->getTimestamp();
-        $data[$this->getPrefixed("endDate")] = (new \DateTime($data[$this->getPrefixed("endDate")]))->getTimestamp();
+        $data[$this->getPrefixed("endDate")] =
+            (new \DateTime($data[$this->getPrefixed("endDate")]))->getTimestamp();
+        $data[$this->getPrefixed("lastChange")] =
+            (new \DateTime($data[$this->getPrefixed("lastChange")]))->getTimestamp();
         return $data;
     }
 }
