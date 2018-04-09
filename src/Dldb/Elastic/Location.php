@@ -215,15 +215,14 @@ class Location extends Base
             ->fromLocationResults($resultList);
     }
 
-    public function fetchGeoJson($category = null)
+    public function fetchGeoJson($category = null, $getAll = false)
     {
-
         $query = new \Elastica\Query();
         $query->setSource(['id', 'name', 'address.*', 'geo.*', 'meta.*', 'category.*']);
 
         $filter =  new \Elastica\Query\MatchAll();
 
-        if (!empty($category)) {
+        if (!empty($category) && false === $getAll) {
             $filter = new \Elastica\Query\BoolQuery();
             $termFilter = new \Elastica\Query\Term(['category.identifier' => $category]);
             $filter->addMust($termFilter);
