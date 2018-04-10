@@ -106,6 +106,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         $query->addValuesNewProcess($process, $parentProcess, $childProcessCount);
         $query->addValuesUpdateProcess($process, $dateTime);
         $this->writeItem($query);
+        (new Slot())->writeSlotProcessMappingFor($process->id);
         Log::writeLogEntry("CREATE (Process::writeNewProcess) $process ", $process->id);
         if (!$process->toQueue($dateTime)->withAppointment) {
             (new ExchangeWaitingscope())->writeWaitingTimeCalculated($process->scope, $dateTime);
@@ -339,6 +340,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         );
         if ($status) {
             $this->deleteRequestsForProcessId($processId);
+            (new Slot())->deleteSlotProcessMappingFor($processId);
         }
         Log::writeLogEntry("DELETE (Process::writeDeletedEntity) $processId ", $processId);
         return $status;

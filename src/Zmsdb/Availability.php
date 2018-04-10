@@ -58,7 +58,7 @@ class Availability extends Base implements Interfaces\ResolveReferences
         // TODO Remove after DB optimization
         $query = new Query\Availability(Query\Base::SELECT);
         $query
-            ->addEntityMapping()
+            ->addEntityMapping('openinghours')
             ->addConditionDoubleTypes()
             ->addResolvedReferences($resolveReferences)
             ->addConditionScopeId($scopeId);
@@ -96,7 +96,7 @@ class Availability extends Base implements Interfaces\ResolveReferences
         $collection = new Collection();
         $query = new Query\Availability(Query\Base::SELECT);
         $query
-            ->addEntityMapping('openinghours')
+            ->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
             ->addConditionScopeId($scopeId)
             ->addConditionAppointmentHours()

@@ -348,7 +348,7 @@ class ProcessTest extends Base
             "amendment"=>"",
             "appointments"=>[
                 [
-                    "date"=>"1464339600",
+                    "date"=>"1464339600", // 2016-05-27 11:00:00
                     "scope"=>[
                         "id"=>"151"
                     ],

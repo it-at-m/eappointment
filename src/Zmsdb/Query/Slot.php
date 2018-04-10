@@ -33,10 +33,33 @@ class Slot extends Base implements MappingInterface
           sp.processID IS NULL
     ';
 
+    const QUERY_INSERT_SLOT_PROCESS_ID = '
+        INSERT INTO slot_process
+        SELECT 
+          s.slotID,
+          b.BuergerID,
+          NOW()
+        FROM slot s
+          INNER JOIN buerger b ON
+            s.year = YEAR(b.Datum)
+            AND s.month = MONTH(b.Datum)
+            AND s.day = DAY(b.Datum)
+            AND s.scopeID = b.StandortID
+            AND b.Uhrzeit BETWEEN s.time AND SEC_TO_TIME(TIME_TO_SEC(s.time) + (s.slotTimeInMinutes * 60) - 1)
+        WHERE
+          b.BuergerID = :processId
+    ';
+
     const QUERY_DELETE_SLOT_PROCESS = '
         DELETE sp 
             FROM slot_process sp LEFT JOIN buerger b ON sp.processID = b.BuergerID
             WHERE b.BuergerID IS NULL
+    ';
+
+    const QUERY_DELETE_SLOT_PROCESS_ID = '
+        DELETE sp 
+            FROM slot_process sp 
+            WHERE sp.processID = :processId
     ';
 
     const QUERY_UPDATE_SLOT_STATUS = "
