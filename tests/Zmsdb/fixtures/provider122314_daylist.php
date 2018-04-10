@@ -25,7 +25,7 @@ return array (
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => -3,
+      'intern' => -1,
       'callcenter' => 0,
       'type' => 'sum',
     ),
@@ -39,7 +39,7 @@ return array (
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => -2,
+      'intern' => 0,
       'callcenter' => 0,
       'type' => 'sum',
     ),
@@ -95,7 +95,7 @@ return array (
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => -2,
+      'intern' => 0,
       'callcenter' => 0,
       'type' => 'sum',
     ),
@@ -249,7 +249,7 @@ return array (
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => -5,
+      'intern' => -1,
       'callcenter' => 0,
       'type' => 'sum',
     ),
@@ -511,12 +511,12 @@ return array (
     'year' => '2016',
     'month' => '05',
     'day' => '25',
-    'status' => 'full',
+    'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 0,
-      'intern' => 0,
-      'callcenter' => 0,
+      'public' => 6,
+      'intern' => 6,
+      'callcenter' => 6,
       'type' => 'sum',
     ),
   ),
@@ -525,12 +525,12 @@ return array (
     'year' => '2016',
     'month' => '05',
     'day' => '26',
-    'status' => 'full',
+    'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 0,
-      'intern' => 0,
-      'callcenter' => 0,
+      'public' => 14,
+      'intern' => 14,
+      'callcenter' => 14,
       'type' => 'sum',
     ),
   ),
@@ -542,9 +542,9 @@ return array (
     'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 76,
-      'intern' => 76,
-      'callcenter' => 76,
+      'public' => 82,
+      'intern' => 82,
+      'callcenter' => 82,
       'type' => 'sum',
     ),
   ),
@@ -556,9 +556,9 @@ return array (
     'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 163,
-      'intern' => 163,
-      'callcenter' => 163,
+      'public' => 165,
+      'intern' => 165,
+      'callcenter' => 165,
       'type' => 'sum',
     ),
   ),

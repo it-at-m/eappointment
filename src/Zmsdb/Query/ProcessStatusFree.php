@@ -21,6 +21,7 @@ class ProcessStatusFree extends Base
         FROM
             (SELECT
                COUNT(slotID) as ancestorCount,
+               IF(MAX(available - confirmed) > 0, MAX(available - confirmed), 0) as free,
                tmp_ancestor.*
             FROM (SELECT
                 IFNULL(COUNT(p.slotID), 0) confirmed,
@@ -42,11 +43,10 @@ class ProcessStatusFree extends Base
                 LEFT JOIN slot_hiera h ON h.ancestorID = s.slotID AND h.ancestorLevel <= c.slotsRequired
                 LEFT JOIN slot_process p ON h.slotID = p.slotID
             GROUP BY s.slotID, h.slotID
-            HAVING confirmed < available
             ) AS tmp_ancestor
             GROUP BY slotID
             HAVING ancestorCount >= slotsRequired
             ) AS tmp_avail 
-            INNER JOIN slot_sequence sq ON sq.slotsequence <= (tmp_avail.available - tmp_avail.confirmed)
+            INNER JOIN slot_sequence sq ON sq.slotsequence <= tmp_avail.free
     ';
 }

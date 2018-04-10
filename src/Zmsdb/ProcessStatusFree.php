@@ -37,6 +37,8 @@ class ProcessStatusFree extends Process
                 $process->appointments->getFirst()->date,
                 'Y-m-d H:i:s'
             );
+            $process->scope = $calendar->scopes->getEntity($process->scope->id);
+            $process->appointments->getFirst()->scope = $process->scope;
             $processList->addEntity($process);
             //var_dump("$process");
         }
