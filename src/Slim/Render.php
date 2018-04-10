@@ -140,7 +140,7 @@ class Render
             $date = strtotime($date);
         }
         if (false === strtotime($expires)) {
-            $expires = '+' + $expires + ' seconds';
+            $expires = '+'. $expires .' seconds';
             $maxAge = intval($expires);
         } else {
             $maxAge = strtotime($expires) - time();
