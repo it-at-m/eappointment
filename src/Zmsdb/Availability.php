@@ -58,7 +58,7 @@ class Availability extends Base implements Interfaces\ResolveReferences
         // TODO Remove after DB optimization
         $query = new Query\Availability(Query\Base::SELECT);
         $query
-            ->addEntityMapping('openinghours')
+            ->addEntityMapping()
             ->addConditionDoubleTypes()
             ->addResolvedReferences($resolveReferences)
             ->addConditionScopeId($scopeId);
@@ -88,6 +88,28 @@ class Availability extends Base implements Interfaces\ResolveReferences
         }
         // End remove
         \BO\Zmsdb\Connection\Select::writeCommit();
+        return $collection;
+    }
+
+    public function readAppointmentListByDate($scopeId, \DateTimeInterface $now, $resolveReferences = 0)
+    {
+        $collection = new Collection();
+        $query = new Query\Availability(Query\Base::SELECT);
+        $query
+            ->addEntityMapping('openinghours')
+            ->addResolvedReferences($resolveReferences)
+            ->addConditionScopeId($scopeId)
+            ->addConditionAppointmentHours()
+            ->addConditionDate($now);
+        $result = $this->fetchList($query, new Entity());
+        if (count($result)) {
+            foreach ($result as $entity) {
+                if ($entity instanceof Entity) {
+                    $entity = $this->readResolvedReferences($entity, $resolveReferences);
+                    $collection->addEntity($entity);
+                }
+            }
+        }
         return $collection;
     }
 

@@ -5,7 +5,7 @@ use \BO\Zmsentities\Process as Entity;
 use \BO\Zmsentities\Collection\ProcessList as Collection;
 
 /**
- *
+ * @SuppressWarnings(Coupling)
  */
 class ProcessStatusFree extends Process
 {
@@ -15,12 +15,35 @@ class ProcessStatusFree extends Process
         $slotType = 'public',
         $slotsRequired = 0
     ) {
-        $resolvedCalendar = new Calendar();
+        //$resolvedCalendar = new Calendar();
+        $calendar = (new Calendar())->readResolvedEntity($calendar, $now, true);
+        (new Day)->writeTemporaryScopeList($calendar, $slotsRequired);
         $selectedDate = $calendar->getFirstDay();
-        $calendar->setLastDayTime($selectedDate);
-        $calendar = $resolvedCalendar->readResolvedEntity($calendar, $now, $selectedDate, $slotType, $slotsRequired);
-        return (isset($calendar['freeProcesses'])) ? $calendar['freeProcesses'] : new Collection();
+        $processList = new Collection();
+        //$calendar->setLastDayTime($selectedDate);
+        //$calendar = $resolvedCalendar->readResolvedEntity($calendar, $now, $selectedDate, $slotType, $slotsRequired);
+        $processData = $this->getReader()
+            ->fetchAll(
+                Query\ProcessStatusFree::QUERY_SELECT_PROCESSLIST_DAY,
+                [
+                    'day' => $selectedDate->format('d'),
+                    'slotType' => $slotType,
+                ]
+            );
+        foreach ($processData as $item) {
+            $process = new \BO\Zmsentities\Process($item);
+            $process->requests = $calendar->requests;
+            $process->appointments->getFirst()->setDateByString(
+                $process->appointments->getFirst()->date,
+                'Y-m-d H:i:s'
+            );
+            $processList->addEntity($process);
+            //var_dump("$process");
+        }
+        $this->getReader()->exec(Query\Day::QUERY_DROP_TEMPORARY_SCOPELIST);
+        return $processList;
     }
+
 
     public function readReservedProcesses($resolveReferences = 2)
     {

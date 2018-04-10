@@ -54,8 +54,9 @@ class CompareFreeProcessesTest extends Base
             $processAppointments += count($freeProcessList->getAppointmentList());
             $freeProcessesTime += count($freeProcessList->getAppointmentList());
 
-            $this->assertTrue(
-                $day->freeAppointments->public == $processAppointments,
+            $this->assertEquals(
+                $day->freeAppointments->public,
+                $processAppointments,
                 "MISMATCH: $scope  calendarDay==$day | freeProcessList(public)==" . $processAppointments
             );
         }
