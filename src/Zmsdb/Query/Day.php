@@ -24,69 +24,8 @@ class Day extends Base
     const QUERY_DROP_TEMPORARY_SCOPELIST = 'DROP TEMPORARY TABLE IF EXISTS calendarscope;';
 
     /**
-     * Different levels of join from inner to outer:
-     *  - r: confirmed appointment counts per time-slot
-     *  - s: calculated free slots per time slot
-     *  - d: inner join on slotsRequired and take the lowest values of the joined time slots
-     *  - l: group and summerize per day
+     * see also ProcessStatusFree::QUERY_SELECT_PROCESSLIST_DAY
      */
-    const QUERY_DAYLIST = '
-        SELECT 
-            year,
-            month,
-            day,
-            SUM(public) AS freeAppointments__public,
-            SUM(callcenter) AS freeAppointments__callcenter,
-            SUM(intern) AS freeAppointments__intern,
-            "bookable" AS status
-        FROM (
-            SELECT 
-                d.scopeID,
-                d.year,
-                d.month,
-                d.day,
-                d.time,
-                MIN(a.public) AS public,
-                MIN(a.callcenter) AS callcenter,
-                MIN(a.intern) AS intern
-            FROM slot d
-            INNER JOIN (
-                SELECT
-                    s.scopeID,
-                    s.year,
-                    s.month,
-                    s.day,
-                    s.time,
-                    s.availabilityID,
-                    IF(s.public >= IFNULL(r.confirmed, 0), s.public - IFNULL(r.confirmed, 0), 0) AS public,
-                    IF(s.callcenter >= IFNULL(r.confirmed, 0), s.callcenter - IFNULL(r.confirmed, 0), 0) AS callcenter,
-                    CAST(s.intern AS SIGNED) - IFNULL(r.confirmed, 0) AS intern,
-                    r.confirmed
-                FROM slot s 
-                    LEFT JOIN (
-                        SELECT scopeID, year, month, day, time, COUNT(*) confirmed 
-                        FROM slot_process
-                        WHERE scopeID = :scopeID AND year = :year AND month = :month
-                        GROUP BY scopeID, year, month, day, time
-                    ) r ON 
-                        r.scopeID = s.scopeID 
-                        AND r.year = s.year 
-                        AND r.month = s.month 
-                        AND r.day = s.day
-                        AND r.time = s.time
-                WHERE s.scopeID = :scopeID AND s.year = :year AND s.month = :month
-            ) a ON 
-                d.scopeID = a.scopeID
-                AND d.year = a. year
-                AND d.month = a.month
-                AND d.day = a.day
-                AND a.time BETWEEN d.time AND SEC_TO_TIME(TIME_TO_SEC(d.time) + (:slotsRequired * d.slotTimeInMinutes * 60)-1)
-            WHERE d.scopeID = :scopeID AND d.year = :year AND d.month = :month
-            GROUP BY d.year, d.month, d.day, d.time
-        ) l
-        GROUP BY year, month, day
-    ';
-    
     const QUERY_DAYLIST_JOIN = '
         SELECT
                     year,
@@ -133,6 +72,7 @@ class Day extends Base
         GROUP BY year, month, day
         ORDER BY year, month, day
 ';
+
     const QUERY_MONTH = '
         SELECT
             IF((public - IFNULL(confirmed, 0)) > 0, public - IFNULL(confirmed, 0), 0 )

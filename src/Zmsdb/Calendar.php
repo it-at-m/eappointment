@@ -13,7 +13,7 @@ class Calendar extends Base
     public function readResolvedEntity(
         Entity $calendar,
         \DateTimeInterface $now,
-        $freeProcessesDate = null,
+        $resolveOnlyScopes = false,
         $slotType = 'public',
         $slotsRequired = 0
     ) {
@@ -27,7 +27,7 @@ class Calendar extends Base
         if (count($calendar->scopes) < 1) {
             throw new Exception\CalendarWithoutScopes("No scopes resolved in $calendar");
         }
-        $calendar = $this->readResolvedDays($calendar, $freeProcessesDate, $now, $slotType, $slotsRequired);
+        $calendar = $this->readResolvedDays($calendar, $resolveOnlyScopes, $now, $slotType, $slotsRequired);
         return $calendar;
     }
 
@@ -111,14 +111,16 @@ class Calendar extends Base
 
     protected function readResolvedDays(
         Entity $calendar,
-        $freeProcessesDate,
+        $resolveOnlyScopes,
         \DateTimeInterface $now,
         $slotType,
         $slotsRequiredForce
     ) {
-        $dayList = (new Day())->readByCalendar($calendar, $slotsRequiredForce);
-        $calendar->days = $dayList->setStatusByType($slotType, $now);
-        //var_dump("$calendar");
+        if (!$resolveOnlyScopes) {
+            $dayList = (new Day())->readByCalendar($calendar, $slotsRequiredForce);
+            $calendar->days = $dayList->setStatusByType($slotType, $now);
+            //var_dump("$calendar");
+        }
         return $calendar;
     }
 }

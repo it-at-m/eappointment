@@ -93,6 +93,14 @@ class Availability extends Base implements MappingInterface
         return $this;
     }
 
+    public function addConditionAppointmentHours()
+    {
+        $this->query
+            ->where('availability.Terminanfangszeit', '!=', '00:00:00')
+            ->where('availability.Terminendzeit', '!=', '00:00:00');
+        return $this;
+    }
+
     public function addConditionOpeningHours()
     {
         $this->query
