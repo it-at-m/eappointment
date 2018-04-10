@@ -46,9 +46,9 @@ class Day extends Base
           time,
           slotsRequired,
           COUNT(slotID) ancestorCount,
-          MIN(IF(public > confirmed, public - confirmed, 0)) AS public,
-          MIN(IF(callcenter > confirmed, callcenter - confirmed, 0)) AS callcenter,
-          MIN(CAST(intern AS SIGNED) - confirmed) AS intern
+          MAX(IF(public > confirmed, public - confirmed, 0)) AS public,
+          MAX(IF(callcenter > confirmed, callcenter - confirmed, 0)) AS callcenter,
+          MAX(CAST(intern AS SIGNED) - confirmed) AS intern
         FROM
         (
 
