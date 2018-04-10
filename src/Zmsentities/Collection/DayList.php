@@ -13,7 +13,7 @@ class DayList extends Base implements JsonUnindexed
      */
     public function getDay($year, $month, $dayNumber, $createDay = true)
     {
-        $dateHash = str_pad($dayNumber, 2, '0', STR_PAD_LEFT) . "-" . str_pad($month, 2, '0', STR_PAD_LEFT) . "-$year";
+        $dateHash = Day::getCalculatedDayHash($dayNumber, $month, $year);
         if (array_key_exists($dateHash, $this)) {
             return $this[$dateHash];
         }

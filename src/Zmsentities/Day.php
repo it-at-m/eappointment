@@ -64,14 +64,14 @@ class Day extends Schema\Entity
      *
      * @return \ArrayObject or String
      */
-    public function getWithStatus($slotType, \DateTimeInterface $dateTime)
+    public function getWithStatus($slotType, \DateTimeInterface $now)
     {
         $hasAppointments = $this->getAppointmentsByType($slotType);
         if ($this->status != self::RESTRICTED) {
             $this->status = ($hasAppointments) ? self::BOOKABLE : self::FULL;
         }
-        // if time < todays time + half an hour, it is restricted
-        if ($this->toDateTime()->getTimestamp() <= $dateTime->getTimestamp() + 1800) {
+        // if dayend < todays time + half an hour, it is restricted
+        if ($this->toDateTime()->getTimestamp() + 86400 <= $now->getTimestamp() + 1800) {
             $this->status =  self::RESTRICTED;
         }
         return $this;
@@ -85,5 +85,22 @@ class Day extends Schema\Entity
         }
         $merged->freeAppointments = $merged->freeAppointments->withAddedSlot($day->freeAppointments);
         return $merged;
+    }
+
+    /**
+     * Returns an unique string hash per day optimized for b-trees
+     */
+    public function getDayHash()
+    {
+        return $this::getCalculatedDayHash($this->day, $this->month, $this->year);
+    }
+
+    public static function getCalculatedDayHash($dayNumber, $month, $year)
+    {
+        $dateHash = str_pad($dayNumber, 2, '0', STR_PAD_LEFT)
+            . "-"
+            . str_pad($month, 2, '0', STR_PAD_LEFT)
+            . "-$year";
+        return $dateHash;
     }
 }
