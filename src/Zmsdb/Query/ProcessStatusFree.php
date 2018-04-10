@@ -21,7 +21,7 @@ class ProcessStatusFree extends Base
         FROM
             (SELECT
                COUNT(slotID) as ancestorCount,
-               IF(MAX(available - confirmed) > 0, MAX(available - confirmed), 0) as free,
+               IF(MIN(available - confirmed) > 0, MIN(available - confirmed), 0) as free,
                tmp_ancestor.*
             FROM (SELECT
                 IFNULL(COUNT(p.slotID), 0) confirmed,

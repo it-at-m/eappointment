@@ -118,7 +118,7 @@ class CalendarTest extends Base
         $now = new \DateTimeImmutable("2016-04-01 11:55");
         $input = $this->getTestEntity();
         $input->addProvider('dldb', 122271); // Bürgeramt Biesdorf Center
-        $input->addRequest('dldb', 120335);
+        $input->addRequest('dldb', 120335); // slots = 2 + Perso slots = 2 -> slots = 4
         $entity = (new Query())->readResolvedEntity($input, $now);
         $this->assertEntity("\\BO\\Zmsentities\\Calendar", $entity);
         $this->assertTrue($entity->hasDay(2016, 5, 25), "Missing 2016-05-25 in dataset");

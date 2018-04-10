@@ -11,7 +11,7 @@ return array (
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => 0,
+      'intern' => -1,
       'callcenter' => 0,
       'type' => 'sum',
     ),
@@ -165,7 +165,7 @@ return array (
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => -1,
+      'intern' => -3,
       'callcenter' => 0,
       'type' => 'sum',
     ),
@@ -179,7 +179,7 @@ return array (
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => -1,
+      'intern' => -3,
       'callcenter' => 0,
       'type' => 'sum',
     ),
@@ -249,7 +249,7 @@ return array (
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => -1,
+      'intern' => -3,
       'callcenter' => 0,
       'type' => 'sum',
     ),
@@ -417,8 +417,8 @@ return array (
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => 3,
-      'callcenter' => 3,
+      'intern' => 1,
+      'callcenter' => 1,
       'type' => 'sum',
     ),
   ),
@@ -445,8 +445,8 @@ return array (
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => 6,
-      'callcenter' => 7,
+      'intern' => -2,
+      'callcenter' => 1,
       'type' => 'sum',
     ),
   ),
@@ -459,8 +459,8 @@ return array (
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => 30,
-      'callcenter' => 30,
+      'intern' => 29,
+      'callcenter' => 29,
       'type' => 'sum',
     ),
   ),
@@ -473,8 +473,8 @@ return array (
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => 44,
-      'callcenter' => 44,
+      'intern' => 43,
+      'callcenter' => 43,
       'type' => 'sum',
     ),
   ),
@@ -486,9 +486,9 @@ return array (
     'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 45,
-      'intern' => 99,
-      'callcenter' => 99,
+      'public' => 38,
+      'intern' => 87,
+      'callcenter' => 87,
       'type' => 'sum',
     ),
   ),
@@ -500,9 +500,9 @@ return array (
     'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 46,
-      'intern' => 93,
-      'callcenter' => 93,
+      'public' => 45,
+      'intern' => 92,
+      'callcenter' => 92,
       'type' => 'sum',
     ),
   ),
@@ -514,9 +514,9 @@ return array (
     'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 42,
-      'intern' => 94,
-      'callcenter' => 94,
+      'public' => 39,
+      'intern' => 82,
+      'callcenter' => 82,
       'type' => 'sum',
     ),
   ),
