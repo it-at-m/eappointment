@@ -151,4 +151,20 @@ class Slot extends Base
         ]);
         return $this;
     }
+
+    public function writeSlotProcessMappingFor($processId)
+    {
+        $this->getWriter()->perform(Query\Slot::QUERY_INSERT_SLOT_PROCESS_ID, [
+            'processId' => $processId,
+        ]);
+        return $this;
+    }
+
+    public function deleteSlotProcessMappingFor($processId)
+    {
+        $this->getWriter()->perform(Query\Slot::QUERY_DELETE_SLOT_PROCESS_ID, [
+            'processId' => $processId,
+        ]);
+        return $this;
+    }
 }
