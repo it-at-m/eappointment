@@ -1,12 +1,26 @@
 #!/usr/bin/env php
 <?php
-$dir = realpath(__DIR__);
-include($dir . '/cliEnv.php');
+$dir = is_dir(getcwd() . '/vendor/bo/zmsdb') ? realpath(getcwd()) : realpath(__DIR__);
+while ($dir != '/' && !file_exists("$dir/config.php")) {
+    $dir = dirname($dir);
+    if (file_exists("$dir/autoload.php")) {
+        require_once("$dir/autoload.php");
+    }
+}
+if (file_exists("$dir/bootstrap.php")) {
+    require("$dir/bootstrap.php");
+} else {
+    require("$dir/config.php");
+}
+
 $dates = preg_grep('#^\d\d\d\d-\d\d?-\d\d?#', $argv);
 if (preg_grep('#^--commit$#', $argv)) {
     $calculator = new \BO\Zmsdb\Helper\CalculateSlots(preg_grep('#^--?v(erbose)?$#', $argv));
     $calculator->writeCalculations(new \DateTimeImmutable(count($dates) ? array_shift($dates) : null));
 } else {
+    $dbname = \BO\Zmsdb\Connection\Select::$writeSourceName;
+    $username = \BO\Zmsdb\Connection\Select::$username;
     echo "Usage: {$argv[0]} --commit [--verbose] [2018-04-01]\n"
         . "\tCalculates and updates available appointments/slots for availabilities.\n\n";
+    echo "\tDatabase: $dbname as $username\n\n";
 }

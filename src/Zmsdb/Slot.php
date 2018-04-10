@@ -128,6 +128,9 @@ class Slot extends Base
             ->fetchOne(
                 Query\Slot::QUERY_LAST_CHANGED
             );
+        if (!$last['dateString']) {
+            $last['dateString'] = '1970-01-01 12:00';
+        }
         return new \DateTimeImmutable($last['dateString']);
     }
 
@@ -140,6 +143,9 @@ class Slot extends Base
                     'availabilityID' => $availabiliy->id,
                 ]
             );
+        if (!$last['dateString']) {
+            $last['dateString'] = '1970-01-01 12:00';
+        }
         return new \DateTimeImmutable($last['dateString']);
     }
 
