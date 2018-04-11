@@ -336,10 +336,10 @@ class Department extends Base
             ->fetchAffected(
                 $query,
                 array(
-                'enabled' => (isset($preferences['enabled'])) ? 1 : 0,
+                'enabled' => $preferences['enabled'],
                 'identification' => $preferences['identification'],
-                'sendConfirmationEnabled' => (isset($preferences['sendConfirmationEnabled'])) ? 1 : 0,
-                'sendReminderEnabled' => (isset($preferences['sendReminderEnabled'])) ? 1 : 0,
+                'sendConfirmationEnabled' => $preferences['sendConfirmationEnabled'],
+                'sendReminderEnabled' => $preferences['sendReminderEnabled'],
                 'departmentId' => $departmentId
                 )
             );
