@@ -3,32 +3,45 @@
   "meta": {
     "$schema": "https://schema.berlin.de/queuemanagement/metaresult.json",
     "error": false,
-    "generated": "2016-04-29T11:53:31+02:00",
-    "server": "Zmsapi-unconfigured"
+    "generated": "2018-04-11T14:46:50+02:00",
+    "server": "Zmsapi-ENV (v2.15.03)"
   },
   "data": {
     "$schema": "https://schema.berlin.de/queuemanagement/status.json",
     "database": {
       "nodeConnections": 0.01,
-      "clusterStatus": "OFF"
+      "clusterStatus": "OFF",
+      "logbin": "OFF",
+      "problems": "tmp_table_size should be at least 32MB; max_heap_table_size should be at least 32MB",
+      "locks": "0",
+      "threads": "1"
     },
     "processes": {
-      "blocked": null,
-      "confirmed": "86860",
-      "deleted": "2",
-      "lastInsert": "2016-04-11 11:58:04",
+      "confirmed": "86861",
+      "deleted": "3",
       "missed": "6",
-      "reserved": "9"
+      "reserved": "10",
+      "lastInsert": "2018-04-11 09:38:26"
     },
-    "version": {
-      "major": "0",
-      "minor": "1",
-      "patch": "0"
+    "mail": {
+      "queueCount": "50",
+      "oldestSeconds": "17952",
+      "newestSeconds": "11903"
+    },
+    "notification": {
+      "queueCount": "4",
+      "oldestSeconds": "81051",
+      "newestSeconds": "81051"
     },
     "sources": {
       "dldb": {
-        "last": "2018-01-31T15:17:02+01:00"
+        "last": "2018-04-10T14:47:06+02:00"
       }
+    },
+    "version": {
+      "major": "2",
+      "minor": "15",
+      "patch": "03"
     }
   }
 }
