@@ -58,12 +58,12 @@ class BaseView extends ErrorHandler {
     }
 
     loadCall(url, method = 'GET', data = null, spinner = false) {
-        return BaseView.loadCallStatic(url, method, data, spinner);
+        return BaseView.loadCallStatic(url, method, data, spinner, this);
     }
 
-    static loadCallStatic(url, method = 'GET', data = null, spinner = false) {
+    static loadCallStatic(url, method = 'GET', data = null, spinner = false, parent) {
         if (spinner) {
-            showSpinner(this.$main);
+            showSpinner(parent.$main);
         }
         const ajaxSettings = {
             method
@@ -77,12 +77,12 @@ class BaseView extends ErrorHandler {
             }).fail(err => {
                 let isException = err.responseText.toLowerCase().includes('exception');
                 if (err.status >= 400 && isException) {
-                    new ExceptionHandler(this.$main, {
+                    new ExceptionHandler(parent.$main, {
                         code: err.status,
                         message: err.responseText,
-                        parent: this
+                        parent: parent
                     });
-                    hideSpinner(this.$main);
+                    hideSpinner(parent.$main);
                 } else {
                     console.log('XHR load error', url, err);
                     reject(err);
@@ -128,11 +128,11 @@ class BaseView extends ErrorHandler {
     }
 
     loadDialog(response, callback) {
-        BaseView.loadDialogStatic(response, callback);
+        BaseView.loadDialogStatic(response, callback, this);
     }
 
-    static loadDialogStatic (response, callback) {
-        const { lightboxContentElement, destroyLightbox } = lightbox(this.$main, () => {
+    static loadDialogStatic (response, callback, parent) {
+        const { lightboxContentElement, destroyLightbox } = lightbox(parent.$main, () => {
             destroyLightbox(),
             callback()
         });
@@ -142,8 +142,8 @@ class BaseView extends ErrorHandler {
                 callback();
                 destroyLightbox();
             },
-            parent: this,
-            loader: this.loadCall,
+            parent: parent,
+            loader: parent.loadCall,
             handleLightbox: destroyLightbox
         })
     }
