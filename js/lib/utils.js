@@ -1,6 +1,5 @@
 import $ from 'jquery'
 import moment from 'moment'
-import MessageHandler from './messageHandler';
 import Baseview from './baseview';
 import settings from '../settings';
 
@@ -116,7 +115,6 @@ export const getUrlParameters = () => {
 
 export const forceHttps = () => {
     if (document.location.protocol !== "https:") {
-        const { lightboxContentElement, destroyLightbox } = lightbox(null, () => {destroyLightbox()});
         Baseview.loadCallStatic(`${settings.includeUrl}/dialog/?template=force_https`).then((response) => {
             Baseview.loadDialogStatic(response, () => {
                 document.location.href = "https://" + document.location.href.substring(document.location.protocol.length, document.location.href.length);
