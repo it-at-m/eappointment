@@ -132,7 +132,10 @@ class BaseView extends ErrorHandler {
     }
 
     static loadDialogStatic (response, callback) {
-        const { lightboxContentElement, destroyLightbox } = lightbox(this.$main, () => {destroyLightbox()});
+        const { lightboxContentElement, destroyLightbox } = lightbox(this.$main, () => {
+            destroyLightbox(),
+            callback()
+        });
         new DialogHandler(lightboxContentElement, {
             response: response,
             callback: () => {
