@@ -82,7 +82,7 @@ class AppointmentFormTest extends Base
             ]
         );
         $response = $this->render([], []);
-        $this->assertContains('Alle Standorte: Bürgeramt Heerstraße', (string)$response->getBody());
+        $this->assertContains('Bürgeramt Heerstraße', (string)$response->getBody());
     }
 
     public function testSelectedProcess()
