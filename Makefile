@@ -11,6 +11,7 @@ build: # Build javascript and css
 
 css:
 	node_modules/.bin/gulp scss
+	node_modules/.bin/gulp scss-print
 
 js: now
 	node_modules/.bin/gulp js
@@ -31,7 +32,6 @@ live: # init live system
 dev: # init development system
 	$(COMPOSER) update
 	npm install
-	node_modules/.bin/bower --config.directory=vendor install
 
 coverage:
 	php -dzend_extension=xdebug.so vendor/bin/phpunit --coverage-html public/_tests/coverage/

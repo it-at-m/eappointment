@@ -8,12 +8,15 @@ module.exports = {
             "jsx": true
         }
     },
-    "plugins": [],
+    "plugins": ["react"],
     "globals": {
         "console": true,
-        "document": true
+        "setTimeout": true,
+        "clearTimeout": true,
+        "document": true,
+        "Promise": true
     },
-    "extends": ["eslint:recommended"],
+    "extends": ["eslint:recommended", "plugin:react/recommended"],
     "rules": {
         "complexity": [
             "error",

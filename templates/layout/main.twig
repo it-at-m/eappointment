@@ -28,7 +28,8 @@
             	{{ parent() }}
             {% endblock %}
 
-            <script type="text/javascript" src="{{ includeUrl() }}/_js/index.js"></script>
+            <script type="text/javascript" src="{{ includeUrl() }}/_js/vendor.js?version={{ currentVersion() }}"></script>
+            <script type="text/javascript" src="{{ includeUrl() }}/_js/index.js?version={{ currentVersion() }}"></script>
             <script type="text/javascript">window.bo.zmsticketprinter.includepath="{{ includeUrl() }}"</script>
             {% if ticketprinter.reload %}
             <script type="text/javascript">window.bo.zmsticketprinter.reloadInterval={{ ticketprinter.reload }}</script>

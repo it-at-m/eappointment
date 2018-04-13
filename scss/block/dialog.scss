@@ -1,0 +1,52 @@
+.dialog {
+    font-size: 16px;
+    font-weight: normal;
+    line-height:1em;
+    .header {
+      padding: 0.4em 0.7em;
+      background-color: #D60C22;
+      position: relative;
+      color: #FFFFFF;
+      margin-bottom: 0;
+      .title {
+        font-size: 1em;
+        line-height: 1.25em;
+        margin: 0;
+        padding: 0;
+        display: inline-block;
+        margin-right: 0.5em;
+      }
+    }
+    .body {
+      background-color: #F0F0F0;
+      border: 1px solid #D2D2D2;
+      border-width: 0 1px 1px 1px;
+      position: relative;
+      padding: 0.4em 0.7em;
+      max-height: 33.7em;
+      overflow: auto;
+    }
+    .form-actions {
+        margin: 1.429em 0;
+        max-width: 100%;
+        .btn {
+            float: right;
+            box-shadow: 1px 1px 0px 0px #333333;
+            margin: 0.5em;
+            padding: 0.286em 0.643em;
+            font-size: 1em;
+            display: inline-block;
+            vertical-align: middle;
+            text-align: center;
+            margin: 0;
+            cursor: pointer;
+            text-decoration: none;
+            color: #000000;
+            overflow: visible;
+            padding: 4px 9px;
+            background-color: #FFFFFF;
+            border: 1px solid #D2D2D2;
+        }
+    }
+
+}

@@ -1,96 +1,67 @@
 body {
-text-align: center;
-font-family: Arial;
-font-size: 19px;
-padding:0;
-}
+  text-align: center;
+  font-family: Arial;
+  font-size: 19px;
+  padding: 0; }
 
 .hinweis {
-font-size: 14px;
-text-align: center;
-}
+  font-size: 14px;
+  text-align: center; }
 
-.nummernanzeige{
-width: 7cm;
-font-size: 1.5cm;
-font-weight: bold;
-height: 53px;
-text-align: center;
-margin:10px;
-}
+.msg_ihre_nummernanzeige {
+  font-size: 38pt !important;
+  font-weight: bold;
+  color: #993300;
+  text-align: center;
+  margin: 10px; }
 
-.msg_ihre_nummernanzeige{
-width: 7cm;
-font-size: 1.5cm;
-font-weight: bold;
-height: 53px;
-text-align: center;
-margin:10px;
-}
+.printausgabe {
+  font-size: 24px;
+  display: block;
+  width: 7cm;
+  text-align: center; }
 
-.printausgabe
-{
-	font-size:16px;
-	display:block;
-    width: 7cm;
-	text-align: center;
-}
+.kleineSchrift {
+  font-size: 11px; }
 
-.kleineSchrift
-{
-	font-size: 11px;
-}
 .center {
-	margin: 0px;
-	text-align: left;
-}
+  margin: 0px;
+  text-align: left; }
 
 .box {
-	margin: 3px;
-	padding: 4px;
-	background: #FFFFFF;
-    display: none;
-}
+  margin: 3px;
+  padding: 4px;
+  background: #FFFFFF;
+  display: none; }
+
 .boxontop {
-	margin-top: 0px;
-    padding-top: 0px;
-	 text-align: center;
-	 width: 7cm;
-	 margin: auto;
-}
+  margin-top: 0px;
+  padding-top: 0px;
+  text-align: center;
+  width: 7cm;
+  margin: auto; }
+
 .ueberschrift {
-    display: none;
-}
-
-.ad, .digitaluhr {
-    display: none;
-}
-
-.smsoptionbutton {
-    display: none;
-}
+  display: none; }
 
 div.label {
-text-align: right;
-float: left;
-padding-right: 6px;
-}
+  text-align: right;
+  float: left;
+  padding-right: 6px; }
 
 div.input {
-margin: 0px 0px 6px 170px;
-}
+  margin: 0px 0px 6px 170px; }
 
 div.eingabe {
-text-align: right;
-float: left;
-padding-right: 6px;
-}
+  text-align: right;
+  float: left;
+  padding-right: 6px; }
 
 div.nummernblock {
-float: left;
-padding-right: 6px;
-}
+  float: left;
+  padding-right: 6px; }
 
 .noprint {
-	display: none;
-}
+  display: none; }
+
+/*# sourceMappingURL=print.css.map */
