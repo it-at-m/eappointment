@@ -1,15 +1,14 @@
 // --------------------------------------------------------
-// ZMS Admin behavior
+// ZMS Ticketprinter behavior
 // --------------------------------------------------------
+
+import 'babel-polyfill';
 
 // Import base libs
 import window from "window";
 import $ from "jquery";
 import settings from './settings';
-
-window.bo = {
-    "zmsticketprinter": settings
-};
+import { forceHttps } from './lib/utils'
 
 // Import Views
 import Reload from "./page/main";
@@ -18,6 +17,12 @@ import PrintDialog from "./page/process";
 import DigitalTime from "./block/digital-clock";
 import NotificationKeyboardHandheldView from "./block/notification-keyboard-handheld";
 import preventFormResubmit from './element/form/preventFormResubmit'
+
+// Bind jQuery on $ for testing
+window.$ = $;
+window.bo = {
+    "zmsticketprinter": settings
+};
 
 // Init Views
 $('#newhash').each(function() { new GetHash(this);});
@@ -33,3 +38,6 @@ $('form').each(function() {
 
 // Say hello
 console.log("Welcome to the ZMS Ticketprinter interface...");
+
+// Force https protocol
+forceHttps();

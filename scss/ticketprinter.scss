@@ -3,16 +3,16 @@
 /**
  * Import our css
  */
- 
+
 // Main site grid and global layout rules
 @media print {
 	@import "layout/print";
-} 
-@media screen {	
+}
+@media screen {
 	@import "layout/main";
 	// Element rules
 	//@import "element/button";
-	
+
 	// Block rules
 	@import "block/header";
 	@import "block/alerts";
@@ -24,7 +24,9 @@
 	@import "block/box";
 	@import "block/debug";
 	@import "block/ticketprinterhash";
-	
+  @import "block/lightbox";
+	@import "block/dialog";
+
 	//page rules
 	@import "page/notification";
 }

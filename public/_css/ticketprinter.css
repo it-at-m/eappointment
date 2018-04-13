@@ -351,6 +351,77 @@
     font-weight: normal;
     transform: rotate(270deg);
     transform-origin: left; }
+  .lightbox {
+    display: flex;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    justify-content: center;
+    padding-top: 100px;
+    background-color: rgba(255, 255, 255, 0.8);
+    z-index: 10; }
+    .lightbox.fixed {
+      position: fixed;
+      align-items: center;
+      padding-top: 0; }
+  .lightbox .lightbox__content {
+    overflow: auto;
+    max-width: 90%;
+    min-width: 500px;
+    display: table; }
+    .lightbox .lightbox__content .loader {
+      margin: 0 !important;
+      position: relative;
+      border-left: 1.1em solid #ddd; }
+  .lightbox .lightbox__content div.table-responsive {
+    max-width: 600px; }
+  .dialog {
+    font-size: 16px;
+    font-weight: normal;
+    line-height: 1em; }
+    .dialog .header {
+      padding: 0.4em 0.7em;
+      background-color: #D60C22;
+      position: relative;
+      color: #FFFFFF;
+      margin-bottom: 0; }
+      .dialog .header .title {
+        font-size: 1em;
+        line-height: 1.25em;
+        margin: 0;
+        padding: 0;
+        display: inline-block;
+        margin-right: 0.5em; }
+    .dialog .body {
+      background-color: #F0F0F0;
+      border: 1px solid #D2D2D2;
+      border-width: 0 1px 1px 1px;
+      position: relative;
+      padding: 0.4em 0.7em;
+      max-height: 33.7em;
+      overflow: auto; }
+    .dialog .form-actions {
+      margin: 1.429em 0;
+      max-width: 100%; }
+      .dialog .form-actions .btn {
+        float: right;
+        box-shadow: 1px 1px 0px 0px #333333;
+        margin: 0.5em;
+        padding: 0.286em 0.643em;
+        font-size: 1em;
+        display: inline-block;
+        vertical-align: middle;
+        text-align: center;
+        margin: 0;
+        cursor: pointer;
+        text-decoration: none;
+        color: #000000;
+        overflow: visible;
+        padding: 4px 9px;
+        background-color: #FFFFFF;
+        border: 1px solid #D2D2D2; }
   .wartenummern .smshinweis {
     left: 160px;
     position: absolute;

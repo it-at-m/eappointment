@@ -7,7 +7,7 @@ gulp.task('buildinfo', [], function () {
     var filesize = fs.statSync('public/_js/index.js').size;
     gutil.log("[Build] index.js with " + gutil.colors.green(filesize + " bytes."));
     notifier.notify({
-        "title": "zmsadmin-Build",
+        "title": "zmsstatistic-Build",
         "message" : "index.js with " + filesize + " bytes."
     });
 });

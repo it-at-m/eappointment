@@ -41,6 +41,9 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->post('/notification/assign/', '\BO\Zmsticketprinter\NotificationAssign')
     ->setName("NotificationAssign");
 
+\App::$slim->get('/dialog/', '\BO\Zmsticketprinter\Helper\DialogHandler')
+    ->setName("dialogHandler");
+
 /*
  * ---------------------------------------------------------------------------
  * redirects from old to new

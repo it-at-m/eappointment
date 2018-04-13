@@ -9,4 +9,7 @@
  * To add a new task, simply add a new task file to gulp/tasks.
  */
 
+// set production env
+process.env.NODE_ENV = 'production';
+
 require('./gulp');
