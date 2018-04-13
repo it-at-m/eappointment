@@ -60,6 +60,7 @@ class Availability extends Schema\Entity
                 'callcenter' => 0,
                 'intern' => 0,
             ],
+            'lastChange' => 0,
             'multipleSlotsAllowed' => true,
             'slotTimeInMinutes' => 10,
             'startDate' => 0,
@@ -557,5 +558,15 @@ class Availability extends Schema\Entity
         $this->startTimeCache = null;
         $this->endTimeCache = null;
         return parent::offsetSet($index, $value);
+    }
+
+    /**
+     * Check if availability is newer than given time
+     *
+     * @return bool
+     */
+    public function isNewerThan(\DateTimeInterface $dateTime)
+    {
+        return ($dateTime->getTimestamp() < $this->lastChange);
     }
 }

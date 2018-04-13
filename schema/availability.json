@@ -71,6 +71,10 @@
       "type": ["number", "null"],
       "description": "ID for the availability. A NULL or zero means, that the availability is new."
     },
+    "lastChange": {
+      "type": "number",
+      "description": "unix timestamp of the last change on this availability"
+    },
     "multipleSlotsAllowed": {
       "type": [
         "boolean",
