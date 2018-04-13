@@ -27,9 +27,9 @@ class ProcessByQueueNumber extends BaseController
         if (! $scope) {
             throw new Exception\Scope\ScopeNotFound();
         }
-
+        $queueLimit = $scope->getPreference('queue', 'lastNumber');
         $process = ProcessStatusQueued::init()
-            ->readByQueueNumberAndScope($args['number'], $scope->id, $resolveReferences);
+            ->readByQueueNumberAndScope($args['number'], $scope->id, $resolveReferences, $queueLimit);
         if (! $process->hasId()) {
             throw new Exception\Process\ProcessNotFound();
         }
