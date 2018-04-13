@@ -60,8 +60,8 @@ COLLATE utf8_unicode_ci;
 
 DROP TABLE IF EXISTS `slot_process`;
 CREATE TABLE `slot_process` ( 
-    `slotID` INT(5) UNSIGNED DEFAULT NULL, 
-    `processID` INT(5) UNSIGNED DEFAULT NULL, 
+    `slotID` INT(5) UNSIGNED NOT NULL, 
+    `processID` INT(5) UNSIGNED NOT NULL, 
     `updateTimestamp` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     PRIMARY KEY (`slotID`, `processID`),
@@ -74,9 +74,7 @@ COLLATE utf8_unicode_ci;
 
 DROP TABLE IF EXISTS `slot_sequence`;
 CREATE TABLE `slot_sequence` ( 
-    `slotsequence` INT(5) UNSIGNED, 
-
-    PRIMARY KEY (`slotsequence`)
+    `slotsequence` INT(5) UNSIGNED PRIMARY KEY 
 ) 
 COMMENT="This table is just a helper for some queries"
 ENGINE = InnoDB 
