@@ -31,11 +31,6 @@ class PickupCallTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/process/status/pickup/',
                     'response' => $this->readFixture("GET_process_82252_12a2.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/cluster/',
-                    'response' => $this->readFixture("GET_cluster_109.json")
                 ]
             ]
         );
@@ -65,11 +60,6 @@ class PickupCallTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/process/status/pickup/',
                     'response' => $this->readFixture("GET_process_82252_12a2.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/cluster/',
-                    'response' => $this->readFixture("GET_cluster_109.json")
                 ]
             ]
         );

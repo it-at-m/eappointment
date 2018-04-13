@@ -17,7 +17,7 @@ class PickupKeyboard extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $department = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/department/')->getEntity();
 
         return \BO\Slim\Render::withHtml(
@@ -27,8 +27,7 @@ class PickupKeyboard extends BaseController
               'title' => 'Abholer verwalten',
               'menuActive' => 'pickup',
               'workstation' => $workstation->getArrayCopy(),
-              'department' => $department,
-              'cluster' => (new Helper\ClusterHelper($workstation))->getEntity()
+              'department' => $department
             )
         );
     }

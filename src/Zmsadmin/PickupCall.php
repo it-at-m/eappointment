@@ -34,7 +34,7 @@ class PickupCall extends BaseController
         }
 
         $process = \App::$http->readPostResult('/process/status/pickup/', $workstation->process)->getEntity();
-        $workstation->testMatchingProcessScope((new Helper\ClusterHelper($workstation))->getScopeList());
+        $workstation->testMatchingProcessScope($workstation->getScopeList());
 
         return \BO\Slim\Render::withHtml(
             $response,

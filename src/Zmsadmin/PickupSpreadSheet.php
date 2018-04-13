@@ -19,17 +19,11 @@ class PickupSpreadSheet extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $processList = \App::$http->readGetResult('/workstation/process/pickup/')->getCollection();
         $department = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/department/')->getEntity();
 
         $providerName = $workstation->scope['provider']['name'];
-        $clusterInfo = '';
-        $cluster = (new Helper\ClusterHelper($workstation))->getEntity();
-        if ($cluster) {
-            $providerName = $cluster->name;
-            $clusterInfo = 'Cluster: ';
-        }
 
         $xlsSheetTitle = 'abholer_'. str_replace(' ', '_', $providerName);
 
@@ -50,7 +44,7 @@ class PickupSpreadSheet extends BaseController
             '','','','','','','',''
         ]);
         $writer->writeSheetRow($xlsSheetTitle, [
-            $department->name .' - '. $clusterInfo.$providerName,
+            $department->name .' - '. $providerName,
             '','','','','','','',''
         ]);
         $writer->writeSheetRow($xlsSheetTitle, $xlsHeaders);

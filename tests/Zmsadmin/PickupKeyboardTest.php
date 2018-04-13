@@ -17,18 +17,13 @@ class PickupKeyboardTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 1],
+                    'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/department/',
                     'response' => $this->readFixture("GET_department_74.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/cluster/',
-                    'response' => $this->readFixture("GET_cluster_109.json")
                 ]
             ]
         );

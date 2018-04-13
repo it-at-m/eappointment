@@ -32,7 +32,7 @@ class PickupMail extends BaseController
         $processId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
         $process = \App::$http->readGetResult('/process/'. $processId .'/')->getEntity();
         $process->status = 'pickup';
-        $workstation->testMatchingProcessScope((new Helper\ClusterHelper($workstation))->getScopeList(), $process);
+        $workstation->testMatchingProcessScope($workstation->getScopeList(), $process);
         $config = \App::$http->readGetResult('/config/')->getEntity();
         $department = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/department/')->getEntity();
 
