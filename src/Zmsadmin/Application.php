@@ -27,7 +27,7 @@ class Application extends \BO\Slim\Application
          // Default language
          'de' => array(
              'name'    => 'Deutsch',
-             'locale'  => 'de_DE',
+             'locale'  => 'de_DE.utf8',
              'default' => true,
          ),
          // Other languages
