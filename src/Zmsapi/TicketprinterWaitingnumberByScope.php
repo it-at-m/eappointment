@@ -23,15 +23,6 @@ class TicketprinterWaitingnumberByScope extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $ticketprinter = (new Query())->readByHash($args['hash']);
-
-        if (! $ticketprinter->hasId()) {
-            throw new Exception\Ticketprinter\TicketprinterHashNotValid();
-        }
-        if (! $ticketprinter->isEnabled()) {
-            throw new Exception\Ticketprinter\TicketprinterNotEnabled();
-        }
-
         $scope = (new Scope())->readEntity($args['id'], 0);
         if (! $scope) {
             throw new Exception\Scope\ScopeNotFound();
