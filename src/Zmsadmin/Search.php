@@ -31,11 +31,16 @@ class Search extends BaseController
             'resolveReferences' => 1,
         ])->getCollection();
         $processList = $processList ? $processList : new \BO\Zmsentities\Collection\ProcessList();
-        if (preg_match('#^\d+$#', $queryString) && $workstation->hasSuperUseraccount()) {
+        if (preg_match('#^\d{4,}$#', $queryString) && $workstation->hasSuperUseraccount()) {
             $logList = \App::$http->readGetResult("/log/process/$queryString/")->getCollection();
         }
         if (!isset($logList) || !$logList) {
             $logList = new \BO\Zmsentities\Collection\LogList();
+        }
+        $processListOther = new \BO\Zmsentities\Collection\ProcessList();
+        if (!$workstation->hasSuperUseraccount()) {
+            $processListOther = $processList->withOutScopeId($workstation->scope['id']);
+            $processList = $processList->withScopeId($workstation->scope['id']);
         }
         return \BO\Slim\Render::withHtml(
             $response,
@@ -43,8 +48,8 @@ class Search extends BaseController
             array(
                 'title' => 'Suche',
                 'workstation' => $workstation,
-                'processList' => $processList->withScopeId($workstation->scope['id']),
-                'processListOther' => $processList->withOutScopeId($workstation->scope['id']),
+                'processList' => $processList,
+                'processListOther' => $processListOther,
                 'logList' => $logList,
                 'searchQuery' => $queryString,
                 'menuActive' => 'search'
