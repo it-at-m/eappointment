@@ -2,7 +2,7 @@
 
 namespace BO\Zmsadmin\Tests;
 
-class AppointmentFormTest extends Base
+class AppointmentFormMultipleSlotsTest extends Base
 {
     protected $arguments = [];
 
@@ -44,6 +44,6 @@ class AppointmentFormTest extends Base
             ]
         );
         $response = parent::testRendering();
-        $this->assertContains('Ameldung einer Wohnung (0)', (string)$response->getBody());
+        $this->assertContains('Anmeldung einer Wohnung (0)', (string)$response->getBody());
     }
 }
