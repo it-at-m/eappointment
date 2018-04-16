@@ -10,24 +10,24 @@ const renderLink = (link, index, onChange, onDeleteClick) => {
     const onChangeTarget = (_, value) => onChange(index, 'target', value)
 
     return (
-        <div className="link-item">
-            <div className="link-item__name">
+        <tr className="link-item">
+            <td className="link-item__name">
                 <Inputs.Text
                     name={`${formName}[name]`}
                     placeholder="Name"
                     value={link.name}
                     onChange={onChangeName}
                 />
-            </div>
-            <div className="link-item__url">
+            </td>
+            <td className="link-item__url">
                 <Inputs.Text
                     name={`${formName}[url]`}
                     placeholder="URL"
                     value={link.url}
                     onChange={onChangeUrl}
                 />
-            </div>
-            <div className="link-item__target">
+            </td>
+            <td className="link-item__target">
                 <label className="checkbox-label">
                     <Inputs.Checkbox
                         name={`${formName}[target]`}
@@ -36,15 +36,15 @@ const renderLink = (link, index, onChange, onDeleteClick) => {
                         value={link.target}
                         checked={1 == link.target}
                     />
-                    In neuem Fenster öffnen
+                    
                 </label>
-            </div>
-            <div className="link-item__delete">
+            </td>
+            <td className="link-item__delete">
                 <label className="checkboxdeselect link__delete-button">
-                    <input type="checkbox" checked={true} onClick={() => onDeleteClick(index)} /><span>Löschen</span>
+                    <input type="checkbox" checked={true} onClick={() => onDeleteClick(index)} /><span></span>
                 </label>
-            </div>
-        </div>
+            </td>
+        </tr>
     )
 }
 
@@ -96,14 +96,24 @@ class LinksView extends Component {
         }
 
         return (
-            <div className="form-group links">
-                <label className="label">Links:</label>
-                <div className="controls">
-                    <div className="department-links__list">
+            <div className="department-links__list">
+                <table className="clean">
+                    <thead>
+                        <th>Bezeichnung</th>
+                        <th>Link</th>
+                        <th>Im neuen Fenster öffnen</th>
+                        <th>Löschen</th>
+                    </thead>
+                    <tbody>
                     {this.state.links.map((link, index) => renderLink(link, index, onChange, onDeleteClick))}
-                    </div>
-                    <button className="button-default" onClick={onNewClick} >Neuer Link</button>
-                </div>
+                    <tr><td colSpan="4">
+                        <button className="button-default" onClick={onNewClick} >Neuer Link</button>
+                    </td></tr>
+                    <tr><td colSpan="4">
+                        &nbsp;
+                    </td></tr>
+                    </tbody>
+                </table>
             </div>
         )
     }
