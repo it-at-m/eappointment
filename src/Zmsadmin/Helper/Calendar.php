@@ -83,8 +83,8 @@ class Calendar
     public function readWeekDayListWithProcessList(\BO\Zmsentities\Collection\ScopeList $scopeList)
     {
         $dayList = new \BO\Zmsentities\Collection\DayList();
-        $startDate = clone $this->dateTime->modify('this week');
-        $endDate = clone $this->dateTime->modify('+6 days');
+        $startDate = clone $this->dateTime->modify('Monday this week');
+        $endDate = clone $this->dateTime->modify('Sunday this week');
         $currentDate = $startDate;
         while ($currentDate <= $endDate) {
             $day = (new \BO\Zmsentities\Day)->setDateTime($currentDate);
