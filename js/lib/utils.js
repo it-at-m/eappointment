@@ -118,7 +118,7 @@ export const forceHttps = () => {
         Baseview.loadCallStatic(`${settings.includeUrl}/dialog/?template=force_https`).then((response) => {
             Baseview.loadDialogStatic(response, () => {
                 document.location.href = "https://" + document.location.href.substring(document.location.protocol.length, document.location.href.length);
-            });
+            }, new Baseview('body'));
         });
     }
 
