@@ -9,29 +9,29 @@ const renderDay = (day, index, onChange, onDeleteClick) => {
     const onChangeDate = (_, value) => onChange(index, 'date', value)
 
     return (
-        <div className="daysoff-item">
-            <div className="daysoff-item__name">
+        <tr className="daysoff-item">
+            <td className="daysoff-item__name">
                 <Inputs.Text
                     name={`${formName}[name]`}
                     placeholder="Name"
                     value={day.name}
                     onChange={onChangeName}
                 />
-            </div>
-            <div className="daysoff-item__date">
+            </td>
+            <td className="daysoff-item__date">
                 <Inputs.Date
                     name={`${formName}[date]`}
                     placeholder="Datum"
                     value={day.date}
                     onChange={onChangeDate}
                 />
-            </div>
-            <div className="daysoff-item__delete">
+            </td>
+            <td className="daysoff-item__delete">
                 <label className="checkboxdeselect daysoff__delete-button">
-                    <input type="checkbox" checked={true} onClick={() => onDeleteClick(index)} /><span>Löschen</span>
+                    <input type="checkbox" checked={true} onClick={() => onDeleteClick(index)} /><span></span>
                 </label>
-            </div>
-        </div>
+            </td>
+        </tr>
     )
 }
 
@@ -85,14 +85,23 @@ class DaysOffView extends Component {
         }
 
         return (
-            <div className="form-group daysoff">
-                <label className="label">Tage:</label>
-                <div className="controls">
-                    <div className="daysoff__list">
+            <div className="daysoff">
+                <table className="clean">
+                    <thead>
+                        <th>Bezeichnung</th>
+                        <th>Datum</th>
+                        <th>Löschen</th>
+                    </thead>
+                    <tbody>
                     {this.state.days.map((day, index) => renderDay(day, index, onChange, onDeleteClick))}
-                    </div>
-                    <button className="button-default" onClick={onNewClick} >Neuer freier Tag</button>
-                </div>
+                    <tr><td colSpan="3">
+                        <button className="button-default" onClick={onNewClick} >Neuer freier Tag</button>
+                    </td></tr>
+                    <tr><td colSpan="3">
+                        &nbsp;
+                    </td></tr>
+                    </tbody>
+                </table>
             </div>
         )
     }
