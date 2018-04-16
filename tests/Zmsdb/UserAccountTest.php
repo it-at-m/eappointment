@@ -19,6 +19,7 @@ class UserAccountTest extends Base
     {
         $query = new Query();
         $entity = $query->readEntity('berlinonline', 1);
+        $entity->email = "test@berlinonline.de";
         $this->assertEntity("\\BO\\Zmsentities\\Useraccount", $entity);
     }
 
@@ -58,6 +59,7 @@ class UserAccountTest extends Base
     {
         $query = new Query();
         $useraccount = $query->readEntityByUserId('137'); //testReadByUserId
+        $useraccount->email = "test@berlinonline.de";
         $this->assertEntity("\\BO\\Zmsentities\\Useraccount", $useraccount);
         $this->assertEquals('testuser', $useraccount->id);
     }
@@ -66,6 +68,9 @@ class UserAccountTest extends Base
     {
         $query = new Query();
         $entityList = $query->readList(2);
+        foreach ($entityList as $entity) {
+            $entity->email = "test@berlinonline.de";
+        }
         $this->assertEntityList("\\BO\\Zmsentities\\Useraccount", $entityList);
         $this->assertEquals(true, $entityList->hasEntity('berlinonline')); //superuser bo
     }
@@ -74,6 +79,9 @@ class UserAccountTest extends Base
     {
         $query = new Query();
         $entityList = $query->readCollectionByDepartmentId(74);
+        foreach ($entityList as $entity) {
+            $entity->email = "test@berlinonline.de";
+        }
         $this->assertEntityList("\\BO\\Zmsentities\\Useraccount", $entityList);
         $this->assertEquals(true, $entityList->hasEntity('testuser')); //superuser bo
         $this->assertTrue($entityList->count() == 2, "Too much results for Department 74");
