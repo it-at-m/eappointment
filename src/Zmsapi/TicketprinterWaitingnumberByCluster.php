@@ -23,15 +23,6 @@ class TicketprinterWaitingnumberByCluster extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $ticketprinter = (new Query())->readByHash($args['hash']);
-
-        if (! $ticketprinter->hasId()) {
-            throw new Exception\Ticketprinter\TicketprinterHashNotValid();
-        }
-        if (! $ticketprinter->isEnabled()) {
-            throw new Exception\Ticketprinter\TicketprinterNotEnabled();
-        }
-
         $cluster = (new Cluster())->readEntity($args['id'], 0);
         if (! $cluster) {
             throw new Exception\Cluster\ClusterNotFound();
