@@ -94,7 +94,7 @@ class Language
         $localeList[] = $locale;
         $suffixList = ['utf8', 'utf-8'];
         foreach ($suffixList as $suffix) {
-            $localeList[] = $locale .'.'. $suffix;
+            array_unshift($localeList, $locale .'.'. $suffix);
         }
         return $localeList;
     }
