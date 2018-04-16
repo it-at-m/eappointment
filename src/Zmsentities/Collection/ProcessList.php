@@ -21,11 +21,11 @@ class ProcessList extends Base
         return $list;
     }
 
-    public function toProcessListByRequest($requestId)
+    public function withRequest($requestId)
     {
         $list = new self();
         foreach ($this as $process) {
-            if (in_array($requestId, $process->getRequestIds())) {
+            if ($process->requests->hasEntity($requestId)) {
                 $list->addEntity(clone $process);
             }
         }
