@@ -330,6 +330,20 @@ class ProcessTest extends EntityCommonTests
         $this->assertEntityList('\BO\Zmsentities\Process', $list[13][1459511423]);
     }
 
+    public function testProcessListByRequest()
+    {
+        $collection = new $this->collectionclass();
+        $entity = $this->getExample();
+        $collection->addEntity($entity);
+
+        $entity2 = $this->getExample();
+        $entity2->requests = new \BO\Zmsentities\Collection\RequestList();
+        $collection->addEntity($entity2);
+        $list = $collection->withRequest(123456);
+        $this->assertCount(1, $list);
+    }
+
+
     public function testScopeList()
     {
         $collection = new $this->collectionclass();
