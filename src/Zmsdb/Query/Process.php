@@ -391,14 +391,20 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionSearch($queryString)
+    public function addConditionSearch($queryString, $orWhere = false)
     {
-        $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($queryString) {
+        $condition = function (\Solution10\SQL\ConditionBuilder $query) use ($queryString) {
+            $queryString = trim($queryString);
             $query->orWith('process.Name', 'LIKE', "%$queryString%");
             $query->orWith('process.EMail', 'LIKE', "%$queryString%");
             $query->orWith('process.Telefonnummer', 'LIKE', "%$queryString%");
             $query->orWith('process.telefonnummer_fuer_rueckfragen', 'LIKE', "%$queryString%");
-        });
+        };
+        if ($orWhere) {
+            $this->query->orWhere($condition);
+        } else {
+            $this->query->where($condition);
+        }
         return $this;
     }
 

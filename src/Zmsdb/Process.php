@@ -223,9 +223,12 @@ class Process extends Base implements Interfaces\ResolveReferences
             ->addLimit($limit);
 
         if (isset($parameter['query'])) {
-            (preg_match('#^\d+$#', $parameter['query']))
-                ? $query->addConditionProcessId($parameter['query'])
-                : $query->addConditionSearch($parameter['query']);
+            if (preg_match('#^\d+$#', $parameter['query'])) {
+                $query->addConditionProcessId($parameter['query']);
+                $query->addConditionSearch($parameter['query'], true);
+            } else {
+                $query->addConditionSearch($parameter['query']);
+            }
             unset($parameter['query']);
         }
         if (count($parameter)) {
@@ -235,7 +238,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         $statement = $this->fetchStatement($query);
         $processList = $this->readList($statement, $resolveReferences);
         if ($processList && isset($parameter['requestId']) && $parameter['requestId']) {
-            $processList = $processList->toProcessListByRequest($parameter['requestId']);
+            $processList = $processList->withRequest($parameter['requestId']);
         }
         return $processList;
     }
