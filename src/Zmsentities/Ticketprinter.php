@@ -15,7 +15,7 @@ class Ticketprinter extends Schema\Entity
     public function getDefaults()
     {
         return [
-            'enabled' => true,
+            'enabled' => false,
             'reload' => 30
         ];
     }
