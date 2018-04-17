@@ -18,7 +18,7 @@ class Version
     {
         $version = static::getString($path);
         $array = [];
-        if (preg_match('#^v(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)$#', $version, $array)) {
+        if (preg_match('#^v(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+.*)$#', $version, $array)) {
             return [
                 'major' => $array['major'],
                 'minor' => $array['minor'],
