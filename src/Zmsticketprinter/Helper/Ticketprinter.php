@@ -57,6 +57,7 @@ class Ticketprinter
         self::$organisation = self::readOrganisation($entity, $scopeId);
         $ticketprinter = static::readWithHash($request);
         $entity->hash = $ticketprinter->hash;
+        $entity->enabled = $ticketprinter->enabled;
         return $entity;
     }
 
@@ -68,6 +69,7 @@ class Ticketprinter
         self::$organisation = self::readOrganisation($entity);
         $ticketprinter = static::readWithHash($request);
         $entity->hash = $ticketprinter->hash;
+        $entity->enabled = $ticketprinter->enabled;
         return $entity;
     }
 
