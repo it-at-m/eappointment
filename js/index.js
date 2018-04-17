@@ -53,7 +53,7 @@ $('.emergency').each(function() {
 })
 
 $('.metalinks').each(function() {
-    new MetaLinksView(this, getDataAttributes(this));
+    //new MetaLinksView(this, getDataAttributes(this));
 })
 
 $('.counter-view').each(function() {
