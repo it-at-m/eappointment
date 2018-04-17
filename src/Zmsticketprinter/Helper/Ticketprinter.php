@@ -18,8 +18,7 @@ class Ticketprinter
     public function __construct($args, $request)
     {
         if (\array_key_exists('scopeId', $args)) {
-            $scopeId = Validator::value($args['scopeId'])->isNumber()->getValue();
-            $this->entity = static::createInstanceByScope($scopeId, $request);
+            $this->entity = static::createInstanceByScope($args, $request);
         } else {
             $this->entity = static::createInstance($request);
         }
@@ -28,14 +27,18 @@ class Ticketprinter
 
     public static function readWithHash($request)
     {
+        $validator = $request->getAttribute('validator');
+        $parameters = $validator->getParameter('ticketprinter')->isArray()->getValue();
         $cookies = $request->getCookieParams();
+        
         $ticketprinterHash = \BO\Zmsclient\Ticketprinter::getHash();
         if (array_key_exists('Ticketprinter', $cookies) && ! $ticketprinterHash) {
             $ticketprinterHash = $cookies['Ticketprinter'];
         }
         if (!$ticketprinterHash) {
             $entity = \App::$http->readGetResult(
-                '/organisation/'. self::$organisation->id . '/hash/'
+                '/organisation/'. self::$organisation->id . '/hash/',
+                ['name' => $parameters['name']]
             )->getEntity();
             \BO\Zmsclient\Ticketprinter::setHash($entity->hash);
         } else {
@@ -49,8 +52,9 @@ class Ticketprinter
         return $this->entity;
     }
 
-    protected static function createInstanceByScope($scopeId, $request)
+    protected static function createInstanceByScope($args, $request)
     {
+        $scopeId = Validator::value($args['scopeId'])->isNumber()->getValue();
         $entity = new Entity();
         $entity->buttonlist = 's'. $scopeId;
         $entity = $entity->toStructuredButtonList();
