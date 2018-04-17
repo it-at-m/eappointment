@@ -28,18 +28,4 @@ class TicketprinterWaitingnumberByClusterTest extends Base
         $this->expectExceptionCode(404);
         $this->render(['id' => 76, 'hash' => 'ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2'], [], []);
     }
-
-    public function testUnvalidHash()
-    {
-        $this->expectException('\BO\Zmsapi\Exception\Ticketprinter\TicketprinterHashNotValid');
-        $this->expectExceptionCode(403);
-        $this->render(['id' => 4, 'hash' => '123456687890'], [], []);
-    }
-
-    public function testDisabledTicketprinter()
-    {
-        $this->expectException('\BO\Zmsapi\Exception\Ticketprinter\TicketprinterNotEnabled');
-        $this->expectExceptionCode(200);
-        $this->render(['id' => 4, 'hash' => 'ac9df1f2983c3f94aebc1a9bd121bfecf5b374f3'], [], []);
-    }
 }

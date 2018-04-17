@@ -21,9 +21,7 @@ class TicketprinterGet extends BaseController
         array $args
     ) {
         $ticketprinter = (new Query)->readByHash($args['hash']);
-        if (! $ticketprinter->hasId()) {
-            throw new Exception\Ticketprinter\TicketprinterNotFound();
-        }
+        Helper\TicketprinterAccess::testTicketprinter($ticketprinter);
 
         $message = Response\Message::create($request);
         $message->data = $ticketprinter;
