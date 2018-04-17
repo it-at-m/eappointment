@@ -178,7 +178,7 @@ class Organisation extends Base
         $query->addValues($values);
         $this->writeItem($query);
         if ($entity->toProperty()->ticketprinters->isAvailable()) {
-            $this->writeOrganisationTicketprinters($organisationId, $entity->ticketprinters);
+            $this->updateOrganisationTicketprinters($entity->ticketprinters, $organisationId);
         }
         return $this->readEntity($organisationId, 1);
     }
@@ -202,6 +202,26 @@ class Organisation extends Base
             $ticketprinter = new \BO\Zmsentities\Ticketprinter($ticketprinter);
             $query = new Ticketprinter();
             $query->writeEntity($ticketprinter, $organisationId);
+        }
+    }
+
+    /**
+     * update ticketprinters of an organisation
+     *
+     * @param
+     *            organisationID,
+     *            ticketprinterList
+     *
+     * @return Boolean
+     */
+    protected function updateOrganisationTicketprinters($ticketprinterList, $organisationId)
+    {
+        foreach ($ticketprinterList as $item) {
+            $query = new Query\Ticketprinter(Query\Base::UPDATE);
+            $entity = new \BO\Zmsentities\Ticketprinter($item);
+            $query->addConditionHash($entity->getId());
+            $query->addValues($query->reverseEntityMapping($entity, $organisationId));
+            $this->writeItem($query);
         }
     }
 }

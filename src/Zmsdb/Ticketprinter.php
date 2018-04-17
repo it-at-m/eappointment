@@ -170,10 +170,11 @@ class Ticketprinter extends Base
      *
      * @return Entity
      */
-    public function writeEntityWithHash($organisationId)
+    public function writeEntityWithHash($organisationId, $ticketprinterName = '')
     {
         $query = new Query\Ticketprinter(Query\Base::INSERT);
         $ticketprinter = (new Entity())->getHashWith($organisationId);
+        $ticketprinter->name = $ticketprinterName;
 
         $organisation = (new Organisation())->readEntity($organisationId);
         $owner = (new Owner())->readByOrganisationId($organisationId);

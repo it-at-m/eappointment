@@ -58,7 +58,7 @@ class Ticketprinter extends Base implements MappingInterface
         $data = array();
         $data['organisationsid'] = $organisationId;
         $data['zugelassen'] = ($entity->isEnabled()) ? 1 : 0;
-        $data['cookiecode'] = $entity->hash;
+        $data['cookiecode'] = $entity->getId();
         $data['timestamp'] = time();
         $data['name'] = $entity->toProperty()->name->get();
         $data = array_filter($data, function ($value) {
