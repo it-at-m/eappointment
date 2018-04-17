@@ -2,3 +2,4 @@
 tags
 /public
 .DS_*
+composer.*.lock
