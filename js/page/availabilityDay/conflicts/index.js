@@ -9,7 +9,12 @@ const renderLink = (conflict, onClick) => {
     const slotTime = availability.slotTimeInMinutes || 0
     const endTime = moment(appointment.date + slotTime * 60 * appointment.slotCount, 'X').format('HH:mm')
     if (availability.id) {
-        return <a href="#" onClick={onClick}><strong>{startTime} - {endTime} Uhr</strong></a>
+        if (moment(appointment.date, 'X').format('HH:mm') === endTime) {
+                return <a href="#" onClick={onClick}><strong>{startTime} Uhr</strong></a>
+        } else {
+              return <a href="#" onClick={onClick}><strong>{startTime} - {endTime} Uhr</strong></a>
+        }
+
     } else {
         return <span><strong>{startTime} Uhr</strong></span>
     }
@@ -47,7 +52,7 @@ const Conflicts = (props) => {
     return (
         <Board className="availability-conflicts"
             title="Konflikte"
-            body={renderConflicts(props.conflicts, props.onSelect)} 
+            body={renderConflicts(props.conflicts, props.onSelect)}
         />
     )
 }
@@ -62,4 +67,3 @@ Conflicts.propTypes = {
 }
 
 export default Conflicts
-
