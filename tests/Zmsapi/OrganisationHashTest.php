@@ -14,6 +14,13 @@ class OrganisationHashTest extends Base
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
+    public function testWithName()
+    {
+        $response = $this->render(['id' => 54], ['name' => 'unittest'], []); //Pankow
+        $this->assertContains('"name":"unittest"', (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
+    }
+
     public function testTicketprinterDisabled()
     {
         $response = $this->render(['id' => 65], [], []); //Friedrichshain-Kreuzberg mit kioskpasswortschutz
