@@ -68,7 +68,7 @@ class TicketprinterTest extends Base
 
     public function testFromButtonListScopeFailed()
     {
-        $this->expectException('\BO\Zmsapi\Exception\Ticketprinter\UnvalidButtonList');
+        $this->expectException('\BO\Zmsdb\Exception\Ticketprinter\UnvalidButtonList');
         $this->expectExceptionCode(428);
         $this->render([], [
             '__body' => '{
@@ -82,14 +82,13 @@ class TicketprinterTest extends Base
         ], []);
     }
 
-    /*
-    public function testFromButtonListClusterFailed()
+    public function testMatchingFailed()
     {
         $this->expectException('\BO\Zmsapi\Exception\Ticketprinter\UnvalidButtonList');
         $this->expectExceptionCode(428);
         $this->render([], [
             '__body' => '{
-                "buttonlist": "c4",
+                "buttonlist": "s106",
                 "enabled": true,
                 "hash": "ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2",
                 "id": 1,
@@ -98,22 +97,20 @@ class TicketprinterTest extends Base
             }'
         ], []);
     }
-    */
 
-    public function testDisabledTicketprinter()
+    public function testEnableTicketprinter()
     {
-        $this->expectException('\BO\Zmsapi\Exception\Ticketprinter\TicketprinterNotEnabled');
-        $this->expectExceptionCode(200);
-        $this->render([], [
+        $response = $this->render([], [
             '__body' => '{
-                "buttonlist": "c4",
-                "enabled": false,
-                "hash": "ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2",
-                "id": 1,
+                "buttonlist": "s141",
+                "enabled": true,
+                "hash": "ac9df1f2983c3f94aebc1a9bd121bfecf5b374f3",
+                "id": 2,
                 "lastUpdate": 1447925326000,
                 "name": "Eingangsbereich links"
             }'
         ], []);
+        $this->assertContains('"enabled":true', (string)$response->getBody());
     }
 
     public function testUnvalidInput()
