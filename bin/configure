@@ -8,9 +8,12 @@ ROOT=$($REALPATH $DIR/..)
 #echo "Get DLDB Exports"
 #$ROOT/bin/getDldbExport
 
-echo "Configuring application"
+echo -n "Configuring application"
 mkdir -p $ROOT/.git/hooks
 ln -sf $ROOT/bin/test $ROOT/.git/hooks/pre-commit
+ln -sf $ROOT/bin/configure $ROOT/.git/hooks/post-checkout
+ln -sf $ROOT/bin/configure $ROOT/.git/hooks/post-commit
+ln -sf $ROOT/bin/configure $ROOT/.git/hooks/post-merge
 
 if [ ! -e $ROOT/config.php ]
 then	
@@ -20,5 +23,6 @@ test -d $ROOT/cache && chmod -fR a+rwX $ROOT/cache || echo "Could not chmod cach
 
 
 #VERSION=`git symbolic-ref -q --short HEAD || git describe --tags --exact-match`
-VERSION=`git describe --abbrev=0 --tags`
+VERSION=`git describe --tags`
 echo $VERSION > $ROOT/VERSION
+echo " $VERSION"
