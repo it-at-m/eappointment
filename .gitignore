@@ -6,3 +6,4 @@ Makefile
 bin/configure
 bin/test
 .DS_Store
+composer.*.lock
