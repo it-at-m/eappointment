@@ -47,12 +47,18 @@ class Organisation extends Schema\Entity implements Useraccount\AccessInterface
      * Reduce data of dereferenced entities to a required minimum
      *
      */
-    public function withLessData()
+    public function withLessData(array $keepArray = [])
     {
         $entity = clone $this;
-        unset($entity['preferences']);
-        unset($entity['ticketprinters']);
-        unset($entity['departments']);
+        if (! in_array('preferences', $keepArray)) {
+            unset($entity['preferences']);
+        }
+        if (! in_array('ticketprinters', $keepArray)) {
+            unset($entity['ticketprinters']);
+        }
+        if (! in_array('departments', $keepArray)) {
+            unset($entity['departments']);
+        }
         return $entity;
     }
 }
