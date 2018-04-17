@@ -184,7 +184,8 @@ class Ticketprinter extends Base
         $values['kundenid'] = $owner->id;
         $query->addValues($values);
         $this->writeItem($query);
-        return $ticketprinter;
+        $lastInsertId = $this->getWriter()->lastInsertId();
+        return $this->readEntity($lastInsertId);
     }
 
     /**

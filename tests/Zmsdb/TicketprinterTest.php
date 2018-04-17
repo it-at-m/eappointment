@@ -138,7 +138,7 @@ class TicketprinterTest extends Base
         $query = new Query();
         $entity = $query->writeEntityWithHash(54); //Organisation Pankow
         $this->assertContains('54', $entity->hash);
-        $this->assertTrue($entity->enabled);
+        $this->assertEquals(1, $entity->enabled);
     }
 
     public function testReadList()
