@@ -4,3 +4,4 @@ tags
 public
 .DS_Store
 testdataset.sql.gz
+composer.*.lock
