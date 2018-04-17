@@ -198,7 +198,7 @@ class Organisation extends Base
         $deleteQuery->addConditionOrganisationId($organisationId);
         $this->deleteItem($deleteQuery);
         foreach ($ticketprinterList as $ticketprinter) {
-            $ticketprinter['enabled'] = (isset($ticketprinter['enabled'])) ? 1 : 0;
+            $ticketprinter['enabled'] = (isset($ticketprinter['enabled']) && $ticketprinter['enabled']);
             $ticketprinter = new \BO\Zmsentities\Ticketprinter($ticketprinter);
             $query = new Ticketprinter();
             $query->writeEntity($ticketprinter, $organisationId);
