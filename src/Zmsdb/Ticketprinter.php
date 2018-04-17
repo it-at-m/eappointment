@@ -27,6 +27,7 @@ class Ticketprinter extends Base
             ->addConditionTicketprinterId($itemId);
         $ticketprinter = $this->fetchOne($query, new Entity());
         $ticketprinter = $this->readWithContactData($ticketprinter);
+        $ticketprinter->enabled = (1 == $ticketprinter->enabled);
         return $ticketprinter;
     }
 
@@ -67,8 +68,8 @@ class Ticketprinter extends Base
             ->addEntityMapping()
             ->addConditionHash($hash);
         $ticketprinter = $this->fetchOne($query, new Entity());
-        $ticketprinter->enabled = (1 == $ticketprinter->enabled);
         $ticketprinter = $this->readWithContactData($ticketprinter);
+        $ticketprinter->enabled = (1 == $ticketprinter->enabled);
         return $ticketprinter;
     }
 
@@ -176,7 +177,6 @@ class Ticketprinter extends Base
 
         $organisation = (new Organisation())->readEntity($organisationId);
         $owner = (new Owner())->readByOrganisationId($organisationId);
-        $ticketprinter->enabled = (! $organisation->getPreference('ticketPrinterProtectionEnabled'));
 
         $values = $query->reverseEntityMapping($ticketprinter, $organisation->id);
         //get owner by organisation
