@@ -352,9 +352,11 @@ class Calendar extends Schema\Entity
     {
         $string = '';
         foreach ($this->days as $day) {
+            $day = ($day instanceof Day) ? $day : new Day($day);
             $string .= "$day\n";
         }
         foreach ($this->scopes as $scope) {
+            $scope = ($scope instanceof Scope) ? $scope : new Scope($scope);
             $string .= "$scope\n";
         }
         return $string;

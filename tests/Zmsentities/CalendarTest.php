@@ -44,6 +44,13 @@ class CalendarTest extends EntityCommonTests
         $this->assertTrue(self::FIRST_DAY == $date->format('Y-m-d'), 'Getting date from timestamp failed');
     }
 
+    public function testToString()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $this->assertContains('Day notBookable@2015-11-19 with slot#free@0:00 p/c/i=2/0/3', (string) $entity);
+        $this->assertContains('scope#141', (string) $entity);
+    }
+
     public function testHasFirstAndLastDay()
     {
         $entity = (new $this->entityclass())->getExample();
