@@ -368,6 +368,7 @@ class AvailabilityTest extends EntityCommonTests
 
         $this->assertTrue($collection->isOpened($time));
         $this->assertTrue($collection->isOpenedByDate($time));
+        $this->assertFalse($collection->isOpenedByDate($time->modify('+ 1 day')));
 
         $this->assertEntityList($this->entityclass, $collection);
         $this->assertTrue(

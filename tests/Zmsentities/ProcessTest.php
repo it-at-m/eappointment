@@ -317,6 +317,15 @@ class ProcessTest extends EntityCommonTests
         $this->assertEquals('Anton Beta', $collection->sortByClientName()->getFirst()->getFirstClient()['familyName']);
     }
 
+    public function testSetTempAppointmentToProcess()
+    {
+        $now = new \DateTimeImmutable(self::DEFAULT_TIME);
+        $collection = new $this->collectionclass();
+        $collection->setTempAppointmentToProcess($now, '999');
+        $collection->setTempAppointmentToProcess($now, '999');
+        $this->assertEquals(999, $collection->getFirst()->getFirstAppointment()->getScope()->getId());
+    }
+
     public function testProcessListByStatusAndTime()
     {
         $collection = new $this->collectionclass();

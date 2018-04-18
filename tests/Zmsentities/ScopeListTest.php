@@ -59,6 +59,25 @@ class ScopeListTest extends EntityCommonTests
         $this->assertFalse(array_key_exists('preferences', $lessDataCollection->getFirst()));
     }
 
+    public function testGetShortestBookableStart()
+    {
+        $now = new \DateTimeImmutable(self::DEFAULT_TIME);
+        $entity = (new $this->entityclass())->getExample();
+        $collection = new $this->collectionclass();
+        $collection->addEntity($entity);
+        $this->assertEquals('2016-04-03', $collection->getShortestBookableStart($now)->format('Y-m-d'));
+    }
+
+    public function testGetShortestBookableStartOnOpenedScope()
+    {
+        $now = new \DateTimeImmutable(self::DEFAULT_TIME);
+        $entity = (new $this->entityclass())->getExample();
+        $entity->status['availability']['isOpened'] = true;
+        $collection = new $this->collectionclass();
+        $collection->addEntity($entity);
+        $this->assertEquals('2016-04-03', $collection->getShortestBookableStartOnOpenedScope($now)->format('Y-m-d'));
+    }
+
     public function testGetGreatestBookableEnd()
     {
         $now = new \DateTimeImmutable(self::DEFAULT_TIME);
@@ -66,6 +85,42 @@ class ScopeListTest extends EntityCommonTests
         $collection = new $this->collectionclass();
         $collection->addEntity($entity);
         $this->assertEquals('2016-05-31', $collection->getGreatestBookableEnd($now)->format('Y-m-d'));
+    }
+
+    public function testGetGreatestBookableEndOnOpenedScope()
+    {
+        $now = new \DateTimeImmutable(self::DEFAULT_TIME);
+        $entity = (new $this->entityclass())->getExample();
+        $entity->status['availability']['isOpened'] = true;
+        $collection = new $this->collectionclass();
+        $collection->addEntity($entity);
+        $this->assertEquals('2016-05-31', $collection->getGreatestBookableEndOnOpenedScope($now)->format('Y-m-d'));
+    }
+
+    public function testWithProviderID()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $collection = new $this->collectionclass();
+        $collection->addEntity($entity);
+        $this->assertEquals(123456, $collection->withProviderID('dldb', 123456)->getFirst()->getProviderId());
+    }
+
+    public function testAddRequiredSlots()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $collection = new $this->collectionclass();
+        $collection->addEntity($entity);
+        $this->assertEquals(0, $collection->getRequiredSlotsByScope($entity));
+        $this->assertEquals(4, $collection->addRequiredSlots('dldb', 123456, 4)->getRequiredSlotsByScope($entity));
+    }
+
+    public function testHasOpenedScope()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $entity->status['availability']['isOpened'] = true;
+        $collection = new $this->collectionclass();
+        $collection->addEntity($entity);
+        $this->assertTrue($collection->hasOpenedScope());
     }
 
     public function testSortByContactName()
