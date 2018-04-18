@@ -12,7 +12,6 @@ import 'moment/locale/de';
 
 // Import Views
 import EmergencyView from './block/emergency'
-//import MetaLinksView from './block/metalinks'
 //import DepartmentLinksView from './block/department/links'
 //import DepartmentDaysOffView from './block/department/daysOff'
 //import TicketPrinterConfigView from './block/ticketprinter/config'
