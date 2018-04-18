@@ -50,6 +50,22 @@ class ProcessTest extends EntityCommonTests
         $this->assertFalse($entity->hasScopeAdmin());
     }
 
+    public function testAddAppointmentFromRequest()
+    {
+        $now = new \DateTimeImmutable(self::DEFAULT_TIME);
+        $entity = $this->getExample();
+        $appointment = $entity->addAppointmentFromRequest(
+            [
+                'selecteddate' => '2016-04-01',
+                'selectedtime' => '11-51-00',
+                'slotCount' => 3
+            ],
+            $now
+        )->getFirstAppointment();
+        $this->assertEquals('2016-04-01 11:51', $appointment->toDateTime()->format('Y-m-d H:i'));
+        $this->assertEquals(3, $appointment->slotCount);
+    }
+
     public function testClient()
     {
         $entity = $this->getExample();

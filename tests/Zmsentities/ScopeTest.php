@@ -77,6 +77,12 @@ class ScopeTest extends EntityCommonTests
         $this->assertEquals(2, $entity->getCalculatedWorkstationCount());
     }
 
+    public function testSetStatusAvailability()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $this->assertTrue($entity->setStatusAvailability('isOpened', true)->getStatus('availability', 'isOpened'));
+    }
+
     public function testGetBookableEndDate()
     {
         $now = new \DateTimeImmutable(self::DEFAULT_TIME);

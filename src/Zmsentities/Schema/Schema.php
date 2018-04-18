@@ -110,14 +110,15 @@ class Schema extends \ArrayObject
         );
     }
 
+    /*
+     * Uses a path like '/changePassword/0' to fetch property settings
+     *
     public function toProperty()
     {
         return new \BO\Zmsentities\Helper\Property($this);
     }
 
-    /**
-     * Uses a path like '/changePassword/0' to fetch property settings
-     */
+
     public function getPropertyByPath($path)
     {
         $pointerList = explode('/', trim($path, '/ '));
@@ -136,6 +137,7 @@ class Schema extends \ArrayObject
         }
         return $property->get([]);
     }
+    */
 
     public function withoutRefs()
     {
