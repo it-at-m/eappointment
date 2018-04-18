@@ -349,7 +349,7 @@ class View extends BaseView {
             selectedProcess: this.selectedProcess,
             selectedScope: this.selectedScope,
             includeUrl: this.includeUrl,
-            slotsRequired: this.slotsRequired,
+            slotsRequired: this.slotsRequired || 1,
             slotType: this.slotType,
             onDatePick: this.onDatePick,
             onDateToday: this.onDateToday,

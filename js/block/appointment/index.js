@@ -56,7 +56,8 @@ class View extends RequestView {
         const url = `${this.includeUrl}/appointmentForm/?selecteddate=${this.selectedDate}&selectedprocess=${this.selectedProcess}&selectedscope=${this.selectedScope}`
         return this.loadContent(url, 'GET', null, null, this.showLoader).then(() => {
             this.assigneMainFormValues();
-            this.loadRequestList().loadPromise.then(() => {
+            this.loadPromise.then(() => {
+                this.initRequestView();
                 this.bindEvents();
                 this.$main.find('select#process_time').trigger('change');
             });
@@ -65,12 +66,13 @@ class View extends RequestView {
 
     loadPartials() {
         this.assigneMainFormValues();
-        this.loadRequestList().loadPromise.then(() => {
+        this.loadPromise.then(() => {
+            this.initRequestView(true);
             this.loadFreeProcessList().loadList().then(() => {
                 this.bindEvents();
                 this.selectedFreeProcessTime = this.$main.find('[data-free-process-list] option').val();
                 this.$main.find('select#process_time').trigger('change');
-            })
+            });
         });
     }
 
@@ -80,13 +82,6 @@ class View extends RequestView {
         this.$main.find('input#process_selected_date').val(moment(this.selectedDate, 'YYYY-MM-DD').format('YYYY-MM-DD'));
         //this.$main.find('.appointment-form .switchcluster select').val(this.selectedScope);
         this.$main.find('[name="familyName"]').focus();
-    }
-
-    loadRequestList() {
-        this.RequestListView = new RequestView($.find('[data-request-list]'), {
-            'selectedProcess': this.selectedProcess
-        });
-        return this.RequestListView;
     }
 
     loadFormButtons() {
@@ -145,19 +140,19 @@ class View extends RequestView {
     }
 
     onClearRequestList() {
-        this.RequestListView.cleanLists();
+        this.cleanLists();
     }
 
     onAddRequest(event) {
-        this.RequestListView.addServiceToList($(event.target), 'serviceListSelected');
-        this.RequestListView.removeServiceFromList($(event.target), 'serviceList');
-        this.RequestListView.updateLists();
+        this.addServiceToList($(event.target), 'serviceListSelected');
+        this.removeServiceFromList($(event.target), 'serviceList');
+        this.updateLists();
     }
 
     onRemoveRequest(event) {
-        this.RequestListView.removeServiceFromList($(event.target), 'serviceListSelected');
-        this.RequestListView.addServiceToList($(event.target), 'serviceList');
-        this.RequestListView.updateLists();
+        this.removeServiceFromList($(event.target), 'serviceListSelected');
+        this.addServiceToList($(event.target), 'serviceList');
+        this.updateLists();
     }
 
     onChangeSlotCount(event) {
