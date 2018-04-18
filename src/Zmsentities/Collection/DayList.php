@@ -94,9 +94,11 @@ class DayList extends Base implements JsonUnindexed
     {
         $merged = new DayList();
         foreach ($dayList as $day) {
+            // @codeCoverageIgnoreStart
             if (!$day instanceof Day) {
                 $day = new Day($day);
             }
+            // @codeCoverageIgnoreEnd
             $merged->addEntity($day->withAddedDay($this->getDayByDay($day)));
         }
         return $merged;
