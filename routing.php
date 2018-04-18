@@ -45,9 +45,6 @@ use \Psr\Http\Message\ResponseInterface;
  \App::$slim->get('/config/', '\BO\Zmsadmin\ConfigInfo')
      ->setName("configinfo");
 
- \App::$slim->get('/metalinks/', '\BO\Zmsadmin\Helper\MetaLinks')
-     ->setName("metalinks");
-
  /*
   * ---------------------------------------------------------------------------
   * Counter

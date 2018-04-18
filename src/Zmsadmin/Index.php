@@ -29,11 +29,15 @@ class Index extends BaseController
         if (is_array($input) && array_key_exists('loginName', $input)) {
             return $this->testLogin($input, $response);
         }
+        $config = (! $workstation)
+            ? \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity()
+            : null;
         return \BO\Slim\Render::withHtml(
             $response,
             'page/index.twig',
             array(
                 'title' => 'Anmeldung',
+                'config' => $config,
                 'workstation' => $workstation
             )
         );
