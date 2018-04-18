@@ -46,6 +46,8 @@ class Workstation extends Base
                 $workstation->linkList = (new Link)->readByScopeId($workstation->scope['id']);
             }
             $workstation->process = (new Process)->readByWorkstation($workstation, $resolveReferences - 1);
+            $config = (new Config)->readEntity();
+            $workstation->support = $config->support;
         }
         return $workstation;
     }
