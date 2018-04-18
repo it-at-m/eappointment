@@ -7,17 +7,17 @@ class View extends BaseView {
         super(element, options);
         this.$main = $(element);
         this.selectedProcess = options.selectedProcess;
+        this.slotsRequired = options.slotsRequired;
         this.serviceList = [];
         this.serviceListSelected = [];
-        this.initRequestView();
         //console.log('Component: RequestList actions', this, options);
     }
 
-    initRequestView () {
-        if (this.selectedProcess)
+    initRequestView (keepSelected = false) {
+        if (this.selectedProcess || keepSelected === true)
             this.readList()
         else
-            this.cleanLists();
+            this.cleanLists()
     }
 
     /**
@@ -85,6 +85,9 @@ class View extends BaseView {
             if (selectedSlots[i] > 0) {
                 slotCount += selectedSlots[i];
             }
+        if (this.slotsRequired > slotCount) {
+            slotCount = this.slotsRequired;
+        }
         $('#appointmentForm_slotCount').val(slotCount).trigger('change');
     }
 }
