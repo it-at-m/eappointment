@@ -441,10 +441,9 @@ class AppointmentFormTest extends Base
             ]
         );
         $response = $this->render([], ['selectedprocess' => 100044, 'success' => 'process_reserved']);
-        $this->assertContains(
-            'Der Termin mit der Nummer 100044 wurde erfolgreich angelegt.',
-            (string)$response->getBody()
-        );
+        $this->assertContains('Die Wartenummer für "BO" lautet: 11', (string)$response->getBody());
+        $this->assertContains('Wartenummer drucken', (string)$response->getBody());
+        $this->assertContains('message-keep', (string)$response->getBody());
     }
 
     public function testWithReserveSubmit()
