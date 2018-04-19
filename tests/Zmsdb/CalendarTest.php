@@ -128,6 +128,24 @@ class CalendarTest extends Base
         );
     }
 
+    public function testWithoutSlotsRequiredForce()
+    {
+        $freeProcessesDate = new \DateTimeImmutable("2016-05-30");
+        $input = $this->getTestEntity();
+        $input->addScope(141); // Bürgeramt Heerstr.
+        $entity = (new Query())->readResolvedEntity($input, $freeProcessesDate, null, 'public');
+        $this->assertEquals(72, $entity->getDay(2016, 5, 30)['freeAppointments']['public']);
+    }
+
+    public function testWithSlotsRequiredForce()
+    {
+        $freeProcessesDate = new \DateTimeImmutable("2016-05-30");
+        $input = $this->getTestEntity();
+        $input->addScope(141); // Bürgeramt Heerstr.
+        $entity = (new Query())->readResolvedEntity($input, $freeProcessesDate, null, 'public', 3);
+        $this->assertEquals(60, $entity->getDay(2016, 5, 30)['freeAppointments']['public']);
+    }
+
     public function testOverallDayOff()
     {
         $freeProcessesDate = new \DateTimeImmutable("2016-05-16");
