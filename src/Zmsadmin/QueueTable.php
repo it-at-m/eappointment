@@ -14,6 +14,8 @@ use \BO\Zmsentities\Collection\QueueList;
 
 class QueueTable extends BaseController
 {
+    protected $processStatusList = ['confirmed', 'queued', 'reserved', 'deleted'];
+
     /**
      * @SuppressWarnings(Param)
      * @return String
@@ -34,7 +36,7 @@ class QueueTable extends BaseController
         $queueList = new QueueList();
         $queueListMissed = new QueueList();
         if ($processList) {
-            $queueList = $this->toProcessListByStatus($processList, $selectedDate, ['confirmed', 'queued', 'reserved']);
+            $queueList = $this->toProcessListByStatus($processList, $selectedDate, $this->processStatusList);
             $queueListMissed = $this->toProcessListByStatus($processList, $selectedDate, ['missed']);
         }
         $changedProcess = ($selectedProcessId)

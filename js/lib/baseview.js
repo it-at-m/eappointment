@@ -138,7 +138,6 @@ class BaseView extends ErrorHandler {
             $container = parent.$main;
             $loader = parent.loadCall;
         }
-        console.log($container);
 
         const { lightboxContentElement, destroyLightbox } = lightbox($container, () => {
             destroyLightbox(),
