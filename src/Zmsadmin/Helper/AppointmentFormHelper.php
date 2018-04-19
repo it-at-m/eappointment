@@ -93,7 +93,7 @@ class AppointmentFormHelper extends AppointmentFormBase
             //read free processlist of day and cluster scopelist to get scope with free processes of given day
             $freeProcessList = $calendar->readAvailableSlotsFromDayAndScopeList($scopeList, $slotType, $slotsRequired);
             if ($freeProcessList && 0 < $freeProcessList->getAppointmentList()->count()) {
-                $scope = $freeProcessList->getAppointmentList()->getFirst()->getScope();
+                $scope = $freeProcessList->getFirst()->scope;
             }
         }
         return $scope;
