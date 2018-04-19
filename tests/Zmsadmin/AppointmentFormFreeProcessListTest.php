@@ -29,7 +29,7 @@ class AppointmentFormFreeProcessListTest extends Base
                 [
                     'function' => 'readPostResult',
                     'url' => '/process/status/free/',
-                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0, 'keepLessData' => ['availability']],
+                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0],
                     'response' => $this->readFixture("GET_freeprocesslist_empty.json")
                 ]
             ]
@@ -56,7 +56,7 @@ class AppointmentFormFreeProcessListTest extends Base
                 [
                     'function' => 'readPostResult',
                     'url' => '/process/status/free/',
-                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0, 'keepLessData' => ['availability']],
+                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0],
                     'response' => $this->readFixture("GET_freeprocesslist_20160527.json")
                 ]
             ]
@@ -85,7 +85,7 @@ class AppointmentFormFreeProcessListTest extends Base
                 [
                     'function' => 'readPostResult',
                     'url' => '/process/status/free/',
-                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0, 'keepLessData' => ['availability']],
+                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0],
                     'response' => '{}'
                 ]
             ]

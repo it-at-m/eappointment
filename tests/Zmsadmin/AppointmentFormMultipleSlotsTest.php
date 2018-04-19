@@ -38,7 +38,7 @@ class AppointmentFormMultipleSlotsTest extends Base
                 [
                     'function' => 'readPostResult',
                     'url' => '/process/status/free/',
-                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0, 'keepLessData' => ['availability']],
+                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0],
                     'response' => $this->readFixture("GET_freeprocesslist_empty.json")
                 ]
             ]
