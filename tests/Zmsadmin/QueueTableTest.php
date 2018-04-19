@@ -68,13 +68,14 @@ class QueueTableTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/cluster/109/process/2016-04-01/',
-                    'parameters' => ['resolveReferences' => 0],
+                    'parameters' => ['resolveReferences' => 1],
                     'response' => $this->readFixture("GET_processlist_cluster_109.json")
                 ]
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
         $this->assertContains('queue-table', (string)$response->getBody());
+        $this->assertContains('Kürzel', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -101,7 +102,7 @@ class QueueTableTest extends Base
               [
                   'function' => 'readGetResult',
                   'url' => '/cluster/109/process/2016-04-01/',
-                  'parameters' => ['resolveReferences' => 0],
+                  'parameters' => ['resolveReferences' => 1],
                   'response' => $this->readFixture("GET_processlist_cluster_109.json")
               ],
               [
