@@ -49,7 +49,7 @@ class ClusterHelper
             $processList = \App::$http
                 ->readGetResult(
                     '/cluster/'. static::$cluster->id .'/process/'. $selectedDate .'/',
-                    ['resolveReferences' => 0]
+                    ['resolveReferences' => 1]
                 )
                 ->getCollection();
         } else {

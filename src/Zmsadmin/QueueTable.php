@@ -50,6 +50,7 @@ class QueueTable extends BaseController
                 'source' => $workstation->getVariantName(),
                 'selectedDate' => ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d'),
                 'cluster' => $clusterHelper->getEntity(),
+                'clusterEnabled' => $clusterHelper->isClusterEnabled(),
                 'processList' => $queueList,
                 'processListMissed' => $queueListMissed,
                 'changedProcess' => $changedProcess,
