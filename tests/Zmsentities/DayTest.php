@@ -35,7 +35,6 @@ class DayTest extends EntityCommonTests
         //test hash cache
         $collection->getDay('2016', '11', '18');
         $this->assertEquals($collection->getDay('2016', '11', '18'), $collection['18-11-2016']);
-
         $this->assertEquals('2015-11-18', $collection->getFirstBookableDay()->format('Y-m-d'));
     }
 
@@ -48,6 +47,54 @@ class DayTest extends EntityCommonTests
         $this->assertEquals(null, $collection->getFirstBookableDay());
     }
 
+    public function testWithAddedDay()
+    {
+        $entity = $this->getExample();
+        $entity->freeAppointments = [];
+
+        $time = new \DateTimeImmutable(self::DEFAULT_TIME);
+        $entity2 = $this->getExample();
+        $entity = $entity->withAddedDay($entity2);
+        $this->assertEquals(3, $entity->freeAppointments['intern']);
+    }
+
+    public function testWithAddedDayList()
+    {
+        $entity = $this->getExample();
+        $entity->status = 'notBookable';
+        $collection = new $this->collectionclass();
+        $collection->addEntity($entity);
+
+        $time = new \DateTimeImmutable(self::DEFAULT_TIME);
+        $entity2 = $this->getExample();
+        $entity2->setDateTime($time);
+        $entity2->status = 'bookable';
+        $collection2 = new $this->collectionclass();
+        $collection2->addEntity($entity2);
+
+        $collection->withAddedDayList($collection2);
+        $this->assertEquals(2, $collection->count());
+        $this->assertEquals(1, $collection->withDaysInDateRange($time, $time)->count());
+    }
+
+    public function testGetDayHash()
+    {
+        $entity = $this->getExample();
+        $this->assertEquals('19-11-2015', $entity->getDayHash());
+    }
+
+    public function testSetStatusByType()
+    {
+        $time = new \DateTimeImmutable(self::DEFAULT_TIME);
+        $entity = $this->getExample();
+        $collection = new $this->collectionclass();
+        $collection->addEntity($entity);
+        $collection->setStatusByType('intern', $time);
+        $this->assertEquals('bookable', $collection->getFirst()->status);
+        $collection->setStatusByType('public', $time);
+        $this->assertEquals('full', $collection->getFirst()->status);
+    }
+
     public function testWithProcessListSortedByHour()
     {
         $entity = $this->getExample();
@@ -57,5 +104,16 @@ class DayTest extends EntityCommonTests
         $collection->addEntity($entity);
         $list = $collection->toSortedByHour();
         $this->assertEntityList('\BO\Zmsentities\Process', $list['hours'][18]['2015-11-19'][1447869171]);
+    }
+
+    public function testGetWithStatus()
+    {
+        $time = new \DateTimeImmutable(self::DEFAULT_TIME);
+        $entity = $this->getExample();
+        $entity->getWithStatus('public', $time);
+        $this->assertEquals('full', $entity->status);
+
+        $entity->getWithStatus('public', $time->modify('+ 3 day'));
+        $this->assertEquals('restricted', $entity->status);
     }
 }

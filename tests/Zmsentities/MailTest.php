@@ -15,7 +15,7 @@ class MailTest extends EntityCommonTests
         $this->assertTrue('1234' == $entity->getProcessAuthKey(), 'Getting AuthKey failed');
         $this->assertTrue('Max Mustermann' == $entity->getFirstClient()['familyName'], 'Getting first client failed');
     }
-
+    
     public function testCollection()
     {
         $collection = new $this->collectionclass();
