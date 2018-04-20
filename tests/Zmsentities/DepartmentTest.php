@@ -156,6 +156,20 @@ class DepartmentTest extends EntityCommonTests
         $this->assertEntityList('\BO\Zmsentities\Dayoff', $entity->getDayoffList());
     }
 
+    public function testGetClusterByScopeId()
+    {
+        $entity = $this->getExample();
+        $cluster = (new Cluster())->getExample();
+        $scope = (new Scope())->getExample();
+        $scope->id = 141;
+        $cluster['scopes'][] = $scope;
+        $entity['clusters'] = (new ClusterList());
+        $entity['clusters']->addEntity($cluster);
+
+        $this->assertFalse($entity->getClusterByScopeId(123));
+        $this->assertEquals(123, $entity->getClusterByScopeId(141));
+    }
+
     public function testWithCompleteScopeList()
     {
         $entity = $this->getExample();

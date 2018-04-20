@@ -37,10 +37,8 @@ class SchemaValidation extends \Exception
             $this->data[$pointer]['failed'] = 1;
             $this->data[$pointer]['data'] = $error->getData();
         }
-
-        $this->message = (! $this->message)
-          ? '[property '. $error->getDataPath() .'] '. json_encode($this->data[$pointer]['messages'], 1) :
-          $this->message;
+        $message = '[property '. $error->getDataPath() .'] '. json_encode($this->data[$pointer]['messages'], 1);
+        $this->message = (! $this->message) ? $message : $this->message;
         return $this;
     }
 }

@@ -57,6 +57,16 @@ class AppointmentTest extends EntityCommonTests
         $this->assertTrue(1 == $entity->slotCount, 'SlotCount not added.');
     }
 
+    public function testCalculatedSlotCount()
+    {
+        $collection = new $this->collectionclass();
+        $entity = (new $this->entityclass())->getExample();
+        $entity2 = (new $this->entityclass())->getExample();
+        $collection->addEntity($entity);
+        $collection->addEntity($entity2);
+        $this->assertEquals(4, $collection->getCalculatedSlotCount());
+    }
+
     public function testAvailability()
     {
         $entity = (new $this->entityclass())->getExample();

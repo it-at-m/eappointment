@@ -50,6 +50,22 @@ class ProcessTest extends EntityCommonTests
         $this->assertFalse($entity->hasScopeAdmin());
     }
 
+    public function testAddAppointmentFromRequest()
+    {
+        $now = new \DateTimeImmutable(self::DEFAULT_TIME);
+        $entity = $this->getExample();
+        $appointment = $entity->addAppointmentFromRequest(
+            [
+                'selecteddate' => '2016-04-01',
+                'selectedtime' => '11-51-00',
+                'slotCount' => 3
+            ],
+            $now
+        )->getFirstAppointment();
+        $this->assertEquals('2016-04-01 11:51', $appointment->toDateTime()->format('Y-m-d H:i'));
+        $this->assertEquals(3, $appointment->slotCount);
+    }
+
     public function testClient()
     {
         $entity = $this->getExample();
@@ -315,6 +331,15 @@ class ProcessTest extends EntityCommonTests
         $entity3->getFirstClient()['familyName'] = 'Anton Beta';
         $collection->addEntity($entity3);
         $this->assertEquals('Anton Beta', $collection->sortByClientName()->getFirst()->getFirstClient()['familyName']);
+    }
+
+    public function testSetTempAppointmentToProcess()
+    {
+        $now = new \DateTimeImmutable(self::DEFAULT_TIME);
+        $collection = new $this->collectionclass();
+        $collection->setTempAppointmentToProcess($now, '999');
+        $collection->setTempAppointmentToProcess($now, '999');
+        $this->assertEquals(999, $collection->getFirst()->getFirstAppointment()->getScope()->getId());
     }
 
     public function testProcessListByStatusAndTime()

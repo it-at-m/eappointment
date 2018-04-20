@@ -145,6 +145,22 @@ class AvailabilityTest extends EntityCommonTests
         );
     }
 
+    public function testDayOffFailed()
+    {
+        $this->expectException('\BO\Zmsentities\Exception\DayoffMissing');
+        $dayOffTime = new \DateTimeImmutable(self::DEFAULT_TIME);
+        $entity = (new $this->entityclass())->hasDayOff($dayOffTime);
+    }
+
+    public function testIsNewerThan()
+    {
+        $dateTime = new \DateTimeImmutable(self::DEFAULT_TIME);
+        $entity = new $this->entityclass();
+        $this->assertFalse($entity->isNewerThan($dateTime));
+        $entity->lastChange = $dateTime->modify('+1 day')->getTimestamp();
+        $this->assertTrue($entity->isNewerThan($dateTime));
+    }
+
     public function testIsBookable()
     {
         $time = new \DateTimeImmutable(self::DEFAULT_TIME);
@@ -368,6 +384,7 @@ class AvailabilityTest extends EntityCommonTests
 
         $this->assertTrue($collection->isOpened($time));
         $this->assertTrue($collection->isOpenedByDate($time));
+        $this->assertFalse($collection->isOpenedByDate($time->modify('+ 1 day')));
 
         $this->assertEntityList($this->entityclass, $collection);
         $this->assertTrue(
