@@ -97,7 +97,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         $childProcessCount = 0
     ) {
         $query = new Query\Process(Query\Base::INSERT);
-        $process->id = $this->readNewProcessId();
+        $process->id = $this->readNewProcessId(new Query\Process(Query\Base::SELECT));
         $process->setRandomAuthKey();
         $process->createTimestamp = $dateTime->getTimestamp();
         $query->addValuesNewProcess($process, $parentProcess, $childProcessCount);
@@ -114,15 +114,12 @@ class Process extends Base implements Interfaces\ResolveReferences
      * Fetch a free process ID from DB
      *
      */
-    protected function readNewProcessId()
+    public function readNewProcessId($query)
     {
-        $query = new Query\Process(Query\Base::SELECT);
-        if ($this->getWriter()->fetchValue($query->getLockProcessId())) {
-            $newProcessId = $this->getWriter()->fetchValue($query->getQueryNewProcessId());
-        } else {
+        if (! $this->getWriter()->fetchValue($query->getLockProcessId())) {
             throw new Exception\Process\ProcessTimeout();
         }
-        return $newProcessId;
+        return $this->getWriter()->fetchValue($query->getQueryNewProcessId());
     }
 
     /**
@@ -432,11 +429,13 @@ class Process extends Base implements Interfaces\ResolveReferences
 
     protected function deleteRequestsForProcessId($processId)
     {
+        $status = false;
         if (0 < $processId) {
             $query =  new Query\XRequest(Query\Base::DELETE);
             $query->addConditionProcessId($processId);
-            return $this->deleteItem($query);
+            $status = $this->deleteItem($query);
         }
+        return $status;
     }
 
     public function readExpiredProcessList(

@@ -194,6 +194,13 @@ class ProcessTest extends Base
         $this->assertEquals(1000, $process->queue->number);
     }
 
+    public function testGetLockProcessIdFailed()
+    {
+        $this->expectException('\BO\Zmsdb\Exception\Process\ProcessTimeout');
+        $query = new Helper\ProcessQuery(\BO\Zmsdb\Query\Base::SELECT);
+        $lockedId = (new ProcessStatusQueued())->readNewProcessId($query);
+    }
+
     public function testProcessListByScopeAndStatus()
     {
         $statusArray = [
@@ -317,6 +324,21 @@ class ProcessTest extends Base
             );
         }
         $this->assertEquals(46, $processList->count());
+    }
+
+    public function testReadExpiredReservationsList()
+    {
+        $reservationDuration = 20;
+        $query = new Query();
+        $time = new \DateTimeImmutable("2016-05-27 11:50");
+        $time = $time->setTimestamp($time->getTimestamp() - ($reservationDuration * 60));
+        $processList = $query->readExpiredReservationsList($time, 142);
+        $this->assertEquals(2, $processList->count());
+
+        $time = new \DateTimeImmutable("2016-05-27 11:49");
+        $time = $time->setTimestamp($time->getTimestamp() - ($reservationDuration * 60));
+        $processList = $query->readExpiredReservationsList($time, 142);
+        $this->assertEquals(0, $processList->count());
     }
 
     protected function getTestCalendarEntity()

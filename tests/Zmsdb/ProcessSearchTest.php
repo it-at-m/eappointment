@@ -45,5 +45,4 @@ class ProcessSearchTest extends Base
         $this->assertEntityList("\\BO\\Zmsentities\\Process", $processList);
         $this->assertEquals(2, $processList->count());
     }
-
 }
