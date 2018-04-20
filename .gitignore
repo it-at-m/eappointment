@@ -4,4 +4,4 @@ coverage
 tags
 config.php
 vendor.old
-vendor.update
+vendor.updatecomposer.*.lock
