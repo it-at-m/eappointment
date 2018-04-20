@@ -11,3 +11,4 @@ public/_tests
 cache
 vendor.old
 vendor.update
+composer.*.lock
