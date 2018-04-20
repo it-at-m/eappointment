@@ -25,7 +25,7 @@ watch: # Build CSS, JS and Swagger docs on changes
 tests: now # run tests
 	vendor/bin/phpmd src/ text phpmd.rules.xml
 	vendor/bin/phpcs --standard=psr2 src/
-	php -dzend_extension=xdebug.so vendor/bin/phpunit --coverage-html public/_tests/coverage/
+	php vendor/bin/phpunit --coverage-html public/_tests/coverage/
 
 fix: #f fix code
 	php vendor/bin/phpcbf --standard=psr2 src/
