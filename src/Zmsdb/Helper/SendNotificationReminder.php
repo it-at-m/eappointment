@@ -15,7 +15,7 @@ class SendNotificationReminder
 
     public function __construct($verbose = false)
     {
-        $this->dateTime = (new \DateTimeImmutable())->setTimestamp(1459509300);
+        $this->dateTime = (new \DateTimeImmutable());
         if ($verbose) {
             error_log("INFO: Send notification reminder dependent on lead time");
             $this->verbose = true;

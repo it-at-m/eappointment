@@ -209,9 +209,8 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionProcessDeleteInterval(
-        \DateTimeInterface $expirationDate
-    ) {
+    public function addConditionProcessDeleteInterval(\DateTimeInterface $expirationDate)
+    {
         $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($expirationDate) {
             $query->andWith(
                 'process.Datum',
@@ -228,9 +227,8 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionProcessReminderInterval(
-        \DateTimeInterface $dateTime
-    ) {
+    public function addConditionProcessReminderInterval(\DateTimeInterface $dateTime)
+    {
         $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($dateTime) {
             $query->andWith(
                 'process.Erinnerungszeitpunkt',
@@ -272,13 +270,11 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionQueueNumber($queueNumber, $queueLimit = 1000)
+    public function addConditionQueueNumber($queueNumber, $queueLimit = 10000)
     {
-        if ($queueLimit > $queueNumber) {
-            $this->query->where('process.wartenummer', '=', $queueNumber);
-        } else {
-            $this->query->where('process.BuergerID', '=', $queueNumber);
-        }
+        ($queueLimit > $queueNumber)
+            ? $this->query->where('process.wartenummer', '=', $queueNumber)
+            : $this->query->where('process.BuergerID', '=', $queueNumber);
         return $this;
     }
 
@@ -339,8 +335,7 @@ class Process extends Base implements MappingInterface
                     ->andWith('process.AbholortID', '=', 0);
             }
             if ('processing' == $status) {
-                $query
-                    ->andWith('process.aufruferfolgreich', '!=', 0);
+                $query->andWith('process.aufruferfolgreich', '!=', 0);
             }
             if ('missed' == $status) {
                 $query->andWith('process.nicht_erschienen', '!=', 0);

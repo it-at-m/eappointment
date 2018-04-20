@@ -35,6 +35,14 @@ class ClusterTest extends Base
         $this->assertEquals(null, $cluster);
     }
 
+    public function testReadEnabledScopeList()
+    {
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $query = new Query();
+        $scopeList = $query->readEnabledScopeList(4, $now);
+        $this->assertEquals(2, $scopeList->count());
+    }
+
     public function testReadListByDepartment()
     {
         $query = new Query();

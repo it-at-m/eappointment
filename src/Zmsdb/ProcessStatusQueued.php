@@ -38,7 +38,7 @@ class ProcessStatusQueued extends Process
      *
      * @return String authKey
      */
-    public function readByQueueNumberAndScope($queueNumber, $scopeId, $resolveReferences = 0, $queueLimit = 1000)
+    public function readByQueueNumberAndScope($queueNumber, $scopeId, $resolveReferences = 0, $queueLimit = 10000)
     {
         $query = new Query\Process(Query\Base::SELECT);
         $query
