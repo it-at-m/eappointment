@@ -24,6 +24,9 @@ class ProcessTest extends Base
         $process = $query->writeNewFromTicketprinter($scope, $now);
         $process = $query->readByQueueNumberAndScope($process->queue['number'], $scope->id);
         $this->assertEquals(1, $process->queue['number']);
+
+        $process = $query->readByQueueNumberAndScope($process->getId(), $scope->id);
+        $this->assertEquals(100005, $process->getId());
     }
 
     public function testReadByWorkstation()
@@ -193,7 +196,18 @@ class ProcessTest extends Base
 
     public function testProcessListByScopeAndStatus()
     {
-        $statusArray = ['pending','pickup','called','missed','queued','confirmed','blocked','deleted','reserved'];
+        $statusArray = [
+            'pending',
+            'pickup',
+            'called',
+            'missed',
+            'queued',
+            'confirmed',
+            'blocked',
+            'deleted',
+            'reserved',
+            'processing'
+        ];
         $collection =(new Query)->readProcessListByScopeAndStatus(141, 'confirmed');
         $this->assertEntityList("\\BO\\Zmsentities\\Process", $collection);
         $this->assertEquals(1000, $collection->count());
@@ -289,17 +303,6 @@ class ProcessTest extends Base
         $firstProcess = $processList->getFirst();
         $process = $query->readEntity($firstProcess->id, $firstProcess->authKey);
         $this->assertEquals('reserved', $process->getStatus());
-    }
-
-    public function testSearch()
-    {
-        $query = new Query();
-        $processList = $query->readSearch(['query' => 'J51362']);
-        $this->assertEntityList("\\BO\\Zmsentities\\Process", $processList);
-        $this->assertEquals(6, $processList->count());
-        $processList = $query->readSearch(['query' => '10029']);
-        $this->assertEquals(2, $processList->count());
-        $this->assertEquals(10029, $processList->getFirst()->id);
     }
 
     public function testExpiredProcesses()
