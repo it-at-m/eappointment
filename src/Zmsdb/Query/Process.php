@@ -425,6 +425,22 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
+    /**
+     * Add Requests Join
+     */
+     public function addConditionRequestId($requestId)
+     {
+         $this->leftJoin(
+             new Alias("buergeranliegen", 'buergeranliegen'),
+             'buergeranliegen.BuergerID',
+             '=',
+             'process.BuergerID'
+         );
+         $this->query->where('buergeranliegen.AnliegenID', '=', $requestId);
+         return $this;
+     }
+
+
     public function addValuesNewProcess(\BO\Zmsentities\Process $process, $parentProcess = 0, $childProcessCount = 0)
     {
         $this->addValues([

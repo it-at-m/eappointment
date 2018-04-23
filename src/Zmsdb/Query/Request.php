@@ -6,6 +6,8 @@ class Request extends Base
 {
     const TABLE = 'request';
 
+    const BATABLE = 'buergeranliegen';
+
     public static function getQuerySlots()
     {
         return 'SELECT
