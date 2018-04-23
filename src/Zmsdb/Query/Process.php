@@ -432,10 +432,10 @@ class Process extends Base implements MappingInterface
     {
         $this->leftJoin(
             new Alias("buergeranliegen", 'buergeranliegen'),
-                'buergeranliegen.BuergerID',
-                '=',
-                'process.BuergerID'
-            );
+            'buergeranliegen.BuergerID',
+            '=',
+            'process.BuergerID'
+        );
         $this->query->where('buergeranliegen.AnliegenID', '=', $requestId);
         return $this;
     }
