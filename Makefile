@@ -14,7 +14,9 @@ now: # Dummy target
 
 dev: # init development system
 	$(COMPOSER) update
-	npm install
+
+update: # update with devel composer.json
+	COMPOSER=composer.devel.json $(COMPOSER) update
 
 live: # init live system, delete unnecessary libs
 	$(COMPOSER) install --no-dev --prefer-dist

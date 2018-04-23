@@ -10,8 +10,9 @@ class ClusterTest extends Base
 {
     public function testBasic()
     {
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
         $query = new Query();
-        $entity = $query->readEntity(4);
+        $entity = $query->readEntity(4, 0, $now);
         $this->assertEntity("\\BO\\Zmsentities\\Cluster", $entity);
 
         $entity = $query->readEntity(999);
@@ -33,6 +34,14 @@ class ClusterTest extends Base
         $this->assertEquals(true, $cluster->scopes->hasEntity('141'));
         $cluster = $query->readByScopeId(101, 1);
         $this->assertEquals(null, $cluster);
+    }
+
+    public function testWithScopeStatusAvailabilityIsOpened()
+    {
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $query = new Query();
+        $cluster = $query->readEntityWithOpenedScopeStatus(4, $now, 1);
+        $this->assertTrue($cluster->scopes->getFirst()->getStatus('availability', 'isOpened'));
     }
 
     public function testReadEnabledScopeList()

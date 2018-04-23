@@ -22,7 +22,7 @@ class Cluster extends Base
     *
     * @return Resource Entity
     */
-    public function readEntity($itemId, $resolveReferences = 0, $getScopeIsOpened = false)
+    public function readEntity($itemId, $resolveReferences = 0)
     {
         $query = new Query\Cluster(Query\Base::SELECT);
         $query
@@ -33,15 +33,21 @@ class Cluster extends Base
         if (! $cluster->hasId()) {
             return null;
         }
-        return $this->readResolvedReferences($cluster, $resolveReferences, $getScopeIsOpened);
+        return $this->readResolvedReferences($cluster, $resolveReferences);
     }
 
-    public function readResolvedReferences(
-        \BO\Zmsentities\Schema\Entity $entity,
-        $resolveReferences,
-        $getScopeIsOpened = false
-    ) {
-        $entity['scopes'] = (new Scope())->readByClusterId($entity->id, $resolveReferences, $getScopeIsOpened);
+    public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $entity, $resolveReferences)
+    {
+        $entity['scopes'] = (new Scope())->readByClusterId($entity->id, $resolveReferences);
+        return $entity;
+    }
+
+    public function readEntityWithOpenedScopeStatus($itemId, \DateTimeInterface $now, $resolveReferences = 0)
+    {
+        $entity = $this->readEntity($itemId, $resolveReferences);
+        foreach ($entity->scopes as $scope) {
+            $scope->setStatusAvailability('isOpened', (new Scope())->readIsOpened($scope->getId(), $now));
+        }
         return $entity;
     }
 
@@ -151,6 +157,7 @@ class Cluster extends Base
             foreach ($cluster->scopes as $scope) {
                 $availabilityList = (new Availability())->readOpeningHoursListByDate($scope['id'], $dateTime, 2);
                 if ($availabilityList->isOpened($dateTime)) {
+                    $scope->setStatusAvailability('isOpened', true);
                     $scopeList->addEntity($scope);
                 }
             }

@@ -27,13 +27,12 @@ class ScopeTest extends Base
 
     public function testCluster()
     {
-        $entityList = (new Query())->readByClusterId(109);
-        //$this->assertEntityList("\\BO\\Zmsentities\\Scope", $entityList);
-
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
         $entityList = (new Query())->readByClusterId(109, 1);
         $this->assertEntityList("\\BO\\Zmsentities\\Scope", $entityList);
 
         $this->assertEquals(true, $entityList->hasEntity('141')); //Herrstraße exists
+        $this->assertEquals(null, $entityList->getFirst()->getStatus('availability', 'isOpened')); //Herrstraße open
         $this->assertEquals(false, $entityList->hasEntity('153')); //Bürgeramt Rathaus Spandau does not exist
     }
 
