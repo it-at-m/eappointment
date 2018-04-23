@@ -233,11 +233,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         }
 
         $statement = $this->fetchStatement($query);
-        $processList = $this->readList($statement, $resolveReferences);
-        if ($processList && isset($parameter['requestId']) && $parameter['requestId']) {
-            $processList = $processList->withRequest($parameter['requestId']);
-        }
-        return $processList;
+        return $this->readList($statement, $resolveReferences);
     }
 
     protected function addSearchConditions($query, $parameter)
@@ -257,6 +253,9 @@ class Process extends Base implements Interfaces\ResolveReferences
         }
         if (isset($parameter['authKey']) && $parameter['authKey']) {
             $query->addConditionAuthKey($parameter['authKey']);
+        }
+        if (isset($parameter['requestId']) && $parameter['requestId']) {
+            $query->addConditionRequestId($parameter['requestId']);
         }
         return $query;
     }

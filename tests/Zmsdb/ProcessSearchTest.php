@@ -45,4 +45,31 @@ class ProcessSearchTest extends Base
         $this->assertEntityList("\\BO\\Zmsentities\\Process", $processList);
         $this->assertEquals(2, $processList->count());
     }
+
+    public function testSearchByProcessId()
+    {
+        $query = new Query();
+        $processList = $query->readSearch(['processId' => 19240]);
+        $this->assertEntityList("\\BO\\Zmsentities\\Process", $processList);
+        $this->assertEquals(1, $processList->count());
+    }
+
+    public function testSearchByAuthKey()
+    {
+        $query = new Query();
+        $processList = $query->readSearch(['authKey' => 'ef66']);
+        $this->assertEntityList("\\BO\\Zmsentities\\Process", $processList);
+        $this->assertEquals(3, $processList->count());
+    }
+
+    public function testSearchByMultipleTerms()
+    {
+        $query = new Query();
+        $processList = $query->readSearch([
+            'requestId' => 120335,
+            'scopeId' => 141
+        ]);
+        $this->assertEntityList("\\BO\\Zmsentities\\Process", $processList);
+        $this->assertEquals(4, $processList->count());
+    }
 }
