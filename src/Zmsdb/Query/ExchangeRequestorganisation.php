@@ -42,10 +42,10 @@ class ExchangeRequestorganisation extends Base
 
     const QUERY_SUBJECTS = '
       SELECT
-          d.`BehoerdenID` as subject,
+          o.`OrganisationsID` as subject,
           periodstart,
           periodend,
-          d.`Name` AS description
+          o.`Organisationsname` AS description
       FROM '. Organisation::TABLE .' AS o
           INNER JOIN
             (
