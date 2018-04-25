@@ -68,7 +68,7 @@ class Process extends Base implements MappingInterface
     public function getLockProcessId()
     {
         return 'SELECT * FROM `' . self::getTablename() . '` A
-            WHERE A.`BuergerID` = 100000 FOR UPDATE';
+            WHERE A.`BuergerID` = :processId FOR UPDATE';
     }
 
     public function addJoin()

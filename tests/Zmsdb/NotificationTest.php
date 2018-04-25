@@ -47,21 +47,10 @@ class NotificationTest extends Base
         $this->assertEquals('1', $entity->getFirstClient()->notificationsSendCount);
     }
 
-    public function testDeleteByProcessId()
-    {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
-        $input = $this->getTestEntity();
-        $query = new Query();
-        $queueId = $query->writeInQueue($input, $now);
-        $query->deleteEntityByProcess($input->process['id']);
-        $entity = $query->readEntity($queueId);
-        $this->assertFalse($entity->hasId($queueId), "Deleted Notification still exists in Database.");
-    }
-
     public function testExceptionWithoutTelephone()
     {
         $now = new \DateTimeImmutable("2016-04-01 11:55");
-        $this->setExpectedException('\BO\Zmsdb\Exception\Notification\ClientWithoutTelephone');
+        $this->expectException('\BO\Zmsdb\Exception\Notification\ClientWithoutTelephone');
         $query = new Query();
         $input = $this->getTestEntity();
         $input->process['clients'][0]['telephone'] = '';
@@ -71,7 +60,7 @@ class NotificationTest extends Base
     public function testExceptionMissingProperty()
     {
         $now = new \DateTimeImmutable("2016-04-01 11:55");
-        $this->setExpectedException('\BO\Zmsentities\Exception\NotificationMissedProperty');
+        $this->expectException('\BO\Zmsentities\Exception\NotificationMissedProperty');
         $query = new Query();
         $input = $this->getTestEntity();
         unset($input->message);

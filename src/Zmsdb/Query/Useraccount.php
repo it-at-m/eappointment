@@ -30,6 +30,7 @@ class Useraccount extends Base implements MappingInterface
             '. self::TABLE_ASSIGNMENT .'
         WHERE
             nutzerid=?
+        ORDER BY behoerdenid
     ';
 
     const QUERY_READ_SUPERUSER_DEPARTMENTS = '

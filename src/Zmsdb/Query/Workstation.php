@@ -64,6 +64,12 @@ class Workstation extends Base implements MappingInterface
     {
     }
 
+    public function getLockWorkstationId()
+    {
+        return 'SELECT * FROM `' . self::getTablename() . '` A
+            WHERE A.`NutzerID` = :workstationId FOR UPDATE';
+    }
+
     public function getEntityMapping()
     {
         return [

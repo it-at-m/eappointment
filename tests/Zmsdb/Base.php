@@ -2,18 +2,23 @@
 
 namespace BO\Zmsdb\Tests;
 
-abstract class Base extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+abstract class Base extends TestCase
 {
     public function setUp()
     {
         \BO\Zmsdb\Connection\Select::setTransaction();
         \BO\Zmsdb\Connection\Select::setProfiling();
         \BO\Zmsdb\Connection\Select::setQueryCache(false);
+        \BO\Zmsdb\Connection\Select::getWriteConnection();
+        \BO\Zmsdb\Connection\Select::setTransaction(false);
     }
 
     public function tearDown()
     {
         //error_log("Memory usage " . round(memory_get_peak_usage() / 1024, 0) . "kb");
+        \BO\Zmsdb\Connection\Select::setTransaction();
         \BO\Zmsdb\Connection\Select::writeRollback();
         \BO\Zmsdb\Connection\Select::closeWriteConnection();
         \BO\Zmsdb\Connection\Select::closeReadConnection();

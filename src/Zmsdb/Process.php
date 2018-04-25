@@ -51,10 +51,26 @@ class Process extends Base implements Interfaces\ResolveReferences
         $query->addConditionProcessId($process['id']);
         $query->addConditionAuthKey($process['authKey']);
         $query->addValuesUpdateProcess($process, $dateTime);
-        $this->writeItem($query);
-        $this->writeRequestsToDb($process);
-        $process = $this->readEntity($process->id, $process->authKey, $resolveReferences);
-        Log::writeLogEntry("UPDATE (Process::updateEntity) $process ", $process->id);
+
+        try {
+            if ($this->getWriter()->perform($query->getLockProcessId(), ['processId' => $process->getId()])) {
+                $this->writeItem($query);
+                $this->writeRequestsToDb($process);
+            }
+        } catch (\PDOException $exception) {
+            if (stripos($exception->getMessage(), 'Lock wait timeout') !== false) {
+                throw new Exception\Pdo\LockTimeout();
+            }
+            //@codeCoverageIgnoreStart
+            if (stripos($exception->getMessage(), 'Deadlock found') !== false) {
+                throw new Exception\Pdo\DeadLockFound();
+            }
+            throw $exception;
+            //@codeCoverageIgnoreEnd
+        }
+
+        $process = $this->readEntity($process->getId(), $process->authKey, $resolveReferences);
+        Log::writeLogEntry("UPDATE (Process::updateEntity) $process ", $process->getId());
         return $process;
     }
 
@@ -97,7 +113,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         $childProcessCount = 0
     ) {
         $query = new Query\Process(Query\Base::INSERT);
-        $process->id = $this->readNewProcessId(new Query\Process(Query\Base::SELECT));
+        $process->id = $this->readNewProcessId();
         $process->setRandomAuthKey();
         $process->createTimestamp = $dateTime->getTimestamp();
         $query->addValuesNewProcess($process, $parentProcess, $childProcessCount);
@@ -114,12 +130,22 @@ class Process extends Base implements Interfaces\ResolveReferences
      * Fetch a free process ID from DB
      *
      */
-    public function readNewProcessId($query)
+    protected function readNewProcessId()
     {
-        if (! $this->getWriter()->fetchValue($query->getLockProcessId())) {
-            throw new Exception\Process\ProcessTimeout();
+        $query = new Query\Process(Query\Base::SELECT);
+        try {
+            if ($this->getWriter()->perform($query->getLockProcessId(), ['processId' => 100000])) {
+                $newProcessId = $this->getWriter()->fetchValue($query->getQueryNewProcessId());
+            }
+        } catch (\PDOException $exception) {
+            if (stripos($exception->getMessage(), 'Lock wait timeout') !== false) {
+                throw new Exception\Pdo\LockTimeout();
+            }
+            //@codeCoverageIgnoreStart
+            throw $exception;
+            //@codeCoverageIgnoreEnd
         }
-        return $this->getWriter()->fetchValue($query->getQueryNewProcessId());
+        return $newProcessId;
     }
 
     /**

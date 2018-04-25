@@ -10,7 +10,7 @@ class FetchFailedTest extends Base
 {
     public function testFetchOneFailed()
     {
-        $this->setExpectedException('\BO\Zmsdb\Exception\PdoFailed');
+        $this->expectException('\BO\Zmsdb\Exception\Pdo\PdoFailed');
         $provider = new Provider();
         $query = new Query('SELECT');
         $Provider = $provider->fetchOne($query, new Entity());
@@ -18,7 +18,7 @@ class FetchFailedTest extends Base
 
     public function testFetchListFailed()
     {
-        $this->setExpectedException('\BO\Zmsdb\Exception\PdoFailed');
+        $this->expectException('\BO\Zmsdb\Exception\Pdo\PdoFailed');
         $provider = new Provider();
         $query = new Query('SELECT');
         $Provider = $provider->fetchList($query, new Entity());
@@ -26,7 +26,7 @@ class FetchFailedTest extends Base
 
     public function testStatementFailed()
     {
-        $this->setExpectedException("\BO\Zmsdb\Exception\PdoFailed");
+        $this->expectException("\BO\Zmsdb\Exception\Pdo\PdoFailed");
         $provider = new Provider();
         $statement = $provider->fetchStatement(new Query('SELECT'));
     }

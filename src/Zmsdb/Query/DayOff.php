@@ -17,6 +17,7 @@ class DayOff extends Base implements MappingInterface
     public function getEntityMapping()
     {
         return [
+            'id' => 'dayOff.FeiertagID',
             'date' => 'dayOff.Datum',
             'name' => 'dayOff.Feiertag'
         ];
@@ -42,8 +43,13 @@ class DayOff extends Base implements MappingInterface
 
     public function addConditionCommon()
     {
-        $this->query
-            ->where('dayOff.BehoerdenID', '=', 0);
+        $this->query->where('dayOff.BehoerdenID', '=', 0);
+        return $this;
+    }
+
+    public function addConditionDayOffId($itemId)
+    {
+        $this->query->where('dayOff.FeiertagID', '=', $itemId);
         return $this;
     }
 
@@ -55,17 +61,13 @@ class DayOff extends Base implements MappingInterface
             '=',
             'dayOff.BehoerdenID'
         );
-        $this->query
-            ->where('scope_dayoff.StandortID', '=', $scopeId)
-            ;
+        $this->query->where('scope_dayoff.StandortID', '=', $scopeId);
         return $this;
     }
 
     public function addConditionDepartmentId($departmentId)
     {
-        $this->query
-            ->where('dayOff.BehoerdenID', '=', $departmentId)
-            ;
+        $this->query->where('dayOff.BehoerdenID', '=', $departmentId);
         return $this;
     }
 

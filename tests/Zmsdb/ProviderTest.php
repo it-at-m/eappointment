@@ -16,7 +16,7 @@ class ProviderTest extends Base
 
     public function testUnknownSource()
     {
-        $this->setExpectedException("\\BO\\Zmsdb\\Exception\\UnknownDataSource");
+        $this->expectException("\\BO\\Zmsdb\\Exception\\UnknownDataSource");
         $entity = (new Query())->readEntity('test', 122280, 1);
         $this->assertEntity("\\BO\\Zmsentities\\Provider", $entity);
     }

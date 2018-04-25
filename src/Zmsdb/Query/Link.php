@@ -24,6 +24,12 @@ class Link extends Base
         ];
     }
 
+    public function addConditionLinkId($linkId)
+    {
+        $this->query->where('link.linkid', '=', $linkId);
+        return $this;
+    }
+
     public function addConditionDepartmentId($departmentId)
     {
         $this->query->where('link.behoerdenid', '=', $departmentId);

@@ -69,4 +69,11 @@ class Link extends Base
         $query->addValues($values);
         return $this->writeItem($query);
     }
+
+    public function deleteEntity($itemId)
+    {
+        $query = new Query\Link(Query\Base::DELETE);
+        $query->addConditionLinkId($itemId);
+        return ($this->deleteItem($query));
+    }
 }

@@ -141,16 +141,11 @@ class Useraccount extends Base
     public function writeEntity(\BO\Zmsentities\Useraccount $entity, $resolveReferences = 0)
     {
         $query = new Query\Useraccount(Query\Base::INSERT);
-        if ($this->readIsUserExisting($entity->id)) {
-            $useraccount = $this->updateEntity($entity->id, $entity);
-        } else {
-            $values = $query->reverseEntityMapping($entity);
-            $query->addValues($values);
-            $this->writeItem($query);
-            $this->updateAssignedDepartments($entity);
-            $useraccount = $this->readEntity($entity->id, $resolveReferences);
-        }
-        return $useraccount;
+        $values = $query->reverseEntityMapping($entity);
+        $query->addValues($values);
+        $this->writeItem($query);
+        $this->updateAssignedDepartments($entity);
+        return $this->readEntity($entity->getId(), $resolveReferences);
     }
 
     /**
@@ -169,8 +164,7 @@ class Useraccount extends Base
         $query->addValues($values);
         $this->writeItem($query);
         $this->updateAssignedDepartments($entity);
-        $newLoginName = $loginName !== $entity->id ? $entity->id : $loginName;
-        return $this->readEntity($newLoginName, $resolveReferences);
+        return $this->readEntity($entity->getId(), $resolveReferences);
     }
 
     /**
@@ -218,8 +212,8 @@ class Useraccount extends Base
     protected function deleteAssignedDepartments($loginName)
     {
         $query = Query\Useraccount::QUERY_DELETE_ASSIGNED_DEPARTMENTS;
-        $statement = $this->getWriter()->prepare($query);
         $userId = $this->readEntityIdByLoginName($loginName);
+        $statement = $this->getWriter()->prepare($query);
         $statement->execute([$userId]);
     }
 }

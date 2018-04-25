@@ -111,13 +111,13 @@ class Mail extends Base
                 'clientEmail' => $client->email
             )
         );
-        $this->writeItem($query);
+        $success = $this->writeItem($query);
         $queueId = $this->getWriter()->lastInsertId();
-        $this->writeMimeparts($queueId, $mail->multipart);
-        if (in_array($process->status, ['pickup', 'queued', 'confirmed'])) {
+        if ($success && in_array($process->status, ['pickup', 'queued', 'confirmed'])) {
             $client->emailSendCount += 1;
             (new Process())->updateEntity($process, $dateTime);
         }
+        $this->writeMimeparts($queueId, $mail->multipart);
         return $this->readEntity($queueId);
     }
 
@@ -151,15 +151,6 @@ class Mail extends Base
         $statement = $this->getWriter()->prepare($query);
         return $statement->execute(array(
             $itemId
-        ));
-    }
-
-    public function deleteEntityByProcess($processId)
-    {
-        $query = Query\MailQueue::QUERY_DELETE_BY_PROCESS;
-        $statement = $this->getWriter()->prepare($query);
-        return $statement->execute(array(
-            $processId
         ));
     }
 

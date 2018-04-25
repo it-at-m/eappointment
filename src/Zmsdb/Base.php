@@ -99,7 +99,7 @@ abstract class Base
                 . " || Statement: "
                 .$statement->queryString
                 ." || Parameters=". var_export($parameters, true);
-            throw new Exception\PDOFailed($message, 0, $pdoException);
+            throw new Exception\Pdo\PDOFailed($message, 0, $pdoException);
         }
         return $statement;
     }
@@ -119,7 +119,7 @@ abstract class Base
             $entity->exchangeArray($query->postProcessJoins($data));
             $entity->setResolveLevel($query->getResolveLevel());
         }/* else {
-            throw new Exception\PDOFailed("Could not fetch one: ". $query->getName()
+            throw new Exception\Pdo\PDOFailed("Could not fetch one: ". $query->getName()
                 . " --> " . var_export($query->getParameters(), 1));
         }*/
         return $entity;

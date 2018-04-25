@@ -7,6 +7,7 @@ use \BO\Zmsentities\Collection\DepartmentList as Collection;
 
 /**
  * @SuppressWarnings(Coupling)
+ * @SuppressWarnings(Complexity)
  *
  */
 class Department extends Base
@@ -212,9 +213,13 @@ class Department extends Base
      */
     protected function writeDepartmentDayoffs($departmentId, $dayoffList)
     {
-        $deleteQuery = new Query\DayOff(Query\Base::DELETE);
-        $deleteQuery->addConditionDepartmentId($departmentId);
-        $this->deleteItem($deleteQuery);
+        $existingDayoffs = (new DayOff())->readByDepartmentId($departmentId);
+        if ($existingDayoffs->count()) {
+            foreach ($existingDayoffs as $item) {
+                $query = new DayOff();
+                $query->deleteEntity($item->getId());
+            }
+        }
 
         foreach ($dayoffList as $dayoff) {
             $query = new Query\DayOff(Query\Base::INSERT);
@@ -240,9 +245,14 @@ class Department extends Base
      */
     protected function writeDepartmentLinks($departmentId, $links)
     {
-        $deleteQuery = new Query\Link(Query\Base::DELETE);
-        $deleteQuery->addConditionDepartmentId($departmentId);
-        $this->deleteItem($deleteQuery);
+        $existingLinks = (new Link())->readByDepartmentId($departmentId);
+        if ($existingLinks->count()) {
+            foreach ($existingLinks as $item) {
+                $query = new Link();
+                $query->deleteEntity($item->getId());
+            }
+        }
+
         foreach ($links as $link) {
             $link = new \BO\Zmsentities\Link($link);
             $query = new Link();
