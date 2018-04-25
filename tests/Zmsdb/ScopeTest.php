@@ -94,7 +94,7 @@ class ScopeTest extends Base
 
     public function testDeleteWithChildren()
     {
-        $this->setExpectedException('\BO\Zmsdb\Exception\Scope\ScopeHasProcesses');
+        $this->expectException('\BO\Zmsdb\Exception\Scope\ScopeHasProcesses');
         $query = new Query();
         $query->deleteEntity(141); //Herrstraße
     }
@@ -125,7 +125,7 @@ class ScopeTest extends Base
 
     public function testReadUpdatedWaitingNumberFailed()
     {
-        $this->setExpectedException('\BO\Zmsdb\Exception\Scope\GivenNumberCountExceeded');
+        $this->expectException('\BO\Zmsdb\Exception\Scope\GivenNumberCountExceeded');
         $query = new Query();
         $now = new \DateTimeImmutable("2016-04-01 11:55");
         $this->assertEquals(1, $query->readWaitingNumberUpdated(109, $now));

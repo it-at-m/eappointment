@@ -54,7 +54,7 @@ class ProcessTest extends Base
 
     public function testExceptionAlreadyReserved()
     {
-        $this->setExpectedException('\BO\Zmsdb\Exception\Process\ProcessReserveFailed');
+        $this->expectException('\BO\Zmsdb\Exception\Process\ProcessReserveFailed');
 
         $now = new \DateTimeImmutable("2016-04-01 11:55");
         $query = new ProcessStatusFree();
@@ -66,7 +66,7 @@ class ProcessTest extends Base
 
     public function testExceptionFollowingSlotsReserved()
     {
-        $this->setExpectedException('\BO\Zmsdb\Exception\Process\ProcessReserveFailed');
+        $this->expectException('\BO\Zmsdb\Exception\Process\ProcessReserveFailed');
 
         $now = new \DateTimeImmutable("2016-04-01 11:55");
         $query = new ProcessStatusFree();
@@ -192,13 +192,6 @@ class ProcessTest extends Base
         $process = $query->writeNewFromAdmin($input, $now);
         $this->assertEntity("\\BO\\Zmsentities\\Process", $process);
         $this->assertEquals(1000, $process->queue->number);
-    }
-
-    public function testGetLockProcessIdFailed()
-    {
-        $this->expectException('\BO\Zmsdb\Exception\Process\ProcessTimeout');
-        $query = new Helper\ProcessQuery(\BO\Zmsdb\Query\Base::SELECT);
-        $lockedId = (new ProcessStatusQueued())->readNewProcessId($query);
     }
 
     public function testProcessListByScopeAndStatus()

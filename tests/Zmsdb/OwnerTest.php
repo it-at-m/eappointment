@@ -50,7 +50,7 @@ class OwnerTest extends Base
 
     public function testDeleteWithChildren()
     {
-        $this->setExpectedException('\BO\Zmsdb\Exception\Owner\OrganisationListNotEmpty');
+        $this->expectException('\BO\Zmsdb\Exception\Owner\OrganisationListNotEmpty');
         $query = new Query();
         $query->deleteEntity(23); //Berlin
     }

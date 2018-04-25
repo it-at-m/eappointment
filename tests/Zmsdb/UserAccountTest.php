@@ -99,20 +99,21 @@ class UserAccountTest extends Base
     public function testReadWorkstationListByScope()
     {
         $this->writeTestLogin();
-        $workstationList = (new Workstation())->readLoggedInListByScope(123, $this->dateTime);
+        $workstationList = (new Workstation())->readLoggedInListByScope(141, $this->dateTime);
         $this->assertEntityList("\\BO\\Zmsentities\\Workstation", $workstationList);
     }
 
     public function testReadWorkstationListByCluster()
     {
-        $this->writeTestLogin(141);
+        $this->writeTestLogin();
         $workstationList = (new Workstation())->readLoggedInListByCluster(109, $this->dateTime);
+        $this->assertEquals(1, $workstationList->count());
         $this->assertEntityList("\\BO\\Zmsentities\\Workstation", $workstationList);
     }
 
     public function testReadWorkstationListByDepartment()
     {
-        $this->writeTestLogin(141);
+        $this->writeTestLogin();
         $workstationList = (new Workstation())->readCollectionByDepartmentId(72);
         $this->assertEntityList("\\BO\\Zmsentities\\Workstation", $workstationList);
         $this->assertEquals(3, $workstationList->getFirst()->name);
@@ -121,14 +122,14 @@ class UserAccountTest extends Base
     public function testReadWorkstationByScopeAndName()
     {
         $this->writeTestLogin();
-        $workstation = (new Workstation())->readWorkstationByScopeAndName(123, 3);
+        $workstation = (new Workstation())->readWorkstationByScopeAndName(141, 3);
         $this->assertEntity("\\BO\\Zmsentities\\Workstation", $workstation);
     }
 
     public function testReadWorkstationByScopeAndNameFailed()
     {
         $this->writeTestLogin();
-        $workstation = (new Workstation())->readWorkstationByScopeAndName(123, 4);
+        $workstation = (new Workstation())->readWorkstationByScopeAndName(141, 4);
         $this->assertEquals(null, $workstation);
     }
 
@@ -182,7 +183,7 @@ class UserAccountTest extends Base
         $this->assertEquals('3', $workstation->hint);
     }
 
-    protected function writeTestLogin($scopeId = false)
+    protected function writeTestLogin()
     {
         $this->dateTime = new \DateTimeImmutable("2016-04-01 11:55");
         $query = new Query();
@@ -194,9 +195,6 @@ class UserAccountTest extends Base
         //get example workstation account with scope etc and give id from logged in workstation for update
         $workstationInput = (new WorkstationEntity())->getExample();
         $workstationInput->id = $workstation->id;
-        if ($scopeId) {
-            $workstation->scope['id'] = $scopeId;
-        }
         //update workstation to read by scope testing
         return (new Workstation())->updateEntity($workstationInput, 1);
     }

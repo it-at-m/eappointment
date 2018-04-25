@@ -236,10 +236,24 @@ class Workstation extends Base
     public function updateEntity(\BO\Zmsentities\Workstation $entity, $resolveReferences = 0)
     {
         $query = new Query\Workstation(Query\Base::UPDATE);
-        $query->addConditionWorkstationId($entity->id);
+        $query->addConditionWorkstationId($entity->getId());
         $values = $query->reverseEntityMapping($entity);
         $query->addValues($values);
-        $this->writeItem($query);
+
+        try {
+            if ($this->getWriter()->perform($query->getLockWorkstationId(), ['workstationId' => $entity->getId()])) {
+                $this->writeItem($query);
+            }
+        } catch (\PDOException $exception) {
+            if (stripos($exception->getMessage(), 'Lock wait timeout') !== false) {
+                throw new Exception\Pdo\LockTimeout();
+            }
+            if (stripos($exception->getMessage(), 'Deadlock found') !== false) {
+                throw new Exception\Pdo\DeadLockFound();
+            }
+            throw $exception;
+        }
+
         return $this->readEntity($entity->useraccount['id'], $resolveReferences);
     }
 }

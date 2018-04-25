@@ -84,9 +84,9 @@ class Notification extends Base
             'clientFamilyName' => $client->familyName,
             'clientTelephone' => $telephone,
         ));
-        $this->writeItem($query);
+        $success = $this->writeItem($query);
         $queueId = $this->getWriter()->lastInsertId();
-        if (in_array($process->status, ['pickup', 'queued', 'confirmed'])) {
+        if ($success && in_array($process->status, ['pickup', 'queued', 'confirmed'])) {
             $client->notificationsSendCount += 1;
             (new Process())->updateEntity($process, $dateTime);
         }
@@ -101,7 +101,7 @@ class Notification extends Base
         $telephone = substr(preg_replace('/\s+/', '', $client->telephone), 0, 10);
         $appointment = $notification->process->getAppointments()->getFirst();
 
-        $query = Query\notification::QUERY_WRITE_IN_CALCULATION;
+        $query = Query\Notification::QUERY_WRITE_IN_CALCULATION;
         $statement = $this->getWriter()->prepare($query);
         return $statement->execute(
             array(
@@ -118,12 +118,5 @@ class Notification extends Base
         $query =  new Query\Notification(Query\Base::DELETE);
         $query->addConditionItemId($itemId);
         return $this->deleteItem($query);
-    }
-
-    public function deleteEntityByProcess($processId)
-    {
-        $query = Query\Notification::QUERY_DELETE_BY_PROCESS;
-        $statement = $this->getWriter()->prepare($query);
-        return $statement->execute(array($processId));
     }
 }

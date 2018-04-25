@@ -66,7 +66,7 @@ class MailTest extends Base
 
     public function testExceptionWithoutMail()
     {
-        $this->setExpectedException('\BO\Zmsdb\Exception\Mail\ClientWithoutEmail');
+        $this->expectException('\BO\Zmsdb\Exception\Mail\ClientWithoutEmail');
         $now = new \DateTimeImmutable("2016-04-01 11:55");
         $query = new Query();
         $input = $this->getTestEntity();
@@ -76,23 +76,12 @@ class MailTest extends Base
 
     public function testWriteMimepartFailed()
     {
-        $this->setExpectedException('BO\Zmsdb\Exception\MailWritePartFailed');
+        $this->expectException('BO\Zmsdb\Exception\MailWritePartFailed');
         $now = new \DateTimeImmutable("2016-04-01 11:55");
         $query = new Query();
         $input = $this->getTestEntity();
         $input->multipart[0]['content'] = null;
         $query->writeInQueue($input, $now);
-    }
-
-    public function testDeleteByProcessId()
-    {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
-        $input = $this->getTestEntity();
-        $query = new Query();
-        $entity = $query->writeInQueue($input, $now);
-        $query->deleteEntityByProcess($input->process['id']);
-        $entity = $query->readEntity($entity->id);
-        $this->assertFalse($entity->hasId(), "Delete Mail by process id failed.");
     }
 
     protected function getTestEntity()

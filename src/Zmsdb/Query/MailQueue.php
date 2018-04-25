@@ -16,13 +16,6 @@ class MailQueue extends Base
             WHERE mq.id=?
     ';
 
-    const QUERY_DELETE_BY_PROCESS = '
-        DELETE mq,  mp
-        FROM '. self::TABLE .' mq
-        LEFT JOIN '. Mimepart::TABLE .' mp ON mp.queueId = mq.id
-        WHERE mq.processID=?
-    ';
-
     public function getEntityMapping()
     {
         return [

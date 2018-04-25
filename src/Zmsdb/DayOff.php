@@ -177,4 +177,11 @@ class DayOff extends Base
             }
         }
     }
+
+    public function deleteEntity($itemId)
+    {
+        $query = new Query\DayOff(Query\Base::DELETE);
+        $query->addConditionDayOffId($itemId);
+        return ($this->deleteItem($query));
+    }
 }

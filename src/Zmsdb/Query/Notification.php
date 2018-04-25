@@ -9,13 +9,6 @@ class Notification extends Base
      */
     const TABLE = 'notificationqueue';
 
-    const QUERY_DELETE_BY_PROCESS = '
-        DELETE nq FROM
-            '. self::TABLE .' nq
-        WHERE
-            nq.processID=?
-    ';
-
     const QUERY_WRITE_IN_CALCULATION = '
     REPLACE INTO
         abrechnung
