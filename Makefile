@@ -34,5 +34,4 @@ fix: #f fix code
 	php vendor/bin/phpcbf --standard=psr2 tests/
 
 coverage:
-	#php vendor/bin/phpunit --coverage-html public/_tests/coverage/
-	php vendor/bin/paratest tests/Zmsdb/ --coverage-html public/_tests/coverage/
+	php vendor/bin/phpunit --coverage-html public/_tests/coverage/
