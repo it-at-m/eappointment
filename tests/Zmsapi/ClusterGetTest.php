@@ -17,6 +17,15 @@ class ClusterGetTest extends Base
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
+    public function testWithScopeListStatusAvailability()
+    {
+        $this->setWorkstation();
+        User::$workstation->useraccount->setRights('cluster');
+        $response = $this->render(['id' => 109], ['getIsOpened' => 1], []);
+        $this->assertContains('isOpened', (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
+    }
+
     public function testEmpty()
     {
         $this->setWorkstation();

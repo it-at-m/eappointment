@@ -26,7 +26,7 @@ class ClusterGet extends BaseController
         $getScopeIsOpened = Validator::param('getIsOpened')->isNumber()->setDefault(0)->getValue();
 
         $cluster = ($getScopeIsOpened)
-            ? (new Query())->readEntityWithOpenedScopeList($args['id'], \App::$now, $resolveReferences)
+            ? (new Query())->readEntityWithOpenedScopeStatus($args['id'], \App::$now, $resolveReferences)
             : (new Query())->readEntity($args['id'], $resolveReferences);
 
         if (! $cluster) {
