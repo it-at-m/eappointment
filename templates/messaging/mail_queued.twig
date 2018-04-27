@@ -5,8 +5,8 @@ Sehr geehrte/r Frau oder Herr {{ client.familyName }},
 hiermit bestätigen wir Ihre Wartenummer für den {{ toGermanDateFromTs(date|default(getNow|date('U'))).date }}<br /><br />
 <strong>Ort:</strong> {{ process.scope.provider.name ~ " " ~ process.scope.provider.contact.street ~", " ~ process.scope.provider.contact.postalCode ~ " " ~ process.scope.provider.contact.city }}<br />
 {% if process.scope.hint %}
-({{ process.scope.hint|split('|')|first }} {{ process.scope.hint|split('|')|last}})
-{% endif %}<br /><br />
+({{ process.scope.hint }})<br />
+{% endif %}<br />
 Ihre Wartenummer ist die <strong>"{{ process.queue.number }}"</strong><br /><br />
 {% if process.scope.provider.source == "dldb" and process.scope.provider.data.payment %}
 Zahlungshinweis: {{ process.scope.provider.data.payment }}<br /><br />
