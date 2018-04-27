@@ -24,14 +24,17 @@ class ExchangePeriod
 
     public function __construct($period)
     {
-        list(static::$year, static::$month, static::$day) = preg_split('%(-)%', $period);
+        $periodArr = preg_split('%(-)%', $period);
+        static::$year = $periodArr[0];
+        static::$month = (isset($periodArr[1])) ? $periodArr[1] : '';
+        static::$day = (isset($periodArr[2])) ? $periodArr[2] : '';
     }
 
     public function getStartDateTime()
     {
         if ('_' == static::$year) {
             static::$periodIdentifier = 'hour';
-            static::$startDateTime = new \DateTimeImmutable();
+            static::$startDateTime = \App::$now;
         } elseif (static::$year && static::$month && static::$day) {
             static::$periodIdentifier = 'hour';
             static::$startDateTime = new \DateTimeImmutable(static::$year .'-'. static::$month .'-'. static::$day);

@@ -27,9 +27,6 @@ class WarehouseSubjectGet extends BaseController
             throw new Exception\Warehouse\ReportNotFound();
         }
         $subjectIdList = (new $exchangeClass)->readSubjectList();
-        if (! $subjectIdList) {
-            throw new Exception\Warehouse\ReportNotFound();
-        }
 
         $message = Response\Message::create($request);
         $message->data = (new Helper\ExchangeAccessFilter($subjectIdList, $workstation))

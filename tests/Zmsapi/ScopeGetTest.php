@@ -30,6 +30,16 @@ class ScopeGetTest extends Base
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
+    public function testWithIsOpenedParamter()
+    {
+        $this->setWorkstation()->getUseraccount()->setRights('scope');
+        $response = $this->render(['id' => self::SCOPE_ID], ['getIsOpened' => 1], []); //Pankow
+        $this->assertContains('isOpened', (string)$response->getBody());
+        $this->assertContains('scope.json', (string)$response->getBody());
+        $this->assertNotContains('"reducedData"', (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
+    }
+
     public function testEmpty()
     {
         $this->setExpectedException('\ErrorException');

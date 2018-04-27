@@ -67,4 +67,12 @@ class WarehouseSubjectGetTest extends Base
         $this->expectException('\BO\Zmsentities\Exception\UserAccountMissingRights');
         $this->render([], [], []);
     }
+
+    public function testNotFound()
+    {
+        $this->expectException('\BO\Zmsapi\Exception\Warehouse\ReportNotFound');
+        $workstation = $this->setWorkstation(138, 'berlinonline', 140);
+        $workstation->getUseraccount()->setRights('scope');
+        $response = $this->render(['subject' => 'unittest'], [], []);
+    }
 }
