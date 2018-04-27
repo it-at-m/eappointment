@@ -42,7 +42,7 @@ class ProcessLockTest extends Base
             ->execute(['processId' => 100000]);
     }
 
-    public function testDBIsLocked()
+    public function testDBIsLockedByNewProcess()
     {
         $this->expectException('\BO\Zmsdb\Exception\Pdo\LockTimeout');
         $this->setDBLock();
@@ -50,5 +50,20 @@ class ProcessLockTest extends Base
         $query = new Query();
         $scope = (new \BO\Zmsdb\Scope())->readEntity(141);
         $process = $query->writeNewPickup($scope, $now);
+    }
+
+    public function testDBIsLockedByUpdateProcess()
+    {
+        $this->expectException('\BO\Zmsdb\Exception\Pdo\LockTimeout');
+        $this->setDBLock();
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $query = new ProcessStatusFree();
+        $input = (new ProcessTest)->getTestProcessEntity();
+        $input->queue['callTime'] = 0;
+        $process = $query->writeEntityReserved($input, $now);
+        $process->amendment = 'Test amendment';
+        $process->clients[] = new \BO\Zmsentities\Client(['familyName' => 'Unbekannt']);
+        $process->queue['lastCallTime'] = 1459511700;
+        $process = $query->updateEntity($process, $now);
     }
 }
