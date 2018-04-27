@@ -33,10 +33,12 @@ class ExchangeNotificationdepartment extends Base
           d.`BehoerdenID` as subject,
           MIN(n.`Datum`) AS periodstart,
           MAX(n.`Datum`) AS periodend,
+          o.`Organisationsname` AS organisationname,
           d.`Name` AS description
       FROM '. self::TABLE .' AS n
           LEFT JOIN '. Scope::TABLE .' AS s ON n.`standortid` = s.`StandortID`
           INNER JOIN '. Department::TABLE .' AS d ON s.`BehoerdenID` = d.`BehoerdenID`
+          LEFT JOIN ' . Organisation::TABLE .' AS o ON d.`OrganisationsID` = o.`OrganisationsID`
       GROUP BY d.`BehoerdenID`
       ORDER BY d.`BehoerdenID` ASC
     ';

@@ -55,6 +55,7 @@ class ExchangeNotificationdepartment extends Base
         $entity->addDictionaryEntry('subject', 'string', 'Behörden ID', 'department.id');
         $entity->addDictionaryEntry('periodstart', 'string', 'Datum von');
         $entity->addDictionaryEntry('periodend', 'string', 'Datum bis');
+        $entity->addDictionaryEntry('organisationname', 'string', 'Name der Organisation');
         $entity->addDictionaryEntry('description', 'string', 'Name der Behörde');
         foreach ($raw as $entry) {
             $entity->addDataSet(array_values($entry));
