@@ -77,6 +77,7 @@ class ExchangeClientdepartment extends Base
           d.`BehoerdenID` as subject,
           periodstart,
           periodend,
+          o.`Organisationsname` AS organisationname,
           d.`Name` AS description
       FROM '. Department::TABLE .' AS d
           INNER JOIN
@@ -89,6 +90,7 @@ class ExchangeClientdepartment extends Base
               group by departmentid
             )
           maxAndminDate ON maxAndminDate.`departmentid` = d.`BehoerdenID`
+          LEFT JOIN ' . Organisation::TABLE .' AS o ON d.`OrganisationsID` = o.`OrganisationsID`
       GROUP BY d.`BehoerdenID`
       ORDER BY d.`BehoerdenID` ASC
     ';

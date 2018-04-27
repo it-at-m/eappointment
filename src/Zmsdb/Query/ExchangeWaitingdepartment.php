@@ -54,13 +54,15 @@ class ExchangeWaitingdepartment extends Base
 
     const QUERY_SUBJECTS = '
         SELECT
-            s.`BehoerdenID` as subject,
+            s.`behoerdenid` as subject,
             MIN(`datum`) AS periodstart,
             MAX(`datum`) AS periodend,
+            o.`Organisationsname` AS organisationname,
             d.`Name` AS description
         FROM ' . self::TABLE . ' AS w
             LEFT JOIN ' . Scope::TABLE .' AS s ON w.`standortid` = s.`StandortID`
             LEFT JOIN ' . Department::TABLE .' AS d ON s.`BehoerdenID` = d.`BehoerdenID`
+            LEFT JOIN ' . Organisation::TABLE .' AS o ON d.`OrganisationsID` = o.`OrganisationsID`
         GROUP BY d.`BehoerdenID`
         ORDER BY d.`BehoerdenID` ASC, periodstart DESC
     ';
