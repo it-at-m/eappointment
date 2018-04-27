@@ -5,12 +5,12 @@ namespace BO\Zmsapi\Helper;
 use \Psr\Http\Message\ServerRequestInterface;
 use \Psr\Http\Message\ResponseInterface;
 
+/**
+ * @codeCoverageIgnore
+ *
+ */
 class LogOperatorMiddleware
 {
-    /**
-     * @codeCoverageIgnore
-     *
-     */
     public function __invoke(
         ServerRequestInterface $request,
         ResponseInterface $response,

@@ -32,9 +32,25 @@ class WarehousePeriodListGetTest extends Base
     {
         $workstation = $this->setWorkstation();
         $workstation->getUseraccount()->setRights('scope', 'department', 'organisation');
-        $response = $this->render(['subject' => 'waitingorganisation', 'subjectId' => 72], ['period' => 'year'], []);
+        $response = $this->render(['subject' => 'waitingorganisation', 'subjectId' => 71], ['period' => 'year'], []);
         $this->assertContains('exchange.json', (string)$response->getBody());
         $this->assertContains('"period":"year"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
+    }
+
+    public function testNotFound()
+    {
+        $this->expectException('\BO\Zmsapi\Exception\Warehouse\ReportNotFound');
+        $workstation = $this->setWorkstation();
+        $workstation->getUseraccount()->setRights('scope');
+        $response = $this->render(['subject' => 'unittest', 'subjectId' => 141], [], []);
+    }
+
+    public function testWrongSubject()
+    {
+        $this->expectException('\BO\Zmsapi\Exception\Warehouse\ReportNotFound');
+        $workstation = $this->setWorkstation();
+        $workstation->getUseraccount()->setRights('scope');
+        $response = $this->render(['subject' => 'waitingscope', 'subjectId' => 142], [], []);
     }
 }

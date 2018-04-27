@@ -24,7 +24,6 @@ class WarehousePeriodGet extends BaseController
         $subject = Validator::value($args['subject'])->isString()->getValue();
         $subjectId = Validator::value($args['subjectId'])->isString()->getValue();
         $period = Validator::value($args['period'])->isString()->isBiggerThan(2)->setDefault('_')->getValue();
-
         $validator = $request->getAttribute('validator');
         $groupby = $validator->getParameter('groupby')->isString()->isBiggerThan(2)->getValue();
 
@@ -32,7 +31,6 @@ class WarehousePeriodGet extends BaseController
         if (! class_exists($exchangeClass)) {
             throw new Exception\Warehouse\ReportNotFound();
         }
-
         $periodHelper = new Helper\ExchangePeriod($period);
         $subjectPeriod = (new $exchangeClass)->readEntity(
             $subjectId,
@@ -40,7 +38,7 @@ class WarehousePeriodGet extends BaseController
             $periodHelper->getEndDateTime(),
             $periodHelper->getPeriodIdentifier($groupby)
         );
-        if (! $subjectPeriod) {
+        if (0 == count($subjectPeriod['data'])) {
             throw new Exception\Warehouse\ReportNotFound();
         }
 

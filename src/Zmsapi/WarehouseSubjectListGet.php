@@ -25,9 +25,6 @@ class WarehouseSubjectListGet extends BaseController
 
         $message = Response\Message::create($request);
         $subjectsList = (new Query)->readSubjectsList();
-        if (! $subjectsList) {
-            throw new Exception\Warehouse\ReportNotFound();
-        }
         $message->data = (new Helper\ExchangeAccessFilter($subjectsList, $workstation))
           ->getFilteredEntity()
           ->withLessData();
