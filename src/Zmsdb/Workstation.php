@@ -244,8 +244,7 @@ class Workstation extends Base
             if ($this->getWriter()->perform($query->getLockWorkstationId(), ['workstationId' => $entity->getId()])) {
                 $this->writeItem($query);
             }
-        }
-        //@codeCoverageIgnoreStart
+        } //@codeCoverageIgnoreStart
         catch (\PDOException $exception) {
             if (stripos($exception->getMessage(), 'Lock wait timeout') !== false) {
                 throw new Exception\Pdo\LockTimeout();
