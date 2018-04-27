@@ -58,6 +58,26 @@ class ProcessPickupTest extends Base
         $workstation['queue']['clusterEnabled'] = 1;
         $workstation->process = json_decode($this->readFixture("GetProcess_10030.json"));
         $process = json_decode($this->readFixture("GetProcess_10029.json"));
+        $process->scope = (new \BO\Zmsentities\Scope())->getExample();
+        $this->render([], [
+            '__body' => json_encode($process)
+        ], []);
+    }
+
+    public function testWorkstationHasAssignedProcess()
+    {
+        $this->expectException('\BO\Zmsapi\Exception\Workstation\WorkstationHasAssignedProcess');
+        $this->expectExceptionCode(404);
+
+        $workstation = $this->setWorkstation(138, 'berlinonline', 167);
+        $workstation['queue']['clusterEnabled'] = 1;
+        $workstation->process = new \BO\Zmsentities\Process(
+            json_decode(
+                $this->readFixture("GetProcess_10030.json"),
+                1
+            )
+        );
+        $process = json_decode($this->readFixture("GetProcess_10029.json"));
         $this->render([], [
             '__body' => json_encode($process)
         ], []);
