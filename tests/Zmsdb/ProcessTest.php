@@ -25,7 +25,7 @@ class ProcessTest extends Base
         $process = $query->readByQueueNumberAndScope($process->queue['number'], $scope->id);
         $this->assertEquals(1, $process->queue['number']);
         $process = $query->readByQueueNumberAndScope($process->getId(), $scope->id);
-        $this->assertEquals(100005, $process->getId());
+        $this->assertTrue(100000 < $process->getId());
     }
 
     public function testReadByWorkstation()
