@@ -20,11 +20,10 @@ class ProcessTest extends Base
     {
         $now = new \DateTimeImmutable("2016-04-01 11:55");
         $query = new ProcessStatusQueued();
-        $scope = (new \BO\Zmsdb\Scope())->readEntity(141);
+        $scope = (new \BO\Zmsdb\Scope())->readEntity(141, 0, true);
         $process = $query->writeNewFromTicketprinter($scope, $now);
         $process = $query->readByQueueNumberAndScope($process->queue['number'], $scope->id);
         $this->assertEquals(1, $process->queue['number']);
-
         $process = $query->readByQueueNumberAndScope($process->getId(), $scope->id);
         $this->assertEquals(100005, $process->getId());
     }

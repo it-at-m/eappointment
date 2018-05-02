@@ -11,12 +11,17 @@ class NotificationTest extends Base
     {
         $now = new \DateTimeImmutable("2016-04-01 11:55");
         $input = $this->getTestEntity();
+        $input->process['status'] = 'pickup';
+
+        $this->assertEquals('0', $input->getFirstClient()->emailSendCount);
+
         $query = new Query();
         $entity = $query->writeInQueue($input, $now);
 
         $this->assertEntity("\\BO\\Zmsentities\\Notification", $entity);
         $this->assertEquals("80410", $entity->getProcessId());
         $this->assertEquals("f22c", $entity->getProcessAuthKey());
+        $this->assertEquals('1', $entity->getFirstClient()->notificationsSendCount);
 
         $collection = $query->readList(1);
         $this->assertTrue($collection->hasEntity($entity->id), "Missing Test Entity with ID 1234 in collection");
@@ -34,17 +39,6 @@ class NotificationTest extends Base
         $input = $this->getTestEntity();
         $input->process = new \BO\Zmsentities\Process($input->process);
         $this->assertTrue($query->writeInCalculationTable($input));
-    }
-
-    public function testWriteInQueueWithPickupStatus()
-    {
-        $now = new \DateTimeImmutable("2016-04-01 11:55");
-        $entity = $this->getTestEntity();
-        $entity->process['status'] = 'pickup';
-        $this->assertEquals('0', $entity->getFirstClient()->emailSendCount);
-        $entity = (new Query)->writeInQueue($entity, $now);
-        $this->assertEntity("\\BO\\Zmsentities\\Notification", $entity);
-        $this->assertEquals('1', $entity->getFirstClient()->notificationsSendCount);
     }
 
     public function testExceptionWithoutTelephone()

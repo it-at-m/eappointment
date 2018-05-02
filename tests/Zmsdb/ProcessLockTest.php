@@ -31,8 +31,8 @@ class ProcessLockTest extends Base
 
     public function tearDown()
     {
-        parent::tearDown();
         $this->pdo->rollBack();
+        parent::tearDown();
     }
 
     public function setDBLock()
@@ -48,7 +48,7 @@ class ProcessLockTest extends Base
         $this->setDBLock();
         $now = new \DateTimeImmutable("2016-04-01 11:55");
         $query = new Query();
-        $scope = (new \BO\Zmsdb\Scope())->readEntity(141);
+        $scope = (new \BO\Zmsdb\Scope())->readEntity(141, 0, true);
         $process = $query->writeNewPickup($scope, $now);
     }
 

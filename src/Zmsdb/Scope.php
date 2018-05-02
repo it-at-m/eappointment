@@ -19,7 +19,7 @@ class Scope extends Base
     public function readEntity($scopeId, $resolveReferences = 0, $disableCache = false)
     {
         $cacheKey = "$scopeId-$resolveReferences";
-        if (! $disableCache && ! array_key_exists($cacheKey, self::$cache)) {
+        if ($disableCache || ! array_key_exists($cacheKey, self::$cache)) {
             $query = new Query\Scope(Query\Base::SELECT);
             $query->addEntityMapping()
                 ->addResolvedReferences($resolveReferences)
