@@ -24,9 +24,11 @@ class ProcessLockTest extends Base
         );
         $this->pdo->exec('SET NAMES "UTF8";');
         $this->pdo->exec('SET SESSION sql_mode = "STRICT_ALL_TABLES";');
-        $this->pdo->exec('set GLOBAL innodb_lock_wait_timeout=1');
+        $this->pdo->exec('SET SESSION innodb_lock_wait_timeout=300');
         $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
         $this->pdo->beginTransaction();
+        // Set shorter timeout for the test to not block other tests using vendor/bin/paratest
+        \BO\Zmsdb\Connection\Select::getWriteConnection()->perform('SET SESSION innodb_lock_wait_timeout=1');
     }
 
     public function tearDown()
@@ -35,27 +37,29 @@ class ProcessLockTest extends Base
         parent::tearDown();
     }
 
-    public function setDBLock()
+    public function writeDBLock()
     {
-        $query = $this->pdo
-            ->prepare((new \BO\Zmsdb\Query\Process(\BO\Zmsdb\Query\Base::SELECT))->getLockProcessId())
+        $statement = $this->pdo
+            ->prepare((new \BO\Zmsdb\Query\Process(\BO\Zmsdb\Query\Base::SELECT))->getLockProcessId());
+        $statement
             ->execute(['processId' => 100000]);
+        $statement->fetchAll();
     }
 
     public function testDBIsLockedByNewProcess()
     {
         $this->expectException('\BO\Zmsdb\Exception\Pdo\LockTimeout');
-        $this->setDBLock();
+        $this->writeDBLock();
         $now = new \DateTimeImmutable("2016-04-01 11:55");
         $query = new Query();
         $scope = (new \BO\Zmsdb\Scope())->readEntity(141, 0, true);
-        $process = $query->writeNewPickup($scope, $now);
+        $query->writeNewPickup($scope, $now);
     }
 
     public function testDBIsLockedByUpdateProcess()
     {
         $this->expectException('\BO\Zmsdb\Exception\Pdo\LockTimeout');
-        $this->setDBLock();
+        $this->writeDBLock();
         $now = new \DateTimeImmutable("2016-04-01 11:55");
         $query = new ProcessStatusFree();
         $input = (new ProcessTest)->getTestProcessEntity();

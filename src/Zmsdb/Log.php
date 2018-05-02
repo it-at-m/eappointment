@@ -19,7 +19,6 @@ class Log extends Base
     {
         $message .= " [" . static::$operator . "]";
         $log = new static();
-        $writer =$log->getWriter();
         $sql = "INSERT INTO `log` SET `message`=:message, `reference_id`=:referenceId, `type`=:type";
         $parameters = [
             "message" => $message,
@@ -27,7 +26,7 @@ class Log extends Base
             "type" => $type,
             ];
         //error_log("$message");
-        return $writer->perform($sql, $parameters);
+        return $log->perform($sql, $parameters);
     }
 
     public function readByProcessId($processId)

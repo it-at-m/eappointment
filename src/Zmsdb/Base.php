@@ -4,9 +4,9 @@ namespace BO\Zmsdb;
 
 /**
  * @SuppressWarnings(NumberOfChildren)
+ * @SuppressWarnings(Public)
  *
  */
-
 abstract class Base
 {
     /**
@@ -88,17 +88,33 @@ abstract class Base
 
     public function startExecute($statement, $parameters)
     {
-        try {
-            //Helper\Performance::addMark();
+        $statement = static::pdoExceptionHandler(function () use ($statement, $parameters) {
             $statement->execute($parameters);
-            //Helper\Performance::writeMark($statement->queryString);
+            return $statement;
+        });
+        return $statement;
+    }
+
+    protected static function pdoExceptionHandler(\Closure $pdoFunction, $parameters = [])
+    {
+        try {
+            $statement = $pdoFunction($parameters);
         } catch (\PDOException $pdoException) {
+            if (stripos($pdoException->getMessage(), 'Lock wait timeout') !== false) {
+                throw new Exception\Pdo\LockTimeout();
+            }
+            //@codeCoverageIgnoreStart
+            if (stripos($pdoException->getMessage(), 'Deadlock found') !== false) {
+                throw new Exception\Pdo\DeadLockFound();
+            }
+            //@codeCoverageIgnoreEnd
             $message = "SQL: "
                 . " Err: "
                 .$pdoException->getMessage()
-                . " || Statement: "
-                .$statement->queryString
-                ." || Parameters=". var_export($parameters, true);
+                //. " || Statement: "
+                //.$statement->queryString
+                //." || Parameters=". var_export($parameters, true)
+                ;
             throw new Exception\Pdo\PDOFailed($message, 0, $pdoException);
         }
         return $statement;
@@ -144,14 +160,25 @@ abstract class Base
      */
     public function writeItem(Query\Base $query)
     {
-        $statement = $this->getWriter()->prepare($query->getSql());
-        return $statement->execute($query->getParameters());
+        return static::pdoExceptionHandler(function () use ($query) {
+            $statement = $this->getWriter()->prepare($query->getSql());
+            return $statement->execute($query->getParameters());
+        });
     }
 
     public function deleteItem(Query\Base $query)
     {
-        $statement = $this->getWriter()->prepare($query->getSql());
-        return $statement->execute($query->getParameters());
+        return static::pdoExceptionHandler(function () use ($query) {
+            $statement = $this->getWriter()->prepare($query->getSql());
+            return $statement->execute($query->getParameters());
+        });
+    }
+
+    public function perform($sql, $parameters)
+    {
+        return static::pdoExceptionHandler(function () use ($sql, $parameters) {
+            return $this->getWriter()->perform($sql, $parameters);
+        });
     }
 
     /**

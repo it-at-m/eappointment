@@ -134,9 +134,9 @@ class Workstation extends Base
         $workstation = new Entity();
         if ($useraccount->readIsUserExisting($loginName, $password)) {
             $query = Query\Workstation::QUERY_LOGIN;
-            $statement = $this->getWriter()->prepare($query);
             $authKey = (new \BO\Zmsentities\Workstation())->getAuthKey();
-            $result = $statement->execute(
+            $result = $this->perform(
+                $query,
                 array(
                     $authKey,
                     $dateTime->format('Y-m-d'),
@@ -240,21 +240,9 @@ class Workstation extends Base
         $values = $query->reverseEntityMapping($entity);
         $query->addValues($values);
 
-        try {
-            if ($this->getWriter()->perform($query->getLockWorkstationId(), ['workstationId' => $entity->getId()])) {
-                $this->writeItem($query);
-            }
-        } //@codeCoverageIgnoreStart
-        catch (\PDOException $exception) {
-            if (stripos($exception->getMessage(), 'Lock wait timeout') !== false) {
-                throw new Exception\Pdo\LockTimeout();
-            }
-            if (stripos($exception->getMessage(), 'Deadlock found') !== false) {
-                throw new Exception\Pdo\DeadLockFound();
-            }
-            throw $exception;
+        if ($this->perform($query->getLockWorkstationId(), ['workstationId' => $entity->getId()])) {
+            $this->writeItem($query);
         }
-        //@codeCoverageIgnoreEnd
         return $this->readEntity($entity->useraccount['id'], $resolveReferences);
     }
 }

@@ -140,6 +140,9 @@ class Useraccount extends Base
      */
     public function writeEntity(\BO\Zmsentities\Useraccount $entity, $resolveReferences = 0)
     {
+        if ($this->readIsUserExisting($entity->id)) {
+            throw new Exception\Useraccount\DuplicateEntry();
+        }
         $query = new Query\Useraccount(Query\Base::INSERT);
         $values = $query->reverseEntityMapping($entity);
         $query->addValues($values);
@@ -213,7 +216,6 @@ class Useraccount extends Base
     {
         $query = Query\Useraccount::QUERY_DELETE_ASSIGNED_DEPARTMENTS;
         $userId = $this->readEntityIdByLoginName($loginName);
-        $statement = $this->getWriter()->prepare($query);
-        $statement->execute([$userId]);
+        return $this->perform($query, [$userId]);
     }
 }

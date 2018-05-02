@@ -50,8 +50,8 @@ class UserAccountTest extends Base
 
     public function testReadLoggedInHashByName()
     {
-        $this->writeTestLogin();
-        $hash = (new Workstation())->readLoggedInHashByName('johndoe');
+        $workstation = $this->writeTestLogin();
+        $hash = (new Workstation())->readLoggedInHashByName($workstation->useraccount->id);
         $this->assertTrue(null !== $hash);
     }
 
@@ -156,14 +156,13 @@ class UserAccountTest extends Base
         $this->assertFalse(isset($entity->id), "Failed to delete User from Database.");
     }
 
-    public function testDublicate()
+    public function testDuplicate()
     {
         $query = new Query();
         $input = $this->getTestEntity();
+        $this->expectException('\BO\Zmsdb\Exception\Useraccount\DuplicateEntry');
         $userAccount = $query->writeEntity($input);
         $userAccount = $query->writeEntity($input);
-        $query->deleteEntity($userAccount->id);
-        $this->assertFalse($query->readIsUserExisting($userAccount->id), "Dublicate UserAccount Entry found in DB.");
     }
 
     public function testLoginFailed()
@@ -179,6 +178,7 @@ class UserAccountTest extends Base
         $workstationInput = (new WorkstationEntity())->getExample();
         $workstationInput->id = $workstation->id;
         $workstationInput->hint = '';
+        $workstationInput['useraccount']['id'] = $workstation->useraccount->id;
         $workstation = (new Workstation())->updateEntity($workstationInput);
         $this->assertEquals('3', $workstation->hint);
     }
@@ -188,6 +188,7 @@ class UserAccountTest extends Base
         $this->dateTime = new \DateTimeImmutable("2016-04-01 11:55");
         $query = new Query();
         $input = $this->getTestEntity();
+        $input->id = $input->id . rand();
         //first write userAccount example in Database
         $userAccount = $query->writeEntity($input);
         //login workstation by useraccount
@@ -195,6 +196,7 @@ class UserAccountTest extends Base
         //get example workstation account with scope etc and give id from logged in workstation for update
         $workstationInput = (new WorkstationEntity())->getExample();
         $workstationInput->id = $workstation->id;
+        $workstationInput['useraccount']['id'] = $input->id;
         //update workstation to read by scope testing
         return (new Workstation())->updateEntity($workstationInput, 1);
     }
