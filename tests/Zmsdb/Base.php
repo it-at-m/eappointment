@@ -8,6 +8,7 @@ abstract class Base extends TestCase
 {
     public function setUp()
     {
+        \BO\Zmsdb\Scope::$cache = [];
         \BO\Zmsdb\Connection\Select::setTransaction();
         \BO\Zmsdb\Connection\Select::setProfiling();
         \BO\Zmsdb\Connection\Select::setQueryCache(false);
