@@ -211,9 +211,10 @@ class Scope extends Base
         if (! $this->readIsGivenNumberInContingent($scopeId) && $respectContingent) {
             throw new Exception\Scope\GivenNumberCountExceeded();
         }
-        $this->getReader()
-            ->fetchValue((new Query\Scope(Query\Base::SELECT))
-            ->getQueryLastWaitingNumber(), ['scope_id' => $scopeId]);
+        $this->perform(
+            (new Query\Scope(Query\Base::SELECT))->getQueryLastWaitingNumber(),
+            ['scope_id' => $scopeId]
+        );
         $entity = $this->readEntity($scopeId)->updateStatusQueue($dateTime);
         $scope = $this->updateEntity($scopeId, $entity);
         return $scope->getStatus('queue', 'lastGivenNumber');
