@@ -91,11 +91,17 @@ class Message implements \JsonSerializable
             "data" => $this->data,
         ];
         if (\App::DEBUG) {
+            // @codeCoverageIgnoreStart
             $message['profiler'] = $this->getProfilerData();
+            // @codeCoverageIgnoreEnd
         }
         return $message;
     }
 
+    /**
+     * @codeCoverageIgnore
+     *
+     */
     protected function getProfilerData()
     {
         $profiles = [];
