@@ -5,6 +5,8 @@
 
 namespace BO\Slim\PhpUnit;
 
+use PHPUnit\Framework\TestCase;
+
 use \BO\Slim\Middleware\SessionMiddleware;
 use \BO\Slim\Middleware\Session\SessionHuman;
 use \BO\Slim\Middleware\Session\SessionData;
@@ -12,7 +14,7 @@ use \BO\Slim\Middleware\Session\SessionData;
 /**
  * @SuppressWarnings(Coupling)
  */
-abstract class Base extends \PHPUnit_Framework_TestCase
+abstract class Base extends TestCase
 {
     use \Helmich\Psr7Assert\Psr7Assertions;
 
