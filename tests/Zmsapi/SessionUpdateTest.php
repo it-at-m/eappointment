@@ -20,7 +20,7 @@ class SessionUpdateTest extends Base
 
     public function testEmpty()
     {
-        $this->setExpectedException('BO\Mellon\Failure\Exception');
+        $this->expectException('BO\Mellon\Failure\Exception');
         $this->render([], [
             '__body' => '',
         ], []);
@@ -37,7 +37,7 @@ class SessionUpdateTest extends Base
 
     public function testUnknownRequest()
     {
-        $this->setExpectedException('\BO\Zmsapi\Exception\Matching\RequestNotFound');
+        $this->expectException('\BO\Zmsapi\Exception\Matching\RequestNotFound');
         $this->render([], [
             '__body' => '{
                 "id": "unittest",
@@ -53,7 +53,7 @@ class SessionUpdateTest extends Base
 
     public function testUnknownProvider()
     {
-        $this->setExpectedException('\BO\Zmsapi\Exception\Matching\ProviderNotFound');
+        $this->expectException('\BO\Zmsapi\Exception\Matching\ProviderNotFound');
         $this->render([], [
             '__body' => '{
                 "id": "unittest",
@@ -69,7 +69,7 @@ class SessionUpdateTest extends Base
 
     public function testNotMatching()
     {
-        $this->setExpectedException('\BO\Zmsapi\Exception\Matching\MatchingNotFound');
+        $this->expectException('\BO\Zmsapi\Exception\Matching\MatchingNotFound');
         $this->render([], [
             '__body' => '{
                 "id": "unittest",

@@ -17,7 +17,7 @@ class ScopeListByClusterTest extends Base
     public function testEmpty()
     {
         $this->setWorkstation();
-        $this->setExpectedException('\ErrorException');
+        $this->expectException('\ErrorException');
         $this->render([], [], []);
     }
 

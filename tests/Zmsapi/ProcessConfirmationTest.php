@@ -43,7 +43,7 @@ class ProcessConfirmationTest extends Base
 
     public function testEmpty()
     {
-        $this->setExpectedException('\BO\Mellon\Failure\Exception');
+        $this->expectException('\BO\Mellon\Failure\Exception');
         $this->render([], [
             '__body' => '',
         ], []);
@@ -51,7 +51,7 @@ class ProcessConfirmationTest extends Base
 
     public function testProcessNotFound()
     {
-        $this->setExpectedException('\BO\Zmsapi\Exception\Process\ProcessNotFound');
+        $this->expectException('\BO\Zmsapi\Exception\Process\ProcessNotFound');
         $this->render([], [
             '__body' => '{
                 "id": 123456,
@@ -82,7 +82,7 @@ class ProcessConfirmationTest extends Base
 
     public function testAuthKeyMatchFailed()
     {
-        $this->setExpectedException('\BO\Zmsapi\Exception\Process\AuthKeyMatchFailed');
+        $this->expectException('\BO\Zmsapi\Exception\Process\AuthKeyMatchFailed');
         $this->render([], [
             '__body' => '{
                 "id": '. self::PROCESS_ID .',

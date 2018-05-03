@@ -17,7 +17,7 @@ class OrganisationByDepartmentTest extends Base
 
     public function testNoRights()
     {
-        $this->setExpectedException('BO\Zmsentities\Exception\UserAccountMissingLogin');
+        $this->expectException('BO\Zmsentities\Exception\UserAccountMissingLogin');
         $this->expectExceptionCode(401);
         $this->render(['id' => 9999], [], []);
     }
@@ -25,7 +25,7 @@ class OrganisationByDepartmentTest extends Base
     public function testDepartmentNotFound()
     {
         $this->setWorkstation()->getUseraccount()->setRights('superuser', 'useraccount');
-        $this->setExpectedException('BO\Zmsapi\Exception\Department\DepartmentNotFound');
+        $this->expectException('BO\Zmsapi\Exception\Department\DepartmentNotFound');
         $this->expectExceptionCode(404);
         $this->render(['id' => 9999], [], []);
     }

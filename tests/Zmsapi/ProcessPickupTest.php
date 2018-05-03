@@ -115,7 +115,7 @@ class ProcessPickupTest extends Base
     {
         $workstation = $this->setWorkstation(138, 'berlinonline', 141);
         $workstation['queue']['clusterEnabled'] = 1;
-        $this->setExpectedException('\BO\Zmsapi\Exception\Process\ProcessNotFound');
+        $this->expectException('\BO\Zmsapi\Exception\Process\ProcessNotFound');
         $this->render([], [
             '__body' => '{
                 "id": 123456,
@@ -129,7 +129,7 @@ class ProcessPickupTest extends Base
     {
         $workstation = $this->setWorkstation(138, 'berlinonline', 141);
         $workstation['queue']['clusterEnabled'] = 1;
-        $this->setExpectedException('\BO\Zmsapi\Exception\Process\AuthKeyMatchFailed');
+        $this->expectException('\BO\Zmsapi\Exception\Process\AuthKeyMatchFailed');
         $this->render([], [
             '__body' => '{
                 "id": 10029,

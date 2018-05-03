@@ -42,7 +42,7 @@ class ScopeGetTest extends Base
 
     public function testEmpty()
     {
-        $this->setExpectedException('\ErrorException');
+        $this->expectException('\ErrorException');
         $this->render([], [], []);
     }
 

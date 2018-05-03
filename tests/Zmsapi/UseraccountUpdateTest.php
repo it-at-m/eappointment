@@ -37,7 +37,7 @@ class UseraccountUpdateTest extends Base
 
     public function testMissingLogin()
     {
-        $this->setExpectedException('BO\Zmsentities\Exception\UserAccountMissingLogin');
+        $this->expectException('BO\Zmsentities\Exception\UserAccountMissingLogin');
         $this->expectExceptionCode(401);
         $this->render(['loginname' => 'testadmin'], [], []);
     }
@@ -45,7 +45,7 @@ class UseraccountUpdateTest extends Base
     public function testMissingRights()
     {
         $this->setWorkstation();
-        $this->setExpectedException('BO\Zmsentities\Exception\UserAccountMissingRights');
+        $this->expectException('BO\Zmsentities\Exception\UserAccountMissingRights');
         $this->expectExceptionCode(403);
         $this->render(['loginname' => 'testadmin'], [], []);
     }
@@ -53,7 +53,7 @@ class UseraccountUpdateTest extends Base
     public function testEmpty()
     {
         $this->setWorkstation()->getUseraccount()->setRights('useraccount');
-        $this->setExpectedException('\BO\Mellon\Failure\Exception');
+        $this->expectException('\BO\Mellon\Failure\Exception');
         $this->render(['loginname' => 'testadmin'], [], []);
     }
 

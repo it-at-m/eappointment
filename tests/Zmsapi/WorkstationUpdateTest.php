@@ -74,7 +74,7 @@ class WorkstationUpdateTest extends Base
 
     public function testAccessFailed()
     {
-        $this->setExpectedException('BO\Zmsapi\Exception\Workstation\WorkstationAccessFailed');
+        $this->expectException('BO\Zmsapi\Exception\Workstation\WorkstationAccessFailed');
         $this->expectExceptionCode(404);
         $currentworkstation = $this->setWorkstation();
         $workstation = clone $currentworkstation;

@@ -19,7 +19,7 @@ class ScopeDeleteTest extends Base
     public function testEmpty()
     {
         $this->setWorkstation()->getUseraccount()->setRights('scope');
-        $this->setExpectedException('\ErrorException');
+        $this->expectException('\ErrorException');
         $this->render([], [], []);
     }
 
@@ -34,7 +34,7 @@ class ScopeDeleteTest extends Base
     public function testNoRights()
     {
         $this->setWorkstation();
-        $this->setExpectedException('BO\Zmsentities\Exception\UserAccountMissingRights');
+        $this->expectException('BO\Zmsentities\Exception\UserAccountMissingRights');
         $this->render(['id' => 615], [], []); //Ordnungsamt Charlottenburg
     }
 }

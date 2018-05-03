@@ -9,10 +9,10 @@
          processIsolation="false"
          stopOnFailure="true"
          syntaxCheck="false"
-         bootstrap="tests/bootstrap.php"
+         bootstrap="tests/Zmsapi/bootstrap.php"
 >
     <testsuites>
-        <testsuite name="Zmsentities Test Suite">
+        <testsuite name="Zmsapi Test Suite">
             <directory>./tests/Zmsapi/</directory>
         </testsuite>
     </testsuites>

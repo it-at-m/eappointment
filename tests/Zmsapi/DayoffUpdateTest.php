@@ -17,7 +17,7 @@ class DayoffUpdateTest extends Base
 
     public function testNoLogin()
     {
-        $this->setExpectedException('BO\Zmsentities\Exception\UserAccountMissingLogin');
+        $this->expectException('BO\Zmsentities\Exception\UserAccountMissingLogin');
         $this->render(['year' => self::YEAR], [
             '__body' => '',
         ], []);
@@ -41,7 +41,7 @@ class DayoffUpdateTest extends Base
     {
         $this->setWorkstation();
         User::$workstation->useraccount->setRights('superuser');
-        $this->setExpectedException('BO\Mellon\Failure\Exception');
+        $this->expectException('BO\Mellon\Failure\Exception');
         $this->render([], [], []);
     }
 
