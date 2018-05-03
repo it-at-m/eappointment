@@ -29,6 +29,9 @@ tests: now # run tests
 	vendor/bin/phpcs --standard=psr2 src/
 	php vendor/bin/phpunit --coverage-html public/_tests/coverage/
 
+paratest: # init parallel unit testing with 5 processes
+	vendor/bin/paratest -c paratest.xml --coverage-html public/_tests/coverage/
+
 fix: #f fix code
 	php vendor/bin/phpcbf --standard=psr2 src/
 	php vendor/bin/phpcbf --standard=psr2 tests/
