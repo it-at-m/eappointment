@@ -29,7 +29,7 @@ class ClusterUpdateTest extends Base
     {
         $this->setWorkstation();
         User::$workstation->useraccount->setRights('cluster');
-        $this->setExpectedException('\BO\Mellon\Failure\Exception');
+        $this->expectException('\BO\Mellon\Failure\Exception');
         $this->render([], [], []);
     }
 

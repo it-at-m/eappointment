@@ -26,7 +26,7 @@ class ScopeCalldisplayImageDataDeleteTest extends Base
     public function testNoRights()
     {
         $this->setWorkstation()->getUserAccount()->setRights('scope');
-        $this->setExpectedException('BO\Zmsentities\Exception\UserAccountMissingRights');
+        $this->expectException('BO\Zmsentities\Exception\UserAccountMissingRights');
         $this->render(['id' => self::SCOPE_ID], [
             '__body' => '',
         ], []);

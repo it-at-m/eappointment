@@ -20,7 +20,7 @@ class ClusterByScopeIdTest extends Base
     public function testEmpty()
     {
         $this->setWorkstation()->getUseraccount()->setRights('cluster');
-        $this->setExpectedException('\ErrorException');
+        $this->expectException('\ErrorException');
         $this->render([], [], []);
     }
 

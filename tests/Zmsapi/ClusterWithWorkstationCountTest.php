@@ -21,7 +21,7 @@ class ClusterWithWorkstationCountTest extends Base
     {
         $this->setWorkstation();
         User::$workstation->useraccount->setRights('cluster');
-        $this->setExpectedException('\ErrorException');
+        $this->expectException('\ErrorException');
         $this->render([], [], []);
     }
 

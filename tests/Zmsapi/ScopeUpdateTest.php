@@ -21,7 +21,7 @@ class ScopeUpdateTest extends Base
     public function testEmpty()
     {
         $this->setWorkstation()->getUseraccount()->setRights('scope');
-        $this->setExpectedException('\BO\Mellon\Failure\Exception');
+        $this->expectException('\BO\Mellon\Failure\Exception');
         $this->render([], [], []);
     }
 
@@ -60,7 +60,7 @@ class ScopeUpdateTest extends Base
     public function testNoRights()
     {
         $this->setWorkstation();
-        $this->setExpectedException('BO\Zmsentities\Exception\UserAccountMissingRights');
+        $this->expectException('BO\Zmsentities\Exception\UserAccountMissingRights');
         $this->render(['id' => 141], [
             '__body' => $this->readFixture('GetScope_lessData.json')
         ], []);

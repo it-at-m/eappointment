@@ -34,7 +34,7 @@ class WorkstationProcessWaitingnumberTest extends Base
         $workstation = $this->setWorkstation();
         $workstation->queue['clusterEnabled'] = 1;
         $workstation->scope['id'] = 146; //ghostworkstation count 3
-        $this->setExpectedException('\BO\Mellon\Failure\Exception');
+        $this->expectException('\BO\Mellon\Failure\Exception');
         $this->render([], [], []);
     }
 

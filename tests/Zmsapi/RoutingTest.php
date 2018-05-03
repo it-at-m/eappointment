@@ -9,6 +9,6 @@ class RoutingTest extends Base
 
     public function testRendering()
     {
-        \BO\Slim\Bootstrap::loadRouting(\App::APP_PATH . '/routing.php');
+        $this->assertEmpty(\BO\Slim\Bootstrap::loadRouting(\App::APP_PATH . '/routing.php'));
     }
 }

@@ -30,7 +30,7 @@ class DepartmentAddClusterTest extends Base
             ->addDepartment([
                 'id' => 72
             ]);
-        $this->setExpectedException('\BO\Mellon\Failure\Exception');
+        $this->expectException('\BO\Mellon\Failure\Exception');
         $this->render(['id' => 72], [], []);
     }
 
