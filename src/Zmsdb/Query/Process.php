@@ -58,7 +58,7 @@ class Process extends Base implements MappingInterface
 
     public function getQueryNewProcessId()
     {
-        $random = rand(1, 100);
+        $random = rand(20, 100);
         return 'SELECT ps.processId AS `nextid`
             FROM `process_sequence` ps LEFT JOIN `' . self::getTablename() . '` p
                 ON ps.processId = p.BuergerID
