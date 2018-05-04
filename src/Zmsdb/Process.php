@@ -97,7 +97,8 @@ class Process extends Base implements Interfaces\ResolveReferences
         \BO\Zmsentities\Process $process,
         \DateTimeInterface $dateTime,
         $parentProcess = 0,
-        $childProcessCount = 0
+        $childProcessCount = 0,
+        $retry = true
     ) {
         $query = new Query\Process(Query\Base::INSERT);
         $process->id = $this->readNewProcessId();
@@ -105,7 +106,16 @@ class Process extends Base implements Interfaces\ResolveReferences
         $process->createTimestamp = $dateTime->getTimestamp();
         $query->addValuesNewProcess($process, $parentProcess, $childProcessCount);
         $query->addValuesUpdateProcess($process, $dateTime);
-        $this->writeItem($query);
+        try {
+            $this->writeItem($query);
+        } catch (Exception\Pdo\PDOFailed $exception) {
+            if ($retry) {
+                // First try might fail if two processes are created with the same number at the same time
+                sleep(1); // Let the other process complete his transaction
+                return $this->writeNewProcess($process, $dateTime, $parentProcess, $childProcessCount, false);
+            }
+            throw new Exception\Process\ProcessCreateFailed($exception->getMessage());
+        }
         (new Slot())->writeSlotProcessMappingFor($process->id);
         Log::writeLogEntry("CREATE (Process::writeNewProcess) $process ", $process->id);
         if (!$process->toQueue($dateTime)->withAppointment) {

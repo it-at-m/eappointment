@@ -51,6 +51,17 @@ class ProcessTest extends Base
         $this->assertEquals($now->getTimestamp(), $process->queue['arrivalTime']);
     }
 
+    public function testExceptionCreate()
+    {
+        $this->expectException('\BO\Zmsdb\Exception\Process\ProcessCreateFailed');
+
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $query = new ProcessStatusFree();
+        $input = $this->getTestProcessEntity();
+        $input['queue']['number'] = 'invalidNumber';
+        $process = $query->writeEntityReserved($input, $now);
+    }
+
     public function testExceptionAlreadyReserved()
     {
         $this->expectException('\BO\Zmsdb\Exception\Process\ProcessReserveFailed');
