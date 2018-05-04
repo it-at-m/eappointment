@@ -21,7 +21,7 @@ class CalculateSlots
     {
         if ($this->verbose) {
             $time = round(microtime(true) - $this->startTime, 3);
-            error_log(sprintf("[CalculateSlots %'.07s] %s", "$time", $message));
+            error_log(sprintf("[CalculateSlots %07.3f] %s", "$time", $message));
         }
         return $this;
     }
@@ -32,19 +32,23 @@ class CalculateSlots
         $scopeList = (new \BO\Zmsdb\Scope())->readList(1);
         $slotQuery = new \BO\Zmsdb\Slot();
         foreach ($scopeList as $scope) {
-            $this->log("$scope");
+            $this->log("Calculate slots for $scope");
             $availabilityList = (new \BO\Zmsdb\Availability)
                 ->readList($scope->id)
                 ->withType('appointment')
                 ;
             foreach ($availabilityList as $availability) {
                 $availability->scope = $scope; //dayoff is required
-                $this->log("$availability");
-                $slotQuery->writeByAvailability($availability, $now);
+                //$this->log("$availability");
+                if ($slotQuery->writeByAvailability($availability, $now)) {
+                    $this->log("Updated $availability");
+                }
             }
         }
         $this->log("Update Slot-Process-Mapping");
         $slotQuery->updateSlotProcessMapping();
+        $this->log("Commit changes (may take a while)");
         \BO\Zmsdb\Connection\Select::writeCommit();
+        $this->log("Slot calculation finished");
     }
 }
