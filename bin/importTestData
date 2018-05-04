@@ -20,8 +20,8 @@ if (preg_grep('/--commit/', $argv)) {
     \BO\Zmsdb\Cli\Db::startConfigDataImport();
     $importer = new \BO\Zmsdb\Source\Dldb();
     $importer->startImport(true);
-    $calculator = new \BO\Zmsdb\Helper\CalculateSlots(preg_grep('#^--?v(erbose)?$#', $argv));
-    $calculator->writeCalculations(\App::$now);
+    $calculator = new \BO\Zmsdb\Helper\CalculateSlots(true);
+    $calculator->writeCalculations(new \DateTimeImmutable("2016-04-01T11:55:00+02:00"));
 } else {
     $dbname = \BO\Zmsdb\Connection\Select::$writeSourceName;
     $username = \BO\Zmsdb\Connection\Select::$username;
