@@ -36,8 +36,7 @@ class ProcessQueue extends BaseController
                 'page/printWaitingNumber.twig',
                 array(
                     'title' => 'Wartenummer drucken',
-                    'process' => $process,
-                    'currentDate' => \App::$now
+                    'process' => $process
                 )
             );
         }
