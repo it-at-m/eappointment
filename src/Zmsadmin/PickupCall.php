@@ -26,12 +26,7 @@ class PickupCall extends BaseController
         $processId = Validator::value($args['id'])->isNumber()->getValue();
         $process = new \BO\Zmsentities\Process(['id' => $processId]);
 
-        try {
-            $workstation = \App::$http->readPostResult('/workstation/process/called/', $process)->getEntity();
-        } catch (\BO\Zmsapi\Exception\Workstation\WorkstationHasAssignedProcess $exception) {
-            $exception->data = $workstation;
-            throw $exception;
-        }
+        $workstation = \App::$http->readPostResult('/workstation/process/called/', $process)->getEntity();
 
         $process = \App::$http->readPostResult('/process/status/pickup/', $workstation->process)->getEntity();
         $workstation->testMatchingProcessScope($workstation->getScopeList());

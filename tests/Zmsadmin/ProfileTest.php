@@ -28,6 +28,67 @@ class ProfileTest extends Base
         $this->assertEquals(200, $response->getStatusCode());
     }
 
+    public function testUpdateFailed()
+    {
+        $exception = new \BO\Zmsclient\Exception();
+        $exception->template = 'BO\Zmsentities\Exception\SchemaValidation';
+        $exception->data['password']['messages'] = [
+            'Nutzername oder das Passwort wurden falsch eingegeben'
+        ];
+
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/workstation/password/',
+                    'exception' => $exception
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, [
+            'id' => 'testadmin',
+            'password' => 'vorschau',
+            'changePassword' => ['myPassword', 'myPassword'],
+            'save' => 'save'
+        ], [], 'POST');
+        $this->assertContains('Nutzername oder das Passwort wurden falsch eingegeben', (string)$response->getBody());
+    }
+
+    public function testUnknownException()
+    {
+        $this->expectException('BO\Zmsclient\Exception');
+        $exception = new \BO\Zmsclient\Exception();
+        $exception->template = '';
+
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/workstation/password/',
+                    'exception' => $exception
+                ]
+            ]
+        );
+        $this->render($this->arguments, [
+            'id' => 'testadmin',
+            'password' => 'vorschau',
+            'changePassword' => ['myPassword', 'myPassword'],
+            'save' => 'save'
+        ], [], 'POST');
+    }
+
     public function testRenderingUpdate()
     {
         \App::$now = new \DateTimeImmutable('2016-04-01 11:55:00', new \DateTimeZone('Europe/Berlin'));
