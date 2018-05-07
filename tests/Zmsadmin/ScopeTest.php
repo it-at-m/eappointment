@@ -355,9 +355,4 @@ class ScopeTest extends Base
         );
         $this->assertEquals(200, $response->getStatusCode());
     }
-
-    public function testTwigExceptionHandler()
-    {
-        //$response = \BO\Zmsadmin\Helper\TwigExceptionHandler::withHtml($request, $response, $exception, $status);
-    }
 }

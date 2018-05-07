@@ -35,5 +35,11 @@ dev: # init development system
 	$(COMPOSER) update
 	npm install
 
+update: # update with devel composer.json
+	COMPOSER=composer.devel.json $(COMPOSER) update
+
 coverage:
 	php vendor/bin/phpunit --coverage-html public/_tests/coverage/
+
+paratest: # init parallel unit testing with 5 processes
+	vendor/bin/paratest -p20 --coverage-html public/_tests/coverage/
