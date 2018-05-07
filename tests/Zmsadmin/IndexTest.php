@@ -58,7 +58,7 @@ class IndexTest extends Base
         $this->assertEquals(302, $response->getStatusCode());
     }
 
-    public function testAlreadyLoggedIn()
+    public function testWelcomeBack()
     {
         $this->setApiCalls(
             [
@@ -71,6 +71,85 @@ class IndexTest extends Base
         );
         $response = $this->render($this->arguments, [], []);
         $this->assertContains('Willkommen zurück', (string)$response->getBody());
+    }
+
+    public function testUnknownException()
+    {
+        $this->expectException('\BO\Zmsclient\Exception');
+        $exception = new \BO\Zmsclient\Exception();
+        $exception->template = '';
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'exception' => $exception
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/workstation/login/',
+                    'exception' => $exception
+                ]
+            ]
+        );
+        $this->render($this->arguments, $this->parameters, [], 'POST');
+    }
+
+    public function testAlreadyLoggedIn()
+    {
+        $this->expectException('\BO\Zmsclient\Exception');
+        $exception = new \BO\Zmsclient\Exception();
+        $exception->template = 'BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn';
+        $exception->data['authkey'] = 'unit';
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'exception' => $exception
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/workstation/login/',
+                    'exception' => $exception
+                ]
+            ]
+        );
+        $this->render($this->arguments, $this->parameters, [], 'POST');
+    }
+
+    public function testLoginFailedBySchemaValidation()
+    {
+        $exception = new \BO\Zmsclient\Exception();
+        $exception->template = 'BO\Zmsentities\Exception\SchemaValidation';
+        $exception->data['password']['messages'] = [
+            'Der Nutzername oder das Passwort wurden falsch eingegeben'
+        ];
+
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'response' => $this->readFixture("GET_Workstation_UserAccountMissingLogin.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/workstation/login/',
+                    'exception' => $exception
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, [
+            'loginName' => 'un',
+            'password' => 'test',
+            'login_form_validate' => 1
+        ], [], 'POST');
+        $this->assertContains(
+            'Das eingegebene Passwort und der Nutzername passen nicht zusammen',
+            (string)$response->getBody()
+        );
+        $this->assertContains('form-group has-error', (string)$response->getBody());
     }
 
     public function testLoginFailed()

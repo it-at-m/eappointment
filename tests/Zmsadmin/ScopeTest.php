@@ -355,4 +355,172 @@ class ScopeTest extends Base
         );
         $this->assertEquals(200, $response->getStatusCode());
     }
+
+    public function testUpdateFailed()
+    {
+        $exception = new \BO\Zmsclient\Exception();
+        $exception->template = 'BO\Zmsentities\Exception\SchemaValidation';
+        $exception->data['emailFrom']['messages'] = [
+            'Die E-Mail Adresse muss eine valide E-Mail im Format max@mustermann.de sein'
+        ];
+
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/provider/dldb/',
+                    'parameters' => ['isAssigned' => true],
+                    'response' => $this->readFixture("GET_providerlist_assigned.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/provider/dldb/',
+                    'parameters' => ['isAssigned' => false],
+                    'response' => $this->readFixture("GET_providerlist_notassigned.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_scope_141.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/department/',
+                    'response' => $this->readFixture("GET_department_74.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/organisation/',
+                    'response' => $this->readFixture("GET_organisation_71_resolved3.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/imagedata/calldisplay/',
+                    'response' => $this->readFixture("GET_imagedata_empty.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/scope/141/',
+                    'exception' => $exception
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, [
+            'provider' => [
+                'source' => 'dldb',
+                'id' => '122217',
+            ],
+            'contact' => [
+                'name' => 'Bürgeramt Heerstraße',
+                'street' => 'Heerstr. 12',
+                'email' => '',
+            ],
+            'hint' => [
+                'Nr. wird zum Termin aufgerufen ',
+                ' Nr. wird zum Termin aufgerufen'
+            ],
+            'save' => 'save',
+            '__file' => [
+                'uploadCallDisplayImage' => new \Slim\Http\UploadedFile(
+                    dirname(__FILE__) . '/fixtures/baer.png',
+                    'baer.png',
+                    'image/png',
+                    13535
+                )
+            ]
+
+        ], [], 'POST');
+        $this->assertContains(
+            'Die E-Mail Adresse muss eine valide E-Mail im Format max@mustermann.de sein',
+            (string)$response->getBody()
+        );
+    }
+
+    public function testUnknownException()
+    {
+        $this->expectException('BO\Zmsclient\Exception');
+        $exception = new \BO\Zmsclient\Exception();
+        $exception->template = '';
+
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/provider/dldb/',
+                    'parameters' => ['isAssigned' => true],
+                    'response' => $this->readFixture("GET_providerlist_assigned.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/provider/dldb/',
+                    'parameters' => ['isAssigned' => false],
+                    'response' => $this->readFixture("GET_providerlist_notassigned.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_scope_141.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/department/',
+                    'response' => $this->readFixture("GET_department_74.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/organisation/',
+                    'response' => $this->readFixture("GET_organisation_71_resolved3.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/imagedata/calldisplay/',
+                    'response' => $this->readFixture("GET_imagedata_empty.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/scope/141/',
+                    'exception' => $exception
+                ]
+            ]
+        );
+        $this->render($this->arguments, [
+            'provider' => [
+                'source' => 'dldb',
+                'id' => '122217',
+            ],
+            'contact' => [
+                'name' => 'Bürgeramt Heerstraße',
+                'street' => 'Heerstr. 12',
+                'email' => '',
+            ],
+            'hint' => [
+                'Nr. wird zum Termin aufgerufen ',
+                ' Nr. wird zum Termin aufgerufen'
+            ],
+            'save' => 'save',
+            '__file' => [
+                'uploadCallDisplayImage' => new \Slim\Http\UploadedFile(
+                    dirname(__FILE__) . '/fixtures/baer.png',
+                    'baer.png',
+                    'image/png',
+                    13535
+                )
+            ]
+
+        ], [], 'POST');
+    }
 }

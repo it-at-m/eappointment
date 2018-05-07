@@ -7,7 +7,7 @@
 namespace BO\Zmsadmin;
 
 /**
-  * Init Controller to display next Button Template only
+  * Init Controller to cancel called pickup
   *
   */
 class PickupCallCancel extends BaseController
@@ -24,14 +24,12 @@ class PickupCallCancel extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
 
         if ($workstation->process['id']) {
-            \App::$http->readDeleteResult('/workstation/process/')->getEntity();
+            \App::$http->readDeleteResult('/workstation/process/');
         }
         return \BO\Slim\Render::withHtml(
             $response,
             'block/pickup/canceled.twig',
-            array(
-                'workstation' => $workstation
-            )
+            array()
         );
     }
 }

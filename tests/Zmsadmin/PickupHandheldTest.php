@@ -52,6 +52,26 @@ class PickupHandheldTest extends Base
         $this->assertEquals(200, $response->getStatusCode());
     }
 
+    public function testRenderingWithCalledProcess()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_workstation_with_process.json")
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, [
+            'selectedprocess' => 82252
+        ], [], 'POST');
+        $this->assertContains('pickup-handheld-view', (string)$response->getBody());
+        $this->assertContains('data-selected-process="82252"', (string)$response->getBody());
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
     public function testRenderingWithSelectedProcessFailed()
     {
         $exception = new \BO\Zmsclient\Exception();

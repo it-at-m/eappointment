@@ -65,4 +65,27 @@ class PickupCallTest extends Base
         );
         $this->render($this->arguments, $this->parameters, []);
     }
+
+    public function testAlreadyCalledProcess()
+    {
+        $this->expectException('\BO\Zmsclient\Exception');
+        $exception = new \BO\Zmsclient\Exception();
+        $exception->template = 'BO\Zmsapi\Exception\Workstation\WorkstationHasAssignedProcess';
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_workstation_with_process.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/workstation/process/called/',
+                    'exception' => $exception
+                ]
+            ]
+        );
+        $this->render($this->arguments, $this->parameters, []);
+    }
 }
