@@ -156,12 +156,12 @@ class TicketprinterTest extends Base
     {
         $duration = 30 * 24 * 3600;
         $query = new Query();
-        $time = new \DateTimeImmutable("2016-11-28");
+        $time = new \DateTimeImmutable("2016-11-27 14:31");
         $time = $time->setTimestamp($time->getTimestamp() - $duration);
         $ticketprinterList = $query->readExpiredTicketprinterList($time);
         $this->assertEquals(3, $ticketprinterList->count());
 
-        $time = new \DateTimeImmutable("2016-09-28");
+        $time = new \DateTimeImmutable("2016-11-27 14:30");
         $time = $time->setTimestamp($time->getTimestamp() - $duration);
         $ticketprinterList = $query->readExpiredTicketprinterList($time);
         $this->assertEquals(2, $ticketprinterList->count());
