@@ -13,7 +13,7 @@ class FileUploader
 {
     public $imageData;
 
-    protected $allowedTypes = array('image/gif','image/jpeg','image/png');
+    protected $allowedTypes = array('image/gif','image/jpeg','image/png','image/svg+xml');
 
     protected $files = null;
 
@@ -66,7 +66,7 @@ class FileUploader
                 $data = file_get_contents($this->uploadFile->file);
                 $image->content = base64_encode($data);
             } else {
-                throw new \Exception('Wrong Mediatype given, use gif, jpg or png');
+                throw new \Exception('Wrong Mediatype given, use gif, jpg, svg or png');
             }
         }
         return $image;

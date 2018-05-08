@@ -149,7 +149,7 @@ class ScopeTest extends Base
     public function testSaveWithUploadImageFailed()
     {
         $this->expectException('\Exception');
-        $this->expectExceptionMessage('Wrong Mediatype given, use gif, jpg or png');
+        $this->expectExceptionMessage('Wrong Mediatype given, use gif, jpg, svg or png');
         \App::$now = new \DateTimeImmutable('2016-04-01 11:55:00', new \DateTimeZone('Europe/Berlin'));
         $this->setApiCalls(
             [
