@@ -49,7 +49,7 @@ class WorkstationProcessFinishedTest extends Base
         $this->render($this->arguments, $this->parameters, []);
     }
 
-    public function testRenderingSave()
+    public function testRenderingSaveWithIgnoreRequests()
     {
         $this->setApiCalls(
             [
@@ -83,9 +83,93 @@ class WorkstationProcessFinishedTest extends Base
             ],
             'pickupScope' => 141,
             'statistic' => [
-                'clientsCount' => 1,
-                'ignoreRequests' => 1
+                'clientsCount' => 1
+            ],
+            'ignoreRequests' => 1
+        ], [], 'POST');
+        $this->assertRedirect($response, '/workstation/');
+        $this->assertEquals(302, $response->getStatusCode());
+    }
+
+    public function testRenderingSaveWithNoRequestsPerformed()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_workstation_with_process.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/request/',
+                    'response' => $this->readFixture("GET_scope_141_requestlist.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/process/status/finished/',
+                    'response' => $this->readFixture("GET_process_82252_12a2.json")
+                ]
             ]
+        );
+        $response = $this->render($this->arguments, [
+            'process' => [
+                'id' => 157017,
+                'clients' => [
+                    [
+                        'familyName' => 'M252',
+                        'email' => 'zms@service.berlinonline.de'
+                    ]
+                ]
+            ],
+            'pickupScope' => 141,
+            'statistic' => [
+                'clientsCount' => 1
+            ],
+            'noRequestsPerformed' => 1
+        ], [], 'POST');
+        $this->assertRedirect($response, '/workstation/');
+        $this->assertEquals(302, $response->getStatusCode());
+    }
+
+    public function testRenderingSaveWithRequestCountList()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_workstation_with_process.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/request/',
+                    'response' => $this->readFixture("GET_scope_141_requestlist.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/process/status/finished/',
+                    'response' => $this->readFixture("GET_process_82252_12a2.json")
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, [
+            'process' => [
+                'id' => 157017,
+                'clients' => [
+                    [
+                        'familyName' => 'M252',
+                        'email' => 'zms@service.berlinonline.de'
+                    ]
+                ]
+            ],
+            'pickupScope' => 141,
+            'statistic' => [
+                'clientsCount' => 1
+            ],
+            'requestCountList' => ['120335' => 1]
         ], [], 'POST');
         $this->assertRedirect($response, '/workstation/');
         $this->assertEquals(302, $response->getStatusCode());
