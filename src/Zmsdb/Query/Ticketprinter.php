@@ -53,15 +53,9 @@ class Ticketprinter extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionDeleteInterval($deleteInSeconds)
+    public function addConditionDeleteInterval($expirationDate)
     {
-        $this->query->where(
-            self::expression(
-                'UNIX_TIMESTAMP(NOW()) - `ticketprinter`.`timestamp`'
-            ),
-            '>=',
-            $deleteInSeconds
-        );
+        $this->query->where('ticketprinter.timestamp', '<=', $expirationDate->getTimestamp());
         return $this;
     }
 

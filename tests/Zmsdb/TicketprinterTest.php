@@ -144,12 +144,27 @@ class TicketprinterTest extends Base
         $query = new Query();
         $input = $this->getTestEntity();
         $entity = $query->writeEntity($input, 78); // with parent Treptow-Köpenick
-        
+
         $collection = $query->readByOrganisationId(78);
         $this->assertEquals(true, $collection->hasEntity($entity->hash)); //Inserted Test Entity exists
 
         $deleteTest = $query->deleteEntity($entity->id);
         $this->assertTrue($deleteTest, "Failed to delete Ticketprinter from Database.");
+    }
+
+    public function testReadExpiredTicketprinterList()
+    {
+        $duration = 30 * 24 * 3600;
+        $query = new Query();
+        $time = new \DateTimeImmutable("2016-11-28");
+        $time = $time->setTimestamp($time->getTimestamp() - $duration);
+        $ticketprinterList = $query->readExpiredTicketprinterList($time);
+        $this->assertEquals(3, $ticketprinterList->count());
+
+        $time = new \DateTimeImmutable("2016-09-28");
+        $time = $time->setTimestamp($time->getTimestamp() - $duration);
+        $ticketprinterList = $query->readExpiredTicketprinterList($time);
+        $this->assertEquals(2, $ticketprinterList->count());
     }
 
     protected function getTestEntity()
