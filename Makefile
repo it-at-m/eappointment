@@ -42,4 +42,4 @@ coverage:
 	php vendor/bin/phpunit --coverage-html public/_tests/coverage/
 
 paratest: # init parallel unit testing with 5 processes
-	vendor/bin/paratest -p20 --coverage-html public/_tests/coverage/
+	vendor/bin/paratest --coverage-html public/_tests/coverage/
