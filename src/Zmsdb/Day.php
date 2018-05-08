@@ -9,27 +9,6 @@ use \BO\Zmsentities\Day as Entity;
 class Day extends Base
 {
 
-    public function readDayListByMonth(
-        $scopeID,
-        $year,
-        $month,
-        $slotsRequired = 1
-    ) {
-        $sql = Query\Day::QUERY_DAYLIST;
-        $data = $this->getReader()
-            ->fetchAll(
-                $sql,
-                [
-                    'scopeID' => $scopeID,
-                    'year'    => $year,
-                    'month'   => $month,
-                    'slotsRequired' => $slotsRequired,
-                ]
-            );
-        $dayList = new \BO\Zmsentities\Collection\DayList($data);
-        return $dayList;
-    }
-
     public function writeTemporaryScopeList(\BO\Zmsentities\Calendar $calendar, $slotsRequiredForce = null)
     {
         $this->getReader()->exec(Query\Day::QUERY_CREATE_TEMPORARY_SCOPELIST);
