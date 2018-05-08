@@ -46,6 +46,7 @@ class ScopeAvailabilityMonthTest extends Base
         $response = $this->render($this->arguments, $this->parameters, []);
         $this->assertContains('Öffnungszeiten Bürgeramt Heerstraße', (string)$response->getBody());
         $this->assertContains('availability-monthtable_calendar', (string)$response->getBody());
+        $this->assertContains('data-availability-count="24"', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -79,6 +80,76 @@ class ScopeAvailabilityMonthTest extends Base
                     'function' => 'readPostResult',
                     'url' => '/calendar/',
                     'parameters' => ['fillWithEmptyDays' => 1],
+                    'exception' => $exception
+                ]
+            ]
+        );
+        $this->render($this->arguments, $this->parameters, []);
+    }
+
+    public function testEmptyAvailabilityList()
+    {
+        $exception = new \BO\Zmsclient\Exception();
+        $exception->template = 'BO\Zmsapi\Exception\Availability\AvailabilityNotFound';
+
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_scope_141.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/availability/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'exception' => $exception
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/calendar/',
+                    'parameters' => ['fillWithEmptyDays' => 1],
+                    'response' => $this->readFixture("GET_calendar.json")
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, $this->parameters, []);
+        $this->assertContains('Öffnungszeiten Bürgeramt Heerstraße', (string)$response->getBody());
+        $this->assertContains('availability-monthtable_calendar', (string)$response->getBody());
+        $this->assertContains('data-availability-count="0"', (string)$response->getBody());
+    }
+
+    public function testAvailabilityListUnknownException()
+    {
+        $this->expectException('\BO\Zmsclient\Exception');
+        $exception = new \BO\Zmsclient\Exception();
+        $exception->template = '';
+
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_scope_141.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/availability/',
+                    'parameters' => ['resolveReferences' => 2],
                     'exception' => $exception
                 ]
             ]
