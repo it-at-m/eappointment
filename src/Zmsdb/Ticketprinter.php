@@ -36,19 +36,12 @@ class Ticketprinter extends Base
      *
      * @return Resource Collection
      */
-    public function readList()
+    protected function readList($statement)
     {
         $ticketprinterList = new Collection();
-        $query = new Query\Ticketprinter(Query\Base::SELECT);
-        $query->addEntityMapping();
-        $result = $this->fetchList($query, new Entity());
-        if (count($result)) {
-            foreach ($result as $ticketprinter) {
-                if ($ticketprinter instanceof Entity) {
-                    $ticketprinter = $this->readWithContactData($ticketprinter);
-                    $ticketprinterList->addEntity($ticketprinter);
-                }
-            }
+        while ($entityData = $statement->fetch(\PDO::FETCH_ASSOC)) {
+            $entity = new Entity($entityData);
+            $ticketprinterList->addEntity($entity);
         }
         return $ticketprinterList;
     }
@@ -238,21 +231,12 @@ class Ticketprinter extends Base
      */
     public function readByOrganisationId($organisationId)
     {
-        $ticketprinterList = new Collection();
         $query = new Query\Ticketprinter(Query\Base::SELECT);
         $query
             ->addEntityMapping()
             ->addConditionOrganisationId($organisationId);
-        $result = $this->fetchList($query, new Entity());
-        if (count($result)) {
-            foreach ($result as $ticketprinter) {
-                if ($ticketprinter instanceof Entity) {
-                    $ticketprinter = $this->readWithContactData($ticketprinter);
-                    $ticketprinterList->addEntity($ticketprinter);
-                }
-            }
-        }
-        return $ticketprinterList;
+        $statement = $this->fetchStatement($query);
+        return $this->readList($statement);
     }
 
      /**
@@ -268,5 +252,15 @@ class Ticketprinter extends Base
         $query =  new Query\Ticketprinter(Query\Base::DELETE);
         $query->addConditionTicketprinterId($itemId);
         return $this->deleteItem($query);
+    }
+
+    public function readExpiredTicketprinterList($deleteInSeconds)
+    {
+        $selectQuery = new Query\Ticketprinter(Query\Base::SELECT);
+        $selectQuery
+            ->addEntityMapping()
+            ->addConditionDeleteInterval($deleteInSeconds);
+        $statement = $this->fetchStatement($selectQuery);
+        return $this->readList($statement);
     }
 }
