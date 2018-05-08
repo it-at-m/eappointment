@@ -9,15 +9,17 @@ class TicketprinterDeleteByCron
 {
     protected $verbose = false;
 
-    protected $deleteInterval = 0;
+    protected $deleteDateTime = 0;
 
     public function __construct($verbose = false)
     {
-        $this->deleteInterval = 30 * 24 * 3600;
         $dateTime = new \DateTimeImmutable();
-        $deleteDate = $dateTime->setTimestamp($dateTime->getTimestamp() - $this->deleteInterval)->format('Y-m-d');
+        $this->deleteDateTime = $dateTime->setTimestamp($dateTime->getTimestamp() - (30 * 24 * 3600));
+        $dateString = $this->deleteDateTime->format('Y-m-d');
         if ($verbose) {
-            error_log("INFO: Deleting expired ticketprinter older than 30 days ($deleteDate)");
+            error_log(
+                "INFO: Deleting expired ticketprinter older than 30 days ($dateString)"
+            );
             $this->verbose = true;
         }
         $this->scopeList = (new \BO\Zmsdb\Scope)->readList();
@@ -25,7 +27,7 @@ class TicketprinterDeleteByCron
 
     public function startProcessing($commit)
     {
-        $ticketprinterList = (new \BO\Zmsdb\Ticketprinter)->readExpiredTicketprinterList($this->deleteInterval);
+        $ticketprinterList = (new \BO\Zmsdb\Ticketprinter)->readExpiredTicketprinterList($this->deleteDateTime);
         foreach ($ticketprinterList as $entity) {
             if ($this->verbose) {
                 error_log("INFO: Processing $entity");

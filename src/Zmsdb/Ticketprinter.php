@@ -254,12 +254,12 @@ class Ticketprinter extends Base
         return $this->deleteItem($query);
     }
 
-    public function readExpiredTicketprinterList($deleteInSeconds)
+    public function readExpiredTicketprinterList($expirationDate)
     {
         $selectQuery = new Query\Ticketprinter(Query\Base::SELECT);
         $selectQuery
             ->addEntityMapping()
-            ->addConditionDeleteInterval($deleteInSeconds);
+            ->addConditionDeleteInterval($expirationDate);
         $statement = $this->fetchStatement($selectQuery);
         return $this->readList($statement);
     }
