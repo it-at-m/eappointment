@@ -70,4 +70,31 @@ class SearchTest extends Base
         $this->assertContains('Log-Ergebnisse', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
+
+    public function testNoSuperuser()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_workstation_basic.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/search/',
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'query' => 'Test%20BO'
+                    ],
+                    'response' => $this->readFixture("GET_searchresult_others.json")
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, $this->parameters, []);
+        $this->assertContains('data-processList-count="5"', (string)$response->getBody());
+        $this->assertContains('data-processListOther-count="1"', (string)$response->getBody());
+        $this->assertEquals(200, $response->getStatusCode());
+    }
 }
