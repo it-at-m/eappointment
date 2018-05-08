@@ -64,7 +64,7 @@ class AppointmentForm extends BaseController
                 'selectedDate' => ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d'),
                 'selectedTime' => ($selectedTime) ? $selectedTime : null,
                 'requestList' => (count($requestList)) ? $requestList->sortByName() : null,
-                'formData' => (isset($validatedForm)) ? $validatedForm->getStatus() : null,
+                'formData' => (isset($validatedForm) && $validatedForm) ? $validatedForm->getStatus() : null,
                 'success' => $success,
                 'freeProcessList' => $freeProcessList
             )

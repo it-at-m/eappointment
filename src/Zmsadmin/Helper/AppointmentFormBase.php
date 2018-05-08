@@ -121,6 +121,7 @@ class AppointmentFormBase
                 array()
             );
         }
+        return false;
     }
 
     protected static function getValidatedForm($request, $workstation)
