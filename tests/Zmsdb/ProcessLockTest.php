@@ -40,9 +40,9 @@ class ProcessLockTest extends Base
     public function writeDBLock()
     {
         $statement = $this->pdo
-            ->prepare((new \BO\Zmsdb\Query\Process(\BO\Zmsdb\Query\Base::SELECT))->getLockProcessId());
+            ->prepare("SELECT * FROM process_sequence  WHERE processId > 100000 AND processId < 101000 FOR UPDATE");
         $statement
-            ->execute(['processId' => 100000]);
+            ->execute();
         $statement->fetchAll();
     }
 

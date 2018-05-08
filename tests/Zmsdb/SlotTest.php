@@ -18,6 +18,7 @@ class SlotTest extends Base
         ]);
         (new Slot())->writeByAvailability($availability, $now);
         $changed = (new Slot())->readLastChangedTime();
-        var_dump($changed->format('c'));
+        //var_dump($changed->format('c'));
+        $this->assertTrue($changed instanceof \DateTimeInterface);
     }
 }
