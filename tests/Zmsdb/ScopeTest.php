@@ -167,7 +167,7 @@ class ScopeTest extends Base
 
         $query->deleteImage($scope->id);
         $readImage = $query->readImageData($scope->id);
-        $this->assertFalse($readImage->content);
+        $this->assertEmpty($readImage->content);
     }
 
     protected function getTestEntity()

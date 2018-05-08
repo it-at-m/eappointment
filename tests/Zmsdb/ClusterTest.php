@@ -159,7 +159,7 @@ class ClusterTest extends Base
 
         $query->deleteImage($cluster->id);
         $readImage = $query->readImageData($cluster->id);
-        $this->assertFalse($readImage->content);
+        $this->assertEmpty($readImage->content);
     }
 
     protected function getTestEntity()
