@@ -148,10 +148,8 @@ class Mail extends Base
     public function deleteEntity($itemId)
     {
         $query = Query\MailQueue::QUERY_DELETE;
-        $statement = $this->getWriter()->prepare($query);
-        return $statement->execute(array(
-            $itemId
-        ));
+        $status = $this->perform($query, [$itemId]);
+        return $status;
     }
 
     protected function readMultiPartByQueueId($queueId)

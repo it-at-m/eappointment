@@ -28,14 +28,11 @@ class Session extends Base
     public function updateEntity($session)
     {
         $query = Query\Session::QUERY_WRITE;
-        $statement = $this->getWriter()->prepare($query);
-        $statement->execute(
-            array(
+        $this->perform($query, array(
             $session['id'],
             $session['name'],
             json_encode($session['content'])
-            )
-        );
+        ));
         $entity = $this->readEntity($session['name'], $session['id']);
         return $entity;
     }
@@ -43,13 +40,10 @@ class Session extends Base
     public function deleteEntity($sessionName, $sessionId)
     {
         $query = Query\Session::QUERY_DELETE;
-        $statement = $this->getWriter()->prepare($query);
-        $result = $statement->execute(
-            array(
+        $result = $this->perform($query, array(
             $sessionId,
             $sessionName
-            )
-        );
+        ));
         return ($result) ? true : false;
     }
 

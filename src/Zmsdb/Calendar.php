@@ -38,7 +38,7 @@ class Calendar extends Base
     protected function readResolvedScopes(Entity $calendar)
     {
         $scopeList = new \BO\Zmsentities\Collection\ScopeList();
-        $scopeReader = new Scope($this->getWriter(), $this->getReader());
+        $scopeReader = new Scope();
         foreach ($calendar->scopes as $scope) {
             $scope = $scopeReader->readEntity($scope['id'], 2);
             $scopeList->addEntity($scope);
@@ -61,7 +61,7 @@ class Calendar extends Base
 
     protected function readResolvedRequests(Entity $calendar)
     {
-        $requestReader = new Request($this->getWriter(), $this->getReader());
+        $requestReader = new Request();
         //if (! isset($calendar['processing']['slotinfo'])) {
         //    $calendar['processing']['slotinfo'] = [];
         //}
@@ -81,7 +81,7 @@ class Calendar extends Base
 
     protected function readResolvedClusters(Entity $calendar)
     {
-        $scopeReader = new Scope($this->getWriter(), $this->getReader());
+        $scopeReader = new Scope();
         foreach ($calendar['clusters'] as $cluster) {
             $scopeList = $scopeReader->readByClusterId($cluster['id'], 1);
             foreach ($scopeList as $scope) {
@@ -95,8 +95,8 @@ class Calendar extends Base
 
     protected function readResolvedProviders(Entity $calendar)
     {
-        $scopeReader = new Scope($this->getWriter(), $this->getReader());
-        $providerReader = new Provider($this->getWriter(), $this->getReader());
+        $scopeReader = new Scope();
+        $providerReader = new Provider();
         foreach ($calendar['providers'] as $key => $provider) {
             $calendar['providers'][$key] = $providerReader->readEntity('dldb', $provider['id']);
             $scopeList = $scopeReader->readByProviderId($provider['id'], 2);

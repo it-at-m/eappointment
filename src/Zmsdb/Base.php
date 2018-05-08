@@ -23,7 +23,7 @@ abstract class Base
      * Cache prepared statements
      *
      */
-    protected static $preparedStatements = [];
+    protected static $preparedCache = [];
 
     /**
      * Make sure, we do not cache statements on different connections
@@ -70,20 +70,20 @@ abstract class Base
         return $this->readDb;
     }
 
-    public function fetchPreparedStatement(Query\Base $query)
+    public function fetchPreparedStatement($query)
     {
         $sql = "$query";
         $reader = $this->getReader();
         if (spl_object_hash($reader) != static::$preparedConnectionId) {
             // do not use prepared statements on a different connection
-            static::$preparedStatements = [];
+            static::$preparedCache = [];
             static::$preparedConnectionId = spl_object_hash($reader);
         }
-        if (!isset(static::$preparedStatements[$sql])) {
+        if (!isset(static::$preparedCache[$sql])) {
             $prepared = $this->getReader()->prepare($sql);
-            static::$preparedStatements[$sql] = $prepared;
+            static::$preparedCache[$sql] = $prepared;
         }
-        return static::$preparedStatements[$sql];
+        return static::$preparedCache[$sql];
     }
 
     public function startExecute($statement, $parameters)
@@ -134,11 +134,31 @@ abstract class Base
         if ($data) {
             $entity->exchangeArray($query->postProcessJoins($data));
             $entity->setResolveLevel($query->getResolveLevel());
-        }/* else {
-            throw new Exception\Pdo\PDOFailed("Could not fetch one: ". $query->getName()
-                . " --> " . var_export($query->getParameters(), 1));
-        }*/
+        }
+        $statement->closeCursor();
         return $entity;
+    }
+
+    public function fetchRow($query, $parameters = null)
+    {
+        return static::pdoExceptionHandler(function () use ($query, $parameters) {
+            $prepared = $this->fetchPreparedStatement($query);
+            $prepared->execute($parameters);
+            $row = $prepared->fetch(\PDO::FETCH_ASSOC);
+            $prepared->closeCursor();
+            return $row;
+        });
+    }
+
+    public function fetchValue($query, $parameters = null)
+    {
+        return static::pdoExceptionHandler(function () use ($query, $parameters) {
+            $prepared = $this->fetchPreparedStatement($query);
+            $prepared->execute($parameters);
+            $value = $prepared->fetchColumn();
+            $prepared->closeCursor();
+            return $value;
+        });
     }
 
     public function fetchList(Query\Base $query, \BO\Zmsentities\Schema\Entity $entity, $resultList = [])
@@ -150,6 +170,7 @@ abstract class Base
             $dataEntity->setResolveLevel($query->getResolveLevel());
             $resultList[] = $dataEntity;
         }
+        $statement->closeCursor();
         return $resultList;
     }
 
@@ -161,23 +182,39 @@ abstract class Base
     public function writeItem(Query\Base $query)
     {
         return static::pdoExceptionHandler(function () use ($query) {
-            $statement = $this->getWriter()->prepare($query->getSql());
-            return $statement->execute($query->getParameters());
+            $this->getWriter(); //Switch to writer for write/delete
+            $statement = $this->fetchPreparedStatement($query);
+            $status = $statement->execute($query->getParameters());
+            $statement->closeCursor();
+            return $status;
         });
     }
 
     public function deleteItem(Query\Base $query)
     {
-        return static::pdoExceptionHandler(function () use ($query) {
-            $statement = $this->getWriter()->prepare($query->getSql());
-            return $statement->execute($query->getParameters());
+        return $this->writeItem($query);
+    }
+
+    public function perform($sql, $parameters = null)
+    {
+        return static::pdoExceptionHandler(function () use ($sql, $parameters) {
+            $this->getWriter(); //Switch to writer for perform
+            $prepared = $this->fetchPreparedStatement($sql);
+            $status = $prepared->execute($parameters);
+            $prepared->closeCursor();
+            return $status;
         });
     }
 
-    public function perform($sql, $parameters)
+    public function fetchAffected($sql, $parameters = null)
     {
         return static::pdoExceptionHandler(function () use ($sql, $parameters) {
-            return $this->getWriter()->perform($sql, $parameters);
+            $this->getWriter(); //Switch to writer for perform
+            $prepared = $this->fetchPreparedStatement($sql);
+            $prepared->execute($parameters);
+            $count = $prepared->rowCount();
+            $prepared->closeCursor();
+            return $count;
         });
     }
 

@@ -113,11 +113,13 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
             ]
         );
         if (!$existingEntry) {
-            $insert = $this->getWriter()->prepare(Query\ExchangeWaitingscope::QUERY_CREATE);
-            $insert->execute([
-                'scopeid' => $scope->id,
-                'date' => $date->format('Y-m-d'),
-            ]);
+            $this->perform(
+                Query\ExchangeWaitingscope::QUERY_CREATE,
+                [
+                    'scopeid' => $scope->id,
+                    'date' => $date->format('Y-m-d'),
+                ]
+            );
             $existingEntry = $this->readByDateTime($scope, $date);
         }
         return $existingEntry;
@@ -135,16 +137,19 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
             $existingEntry['waitingcalculated']
             : $queueEntry['waitingTimeEstimate'];
         $waitingCount = $queueList->getQueuePositionByNumber($queueEntry->number);
-        $waitingCount = $existingEntry['waitingcount'] > $waitingCount ? $existingEntry['waitingcount'] : $waitingCount;
-        $update = $this->getWriter()->prepare(Query\ExchangeWaitingscope::getQueryUpdateByDateTime($date));
-        $update->execute([
-            'waitingcalculated' => $waitingCalculated,
-            'waitingcount' => $waitingCount,
-            'waitingtime' => $existingEntry['waitingtime'],
-            'scopeid' => $scope->id,
-            'date' => $date->format('Y-m-d'),
-            'hour' => $date->format('H')
-        ]);
+        $waitingCount = $existingEntry['waitingcount'] > $waitingCount ?
+            $existingEntry['waitingcount'] : $waitingCount;
+        $this->perform(
+            Query\ExchangeWaitingscope::getQueryUpdateByDateTime($date),
+            [
+                'waitingcalculated' => $waitingCalculated,
+                'waitingcount' => $waitingCount,
+                'waitingtime' => $existingEntry['waitingtime'],
+                'scopeid' => $scope->id,
+                'date' => $date->format('Y-m-d'),
+                'hour' => $date->format('H')
+            ]
+        );
         return $this;
     }
 
@@ -158,8 +163,7 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
         $waitingTime = floor(($date->getTimestamp() - $process->toQueue($date)->arrivalTime) / 60);
         $existingEntry = $this->readByDateTime($process->scope, $date);
         $waitingTime = $existingEntry['waitingtime'] > $waitingTime ? $existingEntry['waitingtime'] : $waitingTime;
-        $update = $this->getWriter()->prepare(Query\ExchangeWaitingscope::getQueryUpdateByDateTime($date));
-        $update->execute([
+        $this->perform(Query\ExchangeWaitingscope::getQueryUpdateByDateTime($date), [
             'waitingcalculated' => $existingEntry['waitingcalculated'],
             'waitingcount' => $existingEntry['waitingcount'],
             'waitingtime' => $waitingTime,

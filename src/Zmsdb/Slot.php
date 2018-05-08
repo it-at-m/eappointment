@@ -36,11 +36,10 @@ class Slot extends Base
         $data['month'] = $date->format('m');
         $data['day'] = $date->format('d');
         $data['time'] = $slot->getTimeString();
-        $slotID = $this->getReader()
-            ->fetchOne(
-                Query\Slot::QUERY_SELECT_SLOT,
-                $data
-            );
+        $slotID = $this->fetchRow(
+            Query\Slot::QUERY_SELECT_SLOT,
+            $data
+        );
         return $slotID ? $slotID['slotID'] : false ;
     }
 
@@ -56,7 +55,7 @@ class Slot extends Base
         }
         // Order is import, the following cancels all slots
         // and should only happen, if rebuild is triggered or not necessary
-        $this->getWriter()->perform(Query\Slot::QUERY_CANCEL_AVAILABILITY, [
+        $this->perform(Query\Slot::QUERY_CANCEL_AVAILABILITY, [
             'availabilityID' => $availability->id,
         ]);
         if ($availability->workstationCount['intern'] <= 0) {
@@ -106,13 +105,13 @@ class Slot extends Base
 
     protected function writeAncestorIDs($slotID, array $ancestors)
     {
-        $this->getWriter()->perform(Query\Slot::QUERY_DELETE_ANCESTOR, [
+        $this->perform(Query\Slot::QUERY_DELETE_ANCESTOR, [
             'slotID' => $slotID,
         ]);
         $ancestorLevel = count($ancestors);
         foreach ($ancestors as $ancestorID) {
             if ($ancestorLevel <= self::MAX_SLOTS) {
-                $this->getWriter()->perform(Query\Slot::QUERY_INSERT_ANCESTOR, [
+                $this->perform(Query\Slot::QUERY_INSERT_ANCESTOR, [
                     'slotID' => $slotID,
                     'ancestorID' => $ancestorID,
                     'ancestorLevel' => $ancestorLevel,
@@ -124,10 +123,9 @@ class Slot extends Base
 
     public function readLastChangedTime()
     {
-        $last = $this->getReader()
-            ->fetchOne(
-                Query\Slot::QUERY_LAST_CHANGED
-            );
+        $last = $this->fetchRow(
+            Query\Slot::QUERY_LAST_CHANGED
+        );
         if (!$last['dateString']) {
             $last['dateString'] = '1970-01-01 12:00';
         }
@@ -136,13 +134,12 @@ class Slot extends Base
 
     protected function readLastChangedTimeByAvailability(AvailabilityEntity $availabiliy)
     {
-        $last = $this->getReader()
-            ->fetchOne(
-                Query\Slot::QUERY_LAST_CHANGED_AVAILABILITY,
-                [
-                    'availabilityID' => $availabiliy->id,
-                ]
-            );
+        $last = $this->fetchRow(
+            Query\Slot::QUERY_LAST_CHANGED_AVAILABILITY,
+            [
+                'availabilityID' => $availabiliy->id,
+            ]
+        );
         if (!$last['dateString']) {
             $last['dateString'] = '1970-01-01 12:00';
         }
@@ -151,16 +148,16 @@ class Slot extends Base
 
     public function updateSlotProcessMapping()
     {
-        $this->getWriter()->perform(Query\Slot::QUERY_DELETE_SLOT_PROCESS, [
+        $this->perform(Query\Slot::QUERY_DELETE_SLOT_PROCESS, [
         ]);
-        $this->getWriter()->perform(Query\Slot::QUERY_INSERT_SLOT_PROCESS, [
+        $this->perform(Query\Slot::QUERY_INSERT_SLOT_PROCESS, [
         ]);
         return $this;
     }
 
     public function writeSlotProcessMappingFor($processId)
     {
-        $this->getWriter()->perform(Query\Slot::QUERY_INSERT_SLOT_PROCESS_ID, [
+        $this->perform(Query\Slot::QUERY_INSERT_SLOT_PROCESS_ID, [
             'processId' => $processId,
         ]);
         return $this;
@@ -168,7 +165,7 @@ class Slot extends Base
 
     public function deleteSlotProcessMappingFor($processId)
     {
-        $this->getWriter()->perform(Query\Slot::QUERY_DELETE_SLOT_PROCESS_ID, [
+        $this->perform(Query\Slot::QUERY_DELETE_SLOT_PROCESS_ID, [
             'processId' => $processId,
         ]);
         return $this;

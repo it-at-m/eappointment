@@ -83,11 +83,11 @@ class Availability extends Base implements Interfaces\ResolveReferences
             }
             if ($reserveEntityIds) {
                 // This can produce deadlocks:
-                $this->getWriter()->exec(Query\Availability::TEMPORARY_DELETE);
+                $this->perform(Query\Availability::TEMPORARY_DELETE);
+                \BO\Zmsdb\Connection\Select::writeCommit();
             }
         }
         // End remove
-        \BO\Zmsdb\Connection\Select::writeCommit();
         return $collection;
     }
 

@@ -57,6 +57,10 @@ class Process extends Base implements Interfaces\ResolveReferences
             $this->writeRequestsToDb($process);
         }
         $process = $this->readEntity($process->getId(), $process->authKey, $resolveReferences);
+
+        if (!$process->getId()) {
+            throw new Exception\Process\ProcessUpdateFailed();
+        }
         Log::writeLogEntry("UPDATE (Process::updateEntity) $process ", $process->getId());
         return $process;
     }
@@ -131,9 +135,7 @@ class Process extends Base implements Interfaces\ResolveReferences
     protected function readNewProcessId()
     {
         $query = new Query\Process(Query\Base::SELECT);
-        if ($this->perform($query->getLockProcessId(), ['processId' => 100000])) {
-            $newProcessId = $this->getWriter()->fetchValue($query->getQueryNewProcessId());
-        }
+        $newProcessId = $this->fetchValue($query->getQueryNewProcessId());
         return $newProcessId;
     }
 
@@ -341,13 +343,10 @@ class Process extends Base implements Interfaces\ResolveReferences
     public function writeDeletedEntity($processId)
     {
         $query = Query\Process::QUERY_DELETE;
-        $statement = $this->getWriter()->prepare($query);
-        $status = $statement->execute(
-            array(
-                $processId,
-                $processId
-            )
-        );
+        $status = $this->perform($query, array(
+            $processId,
+            $processId
+        ));
         if ($status) {
             $this->deleteRequestsForProcessId($processId);
             (new Slot())->deleteSlotProcessMappingFor($processId);
@@ -381,14 +380,11 @@ class Process extends Base implements Interfaces\ResolveReferences
     public function writeCanceledEntity($processId, $authKey)
     {
         $query = Query\Process::QUERY_CANCELED;
-        $statement = $this->getWriter()->prepare($query);
-        $statement->execute(
-            array(
-                $processId,
-                $authKey,
-                $processId
-            )
-        );
+        $this->perform($query, array(
+            $processId,
+            $authKey,
+            $processId
+        ));
         Log::writeLogEntry("DELETE (Process::writeCanceledEntity) $processId ", $processId);
         return $this->readEntity($processId, $authKey, 0);
     }
@@ -409,15 +405,12 @@ class Process extends Base implements Interfaces\ResolveReferences
         }
         $process->status = 'blocked';
         $query = Query\Process::QUERY_DEREFERENCED;
-        $statement = $this->getWriter()->prepare($query);
-        $status = $statement->execute(
-            array(
-                $amendment,
-                $process->id,
-                $process->authKey,
-                $process->id
-            )
-        );
+        $status = $this->perform($query, array(
+            $amendment,
+            $process->id,
+            $process->authKey,
+            $process->id
+        ));
         Log::writeLogEntry("DELETE (Process::writeBlockedEntity) $process ", $process->id);
         return $status;
     }
