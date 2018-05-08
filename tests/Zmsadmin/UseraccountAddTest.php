@@ -78,4 +78,68 @@ class UseraccountAddTest extends Base
         $this->assertRedirect($response, '/useraccount/unittest/?success=useraccount_added');
         $this->assertEquals(302, $response->getStatusCode());
     }
+
+    public function testValidation()
+    {
+        $exception = new \BO\Zmsclient\Exception();
+        $exception->template = 'BO\Zmsentities\Exception\SchemaValidation';
+        $exception->data['password']['messages'] = [
+            'Das Passwort muss mindestens 6 Zeichen lang sein.'
+        ];
+
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/owner/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_ownerlist.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/useraccount/',
+                    'exception' => $exception
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, $this->parameters, [], 'POST');
+        $this->assertContains('Das Passwort muss mindestens 6 Zeichen lang sein.', (string)$response->getBody());
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    public function testUnkownException()
+    {
+        $this->expectException('BO\Zmsclient\Exception');
+        $exception = new \BO\Zmsclient\Exception();
+        $exception->template = '';
+
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/owner/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_ownerlist.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/useraccount/',
+                    'exception' => $exception
+                ]
+            ]
+        );
+        $this->render($this->arguments, $this->parameters, [], 'POST');
+    }
 }

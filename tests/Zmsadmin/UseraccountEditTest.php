@@ -206,4 +206,52 @@ class UseraccountEditTest extends Base
             (string)$response->getBody()
         );
     }
+
+    public function testUnkownException()
+    {
+        $this->expectException('BO\Zmsclient\Exception');
+        $exception = new \BO\Zmsclient\Exception();
+        $exception->template = '';
+
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/useraccount/testuser/',
+                    'response' => $this->readFixture("GET_useraccount_testuser.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/owner/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_owner.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/useraccount/testuser/',
+                    'exception' => $exception
+                ]
+            ]
+        );
+        $this->render($this->arguments, [
+            'id' => 'unittest',
+            'changePassword' => array(
+                '',
+                '',
+            ),
+            'rights' => array(
+                'sms' => '1',
+                'ticketprinter' => '1',
+                'availability' => '1',
+                'scope' => '1'
+            ),
+            'save' => 'save'
+        ], [], 'POST');
+    }
 }
