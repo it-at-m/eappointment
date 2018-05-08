@@ -53,6 +53,18 @@ class Ticketprinter extends Base implements MappingInterface
         return $this;
     }
 
+    public function addConditionDeleteInterval($deleteInSeconds)
+    {
+        $this->query->where(
+            self::expression(
+                'UNIX_TIMESTAMP(NOW()) - `ticketprinter`.`timestamp`'
+            ),
+            '>=',
+            $deleteInSeconds
+        );
+        return $this;
+    }
+
     public function reverseEntityMapping(\BO\Zmsentities\Ticketprinter $entity, $organisationId)
     {
         $data = array();
