@@ -381,6 +381,7 @@ class Scope extends Base
     public function writeImageData($scopeId, \BO\Zmsentities\Mimepart $entity)
     {
         if ($entity->mime && $entity->content) {
+            $this->deleteImage($scopeId);
             $imageName = 's_'. $scopeId .'_bild.'. $entity->getExtension();
             $statement = $this->getWriter()->prepare((new Query\Scope(Query\Base::REPLACE))->getQueryWriteImageData());
             $statement->execute(array(
@@ -404,10 +405,14 @@ class Scope extends Base
     {
         $imageName = 's_'. $scopeId .'_bild';
         $imageData = new \BO\Zmsentities\Mimepart();
-        $imageData->content = $this->getReader()->fetchValue(
+        $fileData = $this->getReader()->fetchAll(
             (new Query\Scope(Query\Base::SELECT))->getQueryReadImageData(),
             ['imagename' => "$imageName%"]
         );
+        if ($fileData) {
+            $imageData->content = $fileData[0]['imagecontent'];
+            $imageData->mime = pathinfo($fileData[0]['imagename'])['extension'];
+        }
         return $imageData;
     }
 

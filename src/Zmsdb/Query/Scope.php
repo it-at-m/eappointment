@@ -62,7 +62,7 @@ class Scope extends Base implements MappingInterface
     public function getQueryReadImageData()
     {
         return '
-            SELECT `imagecontent`
+            SELECT `imagecontent`, `imagename`
             FROM `imagedata`
             WHERE
                 `imagename` LIKE :imagename

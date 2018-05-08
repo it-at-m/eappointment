@@ -245,12 +245,15 @@ class Cluster extends Base
      */
     public function writeImageData($clusterId, \BO\Zmsentities\Mimepart $entity)
     {
-        $imageName = 'c_'. $clusterId .'_bild.'. $entity->getExtension();
-        $statement = $this->getWriter()->prepare((new Query\Scope(Query\Base::REPLACE))->getQueryWriteImageData());
-        $statement->execute(array(
-            'imagename' => $imageName,
-            'imagedata' => $entity->content
-        ));
+        if ($entity->mime && $entity->content) {
+            $this->deleteImage($clusterId);
+            $imageName = 'c_'. $clusterId .'_bild.'. $entity->getExtension();
+            $statement = $this->getWriter()->prepare((new Query\Scope(Query\Base::REPLACE))->getQueryWriteImageData());
+            $statement->execute(array(
+                'imagename' => $imageName,
+                'imagedata' => $entity->content
+            ));
+        }
         $entity->id = $clusterId;
         return $entity;
     }
@@ -267,10 +270,14 @@ class Cluster extends Base
     {
         $imageName = 'c_'. $clusterId .'_bild';
         $imageData = new \BO\Zmsentities\Mimepart();
-        $imageData->content = $this->getReader()->fetchValue(
+        $fileData = $this->getReader()->fetchAll(
             (new Query\Scope(Query\Base::SELECT))->getQueryReadImageData(),
             ['imagename' => "$imageName%"]
         );
+        if ($fileData) {
+            $imageData->content = $fileData[0]['imagecontent'];
+            $imageData->mime = pathinfo($fileData[0]['imagename'])['extension'];
+        }
         return $imageData;
     }
 
