@@ -9,6 +9,7 @@ use \BO\Zmsentities\Collection\ClusterList as Collection;
  *
  * @SuppressWarnings(Public)
  * @SuppressWarnings(Coupling)
+ * @SuppressWarnings(Complexity)
  *
  */
 class Cluster extends Base
