@@ -148,12 +148,7 @@ class Workstation extends Base
                 $workstation = $this->readEntity($loginName, $resolveReferences);
                 $workstation->authkey = $authKey;
                 $query = Query\Workstation::QUERY_PROCESS_RESET;
-                $statement = $this->getWriter()->prepare($query);
-                $statement->execute(
-                    array(
-                        $workstation->id
-                    )
-                );
+                $this->perform($query, [$workstation->id]);
             }
         } else {
             throw new Exception\Useraccount\InvalidCredentials();
@@ -164,12 +159,7 @@ class Workstation extends Base
     public function writeEntityLogoutByName($loginName, $resolveReferences = 0)
     {
         $query = Query\Workstation::QUERY_LOGOUT;
-        $statement = $this->getWriter()->prepare($query);
-        $result = $statement->execute(
-            array(
-                $loginName
-            )
-        );
+        $result = $this->perform($query, [$loginName]);
         $workstation = $this->readEntity($loginName, $resolveReferences);
         return ($result) ? $workstation : null;
     }

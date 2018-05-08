@@ -123,16 +123,10 @@ class Department extends Base
             $query = new Query\Department(Query\Base::DELETE);
             $query->addConditionDepartmentId($departmentId);
             $entityDelete = $this->deleteItem($query);
-            $query = Query\Department::QUERY_MAIL_DELETE;
-            $statement = $this->getWriter()
-                ->prepare($query);
-            $emailDelete = $statement->execute(array(
+            $emailDelete = $this->perform(Query\Department::QUERY_MAIL_DELETE, array(
                 $departmentId
             ));
-            $query = Query\Department::QUERY_NOTIFICATIONS_DELETE;
-            $statement = $this->getWriter()
-                ->prepare($query);
-            $notificationsDelete = $statement->execute(array(
+            $notificationsDelete = $this->perform(Query\Department::QUERY_NOTIFICATIONS_DELETE, array(
                 $departmentId
             ));
         }
@@ -272,10 +266,7 @@ class Department extends Base
     protected function writeDepartmentMail($departmentId, $email)
     {
         self::$departmentCache = [];
-        $query = Query\Department::QUERY_MAIL_INSERT;
-        $statement = $this->getWriter()
-            ->prepare($query);
-        $result = $statement->execute(array(
+        $result = $this->perform(Query\Department::QUERY_MAIL_INSERT, array(
             $departmentId,
             $email
         ));
@@ -294,10 +285,8 @@ class Department extends Base
     protected function writeDepartmentNotifications($departmentId, $preferences)
     {
         self::$departmentCache = [];
-        $query = Query\Department::QUERY_NOTIFICATIONS_INSERT;
-        $statement = $this->getWriter()
-            ->prepare($query);
-        $result = $statement->execute(
+        $result = $this->perform(
+            Query\Department::QUERY_NOTIFICATIONS_INSERT,
             array(
                 $departmentId,
                 (isset($preferences['enabled'])) ? 1 : 0,
@@ -322,11 +311,10 @@ class Department extends Base
     {
         self::$departmentCache = [];
         $query = Query\Department::QUERY_MAIL_UPDATE;
-        return $this->getWriter()
-            ->fetchAffected($query, array(
+        return $this->fetchAffected($query, array(
             'email' => $email,
             'departmentId' => $departmentId
-            ));
+        ));
     }
 
     /**
@@ -342,16 +330,15 @@ class Department extends Base
     {
         self::$departmentCache = [];
         $query = Query\Department::QUERY_NOTIFICATIONS_UPDATE;
-        return $this->getWriter()
-            ->fetchAffected(
-                $query,
-                array(
+        return $this->fetchAffected(
+            $query,
+            array(
                 'enabled' => $preferences['enabled'],
                 'identification' => $preferences['identification'],
                 'sendConfirmationEnabled' => $preferences['sendConfirmationEnabled'],
                 'sendReminderEnabled' => $preferences['sendReminderEnabled'],
                 'departmentId' => $departmentId
-                )
-            );
+            )
+        );
     }
 }

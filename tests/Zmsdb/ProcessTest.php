@@ -59,7 +59,7 @@ class ProcessTest extends Base
         $query = new ProcessStatusFree();
         $input = $this->getTestProcessEntity();
         $input['queue']['number'] = 'invalidNumber';
-        $process = $query->writeEntityReserved($input, $now);
+        $query->writeEntityReserved($input, $now);
     }
 
     public function testExceptionAlreadyReserved()
@@ -130,6 +130,17 @@ class ProcessTest extends Base
         $data = json_decode($json, true);
         $process = new Entity($data);
         $process = $query->updateEntity($process, $now);
+    }
+
+    public function testUpdateFail()
+    {
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $process = new Entity();
+        $process->id = 100009;
+        $process->authKey = 'abcd';
+        $this->expectException('\BO\Zmsdb\Exception\Process\ProcessUpdateFailed');
+        $query = new ProcessStatusFree();
+        $query->updateEntity($process, $now);
     }
 
     public function testUpdateProcessWithStatusProcessing()

@@ -88,7 +88,12 @@ class ProcessArchiveTest extends Base
         $archiveList = $queryArchived->readListIsMissed(1);
         $this->assertEquals(0, $archiveList->getFirst()->getResolveLevel());
         $this->assertContains('missed', $archiveList->getFirst()->queue['status']);
+    }
 
+    public function testReadListMissedFinished()
+    {
+        $queryArchived = new ProcessStatusArchived();
+        $now = new \DateTimeImmutable("2016-04-18 11:55");
         $entity2 =(new Query)->readEntity(10029, '1c56');
         $entity2->status = 'finished';
         $queryArchived->writeEntityFinished($entity2, $now);

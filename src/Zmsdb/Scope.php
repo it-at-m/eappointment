@@ -383,11 +383,13 @@ class Scope extends Base
         if ($entity->mime && $entity->content) {
             $this->deleteImage($scopeId);
             $imageName = 's_'. $scopeId .'_bild.'. $entity->getExtension();
-            $statement = $this->getWriter()->prepare((new Query\Scope(Query\Base::REPLACE))->getQueryWriteImageData());
-            $statement->execute(array(
-                'imagename' => $imageName,
-                'imagedata' => $entity->content
-            ));
+            $this->getWriter()->perform(
+                (new Query\Scope(Query\Base::REPLACE))->getQueryWriteImageData(),
+                array(
+                    'imagename' => $imageName,
+                    'imagedata' => $entity->content
+                )
+            );
         }
         $entity->id = $scopeId;
         return $entity;
@@ -427,13 +429,9 @@ class Scope extends Base
     public function deleteImage($scopeId)
     {
         $imageName = 's_'. $scopeId .'_bild';
-        $statement = $this
-            ->getWriter()
-            ->prepare((new Query\Scope(Query\Base::DELETE))->getQueryDeleteImage());
-        $result = $statement->execute(array(
+        return $this->perform((new Query\Scope(Query\Base::DELETE))->getQueryDeleteImage(), array(
             'imagename' => "$imageName%"
         ));
-        return $result;
     }
 
     /**

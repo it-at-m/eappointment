@@ -29,6 +29,7 @@ class ConnectionTest extends Base
         $insert = $reader->fetchOne('SELECT * FROM `sessiondata` WHERE sessionname="unittest"');
         $this->assertEquals('unittest', $insert['sessionname']);
         $writer->exec('DELETE FROM `sessiondata` WHERE sessionid="unittest"');
+        \BO\Zmsdb\Connection\Select::writeCommit();
     }
 
     public function testRollback()

@@ -102,15 +102,12 @@ class Notification extends Base
         $appointment = $notification->process->getAppointments()->getFirst();
 
         $query = Query\Notification::QUERY_WRITE_IN_CALCULATION;
-        $statement = $this->getWriter()->prepare($query);
-        return $statement->execute(
-            array(
-                $scopeId,
-                $telephone,
-                (new \DateTimeImmutable)->setTimestamp($appointment->date)->format('Y-m-d'),
-                $amount
-            )
-        );
+        return $this->perform($query, array(
+            $scopeId,
+            $telephone,
+            (new \DateTimeImmutable)->setTimestamp($appointment->date)->format('Y-m-d'),
+            $amount
+        ));
     }
 
     public function deleteEntity($itemId)

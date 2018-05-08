@@ -271,7 +271,9 @@ class Select
     public static function writeCommit()
     {
         if (self::$useTransaction && null !== self::$writeConnection && self::getWriteConnection()->inTransaction()) {
-            return self::getWriteConnection()->commit();
+            $status = self::getWriteConnection()->commit();
+            self::$writeConnection->beginTransaction();
+            return $status;
         }
         return null;
     }

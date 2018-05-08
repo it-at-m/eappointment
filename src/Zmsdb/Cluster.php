@@ -249,11 +249,13 @@ class Cluster extends Base
         if ($entity->mime && $entity->content) {
             $this->deleteImage($clusterId);
             $imageName = 'c_'. $clusterId .'_bild.'. $entity->getExtension();
-            $statement = $this->getWriter()->prepare((new Query\Scope(Query\Base::REPLACE))->getQueryWriteImageData());
-            $statement->execute(array(
+            $this->perform(
+            (new Query\Scope(Query\Base::REPLACE))->getQueryWriteImageData(),
+                array(
                 'imagename' => $imageName,
                 'imagedata' => $entity->content
-            ));
+                )
+            );
         }
         $entity->id = $clusterId;
         return $entity;
@@ -293,12 +295,12 @@ class Cluster extends Base
     public function deleteImage($clusterId)
     {
         $imageName = 'c_'. $clusterId .'_bild';
-        $statement = $this
-            ->getWriter()
-            ->prepare((new Query\Scope(Query\Base::DELETE))->getQueryDeleteImage());
-        $result = $statement->execute(array(
+        $result = $this->perform(
+            (new Query\Scope(Query\Base::DELETE))->getQueryDeleteImage(),
+            array(
             'imagename' => "$imageName%"
-        ));
+            )
+        );
         return $result;
     }
 
@@ -370,20 +372,18 @@ class Cluster extends Base
      */
     protected function writeAssignedScopes($clusterId, $scopeList)
     {
-        $deleteStatement = $this->getWriter()->prepare(
-            (new Query\Cluster(Query\Base::DELETE))->getQueryDeleteAssignedScopes()
-        );
-        $deleteStatement->execute(array(
-            'clusterId' => $clusterId
-        ));
-        $writeStatement = $this->getWriter()->prepare(
-            (new Query\Cluster(Query\Base::REPLACE))->getQueryWriteAssignedScopes()
+        $this->perform(
+            (new Query\Cluster(Query\Base::DELETE))->getQueryDeleteAssignedScopes(),
+            ['clusterId' => $clusterId]
         );
         foreach ($scopeList as $scope) {
-            $writeStatement->execute(array(
+            $this->perform(
+                (new Query\Cluster(Query\Base::REPLACE))->getQueryWriteAssignedScopes(),
+                array(
                 'clusterId' => $clusterId,
                 'scopeId' => $scope['id']
-            ));
+                )
+            );
         }
     }
 }
