@@ -43,21 +43,39 @@ class Slot extends Base
         return $slotID ? $slotID['slotID'] : false ;
     }
 
-    public function writeByAvailability(
+    public function isAvailabilityOutdated(
         \BO\Zmsentities\Availability $availability,
         \DateTimeInterface $now,
-        \BO\Zmsentities\Collection\DayoffList $changedDayoffList = null
+        \DateTimeInterface $slotLastChange = null
     ) {
-        $slotLastChange = $this->readLastChangedTimeByAvailability($availability);
-        if (!$availability->isNewerThan($slotLastChange)) {
-            // TODO Check if there could be a difference in slots based on $slotLastChange, i.e. new day
-            return false;
+        //error_log(sprintf("Now=%s Last=%s %s < %s = %s", $now->format('c'), $slotLastChange->format('c'), $now->getTimestamp(), $slotLastChange->getTimestamp() + 3600, $now->getTimestamp() < ($slotLastChange->getTimestamp() + 3600)));
+        if ($availability->isNewerThan($slotLastChange)) {
+            error_log("Outdated on availability: $availability");
+            return true;
         }
-        // Order is import, the following cancels all slots
-        // and should only happen, if rebuild is triggered or not necessary
-        $this->perform(Query\Slot::QUERY_CANCEL_AVAILABILITY, [
-            'availabilityID' => $availability->id,
-        ]);
+        if ($availability->scope->isNewerThan($slotLastChange)) {
+            error_log("Outdated on scope: $availability ". $availability->lastChange);
+            return true;
+        }
+        if ($availability->scope->dayoff->isNewerThan($slotLastChange, $availability, $now)) {
+            error_log("Outdated on dayoff: $availability");
+            return true;
+        }
+        if ($now->getTimestamp() > ($slotLastChange->getTimestamp() + 3600)
+                //&& $availability->hasDateBetween($availability->getBookableEnd(), $now)
+        ) {
+            // TODO Check if there could be a difference in slots based on $slotLastChange, i.e. new day
+            error_log("Outdated on time: $availability");
+            return true;
+        }
+        error_log("Not outdated: $availability");
+        return false;
+    }
+
+    public function hasAvailabilityBookableSlots(
+        \BO\Zmsentities\Availability $availability,
+        \DateTimeInterface $now
+    ) {
         if ($availability->workstationCount['intern'] <= 0) {
             return false;
         }
@@ -68,6 +86,27 @@ class Slot extends Base
         if ($availability->getStartDateTime()->getTimestamp() > $stopDate->getTimestamp()) {
             return false;
         }
+        return true;
+    }
+
+    public function writeByAvailability(
+        \BO\Zmsentities\Availability $availability,
+        \DateTimeInterface $now
+    ) {
+        $now = \BO\Zmsentities\Helper\DateTime::create($now);
+        $slotLastChange = $this->readLastChangedTimeByAvailability($availability);
+        if (!$this->isAvailabilityOutdated($availability, $now, $slotLastChange)) {
+            return false;
+        }
+        // Order is import, the following cancels all slots
+        // and should only happen, if rebuild is triggered or not necessary
+        $this->perform(Query\Slot::QUERY_CANCEL_AVAILABILITY, [
+            'availabilityID' => $availability->id,
+        ]);
+        if (!$availability->hasAvailabilityBookableSlots($availability, $now)) {
+            return false;
+        }
+        $stopDate = $availability->getBookableEnd($now);
 
         $slotlist = $availability->getSlotList();
         $time = $now;
@@ -132,7 +171,7 @@ class Slot extends Base
         return new \DateTimeImmutable($last['dateString']);
     }
 
-    protected function readLastChangedTimeByAvailability(AvailabilityEntity $availabiliy)
+    public function readLastChangedTimeByAvailability(AvailabilityEntity $availabiliy)
     {
         $last = $this->fetchRow(
             Query\Slot::QUERY_LAST_CHANGED_AVAILABILITY,

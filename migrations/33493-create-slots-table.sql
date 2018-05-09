@@ -17,6 +17,12 @@ ALTER TABLE `feiertage`
 
 UPDATE `feiertage` SET updateTimestamp = NOW();
 
+ALTER TABLE `standort`
+    ADD COLUMN `updateTimestamp` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    ADD INDEX (`updateTimestamp`);
+
+UPDATE `standort` SET updateTimestamp = NOW();
+
 DROP TABLE IF EXISTS `slot`;
 CREATE TABLE `slot` ( 
 

@@ -133,6 +133,7 @@ class Scope extends Base implements MappingInterface
             'contact__street' => 'scope.Adresse',
             'contact__email' => 'scope.emailstandortadmin',
             'contact__country' => self::expression('"Germany"'),
+            'lastChange' => 'scope.updateTimestamp',
             'preferences__appointment__deallocationDuration' => 'scope.loeschdauer',
             'preferences__appointment__endInDaysDefault' => 'scope.Termine_bis',
             'preferences__appointment__multipleSlotsEnabled' => 'scope.mehrfachtermine',
@@ -334,6 +335,8 @@ class Scope extends Base implements MappingInterface
     {
         $data[$this->getPrefixed("status__queue__lastGivenNumberTimestamp")] =
             strtotime($data[$this->getPrefixed("status__queue__lastGivenNumberTimestamp")]);
+        $data[$this->getPrefixed("lastChange")] =
+            (new \DateTime($data[$this->getPrefixed("lastChange")]))->getTimestamp();
         return $data;
     }
 }

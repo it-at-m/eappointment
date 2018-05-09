@@ -60,4 +60,9 @@ class CalculateSlots
             }
         }
     }
+
+    public function deleteOldSlots($commit, \DateTimeInterface $now)
+    {
+        error_log("NOT IMPLEMENTED YET: delete not required slots");
+    }
 }

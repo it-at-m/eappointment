@@ -318,7 +318,7 @@ class Scope extends Base
      *
      * @return Entity
      */
-    public function updateEntity($scopeId, \BO\Zmsentities\Scope $entity)
+    public function updateEntity($scopeId, \BO\Zmsentities\Scope $entity, $resolveReferences = 0)
     {
         self::$cache = [];
         $query = new Query\Scope(Query\Base::UPDATE);
@@ -326,7 +326,7 @@ class Scope extends Base
         $values = $query->reverseEntityMapping($entity);
         $query->addValues($values);
         $this->writeItem($query);
-        return $this->readEntity($scopeId);
+        return $this->readEntity($scopeId, $resolveReferences);
     }
 
     /**

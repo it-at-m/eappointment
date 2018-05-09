@@ -29,8 +29,8 @@ class Day extends Base
     const QUERY_DAYLIST_JOIN = '
         SELECT
                     year,
-                    month,
-                    day,
+                    LPAD(month, 2, "0") AS month,
+                    LPAD(day, 2, "0") AS day,
                     SUM(public) AS freeAppointments__public,
                     SUM(callcenter) AS freeAppointments__callcenter,
                     SUM(intern) AS freeAppointments__intern,
@@ -72,49 +72,4 @@ class Day extends Base
         GROUP BY year, month, day
         ORDER BY year, month, day
 ';
-
-    const QUERY_MONTH = '
-        SELECT
-            IF((public - IFNULL(confirmed, 0)) > 0, public - IFNULL(confirmed, 0), 0 )
-                AS freeAppointments__public,
-            IF((callcenter - IFNULL(confirmed, 0)) > 0, callcenter - IFNULL(confirmed, 0), 0 ) 
-                AS freeAppointments__callcenter, 
-            IFNULL(intern - confirmed, intern)
-                AS freeAppointments__intern,
-            s.year AS year,
-            s.month AS month,
-            s.day AS day,
-            "bookable" AS status
-        FROM (
-        SELECT SUM(type = "public") public,
-            SUM(type = "callcenter" OR type = "public") callcenter,
-            COUNT(type) intern,
-            scopeID,
-            year,
-            month,
-            day
-        FROM slot
-        WHERE 
-            year = :year
-            AND month = :month
-            AND scopeID = :scopeID
-        GROUP BY scopeID,
-            year,
-            month,
-            day
-        ) AS s 
-        LEFT JOIN (
-        SELECT COUNT(*) confirmed, YEAR(Datum) as year, MONTH(Datum) as month, DAY(Datum) as day, StandortID as scopeID
-        FROM buerger
-        WHERE 
-            YEAR(Datum) = :year
-            AND MONTH(Datum) = :month
-            AND StandortID = :scopeID
-        GROUP BY Datum, StandortID
-        ) AS p ON 
-            s.year = p.year 
-            AND s.month = p.month 
-            AND s.day = p.day 
-            AND s.scopeID = p.scopeID
-    ';
 }
