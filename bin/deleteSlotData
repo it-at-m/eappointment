@@ -1,0 +1,40 @@
+#!/usr/bin/env php
+<?php
+$dir = realpath(__DIR__);
+do {
+    $dir = dirname($dir);
+    if (file_exists("$dir/autoload.php")) {
+        require_once("$dir/autoload.php");
+    }
+} while ($dir != '/' && !file_exists("$dir/config.php"));
+if (file_exists("$dir/bootstrap.php")) {
+    require("$dir/bootstrap.php");
+} else {
+    require("$dir/config.php");
+}
+$usage = <<<EOS
+
+Usage: {$argv[0]} [dateTime] [--verbose] [--pending] --commit
+        ATTENTION! Delete Slot Data based on time in days interval. USE WITH CAUTION!
+        [dateTime]      current date, optional for testing, e.g. 2016-04-01
+        --commit        no dry run, delete processes
+        --verbose       only shows what would be deleted
+
+        !!!!!!!!!!!!!!!!!!!!!!!
+        !! DATA LOSS WARNING !!
+        !!!!!!!!!!!!!!!!!!!!!!!
+EOS;
+
+$dates = preg_grep('#^\d\d\d\d-\d\d?-\d\d?#', $argv);
+$verbose = array_shift(preg_grep('#^--?v(erbose)?$#', $argv));
+$commit = preg_grep('#^--commit$#', $argv);
+
+if ($dates) {
+    $job = new \BO\Zmsdb\Helper\CalculateSlots($verbose);
+    $job->deleteOldSlots($commit, new \DateTimeImmutable(count($dates) ? array_shift($dates) : null));
+} else {
+    error_log("Missing time interval argument!$usage");
+}
+if (!$commit) {
+    error_log("Use with --commit to delete entries.");
+}

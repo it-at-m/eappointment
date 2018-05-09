@@ -19,6 +19,7 @@ class DayOff extends Base implements MappingInterface
         return [
             'id' => 'dayOff.FeiertagID',
             'date' => 'dayOff.Datum',
+            'lastChange' => 'dayOff.updateTimestamp',
             'name' => 'dayOff.Feiertag'
         ];
     }
@@ -86,6 +87,8 @@ class DayOff extends Base implements MappingInterface
     public function postProcess($data)
     {
         $data[$this->getPrefixed("date")] = (new \DateTime($data[$this->getPrefixed("date")]))->getTimestamp();
+        $data[$this->getPrefixed("lastChange")] =
+            (new \DateTime($data[$this->getPrefixed("lastChange")]))->getTimestamp();
         return $data;
     }
 }

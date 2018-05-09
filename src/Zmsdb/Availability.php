@@ -181,7 +181,7 @@ class Availability extends Base implements Interfaces\ResolveReferences
      *
      * @return Entity
      */
-    public function updateEntity($entityId, \BO\Zmsentities\Availability $entity)
+    public function updateEntity($entityId, \BO\Zmsentities\Availability $entity, $resolveReferences = 0)
     {
         self::$cache = [];
         $entity->testValid();
@@ -190,7 +190,7 @@ class Availability extends Base implements Interfaces\ResolveReferences
         $values = $query->reverseEntityMapping($entity);
         $query->addValues($values);
         $this->writeItem($query);
-        return $this->readEntity($entityId);
+        return $this->readEntity($entityId, $resolveReferences);
     }
 
     /**

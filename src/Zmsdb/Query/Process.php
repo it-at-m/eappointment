@@ -164,6 +164,7 @@ class Process extends Base implements MappingInterface
             ),
             'createIP' => 'process.IPAdresse',
             'createTimestamp' => 'process.IPTimeStamp',
+            'lastChange' => 'process.updateTimestamp',
             'status' => $status_expression,
             'queue__status' => $status_expression,
             'queue__arrivalTime' => self::expression(
@@ -612,6 +613,8 @@ class Process extends Base implements MappingInterface
                 $data[$this->getPrefixed('clients__'.$clientsCount.'__familyName')] = 'Unbekannt';
             }
         }
+        $data[$this->getPrefixed("lastChange")] =
+            (new \DateTime($data[$this->getPrefixed("lastChange")]))->getTimestamp();
         return $data;
     }
 
