@@ -19,6 +19,10 @@
             "type": "number",
             "description": "unix timestamp"
         },
+        "lastChange": {
+            "type": "number",
+            "description": "unix timestamp of the last change on this dayoff"
+        },
         "name": {
             "type": "string",
             "description": "e.g. \"Weihnachten\", \"Betriebsfeier\""

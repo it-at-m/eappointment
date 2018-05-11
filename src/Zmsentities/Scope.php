@@ -219,6 +219,16 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
         return $this;
     }
 
+    /**
+     * Check if scope is newer than given time
+     *
+     * @return bool
+     */
+    public function isNewerThan(\DateTimeInterface $dateTime)
+    {
+        return ($dateTime->getTimestamp() < $this->lastChange);
+    }
+
     public function __toString()
     {
         $string = 'scope#';
