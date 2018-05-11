@@ -55,4 +55,19 @@ class DayoffList extends Base
         }
         return true;
     }
+
+    /**
+     * Check if dayoff is newer than given time
+     *
+     * @return bool
+     */
+    public function isNewerThan(\DateTimeInterface $dateTime, $filterByAvailability = null, $now = null)
+    {
+        foreach ($this as $dayoff) {
+            if ($dayoff->isNewerThan($dateTime, $filterByAvailability, $now)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
