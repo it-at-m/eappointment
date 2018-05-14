@@ -9,6 +9,9 @@ now: # Dummy target
 build: # Build javascript and css
 	node_modules/.bin/gulp
 
+update: # update with devel composer.json
+	COMPOSER=composer.devel.json $(COMPOSER) update
+
 fix: # run code fixing
 	php vendor/bin/phpcbf --standard=psr2 src/
 	php vendor/bin/phpcbf --standard=psr2 tests/
@@ -34,3 +37,6 @@ dev: # init development system
 
 coverage:
 	php -dzend_extension=xdebug.so vendor/bin/phpunit --coverage-html public/_tests/coverage/
+
+paratest: # init parallel unit testing with 5 processes
+	vendor/bin/paratest --coverage-html public/_tests/coverage/
