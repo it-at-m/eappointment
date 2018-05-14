@@ -2,7 +2,9 @@
 
 namespace BO\Zmsclient\Tests;
 
-abstract class Base extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+abstract class Base extends TestCase
 {
 
     /**

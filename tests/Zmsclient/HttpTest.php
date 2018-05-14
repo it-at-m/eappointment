@@ -48,7 +48,7 @@ class HttpTest extends Base
 
     public function testHtml()
     {
-        $this->setExpectedException('\BO\Zmsclient\Exception');
+        $this->expectException('\BO\Zmsclient\Exception');
         $http = $this->createHttpClient();
         $result = $http->readGetResult('/doc/index.html');
         $result->getEntity();
@@ -63,7 +63,7 @@ class HttpTest extends Base
 
     public function testTokenFailed()
     {
-        $this->setExpectedException('\BO\Zmsclient\Exception');
+        $this->expectException('\BO\Zmsclient\Exception');
         $http = $this->createHttpClient();
         $result = $http->readGetResult('/config/');
         $result->getEntity();
@@ -71,7 +71,7 @@ class HttpTest extends Base
 
     public function testWrongFormat()
     {
-        $this->setExpectedException('\BO\Zmsclient\Exception');
+        $this->expectException('\BO\Zmsclient\Exception');
         $http = $this->createHttpClient();
         $result = $http->readGetResult('/doc/swagger.json');
         $result->getEntity();
@@ -79,7 +79,7 @@ class HttpTest extends Base
 
     public function testUnknownUrl()
     {
-        $this->setExpectedException('\BO\Zmsclient\Exception');
+        $this->expectException('\BO\Zmsclient\Exception');
         $http = $this->createHttpClient();
         $result = $http->readGetResult('/unknownUri/');
         $result->getEntity();
