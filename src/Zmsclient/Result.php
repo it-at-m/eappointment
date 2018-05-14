@@ -87,6 +87,9 @@ class Result
                 $response,
                 $this->request
             );
+            if (isset($entity->trace)) {
+                $exception->trace = $entity['trace'];
+            }
             $exception->originalMessage = $entity->message;
             if (array_key_exists('data', $result)) {
                 $exception->data = $result['data'];
