@@ -21,7 +21,7 @@ class ClientTest extends Base
 
     public function testStatusFailed()
     {
-        $this->setExpectedException('\BO\Zmsclient\Psr7\RequestException');
+        $this->expectException('\BO\Zmsclient\Psr7\RequestException');
         $uri = new Uri(self::$http_baseurl . '/status/');
         $uri = $uri->withPort(4444);
         $request = new Request('GET', $uri);

@@ -35,7 +35,7 @@ class SessionTest extends Base
 
     public function testWriteFailed()
     {
-        $this->setExpectedException('BO\Zmsclient\Exception');
+        $this->expectException('BO\Zmsclient\Exception');
         $sessionHandler = $this->createSession();
         $sessionHandler->open('/', self::SESSION_NAME);
         $entity = (new \BO\Zmsentities\Session())->getExample();
