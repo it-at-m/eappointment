@@ -11,7 +11,7 @@
     <div class="body">
         {% block dialog_body -%}{%- endblock %}
     </div>
-    {% if block('board_footer') is not empty %}
+    {% if block('board_footer') is defined %}
     <div class="footer">
         {% block dialog_footer -%}{%- endblock %}
     </div>

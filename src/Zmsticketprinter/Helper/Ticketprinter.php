@@ -30,7 +30,7 @@ class Ticketprinter
         $validator = $request->getAttribute('validator');
         $parameters = $validator->getParameter('ticketprinter')->isArray()->getValue();
         $cookies = $request->getCookieParams();
-        
+
         $ticketprinterHash = \BO\Zmsclient\Ticketprinter::getHash();
         if (array_key_exists('Ticketprinter', $cookies) && ! $ticketprinterHash) {
             $ticketprinterHash = $cookies['Ticketprinter'];
@@ -94,12 +94,15 @@ class Ticketprinter
                     '/scope/'. $nextButton['scope']['id'] . '/organisation/',
                     ['resolveReferences' => 2]
                 )->getEntity();
-            } elseif ('cluster' == $nextButton['type']) {
+            }
+            /* cluster not supported anymore
+            elseif ('cluster' == $nextButton['type']) {
                 $organisation = \App::$http->readGetResult(
                     '/cluster/'. $nextButton['cluster']['id'] . '/organisation/',
                     ['resolveReferences' => 2]
                 )->getEntity();
             }
+            */
             $nextButton = array_shift($ticketprinter->buttons);
         }
         return $organisation;
