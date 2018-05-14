@@ -35,8 +35,7 @@ class BaseController
 
     protected function removeEntityOlderThanOneHour($entity)
     {
-        $now = \App::getNow();
-        if (3600 < $now->getTimestamp() - $entity->createTimestamp) {
+        if (3600 < \App::$now->getTimestamp() - $entity->createTimestamp) {
             $this->deleteEntityFromQueue($entity);
             $log = new Mimepart(['mime' => 'text/plain']);
             $log->content = 'Zmsmessaging Failure: Queue entry older than 1 hour has been removed';

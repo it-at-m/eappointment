@@ -44,12 +44,4 @@ class Application
      * Logging PSR3 compatible
      */
     public static $log = null;
-
-    public static function getNow()
-    {
-        if (\App::$now instanceof \DateTimeInterface) {
-            return \App::$now;
-        }
-        return new \DateTimeImmutable();
-    }
 }
