@@ -9,7 +9,7 @@ help: # This help
 now: # Dummy target
 
 dev: # init development system
-	$(COMPOSER) update
+	COMPOSER=composer.devel.json $(COMPOSER) update
 
 live: # init live system, delete unnecessary libs
 	$(COMPOSER) install --no-dev --prefer-dist
@@ -20,3 +20,6 @@ fix: # run code fixing
 
 coverage:
 	php -dzend_extension=xdebug.so vendor/bin/phpunit --coverage-html public/_tests/coverage/
+
+paratest: # init parallel unit testing with 5 processes
+	vendor/bin/paratest --coverage-html public/_tests/coverage/
