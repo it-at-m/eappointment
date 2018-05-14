@@ -22,7 +22,7 @@ class HomeTest extends Base
     public function testFailed()
     {
         \BO\Zmsclient\Ticketprinter::setHomeUrl("");
-        $this->setExpectedException('\BO\Zmsticketprinter\Exception\HomeNotFound');
+        $this->expectException('\BO\Zmsticketprinter\Exception\HomeNotFound');
         $response = $this->render([ ], [ ], [ ]);
     }
 }

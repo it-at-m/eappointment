@@ -10,12 +10,13 @@ class RoutingTest extends Base
 
     public function testRendering()
     {
-        \BO\Slim\Bootstrap::loadRouting(\App::APP_PATH . '/routing.php');
+        $this->assertEmpty(\BO\Slim\Bootstrap::loadRouting(\App::APP_PATH . '/routing.php'));
     }
 
     public function testErrorHandlerWithCustomTemplate()
     {
         $request = static::createBasicRequest('GET', '/');
+        \App::$language = new \BO\Slim\Language($request, \App::$supportedLanguages);
         $exception = new \BO\Zmsticketprinter\Exception\ScopeNotFound();
         $container = \App::$slim->getContainer();
         $response = $container['errorHandler']($request, $this->getResponse(), $exception);

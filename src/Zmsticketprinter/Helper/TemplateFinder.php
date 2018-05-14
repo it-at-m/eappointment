@@ -71,13 +71,16 @@ class TemplateFinder
             }
             $template = $this->getExistingTemplate($entity);
         }
-        //look for customized template in clusterlist, overwrite template before
+        // look for customized template in clusterlist, overwrite template before
+        // cluster not supported anymore
+        /*
         foreach ($ticketprinter->getClusterList() as $entity) {
             if ($this->getExistingTemplate($entity)) {
                 $template = $this->getExistingTemplate($entity);
                 break;
             }
         }
+        */
         //look for customized template in departmentlist, overwrite template before
         foreach ($organisation->departments as $departmentData) {
             $entity = new \BO\Zmsentities\Department($departmentData);
