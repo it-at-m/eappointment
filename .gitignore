@@ -5,3 +5,4 @@ tags
 config.php
 vendor.old
 vendor.updatecomposer.*.lock
+composer.*.lock
