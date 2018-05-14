@@ -27,6 +27,12 @@ class Exception extends \Exception
     public $data = [];
 
     /**
+     * @var Mixed $trace Code trace
+     *
+     */
+    public $trace;
+
+    /**
      * @param String $message
      * @param \Psr\Http\Message\ResponseInterface $response
      * @param \Psr\Http\Message\RequestInterface $request (optional) reference for better error messages

@@ -58,7 +58,8 @@ class HttpTest extends Base
     {
         $http = $this->createHttpClient();
         $result = $http->readGetResult('/config/', null, 'a9b215f1-e460-490c-8a0b-6d42c274d5e4');
-        $result->getEntity();
+        $entity = $result->getEntity();
+        $this->assertTrue($entity instanceof \BO\Zmsentities\Config);
     }
 
     public function testTokenFailed()
