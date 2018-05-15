@@ -102,6 +102,10 @@
       "description": "Number is used to identify appointments like on call displays\n",
       "minimum": 1000
     },
+    "lastChange": {
+      "type": "number",
+      "description": "unix timestamp of the last change on this process"
+    },
     "queue": {
       "$ref": "queue.json"
     },
