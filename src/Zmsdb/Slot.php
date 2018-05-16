@@ -48,45 +48,33 @@ class Slot extends Base
         \DateTimeInterface $now,
         \DateTimeInterface $slotLastChange = null
     ) {
-        //error_log(sprintf("Now=%s Last=%s %s < %s = %s", $now->format('c'), $slotLastChange->format('c'), $now->getTimestamp(), $slotLastChange->getTimestamp() + 3600, $now->getTimestamp() < ($slotLastChange->getTimestamp() + 3600)));
         if ($availability->isNewerThan($slotLastChange)) {
-            error_log("Outdated on availability: $availability");
+            //error_log("Outdated on availability: $availability");
             return true;
         }
         if ($availability->scope->isNewerThan($slotLastChange)) {
-            error_log("Outdated on scope: $availability ". $availability->lastChange);
+            //error_log("Outdated on scope: $availability ". $availability->lastChange);
             return true;
         }
         if ($availability->scope->dayoff->isNewerThan($slotLastChange, $availability, $now)) {
-            error_log("Outdated on dayoff: $availability");
+            //error_log("Outdated on dayoff: $availability");
             return true;
         }
-        if ($now->getTimestamp() > ($slotLastChange->getTimestamp() + 3600)
-                //&& $availability->hasDateBetween($availability->getBookableEnd(), $now)
+        // First check if the bookable end date on current time is already calculated on last slot change
+        // Second check if between last slot change and current time could be a bookable slot
+        // Be aware, that last slot change and current time might differ serval days if the rebuild fails in some way
+        if (!$availability->hasDate($availability->getBookableEnd($now), $slotLastChange)
+            && $availability->hasDateBetween(
+                $availability->getBookableEnd($slotLastChange),
+                $availability->getBookableEnd($now),
+                $now
+            )
         ) {
-            // TODO Check if there could be a difference in slots based on $slotLastChange, i.e. new day
-            error_log("Outdated on time: $availability");
+            //error_log("Outdated on time: $availability");
             return true;
         }
-        error_log("Not outdated: $availability");
+        //error_log("Not outdated: $availability");
         return false;
-    }
-
-    public function hasAvailabilityBookableSlots(
-        \BO\Zmsentities\Availability $availability,
-        \DateTimeInterface $now
-    ) {
-        if ($availability->workstationCount['intern'] <= 0) {
-            return false;
-        }
-        if ($availability->getEndDateTime()->getTimestamp() < $now->getTimestamp()) {
-            return false;
-        }
-        $stopDate = $availability->getBookableEnd($now);
-        if ($availability->getStartDateTime()->getTimestamp() > $stopDate->getTimestamp()) {
-            return false;
-        }
-        return true;
     }
 
     public function writeByAvailability(
@@ -99,46 +87,55 @@ class Slot extends Base
             return false;
         }
         // Order is import, the following cancels all slots
-        // and should only happen, if rebuild is triggered or not necessary
+        // and should only happen, if rebuild is triggered
         $this->perform(Query\Slot::QUERY_CANCEL_AVAILABILITY, [
             'availabilityID' => $availability->id,
         ]);
-        if (!$availability->hasAvailabilityBookableSlots($availability, $now)) {
+        if (!$availability->hasBookableDates($now)) {
             return false;
         }
         $stopDate = $availability->getBookableEnd($now);
-
         $slotlist = $availability->getSlotList();
         $time = $now;
         $status = false;
         do {
             if ($availability->hasDate($time, $now)) {
-                $ancestors = [];
-                foreach ($slotlist as $slot) {
-                    $slot = clone $slot;
-                    $slotID = $this->readByAvailability($slot, $availability, $time);
-                    if ($slotID) {
-                        $query = new Query\Slot(Query\Base::UPDATE);
-                        $query->addConditionSlotId($slotID);
-                    } else {
-                        $query = new Query\Slot(Query\Base::INSERT);
-                    }
-                    $slot->status = 'free';
-                    $values = $query->reverseEntityMapping($slot, $availability, $time);
-                    $values['createTimestamp'] = time();
-                    $query->addValues($values);
-                    $writeStatus = $this->writeItem($query);
-                    if ($writeStatus && !$slotID) {
-                        $slotID = $this->getWriter()->lastInsertId();
-                    }
-                    $ancestors[] = $slotID;
-                    $this->writeAncestorIDs($slotID, $ancestors);
-                    $status = $writeStatus ? $writeStatus : $status;
-                }
+                $writeStatus = $this->writeSlotListForDate($time, $slotlist, $availability);
+                $status = $writeStatus ? $writeStatus : $status;
             }
             $time = $time->modify('+1day');
         } while ($time->getTimestamp() <= $stopDate->getTimestamp());
 
+        return $status;
+    }
+
+    protected function writeSlotListForDate(
+        \DateTimeInterface $time,
+        Collection $slotlist,
+        AvailabilityEntity $availability
+    ) {
+        $ancestors = [];
+        foreach ($slotlist as $slot) {
+            $slot = clone $slot;
+            $slotID = $this->readByAvailability($slot, $availability, $time);
+            if ($slotID) {
+                $query = new Query\Slot(Query\Base::UPDATE);
+                $query->addConditionSlotId($slotID);
+            } else {
+                $query = new Query\Slot(Query\Base::INSERT);
+            }
+            $slot->status = 'free';
+            $values = $query->reverseEntityMapping($slot, $availability, $time);
+            $values['createTimestamp'] = time();
+            $query->addValues($values);
+            $writeStatus = $this->writeItem($query);
+            if ($writeStatus && !$slotID) {
+                $slotID = $this->getWriter()->lastInsertId();
+            }
+            $ancestors[] = $slotID;
+            $this->writeAncestorIDs($slotID, $ancestors);
+            $status = $writeStatus ? $writeStatus : $status;
+        }
         return $status;
     }
 
