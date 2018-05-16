@@ -92,6 +92,21 @@ class Availability extends Schema\Entity
         return true;
     }
 
+    public function hasBookableDates(\DateTimeInterface $now)
+    {
+        if ($this->workstationCount['intern'] <= 0) {
+            return false;
+        }
+        if ($this->getEndDateTime()->getTimestamp() < $now->getTimestamp()) {
+            return false;
+        }
+        $stopDate = $this->getBookableEnd($now);
+        if ($this->getStartDateTime()->getTimestamp() > $stopDate->getTimestamp()) {
+            return false;
+        }
+        return $this->hasDateBetween($this->getBookableStart($now), $this->getBookableEnd($now), $now);
+    }
+
     /**
      * Check, if the dateTime contains a day
      * ATTENTION: Time critical function, keep highly optimized
@@ -396,6 +411,28 @@ class Availability extends Schema\Entity
             } while ($startTime->getTimestamp() < $stopTime->getTimestamp());
         }
         return $slotList;
+    }
+
+    /**
+     * Check, if a day between two dates is included
+     *
+     * @return Array of arrays with the keys time, public, callcenter, intern
+     */
+    public function hasDateBetween(\DateTimeInterface $startTime, \DateTimeInterface $stopTime, \DateTimeInterface $now)
+    {
+        if ($startTime->getTimestamp() < $now->getTimestamp()) {
+            $startTime = $now;
+        }
+        if ($stopTime->getTimestamp() < $now->getTimestamp()) {
+            return false;
+        }
+        do {
+            if ($this->hasDate($startTime, $now)) {
+                return true;
+            }
+            $startTime = $startTime->modify('+1 day');
+        } while ($startTime->getTimestamp() < $stopTime->getTimestamp());
+        return false;
     }
 
     /**
