@@ -10,13 +10,13 @@ use \Psr\Http\Message\RequestInterface;
 use \Psr\Http\Message\ResponseInterface;
 
 /**
-  * Extension for Twig and Slim
   *
-  *  @SuppressWarnings(PublicMethod)
-  *  @SuppressWarnings(TooManyMethods)
   */
 class TwigExceptionHandler
 {
+
+    const DEFAULT_TEMPLATE = "exception/default.twig";
+
     public static function withHtml(
         RequestInterface $request,
         ResponseInterface $response,
@@ -29,9 +29,14 @@ class TwigExceptionHandler
         if ($exception->getCode() >= 200) {
             $status = $exception->getCode();
         }
+        $template = self::getExceptionTemplate($exception);
         $extendedInfo = self::getExtendedExceptionInfo($exception, $request);
-        if ($status >= 500 || $status < 200 || !$status) {
-            \App::$log->critical("PHP Fatal Exception #{$extendedInfo['uniqueid']}", $extendedInfo);
+        if ($status >= 500 || $status < 200 || !$status || $template == static::DEFAULT_TEMPLATE) {
+            $logInfo = $extendedInfo;
+            unset($logInfo['responsedata']);
+            unset($logInfo['exception']);
+            ksort($logInfo);
+            \App::$log->critical("PHP Fatal Exception #{$extendedInfo['uniqueid']}", $logInfo);
             /*
             \App::$log->critical(
                 "PHP Fatal Exception #{$extendedInfo['uniqueid']}"
@@ -44,7 +49,7 @@ class TwigExceptionHandler
         $response = Render::withLastModified($response, time(), '0');
         return Render::withHtml(
             $response,
-            self::getExceptionTemplate($exception),
+            $template,
             array_merge($extendedInfo, array(
                 "title" => "Bitte entschuldigen Sie den Fehler",
             )),
@@ -65,7 +70,7 @@ class TwigExceptionHandler
         $classname = preg_replace('#[\\\]+#', '/', $classname);
         $template = "exception/$classname.twig";
         if (!$loader->exists($template)) {
-            $template = "exception/default.twig";
+            $template = static::DEFAULT_TEMPLATE;
         }
         return $template;
     }
@@ -86,6 +91,10 @@ class TwigExceptionHandler
         if (isset($exception->response)) {
             $response = $exception->response;
             $responsedata = (string)$response->getBody();
+        }
+        $trace = $exception->getTraceAsString();
+        if (isset($exception->trace)) {
+            $trace = $exception->trace;
         }
         $requestdata = array_merge((array)$request->getQueryParams(), (array)$request->getParsedBody());
         $json_opt = JSON_HEX_TAG | JSON_PRETTY_PRINT | JSON_HEX_AMP;
@@ -111,7 +120,7 @@ class TwigExceptionHandler
             "exceptionclass" => $exceptionclass,
             "file" => $exception->getFile(),
             "line" => $exception->getLine(),
-            "trace" => $exception->getTraceAsString(),
+            "trace" => $trace,
             "servertime" => $servertime,
             "uniqueid" => $uniqueId,
             "request" => $request,
