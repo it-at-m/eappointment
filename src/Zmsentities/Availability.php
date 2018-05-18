@@ -363,6 +363,9 @@ class Availability extends Schema\Entity
      */
     public function isBookable(\DateTimeInterface $bookableDate, \DateTimeInterface $now)
     {
+        if (!$this->hasDay($bookableDate)) {
+            return false;
+        }
         $bookableCurrentTime = $bookableDate->modify($now->format('H:i:s'));
         Helper\DateTime::create($bookableDate)->getTimestamp() + Helper\DateTime::create($now)->getSecondsOfDay();
         $startDate = $this->getBookableStart($now)->modify('00:00:00');
@@ -376,7 +379,9 @@ class Availability extends Schema\Entity
             //error_log("END " . $bookableCurrentTime->format('c').'>'.$endDate->format('c'). " " . $this);
             return false;
         }
-        if ($bookableDate->format('Y-m-d') == $endDate->format('Y-m-d')) {
+        if ($bookableDate->format('Y-m-d') == $endDate->format('Y-m-d')
+            && $now->format('Y-m-d') != $this->getEndDateTime()->format('Y-m-d')
+        ) {
             // Avoid releasing all appointments on midnight, allow smaller contingents distributed over the day
             $delayedStart = $this->getBookableEnd($now)->modify($this->getStartDateTime()->format('H:i:s'));
             if ($bookableCurrentTime->getTimestamp() < $delayedStart->getTimestamp()) {
