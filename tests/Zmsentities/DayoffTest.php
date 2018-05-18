@@ -64,6 +64,25 @@ class DayoffTest extends EntityCommonTests
         $this->assertEquals(1463356800, $list->getFirst()->date);
     }
 
+    public function testIsNewerThan()
+    {
+        $now = new \DateTimeImmutable('2016-04-01 11:55:00');
+        $availabiliy = new \BO\Zmsentities\Availability();
+        $collection = new \BO\Zmsentities\Collection\DayoffList();
+        $dayoff = new \BO\Zmsentities\Dayoff(
+            [
+                "date" => "1458856800",
+                "name" => "Karfreitag"
+            ]
+        );
+        $collection[] = $dayoff;
+        $dayoff->lastChange = $now->modify('-1 day')->getTimestamp();
+        $this->assertFalse($collection->isNewerThan($now), "lastChange is older");
+        $dayoff->lastChange = $now->modify('+1 day')->getTimestamp();
+        $this->assertTrue($collection->isNewerThan($now), "lastChange is newer");
+        $this->assertFalse($collection->isNewerThan($now, $availabiliy, $now), "availability is not bookable");
+    }
+
     protected function getDayOffExampleList()
     {
         $list = [

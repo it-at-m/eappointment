@@ -142,6 +142,15 @@ class ScopeTest extends EntityCommonTests
         $this->assertTrue(! array_key_exists('dayoff', $entity->withLessData()));
     }
 
+    public function testNewerThan()
+    {
+        $now = new \DateTimeImmutable('2016-04-01 11:55:00');
+        $entity = $this->getExample();
+        $entity->lastChange = $now->getTimestamp();
+        $this->assertTrue($entity->isNewerThan($now->modify('-1 day')));
+        $this->assertFalse($entity->isNewerThan($now->modify('+1 day')));
+    }
+
     public function testRequestList()
     {
         $entity = $this->getExample();
