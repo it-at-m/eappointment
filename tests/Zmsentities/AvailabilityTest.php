@@ -213,6 +213,43 @@ class AvailabilityTest extends EntityCommonTests
             $entity->isBookable($time->modify("+1month"), $time),
             'Availability endInDays is before startInDays'
         );
+
+        $entity['endDate'] = $time->modify("+90 day")->getTimestamp();
+        $entity->bookable['endInDays'] = 60;
+        $entity['workstationCount']['intern'] = 3;
+        $entity['weekday']['friday'] = 1;
+        $entity['scope'] = new \BO\Zmsentities\Scope([
+            'dayoff' => new \BO\Zmsentities\Collection\DayoffList(),
+        ]);
+        $this->assertTrue($entity->hasBookableDates($time), 'Availability shoud have bookable dates');
+        $entity['workstationCount']['intern'] = 0;
+        $this->assertFalse(
+            $entity->hasBookableDates($time),
+            'Availability should not be bookable on missing workstation'
+        );
+        $entity['workstationCount']['intern'] = 1;
+        $entity['weekday']['friday'] = 0;
+        $this->assertFalse(
+            $entity->hasBookableDates($time),
+            'Availability should not be bookable on missing weekday'
+        );
+        $entity['weekday']['friday'] = 1;
+        $entity['startDate'] = $time->modify("+61 day")->getTimestamp();
+        $this->assertFalse(
+            $entity->hasBookableDates($time),
+            'Availability should not be bookable if not started'
+        );
+        $entity['startDate'] = $time->modify("-60 day")->getTimestamp();
+        $entity['endDate'] = $time->modify("-2 day")->getTimestamp();
+        $this->assertFalse(
+            $entity->hasBookableDates($time),
+            'Availability should not be bookable if in the past'
+        );
+        $entity['endDate'] = $time->modify("+20 day")->getTimestamp();
+        $this->assertFalse(
+            $entity->hasDateBetween($time->modify("-2 day"), $time->modify("-1 day"), $time),
+            'Availability should not have dates in the past'
+        );
     }
 
     public function testIsBookableByScopeEnd()
@@ -221,10 +258,38 @@ class AvailabilityTest extends EntityCommonTests
         $entity = new $this->entityclass();
         $entity->bookable['startInDays'] = null;
         $entity->bookable['endInDays'] = null;
+        $entity['startDate'] = $time->modify("-60 day")->getTimestamp();
+        $entity['endDate'] = $time->modify("+200 day")->getTimestamp();
         $entity['scope'] = (new \BO\Zmsentities\Scope())->getExample();
+        //error_log(__METHOD__ . ": $entity ". $time->format('c'));
         $this->assertTrue(
             $entity->isBookable($time->modify("+1month"), $time),
             'Availability endInDays is before startInDays'
+        );
+    }
+
+    public function testIsBookableMidnight()
+    {
+        $time = new \DateTimeImmutable(self::DEFAULT_TIME);
+        $entity = new $this->entityclass();
+        $entity->bookable['startInDays'] = 0;
+        $entity['startDate'] = $time->getTimestamp();
+        $entity['endDate'] = $time->modify("+2month")->getTimestamp();
+        $entity['startTime'] = $time->modify('-1 hour')->format('H:i');
+        $this->assertTrue(
+            $entity->isBookable($time->modify("+2month"), $time),
+            "Last Day should be bookable"
+        );
+        $entity['startTime'] = $time->modify('+1 hour')->format('H:i');
+        $this->assertFalse(
+            $entity->isBookable($time->modify("+2month"), $time),
+            "Last Day opening hour did not started yet"
+        );
+        $entity['endDate'] = $entity['startDate'];
+        $entity->bookable['endInDays'] = 0;
+        $this->assertTrue(
+            $entity->isBookable($time, $time),
+            "Current Day should be bookable independent of current time"
         );
     }
 

@@ -3,3 +3,4 @@ tags
 /public
 .DS_*
 composer.*.lock
+clover.xml

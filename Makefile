@@ -22,4 +22,4 @@ tests: now # run tests
 	bin/tests
 
 coverage:
-	php -dzend_extension=xdebug.so vendor/bin/phpunit --coverage-html public/_tests/coverage/
+	php -dzend_extension=xdebug.so vendor/bin/phpunit --coverage-html public/_tests/coverage/ --coverage-clover clover.xml
