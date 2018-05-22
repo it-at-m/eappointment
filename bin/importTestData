@@ -23,7 +23,7 @@ if (preg_grep('/--commit/', $argv)) {
     $importer = new \BO\Zmsdb\Source\Dldb();
     $importer->startImport(true);
     $calculator = new \BO\Zmsdb\Helper\CalculateSlots(true);
-    $calculator->writeCalculations(new \DateTimeImmutable("2016-04-01"));
+    $calculator->writeCalculations(new \DateTimeImmutable("2016-04-01"), 3600);
 } else {
     $dbname = \BO\Zmsdb\Connection\Select::$writeSourceName;
     $username = \BO\Zmsdb\Connection\Select::$username;
