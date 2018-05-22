@@ -20,22 +20,32 @@ class CalculateSlots
     public function log($message)
     {
         if ($this->verbose) {
-            $time = round(microtime(true) - $this->startTime, 3);
+            $time = $this->getSpendTime();
             $memory = memory_get_usage()/(1024*1024);
             error_log(sprintf("[CalculateSlots %07.3fs %07.1fmb] %s", "$time", $memory, $message));
         }
         return $this;
     }
 
-    public function writeCalculations(\DateTimeInterface $now)
+    public function getSpendTime()
+    {
+        $time = round(microtime(true) - $this->startTime, 3);
+        return $time;
+    }
+
+    public function writeCalculations(\DateTimeInterface $now, $breakTime = 10)
     {
         \BO\Zmsdb\Connection\Select::setTransaction();
-        $this->log("Fetch Slot list");
+        $this->log("Fetch Slot list with time ". $now->format('c'));
         $scopeList = (new \BO\Zmsdb\Scope())->readList(1);
         $scopeLength = count($scopeList) - 1;
         foreach ($scopeList as $key => $scope) {
             if ($this->writeCalculatedScope($scope, $now)) {
                 $this->log("Calculated slots $key/$scopeLength for $scope");
+            }
+            if ($this->getSpendTime() > $breakTime) {
+                $this->log("Break update, wait for next iteration");
+                break;
             }
         }
         $this->log("Update Slot-Process-Mapping");
