@@ -32,10 +32,11 @@ class CalculateSlots
         \BO\Zmsdb\Connection\Select::setTransaction();
         $this->log("Fetch Slot list");
         $scopeList = (new \BO\Zmsdb\Scope())->readList(1);
-        $scopeLength = count($scopeList);
+        $scopeLength = count($scopeList) - 1;
         foreach ($scopeList as $key => $scope) {
-            $this->log("Calculate slots $key/$scopeLength for $scope");
-            $this->writeCalculatedScope($scope, $now);
+            if ($this->writeCalculatedScope($scope, $now)) {
+                $this->log("Calculated slots $key/$scopeLength for $scope");
+            }
         }
         $this->log("Update Slot-Process-Mapping");
         $slotQuery = new \BO\Zmsdb\Slot();

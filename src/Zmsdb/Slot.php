@@ -4,6 +4,7 @@ namespace BO\Zmsdb;
 use \BO\Zmsentities\Slot as Entity;
 use \BO\Zmsentities\Collection\SlotList as Collection;
 use \BO\Zmsentities\Availability as AvailabilityEntity;
+use \BO\Zmsentities\Scope as ScopeEntity;
 
 /**
  * @SuppressWarnings(Public)
@@ -82,10 +83,13 @@ class Slot extends Base
 
     public function writeByAvailability(
         \BO\Zmsentities\Availability $availability,
-        \DateTimeInterface $now
+        \DateTimeInterface $now,
+        \DateTimeInterface $slotLastChange = null
     ) {
         $now = \BO\Zmsentities\Helper\DateTime::create($now);
-        $slotLastChange = $this->readLastChangedTimeByAvailability($availability);
+        if (!$slotLastChange) {
+            $slotLastChange = $this->readLastChangedTimeByAvailability($availability);
+        }
         if (!$this->isAvailabilityOutdated($availability, $now, $slotLastChange)) {
             return false;
         }
@@ -114,13 +118,14 @@ class Slot extends Base
 
     public function writeByScope(\BO\Zmsentities\Scope $scope, \DateTimeInterface $now)
     {
+        $slotLastChange = $this->readLastChangedTimeByScope($scope);
         $availabilityList = (new \BO\Zmsdb\Availability)
             ->readAppointmentListByScope($scope, 0, $now->modify('-1 day'))
             ;
         $updatedList = new \BO\Zmsentities\Collection\AvailabilityList();
         foreach ($availabilityList as $availability) {
             $availability->scope = clone $scope; //dayoff is required
-            if ($this->writeByAvailability($availability, $now)) {
+            if ($this->writeByAvailability($availability, $now, $slotLastChange)) {
                 $updatedList->addEntity($availability);
             }
         }
@@ -179,6 +184,20 @@ class Slot extends Base
     {
         $last = $this->fetchRow(
             Query\Slot::QUERY_LAST_CHANGED
+        );
+        if (!$last['dateString']) {
+            $last['dateString'] = '1970-01-01 12:00';
+        }
+        return new \DateTimeImmutable($last['dateString']);
+    }
+
+    public function readLastChangedTimeByScope(ScopeEntity $scope)
+    {
+        $last = $this->fetchRow(
+            Query\Slot::QUERY_LAST_CHANGED_SCOPE,
+            [
+                'scopeID' => $scope->id,
+            ]
         );
         if (!$last['dateString']) {
             $last['dateString'] = '1970-01-01 12:00';
