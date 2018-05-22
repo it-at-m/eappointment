@@ -32,7 +32,9 @@ class CalculateSlots
         \BO\Zmsdb\Connection\Select::setTransaction();
         $this->log("Fetch Slot list");
         $scopeList = (new \BO\Zmsdb\Scope())->readList(1);
-        foreach ($scopeList as $scope) {
+        $scopeLength = count($scopeList);
+        foreach ($scopeList as $key => $scope) {
+            $this->log("Calculate slots $key/$scopeLength for $scope");
             $this->writeCalculatedScope($scope, $now);
         }
         $this->log("Update Slot-Process-Mapping");
@@ -46,26 +48,25 @@ class CalculateSlots
     protected function writeCalculatedScope(\BO\Zmsentities\Scope $scope, \DateTimeInterface $now)
     {
         $slotQuery = new \BO\Zmsdb\Slot();
-        $this->log("Calculate slots for $scope");
-        $availabilityList = (new \BO\Zmsdb\Availability)
-            ->readList($scope->id)
-            ->withType('appointment')
-            ;
-        foreach ($availabilityList as $availability) {
-            $availability->scope = clone $scope; //dayoff is required
-            //$this->log("$availability");
-            if ($slotQuery->writeByAvailability($availability, $now)) {
-                $this->log("Updated $availability");
-                \BO\Zmsdb\Connection\Select::writeCommit();
-            }
+        $updatedList = $slotQuery->writeByScope($scope, $now);
+        foreach ($updatedList as $availability) {
+            $this->log("Updated $availability");
         }
+        if (count($updatedList)) {
+            \BO\Zmsdb\Connection\Select::writeCommit();
+            return true;
+        }
+        return false;
     }
 
     /**
      * @SuppressWarnings(Unused)
      */
-    public function deleteOldSlots($commit, \DateTimeInterface $now)
+    public function deleteOldSlots(\DateTimeInterface $now)
     {
-        error_log("NOT IMPLEMENTED YET: delete not required slots");
+        $slotQuery = new \BO\Zmsdb\Slot();
+        if ($slotQuery->deleteSlotsOlderThan($now)) {
+            $this->log("Deleted slots older than ". $now->format('Y-m-d'));
+        }
     }
 }

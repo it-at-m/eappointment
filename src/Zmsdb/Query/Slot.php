@@ -112,6 +112,10 @@ GROUP BY s.scopeID, s.year, s.month, s.day, s.time
         UPDATE slot SET status = "cancelled" WHERE availabilityID = :availabilityID
 ';
 
+    const QUERY_DELETE_SLOT_OLD = '
+    DELETE FROM slot WHERE year <= :year AND  month <= :month AND  day < :day
+';
+
     public function getEntityMapping()
     {
         return [
