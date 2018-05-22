@@ -5008,7 +5008,16 @@ use \Psr\Http\Message\ResponseInterface;
         $message->meta->error = true;
         $message->meta->message = $exception->getMessage();
         $message->meta->exception = get_class($exception);
-        $message->meta->trace = $exception->getTrace();
+        $message->meta->trace = '';
+        foreach (array_slice($exception->getTrace(), 0, 10) as $call) {
+            $message->meta->trace .= "\\";
+            $message->meta->trace .= isset($call['class']) ? $call['class'] : '';
+            $message->meta->trace .= "::";
+            $message->meta->trace .= isset($call['function']) ? $call['function'] : '';
+            $message->meta->trace .= " +";
+            $message->meta->trace .= isset($call['line']) ? $call['line'] : '';
+            $message->meta->trace .= "\n";
+        }
         if (isset($exception->data)) {
             $message->data = $exception->data;
         }
@@ -5019,10 +5028,10 @@ use \Psr\Http\Message\ResponseInterface;
         }
         if ($exception->getCode() >= 500 || !$exception->getCode()) {
             \App::$log->critical(
-                "PHP Fatal Exception: "
+                "[API] Fatal Exception: "
                 . " in " . $exception->getFile() . " +" . $exception->getLine()
                 . " -> " . $exception->getMessage()
-                . " | Trace: ". substr($exception->getTraceAsString(), 0, 1024)
+                . " | Trace: ". $message->meta->trace
             );
         }
         return \BO\Slim\Render::withJson($response, $message, $status);
