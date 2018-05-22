@@ -12,6 +12,7 @@ if (file_exists("$dir/bootstrap.php")) {
 } else {
     require("$dir/config.php");
 }
+ini_set('memory_limit', '1024M');
 
 $dates = preg_grep('#^\d\d\d\d-\d\d?-\d\d?#', $argv);
 $now = new \DateTimeImmutable();
