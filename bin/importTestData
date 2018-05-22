@@ -12,6 +12,8 @@ if (file_exists("$dir/bootstrap.php")) {
 } else {
     require("$dir/config.php");
 }
+ini_set('memory_limit', '1024M');
+
 if (preg_grep('/--commit/', $argv)) {
     $fixtures = realpath(__DIR__ . '/../tests/Zmsdb/fixtures/');
     $migrations = realpath(__DIR__ . '/../migrations/');
