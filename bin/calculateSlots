@@ -14,13 +14,20 @@ if (file_exists("$dir/bootstrap.php")) {
 }
 
 $dates = preg_grep('#^\d\d\d\d-\d\d?-\d\d?#', $argv);
+$now = new \DateTimeImmutable();
+if (count($dates)) {
+    $now = new \DateTimeImmutable(array_shift($dates));
+} elseif (class_exists('\App') && isset(\App::$now)) {
+    $now = \App::$now;
+}
 if (preg_grep('#^--commit$#', $argv)) {
     $calculator = new \BO\Zmsdb\Helper\CalculateSlots(preg_grep('#^--?v(erbose)?$#', $argv));
-    $calculator->writeCalculations(new \DateTimeImmutable(count($dates) ? array_shift($dates) : null));
+    $calculator->writeCalculations($now);
 } else {
     $dbname = \BO\Zmsdb\Connection\Select::$writeSourceName;
     $username = \BO\Zmsdb\Connection\Select::$username;
     echo "Usage: {$argv[0]} --commit [--verbose] [2018-04-01]\n"
         . "\tCalculates and updates available appointments/slots for availabilities.\n\n";
-    echo "\tDatabase: $dbname as $username\n\n";
+    echo "\tDatabase:             $dbname as $username\n";
+    echo "\tDate for calculation: ".$now->format('c')."\n\n";
 }
