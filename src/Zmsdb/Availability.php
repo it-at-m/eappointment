@@ -4,6 +4,9 @@ namespace BO\Zmsdb;
 use \BO\Zmsentities\Availability as Entity;
 use \BO\Zmsentities\Collection\AvailabilityList as Collection;
 
+/**
+ * @SuppressWarnings(Public)
+ */
 class Availability extends Base implements Interfaces\ResolveReferences
 {
     public static $cache = [];
@@ -40,21 +43,7 @@ class Availability extends Base implements Interfaces\ResolveReferences
         if (1 <= $resolveReferences) {
             $scope = (new Scope())->readEntity($scopeId, $resolveReferences - 1);
         }
-        $collection = new Collection();
-        $query = new Query\Availability(Query\Base::SELECT);
-        $query
-            ->addEntityMapping()
-            ->addResolvedReferences($resolveReferences)
-            ->addConditionScopeId($scopeId);
-        $result = $this->fetchList($query, new Entity());
-        if (count($result)) {
-            foreach ($result as $entity) {
-                if ($entity instanceof Entity) {
-                    $entity['scope'] = clone $scope;
-                    $collection->addEntity($entity);
-                }
-            }
-        }
+        $collection = $this->readAppointmentListByScope($scope, $resolveReferences);
         // TODO Remove after DB optimization
         $query = new Query\Availability(Query\Base::SELECT);
         $query
@@ -88,6 +77,34 @@ class Availability extends Base implements Interfaces\ResolveReferences
             }
         }
         // End remove
+        return $collection;
+    }
+
+    public function readAppointmentListByScope(
+        \BO\Zmsentities\Scope $scope,
+        $resolveReferences = 0,
+        $skipOlderThan = false
+    ) {
+        $collection = new Collection();
+        $query = new Query\Availability(Query\Base::SELECT);
+        $query
+            ->addEntityMapping()
+            ->addResolvedReferences($resolveReferences)
+            ->addConditionAppointmentHours()
+            ->addConditionScopeId($scope->id);
+        if ($skipOlderThan instanceof \DateTimeInterface) {
+            $query->addConditionSkipOld($skipOlderThan);
+        }
+        $result = $this->fetchList($query, new Entity());
+        if (count($result)) {
+            foreach ($result as $entity) {
+                if ($entity instanceof Entity) {
+                    $entity['scope'] = clone $scope;
+                    //skip resolveReferences for using the scope given, TODO check resolvedLevel from scope
+                    $collection->addEntity($entity);
+                }
+            }
+        }
         return $collection;
     }
 

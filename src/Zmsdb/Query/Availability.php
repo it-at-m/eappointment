@@ -2,6 +2,9 @@
 
 namespace BO\Zmsdb\Query;
 
+/**
+ * @SuppressWarnings(Public)
+ */
 class Availability extends Base implements MappingInterface
 {
     /**
@@ -120,6 +123,14 @@ class Availability extends Base implements MappingInterface
             ->where('availability.Terminendzeit', '!=', '00:00:00')
             ->where('availability.Anfangszeit', '!=', '00:00:00')
             ->where('availability.Endzeit', '!=', '00:00:00');
+        return $this;
+    }
+
+    public function addConditionSkipOld(\DateTimeInterface $dateTime)
+    {
+        $date = $dateTime->format('Y-m-d');
+        $this->query
+            ->where('availability.Endedatum', '>=', $date);
         return $this;
     }
 

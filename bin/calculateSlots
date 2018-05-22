@@ -24,10 +24,13 @@ if (count($dates)) {
 if (preg_grep('#^--commit$#', $argv)) {
     $calculator = new \BO\Zmsdb\Helper\CalculateSlots(preg_grep('#^--?v(erbose)?$#', $argv));
     $calculator->writeCalculations($now);
+    if (preg_grep('#^--delete$#', $argv)) {
+        $calculator->deleteOldSlots($now);
+    }
 } else {
     $dbname = \BO\Zmsdb\Connection\Select::$writeSourceName;
     $username = \BO\Zmsdb\Connection\Select::$username;
-    echo "Usage: {$argv[0]} --commit [--verbose] [2018-04-01]\n"
+    echo "Usage: {$argv[0]} --commit [--verbose] [--delete] [2018-04-01]\n"
         . "\tCalculates and updates available appointments/slots for availabilities.\n\n";
     echo "\tDatabase:             $dbname as $username\n";
     echo "\tDate for calculation: ".$now->format('c')."\n\n";

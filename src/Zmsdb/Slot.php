@@ -5,6 +5,9 @@ use \BO\Zmsentities\Slot as Entity;
 use \BO\Zmsentities\Collection\SlotList as Collection;
 use \BO\Zmsentities\Availability as AvailabilityEntity;
 
+/**
+ * @SuppressWarnings(Public)
+ */
 class Slot extends Base
 {
 
@@ -109,6 +112,21 @@ class Slot extends Base
         return $status;
     }
 
+    public function writeByScope(\BO\Zmsentities\Scope $scope, \DateTimeInterface $now)
+    {
+        $availabilityList = (new \BO\Zmsdb\Availability)
+            ->readAppointmentListByScope($scope, 0, $now->modify('-1 day'))
+            ;
+        $updatedList = new \BO\Zmsentities\Collection\AvailabilityList();
+        foreach ($availabilityList as $availability) {
+            $availability->scope = clone $scope; //dayoff is required
+            if ($this->writeByAvailability($availability, $now)) {
+                $updatedList->addEntity($availability);
+            }
+        }
+        return $updatedList;
+    }
+
     protected function writeSlotListForDate(
         \DateTimeInterface $time,
         Collection $slotlist,
@@ -205,5 +223,14 @@ class Slot extends Base
             'processId' => $processId,
         ]);
         return $this;
+    }
+
+    public function deleteSlotsOlderThan(\DateTimeInterface $dateTime)
+    {
+        return $this->perform(Query\Slot::QUERY_DELETE_SLOT_OLD, [
+            'year' => $dateTime->format('Y'),
+            'month' => $dateTime->format('m'),
+            'day' => $dateTime->format('d'),
+        ]);
     }
 }
