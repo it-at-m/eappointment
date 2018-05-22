@@ -250,7 +250,7 @@ class Cluster extends Base
             $this->deleteImage($clusterId);
             $imageName = 'c_'. $clusterId .'_bild.'. $entity->getExtension();
             $this->perform(
-            (new Query\Scope(Query\Base::REPLACE))->getQueryWriteImageData(),
+                (new Query\Scope(Query\Base::REPLACE))->getQueryWriteImageData(),
                 array(
                 'imagename' => $imageName,
                 'imagedata' => $entity->content
