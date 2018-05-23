@@ -25,7 +25,7 @@ class OwnerOverviewTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/owner/',
-                    'parameters' => ['resolveReferences' => 4],
+                    'parameters' => ['resolveReferences' => 5],
                     'response' => $this->readFixture("GET_ownerlist.json")
                 ]
             ]
@@ -52,7 +52,7 @@ class OwnerOverviewTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/owner/',
-                    'parameters' => ['resolveReferences' => 4],
+                    'parameters' => ['resolveReferences' => 5],
                     'exception' => $exception
                 ]
             ]
