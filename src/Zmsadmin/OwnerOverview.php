@@ -18,7 +18,7 @@ class OwnerOverview extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
-        $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences' => 4))->getCollection();
+        $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences' => 5))->getCollection();
         return \BO\Slim\Render::withHtml(
 
             $response,
