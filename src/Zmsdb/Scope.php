@@ -69,11 +69,9 @@ class Scope extends Base
                             '$ref' => '/scope/' . $entity['id'] . '/'
                         )
                     );
+                    $scopeList->addEntity($entity);
                 } else {
-                    $resolveReferences = $resolveReferences - 1;
-                }
-                if ($entity instanceof Entity) {
-                    $scopeList->addEntity($this->readResolvedReferences($entity, $resolveReferences));
+                    $scopeList->addEntity($this->readResolvedReferences($entity, $resolveReferences - 1));
                 }
             }
         }
