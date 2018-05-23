@@ -10,4 +10,5 @@ if [[ $ZMS_CRONROOT =~ ^1|on|true|yes$ ]]; then
     $BIN/deleteSessionData Zmsappointment 30 --commit
     #$BIN/deleteReservedData --commit
     #$BIN/sendNotificationReminder --commit
+    $BIN/calculateSlots --commit
 fi
