@@ -244,12 +244,35 @@ class Slot extends Base
         return $this;
     }
 
+    public function writeCanceledByTime(\DateTimeInterface $dateTime)
+    {
+        return $this->perform(Query\Slot::QUERY_CANCEL_SLOT_OLD, [
+            'year' => $dateTime->format('Y'),
+            'month' => $dateTime->format('m'),
+            'day' => $dateTime->format('d'),
+            'time' => $dateTime->format('H:i:s'),
+        ]);
+    }
+
     public function deleteSlotsOlderThan(\DateTimeInterface $dateTime)
     {
-        return $this->perform(Query\Slot::QUERY_DELETE_SLOT_OLD, [
+        $status = $this->perform(Query\Slot::QUERY_DELETE_SLOT_OLD, [
             'year' => $dateTime->format('Y'),
             'month' => $dateTime->format('m'),
             'day' => $dateTime->format('d'),
         ]);
+        $status = ($status && $this->perform(Query\Slot::QUERY_DELETE_SLOT_HIERA));
+        $status = ($status && $this->writeOptimizedSlotTables());
+        return $status;
+    }
+
+    public function writeOptimizedSlotTables()
+    {
+        $status = true;
+        $status = ($status && $this->perform(Query\Slot::QUERY_OPTIMIZE_SLOT));
+        $status = ($status && $this->perform(Query\Slot::QUERY_OPTIMIZE_SLOT_HIERA));
+        $status = ($status && $this->perform(Query\Slot::QUERY_OPTIMIZE_SLOT_PROCESS));
+        $status = ($status && $this->perform(Query\Slot::QUERY_OPTIMIZE_PROCESS));
+        return $status;
     }
 }

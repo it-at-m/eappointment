@@ -24,6 +24,7 @@ if (count($dates)) {
 if (preg_grep('#^--commit$#', $argv)) {
     $calculator = new \BO\Zmsdb\Helper\CalculateSlots(preg_grep('#^--?v(erbose)?$#', $argv));
     $calculator->writeCalculations($now);
+    $calculator->writeCanceledSlots($now);
     if (preg_grep('#^--delete$#', $argv)) {
         $calculator->deleteOldSlots($now);
     }

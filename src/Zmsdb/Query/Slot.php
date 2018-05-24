@@ -10,6 +10,11 @@ class Slot extends Base implements MappingInterface
      */
     const TABLE = 'slot';
 
+    const QUERY_OPTIMIZE_SLOT = 'OPTIMIZE TABLE slot;';
+    const QUERY_OPTIMIZE_SLOT_HIERA = 'OPTIMIZE TABLE slot_hiera;';
+    const QUERY_OPTIMIZE_SLOT_PROCESS = 'OPTIMIZE TABLE slot_proces;';
+    const QUERY_OPTIMIZE_PROCESS = 'OPTIMIZE TABLE buerger;';
+
     const QUERY_LAST_CHANGED = 'SELECT MAX(updateTimestamp) AS dateString FROM slot;';
 
     const QUERY_LAST_CHANGED_AVAILABILITY = '
@@ -115,9 +120,20 @@ GROUP BY s.scopeID, s.year, s.month, s.day, s.time
         UPDATE slot SET status = "cancelled" WHERE availabilityID = :availabilityID
 ';
 
+    const QUERY_CANCEL_SLOT_OLD = '
+    UPDATE slot SET status =  "cancelled" WHERE year <= :year AND  month <= :month AND  day <= :day AND time < :time
+';
+
     const QUERY_DELETE_SLOT_OLD = '
     DELETE FROM slot WHERE year <= :year AND  month <= :month AND  day < :day
 ';
+
+    const QUERY_DELETE_SLOT_HIERA = '
+        DELETE sh 
+            FROM slot_hiera sh LEFT JOIN slot s USING(slotID)
+            WHERE s.slotID IS NULL
+    ';
+
 
     public function getEntityMapping()
     {
