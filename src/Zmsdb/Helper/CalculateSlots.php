@@ -70,6 +70,17 @@ class CalculateSlots
         return false;
     }
 
+    public function writeCanceledSlots(\DateTimeInterface $now)
+    {
+        $slotQuery = new \BO\Zmsdb\Slot();
+        if ($slotQuery->writeCanceledByTime($now->modify('+30 minutes'))) {
+            \BO\Zmsdb\Connection\Select::writeCommit();
+            $this->log("Cancelled old slots");
+            return true;
+        }
+        return false;
+    }
+
     /**
      * @SuppressWarnings(Unused)
      */
@@ -77,6 +88,7 @@ class CalculateSlots
     {
         $slotQuery = new \BO\Zmsdb\Slot();
         if ($slotQuery->deleteSlotsOlderThan($now)) {
+            \BO\Zmsdb\Connection\Select::writeCommit();
             $this->log("Deleted slots older than ". $now->format('Y-m-d'));
         }
     }
