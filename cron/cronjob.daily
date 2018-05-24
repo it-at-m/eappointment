@@ -11,6 +11,7 @@ if [[ $ZMS_CRONROOT =~ ^1|on|true|yes$ ]]; then
     $BIN/resetWorkstations --commit
     $BIN/deleteDayoffData 6 --commit
     #$BIN/deleteAppointmentData 1 --commit
+    $BIN/calculateSlots --commit --delete
     if [[ $ZMS_ENV =~ ^dev|stage$ ]]; then
         $BIN/migrate --update
     fi
