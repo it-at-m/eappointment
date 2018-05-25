@@ -21,6 +21,11 @@ class Status extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        try {
+            $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
+        } catch (\Exception $workstationexception) {
+            $workstation = null;
+        }
         $result = \App::$http->readGetResult('/status/');
         return \BO\Slim\Render::withHtml(
             $response,
@@ -28,6 +33,7 @@ class Status extends BaseController
             array(
                 'title' => 'Status der Terminvereinbarung',
                 'status' => $result->getEntity(),
+                'workstation' => $workstation
             )
         );
     }
