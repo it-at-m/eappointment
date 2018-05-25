@@ -44,8 +44,8 @@ class Result
      */
     public function setResponse(\Psr\Http\Message\ResponseInterface $response)
     {
-        $this->testMeta();
         $body = Validator::value((string)$response->getBody())->isJson();
+        $this->testMeta($body, $response);
         $result = $body->getValue();
         if (array_key_exists("data", $result)) {
             $this->setData($result['data']);
@@ -58,10 +58,8 @@ class Result
      *
      * @throws Exception
      */
-    protected function testMeta()
+    protected function testMeta($body, \Psr\Http\Message\ResponseInterface $response)
     {
-        $response = $this->response;
-        $body = Validator::value((string)$response->getBody())->isJson();
         if ($body->hasFailed()) {
             $content = (string)$response->getBody();
             throw new Exception\ApiFailed(
