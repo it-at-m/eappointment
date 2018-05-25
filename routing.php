@@ -4316,6 +4316,42 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/status/deadlock/":
+ *      get:
+ *          summary: Example status on a database deadlock
+ *          description: Use this route if you want to test deadlock handling on a client
+ *          tags:
+ *              - status
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      $ref: "schema/status.json"
+ */
+\App::$slim->get('/status/deadlock/',
+    '\BO\Zmsapi\StatusDeadlock')
+    ->setName("StatusDeadlock");
+
+/**
+ *  @swagger
+ *  "/status/locktimeout/":
+ *      get:
+ *          summary: Example status on a database locktimeout
+ *          description: Use this route if you want to test lock timeout handling on a client
+ *          tags:
+ *              - status
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      $ref: "schema/status.json"
+ */
+\App::$slim->get('/status/locktimeout/',
+    '\BO\Zmsapi\StatusLocktimeout')
+    ->setName("StatusLocktimeout");
+
+/**
+ *  @swagger
  *  "/ticketprinter/{hash}/":
  *      get:
  *          summary: Get current Ticketprinter by hash
