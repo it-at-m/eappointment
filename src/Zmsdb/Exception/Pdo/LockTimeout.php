@@ -4,7 +4,7 @@ namespace BO\Zmsdb\Exception\Pdo;
 
 class LockTimeout extends \Exception
 {
-    protected $code = 404;
+    protected $code = 500;
 
     protected $message = 'Failed to lock database for updating';
 }
