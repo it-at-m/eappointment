@@ -11,7 +11,7 @@ class Status extends Base
      *
      * @return \BO\Zmsentities\Status
      */
-    public function readEntity()
+    public function readEntity($includeProcessStats = true)
     {
         $entity = new Entity();
         $configVariables = $this->readConfigVariables();
@@ -25,7 +25,9 @@ class Status extends Base
             array_key_exists('wsrep_ready', $statusVariables) ? $statusVariables['wsrep_ready'] : 'OFF';
         $entity['database']['logbin'] =
             array_key_exists('log_bin', $configVariables) ? $configVariables['log_bin'] : 'OFF';
-        $entity['processes'] = $this->readProcessStats();
+        if ($includeProcessStats) {
+            $entity['processes'] = $this->readProcessStats();
+        }
         $entity['mail'] = $this->readMailStats();
         $entity['notification'] = $this->readNotificationStats();
         $entity['sources']['dldb']['last'] = $this->readDdldUpdateStats();
