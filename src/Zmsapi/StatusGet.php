@@ -21,7 +21,9 @@ class StatusGet extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $status = (new Status())->readEntity();
+        $validator = $request->getAttribute('validator');
+        $includeProcessStats = $validator->getParameter('includeProcessStats')->isNumber()->setDefault(1)->getValue();
+        $status = (new Status())->readEntity($includeProcessStats);
         $status['version'] = Helper\Version::getArray();
 
         $message = Response\Message::create($request);

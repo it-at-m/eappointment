@@ -4304,6 +4304,11 @@ use \Psr\Http\Message\ResponseInterface;
  *          summary: Get status of api
  *          tags:
  *              - status
+ *          parameters:
+ *              -   name: includeProcessStats
+ *                  description: "Collecting stats about processes slows the request down. For healthcheck, this data might not be necessary. Default is to include the stats, a value of 0 skip the stats."
+ *                  in: query
+ *                  type: integer
  *          responses:
  *              200:
  *                  description: "success"
