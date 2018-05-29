@@ -86,6 +86,14 @@ class HttpTest extends Base
         $result->getEntity();
     }
 
+    public function testDeadlock()
+    {
+        $this->expectException('\BO\Zmsclient\Exception');
+        $http = $this->createHttpClient();
+        $result = $http->readGetResult('/status/deadlock/');
+        $result->getEntity();
+    }
+
     protected function writeTestLogin()
     {
         $http = $this->createHttpClient();
