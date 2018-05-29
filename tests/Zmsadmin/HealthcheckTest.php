@@ -16,6 +16,7 @@ class HealthcheckTest extends Base
             [
                 'function' => 'readGetResult',
                 'url' => '/status/',
+                'parameters' => ['includeProcessStats' => 0],
                 'response' => $this->readFixture("GET_status.json")
             ]
         ];
