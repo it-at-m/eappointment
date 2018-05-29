@@ -134,8 +134,7 @@ class Http
         if (null !== $xToken) {
             $request = $request->withHeader('X-Token', $xToken);
         }
-        $response = $this->readResponse($request);
-        return new Result($response, $request);
+        return $this->readResult($request);
     }
 
     /**
@@ -157,8 +156,7 @@ class Http
         $body = new Psr7\Stream();
         $body->write(json_encode($entity));
         $request = $request->withBody($body);
-        $response = $this->readResponse($request);
-        return new Result($response, $request);
+        return $this->readResult($request);
     }
 
     /**
@@ -176,7 +174,28 @@ class Http
             $uri = $uri->withQuery(http_build_query($getParameters));
         }
         $request = new Psr7\Request('DELETE', $uri);
+        return $this->readResult($request);
+    }
+
+    protected function readResult(
+        \Psr\Http\Message\RequestInterface $request = null,
+        $try = 0
+    ) {
         $response = $this->readResponse($request);
-        return new Result($response, $request);
+        $result = new Result($response, $request);
+        if ($response->getStatuscode() == 500) {
+            try {
+                $result->getData();
+            } catch (Exception $exception) {
+                if ($try < 3 && in_array($exception->template, [
+                    "BO\\Zmsdb\\Exception\\Pdo\\DeadLockFound",
+                    "BO\\Zmsdb\\Exception\\Pdo\\LockTimeout",
+                ])) {
+                    usleep(rand(1000000, 3000000));
+                    return $this->readResult($request, $try + 1);
+                }
+            }
+        }
+        return $result;
     }
 }
