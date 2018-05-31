@@ -5,7 +5,7 @@
     </ul>
     {% endblock %}
 
-    {% set years = [] %}
+    {% set years = ["now"|date('Y')] %}
     {% for key, entry in items.data %}
         {% if entry|first|length == 4 %}
             {% set years = years|merge([entry|first]) %}
@@ -19,7 +19,17 @@
                 {% if year in last3Year %}{% set display = 'show' %}{% endif %}
                 <tr class="{{ display }}">
                     <td class="report-period--year{% if (selected and year == selected|date('Y')) or year == selected %} report-period--year-active{% endif %}">
-                        <a href="{{ urlGet("Report%s"|format(source.entity), {'period': year}, {}) }}">{{ year }}</a>
+                        {% set yearExists = 0 %}
+                        {% for entry in items.data if yearExists == 0 %}
+                            {% if entry|first|length > 4 and entry|first|date('Y') == year %}
+                                {% set yearExists = 1 %}
+                            {% endif %}
+                        {% endfor %}
+                        {% if yearExists %}
+                            <a href="{{ urlGet("Report%s"|format(source.entity), {'period': year}, {}) }}">{{ year }}</a>
+                        {% else %}
+                            {{ year }}
+                        {% endif %}
                     </td>
                     {% for month in 1..12 %}
                         {% set monthExists = 0 %}
