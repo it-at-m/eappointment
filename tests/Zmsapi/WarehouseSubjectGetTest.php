@@ -70,7 +70,7 @@ class WarehouseSubjectGetTest extends Base
 
     public function testNotFound()
     {
-        $this->expectException('\BO\Zmsapi\Exception\Warehouse\ReportNotFound');
+        $this->expectException('\BO\Zmsapi\Exception\Warehouse\UnknownReportType');
         $workstation = $this->setWorkstation(138, 'berlinonline', 140);
         $workstation->getUseraccount()->setRights('scope');
         $response = $this->render(['subject' => 'unittest'], [], []);

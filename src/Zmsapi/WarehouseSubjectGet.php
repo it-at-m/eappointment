@@ -24,7 +24,7 @@ class WarehouseSubjectGet extends BaseController
         $subject = Validator::value($args['subject'])->isString()->getValue();
         $exchangeClass = '\BO\Zmsdb\Exchange' . ucfirst($subject);
         if (! class_exists($exchangeClass)) {
-            throw new Exception\Warehouse\ReportNotFound();
+            throw new Exception\Warehouse\UnknownReportType();
         }
         $subjectIdList = (new $exchangeClass)->readSubjectList();
 

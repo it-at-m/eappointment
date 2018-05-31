@@ -29,7 +29,7 @@ class WarehousePeriodGet extends BaseController
 
         $exchangeClass = '\BO\Zmsdb\Exchange' . ucfirst($subject);
         if (! class_exists($exchangeClass)) {
-            throw new Exception\Warehouse\ReportNotFound();
+            throw new Exception\Warehouse\UnknownReportType();
         }
         $periodHelper = new Helper\ExchangePeriod($period);
         $subjectPeriod = (new $exchangeClass)->readEntity(
