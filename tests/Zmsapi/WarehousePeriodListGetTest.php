@@ -38,19 +38,11 @@ class WarehousePeriodListGetTest extends Base
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
-    public function testNotFound()
+    public function testWrongSubject()
     {
         $this->expectException('\BO\Zmsapi\Exception\Warehouse\UnknownReportType');
         $workstation = $this->setWorkstation();
         $workstation->getUseraccount()->setRights('scope');
         $response = $this->render(['subject' => 'unittest', 'subjectId' => 141], [], []);
-    }
-
-    public function testWrongSubject()
-    {
-        $this->expectException('\BO\Zmsapi\Exception\Warehouse\ReportNotFound');
-        $workstation = $this->setWorkstation();
-        $workstation->getUseraccount()->setRights('scope');
-        $response = $this->render(['subject' => 'waitingscope', 'subjectId' => 142], [], []);
     }
 }
