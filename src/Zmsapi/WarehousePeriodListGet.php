@@ -30,9 +30,6 @@ class WarehousePeriodListGet extends BaseController
             throw new Exception\Warehouse\UnknownReportType();
         }
         $subjectPeriodList = (new $exchangeClass)->readPeriodList($subjectId, $period);
-        if (0 == count($subjectPeriodList['data'])) {
-            throw new Exception\Warehouse\ReportNotFound();
-        }
 
         $message = Response\Message::create($request);
         $message->data = $subjectPeriodList;
