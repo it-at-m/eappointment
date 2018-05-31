@@ -73,7 +73,7 @@ class WarehousePeriodGetTest extends Base
 
     public function testNotFound()
     {
-        $this->expectException('\BO\Zmsapi\Exception\Warehouse\ReportNotFound');
+        $this->expectException('\BO\Zmsapi\Exception\Warehouse\UnknownReportType');
         $workstation = $this->setWorkstation();
         $workstation->getUseraccount()->setRights('scope');
         $response = $this->render(
