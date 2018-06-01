@@ -33,10 +33,16 @@ class ProcessFree extends BaseController
         $calendarData = Validator::input()->isJson()->assertValid()->getValue();
         $calendar = new \BO\Zmsentities\Calendar($calendarData);
         $message = Response\Message::create($request);
-        $message->data = (new Query())
+        $processList = (new Query())
             ->readFreeProcesses($calendar, \App::getNow(), $slotType, $slotsRequired)
             ->withLessData($keepLessData)
         ;
+        if (count($processList) > 200) {
+            $processList = $processList->withUniqueScope(true);
+        } else {
+            $processList = $processList->withUniqueScope(false);
+        }
+        $message->data = $processList;
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message, 200);
