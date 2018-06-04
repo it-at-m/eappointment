@@ -73,7 +73,7 @@ class CalculateSlots
     public function writeCanceledSlots(\DateTimeInterface $now)
     {
         $slotQuery = new \BO\Zmsdb\Slot();
-        if ($slotQuery->writeCanceledByTime($now->modify('+10 minutes'))) {
+        if ($slotQuery->writeCanceledByTime($now->modify('+5 minutes'))) {
             \BO\Zmsdb\Connection\Select::writeCommit();
             $this->log("Cancelled old slots");
             return true;
