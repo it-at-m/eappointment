@@ -35,7 +35,7 @@ class ProcessFree extends BaseController
         $calendar = new \BO\Zmsentities\Calendar($calendarData);
         $message = Response\Message::create($request);
         $processList = (new Query())
-            ->readFreeProcesses($calendar, \App::getNow(), $slotType, $slotsRequired)
+            ->readFreeProcesses($calendar, \App::getNow(), $slotType, $slotsRequired, $groupData ? true: false)
             ->withLessData($keepLessData)
         ;
         if ($groupData && count($processList) >= $groupData) {
@@ -46,7 +46,6 @@ class ProcessFree extends BaseController
         $message->data = $processList;
 
         $response = Render::withLastModified($response, time(), '0');
-        $response = Render::withJson($response, $message, 200);
-        return $response;
+        return Render::withJson($response, $message, 200);
     }
 }
