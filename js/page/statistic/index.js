@@ -18,20 +18,21 @@ class View extends BaseView {
         this.$main.off('click')
         .on('change', 'input[type="checkbox"]', () => {
             this.toggleButtons();
-        }).on('click', 'div.input-counter a', (ev) => {
+        }).on('click', 'div.form-input-counter', (ev) => {
             this.changeInputCounter(ev);
             this.toggleButtons();
         })
     }
 
     changeInputCounter (ev) {
-        let $input = $(ev.target).parent().find('input');
+        let $input = $(ev.currentTarget).find('input');
         let number = $input.val();
         if ($(ev.target).hasClass('decrement')) {
             $input.val(number > 0 ? --number : 0);
         } else {
             $input.val(++number);
         }
+        $input.attr('value', $input.val());
         return false;
     }
 
