@@ -1,6 +1,6 @@
 swagger: '2.0'
 info:
-  version: 2.15.0
+  version: 2.17.0
   title: ZMS (human waiting queue management) API
   x-logo:
     url: "/terminvereinbarung/api/2/doc/logo.png"
@@ -16,7 +16,7 @@ info:
        * ticketprinter support for customers without appointments (authenticated, lockable, timeable)
        * calldisplay support
        * collecting statistics like waiting time or served clients per day
-
+       
        This documentation covers the API-level access to these features.
   termsOfService: 'http://service.berlin.de/terminvereinbarung/'
   contact:
