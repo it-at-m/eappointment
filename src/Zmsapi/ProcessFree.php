@@ -21,6 +21,7 @@ class ProcessFree extends BaseController
         array $args
     ) {
         $slotsRequired = Validator::param('slotsRequired')->isNumber()->getValue();
+        $groupData = Validator::param('groupData')->isNumber()->getValue();
         $slotType = Validator::param('slotType')->isString()->getValue();
         $keepLessData = Validator::param('keepLessData')->isArray()->setDefault([])->getValue();
         if ($slotType || $slotsRequired) {
@@ -37,9 +38,9 @@ class ProcessFree extends BaseController
             ->readFreeProcesses($calendar, \App::getNow(), $slotType, $slotsRequired)
             ->withLessData($keepLessData)
         ;
-        if (count($processList) > 200) {
+        if ($groupData && count($processList) >= $groupData) {
             $processList = $processList->withUniqueScope(true);
-        } else {
+        } elseif ($groupData) {
             $processList = $processList->withUniqueScope(false);
         }
         $message->data = $processList;
