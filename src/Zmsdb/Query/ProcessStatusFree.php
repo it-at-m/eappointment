@@ -49,4 +49,5 @@ class ProcessStatusFree extends Base
             ) AS tmp_avail 
             INNER JOIN slot_sequence sq ON sq.slotsequence <= tmp_avail.free
     ';
+    const GROUPBY_SELECT_PROCESSLIST_DAY = 'GROUP BY scope__id, appointments__0__date';
 }
