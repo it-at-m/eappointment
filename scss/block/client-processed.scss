@@ -31,7 +31,12 @@
                 }
             }
             input {
-                color: #000;
+                color: #000 !important;
+                background-color:       #ffffff !important;
+            }
+            input[value="0"] {
+                color: #999 !important;
+                background-color:       #f0f0f0 !important;
             }
         }
         .form-input {
