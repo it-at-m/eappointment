@@ -1,0 +1,60 @@
+{
+    "type": "object",
+    "description": "Representation of an Apikey. It usually stores temporary api quota data while appointment scheduling in service app",
+    "example": {
+        "key": "wMdVa5Nu1seuC/RSJxhKl2M3yw+8zqaAilPH2Xc2IZs",
+        "captcha": {
+            "mime": "image/png;base64",
+            "content": "R0lGODdhEAAQAMwAAPj7+FmhUYjNfGuxYYDJdYTIeanOpT+DOTuANXi/bGOrWj6CONzv2sPjv2CmV1unU4zPgISg6DJnJ3ImTh8Mtbs00aNP1CZSGy0YqLEn47RgXW8amasW7XWsmmvX2iuXiwAAAAAEAAQAAAFVyAgjmRpnihqGCkpDQPbGkNUOFk6DZqgHCNGg2T4QAQBoIiRSAwBE4VA4FACKgkB5NGReASFZEmxsQ0whPDi9BiACYQAInXhwOUtgCUQoORFCGt/g4QAIQA7",
+            "base64": true
+        },
+        "quota": [
+            {
+                "route": "/calendar/",
+                "period": "hour",
+                "requests": 99
+            }
+        ]
+    },
+    "required": [
+        "key"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "key": {
+            "type": "string",
+            "description": "temporary random api key string"
+        },
+        "captcha": {
+            "$ref": "mimepart.json"
+        },
+        "quota": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "route": {
+                        "type": "string",
+                        "description": "path of an URL for which the quota is valid"
+                    },
+                    "period": {
+                        "type": "string",
+                        "description": "Period of time for this quota",
+                        "enum": [
+                            "minute",
+                            "hour",
+                            "day",
+                            "week",
+                            "month"
+                        ]
+                    },
+                    "requests": {
+                        "type": "number",
+                        "description": "Number of requests left",
+                        "example": 99
+                    }
+                }
+            }
+        }
+    }
+}
