@@ -2573,6 +2573,8 @@ use \Psr\Http\Message\ResponseInterface;
  *                  description: "Parameter for withLessData method to keep given values in response data"
  *                  in: query
  *                  type: array
+ *                  items:
+ *                      type: string
  *              -   name: groupData
  *                  description: "Set this parameter if you want to automatically group appointments by time and scope. Be aware, that this parameters reduces the number of appointments, there is no information of the original count left. The value for this parameter sets a threshold to set grouping a step further. Giving a value of 200 means, that on a result with 200 or more appointments, the grouping is not by exact time, instead the hour of the appointment is used to group the results, so that for every hour an scope, at least an available appointment is shown."
  *                  in: query
