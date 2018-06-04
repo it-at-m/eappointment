@@ -1,4 +1,78 @@
 {
+	"/apikey/": {
+		"get": {
+			"summary": "Get quotas if key is active",
+			"tags": [
+				"apikey"
+			],
+			"parameters": [
+				{
+					"name": "X-API-Key",
+					"required": true,
+					"description": "authentication key to identify user",
+					"in": "header",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/apikey.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "access failed"
+				}
+			}
+		},
+		"post": {
+			"summary": "Activate or update apikey",
+			"tags": [
+				"apikey"
+			],
+			"parameters": [
+				{
+					"name": "apikey",
+					"description": "apikey data",
+					"in": "body",
+					"schema": {
+						"type": "array",
+						"items": {
+							"$ref": "schema/apikey.json"
+						}
+					}
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/apikey.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "access failed"
+				}
+			}
+		}
+	},
 	"/availability/{id}/": {
 		"get": {
 			"summary": "Get an availability by id",
@@ -3100,6 +3174,15 @@
 					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
 					"in": "query",
 					"type": "integer"
+				},
+				{
+					"name": "keepLessData",
+					"description": "Parameter for withLessData method to keep given values in response data",
+					"in": "query",
+					"type": "array",
+					"items": {
+						"type": "string"
+					}
 				}
 			],
 			"responses": {
@@ -4348,7 +4431,7 @@
 					"description": "status of process",
 					"in": "path",
 					"required": true,
-					"type": "integer"
+					"type": "string"
 				},
 				{
 					"name": "X-Authkey",
@@ -4989,6 +5072,55 @@
 				},
 				"404": {
 					"description": "scope id does not exists"
+				}
+			}
+		}
+	},
+	"/scope/{ids}/ticketprinter/": {
+		"get": {
+			"summary": "Get a list of ticketprinter by scope id list",
+			"x-since": 2.1,
+			"tags": [
+				"scope",
+				"ticketprinter"
+			],
+			"parameters": [
+				{
+					"name": "ids",
+					"description": "number of scopes as csv",
+					"in": "path",
+					"required": true,
+					"type": "string"
+				},
+				{
+					"name": "X-Authkey",
+					"required": true,
+					"x-since": 2.12,
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "get a ticketprinter collection",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/ticketprinter.json"
+								}
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "no ticketprinter found"
 				}
 			}
 		}
