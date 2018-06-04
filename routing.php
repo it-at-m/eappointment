@@ -20,6 +20,67 @@ use \Psr\Http\Message\ResponseInterface;
  * json
  * -------------------------------------------------------------------------*/
 
+ /**
+  *  @swagger
+  *  "/apikey/":
+  *      get:
+  *          summary: Get quotas if key is active
+  *          tags:
+  *              - apikey
+  *          parameters:
+  *              -   name: X-API-Key
+  *                  required: true
+  *                  description: authentication key to identify user
+  *                  in: header
+  *                  type: string
+  *          responses:
+  *              200:
+  *                  description: "success"
+  *                  schema:
+  *                      type: object
+  *                      properties:
+  *                          meta:
+  *                              $ref: "schema/metaresult.json"
+  *                          data:
+  *                              $ref: "schema/apikey.json"
+  *              404:
+  *                  description: "access failed"
+  */
+ \App::$slim->get('/apikey/',
+     '\BO\Zmsapi\ApikeyGet')
+     ->setName("ApikeyGet");
+
+ /**
+  *  @swagger
+  *  "/apikey/":
+  *      post:
+  *          summary: Activate or update apikey
+  *          tags:
+  *             - apikey
+  *          parameters:
+  *             - name: apikey
+  *               description: apikey data
+  *               in: body
+  *               schema:
+  *                  type: array
+  *                  items:
+  *                      $ref: "schema/apikey.json"
+  *          responses:
+  *              200:
+  *                  description: "success"
+  *                  schema:
+  *                      type: object
+  *                      properties:
+  *                          meta:
+  *                              $ref: "schema/metaresult.json"
+  *                          data:
+  *                              $ref: "schema/apikey.json"
+  *              404:
+  *                  description: "access failed"
+  */
+ \App::$slim->post('/apikey/',
+     '\BO\Zmsapi\ApiKeyUpdate')
+     ->setName("ApiKeyUpdate");
 
 /**
  *  @swagger
@@ -2512,6 +2573,8 @@ use \Psr\Http\Message\ResponseInterface;
  *                  description: "Parameter for withLessData method to keep given values in response data"
  *                  in: query
  *                  type: array
+ *                  items:
+ *                      type: string
  *          responses:
  *              200:
  *                  description: get a list of available processes, if no process found, return empty list
