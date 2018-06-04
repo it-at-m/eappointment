@@ -13,7 +13,8 @@ class ProcessStatusFree extends Process
         \BO\Zmsentities\Calendar $calendar,
         \DateTimeInterface $now,
         $slotType = 'public',
-        $slotsRequired = 0
+        $slotsRequired = 0,
+        $groupData = false
     ) {
         //$resolvedCalendar = new Calendar();
         $calendar = (new Calendar())->readResolvedEntity($calendar, $now, true);
@@ -22,15 +23,15 @@ class ProcessStatusFree extends Process
         $processList = new Collection();
         //$calendar->setLastDayTime($selectedDate);
         //$calendar = $resolvedCalendar->readResolvedEntity($calendar, $now, $selectedDate, $slotType, $slotsRequired);
-        $processData = $this->getReader()
-            ->fetchAll(
-                Query\ProcessStatusFree::QUERY_SELECT_PROCESSLIST_DAY,
-                [
-                    'day' => $selectedDate->format('d'),
-                    'slotType' => $slotType,
-                ]
-            );
-        foreach ($processData as $item) {
+        $processData = $this->fetchHandle(
+            Query\ProcessStatusFree::QUERY_SELECT_PROCESSLIST_DAY
+            . ($groupData ? Query\ProcessStatusFree::GROUPBY_SELECT_PROCESSLIST_DAY : ''),
+            [
+                'day' => $selectedDate->format('d'),
+                'slotType' => $slotType,
+            ]
+        );
+        while ($item = $processData->fetch(\PDO::FETCH_ASSOC)) {
             $process = new \BO\Zmsentities\Process($item);
             $process->requests = $calendar->requests;
             $process->appointments->getFirst()->setDateByString(
@@ -42,6 +43,7 @@ class ProcessStatusFree extends Process
             $processList->addEntity($process);
             //var_dump("$process");
         }
+        $processData->closeCursor();
         $this->getReader()->exec(Query\Day::QUERY_DROP_TEMPORARY_SCOPELIST);
         return $processList;
     }

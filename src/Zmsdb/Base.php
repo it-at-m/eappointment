@@ -161,6 +161,15 @@ abstract class Base
         });
     }
 
+    public function fetchHandle($query, $parameters = null)
+    {
+        return static::pdoExceptionHandler(function () use ($query, $parameters) {
+            $prepared = $this->fetchPreparedStatement($query);
+            $prepared->execute($parameters);
+            return $prepared;
+        });
+    }
+
     public function fetchList(Query\Base $query, \BO\Zmsentities\Schema\Entity $entity, $resultList = [])
     {
         $statement = $this->fetchStatement($query);
