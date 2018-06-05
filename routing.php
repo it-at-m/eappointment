@@ -58,13 +58,16 @@ use \Psr\Http\Message\ResponseInterface;
   *          tags:
   *             - apikey
   *          parameters:
-  *             - name: apikey
-  *               description: apikey data
-  *               in: body
-  *               schema:
-  *                  type: array
-  *                  items:
+  *              -   name: apikey
+  *                  description: apikey data to update
+  *                  in: body
+  *                  schema:
   *                      $ref: "schema/apikey.json"
+  *              -   name: X-API-Key
+  *                  required: true
+  *                  description: authentication key to identify user
+  *                  in: header
+  *                  type: string
   *          responses:
   *              200:
   *                  description: "success"
@@ -79,8 +82,36 @@ use \Psr\Http\Message\ResponseInterface;
   *                  description: "access failed"
   */
  \App::$slim->post('/apikey/',
-     '\BO\Zmsapi\ApiKeyUpdate')
-     ->setName("ApiKeyUpdate");
+     '\BO\Zmsapi\ApikeyUpdate')
+     ->setName("ApikeyUpdate");
+
+ /**
+  *  @swagger
+  *  "/apikey/":
+  *      delete:
+  *          summary: Deletes an apikey
+  *          tags:
+  *              - apikey
+  *          parameters:
+  *              -   name: X-API-Key
+  *                  required: true
+  *                  description: authentication key to identify user
+  *                  in: header
+  *                  type: string
+  *          responses:
+  *              200:
+  *                  description: "success, returns deleted object or empty if object did not exists"
+  *                  schema:
+  *                      type: object
+  *                      properties:
+  *                          meta:
+  *                              $ref: "schema/metaresult.json"
+  *                          data:
+  *                              $ref: "schema/apikey.json"
+  */
+ \App::$slim->delete('/apikey/',
+     '\BO\Zmsapi\ApikeyDelete')
+     ->setName("ApikeyDelete");
 
 /**
  *  @swagger
