@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS `apikey`;
 CREATE TABLE `apikey` (
     `key` varchar(100) NOT NULL,
-    `ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `ts` bigint(20) NOT NULL,
 PRIMARY KEY (`key`))
 ENGINE = InnoDB
 CHARACTER SET utf8
@@ -9,6 +9,7 @@ COLLATE utf8_unicode_ci;
 
 DROP TABLE IF EXISTS `apiquota`;
 CREATE TABLE `apiquota` (
+    `quotaid` INT(5) UNSIGNED NOT NULL AUTO_INCREMENT ,
     `key` varchar(100) NOT NULL,
     `route` varchar(100) NOT NULL,
     `period` enum(
@@ -19,7 +20,7 @@ CREATE TABLE `apiquota` (
         "month"
     ) NOT NULL,
     `requests` INT(3) NOT NULL,
-PRIMARY KEY (`key`))
+PRIMARY KEY (`quotaid`))
 ENGINE = InnoDB
 CHARACTER SET utf8
 COLLATE utf8_unicode_ci;
