@@ -2,11 +2,11 @@ swagger: '2.0'
 info:
   version: 2.15.0
   title: ZMS (human waiting queue management) API
-  x-logo: 
+  x-logo:
     url: "/terminvereinbarung/api/2/doc/logo.png"
   description: |
       The ZMS system is intended to manage human waiting queues. It has the following features:
-      
+
        * make appointments via a calender and initiate a process to manage an appointment
        * import requests (services) and providers (locations) from external sources
        * manage scopes for appointments, including a four level hierarchy of owner->organisation->department->scope
@@ -38,13 +38,15 @@ securityDefinitions:
     type: basic
     description: |
         The API uses two variants of authentication. An application can use basic authentication via HTTP for identification. As an alternative, there is a header with the name "X-Authkey". This key can be optained by accessing "/workstation/login/".
-        
+
         According to the application settings, there might be different rights to use API methods. Further rights depend on the settings for the authorized useraccount.
 security:
     - httpauth: []
 paths:
   $ref: "routes.json"
 definitions:
+  apikey:
+    $ref: "schema/apikey.json"
   appointment:
     $ref: "schema/appointment.json"
   availability:
