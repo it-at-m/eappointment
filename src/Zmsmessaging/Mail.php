@@ -66,16 +66,17 @@ class Mail extends BaseController
     protected function getValidMailer(\BO\Zmsentities\Mail $entity)
     {
         $message = '';
+        $messageId = $entity['id'];
         try {
             $mailer = $this->readMailer($entity);
             $mailer->AddAddress($entity->getRecipient(), $entity->client['familyName']);
         // @codeCoverageIgnoreStart
         } catch (phpmailerException $exception) {
-            $message = 'Zmsmessaging PHPMailer Failure: '. $exception->getMessage();
-            \App::$log->warning($message, [$exception]);
+            $message = "Message #$messageId PHPMailer Failure: ". $exception->getMessage();
+            \App::$log->warning($message, []);
         } catch (\Exception $exception) {
-            $message = 'Zmsmessaging Failure: '. $exception->getMessage();
-            \App::$log->warning($message, [$exception]);
+            $message = "Message #$messageId Failure: ". $exception->getMessage();
+            \App::$log->warning($message, []);
         }
         if ($message) {
             $this->removeEntityOlderThanOneHour($entity);
@@ -91,6 +92,7 @@ class Mail extends BaseController
 
     protected function readMailer(\BO\Zmsentities\Mail $entity)
     {
+        $this->testEntity($entity);
         $encoding = 'base64';
         foreach ($entity->multipart as $part) {
             $mimepart = new Mimepart($part);

@@ -21,4 +21,4 @@ class App extends \BO\Zmsmessaging\Application
 }
 
 // uncomment for testing
-App::$now = new DateTimeImmutable('2016-04-01 11:55:00', new DateTimeZone('Europe/Berlin'));
+//App::$now = new DateTimeImmutable('2016-04-01 11:55:00', new DateTimeZone('Europe/Berlin'));

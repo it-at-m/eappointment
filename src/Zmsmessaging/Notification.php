@@ -65,16 +65,17 @@ class Notification extends BaseController
     protected function getValidMailer(\BO\Zmsentities\Notification $entity)
     {
         $message = '';
+        $messageId = $entity['id'];
         try {
             $mailer = $this->readMailer($entity);
             $mailer->AddAddress($entity->getRecipient());
         // @codeCoverageIgnoreStart
         } catch (phpmailerException $exception) {
-            $message = 'Zmsmessaging PHPMailer Failure: '. $exception->getMessage();
-            \App::$log->warning($message, [$exception]);
+            $message = "Message #$messageId PHPMailer Failure: ". $exception->getMessage();
+            \App::$log->warning($message, []);
         } catch (\Exception $exception) {
-            $message = 'Zmsmessaging Failure: '. $exception->getMessage();
-            \App::$log->warning($message, [$exception]);
+            $message = "Message #$messageId Failure: ". $exception->getMessage();
+            \App::$log->warning($message, []);
         }
         if ($message) {
             $this->removeEntityOlderThanOneHour($entity);
@@ -92,6 +93,7 @@ class Notification extends BaseController
 
     protected function readMailer(\BO\Zmsentities\Notification $entity)
     {
+        $this->testEntity($entity);
         $sender = $entity->getIdentification();
         $mailer = new PHPMailer(true);
         $mailer->Encoding = 'base64';

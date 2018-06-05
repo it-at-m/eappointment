@@ -11,7 +11,7 @@ require(APP_PATH . '/vendor/autoload.php');
 require(APP_PATH . '/config.php');
 
 \App::$log = new \Monolog\Logger('Zmsmessaging');
-
+\App::$now = (\App::$now instanceof \DateTimeInterface) ? \App::$now : new \DateTimeImmutable();
 \App::$http = new \BO\Zmsclient\Http(\App::HTTP_BASE_URL);
 \BO\Zmsclient\Psr7\Client::$curlopt = \App::$http_curl_config;
 
