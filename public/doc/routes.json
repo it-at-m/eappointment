@@ -42,14 +42,18 @@
 			"parameters": [
 				{
 					"name": "apikey",
-					"description": "apikey data",
+					"description": "apikey data to update",
 					"in": "body",
 					"schema": {
-						"type": "array",
-						"items": {
-							"$ref": "schema/apikey.json"
-						}
+						"$ref": "schema/apikey.json"
 					}
+				},
+				{
+					"name": "X-API-Key",
+					"required": true,
+					"description": "authentication key to identify user",
+					"in": "header",
+					"type": "string"
 				}
 			],
 			"responses": {
@@ -69,6 +73,37 @@
 				},
 				"404": {
 					"description": "access failed"
+				}
+			}
+		},
+		"delete": {
+			"summary": "Deletes an apikey",
+			"tags": [
+				"apikey"
+			],
+			"parameters": [
+				{
+					"name": "X-API-Key",
+					"required": true,
+					"description": "authentication key to identify user",
+					"in": "header",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success, returns deleted object or empty if object did not exists",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/apikey.json"
+							}
+						}
+					}
 				}
 			}
 		}
@@ -3183,6 +3218,12 @@
 					"items": {
 						"type": "string"
 					}
+				},
+				{
+					"name": "groupData",
+					"description": "Set this parameter if you want to automatically group appointments by time and scope. Be aware, that this parameters reduces the number of appointments, there is no information of the original count left. The value for this parameter sets a threshold to set grouping a step further. Giving a value of 200 means, that on a result with 200 or more appointments, the grouping is not by exact time, instead the hour of the appointment is used to group the results, so that for every hour an scope, at least an available appointment is shown.",
+					"in": "query",
+					"type": "integer"
 				}
 			],
 			"responses": {
@@ -5269,6 +5310,48 @@
 	"/status/": {
 		"get": {
 			"summary": "Get status of api",
+			"tags": [
+				"status"
+			],
+			"parameters": [
+				{
+					"name": "includeProcessStats",
+					"description": "Collecting stats about processes slows the request down. For healthcheck, this data might not be necessary. Default is to include the stats, a value of 0 skip the stats.",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"$ref": "schema/status.json"
+					}
+				}
+			}
+		}
+	},
+	"/status/deadlock/": {
+		"get": {
+			"summary": "Example status on a database deadlock",
+			"description": "Use this route if you want to test deadlock handling on a client",
+			"tags": [
+				"status"
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"$ref": "schema/status.json"
+					}
+				}
+			}
+		}
+	},
+	"/status/locktimeout/": {
+		"get": {
+			"summary": "Example status on a database locktimeout",
+			"description": "Use this route if you want to test lock timeout handling on a client",
 			"tags": [
 				"status"
 			],
