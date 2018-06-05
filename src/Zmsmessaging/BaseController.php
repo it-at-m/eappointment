@@ -55,4 +55,21 @@ class BaseController
         }
         return ($entity) ? true : false;
     }
+
+    public function testEntity($entity)
+    {
+        if (!isset($entity['department'])) {
+            throw new \Exception("Could not resolve department for message ".$entity['id']);
+        }
+        if (!isset($entity['department']['email'])) {
+            throw new \Exception(
+                "No mail address for department "
+                .$entity['department']['name']
+                ." ("
+                .$entity['department']['id']
+                .") "
+                .$entity['id']
+            );
+        }
+    }
 }

@@ -34,7 +34,7 @@ class ExceptionsCatchTest extends Base
         \App::$messaging = new \BO\Zmsmessaging\Mail();
         $resultList = \App::$messaging->initQueueTransmission();
         $this->assertTrue(0 == count($resultList));
-        $this->assertLogHasWarningThatContains('Zmsmessaging PHPMailer Failure: Die Adresse ist ungültig:  (setFrom)');
+        $this->assertLogHasWarningThatContains('PHPMailer Failure: Die Adresse ist ungültig:  (setFrom)');
     }
 
     public function testLogNotificationMissingDepartmentMail()
@@ -65,7 +65,7 @@ class ExceptionsCatchTest extends Base
         \App::$messaging = new \BO\Zmsmessaging\Notification();
         $resultList = \App::$messaging->initQueueTransmission();
         $this->assertTrue(0 == count($resultList));
-        $this->assertLogHasWarningThatContains('Zmsmessaging PHPMailer Failure: Die Adresse ist ungültig:  (setFrom)');
+        $this->assertLogHasWarningThatContains('PHPMailer Failure: Die Adresse ist ungültig:  (setFrom)');
     }
 
     public function testLogMailOlderThanOneHour()
