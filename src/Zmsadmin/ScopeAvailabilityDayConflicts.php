@@ -20,7 +20,9 @@ class ScopeAvailabilityDayConflicts extends ScopeAvailabilityDay
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $data = static::getAvailabilityData($args['id'], $args['date']);
+        $scope = \App::$http->readGetResult('/scope/' . intval($args['id']) . '/', ['resolveReferences' => 1])
+            ->getEntity();
+        $data = static::getAvailabilityData($scope, $args['date']);
         return \BO\Slim\Render::withJson(
             $response,
             $data
