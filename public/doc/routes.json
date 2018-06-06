@@ -1,5 +1,5 @@
 {
-	"/apikey/": {
+	"/apikey/{key}/": {
 		"get": {
 			"summary": "Get quotas if key is active",
 			"tags": [
@@ -7,52 +7,10 @@
 			],
 			"parameters": [
 				{
-					"name": "X-API-Key",
+					"name": "key",
+					"description": "key for public api access",
+					"in": "path",
 					"required": true,
-					"description": "authentication key to identify user",
-					"in": "header",
-					"type": "string"
-				}
-			],
-			"responses": {
-				"200": {
-					"description": "success",
-					"schema": {
-						"type": "object",
-						"properties": {
-							"meta": {
-								"$ref": "schema/metaresult.json"
-							},
-							"data": {
-								"$ref": "schema/apikey.json"
-							}
-						}
-					}
-				},
-				"404": {
-					"description": "access failed"
-				}
-			}
-		},
-		"post": {
-			"summary": "Activate or update apikey",
-			"tags": [
-				"apikey"
-			],
-			"parameters": [
-				{
-					"name": "apikey",
-					"description": "apikey data to update",
-					"in": "body",
-					"schema": {
-						"$ref": "schema/apikey.json"
-					}
-				},
-				{
-					"name": "X-API-Key",
-					"required": true,
-					"description": "authentication key to identify user",
-					"in": "header",
 					"type": "string"
 				}
 			],
@@ -83,10 +41,10 @@
 			],
 			"parameters": [
 				{
-					"name": "X-API-Key",
+					"name": "key",
+					"description": "key for public api access",
+					"in": "path",
 					"required": true,
-					"description": "authentication key to identify user",
-					"in": "header",
 					"type": "string"
 				}
 			],
@@ -104,6 +62,43 @@
 							}
 						}
 					}
+				}
+			}
+		}
+	},
+	"/apikey/": {
+		"post": {
+			"summary": "Activate or update apikey",
+			"tags": [
+				"apikey"
+			],
+			"parameters": [
+				{
+					"name": "apikey",
+					"description": "apikey data to update",
+					"in": "body",
+					"schema": {
+						"$ref": "schema/apikey.json"
+					}
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/apikey.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "access failed"
 				}
 			}
 		}
