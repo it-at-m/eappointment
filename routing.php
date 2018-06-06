@@ -22,16 +22,16 @@ use \Psr\Http\Message\ResponseInterface;
 
  /**
   *  @swagger
-  *  "/apikey/":
+  *  "/apikey/{key}/":
   *      get:
   *          summary: Get quotas if key is active
   *          tags:
   *              - apikey
   *          parameters:
-  *              -   name: X-API-Key
+  *              -   name: key
+  *                  description: key for public api access
+  *                  in: path
   *                  required: true
-  *                  description: authentication key to identify user
-  *                  in: header
   *                  type: string
   *          responses:
   *              200:
@@ -46,7 +46,7 @@ use \Psr\Http\Message\ResponseInterface;
   *              404:
   *                  description: "access failed"
   */
- \App::$slim->get('/apikey/',
+ \App::$slim->get('/apikey/{key}/',
      '\BO\Zmsapi\ApikeyGet')
      ->setName("ApikeyGet");
 
@@ -63,11 +63,6 @@ use \Psr\Http\Message\ResponseInterface;
   *                  in: body
   *                  schema:
   *                      $ref: "schema/apikey.json"
-  *              -   name: X-API-Key
-  *                  required: true
-  *                  description: authentication key to identify user
-  *                  in: header
-  *                  type: string
   *          responses:
   *              200:
   *                  description: "success"
@@ -87,16 +82,16 @@ use \Psr\Http\Message\ResponseInterface;
 
  /**
   *  @swagger
-  *  "/apikey/":
+  *  "/apikey/{key}/":
   *      delete:
   *          summary: Deletes an apikey
   *          tags:
   *              - apikey
   *          parameters:
-  *              -   name: X-API-Key
+  *              -   name: key
+  *                  description: key for public api access
+  *                  in: path
   *                  required: true
-  *                  description: authentication key to identify user
-  *                  in: header
   *                  type: string
   *          responses:
   *              200:
@@ -109,7 +104,7 @@ use \Psr\Http\Message\ResponseInterface;
   *                          data:
   *                              $ref: "schema/apikey.json"
   */
- \App::$slim->delete('/apikey/',
+ \App::$slim->delete('/apikey/{key}/',
      '\BO\Zmsapi\ApikeyDelete')
      ->setName("ApikeyDelete");
 

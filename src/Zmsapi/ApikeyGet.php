@@ -22,16 +22,12 @@ class ApikeyGet extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $xApiKey = $request->getHeaderLine('X-Api-Key');
-        $entity = (new Query())->readEntity($xApiKey);
-        if (! $entity->hasId()) {
-            throw new Exception\Apikey\ApikeyNotFound();
-        }
+        $entity = (new Query())->readEntity($args['key']);
         $message = Response\Message::create($request);
         $message->data = $entity;
 
         $response = Render::withLastModified($response, time(), '0');
-        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+        $response = Render::withJson($response, $message, 200);
         return $response;
     }
 }
