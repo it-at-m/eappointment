@@ -33,6 +33,7 @@ class Apiquota extends Base implements MappingInterface
             'route' => 'apiquota.route',
             'period' => 'apiquota.period',
             'requests' => 'apiquota.requests'
+            'ts' => 'apiquota.ts'
         ];
         return $mapping;
     }
@@ -46,6 +47,18 @@ class Apiquota extends Base implements MappingInterface
     public function addConditionRoute($route)
     {
         $this->query->where('apiquota.route', '=', $route);
+        return $this;
+    }
+
+    public function addConditionQuotaDeleteInterval($deleteInSeconds)
+    {
+        $this->query->where(
+            self::expression(
+                'UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(`apiquota`.`ts`)'
+            ),
+            '>=',
+            $deleteInSeconds
+        );
         return $this;
     }
 }
