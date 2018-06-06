@@ -22,15 +22,14 @@ class ApikeyUpdate extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $xApiKey = $request->getHeaderLine('X-Api-Key');
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Apikey($input);
 
-        $apiKey = (new Query())->readEntity($xApiKey);
+        $apiKey = (new Query())->readEntity($entity->key);
         if (! $apiKey->hasId()) {
             $entity = (new Query())->writeEntity($entity);
         } else {
-            $entity = (new Query())->updateEntity($xApiKey, $entity);
+            $entity = (new Query())->updateEntity($entity->key, $entity);
         }
         $message = Response\Message::create($request);
         $message->data = $entity;

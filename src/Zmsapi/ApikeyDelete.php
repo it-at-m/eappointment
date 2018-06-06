@@ -22,9 +22,8 @@ class ApikeyDelete extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $xApiKey = $request->getHeaderLine('X-Api-Key');
         $message = Response\Message::create($request);
-        $message->data = (new Query)->deleteEntity($xApiKey);
+        $message->data = (new Query)->deleteEntity($args['key']);
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
