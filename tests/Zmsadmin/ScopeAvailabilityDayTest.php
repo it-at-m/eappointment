@@ -26,12 +26,13 @@ class ScopeAvailabilityDayTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
+                    'parameters' => ['resolveReferences' => 1],
                     'response' => $this->readFixture("GET_scope_141.json")
                 ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/availability/',
-                    'parameters' => ['reserveEntityIds' => 1, 'resolveReferences' => 2],
+                    'parameters' => ['reserveEntityIds' => 1, 'resolveReferences' => 0],
                     'response' => $this->readFixture("GET_scope_141_availability.json")
                 ],
                 [
@@ -63,12 +64,13 @@ class ScopeAvailabilityDayTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
+                    'parameters' => ['resolveReferences' => 1],
                     'response' => $this->readFixture("GET_scope_141.json")
                 ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/availability/',
-                    'parameters' => ['reserveEntityIds' => 1, 'resolveReferences' => 2],
+                    'parameters' => ['reserveEntityIds' => 1, 'resolveReferences' => 0],
                     'exception' => $exception
                 ],
                 [
@@ -100,12 +102,13 @@ class ScopeAvailabilityDayTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/',
+                    'parameters' => ['resolveReferences' => 1],
                     'response' => $this->readFixture("GET_scope_141.json")
                 ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/availability/',
-                    'parameters' => ['reserveEntityIds' => 1, 'resolveReferences' => 2],
+                    'parameters' => ['reserveEntityIds' => 1, 'resolveReferences' => 0],
                     'exception' => $exception
                 ]
             ]
