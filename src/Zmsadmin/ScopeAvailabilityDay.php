@@ -21,8 +21,9 @@ class ScopeAvailabilityDay extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-        $scope = \App::$http->readGetResult('/scope/' . intval($args['id']) . '/')->getEntity();
-        $data = static::getAvailabilityData($scope->id, $args['date']);
+        $scope = \App::$http->readGetResult('/scope/' . intval($args['id']) . '/', ['resolveReferences' => 1])
+            ->getEntity();
+        $data = static::getAvailabilityData($scope, $args['date']);
         $data['workstation'] = $workstation;
         $data['scope'] = $scope;
         $data['title'] = 'Behörden und Standorte - Öffnungszeiten';
@@ -34,14 +35,15 @@ class ScopeAvailabilityDay extends BaseController
         );
     }
 
-    protected static function getAvailabilityData($scope_id, $dateString)
+    protected static function getAvailabilityData($scope, $dateString)
     {
+        $scope_id = $scope->id;
         $dateTime = new \BO\Zmsentities\Helper\DateTime($dateString);
         try {
             $availabilityList = \App::$http
                 ->readGetResult('/scope/' . intval($scope_id) . '/availability/', [
                     'reserveEntityIds' => 1,
-                    'resolveReferences' => 2
+                    'resolveReferences' => 0
                 ])
                 ->getCollection()
                 ->withDateTime($dateTime);
@@ -50,6 +52,9 @@ class ScopeAvailabilityDay extends BaseController
                 throw $exception;
             }
             $availabilityList = new \BO\Zmsentities\Collection\AvailabilityList();
+        }
+        foreach ($availabilityList as $availability) {
+            $availability->scope = $scope;
         }
         $processList = \App::$http
             ->readGetResult('/scope/' . intval($scope_id) . '/process/' . $dateTime->format('Y-m-d') . '/')
