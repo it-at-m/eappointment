@@ -122,7 +122,8 @@ class Apikey extends Base
             'key' => $apiKey,
             'route' => $route,
             'period' => $period,
-            'requests' => $requests
+            'requests' => $requests,
+            'ts' => \App::$now->getTimestamp()
         ]);
         $this->writeItem($query);
     }
@@ -138,20 +139,22 @@ class Apikey extends Base
      */
     public function updateQuota($apiKey, Entity $entity)
     {
-        foreach ($entity->quota as $quota) {
-            if ($this->readQuota($apiKey, $quota['route'])) {
-                $query = new Query\Apiquota(Query\Base::UPDATE);
-                $query->addConditionApikey($apiKey);
-                $query->addConditionRoute($quota['route']);
-                $query->addValues([
-                    'key' => $apiKey,
-                    'route' => $quota['route'],
-                    'period' => $quota['period'],
-                    'requests' => $quota['requests']
-                ]);
-                $this->writeItem($query);
-            } else {
-                $this->writeQuota($apiKey, $quota['route'], $quota['period'], $quota['requests']);
+        if (isset($entity->quota)) {
+            foreach ($entity->quota as $quota) {
+                if ($this->readQuota($apiKey, $quota['route'])) {
+                    $query = new Query\Apiquota(Query\Base::UPDATE);
+                    $query->addConditionApikey($apiKey);
+                    $query->addConditionRoute($quota['route']);
+                    $query->addValues([
+                        'key' => $apiKey,
+                        'route' => $quota['route'],
+                        'period' => $quota['period'],
+                        'requests' => $quota['requests']
+                    ]);
+                    $this->writeItem($query);
+                } else {
+                    $this->writeQuota($apiKey, $quota['route'], $quota['period'], $quota['requests']);
+                }
             }
         }
     }

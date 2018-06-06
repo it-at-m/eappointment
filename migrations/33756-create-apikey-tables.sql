@@ -20,6 +20,7 @@ CREATE TABLE `apiquota` (
         "month"
     ) NOT NULL,
     `requests` INT(3) NOT NULL,
+    `ts` bigint(20) NOT NULL
 PRIMARY KEY (`quotaid`))
 ENGINE = InnoDB
 CHARACTER SET utf8
