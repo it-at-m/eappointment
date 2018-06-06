@@ -28,4 +28,32 @@ class Apikey extends Schema\Entity
         ]);
         return $this;
     }
+
+    public function getQuotaPositionByRoute($route)
+    {
+        if (isset($this->quota)) {
+            foreach ($this->quota as $position => $quota) {
+                if ($route == $quota['route']) {
+                    return $position;
+                }
+            }
+        }
+        return false;
+    }
+
+    public function addQuota($route, $period)
+    {
+        $this->quota[] = [
+            'route' => $route,
+            'period' => $period,
+            'requests' => 1
+        ];
+        return $this;
+    }
+
+    public function updateQuota($position)
+    {
+        $this->quota[$position]['requests']++;
+        return $this;
+    }
 }

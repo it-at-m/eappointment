@@ -52,6 +52,11 @@
                         "type": "number",
                         "description": "Number of requests left",
                         "example": 99
+                    },
+                    "ts": {
+                        "type": "number",
+                        "description": "unix timestamp representing the creating time of quota",
+                        "example": 1459512840
                     }
                 }
             }
