@@ -99,7 +99,7 @@ class Apikey extends Base
         $data = $this
         ->getReader()
         ->fetchAll(
-            Query\Apiquota::getQueryReadApiQuotaList(),
+            Query\Apiquota::getQueryReadApiQuotaListByKey(),
             [
                 'key' => $apiKey
             ]
@@ -123,7 +123,7 @@ class Apikey extends Base
             'route' => $route,
             'period' => $period,
             'requests' => $requests,
-            'ts' => \App::$now->getTimestamp()
+            'ts' => (new \DateTimeImmutable)->getTimestamp()
         ]);
         $this->writeItem($query);
     }
@@ -181,5 +181,34 @@ class Apikey extends Base
         }
 
         return ($entity) ? $entity : null;
+    }
+
+    /**
+     * delete api quota by its period setting and creation timestamp
+     *
+     * @param
+     *      apikey
+     *
+     * @return Entity
+     */
+    public function readExpiredQuotaListByPeriod(\DateTimeInterface $dateTime)
+    {
+        $data = $this->getReader()->fetchAll(Query\Apiquota::getQueryReadApiQuotaExpired($dateTime));
+        return ($data) ? $data : null;
+    }
+
+    /**
+     * delete an existing outdated apikey
+     *
+     * @param
+     *      apikey
+     *
+     * @return Entity
+     */
+    public function writeDeletedQuota($quotaId)
+    {
+        $query = new Query\Apiquota(Query\Base::DELETE);
+        $query->addConditionQuotaId($quotaId);
+        return $this->deleteItem($query);
     }
 }
