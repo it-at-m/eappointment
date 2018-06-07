@@ -45,8 +45,7 @@ class ScopeAvailabilityDay extends BaseController
                     'reserveEntityIds' => 1,
                     'resolveReferences' => 0
                 ])
-                ->getCollection()
-                ->withDateTime($dateTime);
+                ->getCollection();
         } catch (\BO\Zmsclient\Exception $exception) {
             if ($exception->template != 'BO\Zmsapi\Exception\Availability\AvailabilityNotFound') {
                 throw $exception;
@@ -56,6 +55,7 @@ class ScopeAvailabilityDay extends BaseController
         foreach ($availabilityList as $availability) {
             $availability->scope = $scope;
         }
+        $availabilityList = $availabilityList->withDateTime($dateTime);
         $processList = \App::$http
             ->readGetResult('/scope/' . intval($scope_id) . '/process/' . $dateTime->format('Y-m-d') . '/')
             ->getCollection();
