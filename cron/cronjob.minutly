@@ -11,4 +11,5 @@ if [[ $ZMS_CRONROOT =~ ^1|on|true|yes$ ]]; then
     #$BIN/deleteReservedData --commit
     #$BIN/sendNotificationReminder --commit
     $BIN/calculateSlots --commit
+    $BIN/resetApiQuota --commit
 fi
