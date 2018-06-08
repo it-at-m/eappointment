@@ -223,6 +223,8 @@ class Slot extends Base
     {
         $this->perform(Query\Slot::QUERY_DELETE_SLOT_PROCESS, [
         ]);
+        $this->perform(Query\Slot::QUERY_DELETE_SLOT_PROCESS_CANCELLED, [
+        ]);
         $this->perform(Query\Slot::QUERY_INSERT_SLOT_PROCESS, [
         ]);
         return $this;
