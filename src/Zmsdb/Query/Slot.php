@@ -36,6 +36,7 @@ class Slot extends Base implements MappingInterface
             AND s.day = DAY(b.Datum)
             AND s.scopeID = b.StandortID
             AND b.Uhrzeit BETWEEN s.time AND SEC_TO_TIME(TIME_TO_SEC(s.time) + (s.slotTimeInMinutes * 60) - 1)
+            AND s.status = "free"
           LEFT JOIN slot_process sp ON b.BuergerID = sp.processID
         WHERE
           sp.processID IS NULL
@@ -62,6 +63,12 @@ class Slot extends Base implements MappingInterface
         DELETE sp 
             FROM slot_process sp LEFT JOIN buerger b ON sp.processID = b.BuergerID
             WHERE b.BuergerID IS NULL
+    ';
+
+    const QUERY_DELETE_SLOT_PROCESS_CANCELLED = '
+        DELETE sp 
+            FROM slot_process sp LEFT JOIN slot s USING (slotID)
+            WHERE s.status = "cancelled" OR s.status IS NULL
     ';
 
     const QUERY_DELETE_SLOT_PROCESS_ID = '
