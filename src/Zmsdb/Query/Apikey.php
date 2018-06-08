@@ -18,6 +18,7 @@ class Apikey extends Base implements MappingInterface
     {
         $mapping = [
             'key' => 'apikey.key',
+            'createIP' => 'apikey.createIP',
             'ts' => 'apikey.ts'
         ];
         return $mapping;

@@ -34,18 +34,17 @@ class Apikey extends Base
         $query = new Query\Apikey(Query\Base::INSERT);
         $query->addValues([
             'key' => $entity->key,
-            'ts' => \App::$now->getTimestamp()
+            'createIP' => $entity->createIP,
+            'ts' => (new \DateTimeImmutable)->getTimestamp()
         ]);
         if ($this->writeItem($query)) {
-            foreach ($entity->quota as $quota) {
-                $this->writeQuota($entity->key, $quota['route'], $quota['period'], $quota['requests']);
-            }
+            $this->updateQuota($entity->key, $entity);
         }
         return $this->readEntity($entity->key);
     }
 
     /**
-     * update an existing active apikey
+     * update an existing active apikey quota
      *
      * @param
      *      entity
@@ -54,12 +53,6 @@ class Apikey extends Base
      */
     public function updateEntity($apiKey, Entity $entity)
     {
-        $query = new Query\Apikey(Query\Base::UPDATE);
-        $query->addConditionApikey($apiKey);
-        $query->addValues([
-            'ts' => \App::$now->getTimestamp()
-        ]);
-        $this->writeItem($query);
         $this->updateQuota($apiKey, $entity);
         return $this->readEntity($apiKey, 1);
     }
