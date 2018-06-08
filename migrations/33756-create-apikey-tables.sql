@@ -1,6 +1,7 @@
 DROP TABLE IF EXISTS `apikey`;
 CREATE TABLE `apikey` (
     `key` varchar(100) NOT NULL,
+    `createIP` VARCHAR(40) NOT NULL , 
     `ts` bigint(20) NOT NULL,
 PRIMARY KEY (`key`))
 ENGINE = InnoDB
