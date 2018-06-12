@@ -59,6 +59,15 @@ class Slot extends Base implements MappingInterface
           b.BuergerID = :processId
     ';
 
+    const QUERY_UPDATE_SLOT_MISSING_AVAILABILITY = '
+    UPDATE
+         slot s
+           LEFT JOIN oeffnungszeit a ON s.availabilityID = a.OeffnungszeitID
+           SET s.status = "cancelled"
+           WHERE
+             a.OeffnungszeitID IS NULL
+               OR a.Endedatum < :dateString
+    ';
     const QUERY_DELETE_SLOT_PROCESS = '
         DELETE sp 
             FROM slot_process sp LEFT JOIN buerger b ON sp.processID = b.BuergerID

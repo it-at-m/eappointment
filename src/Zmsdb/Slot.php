@@ -248,12 +248,15 @@ class Slot extends Base
 
     public function writeCanceledByTime(\DateTimeInterface $dateTime)
     {
+        $status = $this->perform(Query\Slot::QUERY_UPDATE_SLOT_MISSING_AVAILABILITY, [
+            'dateString' => $dateTime->format('Y-m-d'),
+        ]);
         return $this->perform(Query\Slot::QUERY_CANCEL_SLOT_OLD, [
             'year' => $dateTime->format('Y'),
             'month' => $dateTime->format('m'),
             'day' => $dateTime->format('d'),
             'time' => $dateTime->format('H:i:s'),
-        ]);
+        ]) && $status;
     }
 
     public function deleteSlotsOlderThan(\DateTimeInterface $dateTime)
