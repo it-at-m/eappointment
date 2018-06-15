@@ -143,6 +143,21 @@ class Calendar extends Schema\Entity
     }
 
     /**
+     * Returns a list of associated request entities
+     *
+     * @return array
+     */
+    public function getRequestList()
+    {
+        $requestList = new \BO\Zmsentities\Collection\RequestList();
+        foreach ($this->requests as $request) {
+            $request = new Request($request);
+            $requestList->addEntity($request);
+        }
+        return $requestList;
+    }
+
+    /**
      * Returns a list of associated provider ids
      *
      * @return array

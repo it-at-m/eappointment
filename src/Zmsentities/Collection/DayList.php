@@ -172,4 +172,15 @@ class DayList extends Base implements JsonUnindexed
         }
         return $list;
     }
+
+    public function withDaysFromPeriod(\DateTimeInterface $startDate, \DateTimeInterface $endDate)
+    {
+        $list = new self();
+        do {
+            $day = (new Day())->setDateTime($startDate);
+            $list->addEntity($day);
+            $startDate = $startDate->modify('+1 day');
+        } while ($startDate <= $endDate);
+        return $list;
+    }
 }
