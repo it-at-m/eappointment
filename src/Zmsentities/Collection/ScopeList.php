@@ -175,4 +175,14 @@ class ScopeList extends Base
         }
         return $isOpened;
     }
+
+    public function getProviderList()
+    {
+        $list = new ProviderList();
+        foreach ($this as $scope) {
+            $provider = $scope->getProvider();
+            $list->addEntity($provider);
+        }
+        return $list->withUniqueProvider();
+    }
 }
