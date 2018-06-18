@@ -28,11 +28,21 @@ if (preg_grep('#^--longrun$#', $argv)) {
 }
 if (preg_grep('#^--commit$#', $argv)) {
     $calculator = new \BO\Zmsdb\Helper\CalculateSlots(preg_grep('#^--?v(erbose)?$#', $argv));
-    $calculator->writeCalculations($now, $runTimeout);
+    try {
+        $calculator->writeCalculations($now, $runTimeout);
+    } catch (\BO\Zmsdb\Exception\Pdo\LockTimeout $exception) {
+        $calculator->log("Unexpected end due to lock timeout, showing tracelog:");
+        $calculator->dumpLogs();
+        error_log($exception->getTraceAsString());
+    } catch (\Exception $exception) {
+        $calculator->dumpLogs();
+        throw $exception;
+    }
     $calculator->writeCanceledSlots($now);
     if (preg_grep('#^--delete$#', $argv)) {
         $calculator->deleteOldSlots($now);
     }
+    $calculator->writeMaintenanceQueries($now);
 } else {
     $dbname = \BO\Zmsdb\Connection\Select::$writeSourceName;
     $username = \BO\Zmsdb\Connection\Select::$username;
