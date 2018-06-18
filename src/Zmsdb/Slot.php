@@ -228,7 +228,7 @@ class Slot extends Base
         $processIdList = $this->fetchAll(Query\Slot::QUERY_SELECT_MISSING_PROCESS);
         // Client side INSERT ... SELECT ... to reduce table locking
         foreach ($processIdList as $processId) {
-            $this->perform(Query\Slot::QUERY_INSERT_SLOT_PROCESS, $processId);
+            $this->perform(Query\Slot::QUERY_INSERT_SLOT_PROCESS, array_values($processId));
         }
         return $this;
     }
