@@ -13,6 +13,13 @@ class Apikey extends Schema\Entity
         return [];
     }
 
+    public function getHashFromCaptcha($text, $secret, $salt)
+    {
+        $hash = password_hash($text . $secret, PASSWORD_BCRYPT, ['cost' => 12, 'salt' => $salt]);
+        $hash = substr($hash, 29);
+        return str_replace('/', '', $hash);
+    }
+
     public function withCaptchaData($base64_jpg)
     {
         $this->captcha = new Mimepart([
