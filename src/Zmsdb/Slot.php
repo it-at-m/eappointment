@@ -225,8 +225,11 @@ class Slot extends Base
         ]);
         $this->perform(Query\Slot::QUERY_DELETE_SLOT_PROCESS_CANCELLED, [
         ]);
-        $this->perform(Query\Slot::QUERY_INSERT_SLOT_PROCESS, [
-        ]);
+        $processIdList = $this->fetchAll(Query\Slot::QUERY_SELECT_MISSING_PROCESS);
+        // Client side INSERT ... SELECT ... to reduce table locking
+        foreach ($processIdList as $processId) {
+            $this->perform(Query\Slot::QUERY_INSERT_SLOT_PROCESS, $processId);
+        }
         return $this;
     }
 

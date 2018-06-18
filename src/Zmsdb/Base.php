@@ -161,6 +161,17 @@ abstract class Base
         });
     }
 
+    public function fetchAll($query, $parameters = null)
+    {
+        return static::pdoExceptionHandler(function () use ($query, $parameters) {
+            $prepared = $this->fetchPreparedStatement($query);
+            $prepared->execute($parameters);
+            $list = $prepared->fetchAll(\PDO::FETCH_ASSOC);
+            $prepared->closeCursor();
+            return $list;
+        });
+    }
+
     public function fetchHandle($query, $parameters = null)
     {
         return static::pdoExceptionHandler(function () use ($query, $parameters) {
