@@ -13,17 +13,10 @@ class ApikeyTest extends EntityCommonTests
         $this->assertContains('"key":"wMdVa5Nu1seuC\/RSJxhKl2M3yw+8zqaAilPH2Xc2IZs"', (string)$entity);
     }
 
-    public function testRandomKey()
-    {
-        $entity = (new $this->entityclass())->getExample()->withRandomKey();
-        $this->assertNotContains('"key":"wMdVa5Nu1seuC\/RSJxhKl2M3yw+8zqaAilPH2Xc2IZs"', (string)$entity);
-        $this->assertTrue(32 == strlen($entity->key));
-    }
-
     public function testCaptcha()
     {
         $entity = (new $this->entityclass())->getExample()->withCaptchaData('base64UnitTest');
-        $this->assertContains('"mime":"image\/png;base64"', (string)$entity);
+        $this->assertContains('"mime":"image\/jpeg;base64"', (string)$entity);
         $this->assertTrue("base64UnitTest" === $entity->captcha->content);
     }
 }

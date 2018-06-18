@@ -13,17 +13,11 @@ class Apikey extends Schema\Entity
         return [];
     }
 
-    public function withRandomKey()
-    {
-        $this->key =  bin2hex(openssl_random_pseudo_bytes(16));
-        return $this;
-    }
-
-    public function withCaptchaData($base64_png)
+    public function withCaptchaData($base64_jpg)
     {
         $this->captcha = new Mimepart([
-            'content' => $base64_png,
-            'mime' => 'image/png;base64',
+            'content' => $base64_jpg,
+            'mime' => 'image/jpeg;base64',
             'base64' => true
         ]);
         return $this;
