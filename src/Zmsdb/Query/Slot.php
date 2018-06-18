@@ -44,6 +44,7 @@ class Slot extends Base implements MappingInterface
           LEFT JOIN slot_process sp ON b.BuergerID = sp.processID
         WHERE
           sp.processID IS NULL
+          AND b.updateTimestamp >= :updateTimestamp
     ';
 
     const QUERY_INSERT_SLOT_PROCESS_ID = '
@@ -76,6 +77,12 @@ class Slot extends Base implements MappingInterface
         DELETE sp 
             FROM slot_process sp LEFT JOIN buerger b ON sp.processID = b.BuergerID
             WHERE b.BuergerID IS NULL
+    ';
+
+    const QUERY_SELECT_DELETABLE_SLOT_PROCESS = '
+        SELECT b.BuergerID AS processId
+            FROM slot_process sp LEFT JOIN buerger b ON sp.processID = b.BuergerID
+            WHERE b.StandortID = 0
     ';
 
     const QUERY_DELETE_SLOT_PROCESS_CANCELLED = '

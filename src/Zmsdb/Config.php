@@ -42,6 +42,23 @@ class Config extends Base
         return ($result) ? $this->readEntity() : null;
     }
 
+    public function readProperty($property, $forUpdate = false)
+    {
+        $sql = Query\Config::QUERY_SELECT_PROPERTY;
+        if ($forUpdate) {
+            $sql .= " FOR UPDATE";
+        }
+        return $this->fetchValue($sql, [$property]);
+    }
+
+    public function replaceProperty($property, $value)
+    {
+        return $this->perform(Query\Config::QUERY_REPLACE_PROPERTY, [
+            'property' => $property,
+            'value' => $value,
+        ]);
+    }
+
     /**
      * remove config data
      *

@@ -13,6 +13,20 @@ class Config extends Base
         SELECT * FROM config
     ';
 
+    const QUERY_SELECT_PROPERTY =
+            'SELECT
+                value
+            FROM config
+            WHERE name = ?
+            ';
+
+    const QUERY_REPLACE_PROPERTY =
+        'REPLACE INTO config
+            SET name  = :property, 
+                value = :value
+            ';
+
+
     public function addConditionName($itemName)
     {
         $this->query->where(self::TABLE .'.name', '=', $itemName);
