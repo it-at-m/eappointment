@@ -25,10 +25,14 @@ class Slot extends Base implements MappingInterface
 
     const QUERY_INSERT_SLOT_PROCESS = '
         INSERT INTO slot_process
+        VALUES(?,?,?) 
+    ';
+
+    const QUERY_SELECT_MISSING_PROCESS = '
         SELECT 
           s.slotID,
           b.BuergerID,
-          NOW()
+          NOW() updateTimestamp
         FROM slot s
           INNER JOIN buerger b ON
             s.year = YEAR(b.Datum)
