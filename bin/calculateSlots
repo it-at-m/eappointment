@@ -21,15 +21,14 @@ if (count($dates)) {
 } elseif (class_exists('\App') && isset(\App::$now)) {
     $now = \App::$now;
 }
-if (preg_grep('#^--longrun$#', $argv)) {
-    $runTimeout = 7200;
-} else {
-    $runTimeout = 10;
+$repair = false;
+if (preg_grep('#^--repair$#', $argv)) {
+    $repair = true;
 }
 if (preg_grep('#^--commit$#', $argv)) {
     $calculator = new \BO\Zmsdb\Helper\CalculateSlots(preg_grep('#^--?v(erbose)?$#', $argv));
     try {
-        $calculator->writeCalculations($now, $runTimeout);
+        $calculator->writeCalculations($now, $repair);
     } catch (\BO\Zmsdb\Exception\Pdo\LockTimeout $exception) {
         $calculator->log("Unexpected end due to lock timeout, showing tracelog:");
         $calculator->dumpLogs();
@@ -46,7 +45,7 @@ if (preg_grep('#^--commit$#', $argv)) {
 } else {
     $dbname = \BO\Zmsdb\Connection\Select::$writeSourceName;
     $username = \BO\Zmsdb\Connection\Select::$username;
-    echo "Usage: {$argv[0]} --commit [--verbose] [--delete] [--longrun] [2018-04-01]\n"
+    echo "Usage: {$argv[0]} --commit [--verbose] [--delete] [--repair] [2018-04-01]\n"
         . "\tCalculates and updates available appointments/slots for availabilities.\n\n";
     echo "\tDatabase:             $dbname as $username\n";
     echo "\tDate for calculation: ".$now->format('c')."\n\n";
