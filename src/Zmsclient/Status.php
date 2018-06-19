@@ -48,6 +48,14 @@ class Status
             if ($status['database']['nodeConnections'] > 50) {
                 $result[] = "WARN - DB connected thread over 50% of available connections";
             }
+            if (isset($status['processes'])
+                && isset($status['processes']['lastCalculate'])
+                && \App::$now->getTimestamp() - strtotime($status['processes']['lastCalculate']) > 300
+            ) {
+                $slotOutdate =
+                    \App::$now->getTimestamp() - strtotime($status['processes']['lastCalculate']);
+                $result[] = "WARN - slot calculation is $slotOutdate seconds old";
+            }
             $result = preg_grep('/./', $result);
             if (!count($result)) {
                 $result = "OK - "
