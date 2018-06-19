@@ -25,12 +25,17 @@ class Status extends Base
             array_key_exists('wsrep_ready', $statusVariables) ? $statusVariables['wsrep_ready'] : 'OFF';
         $entity['database']['logbin'] =
             array_key_exists('log_bin', $configVariables) ? $configVariables['log_bin'] : 'OFF';
+        $entity['processes'] = [];
         if ($includeProcessStats) {
             $entity['processes'] = $this->readProcessStats();
+            $outdated = $this->readOutdatedSlots();
+            $entity['processes']['outdated'] = $outdated['cnt'];
+            $entity['processes']['outdatedOldest'] = $outdated['oldest'];
         }
         $entity['mail'] = $this->readMailStats();
         $entity['notification'] = $this->readNotificationStats();
         $entity['sources']['dldb']['last'] = $this->readDdldUpdateStats();
+        $entity['processes']['lastCalculate'] = $this->readLastCalculateSlots();
         return $entity;
     }
 
@@ -59,6 +64,40 @@ class Status extends Base
                 value
             FROM config
             WHERE name = "sources_dldb_last"
+            '
+        );
+        return $stats['value'];
+    }
+
+    /**
+     * Get the information on dldb update status
+     *
+     * @return Array
+     */
+    protected function readOutdatedSlots()
+    {
+        $stats = $this->getReader()->fetchOne(
+            'SELECT
+                COUNT(*) cnt, MIN(s.updateTimestamp) oldest
+            FROM slot s LEFT JOIN oeffnungszeit a ON s.availabilityID = a.OeffnungszeitID
+            WHERE s.updateTimestamp < a.updateTimestamp
+            '
+        );
+        return $stats;
+    }
+
+    /**
+     * Get the information on dldb update status
+     *
+     * @return Array
+     */
+    protected function readLastCalculateSlots()
+    {
+        $stats = $this->getReader()->fetchOne(
+            'SELECT
+                value
+            FROM config
+            WHERE name = "status__calculateSlotsLastRun"
             '
         );
         return $stats['value'];
