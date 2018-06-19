@@ -50,7 +50,7 @@ class Status
             }
             if (isset($status['processes'])
                 && isset($status['processes']['lastCalculate'])
-                && \App::$now->getTimestamp() - strtotime($status['processes']['lastCalculate']) > 300
+                && \App::$now->getTimestamp() - strtotime($status['processes']['lastCalculate']) > 600
             ) {
                 $slotOutdate =
                     \App::$now->getTimestamp() - strtotime($status['processes']['lastCalculate']);
