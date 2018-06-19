@@ -78,7 +78,7 @@ class Status extends Base
     {
         $stats = $this->getReader()->fetchOne(
             'SELECT
-                COUNT(*) cnt, MIN(s.updateTimestamp) oldest
+                COUNT(*) cnt, MIN(a.updateTimestamp) oldest
             FROM slot s LEFT JOIN oeffnungszeit a ON s.availabilityID = a.OeffnungszeitID
             WHERE s.updateTimestamp < a.updateTimestamp
             '
