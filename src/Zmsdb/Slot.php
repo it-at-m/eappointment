@@ -245,9 +245,9 @@ class Slot extends Base
         $processIdList = $this->fetchAll(Query\Slot::QUERY_SELECT_DELETABLE_SLOT_PROCESS);
         // Client side INSERT ... SELECT ... to reduce table locking
         foreach ($processIdList as $processId) {
-            var_dump($processId);
             $this->perform(Query\Slot::QUERY_DELETE_SLOT_PROCESS_ID, $processId);
         }
+        return $processIdList;
     }
 
     public function writeSlotProcessMappingFor($processId)
