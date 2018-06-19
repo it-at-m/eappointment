@@ -84,7 +84,7 @@ class CalculateSlots
     }
 
 
-    public function writeCalculations(\DateTimeInterface $now, $breakTime = 10)
+    public function writeCalculations(\DateTimeInterface $now, $repair = false)
     {
         \BO\Zmsdb\Connection\Select::setTransaction();
         \BO\Zmsdb\Connection\Select::getWriteConnection();
@@ -95,16 +95,15 @@ class CalculateSlots
             $this->log("Skip calculation due to config setting status.calculateSlotsSkip");
             return false;
         }
+        if ($repair) {
+            $updateTimestamp = '';
+        }
         $this->log("Last Run on time=" . $updateTimestamp);
         $scopeList = (new \BO\Zmsdb\Scope())->readList(1);
         $scopeLength = count($scopeList) - 1;
         foreach ($scopeList as $key => $scope) {
             if ($this->writeCalculatedScope($scope, $now)) {
                 $this->log("Calculated slots $key/$scopeLength for $scope");
-            }
-            if ($this->getSpendTime() > $breakTime) {
-                $this->log("Break update, wait for next iteration");
-                break;
             }
         }
         $this->log("Finished slot calculation");

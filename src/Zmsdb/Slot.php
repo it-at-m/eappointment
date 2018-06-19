@@ -8,6 +8,7 @@ use \BO\Zmsentities\Scope as ScopeEntity;
 
 /**
  * @SuppressWarnings(Public)
+ * @SuppressWarnings(Complexity)
  */
 class Slot extends Base
 {
