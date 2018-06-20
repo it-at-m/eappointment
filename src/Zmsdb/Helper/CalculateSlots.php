@@ -135,23 +135,23 @@ class CalculateSlots
         return false;
     }
 
-    public function writeCanceledSlots(\DateTimeInterface $now)
+    public function writeCanceledSlots(\DateTimeInterface $now, $modify = '+10 minutes')
     {
+        \BO\Zmsdb\Connection\Select::getWriteConnection();
         $slotQuery = new \BO\Zmsdb\Slot();
-        if ($slotQuery->writeCanceledByTime($now->modify('+5 minutes'))) {
+        if ($slotQuery->writeCanceledByTime($now->modify($modify))) {
             \BO\Zmsdb\Connection\Select::writeCommit();
-            $this->log("Cancelled old slots");
+            $this->log("Cancelled slots older than ".$now->modify($modify)->format('c'));
             return true;
         }
         return false;
     }
 
-    /**
-     * @SuppressWarnings(Unused)
-     */
     public function deleteOldSlots(\DateTimeInterface $now)
     {
         $slotQuery = new \BO\Zmsdb\Slot();
+        $pdo = \BO\Zmsdb\Connection\Select::getWriteConnection();
+        $pdo->exec('SET SESSION innodb_lock_wait_timeout=120');
         if ($slotQuery->deleteSlotsOlderThan($now)) {
             \BO\Zmsdb\Connection\Select::writeCommit();
             $this->log("Deleted slots older than ". $now->format('Y-m-d'));
