@@ -101,7 +101,7 @@ class Slot extends Base
         ]);
         if (!$availability->hasBookableDates($now)) {
             $availability['processingNote'][] = 'cancelled: not bookable';
-            return true;
+            return false;
         }
         $stopDate = $availability->getBookableEnd($now);
         $slotlist = $availability->getSlotList();
