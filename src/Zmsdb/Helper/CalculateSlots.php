@@ -125,7 +125,7 @@ class CalculateSlots
         $slotQuery = new \BO\Zmsdb\Slot();
         $updatedList = $slotQuery->writeByScope($scope, $now);
         foreach ($updatedList as $availability) {
-            $this->log("Updated $availability");
+            $this->log("Updated $availability with reason " . implode('|', $availability['processingNote']));
         }
         if (count($updatedList)) {
             \BO\Zmsdb\Connection\Select::writeCommit();
