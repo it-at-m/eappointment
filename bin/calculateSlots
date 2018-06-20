@@ -28,7 +28,12 @@ if (preg_grep('#^--repair$#', $argv)) {
 if (preg_grep('#^--commit$#', $argv)) {
     $calculator = new \BO\Zmsdb\Helper\CalculateSlots(preg_grep('#^--?v(erbose)?$#', $argv));
     try {
+        if (preg_grep('#^--delete$#', $argv)) {
+            $calculator->deleteOldSlots($now);
+        }
         $calculator->writeCalculations($now, $repair);
+        $calculator->writeCanceledSlots($now);
+        $calculator->writeMaintenanceQueries($now);
     } catch (\BO\Zmsdb\Exception\Pdo\LockTimeout $exception) {
         $calculator->log("Unexpected end due to lock timeout, showing tracelog:");
         $calculator->dumpLogs();
@@ -37,11 +42,6 @@ if (preg_grep('#^--commit$#', $argv)) {
         $calculator->dumpLogs();
         throw $exception;
     }
-    $calculator->writeCanceledSlots($now);
-    if (preg_grep('#^--delete$#', $argv)) {
-        $calculator->deleteOldSlots($now);
-    }
-    $calculator->writeMaintenanceQueries($now);
 } else {
     $dbname = \BO\Zmsdb\Connection\Select::$writeSourceName;
     $username = \BO\Zmsdb\Connection\Select::$username;
