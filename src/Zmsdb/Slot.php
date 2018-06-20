@@ -54,15 +54,15 @@ class Slot extends Base
         \DateTimeInterface $slotLastChange = null
     ) {
         if ($availability->isNewerThan($slotLastChange)) {
-            //error_log("Outdated on availability: $availability");
+            $availability['processingNote'][] = 'outdated: availability change';
             return true;
         }
         if ($availability->scope->isNewerThan($slotLastChange)) {
-            //error_log("Outdated on scope: $availability ". $availability->lastChange);
+            $availability['processingNote'][] = 'outdated: scope change';
             return true;
         }
         if ($availability->scope->dayoff->isNewerThan($slotLastChange, $availability, $now)) {
-            //error_log("Outdated on dayoff: $availability");
+            $availability['processingNote'][] = 'outdated: dayoff change';
             return true;
         }
         // First check if the bookable end date on current time is already calculated on last slot change
@@ -75,7 +75,7 @@ class Slot extends Base
                 $now
             )
         ) {
-            //error_log("Outdated on time: $availability");
+            $availability['processingNote'][] = 'outdated: new slots required';
             return true;
         }
         //error_log("Not outdated: $availability");
@@ -100,7 +100,8 @@ class Slot extends Base
             'availabilityID' => $availability->id,
         ]);
         if (!$availability->hasBookableDates($now)) {
-            return false;
+            $availability['processingNote'][] = 'cancelled: not bookable';
+            return true;
         }
         $stopDate = $availability->getBookableEnd($now);
         $slotlist = $availability->getSlotList();
