@@ -27,7 +27,7 @@ class ApikeyGet extends BaseController
         $message->data = $entity;
 
         $response = Render::withLastModified($response, time(), '0');
-        $response = Render::withJson($response, $message, 200);
+        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
         return $response;
     }
 }
