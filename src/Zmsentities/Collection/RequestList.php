@@ -16,20 +16,6 @@ class RequestList extends Base
         return true;
     }
 
-    public function getIds()
-    {
-        $idList = array();
-        foreach ($this as $request) {
-            $idList[] = $request['id'];
-        }
-        return $idList;
-    }
-
-    public function getCSV()
-    {
-        return implode(',', $this->getIds());
-    }
-
     public function toSortedByGroup()
     {
         $list = array();
@@ -74,5 +60,16 @@ class RequestList extends Base
             }
         }
         return false;
+    }
+
+    public function withUniqueRequests()
+    {
+        $requestList = new self();
+        foreach ($this as $request) {
+            if (! $requestList->hasEntity($request->id)) {
+                $requestList->addEntity(clone $request);
+            }
+        }
+        return $requestList;
     }
 }
