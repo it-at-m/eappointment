@@ -13,9 +13,9 @@ class Apikey extends Schema\Entity
         return [];
     }
 
-    public function getHashFromCaptcha($text, $secret, $salt)
+    public function getHashFromCaptcha($text, $secret)
     {
-        $hash = password_hash($text . $secret, PASSWORD_BCRYPT, ['cost' => 12, 'salt' => $salt]);
+        $hash = hash('sha256', $text . $secret);
         $hash = substr($hash, 29);
         return str_replace('/', '', $hash);
     }
@@ -32,14 +32,7 @@ class Apikey extends Schema\Entity
 
     public function getQuotaPositionByRoute($route)
     {
-        if (isset($this->quota)) {
-            foreach ($this->quota as $position => $quota) {
-                if ($route == $quota['route']) {
-                    return $position;
-                }
-            }
-        }
-        return false;
+        return array_search($route, array_column($this->quota, 'route'));
     }
 
     public function addQuota($route, $period)
