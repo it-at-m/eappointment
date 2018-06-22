@@ -71,7 +71,7 @@ class Status extends Base
 
     /**
      * Get the information on dldb update status
-     *
+     * Hint: "cancelled" slots might be older, but do not get updated, if not bookable in availability any longer
      * @return Array
      */
     protected function readOutdatedSlots()
@@ -80,7 +80,7 @@ class Status extends Base
             'SELECT
                 COUNT(*) cnt, MIN(a.updateTimestamp) oldest
             FROM slot s LEFT JOIN oeffnungszeit a ON s.availabilityID = a.OeffnungszeitID
-            WHERE s.updateTimestamp < a.updateTimestamp
+            WHERE s.updateTimestamp < a.updateTimestamp AND s.status = "free"
             '
         );
         return $stats;
