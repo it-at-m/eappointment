@@ -113,16 +113,18 @@ class Calendar extends Schema\Entity
     }
 
     /**
-     * Returns calendar with added scope
+     * Returns calendar with added scopes
      *
      * @return $this
      */
-    public function addScope($scopeId)
+    public function addScope($scopeList)
     {
-        if ($scopeId) {
-            $scope = new Scope();
-            $scope->id = $scopeId;
-            $this->scopes[] = $scope;
+        foreach (explode(',', $scopeList) as $id) {
+            if ($id) {
+                $scope = new Scope();
+                $scope->id = $id;
+                $this->scopes[] = $scope;
+            }
         }
         return $this;
     }
@@ -263,6 +265,14 @@ class Calendar extends Schema\Entity
         $day = new Day();
         $day->setDateTime($date);
         $this['lastDay'] = $day;
+        return $this;
+    }
+
+    public function setFirstDayTime($date)
+    {
+        $day = new Day();
+        $day->setDateTime($date);
+        $this['firstDay'] = $day;
         return $this;
     }
 
