@@ -51,6 +51,7 @@ class Availability extends Base implements MappingInterface
             'repeat__afterWeeks' => 'availability.allexWochen',
             'repeat__weekOfMonth' => 'availability.jedexteWoche',
             'slotTimeInMinutes' => self::expression('FLOOR(TIME_TO_SEC(`availability`.`Timeslot`) / 60)') ,
+            // dependant function on this IF(): \BO\Zmsdb\Availablity::readList()
             'type' => self::expression(
                 "IF(`availability`.`Terminanfangszeit`, 'appointment', 'openinghours')"
             ),
@@ -70,7 +71,8 @@ class Availability extends Base implements MappingInterface
             )
         ];
         if ('openinghours' == $type) {
-            $mapping['type'] = self::expression('"openinghours"');
+            // Test if following line is needed: type mapping with IF() a few lines before
+            //$mapping['type'] = self::expression('"openinghours"');
             $mapping['startTime'] = 'availability.Anfangszeit';
             $mapping['endTime'] = 'availability.Endzeit';
         }

@@ -44,17 +44,21 @@ class Availability extends Base implements Interfaces\ResolveReferences
             $scope = (new Scope())->readEntity($scopeId, $resolveReferences - 1);
         }
         $collection = $this->readAppointmentListByScope($scope, $resolveReferences);
-        // TODO Remove after DB optimization
         $query = new Query\Availability(Query\Base::SELECT);
         $query
             ->addEntityMapping('openinghours')
-            ->addConditionDoubleTypes()
+            ->addConditionOpeningHours()
             ->addResolvedReferences($resolveReferences)
             ->addConditionScopeId($scopeId);
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
             foreach ($result as $entity) {
-                if ($reserveEntityIds) {
+                $entity['scope'] = clone $scope;
+                $entity->workstationCount['intern'] = 0;
+                $entity->workstationCount['callcenter'] = 0;
+                $entity->workstationCount['public'] = 0;
+                if ($entity['type'] == 'appointment' && $reserveEntityIds) {
+                    // TODO Remove after DB optimization when the types are seperated
                     // reserve an ID by creating a temporary entity
                     $tempAvailability = $this->writeEntity(new Entity([
                         'description' => '--temporary--',
@@ -62,13 +66,18 @@ class Availability extends Base implements Interfaces\ResolveReferences
                             'id' => 0,
                         ]),
                     ]));
+                    $entity['description'] = 'Automatisch erzeugt aus Öffnungszeit für Terminkunden #'.$entity->id;
                     $entity->id = $tempAvailability->id;
+                    $entity['type'] = 'openinghours';
+                    //error_log($collection->hasOverlapWith($entity). " overlaps");
+                    //if (!$collection->hasOverlapWith($entity)->count()) {
+                    //    $collection->addEntity($entity);
+                    //}
+                    $collection->addEntity($entity);
+                } else {
+                    $entity['type'] = 'openinghours';
+                    $collection->addEntity($entity);
                 }
-                $entity['scope'] = clone $scope;
-                $entity->workstationCount['intern'] = 0;
-                $entity->workstationCount['callcenter'] = 0;
-                $entity->workstationCount['public'] = 0;
-                $collection->addEntity($entity);
             }
             if ($reserveEntityIds) {
                 // This can produce deadlocks:
@@ -145,6 +154,7 @@ class Availability extends Base implements Interfaces\ResolveReferences
             foreach ($result as $entity) {
                 if ($entity instanceof Entity) {
                     $entity = $this->readResolvedReferences($entity, $resolveReferences);
+                    $entity->type = 'openinghours';
                     $collection->addEntity($entity);
                 }
             }
