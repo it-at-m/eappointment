@@ -490,6 +490,22 @@ class Availability extends Schema\Entity
         return true;
     }
 
+    public function hasSharedWeekdayWith(Availability $availability)
+    {
+        if ($this->type == $availability->type
+            && (bool)$this->weekday['monday'] != (bool)$availability->weekday['monday']
+            && (bool)$this->weekday['tuesday'] != (bool)$availability->weekday['tuesday']
+            && (bool)$this->weekday['wednesday'] != (bool)$availability->weekday['wednesday']
+            && (bool)$this->weekday['thursday'] != (bool)$availability->weekday['thursday']
+            && (bool)$this->weekday['friday'] != (bool)$availability->weekday['friday']
+            && (bool)$this->weekday['saturday'] != (bool)$availability->weekday['saturday']
+            && (bool)$this->weekday['sunday'] != (bool)$availability->weekday['sunday']
+        ) {
+            return false;
+        }
+        return true;
+    }
+
     /**
      * Get overlaps on daytime
      * This functions does not check, if two availabilities are openend on the same day!
@@ -501,7 +517,10 @@ class Availability extends Schema\Entity
     public function getTimeOverlaps(Availability $availability)
     {
         $processList = new Collection\ProcessList();
-        if ($availability->id != $this->id && $availability->type == $this->type) {
+        if ($availability->id != $this->id
+            && $availability->type == $this->type
+            && $this->hasSharedWeekdayWith($availability)
+        ) {
             $processTemplate = new Process();
             $processTemplate->amendment = "Zwei Öffnungszeiten überschneiden sich.";
             $processTemplate->status = 'conflict';
