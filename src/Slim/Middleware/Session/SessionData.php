@@ -32,14 +32,14 @@ class SessionData implements SessionInterface
     /**
      *
      * @SuppressWarnings(Superglobals)
+     * @SuppressWarnings(Unused)
      *
      * @return self
      */
     public static function getSession(Request $request)
     {
-        $cookies = $request->getCookieParams();
         $session = array();
-        if (count($cookies) && headers_sent() === false && session_status() !== PHP_SESSION_ACTIVE) {
+        if (headers_sent() === false && session_status() !== PHP_SESSION_ACTIVE) {
             session_start();
             if (!count($_SESSION)) {
                 $_SESSION['status'] = 'start';
