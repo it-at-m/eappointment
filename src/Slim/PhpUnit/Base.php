@@ -101,6 +101,7 @@ abstract class Base extends TestCase
             'REQUEST_URI'          => $uri,
             'REMOTE_ADDR'          => '127.0.0.1'
         ]));
+        $request = $request->withAttribute('ip_address', '127.0.0.1');
         return $request;
     }
 
