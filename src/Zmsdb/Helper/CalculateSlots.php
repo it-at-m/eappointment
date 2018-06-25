@@ -112,8 +112,8 @@ class CalculateSlots
         $this->log("Finished to free slots for deleted processes");
         $slotQuery->deleteSlotProcessOnSlot();
         $this->log("Finished to free slots for cancelled availabilities");
-        $slotQuery->updateSlotProcessMapping($updateTimestamp);
-        $this->log("Updated Slot-Process-Mapping");
+        $slotsProcessed = $slotQuery->updateSlotProcessMapping();
+        $this->log("Updated Slot-Process-Mapping, mapped $slotsProcessed processes");
         (new \BO\Zmsdb\Config)->replaceProperty('status__calculateSlotsLastRun', $now->format('Y-m-d H:i:s'));
         $this->log("Committing changes (may take a while)");
         \BO\Zmsdb\Connection\Select::writeCommit();
