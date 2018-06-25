@@ -69,7 +69,7 @@ class Process extends Schema\Entity
 
     public function getRequestCSV()
     {
-        return $this->getRequests()->getCSV();
+        return $this->getRequests()->getIdsCsv();
     }
 
     public function addScope($scopeId)
@@ -326,7 +326,7 @@ class Process extends Schema\Entity
         }
         return $appointment;
     }
-    
+
     public function setStatusBySettings()
     {
         $scope = new Scope($this->scope);
