@@ -35,6 +35,10 @@
           "type": "number",
           "description": "Number of deleted appointments in the database blocking free appointment times."
         },
+        "lastCalculate": {
+          "type": "string",
+          "description": "Timestamp of last calculation for slots"
+        },
         "lastInsert": {
           "type": "number",
           "description": "Timestamp of last inserted process"
@@ -42,6 +46,14 @@
         "missed": {
           "type": "number",
           "description": "Number of missed appointments in the database. Zeroed on daily basis in the night."
+        },
+        "outdated": {
+          "type": "number",
+          "description": "Number of slots, which might change on recalculation due to changed availabilities"
+        },
+        "outdatedOldest": {
+          "type": "string",
+          "description": "Timestamp of oldest slot for recalculation."
         },
         "reserved": {
           "type": "number",

@@ -83,6 +83,13 @@
       "default": true,
       "description": "an appointment is allowed to take more than one time slot"
     },
+    "processingNote": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "description": "Non persistent note usable for processing or logging calculation results, usually used for debugging"
+      }
+    },
     "repeat": {
       "type": "object",
       "properties": {

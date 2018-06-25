@@ -328,6 +328,8 @@ class Calendar extends Schema\Entity
                 unset($scope['provider']['data']);
                 $scope['provider']['data'] = ['payment' => $payment];
                 unset($scope['dayoff']);
+                unset($scope['status']);
+                unset($scope['preferences']);
             }
         }
         unset($entity['providers']);
