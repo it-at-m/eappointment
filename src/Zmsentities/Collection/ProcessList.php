@@ -104,6 +104,17 @@ class ProcessList extends Base
         return $list->withUniqueScopes();
     }
 
+    public function getRequestList()
+    {
+        $list = new RequestList();
+        foreach ($this as $process) {
+            if (array_key_exists('requests', $process)) {
+                $list->addList($process->getRequests());
+            }
+        }
+        return $list->withUniqueRequests();
+    }
+
     public function getAppointmentList()
     {
         $appointmentList = new AppointmentList();
