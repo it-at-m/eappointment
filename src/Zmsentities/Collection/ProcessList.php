@@ -4,6 +4,7 @@ namespace BO\Zmsentities\Collection;
 use \BO\Zmsentities\Helper\Sorter;
 
 /**
+ * @SuppressWarnings(Complexity)
  * @SuppressWarnings(Public)
  *
  */
