@@ -44,7 +44,6 @@ class Slot extends Base implements MappingInterface
           LEFT JOIN slot_process sp ON b.BuergerID = sp.processID
         WHERE
           sp.processID IS NULL
-          AND b.updateTimestamp >= :updateTimestamp
     ';
 
     const QUERY_INSERT_SLOT_PROCESS_ID = '

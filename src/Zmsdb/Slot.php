@@ -221,16 +221,15 @@ class Slot extends Base
         return new \DateTimeImmutable($last['dateString']);
     }
 
-    public function updateSlotProcessMapping($timestampString)
+    public function updateSlotProcessMapping()
     {
         $processIdList = $this->fetchAll(Query\Slot::QUERY_SELECT_MISSING_PROCESS, [
-            'updateTimestamp' => $timestampString
         ]);
         // Client side INSERT ... SELECT ... to reduce table locking
         foreach ($processIdList as $processId) {
             $this->perform(Query\Slot::QUERY_INSERT_SLOT_PROCESS, array_values($processId));
         }
-        return $this;
+        return count($processIdList);
     }
 
     public function deleteSlotProcessOnSlot()
