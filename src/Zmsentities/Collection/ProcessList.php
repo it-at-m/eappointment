@@ -190,6 +190,25 @@ class ProcessList extends Base
         return $processList;
     }
 
+    public function withUniqueScope($oncePerHour = false)
+    {
+        $processList = new static();
+        $scopeKeyList = [];
+        foreach ($this as $process) {
+            $scopeKey = $process->scope->id . '-';
+            if ($oncePerHour) {
+                $scopeKey .= $process->getFirstAppointment()->toDateTime()->format('H');
+            } else {
+                $scopeKey .= $process->getFirstAppointment()->toDateTime()->format('H:i');
+            }
+            if (!in_array($scopeKey, $scopeKeyList)) {
+                $processList[] = clone $process;
+                $scopeKeyList[] = $scopeKey;
+            }
+        }
+        return $processList;
+    }
+
     public function withScopeId($scopeId)
     {
         $processList = new static();
