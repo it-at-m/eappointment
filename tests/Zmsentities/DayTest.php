@@ -75,6 +75,9 @@ class DayTest extends EntityCommonTests
         $collection->withAddedDayList($collection2);
         $this->assertEquals(2, $collection->count());
         $this->assertEquals(1, $collection->withDaysInDateRange($time, $time)->count());
+
+        $collection = new $this->collectionclass();
+        $this->assertEquals(8, $collection->withDaysFromPeriod($time, $time->modify('+7 days'))->count());
     }
 
     public function testGetDayHash()

@@ -470,7 +470,7 @@ class Availability extends Schema\Entity
      */
     public function isMatchOf(Availability $availability)
     {
-        if ($this->type != $availability->type
+        return ($this->type != $availability->type
             || $this->startTime != $availability->startTime
             || $this->endTime != $availability->endTime
             || $this->startDate != $availability->startDate
@@ -484,15 +484,12 @@ class Availability extends Schema\Entity
             || (bool)$this->weekday['friday'] != (bool)$availability->weekday['friday']
             || (bool)$this->weekday['saturday'] != (bool)$availability->weekday['saturday']
             || (bool)$this->weekday['sunday'] != (bool)$availability->weekday['sunday']
-        ) {
-            return false;
-        }
-        return true;
+        ) ? false : true;
     }
 
     public function hasSharedWeekdayWith(Availability $availability)
     {
-        if ($this->type == $availability->type
+        return ($this->type == $availability->type
             && (bool)$this->weekday['monday'] != (bool)$availability->weekday['monday']
             && (bool)$this->weekday['tuesday'] != (bool)$availability->weekday['tuesday']
             && (bool)$this->weekday['wednesday'] != (bool)$availability->weekday['wednesday']
@@ -500,10 +497,7 @@ class Availability extends Schema\Entity
             && (bool)$this->weekday['friday'] != (bool)$availability->weekday['friday']
             && (bool)$this->weekday['saturday'] != (bool)$availability->weekday['saturday']
             && (bool)$this->weekday['sunday'] != (bool)$availability->weekday['sunday']
-        ) {
-            return false;
-        }
-        return true;
+        ) ? false : true;
     }
 
     /**

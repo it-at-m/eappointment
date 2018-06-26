@@ -30,7 +30,7 @@ class CalendarTest extends EntityCommonTests
         $entity->addProvider('dldb', self::PROVIDER);
         $this->assertEquals(2, count($entity->getProviderList()));
         $entity->addRequest('dldb', self::REQUESTS);
-        $this->assertEquals(2, count($entity->requests));
+        $this->assertEquals(2, count($entity->getRequestList()));
         $entity->addCluster('dldb', self::CLUSTER);
         $this->assertEquals(2, count($entity->clusters));
         $entity->addScope(self::SCOPE);
@@ -95,8 +95,10 @@ class CalendarTest extends EntityCommonTests
         $this->assertTrue($entity->hasDay($day->year, $day->month, $day->day));
         $this->assertFalse($entity->hasDay('2015', '11', '20'));
 
-        $time = \DateTime::createFromFormat('Y-m-d', self::LAST_DAY);
-        $entity->setLastDayTime($time);
+        $entity->setFirstDayTime(\DateTime::createFromFormat('Y-m-d', self::FIRST_DAY));
+        $entity->setLastDayTime(\DateTime::createFromFormat('Y-m-d', self::LAST_DAY));
+        $this->assertTrue($entity->getFirstDay()
+            ->format('Y-m-d') == self::FIRST_DAY, 'First day does not match');
         $this->assertTrue($entity->getLastDay()
             ->format('Y-m-d') == self::LAST_DAY, 'Last day does not match');
     }
