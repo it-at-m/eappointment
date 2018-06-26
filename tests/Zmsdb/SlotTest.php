@@ -96,8 +96,9 @@ class SlotTest extends Base
         $now = (new Slot())->readLastChangedTimeByAvailability($availability);
         $lastChange = $now;
         $now = $now->modify('+1 hour -1 second');
+        $availability->lastChange = $now->getTimestamp();
         $status = (new Slot())->isAvailabilityOutdated($availability, $now, $lastChange);
-        $this->assertFalse($status, "Availability should not rebuild slots without change one hour after rebuild");
+        $this->assertTrue($status, "If availability is changed, it should rebuild, even a rebuild happened before");
     }
 
     public function testChangeByTime()
