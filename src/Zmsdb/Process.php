@@ -61,6 +61,8 @@ class Process extends Base implements Interfaces\ResolveReferences
         if (!$process->getId()) {
             throw new Exception\Process\ProcessUpdateFailed();
         }
+        (new Slot())->deleteSlotProcessMappingFor($process->id);
+        (new Slot())->writeSlotProcessMappingFor($process->id);
         Log::writeLogEntry("UPDATE (Process::updateEntity) $process ", $process->getId());
         return $process;
     }
