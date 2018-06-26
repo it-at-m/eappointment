@@ -201,6 +201,7 @@ class Process extends Base implements Interfaces\ResolveReferences
             ->addEntityMapping()
             ->addConditionScopeId($scopeId)
             ->addConditionAssigned()
+            ->addConditionIgnoreSlots()
             ->addConditionTime($dateTime);
         $statement = $this->fetchStatement($query);
         return $this->readList($statement, $resolveReferences);
@@ -234,6 +235,7 @@ class Process extends Base implements Interfaces\ResolveReferences
             ->addResolvedReferences($resolveReferences)
             ->addEntityMapping()
             ->addConditionAssigned()
+            ->addConditionIgnoreSlots()
             ->addLimit($limit);
 
         if (isset($parameter['query'])) {
@@ -312,6 +314,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         $query
             ->addCountValue()
             ->addConditionAssigned()
+            ->addConditionIgnoreSlots()
             ->addConditionScopeId($scopeId);
         $statement = $this->fetchStatement($query);
         $result = $statement->fetch(\PDO::FETCH_ASSOC);

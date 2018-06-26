@@ -309,9 +309,6 @@ class Process extends Base implements MappingInterface
     public function addConditionAssigned()
     {
         $this->query ->where('process.StandortID', '!=', "0");
-        $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) {
-            $query->andWith(self::expression('process.istFolgeterminvon IS NULL OR process.istFolgeterminvon'), '=', 0);
-        });
         return $this;
     }
 

@@ -121,6 +121,28 @@ class Mail extends Base
         return $this->readEntity($queueId);
     }
 
+    public function writeInQueueWithDailyProcessList(
+        \BO\Zmsentities\Scope $scope,
+        Entity $mail
+    ) {
+        $query = new Query\MailQueue(Query\Base::INSERT);
+        $department = (new Department())->readByScopeId($scope->getId(), 0);
+        $query->addValues(
+            array(
+                'departmentID' => $department->toProperty()->id->get(),
+                'createTimestamp' => time(),
+                'createIP' => $mail->createIP,
+                'subject' => $mail->subject,
+                'clientFamilyName' => $mail->client->familyName,
+                'clientEmail' => $mail->client->email
+            )
+        );
+        $this->writeItem($query);
+        $queueId = $this->getWriter()->lastInsertId();
+        $this->writeMimeparts($queueId, $mail->multipart);
+        return $this->readEntity($queueId);
+    }
+
     protected function writeMimeparts($queueId, $multipart)
     {
         $success = true;

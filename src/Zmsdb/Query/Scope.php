@@ -209,6 +209,12 @@ class Scope extends Base implements MappingInterface
         return $this;
     }
 
+    public function addConditionWithAdminEmail()
+    {
+        $this->query->where('scope.emailstandortadmin', '!=', '');
+        return $this;
+    }
+
     public function addSelectWorkstationCount($dateTime)
     {
         $this->query->select(
