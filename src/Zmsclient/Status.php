@@ -50,10 +50,10 @@ class Status
             }
             if (isset($status['processes'])
                 && isset($status['processes']['lastCalculate'])
-                && \App::$now->getTimestamp() - strtotime($status['processes']['lastCalculate']) > 600
+                && time() - strtotime($status['processes']['lastCalculate']) > 600
             ) {
                 $slotOutdate =
-                    \App::$now->getTimestamp() - strtotime($status['processes']['lastCalculate']);
+                    time() - strtotime($status['processes']['lastCalculate']);
                 $result[] = "WARN - slot calculation is $slotOutdate seconds old";
             }
             $result = preg_grep('/./', $result);
