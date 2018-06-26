@@ -108,8 +108,8 @@ class CalculateSlots
         }
         $this->log("Finished slot calculation");
         $slotQuery = new \BO\Zmsdb\Slot();
-        $slotQuery->deleteSlotProcessOnProcess();
-        $this->log("Finished to free slots for deleted processes");
+        $slotsProcessed = $slotQuery->deleteSlotProcessOnProcess();
+        $this->log("Finished to free $slotsProcessed slots for changed/deleted processes");
         $slotQuery->deleteSlotProcessOnSlot();
         $this->log("Finished to free slots for cancelled availabilities");
         $slotsProcessed = $slotQuery->updateSlotProcessMapping();
@@ -149,12 +149,13 @@ class CalculateSlots
 
     public function deleteOldSlots(\DateTimeInterface $now)
     {
+        $this->log("Maintenance: Delete slots older than ". $now->format('Y-m-d'));
         $slotQuery = new \BO\Zmsdb\Slot();
         $pdo = \BO\Zmsdb\Connection\Select::getWriteConnection();
         $pdo->exec('SET SESSION innodb_lock_wait_timeout=120');
         if ($slotQuery->deleteSlotsOlderThan($now)) {
             \BO\Zmsdb\Connection\Select::writeCommit();
-            $this->log("Deleted slots older than ". $now->format('Y-m-d'));
+            $this->log("Deleted slots successfully");
         }
     }
 }

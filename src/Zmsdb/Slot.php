@@ -240,14 +240,12 @@ class Slot extends Base
 
     public function deleteSlotProcessOnProcess()
     {
-        $this->perform(Query\Slot::QUERY_DELETE_SLOT_PROCESS, [
-        ]);
         $processIdList = $this->fetchAll(Query\Slot::QUERY_SELECT_DELETABLE_SLOT_PROCESS);
         // Client side INSERT ... SELECT ... to reduce table locking
         foreach ($processIdList as $processId) {
             $this->perform(Query\Slot::QUERY_DELETE_SLOT_PROCESS_ID, $processId);
         }
-        return $processIdList;
+        return count($processIdList);
     }
 
     public function writeSlotProcessMappingFor($processId)
