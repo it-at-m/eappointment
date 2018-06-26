@@ -292,6 +292,39 @@ class Scope extends Base
     }
 
     /**
+     * get list of scopes with admin
+     *
+     * * @param
+     * scopeId
+     * now
+     *
+     * @return number
+     */
+    public function readListWithScopeAdminEmail($resolveReferences = 0)
+    {
+        $scopeList = new Collection();
+        $query = new Query\Scope(Query\Base::SELECT);
+        $query
+            ->addEntityMapping()
+            ->addConditionWithAdminEmail()
+            ->addResolvedReferences($resolveReferences);
+        $result = $this->fetchList($query, new Entity());
+        if (count($result)) {
+            foreach ($result as $entity) {
+                if ($entity instanceof Entity) {
+                    $entity = $this->readResolvedReferences($entity, $resolveReferences);
+                    $scopeList->addEntity($entity);
+                }
+            }
+        }
+        return $scopeList;
+    }
+
+
+
+
+
+    /**
      * write a scope
      *
      * @return Entity

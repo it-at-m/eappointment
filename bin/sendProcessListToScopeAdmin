@@ -1,0 +1,32 @@
+#!/usr/bin/env php
+<?php
+$dir = realpath(__DIR__);
+do {
+    $dir = dirname($dir);
+    if (file_exists("$dir/autoload.php")) {
+        require_once("$dir/autoload.php");
+    }
+} while ($dir != '/' && !file_exists("$dir/config.php"));
+if (file_exists("$dir/bootstrap.php")) {
+    require("$dir/bootstrap.php");
+} else {
+    require("$dir/config.php");
+}
+$usage = <<<EOS
+
+Usage: {$argv[0]} [--verbose] --commit
+        ATTENTION! Sends process list of current day to scopes admin email . USE WITH CAUTION!
+        --commit        no dry run, delete processes
+        --verbose       only shows what would be deleted
+
+EOS;
+
+$verbose = preg_grep('#^--?v(erbose)?$#', $argv);
+$commit = preg_grep('#^--commit$#', $argv);
+
+$job = new \BO\Zmsdb\Helper\SendProcessListToScopeAdmin($verbose);
+$job->startProcessing($commit);
+
+if (!$commit) {
+    error_log("Use with --commit to send notifications.");
+}
