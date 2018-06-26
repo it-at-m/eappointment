@@ -27,6 +27,8 @@ class ProcessStatusFree extends Process
             Query\ProcessStatusFree::QUERY_SELECT_PROCESSLIST_DAY
             . ($groupData ? Query\ProcessStatusFree::GROUPBY_SELECT_PROCESSLIST_DAY : ''),
             [
+                'year' => $selectedDate->format('Y'),
+                'month' => $selectedDate->format('m'),
                 'day' => $selectedDate->format('d'),
                 'slotType' => $slotType,
             ]
