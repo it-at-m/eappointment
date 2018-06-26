@@ -36,6 +36,8 @@ class ProcessStatusFree extends Base
                 calendarscope c
                 INNER JOIN slot s
                     ON c.scopeID = s.scopeID
+                        AND c.year = :year
+                        AND c.month = :month
                         AND c.year = s.year
                         AND c.month = s.month
                         AND s.day = :day
