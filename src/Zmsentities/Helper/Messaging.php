@@ -11,6 +11,10 @@ use \BO\Zmsentities\Process;
 
 use \BO\Zmsentities\Config;
 
+/**
+ * @SuppressWarnings(Coupling)
+ *
+ */
 class Messaging
 {
     public static $icsRequiredForStatus = [
@@ -75,6 +79,22 @@ class Messaging
                 'process' => $process,
                 'config' => $config,
                 'initiator' => $initiator
+            )
+        );
+        return $message;
+    }
+
+    public static function getScopeAdminProcessListContent(
+        \BO\Zmsentities\Collection\ProcessList $processList,
+        \BO\Zmsentities\Scope $scope,
+        \DateTimeInterface $dateTime
+    ) {
+        $message = self::twigView()->render(
+            'messaging/mail_scopeadmin_processlist.twig',
+            array(
+                'dateTime' => $dateTime,
+                'processList' => $processList,
+                'scope' => $scope
             )
         );
         return $message;

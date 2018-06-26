@@ -133,6 +133,34 @@ class Mail extends Schema\Entity
         return $entity;
     }
 
+    public function toScopeAdminProcessList(
+        Collection\ProcessList $processList,
+        Scope $scope,
+        \DateTimeInterface $dateTime
+    ) {
+        $entity = clone $this;
+        $content = Messaging::getScopeAdminProcessListContent($processList, $scope, $dateTime);
+        $entity->subject = 'Termine am '. $dateTime->format('Y-m-d');
+        $entity->createIP = 0;
+        $entity->client = new Client([
+            'email' => $scope->getContactEmail(),
+            'familyName' => $scope->getName()
+        ]);
+        $entity->multipart[] = new Mimepart(array(
+            'mime' => 'text/html',
+            'content' => $content,
+            'base64' => false
+        ));
+        /*
+        $entity->multipart[] = new Mimepart(array(
+            'mime' => 'text/plain',
+            'content' => Messaging::getPlainText($content),
+            'base64' => false
+        ));
+        */
+        return $entity;
+    }
+
     public function withDepartment($department)
     {
         $this->department = $department;
