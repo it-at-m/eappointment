@@ -72,16 +72,21 @@ class Slot extends Base implements MappingInterface
              a.OeffnungszeitID IS NULL
                OR a.Endedatum < :dateString
     ';
-    const QUERY_DELETE_SLOT_PROCESS = '
-        DELETE sp 
-            FROM slot_process sp LEFT JOIN buerger b ON sp.processID = b.BuergerID
-            WHERE b.BuergerID IS NULL
-    ';
-
     const QUERY_SELECT_DELETABLE_SLOT_PROCESS = '
         SELECT b.BuergerID AS processId
-            FROM slot_process sp LEFT JOIN buerger b ON sp.processID = b.BuergerID
-            WHERE b.StandortID = 0
+            FROM slot_process sp
+              LEFT JOIN buerger b ON sp.processID = b.BuergerID
+              LEFT JOIN slot s ON sp.slotID = s.slotID
+            WHERE b.BuergerID IS NULL
+              OR (
+                b.updateTimestamp > sp.updateTimestamp
+                AND (
+                  b.Uhrzeit NOT BETWEEN s.time AND SEC_TO_TIME(TIME_TO_SEC(s.time) + (s.slotTimeInMinutes * 60) - 1)
+                  OR s.month != MONTH(b.Datum)
+                  OR s.day != DAY(b.Datum)
+                  OR s.scopeID != b.StandortID
+                )
+              ) 
     ';
 
     const QUERY_DELETE_SLOT_PROCESS_CANCELLED = '
