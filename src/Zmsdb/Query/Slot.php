@@ -73,7 +73,7 @@ class Slot extends Base implements MappingInterface
                OR a.Endedatum < :dateString
     ';
     const QUERY_SELECT_DELETABLE_SLOT_PROCESS = '
-        SELECT b.BuergerID AS processId
+        SELECT sp.processID AS processId
             FROM slot_process sp
               LEFT JOIN buerger b ON sp.processID = b.BuergerID
               LEFT JOIN slot s ON sp.slotID = s.slotID
