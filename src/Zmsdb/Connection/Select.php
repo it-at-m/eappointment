@@ -133,7 +133,11 @@ class Select
             self::$readConnection->setProfiler(self::$readProfiler);
             //self::$readConnection->exec('SET SESSION TRANSACTION READ ONLY');
             if (!self::$useQueryCache) {
-                self::$readConnection->exec('SET SESSION query_cache_type = 0;');
+                try {
+                    self::$readConnection->exec('SET SESSION query_cache_type = 0;');
+                } catch (\Exception $exception) {
+                    // ignore, query cache might be disabled
+                }
             }
             if (self::$useProfiling) {
                 self::$readConnection->exec('SET profiling = 1;');
@@ -190,7 +194,11 @@ class Select
                 self::$writeConnection->beginTransaction();
             }
             if (!self::$useQueryCache) {
-                self::$writeConnection->exec('SET SESSION query_cache_type = 0;');
+                try {
+                    self::$writeConnection->exec('SET SESSION query_cache_type = 0;');
+                } catch (\Exception $exception) {
+                    // ignore, query cache might be disabled
+                }
             }
             if (self::$useProfiling) {
                 self::$writeConnection->exec('SET profiling = 1;');
