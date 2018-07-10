@@ -42,5 +42,5 @@ if (preg_grep('/--dump/', $argv)) {
     $password = \BO\Zmsdb\Connection\Select::$password;
     $host = $dsn_data['host'];
     $dbname = $dsn_data['dbname'];
-    system("mysqldump -u$username -p$password -h $host --compact -B $dbname |gzip | cat > testdataset.sql.gz");
+    system("mysqldump -u$username -p$password -h $host $dbname |gzip | cat > testdataset.sql.gz");
 }
