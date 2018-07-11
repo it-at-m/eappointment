@@ -67,7 +67,12 @@ class Warehouse extends Base
             'subject' => 'requestorganisation',
             'description' => 'Dienstleistungsstatistik Organisation',
             'right' => 'useraccount.rights.organisation'
-        ]
+        ],
+        [
+            'subject' => 'useraccount',
+            'description' => 'Nutzerdaten mit E-Mail-Adresse und Rechten',
+            'right' => 'useraccount.rights.superuser'
+        ],
     ];
 
     public function readSubjectsList()
