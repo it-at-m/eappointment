@@ -10,20 +10,20 @@ class ExchangeUseraccount extends Base
     public function readEntity($subjectid)
     {
         $entity = new Exchange();
-        $entity->addDictionaryEntry('organisationname', 'string', 'Name der Organisation', 'organisation.name');
-        $entity->addDictionaryEntry('behoerdennamen', 'string', 'Name der Berhoerde', 'behoerde.name');
-        $entity->addDictionaryEntry('name', 'string', 'Name des Nutzers', 'nutzer.name');
-        $entity->addDictionaryEntry('email', 'string', 'E-Mail Addresse des Nutzers', 'nutzer.email');
+        $entity->addDictionaryEntry('Organisation', 'string', 'Name der Organisation');
+        $entity->addDictionaryEntry('Behoerde', 'string', 'Name der Berhoerde');
+        $entity->addDictionaryEntry('Name', 'string', 'Name des Nutzers');
+        $entity->addDictionaryEntry('Eimail', 'string', 'E-Mail Addresse des Nutzers');
         $entity->addDictionaryEntry('lastUpdate', 'string', 'Wurde letztens aktualisiert');
-        $entity->addDictionaryEntry('usesmssending', 'string', 'Nutzung SMS-Versands');
-        $entity->addDictionaryEntry('kioskonoff', 'string', 'Ein- und Ausschlaten vom Kiosk');
-        $entity->addDictionaryEntry('availabilityadmin', 'string', 'Administration von Öffnungszeiten');
-        $entity->addDictionaryEntry('locationadmin', 'string', 'Administration von Standorten');
-        $entity->addDictionaryEntry('useradmin', 'string', 'Administration von Nutzer');
-        $entity->addDictionaryEntry('loctioncluseteradmin', 'string', 'Administration von Standortclustern');
-        $entity->addDictionaryEntry('behoerdenadmin', 'string', 'Adminstration von Behörden');
-        $entity->addDictionaryEntry('bezirkenadmin', 'string', 'Adminstration von Bezirken');
-        $entity->addDictionaryEntry('Superuser', 'string', 'Superuser');
+        $entity->addDictionaryEntry('SMS', 'string', 'Nutzung SMS-Versands');
+        $entity->addDictionaryEntry('Kiosk', 'string', 'Ein- und Ausschlaten vom Kiosk');
+        $entity->addDictionaryEntry('Öffzeitadmin', 'string', 'Administration von Öffnungszeiten');
+        $entity->addDictionaryEntry('Stdortadmin', 'string', 'Administration von Standorten');
+        $entity->addDictionaryEntry('Nutzeradmin', 'string', 'Administration von Nutzer');
+        $entity->addDictionaryEntry('Clusteradmin', 'string', 'Administration von Standortclustern');
+        $entity->addDictionaryEntry('Behoerdenadmin', 'string', 'Adminstration von Behoerden');
+        $entity->addDictionaryEntry('Bezirkenadmin', 'string', 'Adminstration von Bezirken');
+        $entity->addDictionaryEntry('Superuser', 'string', 'Superuser', 'useraccount.rights.superuser');
         $subjectIdList = explode(',', $subjectid);
 
         foreach ($subjectIdList as $subjectid) {
@@ -57,7 +57,6 @@ class ExchangeUseraccount extends Base
 
     /**
      * @SuppressWarnings(Param)
-     *
      */
     public function readPeriodList($subjectid, $period = 'day')
     {
