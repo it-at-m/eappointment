@@ -24,6 +24,7 @@ class ExchangeUseraccount extends Base
        LEFT JOIN standort s ON s.BehoerdenID = b.BehoerdenID
        LEFT JOIN organisation o USING(OrganisationsID)
        WHERE 1
+       AND n.Name IS NOT NULL
        GROUP BY o.OrganisationsID, n.BehoerdenID, n.Name
        ORDER BY o.Organisationsname, b.Name, n.Name";
 }
