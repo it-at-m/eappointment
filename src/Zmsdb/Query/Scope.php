@@ -121,6 +121,12 @@ class Scope extends Base implements MappingInterface
             '=',
             'scopemail.BehoerdenID'
         );
+        $this->leftJoin(
+            new Alias(Provider::getTablename(), 'scopeprovider'),
+            'scope.InfoDienstleisterID',
+            '=',
+            'scopeprovider.id'
+        );
     }
 
     //Todo: now() Parameter to enable query cache
@@ -129,7 +135,7 @@ class Scope extends Base implements MappingInterface
         return [
             'hint' => 'scope.Hinweis',
             'id' => 'scope.StandortID',
-            'contact__name' => 'scope.Bezeichnung',
+            'contact__name' => 'scopeprovider.name',
             'contact__street' => 'scope.Adresse',
             'contact__email' => 'scope.emailstandortadmin',
             'contact__country' => self::expression('"Germany"'),
