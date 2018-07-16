@@ -8,7 +8,9 @@ set +a
 
 if [[ $ZMS_CRONROOT =~ ^1|on|true|yes$ ]]; then
     $BIN/deleteSessionData Zmsappointment 30 --commit
-    #$BIN/deleteReservedData --commit
+    if [[ $ZMS_ENV =~ ^dev|stage$ ]]; then
+        #$BIN/deleteReservedData --commit
+    fi
     #$BIN/sendNotificationReminder --commit
     $BIN/calculateSlots --commit
     $BIN/resetApiQuota --commit
