@@ -84,12 +84,13 @@ class ScopeTest extends Base
     {
         $query = new Query();
         $input = $this->getTestEntity();
-        $entity = $query->writeEntity($input, 74); //with parent Bürgeramt Otto-Suhr-Allee
-        $this->assertEquals('Flughafen Schönefeld, Landebahn', $entity->getName());
+        $entity = $query->writeEntity($input, 74, 1); //with parent Bürgeramt Otto-Suhr-Allee
+        // contact name of scope is filled with provider name data
+        $this->assertEquals('Bau- und Wohnungsaufsichtsamt Steglitz-Zehlendorf', $entity->getName());
 
         $entity->contact['name'] = 'Flughafen Schönefeld, Nachsicht';
-        $entity = $query->updateEntity($entity->id, $entity, 74); //with parent Bürgeramt Otto-Suhr-Allee
-        $this->assertEquals('Flughafen Schönefeld, Nachsicht', $entity->getName());
+        $entity = $query->updateEntity($entity->id, $entity, 74, 1); //with parent Bürgeramt Otto-Suhr-Allee
+        $this->assertEquals('Bau- und Wohnungsaufsichtsamt Steglitz-Zehlendorf', $entity->getName());
     }
 
     public function testDeleteWithChildren()
