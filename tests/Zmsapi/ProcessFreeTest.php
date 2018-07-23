@@ -33,6 +33,66 @@ class ProcessFreeTest extends Base
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
+    public function testWithGroupDataGreaterProcessListCount()
+    {
+        $response = $this->render([], [
+            'groupData' => 3,
+            '__body' => '{
+                "firstDay": {
+                    "year": 2016,
+                    "month": 5,
+                    "day": 27
+                },
+                "requests": [
+                    {
+                        "id": "120703",
+                        "name": "Personalausweis beantragen",
+                        "source": "dldb"
+                    }
+                ],
+                "providers": [
+                    {
+                        "id": 122217
+                    }
+                ]
+            }'
+        ], []);
+        $this->assertContains('process.json', (string)$response->getBody());
+        $this->assertContains('"date":"1464340800"', (string)$response->getBody());
+        $this->assertContains('"date":"1464342000"', (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
+    }
+
+    public function testWithGroupDataLessProcessListCount()
+    {
+        $response = $this->render([], [
+            'groupData' => 1,
+            '__body' => '{
+                "firstDay": {
+                    "year": 2016,
+                    "month": 5,
+                    "day": 27
+                },
+                "requests": [
+                    {
+                        "id": "120703",
+                        "name": "Personalausweis beantragen",
+                        "source": "dldb"
+                    }
+                ],
+                "providers": [
+                    {
+                        "id": 122217
+                    }
+                ]
+            }'
+        ], []);
+        $this->assertContains('process.json', (string)$response->getBody());
+        $this->assertContains('"date":"1464340800"', (string)$response->getBody());
+        $this->assertNotContains('"date":"1464342000"', (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
+    }
+
     public function testEmpty()
     {
         $this->expectException('BO\Mellon\Failure\Exception');

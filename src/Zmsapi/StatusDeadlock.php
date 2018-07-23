@@ -13,6 +13,7 @@ class StatusDeadlock extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
+     * @codeCoverageIgnore
      * @return String
      */
     public function readResponse(
