@@ -28,5 +28,5 @@ $job = new \BO\Zmsdb\Helper\SendProcessListToScopeAdmin($verbose);
 $job->startProcessing($commit);
 
 if (!$commit) {
-    error_log("Use with --commit to send notifications.");
+    error_log("Use with --commit to send email.");
 }
