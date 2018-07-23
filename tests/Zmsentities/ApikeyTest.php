@@ -10,7 +10,7 @@ class ApikeyTest extends EntityCommonTests
     {
         $entity = (new $this->entityclass())->getExample();
         $this->assertEntity($this->entityclass, $entity);
-        $this->assertContains('"key":"wMdVa5Nu1seuC\/RSJxhKl2M3yw+8zqaAilPH2Xc2IZs"', (string)$entity);
+        $this->assertContains('"key":"wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs"', (string)$entity);
     }
 
     public function testCaptcha()

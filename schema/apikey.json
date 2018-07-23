@@ -2,7 +2,7 @@
     "type": "object",
     "description": "Representation of an Apikey. It usually stores temporary api quota data while appointment scheduling in service app",
     "example": {
-        "key": "wMdVa5Nu1seuC/RSJxhKl2M3yw+8zqaAilPH2Xc2IZs",
+        "key": "wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs",
         "captcha": {
             "mime": "image/jpeg;base64",
             "content": "R0lGODdhEAAQAMwAAPj7+FmhUYjNfGuxYYDJdYTIeanOpT+DOTuANXi/bGOrWj6CONzv2sPjv2CmV1unU4zPgISg6DJnJ3ImTh8Mtbs00aNP1CZSGy0YqLEn47RgXW8amasW7XWsmmvX2iuXiwAAAAAEAAQAAAFVyAgjmRpnihqGCkpDQPbGkNUOFk6DZqgHCNGg2T4QAQBoIiRSAwBE4VA4FACKgkB5NGReASFZEmxsQ0whPDi9BiACYQAInXhwOUtgCUQoORFCGt/g4QAIQA7",
@@ -14,7 +14,8 @@
                 "period": "hour",
                 "requests": 99
             }
-        ]
+        ],
+        "createIP": "127.0.0.1"
     },
     "required": [
         "key"
@@ -60,6 +61,10 @@
                     }
                 }
             }
+        },
+        "createIP": {
+            "type": "string",
+            "description": "IP Address of the creator"
         }
     }
 }
