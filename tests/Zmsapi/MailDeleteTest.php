@@ -22,6 +22,6 @@ class MailDeleteTest extends Base
         $this->setWorkstation()->getUseraccount()->setRights('superuser');
         $this->expectException('\BO\Zmsapi\Exception\Mail\MailNotFound');
         $this->expectExceptionCode(404);
-        $this->render(['id' => 1], [], []);
+        $this->render(['id' => 0], [], []);
     }
 }
