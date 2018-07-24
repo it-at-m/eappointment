@@ -2,14 +2,19 @@
 
 namespace BO\Zmsapi\Tests;
 
+use \BO\Zmsdb\Apikey as Query;
+
+use \BO\Zmsentities\Apikey as Entity;
+
 class ApikeyDeleteTest extends Base
 {
     protected $classname = "ApikeyDelete";
 
     public function testRendering()
     {
-        $this->setWorkstation();
-        $response = $this->render(['key' => '79cc69c11550f5558a0c0da3f6a055cd53c'], [], []);
+        $input = (new Entity)->createExample();
+        $entity = (new Query())->writeEntity($input);
+        $response = $this->render(['key' => 'wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs'], [], []);
         $this->assertContains('apikey.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
