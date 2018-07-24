@@ -18,6 +18,7 @@ import EmergencyView from './block/emergency'
 //import CallDisplayConfigView from './block/calldisplay/config'
 import CounterView from './page/counter'
 import WorkstationView from './page/workstation'
+import UseraccountView from './page/useraccount'
 import PickupView from './page/pickup'
 import PickupHandheldView from './page/pickup/handheld'
 import PickupKeyboardHandheldView from "./page/pickup/keyboard-handheld"
@@ -61,6 +62,10 @@ $('.counter-view').each(function() {
 
 $('.workstation-view').each(function() {
     new WorkstationView(this, getDataAttributes(this));
+})
+
+$('.useraccount-edit-view').each(function() {
+    new UseraccountView(this, getDataAttributes(this));
 })
 
 $('.calendar-weektable').each(function() {
