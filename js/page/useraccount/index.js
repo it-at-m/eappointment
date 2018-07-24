@@ -17,7 +17,7 @@ class View extends BaseView {
     bindEvents() {
         this.$main.off('click').on('click', 'a.button-delete', (ev) => {
             this.onConfirm(ev, "confirm_user_delete", () => {
-                location.href = ev.target.href;
+                window.location.href = ev.target.href;
             });
         });
     }
