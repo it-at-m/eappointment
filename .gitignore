@@ -10,4 +10,3 @@ cache
 vendor.old
 vendor.update
 VERSION
-composer.*.lock
