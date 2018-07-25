@@ -12,10 +12,12 @@
             {
                 "route": "/calendar/",
                 "period": "hour",
-                "requests": 99
+                "requests": 99,
+                "ts": 1459512840
             }
         ],
-        "createIP": "127.0.0.1"
+        "createIP": "127.0.0.1",
+        "ts": 1459512840
     },
     "required": [
         "key"
@@ -65,6 +67,11 @@
         "createIP": {
             "type": "string",
             "description": "IP Address of the creator"
+        },
+        "ts": {
+            "type": "number",
+            "description": "unix timestamp representing the creating time of quota",
+            "example": 1459512840
         }
     }
 }
