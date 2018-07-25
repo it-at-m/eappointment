@@ -111,4 +111,22 @@ class ProcessArchiveTest extends Base
         $archiveList = $queryArchived->readListWithAppointment(1);
         $this->assertEquals(1, $archiveList->getFirst()->queue['withAppointment']);
     }
+
+    public function testWriteBlockedWithoutQueueStatus()
+    {
+        $entity =(new Query)->readEntity(10029, '1c56');
+        unset($entity->queue['status']);
+        $this->assertTrue((new ProcessStatusArchived())->writeBlockedEntity($entity));
+    }
+
+    public function testWriteNewArchivedWithoutAppointment()
+    {
+        $queryArchived = new ProcessStatusArchived();
+        $now = new \DateTimeImmutable("2016-04-18 12:55");
+        $entity =(new Query)->readEntity(10029, '1c56');
+        $entity->appointments = [];
+        $updatedEntity = $queryArchived->writeNewArchivedProcess($entity, $now);
+        $archivedProcessWaitingData = (new \BO\Zmsdb\ExchangeWaitingscope)->readByDateTime($updatedEntity->scope, $now);
+        $this->assertEquals(85, $archivedProcessWaitingData['waitingtime']);
+    }
 }

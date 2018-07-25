@@ -12,13 +12,6 @@ class Apiquota extends Base implements MappingInterface
      */
     const TABLE = 'apiquota';
 
-    public static function getQueryReadApiQuota()
-    {
-        return '
-            SELECT * FROM `apiquota` WHERE `key` = :key AND `route` = :route
-        ';
-    }
-
     public static function getQueryReadApiQuotaListByKey()
     {
         return '

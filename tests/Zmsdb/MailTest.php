@@ -53,6 +53,20 @@ class MailTest extends Base
         $this->assertContains('Die Terminänderung wurde initiiert via', $entity->getPlainPart());
     }
 
+    public function testWriteInQueueWithDailyProcessList()
+    {
+        $now = new \DateTimeImmutable("2016-04-01 11:55");
+        $scope = (new \BO\Zmsdb\Scope)->readEntity(451, 1); // Mobiles Bürgeramt Reinickendorf with Admin Email
+        $processList = new \BO\Zmsentities\Collection\ProcessList();
+        $processList->addEntity(\BO\Zmsentities\Process::createExample());
+        $mail = (new \BO\Zmsentities\Mail())->toScopeAdminProcessList($processList, $scope, $now);
+
+        $entity = (new Query)->writeInQueueWithDailyProcessList($scope, $mail);
+        $this->assertContains('Termine am 2016-04-01 (1 gesamt)', $entity->getHtmlPart());
+        $this->assertContains('Max Mustermann', $entity->getHtmlPart());
+        $this->assertContains('18:52', $entity->getHtmlPart());
+    }
+
     public function testWriteInQueueWithPickupStatus()
     {
         $now = new \DateTimeImmutable("2016-04-01 11:55");

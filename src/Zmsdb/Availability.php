@@ -43,7 +43,7 @@ class Availability extends Base implements Interfaces\ResolveReferences
         if (1 <= $resolveReferences) {
             $scope = (new Scope())->readEntity($scopeId, $resolveReferences - 1);
         }
-        $collection = $this->readAppointmentListByScope($scope, $resolveReferences);
+        $collection = $this->readAvailabilityListByScope($scope, $resolveReferences);
         $query = new Query\Availability(Query\Base::SELECT);
         $query
             ->addEntityMapping('openinghours')
@@ -73,11 +73,9 @@ class Availability extends Base implements Interfaces\ResolveReferences
                     //if (!$collection->hasOverlapWith($entity)->count()) {
                     //    $collection->addEntity($entity);
                     //}
-                    $collection->addEntity($entity);
-                } else {
-                    $entity['type'] = 'openinghours';
-                    $collection->addEntity($entity);
                 }
+                $entity['type'] = ($entity['type'] != 'appointment') ? 'openinghours' : $entity['type'];
+                $collection->addEntity($entity);
             }
             if ($reserveEntityIds) {
                 // This can produce deadlocks:
@@ -89,7 +87,7 @@ class Availability extends Base implements Interfaces\ResolveReferences
         return $collection;
     }
 
-    public function readAppointmentListByScope(
+    public function readAvailabilityListByScope(
         \BO\Zmsentities\Scope $scope,
         $resolveReferences = 0,
         $skipOlderThan = false
@@ -117,7 +115,8 @@ class Availability extends Base implements Interfaces\ResolveReferences
         return $collection;
     }
 
-    public function readAppointmentListByDate($scopeId, \DateTimeInterface $now, $resolveReferences = 0)
+    /* not in use
+    public function readAvailabilityListByDate($scopeId, \DateTimeInterface $now, $resolveReferences = 0)
     {
         $collection = new Collection();
         $query = new Query\Availability(Query\Base::SELECT);
@@ -138,6 +137,7 @@ class Availability extends Base implements Interfaces\ResolveReferences
         }
         return $collection;
     }
+    */
 
     public function readOpeningHoursListByDate($scopeId, \DateTimeInterface $now, $resolveReferences = 0)
     {
