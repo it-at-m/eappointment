@@ -27,4 +27,15 @@ class ConfigTest extends Base
         $config = $query->readEntity();
         $this->assertFalse(array_key_exists('test', $config));
     }
+
+    public function testReadProperty()
+    {
+        $query = new Query();
+        $property = $query->readProperty('emergency__refreshInterval');
+        $this->assertEquals(5, $property);
+
+        $query->replaceProperty('emergency__refreshInterval', 10);
+        $property = $query->readProperty('emergency__refreshInterval', true);
+        $this->assertEquals(10, $property);
+    }
 }

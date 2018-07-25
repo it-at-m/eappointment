@@ -50,6 +50,19 @@ class AvailabilityTest extends Base
         );
     }
 
+    public function testReadListSkipOld()
+    {
+        $now = new \DateTimeImmutable("2016-07-01 11:55");
+        $query = new Query();
+        $scope = (new \BO\Zmsdb\Scope)->readEntity(109);
+
+        $collection = $query->readAvailabilityListByScope($scope, 1); //by scope Helle Mitte
+        $this->assertEquals(9, $collection->count());
+
+        $collection = $query->readAvailabilityListByScope($scope, 1, $now); //by scope Helle Mitte
+        $this->assertEquals(0, $collection->count());
+    }
+
     public function testWriteEntity()
     {
         $query = new Query();

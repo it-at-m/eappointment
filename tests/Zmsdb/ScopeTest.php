@@ -149,6 +149,14 @@ class ScopeTest extends Base
         $this->assertEquals(true, $query->readIsOpened(141, $now)); //Herrstraße
     }
 
+    public function testReadScopeListWithAdminEmail()
+    {
+        $query = new Query();
+        $collection = $query->readListWithScopeAdminEmail();
+        $this->assertEquals(5, $collection->count());
+        $this->assertTrue('' !== $collection->getFirst()->getContactEMail());
+    }
+
     public function testAddDldbData()
     {
         \BO\Zmsdb\Scope::$cache = [];

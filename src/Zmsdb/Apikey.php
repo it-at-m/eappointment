@@ -18,7 +18,7 @@ class Apikey extends Base
         if ($entity->hasId()) {
             $entity->quota = $this->readQuotaList($apiKey);
         }
-        return ($entity) ? $entity : null;
+        return $entity;
     }
 
     /**
@@ -68,13 +68,14 @@ class Apikey extends Base
      */
     public function readQuota($apiKey, $route)
     {
-        $data = $this->fetchRow(
-            Query\Apiquota::getQueryReadApiQuota(),
-            [
-                'key' => $apiKey,
-                'route' => $route
-            ]
-        );
+        $query = new Query\Apiquota(Query\Base::SELECT);
+        $query
+            ->addEntityMapping()
+            ->addResolvedReferences(0)
+            ->addConditionApikey($apiKey)
+            ->addConditionRoute($route);
+        $statement = $this->fetchStatement($query);
+        $data = $statement->fetch(\PDO::FETCH_ASSOC);
         return $data;
     }
 
@@ -186,7 +187,7 @@ class Apikey extends Base
      */
     public function readExpiredQuotaListByPeriod(\DateTimeInterface $dateTime)
     {
-        $data = $this->getReader()->fetchAll(Query\Apiquota::getQueryReadApiQuotaExpired($dateTime));
+        $data = $this->fetchAll(Query\Apiquota::getQueryReadApiQuotaExpired($dateTime));
         return ($data) ? $data : null;
     }
 

@@ -122,7 +122,7 @@ class Slot extends Base
     {
         $slotLastChange = $this->readLastChangedTimeByScope($scope);
         $availabilityList = (new \BO\Zmsdb\Availability)
-            ->readAppointmentListByScope($scope, 0, $now->modify('-1 day'))
+            ->readAvailabilityListByScope($scope, 0, $now->modify('-1 day'))
             ;
         $updatedList = new \BO\Zmsentities\Collection\AvailabilityList();
         foreach ($availabilityList as $availability) {
