@@ -1,0 +1,37 @@
+#!/usr/bin/env php
+<?php
+$dir = realpath(__DIR__);
+do {
+    $dir = dirname($dir);
+    if (file_exists("$dir/autoload.php")) {
+        require_once("$dir/autoload.php");
+    }
+} while ($dir != '/' && !file_exists("$dir/config.php"));
+if (file_exists("$dir/bootstrap.php")) {
+    require("$dir/bootstrap.php");
+} else {
+    require("$dir/config.php");
+}
+$usage = <<<EOS
+
+Usage: {$argv[0]} hours [--verbose] --commit
+        ATTENTION! Sends email reminder based on process reminder timestamp. USE WITH CAUTION!
+        hours           hours before appointment to send email reminder
+        --commit        no dry run, delete processes
+        --verbose       only shows what would be deleted
+
+EOS;
+
+$timeInterval = array_shift(preg_grep('#^\d+$#', $argv));
+$verbose = preg_grep('#^--?v(erbose)?$#', $argv);
+$commit = preg_grep('#^--commit$#', $argv);
+
+if ($timeInterval) {
+    $job = new \BO\Zmsdb\Helper\SendMailReminder($timeInterval, $verbose);
+    $job->startProcessing($commit);
+} else {
+    error_log("Missing time interval argument!$usage");
+}
+if (! $commit) {
+    error_log("Use with --commit to send emails.");
+}
