@@ -13,9 +13,9 @@ class SessionHuman extends SessionContainer
 
     const MIN_TIME = 5;
 
-    public function writeVerifySession($origin = '')
+    public function writeVerifySession($request, $origin = '')
     {
-        $clientIp = self::getFromServer('REMOTE_ADDR');
+        $clientIp = $request->getAttribute('ip_address');
         $this->set('client', 1, 'human');
         $this->set('ts', time(), 'human');
         if (! $this->isOrigin('captcha')) {
@@ -31,31 +31,32 @@ class SessionHuman extends SessionContainer
         $this->set('origin', $origin, 'human');
     }
 
-    public function redirectOnSuspicion($requiredSteps = array(), $fileName = false)
+    public function redirectOnSuspicion($request, $requiredSteps = array(), $fileName = false)
     {
+        $path = $request->getUri()->getPath();
         if (! $this->isOrigin('captcha')) {
             foreach ($requiredSteps as $stepName) {
                 if (!$this->hasStep($stepName)) {
                     \App::$log->notice(
-                        "[Human " . session_id() . "] Missing step $stepName on " . self::getFromServer('SCRIPT_NAME')
+                        "[Human " . session_id() . "] Missing step $stepName on " . $path
                     );
-                    $this->writeRedirectCaptcha($stepName);
+                    $this->writeRedirectCaptcha($path, $stepName);
                     return true;
                 }
             }
-            $clientIpAddress = self::getFromServer('REMOTE_ADDR');
+            $clientIpAddress = $request->getAttribute('ip_address');
             if (!$this->has('remoteAddress', 'human') || $clientIpAddress != $this->get('remoteAddress', 'human')) {
                 \App::$log->error("[Human " . session_id() . "] Missing remote address " . $clientIpAddress);
-                $this->writeRedirectCaptcha($fileName);
+                $this->writeRedirectCaptcha($path, $fileName);
                 return true;
             }
         }
         if (!$this->isVerified()) {
-            \App::$log->error("[Human " . session_id() . "] Missing session on " . self::getFromServer('SCRIPT_NAME'));
-            $this->writeRedirectCaptcha($fileName);
+            \App::$log->error("[Human " . session_id() . "] Missing session on " . $path);
+            $this->writeRedirectCaptcha($path, $fileName);
             return true;
         }
-        $this->writeRedirectCaptcha(end($requiredSteps));
+        $this->writeRedirectCaptcha($path, end($requiredSteps));
         return false;
     }
 
@@ -137,18 +138,12 @@ class SessionHuman extends SessionContainer
      *
      * @return self
      */
-    protected function writeRedirectCaptcha($filename = false)
+    protected function writeRedirectCaptcha($path, $filename = false)
     {
         if (false === $filename) {
-            $filename = basename(self::getFromServer('SCRIPT_NAME'));
+            $filename = basename($path);
         }
         $referer = array('human' => array('referer' => $filename));
         $this->setGroup($referer);
-    }
-
-    private function getFromServer($param)
-    {
-        $data = filter_input(INPUT_SERVER, $param);
-        return $data;
     }
 }
