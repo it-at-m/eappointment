@@ -7,7 +7,8 @@ use \BO\Zmsentities\Exchange;
 class ExchangeUseraccount extends Base
 {
 
-    public function readEntity($subjectid) {
+    public function readEntity($subjectid)
+    {
         $entity = new Exchange();
         $entity->addDictionaryEntry('organisationname', 'string', 'Name der Organisation', 'organisation.name');
         $entity->addDictionaryEntry('behoerdennamen', 'string', 'Name der Berhoerde', 'behoerde.name');
@@ -66,5 +67,4 @@ class ExchangeUseraccount extends Base
         $entity->addDataSet(["_"]);
         return $entity;
     }
-
 }
