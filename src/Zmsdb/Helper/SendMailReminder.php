@@ -2,9 +2,6 @@
 
 namespace BO\Zmsdb\Helper;
 
-/**
- * @codeCoverageIgnore
- */
 class SendMailReminder
 {
     protected $processList;

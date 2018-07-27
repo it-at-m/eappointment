@@ -2,9 +2,6 @@
 
 namespace BO\Zmsdb\Helper;
 
-/**
- * @codeCoverageIgnore
- */
 class SendNotificationReminder
 {
     protected $processList;
