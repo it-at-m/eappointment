@@ -3,11 +3,6 @@
 namespace BO\Zmsdb\Tests;
 
 use \BO\Zmsdb\Process as Query;
-use \BO\Zmsdb\ProcessStatusFree;
-use \BO\Zmsdb\ProcessStatusQueued;
-use \BO\Zmsdb\ProcessStatusArchived;
-use \BO\Zmsentities\Process as Entity;
-use \BO\Zmsentities\Calendar;
 
 /**
  * @SuppressWarnings(TooManyPublicMethods)

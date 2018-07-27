@@ -22,12 +22,12 @@ Usage: {$argv[0]} hours [--verbose] --commit
 
 EOS;
 
-$timeInterval = array_shift(preg_grep('#^\d+$#', $argv));
+$timeInterval = preg_grep('#^\d+$#', $argv);
 $verbose = preg_grep('#^--?v(erbose)?$#', $argv);
 $commit = preg_grep('#^--commit$#', $argv);
 
 if ($timeInterval) {
-    $job = new \BO\Zmsdb\Helper\SendMailReminder($timeInterval, $verbose);
+    $job = new \BO\Zmsdb\Helper\SendMailReminder(array_shift($timeInterval), $verbose);
     $job->startProcessing($commit);
 } else {
     error_log("Missing time interval argument!$usage");

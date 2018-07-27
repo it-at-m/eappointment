@@ -60,7 +60,7 @@ class Process extends Base implements MappingInterface
     {
         $random = rand(20, 100);
         return 'SELECT pseq.processId AS `nextid`
-            FROM process_sequence pseq 
+            FROM process_sequence pseq
             WHERE pseq.processId = (
                 SELECT ps.processID FROM `process_sequence` ps LEFT JOIN `' . self::getTablename() . '` p
                     ON ps.processId = p.BuergerID
@@ -246,6 +246,24 @@ class Process extends Base implements MappingInterface
             );
         });
         $this->query->orderBy('reminderTimestamp', 'ASC');
+        return $this;
+    }
+
+    public function addConditionProcessMailReminder(\DateTimeInterface $dateTime, $reminderInSeconds)
+    {
+        $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($dateTime, $reminderInSeconds) {
+            $query->andWith(
+                'process.Datum',
+                '=',
+                $dateTime->format('Y-m-d')
+            );
+            $query->andWith(
+                'process.Uhrzeit',
+                '=',
+                $dateTime->modify('+ '. $reminderInSeconds .' Seconds')->format('H:i')
+            );
+        });
+        $this->query->orderBy('appointments__0__date', 'ASC');
         return $this;
     }
 
