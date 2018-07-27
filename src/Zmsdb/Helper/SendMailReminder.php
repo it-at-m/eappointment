@@ -13,9 +13,9 @@ class SendMailReminder
 
     protected $verbose = false;
 
-    public function __construct($hours, $verbose = false)
+    public function __construct($hours = 2, $verbose = false)
     {
-        $this->dateTime = (new \DateTimeImmutable());
+        $this->dateTime = new \DateTimeImmutable();
         $reminderInSeconds = (60 * 60) * $hours;
         if ($verbose) {
             error_log("INFO: Send email reminder dependent on lead time");
@@ -23,6 +23,7 @@ class SendMailReminder
         }
 
         $this->processList = (new \BO\Zmsdb\Process)->readEmailReminderProcessListByInterval(
+            $this->dateTime,
             $reminderInSeconds,
             10000,
             2
@@ -46,10 +47,10 @@ class SendMailReminder
     protected function writeReminder(\BO\Zmsentities\Process $process)
     {
         $entity = null;
-        $department = (new \BO\Zmsdb\Department)->readByScopeId($process->getScopeId(), 2);
+        $process->status = "reminder";
         if ($process->getFirstClient()->hasEmail()) {
             $config = (new \BO\Zmsdb\Config)->readEntity();
-            $entity = (new \BO\Zmsentities\Mail)->toResolvedEntity($process, $config, $department);
+            $entity = (new \BO\Zmsentities\Mail)->toResolvedEntity($process, $config);
             $entity = (new \BO\Zmsdb\Mail)->writeInQueue($entity, $this->dateTime);
         }
         return $entity;
