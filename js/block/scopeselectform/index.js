@@ -1,6 +1,7 @@
 /* global window */
 /* global alert */
 import BaseView from "../../lib/baseview"
+import $ from "jquery"
 
 class View extends BaseView {
 
@@ -9,9 +10,22 @@ class View extends BaseView {
         this.includeUrl = options.includeurl
         this.today = this.options.today
         this.scopeId = null
-        this.bindEvents();
+        this.$.ready(() => {
+            this.bindKeyEvents();
+            this.bindEvents();
+            this.update();
+        });
         //console.log('Component: LoginForm', this, options);
-        this.update()
+
+    }
+
+    bindKeyEvents() {
+        $(document).off().on('keypress', (ev) => {
+            switch (ev.key) {
+                case "s":
+                    this.$main.find('select[name=scope]').trigger('focus');
+            }
+        })
     }
 
     bindEvents() {
