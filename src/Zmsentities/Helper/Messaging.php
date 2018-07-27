@@ -34,6 +34,7 @@ class Messaging
         'mail' => array(
             'queued' => 'mail_queued.twig',
             'appointment' => 'mail_confirmation.twig',
+            'reminder' => 'mail_reminder.twig',
             'pickup' => 'mail_pickup.twig',
             'deleted' => 'mail_delete.twig',
             'blocked' => 'mail_delete.twig',
