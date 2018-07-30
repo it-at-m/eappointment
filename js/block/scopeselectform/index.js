@@ -23,7 +23,23 @@ class View extends BaseView {
         $(document).off().on('keypress', (ev) => {
             switch (ev.key) {
                 case "s":
-                    this.$main.find('select[name=scope]').trigger('focus');
+                    this.$main.find('select[name=scope]').focus()
+                    break;
+                case "p":
+                    this.$main.find('input[name=workstation]').focus()
+                    break;
+                case "z":
+                    this.$main.find('[name=hint]').focus()
+                    break;
+                case "a":
+                    this.$main.find('.button-login').focus()
+                    break;
+                case "d":
+                    this.$main.find('[data-button-print]').focus()
+                    break;
+                case "e":
+                    this.$main.find('[data-button-download]').focus()
+                    break;
             }
         })
     }
