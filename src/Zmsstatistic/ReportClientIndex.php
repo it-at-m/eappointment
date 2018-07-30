@@ -36,26 +36,37 @@ class ReportClientIndex extends BaseController
         $exchangeClient = null;
         $exchangeNotification = null;
         if (isset($args['period'])) {
-            $exchangeClient = \App::$http
-                ->readGetResult('/warehouse/clientscope/' . $scopeId . '/'. $args['period']. '/')
-                ->getEntity()
-                ->withCalculatedTotals($this->totals, 'date')
-                ->toHashed();
-
-            $exchangeNotification = \App::$http
-                ->readGetResult(
-                    '/warehouse/notificationscope/' . $scopeId . '/'. $args['period']. '/',
-                    ['groupby' => 'month']
-                )
-                ->getEntity()
-                ->toHashed();
+            try {
+                $exchangeClient = \App::$http
+                    ->readGetResult('/warehouse/clientscope/' . $scopeId . '/'. $args['period']. '/')
+                    ->getEntity()
+                    ->withCalculatedTotals($this->totals, 'date')
+                    ->toHashed();
+            } catch (\Exception $exception) {
+                // do nothing
+            }
+            try {
+                $exchangeNotification = \App::$http
+                    ->readGetResult(
+                        '/warehouse/notificationscope/' . $scopeId . '/'. $args['period']. '/',
+                        ['groupby' => 'month']
+                    )
+                    ->getEntity()
+                    ->toHashed();
+            } catch (\Exception $exception) {
+                // do nothing
+            }
         }
 
         $type = $validator->getParameter('type')->isString()->getValue();
         if ($type) {
             $args['category'] = 'clientscope';
-            $args['reports'][] = $exchangeNotification;
-            $args['reports'][] = $exchangeClient;
+            if (count($exchangeNotification->data)) {
+                $args['reports'][] = $exchangeNotification;
+            }
+            if (count($exchangeClient->data)) {
+                $args['reports'][] = $exchangeClient;
+            }
             $args['scope'] = $this->workstation->getScope();
             $args['department'] = $this->department;
             $args['organisation'] = $this->organisation;
