@@ -131,7 +131,7 @@ class BaseView extends ErrorHandler {
         BaseView.loadDialogStatic(response, callback, this);
     }
 
-    static loadDialogStatic (response, callback, parent) {
+    static loadDialogStatic (response, callback, parent, callbackAsBackgroundAction = false) {
         var $container = null;
         var $loader = null;
         if (parent) {
@@ -141,7 +141,7 @@ class BaseView extends ErrorHandler {
 
         const { lightboxContentElement, destroyLightbox } = lightbox($container, () => {
             destroyLightbox(),
-            callback()
+            (callbackAsBackgroundAction) ? callback() : () => {}
         });
         new DialogHandler(lightboxContentElement, {
             response: response,

@@ -6,6 +6,7 @@ import { stopEvent } from '../../lib/utils'
 class View extends BaseView {
     constructor (element, options) {
         super(element);
+        this.$main = $(element);
         this.element = $(element).focus();
         this.includeUrl = options.includeurl;
         this.bindPublicMethods();
@@ -16,9 +17,7 @@ class View extends BaseView {
 
     bindEvents() {
         this.$main.off('click').on('click', 'a.button-delete', (ev) => {
-            this.onConfirm(ev, "confirm_user_delete", () => {
-                window.location.href = ev.target.href;
-            });
+            this.onConfirm(ev, "confirm_user_delete", () => {this.onDelete(ev)});
         });
     }
 
@@ -29,6 +28,10 @@ class View extends BaseView {
       this.loadCall(`${this.includeUrl}/dialog/?template=${template}&parameter[name]=${userName}`).then((response) => {
            this.loadDialog(response, callback);
       });
+    }
+
+    onDelete(ev) {
+        window.location.href = ev.target.href;
     }
 }
 
