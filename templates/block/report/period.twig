@@ -5,9 +5,9 @@
     </ul>
     {% endblock %}
 
-    {% set years = ["now"|date('Y')] %}
+    {% set years = [getNow()|date('Y')] %}
     {% for key, entry in items.data %}
-        {% if entry|first|length == 4 %}
+        {% if entry|first|length == 4 and entry|first not in years %}
             {% set years = years|merge([entry|first]) %}
         {% endif %}
     {% endfor %}
