@@ -7,6 +7,8 @@ class App extends \BO\Zmsadmin\Application
 {
     const IDENTIFIER = 'Zmsadmin-ENV';
     const DEBUG = false;
+    // Per default uses dir ./cache
+    //const TWIG_CACHE = false;
 
     /**
      * HTTP url for api
