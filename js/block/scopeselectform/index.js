@@ -1,7 +1,6 @@
 /* global window */
 /* global alert */
 import BaseView from "../../lib/baseview"
-import $ from "jquery"
 
 class View extends BaseView {
 
@@ -11,7 +10,6 @@ class View extends BaseView {
         this.today = this.options.today
         this.scopeId = null
         this.$.ready(() => {
-            this.bindKeyEvents();
             this.bindEvents();
             this.update();
         });
@@ -19,33 +17,8 @@ class View extends BaseView {
 
     }
 
-    bindKeyEvents() {
-        $(document).off().on('keypress', (ev) => {
-            switch (ev.key) {
-                case "s":
-                    this.$main.find('select[name=scope]').focus()
-                    break;
-                case "p":
-                    this.$main.find('input[name=workstation]').focus()
-                    break;
-                case "z":
-                    this.$main.find('[name=hint]').focus()
-                    break;
-                case "a":
-                    this.$main.find('.button-login').focus()
-                    break;
-                case "d":
-                    this.$main.find('[data-button-print]').focus()
-                    break;
-                case "e":
-                    this.$main.find('[data-button-download]').focus()
-                    break;
-            }
-        })
-    }
-
     bindEvents() {
-        this.$main.off().on('click', '[data-button-print]', (ev) => {
+        this.$main.on('click', '[data-button-print]', (ev) => {
             ev.preventDefault()
             ev.stopPropagation()
 
