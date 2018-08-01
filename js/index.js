@@ -11,7 +11,9 @@ import moment from 'moment'
 import 'moment/locale/de';
 
 // Import Views
+import GlobalView from './page/global'
 import EmergencyView from './block/emergency'
+//import LoginFormView from './block/index/loginform'
 //import DepartmentLinksView from './block/department/links'
 //import DepartmentDaysOffView from './block/department/daysOff'
 //import TicketPrinterConfigView from './block/ticketprinter/config'
@@ -48,6 +50,8 @@ moment.locale('de')
 forceHttps();
 
 // Init Views
+new GlobalView(document);
+
 $('.emergency').each(function() {
     new EmergencyView(this, getDataAttributes(this));
 })
@@ -103,6 +107,7 @@ $('textarea.maxchars').each(function() {
 $('.scope-form-update').each(function() {
     scopeChangeProvider(this);
 });
+
 
 printScopeAppointmentsByDay();
 printWaitingNumber();
