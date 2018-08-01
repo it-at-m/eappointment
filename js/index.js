@@ -11,6 +11,7 @@ import moment from 'moment'
 import 'moment/locale/de';
 //import bindReact from './lib/bindReact.js'
 import { getDataAttributes } from './lib/utils'
+import { forceHttps } from './lib/utils'
 
 import PeriodListView from './block/periodlist'
 
@@ -18,6 +19,9 @@ import PeriodListView from './block/periodlist'
 window.$ = $;
 
 moment.locale('de')
+
+// Force https protocol
+forceHttps();
 
 // Say hello
 console.log("Welcome to the ZMS statistic interface...");
