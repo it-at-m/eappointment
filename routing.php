@@ -4232,6 +4232,10 @@ use \Psr\Http\Message\ResponseInterface;
 *                  required: true
 *                  in: path
 *                  type: string
+*              -   name: sync
+*                  description: "Set this to 1 if you want synchronous read for the session data. If session data is written shortly before reading, replication might not be up to date. Using this parameter solves this problem but might result in slower responses. Use this parameter only if necessary, for example after HTTP-redirect which write session data and a read requests follows much less than a second after. Usually, two requests do not follow on each other so that this parameter is necessary."
+*                  in: query
+*                  type: integer
 *          responses:
 *              200:
 *                  description: get a session by id and name

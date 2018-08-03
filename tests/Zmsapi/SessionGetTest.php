@@ -13,7 +13,7 @@ class SessionGetTest extends Base
     public function testRendering()
     {
         (new SessionUpdateTest)->testRendering();
-        $response = $this->render(['name' => self::SESSION_NAME, 'id' => self::SESSION_ID], [], []);
+        $response = $this->render(['name' => self::SESSION_NAME, 'id' => self::SESSION_ID], ['sync' => 1], []);
         $this->assertContains('session.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
