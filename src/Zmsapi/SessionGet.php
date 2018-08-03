@@ -20,6 +20,11 @@ class SessionGet extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        $validator = $request->getAttribute('validator');
+        $syncRead = $validator->getParameter('sync')->isNumber()->getValue();
+        if ($syncRead) {
+            \BO\Zmsdb\Connection\Select::getWriteConnection();
+        }
         $session = (new Session)->readEntity($args['name'], $args['id']);
         if (! $session) {
             throw new Exception\Session\SessionNotFound();
