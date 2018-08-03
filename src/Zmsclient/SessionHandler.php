@@ -9,6 +9,13 @@ class SessionHandler implements \SessionHandlerInterface
     public $sessionName;
 
     /**
+     * Adds a parameter "sync" on reading the session from the API
+     * Use a value of 1 to enable synchronous reads
+     * if a former session write happened during a redirect
+     */
+    public static $useSyncFlag = 0;
+
+    /**
      * @var \BO\Zmsclient\Http $http
      *
      */
@@ -37,8 +44,11 @@ class SessionHandler implements \SessionHandlerInterface
     public function read($sessionId)
     {
         try {
-            $session = $this->http->readGetResult('/session/' . $this->sessionName . '/' . $sessionId . '/')
-                ->getEntity();
+            $session = $this->http->readGetResult(
+                '/session/' . $this->sessionName . '/' . $sessionId . '/',
+                ['sync' => static::useSyncFlag]
+            )
+            ->getEntity();
         } catch (Exception\ApiFailed $exception) {
             // @codeCoverageIgnoreStart
             throw $exception;
