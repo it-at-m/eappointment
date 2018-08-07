@@ -46,7 +46,7 @@ class SessionHandler implements \SessionHandlerInterface
         try {
             $session = $this->http->readGetResult(
                 '/session/' . $this->sessionName . '/' . $sessionId . '/',
-                ['sync' => static::useSyncFlag]
+                ['sync' => static::$useSyncFlag]
             )
             ->getEntity();
         } catch (Exception\ApiFailed $exception) {
