@@ -13,7 +13,7 @@ class ExchangeUseraccountTest extends Base
         $query = new Query();
         $entity = $query->readEntity(74);
         $this->assertEntity("\\BO\\Zmsentities\\Exchange", $entity);
-        $this->assertEquals(11, count($entity->data));
+        $this->assertEquals(12, count($entity->data));
         $this->assertEquals('berlinonline', $entity->data[0][2]);
     }
 
