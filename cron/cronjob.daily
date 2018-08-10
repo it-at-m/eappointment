@@ -12,7 +12,7 @@ if [[ $ZMS_CRONROOT =~ ^1|on|true|yes$ ]]; then
     $BIN/deleteDayoffData 6 --commit
     if [[ $ZMS_ENV =~ ^dev|stage$ ]]; then
         $BIN/deleteAppointmentData 1 --commit
-        $BIN/sendProcessListToScopeAdmin --commit
+        #$BIN/sendProcessListToScopeAdmin --commit
     fi
     $BIN/calculateSlots --commit --delete
     if [[ $ZMS_ENV =~ ^dev|stage$ ]]; then
