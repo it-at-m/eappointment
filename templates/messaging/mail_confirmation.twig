@@ -15,6 +15,7 @@ Ihr Code zur Terminabsage oder -änderung lautet <strong>"{{ process.authKey }}"
 Zahlungshinweis: {{ process.scope.provider.data.payment }}<br />
 <br />
 {% endif %}
+
 {% if process.request|length > 0 %}
 {% set requestalias = "Dienstleistungen" %}
 {% else %}

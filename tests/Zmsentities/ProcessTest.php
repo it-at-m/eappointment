@@ -331,6 +331,9 @@ class ProcessTest extends EntityCommonTests
         $entity3->getFirstClient()['familyName'] = 'Anton Beta';
         $collection->addEntity($entity3);
         $this->assertEquals('Anton Beta', $collection->sortByClientName()->getFirst()->getFirstClient()['familyName']);
+
+        $this->assertEquals(1, $collection->getRequestList()->count());
+        $this->assertEquals(123456, $collection->getRequestList()->getFirst()->getId());
     }
 
     public function testSetTempAppointmentToProcess()
@@ -375,7 +378,16 @@ class ProcessTest extends EntityCommonTests
         $entity = $this->getExample();
         $collection->addEntity($entity);
         $scopeList = $collection->getScopeList();
-        $this->assertTrue(count($scopeList) > 0);
+        $this->assertEquals(1, $scopeList->count());
+
+        $entity2 = clone $entity;
+        $entity2->appointments = (new \BO\Zmsentities\Collection\AppointmentList())
+            ->addEntity((new \BO\Zmsentities\Appointment())->getExample()->setTime('18:30'));
+        $collection->addEntity($entity2);
+        $this->assertEquals(2, $collection->count());
+        $this->assertEquals(2, $collection->withUniqueScope()->count());
+        $this->assertEquals(1, $collection->withUniqueScope(true)->count());
+
     }
 
     public function testWithScopeId()
