@@ -66,6 +66,8 @@ class ScopeTest extends EntityCommonTests
         $collection->addEntity($entity);
         $newCollection->addScopeList($collection);
         $this->assertTrue($newCollection->hasEntity($entity->id), 'Failed to add scopelist to another list');
+
+        $this->assertEquals(1, $newCollection->getProviderList()->count());
     }
 
     public function testCalculatedWorkstationCount()

@@ -10,11 +10,11 @@ help: # This help
 now: # Dummy target
 
 dev: # init development system
-	$(COMPOSER) update
+	COMPOSER=composer.devel.json $(COMPOSER) update
 
 live: # init live system, delete unnecessary libs
 	$(COMPOSER) install --no-dev --prefer-dist
-	
+
 fix: # run code fixing
 	php vendor/bin/phpcbf --standard=psr2 src/
 

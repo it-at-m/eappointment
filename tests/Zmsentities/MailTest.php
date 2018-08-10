@@ -8,6 +8,8 @@ class MailTest extends EntityCommonTests
 
     public $collectionclass = '\BO\Zmsentities\Collection\MailList';
 
+    const DEFAULT_TIME = '2016-04-01 11:55:00';
+
     public function testBasic()
     {
         $entity = (new $this->entityclass())->getExample();
@@ -15,7 +17,7 @@ class MailTest extends EntityCommonTests
         $this->assertTrue('1234' == $entity->getProcessAuthKey(), 'Getting AuthKey failed');
         $this->assertTrue('Max Mustermann' == $entity->getFirstClient()['familyName'], 'Getting first client failed');
     }
-    
+
     public function testCollection()
     {
         $collection = new $this->collectionclass();
@@ -106,6 +108,20 @@ class MailTest extends EntityCommonTests
         $entity = $entity->toCustomMessageEntity($process, $formCollection->getValues());
         $this->assertEquals('Das ist ein Test', $entity->subject);
         $this->assertEquals('Das ist eine Testnachricht', $entity->getPlainPart());
+        $this->assertEquals(null, $entity->getIcsPart());
+    }
+
+    public function testToScopeAdminProcessList()
+    {
+        $now = new \DateTimeImmutable(self::DEFAULT_TIME);
+        $process = (new \BO\Zmsentities\Process())->getExample();
+        $processList = (new \BO\Zmsentities\Collection\ProcessList())->addEntity($process);
+        $scope = (new \BO\Zmsentities\Scope())->getExample();
+        $entity = (new $this->entityclass())->toScopeAdminProcessList($processList, $scope, $now);
+        $this->assertEquals('Termine am 2016-04-01', $entity->subject);
+        $this->assertContains('Termine am 2016-04-01 (1 gesamt)', $entity->getHtmlPart());
+        $this->assertContains('18:52 <small>(2)</small>', $entity->getHtmlPart());
+        $this->assertEquals(null, $entity->getPlainPart());
         $this->assertEquals(null, $entity->getIcsPart());
     }
 
