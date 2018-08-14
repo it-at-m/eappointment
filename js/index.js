@@ -11,7 +11,7 @@ import moment from 'moment'
 import 'moment/locale/de';
 
 // Import Views
-import GlobalView from './page/global'
+import AccessKeyView from './page/accesskeys'
 import EmergencyView from './block/emergency'
 //import LoginFormView from './block/index/loginform'
 //import DepartmentLinksView from './block/department/links'
@@ -50,7 +50,7 @@ moment.locale('de')
 forceHttps();
 
 // Init Views
-new GlobalView(document);
+new AccessKeyView(document);
 
 $('.emergency').each(function() {
     new EmergencyView(this, getDataAttributes(this));
