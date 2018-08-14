@@ -17,7 +17,7 @@ class View extends BaseView {
         const keySelectorMap = {
             'a': 'input[name=email], .button-login',
             'b': 'input[name=sendConfirmation]',
-            'd': '.service-checkbox, [data-button-print]',
+            'd': '.service-checkbox:first, [data-button-print]',
             'e': '[data-button-download], select[name=headsUpTime]',
             'h': '.process-queue',
             'i': 'input[name=sendMailConfirmation]',
@@ -41,7 +41,6 @@ class View extends BaseView {
         };
         const focusKey = function(key) {
             return focus(keySelectorMap[key]);
-
         };
 
         $main.off().on('keypress', ':not(input, textarea, select)', (keyEvent) => {
