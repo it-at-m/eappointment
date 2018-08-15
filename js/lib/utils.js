@@ -1,5 +1,7 @@
+import Baseview from './baseview';
 import $ from 'jquery'
 import moment from 'moment'
+import settings from '../settings';
 
 export const timeToFloat = (time) => {
     const momentTime = moment(time, 'HH:mm:ss')
@@ -102,11 +104,11 @@ export const getUrlParameters = () => {
 }
 
 export const forceHttps = () => {
-    if (document.location.protocol !== "https:") {
+    if (document.location.protocol !== "http:") {
         Baseview.loadCallStatic(`${settings.includeUrl}/dialog/?template=force_https`).then((response) => {
             Baseview.loadDialogStatic(response,
                 () => {
-                    document.location.href = "https://" + document.location.href.substring(document.location.protocol.length, document.location.href.length);
+                    document.location.href = "http://" + document.location.href.substring(document.location.protocol.length, document.location.href.length);
                 },
                 Baseview,
                 true

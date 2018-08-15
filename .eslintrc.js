@@ -11,7 +11,9 @@ module.exports = {
     "plugins": [],
     "globals": {
         "console": true,
-        "document": true
+        "setTimeout": true,
+        "document": true,
+        "Promise": true
     },
     "extends": ["eslint:recommended"],
     "rules": {
