@@ -1,7 +1,6 @@
 import $ from 'jquery';
 import ExceptionHandler from './exceptionHandler'
-import maxChars from '../element/form/maxChars'
-import settings from '../settings'
+import settings from '../settings' 
 
 class DialogHandler {
 
@@ -30,10 +29,6 @@ class DialogHandler {
         } else {
             this.$main.html(content);
         }
-
-        $('textarea.maxchars').each(function() {
-            maxChars(this);
-        });
     }
 
     bindEvents() {
