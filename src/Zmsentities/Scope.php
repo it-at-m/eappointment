@@ -14,7 +14,7 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
     {
         return [
             'id' => 0,
-            'contact' => new Contact(['name' => '(nicht zugeordnet)']),
+            'contact' => new Contact(),
             'provider' => new Provider(),
         ];
     }
