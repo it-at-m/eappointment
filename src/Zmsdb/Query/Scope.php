@@ -52,10 +52,11 @@ class Scope extends Base implements MappingInterface
     public function getQuerySimpleDepartmentMatch()
     {
         return '
-            SELECT StandortID AS id, Bezeichnung AS contact__name
-            FROM `standort`
+            SELECT s.StandortID AS id, p.name AS contact__name
+            FROM `standort` AS s 
+            LEFT JOIN `provider` AS p ON s.InfoDienstleisterID = p.id 
             WHERE
-                BehoerdenID = ?
+                s.BehoerdenID = ?
         ';
     }
 
