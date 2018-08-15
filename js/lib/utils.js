@@ -104,11 +104,11 @@ export const getUrlParameters = () => {
 }
 
 export const forceHttps = () => {
-    if (document.location.protocol !== "http:") {
+    if (document.location.protocol !== "https:") {
         Baseview.loadCallStatic(`${settings.includeUrl}/dialog/?template=force_https`).then((response) => {
             Baseview.loadDialogStatic(response,
                 () => {
-                    document.location.href = "http://" + document.location.href.substring(document.location.protocol.length, document.location.href.length);
+                    document.location.href = "https://" + document.location.href.substring(document.location.protocol.length, document.location.href.length);
                 },
                 Baseview,
                 true
