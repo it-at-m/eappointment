@@ -65,6 +65,11 @@ class QueueTable extends BaseController
     protected function toProcessListByStatus($processList, $selectedDate, $status)
     {
         $selectedDateTime = new \DateTimeImmutable($selectedDate);
-        return $processList->toQueueList($selectedDateTime)->withStatus($status)->toProcessList()->sortByArrivalTime();
+        return $processList
+            ->toQueueList($selectedDateTime)
+            ->withStatus($status)
+            ->toProcessList()
+            ->sortByArrivalTime()
+            ->sortByEstimatedWaitingTime();
     }
 }
