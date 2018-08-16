@@ -14,6 +14,7 @@ class View extends BaseView {
         this.processId = options.calledProcess || 0;
         this.refreshCurrentTime = null;
         this.onNextProcess = options.onNextProcess || (() => {});
+        this.onCalledProcess = options.onCalledProcess || (() => {});
         this.bindPublicMethods('bindEvents','loadClientNext','setTimeSinceCall', 'loadCalled', 'loadProcessing');
         $.ajaxSetup({ cache: false });
         this.bindEvents();
@@ -76,24 +77,22 @@ class View extends BaseView {
         this.$main.on('click', '.button-callnextclient a', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
-            this.loadClientNext();
+            this.loadClientNext().then(() => this.onNextProcess());
         }).on('click', '.client-precall_button-success', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
             this.processId = $(ev.target).data('processid');
-            this.loadCalled();
+            this.loadCalled().then(() => this.onNextProcess());
         }).on('click', '.client-precall_button-skip', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
             this.exclude = $(ev.target).data('exclude');
-            this.loadClientNext();
-            this.onNextProcess();
+            this.loadClientNext().then(() => this.onNextProcess());
         }).on('click', '.client-called_button-skip', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
             this.exclude = $(ev.target).data('exclude');
-            this.loadCancelClientNext();
-            this.onNextProcess();
+            this.loadCancelClientNext().then(() => this.onNextProcess());
         }).on('click', '.client-called_button-success', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
