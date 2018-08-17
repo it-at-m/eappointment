@@ -11,7 +11,7 @@ class ExchangeUseraccountTest extends Base
     public function testBasic()
     {
         $query = new Query();
-        $entity = $query->readEntity(74);
+        $entity = $query->readEntity();
         $this->assertEntity("\\BO\\Zmsentities\\Exchange", $entity);
         $this->assertEquals(12, count($entity->data));
         $this->assertEquals('berlinonline', $entity->data[0][2]);
@@ -29,7 +29,7 @@ class ExchangeUseraccountTest extends Base
     public function testPeriodList()
     {
         $query = new Query();
-        $entity = $query->readPeriodList(74);
+        $entity = $query->readPeriodList();
         $this->assertEntity("\\BO\\Zmsentities\\Exchange", $entity);
         $this->assertEquals(1, count($entity->data));
         $this->assertEquals('_', $entity->data[0][0]);

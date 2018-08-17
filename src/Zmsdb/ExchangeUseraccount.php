@@ -7,7 +7,7 @@ use \BO\Zmsentities\Exchange;
 class ExchangeUseraccount extends Base
 {
 
-    public function readEntity($subjectid)
+    public function readEntity()
     {
         $entity = new Exchange();
         $entity->addDictionaryEntry('Organisation', 'string', 'Name der Organisation');
@@ -24,20 +24,12 @@ class ExchangeUseraccount extends Base
         $entity->addDictionaryEntry('rightsdepartment', 'string', 'Adminstration von Behoerden');
         $entity->addDictionaryEntry('rightssorganisation', 'string', 'Adminstration von Bezirken');
         $entity->addDictionaryEntry('rightssuperuser', 'string', 'Superuser', 'useraccount.rights.superuser');
-        $subjectIdList = explode(',', $subjectid);
 
-        foreach ($subjectIdList as $subjectid) {
-            $raw = $this
-                ->getReader()
-                ->fetchAll(
-                    constant("\BO\Zmsdb\Query\ExchangeUseraccount::QUERY_READ_REPORT"),
-                    [
-                        'nutzerid' => $subjectid
-                    ]
-                );
-            foreach ($raw as $entry) {
-                $entity->addDataSet(array_values($entry));
-            }
+        $raw = $this
+            ->getReader()
+            ->fetchAll(constant("\BO\Zmsdb\Query\ExchangeUseraccount::QUERY_READ_REPORT"), []);
+        foreach ($raw as $entry) {
+            $entity->addDataSet(array_values($entry));
         }
         return $entity;
     }
@@ -50,7 +42,6 @@ class ExchangeUseraccount extends Base
         $entity->addDictionaryEntry('periodstart', 'string', 'Datum von');
         $entity->addDictionaryEntry('periodend', 'string', 'Datum bis');
         $entity->addDictionaryEntry('description', 'string', 'Beschreibung');
-
         $entity->addDataSet(["_", "", "", "Alle Nutzer"]);
         return $entity;
     }
@@ -58,11 +49,10 @@ class ExchangeUseraccount extends Base
     /**
      * @SuppressWarnings(Param)
      */
-    public function readPeriodList($subjectid, $period = 'day')
+    public function readPeriodList()
     {
         $entity = new Exchange();
         $entity->addDictionaryEntry('id', 'string', 'Organisation', 'useraccount.rights.superuser');
-
         $entity->addDataSet(["_"]);
         return $entity;
     }

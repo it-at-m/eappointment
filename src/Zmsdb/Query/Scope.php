@@ -53,8 +53,8 @@ class Scope extends Base implements MappingInterface
     {
         return '
             SELECT s.StandortID AS id, p.name AS contact__name
-            FROM `standort` AS s 
-            LEFT JOIN `provider` AS p ON s.InfoDienstleisterID = p.id 
+            FROM `standort` AS s
+            LEFT JOIN `provider` AS p ON s.InfoDienstleisterID = p.id
             WHERE
                 s.BehoerdenID = ?
         ';
@@ -303,7 +303,7 @@ class Scope extends Base implements MappingInterface
         $data['wartenummernkontingent'] = $entity->getPreference('queue', 'maxNumberContingent');
         $data['Bearbeitungszeit'] = gmdate("H:i", $entity->getPreference('queue', 'processingTimeAverage') * 60);
         $data['wartezeitveroeffentlichen'] = $entity->getPreference('queue', 'publishWaitingTimeEnabled', true);
-        $data['ohnestatistik'] = $entity->toProperty()->preferences->queue->statisticsEnabled->get();
+        $data['ohnestatistik'] = (0 == $entity->getPreference('queue', 'statisticsEnabled', true)) ? 1 : 0;
         $data['kundenbef_emailtext'] = $entity->getPreference('survey', 'emailContent');
         $data['kundenbefragung'] = $entity->getPreference('survey', 'enabled', true);
         $data['kundenbef_label'] = $entity->getPreference('survey', 'label');
