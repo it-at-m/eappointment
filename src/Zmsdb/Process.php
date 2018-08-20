@@ -479,7 +479,7 @@ class Process extends Base implements Interfaces\ResolveReferences
             ->addResolvedReferences($resolveReferences)
             ->addConditionScopeId($scopeId)
             ->addConditionIsReserved()
-            ->addConditionProcessDeleteInterval($expirationDate)
+            ->addConditionProcessExpiredIPTimeStamp($expirationDate)
             ->addConditionIgnoreSlots()
             ->addLimit($limit);
         $statement = $this->fetchStatement($selectQuery);

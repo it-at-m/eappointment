@@ -231,6 +231,19 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
+    public function addConditionProcessExpiredIPTimeStamp(\DateTimeInterface $expirationDate)
+    {
+        $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($expirationDate) {
+            $query->andWith(
+                'process.IPTimeStamp',
+                '<=',
+                $expirationDate->getTimestamp()
+            );
+        });
+        $this->query->orderBy('appointments__0__date', 'ASC');
+        return $this;
+    }
+
     public function addConditionProcessReminderInterval(\DateTimeInterface $dateTime)
     {
         $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($dateTime) {
@@ -270,16 +283,20 @@ class Process extends Base implements MappingInterface
     public function addConditionProcessId($processId)
     {
         $this->query->where('process.BuergerID', '=', $processId);
-        $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) {
-            $query->andWith(self::expression('process.istFolgeterminvon IS NULL OR process.istFolgeterminvon'), '=', 0);
+        $this->query->where(function (\Solution10\SQL\ConditionBuilder $condition) {
+            $condition
+                ->andWith('process.istFolgeterminvon', 'IS', null)
+                ->orWith('process.istFolgeterminvon', '=', 0);
         });
         return $this;
     }
 
     public function addConditionIgnoreSlots()
     {
-        $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) {
-            $query->andWith(self::expression('process.istFolgeterminvon IS NULL OR process.istFolgeterminvon'), '=', 0);
+        $this->query->where(function (\Solution10\SQL\ConditionBuilder $condition) {
+            $condition
+                ->andWith('process.istFolgeterminvon', 'IS', null)
+                ->orWith('process.istFolgeterminvon', '=', 0);
         });
         return $this;
     }
@@ -400,8 +417,12 @@ class Process extends Base implements MappingInterface
             '(abgesagt)'
         ))
             ->where('process.vorlaeufigeBuchung', '=', 1)
-            ->where('process.StandortID', '<>', 1)
-            ->where('process.istFolgeterminvon', 'is', null);
+            ->where('process.StandortID', '<>', 1);
+        $this->query->where(function (\Solution10\SQL\ConditionBuilder $condition) {
+            $condition
+                ->andWith('process.istFolgeterminvon', 'IS', null)
+                ->orWith('process.istFolgeterminvon', '=', 0);
+        });
         return $this;
     }
 

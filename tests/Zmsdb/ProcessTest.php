@@ -344,14 +344,13 @@ class ProcessTest extends Base
     {
         $reservationDuration = 20;
         $query = new Query();
-        $time = new \DateTimeImmutable("2016-05-27 11:50");
-        $time = $time->setTimestamp($time->getTimestamp() - ($reservationDuration * 60));
-        $processList = $query->readExpiredReservationsList($time, 142);
+
+        $expirationDate = new \DateTimeImmutable("2016-03-29 12:12:05");
+        $processList = $query->readExpiredReservationsList($expirationDate, 142);
         $this->assertEquals(2, $processList->count());
 
-        $time = new \DateTimeImmutable("2016-05-27 11:49");
-        $time = $time->setTimestamp($time->getTimestamp() - ($reservationDuration * 60));
-        $processList = $query->readExpiredReservationsList($time, 142);
+        $expirationDate = new \DateTimeImmutable("2016-03-28 11:10:00");
+        $processList = $query->readExpiredReservationsList($expirationDate, 142);
         $this->assertEquals(0, $processList->count());
     }
 
