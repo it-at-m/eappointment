@@ -121,7 +121,6 @@ class ProcessFormValidation
         $collection['familyName'] = Validator::param('familyName')->isString()
             ->isBiggerThan(2, "Es muss ein aussagekräftiger Name eingegeben werden")
             ->isSmallerThan(50, "Der Name sollte 50 Zeichen nicht überschreiten");
-
         // email
         if (!Validator::param('email')->isDeclared()->hasFailed()) {
             $collection['email'] = Validator::param('email')
@@ -224,8 +223,8 @@ class ProcessFormValidation
     protected static function hasCheckedSms()
     {
         return (
-            false === Validator::param('sendConfirmation')->isDeclared()->hasFailed() ||
-            false === Validator::param('sendReminder')->isDeclared()->hasFailed()
+            1 == Validator::param('sendConfirmation')->isDeclared()->getValue() ||
+            1 == Validator::param('sendReminder')->isDeclared()->getValue()
         );
     }
 }
