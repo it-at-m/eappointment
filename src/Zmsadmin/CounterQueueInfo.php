@@ -22,7 +22,7 @@ class CounterQueueInfo extends BaseController
         $ghostWorkstation = $validator->getParameter('ghostworkstationcount')->isNumber()->getValue();
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
 
-        if ($ghostWorkstation) {
+        if ($ghostWorkstation >= -1) {
             $scope = $workstation->getScope();
             $scope->setStatusQueue('ghostWorkstationCount', $ghostWorkstation);
             $workstation->scope = \App::$http
