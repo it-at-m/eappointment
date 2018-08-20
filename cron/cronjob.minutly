@@ -10,6 +10,7 @@ if [[ $ZMS_CRONROOT =~ ^1|on|true|yes$ ]]; then
     $BIN/deleteSessionData Zmsappointment 30 --commit
     if [[ $ZMS_ENV =~ ^dev|stage$ ]]; then
         $BIN/deleteReservedData --commit
+        $BIN/sendMailReminder 2 --commit
     fi
     #$BIN/sendNotificationReminder --commit
     $BIN/calculateSlots --commit
