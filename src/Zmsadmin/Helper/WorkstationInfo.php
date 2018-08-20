@@ -22,7 +22,9 @@ class WorkstationInfo
         } else {
             $dateTime = new \BO\Zmsentities\Helper\DateTime($dateString);
             $scope = \App::$http->readGetResult('/scope/'. $scope->id . '/')->getEntity();
-            $queueList =  \App::$http->readGetResult('/scope/'. $scope->id . '/queue/')->getCollection();
+            $queueList =  \App::$http->readGetResult('/scope/'. $scope->id . '/queue/')
+                ->getCollection()
+                ->withStatus(['confirmed', 'queued', 'reserved', 'deleted']);
             $infoData['workstationGhostCount'] = $scope->status['queue']['ghostWorkstationCount'];
             $infoData['availabilities'] = static::getAvailabilityByScopeAndDateTime($scope->id, $dateTime);
             $infoData['workstationList'] = static::getWorkstationsByScope($scope->id);

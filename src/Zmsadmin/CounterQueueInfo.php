@@ -19,7 +19,7 @@ class CounterQueueInfo extends BaseController
     ) {
         $validator = $request->getAttribute('validator');
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
-        $ghostWorkstation= $validator->getParameter('ghostworkstationcount')->isNumber()->getValue();
+        $ghostWorkstation = $validator->getParameter('ghostworkstationcount')->isNumber()->getValue();
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
 
         if ($ghostWorkstation) {
