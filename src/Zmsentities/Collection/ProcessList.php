@@ -41,6 +41,14 @@ class ProcessList extends Base
         return $this;
     }
 
+    public function sortByEstimatedWaitingTime()
+    {
+        $this->uasort(function ($a, $b) {
+            return ($a->queue['waitingTimeEstimate'] - $b->queue['waitingTimeEstimate']);
+        });
+        return $this;
+    }
+
     public function sortByClientName()
     {
         $this->uasort(function ($a, $b) {

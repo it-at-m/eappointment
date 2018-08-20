@@ -328,12 +328,16 @@ class ProcessTest extends EntityCommonTests
         $this->assertEquals('1447869171', $queueList->getFirst()->arrivalTime);
 
         $entity3 = $this->getExample();
+        $entity3->queue['waitingTimeEstimate'] = 60;
         $entity3->getFirstClient()['familyName'] = 'Anton Beta';
         $collection->addEntity($entity3);
         $this->assertEquals('Anton Beta', $collection->sortByClientName()->getFirst()->getFirstClient()['familyName']);
 
         $this->assertEquals(1, $collection->getRequestList()->count());
         $this->assertEquals(123456, $collection->getRequestList()->getFirst()->getId());
+
+        $this->assertEquals('0', $collection->sortByEstimatedWaitingTime()->getFirst()->queue['waitingTimeEstimate']);
+        $this->assertEquals('60', $collection->sortByEstimatedWaitingTime()->getLast()->queue['waitingTimeEstimate']);
     }
 
     public function testSetTempAppointmentToProcess()
