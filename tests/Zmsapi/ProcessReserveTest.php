@@ -20,7 +20,7 @@ class ProcessReserveTest extends Base
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
-    public function testSlotsRequired()
+    public function testWithSlotsRequired()
     {
         $this->setWorkstation();
         $processList = new \BO\Zmsentities\Collection\ProcessList(
@@ -35,6 +35,21 @@ class ProcessReserveTest extends Base
 
         $this->assertContains('reserved', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
+    }
+
+    public function testWithSlotsRequiredExceeded()
+    {
+        $this->expectException('BO\Zmsdb\Exception\Process\ProcessReserveFailed');
+        $this->setWorkstation();
+        $processList = new \BO\Zmsentities\Collection\ProcessList(
+            json_decode($this->readFixture("GetFreeProcessList.json"))
+        );
+        $process = $processList->getFirst();
+        $response = $this->render([], [
+            '__body' => json_encode($process),
+            'slotsRequired' => 2,
+            'slotType' => 'intern'
+        ], []);
     }
 
     public function testMultipleSlots()
