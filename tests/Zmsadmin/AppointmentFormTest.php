@@ -206,12 +206,16 @@ class AppointmentFormTest extends Base
                 [
                     'function' => 'readPostResult',
                     'url' => '/process/status/free/',
-                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0],
+                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 3],
                     'response' => $this->readFixture("GET_freeprocesslist_20160527.json")
                 ]
             ]
         );
-        $response = $this->render([], ['selecteddate' => '2016-05-27', 'selectedscope' => 141], []);
+        $response = $this->render([], [
+            'selecteddate' => '2016-05-27',
+            'selectedscope' => 141,
+            'slotsRequired' => 3
+        ], []);
         $this->assertContains('slotCount', (string)$response->getBody());
     }
 

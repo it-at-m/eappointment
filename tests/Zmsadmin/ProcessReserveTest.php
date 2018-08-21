@@ -30,7 +30,7 @@ class ProcessReserveTest extends Base
                 [
                     'function' => 'readPostResult',
                     'url' => '/process/status/reserved/',
-                    'parameters' => ['slotType' => 'intern'],
+                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0],
                     'response' => $this->readFixture("GET_process_100005_95a3_reserved.json")
                 ],
                 [
@@ -72,7 +72,7 @@ class ProcessReserveTest extends Base
                 [
                     'function' => 'readPostResult',
                     'url' => '/process/status/reserved/',
-                    'parameters' => ['slotType' => 'intern'],
+                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0],
                     'response' => $this->readFixture("GET_process_194104_2b88_notification.json")
                 ],
                 [
@@ -108,6 +108,49 @@ class ProcessReserveTest extends Base
         $this->assertRedirect(
             $response,
             '/appointmentForm/?selectedprocess=194104&selectedscope=141&success=process_reserved'
+        );
+        $this->assertEquals(302, $response->getStatusCode());
+    }
+
+    public function testWithManualSlotCount()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/process/status/reserved/',
+                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 3],
+                    'response' => $this->readFixture("GET_process_100005_95a3_reserved.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_scope_141.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/cluster/',
+                    'response' => $this->readFixture("GET_cluster_109.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/process/status/confirmed/',
+                    'response' => $this->readFixture("GET_process_100005_95a3_confirmed.json")
+                ]
+            ]
+        );
+        $parameters = array_merge($this->parameters, ['slotCount' => 3]);
+        $response = $this->render($this->arguments, $parameters, [], 'POST');
+        $this->assertRedirect(
+            $response,
+            '/appointmentForm/?selectedprocess=100005&selectedscope=141&success=process_reserved'
         );
         $this->assertEquals(302, $response->getStatusCode());
     }

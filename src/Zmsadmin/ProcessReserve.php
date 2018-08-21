@@ -36,7 +36,10 @@ class ProcessReserve extends BaseController
         $scope = Helper\AppointmentFormHelper::readPreferedScope($request, $input['scope'], $workstation);
         $process->withUpdatedData($input, $dateTime, $scope);
         $process = \App::$http
-            ->readPostResult('/process/status/reserved/', $process, ['slotType' => 'intern'])
+            ->readPostResult('/process/status/reserved/', $process, [
+                'slotType' => 'intern',
+                'slotsRequired' => (1 < $input['slotCount']) ? $input['slotCount'] : 0
+            ])
             ->getEntity();
         $process = \App::$http->readPostResult('/process/status/confirmed/', $process)->getEntity();
         $queryParams = [];
