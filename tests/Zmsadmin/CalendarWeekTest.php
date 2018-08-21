@@ -7,8 +7,8 @@ class CalendarWeekTest extends Base
     protected $arguments = ['year' => 2016, 'weeknr' => 13];
 
     protected $parameters = [
-        'slottype' => 'intern',
-        'slotsrequired' => 0
+        'slotType' => 'intern',
+        'slotsRequired' => 0
     ];
 
     protected $classname = "CalendarWeek";

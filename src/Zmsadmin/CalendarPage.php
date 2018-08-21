@@ -23,8 +23,8 @@ class CalendarPage extends BaseController
 
         $validator = $request->getAttribute('validator');
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
-        $slotType = $validator->getParameter('slottype')->isString()->getValue();
-        $slotsRequired = $validator->getParameter('slotsrequired')->isNumber()->getValue();
+        $slotType = $validator->getParameter('slotType')->isString()->getValue();
+        $slotsRequired = $validator->getParameter('slotsRequired')->isNumber()->getValue();
         $selectedScopeId = $validator->getParameter('selectedscope')->isNumber()->getValue();
 
         $scope = Helper\AppointmentFormHelper::readPreferedScope($request, $selectedScopeId, $workstation);

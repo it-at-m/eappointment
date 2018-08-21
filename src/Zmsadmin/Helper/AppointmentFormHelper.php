@@ -60,7 +60,7 @@ class AppointmentFormHelper extends AppointmentFormBase
 
     protected static function setSlotType($validator)
     {
-        $slotType = $validator->getParameter('slottype')->isString()->getValue();
+        $slotType = $validator->getParameter('slotType')->isString()->getValue();
         $slotType = ($slotType) ? $slotType : 'intern';
         return $slotType;
     }
@@ -69,7 +69,7 @@ class AppointmentFormHelper extends AppointmentFormBase
     {
         $slotsRequired = 0;
         if ($scope->getPreference('appointment', 'multipleSlotsEnabled')) {
-            $slotsRequired = $validator->getParameter('slotsrequired')->isNumber()->getValue();
+            $slotsRequired = $validator->getParameter('slotsRequired')->isNumber()->getValue();
             $slotsRequired = ($slotsRequired) ? $slotsRequired : 0;
         }
         return $slotsRequired;
@@ -83,9 +83,9 @@ class AppointmentFormHelper extends AppointmentFormBase
             $scope = \App::$http->readGetResult('/scope/'. $scopeId .'/', ['resolveReferences' => 1])->getEntity();
         } elseif ($clusterHelper->isClusterEnabled()) {
             $validator = $request->getAttribute('validator');
-            $slotType = $validator->getParameter('slottype')->isString()->getValue();
+            $slotType = $validator->getParameter('slotType')->isString()->getValue();
             $slotType = ($slotType) ? $slotType : 'intern';
-            $slotsRequired = $validator->getParameter('slotsrequired')->isNumber()->getValue();
+            $slotsRequired = $validator->getParameter('slotsRequired')->isNumber()->getValue();
             $slotsRequired = ($slotsRequired) ? $slotsRequired : 0;
             $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
             $calendar = new Calendar($selectedDate);

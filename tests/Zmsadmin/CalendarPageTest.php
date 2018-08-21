@@ -7,8 +7,8 @@ class CalendarPageTest extends Base
     protected $arguments = [];
 
     protected $parameters = [
-        'slottype' => 'intern',
-        'slotsrequired' => 0
+        'slotType' => 'intern',
+        'slotsRequired' => 0
     ];
 
     protected $classname = "CalendarPage";
@@ -76,8 +76,8 @@ class CalendarPageTest extends Base
         $response = $this->render(
             [],
             [
-            'slottype' => 'intern',
-            'slotsrequired' => 0,
+            'slotType' => 'intern',
+            'slotsRequired' => 0,
             'selectedscope' => 141
             ],
             []
