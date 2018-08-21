@@ -221,10 +221,17 @@ class Slot extends Base
         return new \DateTimeImmutable($last['dateString']);
     }
 
-    public function updateSlotProcessMapping()
+    public function updateSlotProcessMapping($scopeID = null)
     {
-        $processIdList = $this->fetchAll(Query\Slot::QUERY_SELECT_MISSING_PROCESS, [
-        ]);
+        if ($scopeID) {
+            $processIdList = $this->fetchAll(
+                Query\Slot::QUERY_SELECT_MISSING_PROCESS
+                . Query\Slot::QUERY_SELECT_MISSING_PROCESS_BY_SCOPE,
+                ['scopeID' => $scopeID]
+            );
+        } else {
+            $processIdList = $this->fetchAll(Query\Slot::QUERY_SELECT_MISSING_PROCESS, []);
+        }
         // Client side INSERT ... SELECT ... to reduce table locking
         foreach ($processIdList as $processId) {
             $this->perform(Query\Slot::QUERY_INSERT_SLOT_PROCESS, array_values($processId));
@@ -232,15 +239,30 @@ class Slot extends Base
         return count($processIdList);
     }
 
-    public function deleteSlotProcessOnSlot()
+    public function deleteSlotProcessOnSlot($scopeID = null)
     {
-        $this->perform(Query\Slot::QUERY_DELETE_SLOT_PROCESS_CANCELLED, [
-        ]);
+        if ($scopeID) {
+            $this->perform(
+                Query\Slot::QUERY_DELETE_SLOT_PROCESS_CANCELLED
+                . Query\Slot::QUERY_DELETE_SLOT_PROCESS_CANCELLED_BY_SCOPE,
+                ['scopeID' => $scopeID]
+            );
+        } else {
+            $this->perform(Query\Slot::QUERY_DELETE_SLOT_PROCESS_CANCELLED, []);
+        }
     }
 
-    public function deleteSlotProcessOnProcess()
+    public function deleteSlotProcessOnProcess($scopeID = null)
     {
-        $processIdList = $this->fetchAll(Query\Slot::QUERY_SELECT_DELETABLE_SLOT_PROCESS);
+        if ($scopeID) {
+            $processIdList = $this->fetchAll(
+                Query\Slot::QUERY_SELECT_DELETABLE_SLOT_PROCESS
+                . Query\Slot::QUERY_SELECT_DELETABLE_SLOT_PROCESS_BY_SCOPE,
+                ['scopeID' => $scopeID]
+            );
+        } else {
+            $processIdList = $this->fetchAll(Query\Slot::QUERY_SELECT_DELETABLE_SLOT_PROCESS);
+        }
         // Client side INSERT ... SELECT ... to reduce table locking
         foreach ($processIdList as $processId) {
             $this->perform(Query\Slot::QUERY_DELETE_SLOT_PROCESS_ID, $processId);
