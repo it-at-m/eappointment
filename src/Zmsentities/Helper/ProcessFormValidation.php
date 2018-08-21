@@ -153,7 +153,7 @@ class ProcessFormValidation
         }
 
         // survey accepted
-        if (!Validator::param('surveyAccepted')->isDeclared()->hasFailed()) {
+        if (1 == Validator::param('surveyAccepted')->isNumber()->getValue()) {
             $collection['surveyAccepted'] = Validator::param('surveyAccepted')->isNumber();
         }
         return $collection;
@@ -162,17 +162,17 @@ class ProcessFormValidation
     protected static function getNotificationParameters($collection)
     {
         // confirmation notification
-        if (!Validator::param('sendConfirmation')->isDeclared()->hasFailed()) {
+        if (1 == Validator::param('sendConfirmation')->isNumber()->getValue()) {
             $collection['sendConfirmation'] = Validator::param('sendConfirmation')->isNumber();
         }
 
         // confirmation mail
-        if (!Validator::param('sendMailConfirmation')->isDeclared()->hasFailed()) {
+        if (1 == Validator::param('sendMailConfirmation')->isNumber()->getValue()) {
             $collection['sendMailConfirmation'] = Validator::param('sendMailConfirmation')->isNumber();
         }
 
         // reminder notification
-        if (!Validator::param('sendReminder')->isDeclared()->hasFailed()) {
+        if (1 == Validator::param('sendReminder')->isNumber()->getValue()) {
             $collection['sendReminder'] = Validator::param('sendReminder')->isNumber();
             $collection['headsUpTime'] = Validator::param('headsUpTime')->isNumber();
         }
@@ -223,8 +223,8 @@ class ProcessFormValidation
     protected static function hasCheckedSms()
     {
         return (
-            1 == Validator::param('sendConfirmation')->isDeclared()->getValue() ||
-            1 == Validator::param('sendReminder')->isDeclared()->getValue()
+            1 == Validator::param('sendConfirmation')->isNumber()->getValue() ||
+            1 == Validator::param('sendReminder')->isNumber()->getValue()
         );
     }
 }
