@@ -22,7 +22,7 @@ class View extends BaseView {
     }
 
     load() {
-        const url = `${this.includeUrl}/calendarPage/?selecteddate=${this.selectedDate}&slottype=${this.slotType}&slotsrequired=${this.slotsRequired}&selectedscope=${this.selectedScope}&selectedprocess=${this.selectedProcess}`
+        const url = `${this.includeUrl}/calendarPage/?selecteddate=${this.selectedDate}&slotType=${this.slotType}&slotsRequired=${this.slotsRequired}&selectedscope=${this.selectedScope}&selectedprocess=${this.selectedProcess}`
         this.loadPromise = this.loadContent(url, 'GET', null, null, this.showLoader)
         return this.loadPromise;
     }
