@@ -21,14 +21,18 @@ class CounterAppointmentTimes extends BaseController
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
 
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
-        $workstationInfo = Helper\WorkstationInfo::getInfoBoxData($workstation, $selectedDate);
+        $dateTime = new \BO\Zmsentities\Helper\DateTime($selectedDate);
+        $availabilityList = \App::$http
+            ->readGetResult('/scope/'. $workstation->scope['id'] . '/availability/', ['resolveReferences' => 2])
+            ->getCollection()
+            ->withDateTime($dateTime);
 
         return \BO\Slim\Render::withHtml(
             $response,
             'block/appointment/times.twig',
             array(
                 'workstation' => $workstation,
-                'workstationInfo' => $workstationInfo
+                'availabilityList' => $availabilityList
             )
         );
     }

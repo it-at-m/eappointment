@@ -43,10 +43,16 @@ class AppointmentFormBase
         $input = $request->getParsedBody();
         $scopeId = (isset($input['scope'])) ? $input['scope'] : 0;
         $scope = static::readPreferedScope($request, $scopeId, $workstation);
-        $isOpened = \App::$http
-            ->readGetResult('/scope/'. $scope->id .'/availability/', ['resolveReferences' => 2])
-            ->getCollection()
-            ->isOpened(\App::$now);
+        try {
+            $isOpened = \App::$http
+                ->readGetResult('/scope/'. $scope->id .'/availability/', ['resolveReferences' => 2])
+                ->getCollection()
+                ->isOpened(\App::$now);
+        } catch (\BO\Zmsclient\Exception $exception) {
+            if ($exception->template == 'BO\\Zmsapi\\Exception\\Availability\\AvailabilityNotFound') {
+                $isOpened = false;
+            }
+        }
         $notice = (! $isOpened) ? 'Außerhalb der Öffnungszeiten gebucht! ' : '';
         $process = (new Entity)->createFromScope($scope, $dateTime);
         $process->updateRequests('dldb', isset($input['requests']) ? implode(',', $input['requests']) : 0);

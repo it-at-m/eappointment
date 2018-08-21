@@ -23,28 +23,6 @@ class WorkstationProcessCalledTest extends Base
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/',
-                    'response' => $this->readFixture("GET_scope_141.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/queue/',
-                    'response' => $this->readFixture("GET_scope_141_queuelist.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/availability/',
-                    'parameters' => ['resolveReferences' => 2],
-                    'response' => $this->readFixture("GET_scope_141_availability.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/workstation/',
-                    'parameters' => ['resolveReferences' => 1],
-                    'response' => $this->readFixture("GET_scope_141_workstationlist.json")
-                ],
-                [
                     'function' => 'readPostResult',
                     'url' => '/workstation/process/called/',
                     'response' => $this->readFixture("GET_workstation_with_process.json")
@@ -66,28 +44,6 @@ class WorkstationProcessCalledTest extends Base
                     'url' => '/workstation/',
                     'parameters' => ['resolveReferences' => 1],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/',
-                    'response' => $this->readFixture("GET_scope_141.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/queue/',
-                    'response' => $this->readFixture("GET_scope_141_queuelist.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/availability/',
-                    'parameters' => ['resolveReferences' => 2],
-                    'response' => $this->readFixture("GET_scope_141_availability.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/workstation/',
-                    'parameters' => ['resolveReferences' => 1],
-                    'response' => $this->readFixture("GET_scope_141_workstationlist.json")
                 ],
                 [
                     'function' => 'readPostResult',

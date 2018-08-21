@@ -21,7 +21,6 @@ class WorkstationProcessCalled extends BaseController
         $validator = $request->getAttribute('validator');
 
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
-        $workstationInfo = Helper\WorkstationInfo::getInfoBoxData($workstation);
         if (! $workstation->process->hasId() && ! $workstation->process->queue->callTime) {
             $processId = Validator::value($args['id'])->isNumber()->getValue();
             $process = new \BO\Zmsentities\Process(['id' => $processId]);
@@ -40,7 +39,6 @@ class WorkstationProcessCalled extends BaseController
             array(
                 'title' => 'Sachbearbeiter',
                 'workstation' => $workstation,
-                'workstationInfo' => $workstationInfo,
                 'hasProcessCalled' => ($workstation->process['id'] != $processId),
                 'menuActive' => 'workstation',
                 'exclude' => join(',', $exclude)
