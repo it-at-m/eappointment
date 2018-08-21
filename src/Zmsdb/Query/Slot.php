@@ -45,6 +45,9 @@ class Slot extends Base implements MappingInterface
         WHERE
           sp.processID IS NULL
     ';
+    const QUERY_SELECT_MISSING_PROCESS_BY_SCOPE = '
+          AND s.scopeID = :scopeID
+    ';
 
     const QUERY_INSERT_SLOT_PROCESS_ID = '
         INSERT INTO slot_process
@@ -77,22 +80,30 @@ class Slot extends Base implements MappingInterface
             FROM slot_process sp
               LEFT JOIN buerger b ON sp.processID = b.BuergerID
               LEFT JOIN slot s ON sp.slotID = s.slotID
-            WHERE b.BuergerID IS NULL
-              OR (
-                b.updateTimestamp > sp.updateTimestamp
-                AND (
-                  b.Uhrzeit NOT BETWEEN s.time AND SEC_TO_TIME(TIME_TO_SEC(s.time) + (s.slotTimeInMinutes * 60) - 1)
-                  OR s.month != MONTH(b.Datum)
-                  OR s.day != DAY(b.Datum)
-                  OR s.scopeID != b.StandortID
+            WHERE (
+                b.BuergerID IS NULL
+                OR (
+                  b.updateTimestamp > sp.updateTimestamp
+                  AND (
+                    b.Uhrzeit NOT BETWEEN s.time AND SEC_TO_TIME(TIME_TO_SEC(s.time) + (s.slotTimeInMinutes * 60) - 1)
+                    OR s.month != MONTH(b.Datum)
+                    OR s.day != DAY(b.Datum)
+                    OR s.scopeID != b.StandortID
+                  )
                 )
               ) 
+    ';
+    const QUERY_SELECT_DELETABLE_SLOT_PROCESS_BY_SCOPE = '
+              AND b.StandortID = :scopeID
     ';
 
     const QUERY_DELETE_SLOT_PROCESS_CANCELLED = '
         DELETE sp 
             FROM slot_process sp LEFT JOIN slot s USING (slotID)
-            WHERE s.status = "cancelled" OR s.status IS NULL
+            WHERE (s.status = "cancelled" OR s.status IS NULL)
+    ';
+    const QUERY_DELETE_SLOT_PROCESS_CANCELLED_BY_SCOPE = '
+                AND s.scopeID = :scopeID
     ';
 
     const QUERY_DELETE_SLOT_PROCESS_ID = '

@@ -107,15 +107,20 @@ class CalculateSlots
             }
         }
         $this->log("Finished slot calculation");
+
         $slotQuery = new \BO\Zmsdb\Slot();
         $slotsProcessed = $slotQuery->deleteSlotProcessOnProcess();
         $this->log("Finished to free $slotsProcessed slots for changed/deleted processes");
+
         $slotQuery->deleteSlotProcessOnSlot();
         $this->log("Finished to free slots for cancelled availabilities");
+
         $slotsProcessed = $slotQuery->updateSlotProcessMapping();
         $this->log("Updated Slot-Process-Mapping, mapped $slotsProcessed processes");
+
         (new \BO\Zmsdb\Config)->replaceProperty('status__calculateSlotsLastRun', $now->format('Y-m-d H:i:s'));
         $this->log("Committing changes (may take a while)");
+
         \BO\Zmsdb\Connection\Select::writeCommit();
         $this->log("Slot calculation finished");
     }
@@ -128,6 +133,15 @@ class CalculateSlots
             $this->log("Updated $availability with reason " . implode('|', $availability['processingNote']));
         }
         if (count($updatedList)) {
+            $slotsProcessed = $slotQuery->deleteSlotProcessOnProcess($scope->id);
+            $this->log("Finished to free $slotsProcessed slots for changed/deleted processes");
+
+            $slotQuery->deleteSlotProcessOnSlot($scope->id);
+            $this->log("Finished to free slots for cancelled availabilities");
+
+            $slotsProcessed = $slotQuery->updateSlotProcessMapping($scope->id);
+            $this->log("Updated Slot-Process-Mapping, mapped $slotsProcessed processes");
+
             \BO\Zmsdb\Connection\Select::writeCommit();
             $this->readLastRun();
             return true;
