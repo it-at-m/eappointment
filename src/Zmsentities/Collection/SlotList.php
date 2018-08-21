@@ -82,7 +82,9 @@ class SlotList extends Base
             }
         }
         if (0 < $takeFollowingSlot) {
-            throw new \Exception("$appointment does not fit in slotlist");
+            throw new \BO\Zmsentities\Exception\AppointmentNotFitInSlotList(
+                "$appointment does not fit in $this"
+            );
         }
         return $slotList;
     }
