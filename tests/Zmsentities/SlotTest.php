@@ -116,6 +116,26 @@ class SlotTest extends EntityCommonTests
         $this->assertEquals('12:50', $slotList->getFirst()['time']);
     }
 
+    public function testSlotByAppointmentFailed()
+    {
+        $this->expectException('\BO\Zmsentities\Exception\AppointmentNotFitInSlotList');
+        $now = new \DateTimeImmutable(self::DEFAULT_TIME);
+        $appointment = (new \BO\Zmsentities\Appointment())->getExample();
+        $appointment->setTime('12:50');
+        $appointment->slotCount = 3;
+        $collection = new $this->collectionclass();
+        $entity = $this->getExample();
+        $entity2 = new $this->entityclass(array (
+            'public' => 2,
+            'intern' => 9,
+            'callcenter' => 5,
+            'time' => '12:50'
+        ));
+        $collection->addEntity($entity);
+        $collection->addEntity($entity2);
+        $slotList = $collection->withSlotsForAppointment($appointment);
+    }
+
     public function testAvailableForAll()
     {
         $collection = new $this->collectionclass();
