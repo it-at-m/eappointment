@@ -8,14 +8,18 @@ class View extends BaseView {
 
     constructor (element, options) {
         super(element, options);
+        this.element = element;
+        this.options = options;
         this.includeUrl = options.includeUrl || "";
         this.showLoader = options.showLoader || false;
         this.exclude = "";
         this.processId = options.calledProcess || 0;
         this.refreshCurrentTime = null;
         this.onNextProcess = options.onNextProcess || (() => {});
+        this.onCallNextProcess = options.onCallNextProcess || (() => {});
+        this.onCancelNextProcess = options.onCancelNextProcess || (() => {});
         this.onCalledProcess = options.onCalledProcess || (() => {});
-        this.bindPublicMethods('bindEvents','loadClientNext','setTimeSinceCall', 'loadCalled', 'loadProcessing');
+        this.bindPublicMethods('cleanInstance', 'bindEvents','loadClientNext','setTimeSinceCall', 'loadCalled', 'loadProcessing');
         $.ajaxSetup({ cache: false });
         this.bindEvents();
         //console.log('Component: Client', this, options);
@@ -38,10 +42,9 @@ class View extends BaseView {
     }
 
     loadCall() {
-        console.log('load call')
         this.cleanInstance();
         const url = `${this.includeUrl}/workstation/call/${this.processId}/?direct=1`
-        return this.loadInto(url).then(this.setTimeSinceCall);
+        return this.loadInto(url).then(this.setTimeSinceCall).then(() => this.onNextProcess());;
     }
 
     loadCalled() {
@@ -77,12 +80,12 @@ class View extends BaseView {
         this.$main.on('click', '.button-callnextclient a', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
-            this.loadClientNext().then(() => this.onNextProcess());
+            this.loadClientNext();
         }).on('click', '.client-precall_button-success', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
             this.processId = $(ev.target).data('processid');
-            this.loadCalled().then(() => this.onNextProcess());
+            this.loadCalled();
         }).on('click', '.client-precall_button-skip', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
@@ -143,7 +146,7 @@ class View extends BaseView {
         }, 1000);
     }
 
-    cleanInstance() {
+    cleanInstance () {
         clearTimeout(window.refreshCounter);
         clearTimeout(this.refreshCurrentTime);
         this.setCurrentTime();

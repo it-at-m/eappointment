@@ -45,7 +45,7 @@ class BaseView extends ErrorHandler {
                     new ExceptionHandler(this.$main, {
                         code: err.status,
                         message: err.responseText,
-                        parent: this
+                        parent:  this
                     });
                     hideSpinner(this.$main);
                 } else {
