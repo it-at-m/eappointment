@@ -158,4 +158,13 @@ class AvailabilityList extends Base
         }
         return $processList;
     }
+
+    public function withScope(\BO\Zmsentities\Scope $scope)
+    {
+        $list = clone $this;
+        foreach ($list as $key => $availability) {
+            $list[$key] = $availability->withScope($scope);
+        }
+        return $list;
+    }
 }
