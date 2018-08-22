@@ -7,6 +7,9 @@ import AppointmentView from '../../block/appointment'
 import QueueView from '../../block/queue'
 import CalendarView from '../../block/calendar'
 import ClientNextView from '../../block/process/next'
+import QueueInfoView from '../../block/queue/info'
+import AppointmentTimesView from '../../block/appointment/times'
+
 
 class View extends BaseView {
     constructor (element, options) {
@@ -46,7 +49,8 @@ class View extends BaseView {
             'onSendNotificationReminder',
             'onReloadQueueTable',
             'onChangeTableView',
-            'onChangeSlotCount'
+            'onChangeSlotCount',
+            'onGhostWorkstationChange'
         );
         this.$.ready(() => {
             this.setLastReload();
@@ -154,6 +158,7 @@ class View extends BaseView {
             if (false === response.toLowerCase().includes('has-error')) {
                 this.selectedProcess = null;
                 this.loadAppointmentForm(true, true, $container);
+                this.loadQueueInfo();
                 this.loadQueueTable();
                 this.loadCalendar();
             }
@@ -177,6 +182,7 @@ class View extends BaseView {
         if ($container) {
             return this.loadContent(`${this.includeUrl}/appointmentForm/`, 'POST', {'delete': 1, 'processId': processId, 'initiator': this.initiator}, $container).then(() => {
                   this.loadAppointmentForm(true, true, $container);
+                  this.loadQueueInfo();
                   this.loadQueueTable();
                   this.loadCalendar();
             });
@@ -185,6 +191,7 @@ class View extends BaseView {
           return this.loadCall(`${this.includeUrl}/appointmentForm/`, 'POST', {'delete': 1, 'processId': processId, 'initiator': this.initiator}).then((response) => {
                 this.loadMessage(response, () => {
                     this.loadAppointmentForm(true, true);
+                    this.loadQueueInfo();
                     this.loadQueueTable();
                     this.loadCalendar();
                     hideSpinner();
@@ -212,6 +219,7 @@ class View extends BaseView {
         sendData.push({name: 'queue', value: 1});
         this.loadContent(`${this.includeUrl}/appointmentForm/`, 'POST', sendData, $container).then(() => {
             this.loadAppointmentForm(true, true, $container);
+            this.loadQueueInfo();
             this.loadQueueTable();
             this.loadCalendar();
         });
@@ -313,6 +321,15 @@ class View extends BaseView {
         );
     }
 
+    onGhostWorkstationChange($container, event) {
+        let ghostWorkstationCount = "-1";
+        if (event.target.value > -1)
+            ghostWorkstationCount = event.target.value;
+        this.loadContent(`${this.includeUrl}/counter/queueInfo/?ghostworkstationcount=${ghostWorkstationCount}`, null, null, $container).then(() => {
+            this.loadAllPartials();
+        });
+    }
+
     loadAllPartials() {
         return Promise.all([
             this.loadCalendar(),
@@ -402,6 +419,23 @@ class View extends BaseView {
             onChangeTableView: this.onChangeTableView,
             onConfirm: this.onConfirm,
             onReloadQueueTable: this.onReloadQueueTable,
+            showLoader: showLoader
+        })
+    }
+
+    loadQueueInfo (showLoader = true) {
+        return new QueueInfoView($.find('[data-queue-info]'), {
+            selectedDate: this.selectedDate,
+            includeUrl: this.includeUrl,
+            onGhostWorkstationChange: this.onGhostWorkstationChange,
+            showLoader: showLoader
+        })
+    }
+
+    loadAppointmentTimes (showLoader = true) {
+        return new AppointmentTimesView($.find('[data-appointment-times]'), {
+            selectedDate: this.selectedDate,
+            includeUrl: this.includeUrl,
             showLoader: showLoader
         })
     }

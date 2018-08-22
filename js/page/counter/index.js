@@ -1,16 +1,12 @@
 /* global window */
 import Workstation from '../workstation'
 import settings from '../../settings'
-import AppointmentTimesView from '../../block/appointment/times'
-import QueueInfoView from '../../block/queue/info'
 
 class View extends Workstation {
 
     constructor (element, options) {
         super(element, options);
-        this.bindPublicMethods(
-            'onGhostWorkstationChange'
-        );
+        this.bindPublicMethods();
         //console.log('Component: Counter', this, options);
     }
 
@@ -37,15 +33,6 @@ class View extends Workstation {
         });
     }
 
-    onGhostWorkstationChange($container, event) {
-        let ghostWorkstationCount = "-1";
-        if (event.target.value > -1)
-            ghostWorkstationCount = event.target.value;
-        this.loadContent(`${this.includeUrl}/counter/queueInfo/?ghostworkstationcount=${ghostWorkstationCount}`, null, null, $container).then(() => {
-            this.loadAllPartials();
-        });
-    }
-
     loadAllPartials() {
         return Promise.all([
             this.loadCalendar(),
@@ -55,24 +42,6 @@ class View extends Workstation {
             this.loadAppointmentTimes()
         ])
     }
-
-    loadAppointmentTimes (showLoader = true) {
-        return new AppointmentTimesView(this.$main.find('[data-appointment-times]'), {
-            selectedDate: this.selectedDate,
-            includeUrl: this.includeUrl,
-            showLoader: showLoader
-        })
-    }
-
-    loadQueueInfo (showLoader = true) {
-        return new QueueInfoView(this.$main.find('[data-queue-info]'), {
-            selectedDate: this.selectedDate,
-            includeUrl: this.includeUrl,
-            onGhostWorkstationChange: this.onGhostWorkstationChange,
-            showLoader: showLoader
-        })
-    }
-
 }
 
 export default View;
