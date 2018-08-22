@@ -33,6 +33,8 @@ class View extends BaseView {
             'onDateToday',
             'onSelectDateWithOverlay',
             'onNextProcess',
+            'onCallNextProcess',
+            'onCancelNextProcess',
             'onDeleteProcess',
             'onConfirm',
             'onEditProcess',
@@ -230,6 +232,17 @@ class View extends BaseView {
         this.loadQueueTable();
     }
 
+    onCallNextProcess() {
+        let exclude = $($.find('[data-called-process]')).data('calledProcess');
+        const url = `${this.includeUrl}/workstation/process/cancel/next/?exclude=` + exclude
+        return this.loadContent(url, 'GET', null, $('.client-next'));
+    }
+
+    onCancelNextProcess() {
+        this.calledProcess = null;
+        this.loadClientNext();
+    }
+
     onReloadQueueTable(event) {
         stopEvent(event);
         this.loadQueueTable();
@@ -335,6 +348,8 @@ class View extends BaseView {
             includeUrl: this.includeUrl,
             calledProcess: this.calledProcess,
             onNextProcess: this.onNextProcess,
+            onCallNextProcess: this.onCallNextProcess,
+            onCancelNextProcess: this.onCancelNextProcess,
             onAbortMessage: this.onAbortMessage,
             showLoader: showLoader
         })
@@ -377,6 +392,8 @@ class View extends BaseView {
             onDeleteProcess: this.onDeleteProcess,
             onEditProcess: this.onEditProcess,
             onNextProcess: this.onNextProcess,
+            onCallNextProcess: this.onCallNextProcess,
+            onCancelNextProcess: this.onCancelNextProcess,
             onResetProcess: this.onResetProcess,
             onAbortMessage: this.onAbortMessage,
             onSendCustomMail: this.onSendCustomMail,
