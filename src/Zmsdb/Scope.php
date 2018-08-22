@@ -338,6 +338,7 @@ class Scope extends Base
         $this->writeItem($query);
         $lastInsertId = $this->getWriter()
             ->lastInsertId();
+        $this->replacePreferences($entity);
         return $this->readEntity($lastInsertId);
     }
 
@@ -357,7 +358,20 @@ class Scope extends Base
         $values = $query->reverseEntityMapping($entity);
         $query->addValues($values);
         $this->writeItem($query);
+        $this->replacePreferences($entity);
         return $this->readEntity($scopeId, $resolveReferences);
+    }
+
+    public function replacePreferences(\BO\Zmsentities\Scope $entity)
+    {
+        $preferenceQuery = new Preferences();
+        $entityName = 'scope';
+        $entityId = $entity['id'];
+        foreach ($entity['preferences'] as $groupName => $groupValues) {
+            foreach ($groupValues as $name => $value) {
+                $preferenceQuery->replaceProperty($entityName, $entityId, $groupName, $name, $value);
+            }
+        }
     }
 
     /**
@@ -483,6 +497,19 @@ class Scope extends Base
         $entity = $this->readEntity($scopeId);
         $query = new Query\Scope(Query\Base::DELETE);
         $query->addConditionScopeId($scopeId);
+        $this->deletePreferences($entity);
         return ($this->deleteItem($query)) ? $entity : null;
+    }
+
+    public function deletePreferences(\BO\Zmsentities\Scope $entity)
+    {
+        $preferenceQuery = new Preferences();
+        $entityName = 'scope';
+        $entityId = $entity['id'];
+        foreach ($entity['preferences'] as $groupName => $groupValues) {
+            foreach (array_keys($groupValues) as $name) {
+                $preferenceQuery->deleteProperty($entityName, $entityId, $groupName, $name);
+            }
+        }
     }
 }
