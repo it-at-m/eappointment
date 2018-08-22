@@ -33,7 +33,9 @@ class ApiQuotaDeleteByCron
                 }
             }
         } else {
-            error_log("INFO: no expired quota was found");
+            if ($verbose) {
+                error_log("INFO: no expired quota was found");
+            }
         }
     }
 
