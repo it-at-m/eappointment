@@ -9,6 +9,7 @@ use \BO\Zmsentities\Scope as ScopeEntity;
 /**
  * @SuppressWarnings(Public)
  * @SuppressWarnings(Complexity)
+ * @SuppressWarnings(Coupling)
  */
 class Slot extends Base
 {
@@ -48,6 +49,29 @@ class Slot extends Base
         return $slotID ? $slotID['slotID'] : false ;
     }
 
+    public function hasScopeRelevantChanges(
+        \BO\Zmsentities\Scope $scope,
+        \DateTimeInterface $slotLastChange = null
+    ) {
+        $startInDaysDefault = (new Preferences())
+            ->readProperty('scope', $scope->id, 'appointment', 'startInDaysDefault');
+        $endInDaysDefault = (new Preferences())
+            ->readProperty('scope', $scope->id, 'appointment', 'endInDaysDefault');
+        if ($scope->preferences['appointment']['startInDaysDefault'] != $startInDaysDefault
+            || $scope->preferences['appointment']['endInDaysDefault'] != $endInDaysDefault
+        ) {
+            return true;
+        }
+        $startInDaysChange = (new Preferences())
+            ->readChangeDateTime('scope', $scope->id, 'appointment', 'startInDaysDefault');
+        $endInDaysChange = (new Preferences())
+            ->readChangeDateTime('scope', $scope->id, 'appointment', 'endInDaysDefault');
+        if ($startInDaysChange->getTimestamp() > $slotLastChange->getTimestamp()
+            || $endInDaysChange->getTimestamp() > $slotLastChange->getTimestamp()) {
+            return true;
+        }
+    }
+
     public function isAvailabilityOutdated(
         \BO\Zmsentities\Availability $availability,
         \DateTimeInterface $now,
@@ -57,7 +81,9 @@ class Slot extends Base
             $availability['processingNote'][] = 'outdated: availability change';
             return true;
         }
-        if ($availability->scope->isNewerThan($slotLastChange)) {
+        if ($availability->scope->isNewerThan($slotLastChange)
+            && $this->hasScopeRelevantChanges($availability->scope, $slotLastChange)
+        ) {
             $availability['processingNote'][] = 'outdated: scope change';
             return true;
         }
@@ -190,7 +216,7 @@ class Slot extends Base
         if (!$last['dateString']) {
             $last['dateString'] = '1970-01-01 12:00';
         }
-        return new \DateTimeImmutable($last['dateString']);
+        return new \DateTimeImmutable($last['dateString'] . ' UTC');
     }
 
     public function readLastChangedTimeByScope(ScopeEntity $scope)
@@ -204,7 +230,7 @@ class Slot extends Base
         if (!$last['dateString']) {
             $last['dateString'] = '1970-01-01 12:00';
         }
-        return new \DateTimeImmutable($last['dateString']);
+        return new \DateTimeImmutable($last['dateString'] . ' UTC');
     }
 
     public function readLastChangedTimeByAvailability(AvailabilityEntity $availabiliy)
@@ -218,7 +244,7 @@ class Slot extends Base
         if (!$last['dateString']) {
             $last['dateString'] = '1970-01-01 12:00';
         }
-        return new \DateTimeImmutable($last['dateString']);
+        return new \DateTimeImmutable($last['dateString'] . ' UTC');
     }
 
     public function updateSlotProcessMapping($scopeID = null)

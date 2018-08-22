@@ -88,7 +88,7 @@ class DayOff extends Base implements MappingInterface
     {
         $data[$this->getPrefixed("date")] = (new \DateTime($data[$this->getPrefixed("date")]))->getTimestamp();
         $data[$this->getPrefixed("lastChange")] =
-            (new \DateTime($data[$this->getPrefixed("lastChange")]))->getTimestamp();
+            (new \DateTime($data[$this->getPrefixed("lastChange")] . ' UTC'))->getTimestamp();
         return $data;
     }
 }
