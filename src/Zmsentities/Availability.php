@@ -575,6 +575,13 @@ class Availability extends Schema\Entity
         return $availability;
     }
 
+    public function withScope(\BO\Zmsentities\Scope $scope)
+    {
+        $availability = clone $this;
+        $availability->scope = $scope;
+        return $availability;
+    }
+
     public function __toString()
     {
         $info = "Availability.".$this['type']." #" . $this['id'];
