@@ -365,3 +365,11 @@
             {{ description | raw }}
         </p>
 {% endmacro %}
+
+{% macro providername(name) %}
+    {% if name %}
+         {{ name }}
+    {% else %}
+         {% trans %} (nicht zugeordnet) {% endtrans %}
+    {% endif %}
+{% endmacro %}

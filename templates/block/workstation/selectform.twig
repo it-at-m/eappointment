@@ -1,5 +1,5 @@
 {% embed "block/scaffholding/board.twig" with {'class': 'loginform'} %}
-        {% from 'element/helper/form.twig' import formgroup, formbutton, inputfield %}
+        {% from 'element/helper/form.twig' import formgroup, formbutton, inputfield, providername %}
 
         {% block board_title %}
             {{ title }}
@@ -15,11 +15,11 @@
                     {% for department in workstation.useraccount.departments %}
                     	{% set scopeOptionsGroupOptions = [] %}
                     	{% for scope in department.scopes %}
-                            {% set scopeOptionsGroupOptions = scopeOptionsGroupOptions|merge([{ "value": scope.id, "name": scope.contact.name  ~ " " ~ scope.shortName }]) %}
+                            {% set scopeOptionsGroupOptions = scopeOptionsGroupOptions|merge([{ "value": scope.id, "name": providername(scope.contact.name)  ~ " " ~ scope.shortName }]) %}
                         {% endfor %}
                         {% for cluster in department.clusters %}
                             {% for scope in cluster.scopes %}
-                                {% set scopeOptionsGroupOptions = scopeOptionsGroupOptions|merge([{ "value": scope.id, "name": scope.contact.name ~ " " ~ scope.shortName }]) %}
+                                {% set scopeOptionsGroupOptions = scopeOptionsGroupOptions|merge([{ "value": scope.id, "name": providername(scope.contact.name) ~ " " ~ scope.shortName }]) %}
                             {% endfor %}
                         {% endfor %}
                         {% set scopeOptionsGroup = scopeOptionsGroup|merge([{ 'name' : department.name, 'options' : scopeOptionsGroupOptions|msort('name') }]) %}
