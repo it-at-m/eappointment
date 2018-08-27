@@ -58,11 +58,16 @@ class ProcessQueueTest extends Base
                     'url' => '/scope/141/cluster/',
                     'response' => $this->readFixture("GET_cluster_109.json")
                 ],
-
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_scope_141.json")
+                ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/availability/',
-                    'parameters' => ['resolveReferences' => 2],
+                    'parameters' => ['resolveReferences' => 0],
                     'response' => $this->readFixture("GET_scope_141_availability.json")
                 ],
                 [
@@ -113,8 +118,14 @@ class ProcessQueueTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
+                    'url' => '/scope/141/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_scope_141.json")
+                ],
+                [
+                    'function' => 'readGetResult',
                     'url' => '/scope/141/availability/',
-                    'parameters' => ['resolveReferences' => 2],
+                    'parameters' => ['resolveReferences' => 0],
                     'response' => $this->readFixture("GET_scope_141_availability.json")
                 ],
                 [
@@ -170,11 +181,16 @@ class ProcessQueueTest extends Base
                     'url' => '/scope/141/cluster/',
                     'response' => $this->readFixture("GET_cluster_109.json")
                 ],
-
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_scope_141.json")
+                ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/availability/',
-                    'parameters' => ['resolveReferences' => 2],
+                    'parameters' => ['resolveReferences' => 0],
                     'response' => $this->readFixture("GET_scope_141_availability.json")
                 ],
                 [

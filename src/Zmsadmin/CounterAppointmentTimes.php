@@ -23,8 +23,9 @@ class CounterAppointmentTimes extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
         $dateTime = new \BO\Zmsentities\Helper\DateTime($selectedDate);
         $availabilityList = \App::$http
-            ->readGetResult('/scope/'. $workstation->scope['id'] . '/availability/', ['resolveReferences' => 2])
+            ->readGetResult('/scope/'. $workstation->scope['id'] . '/availability/', ['resolveReferences' => 0])
             ->getCollection()
+            ->withScope(new \BO\Zmsentities\Scope($workstation->scope))
             ->withDateTime($dateTime);
 
         return \BO\Slim\Render::withHtml(

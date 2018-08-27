@@ -37,11 +37,10 @@ class ScopeAvailabilityDay extends BaseController
 
     protected static function getAvailabilityData($scope, $dateString)
     {
-        $scope_id = $scope->id;
         $dateTime = new \BO\Zmsentities\Helper\DateTime($dateString);
         try {
             $availabilityList = \App::$http
-                ->readGetResult('/scope/' . intval($scope_id) . '/availability/', [
+                ->readGetResult('/scope/' . intval($scope->id) . '/availability/', [
                     'reserveEntityIds' => 1,
                     'resolveReferences' => 0
                 ])
@@ -52,12 +51,9 @@ class ScopeAvailabilityDay extends BaseController
             }
             $availabilityList = new \BO\Zmsentities\Collection\AvailabilityList();
         }
-        foreach ($availabilityList as $availability) {
-            $availability->scope = $scope;
-        }
-        $availabilityList = $availabilityList->withDateTime($dateTime);
+        $availabilityList = $availabilityList->withScope($scope)->withDateTime($dateTime);
         $processList = \App::$http
-            ->readGetResult('/scope/' . intval($scope_id) . '/process/' . $dateTime->format('Y-m-d') . '/')
+            ->readGetResult('/scope/' . intval($scope->id) . '/process/' . $dateTime->format('Y-m-d') . '/')
             ->getCollection();
         $processList = ($processList) ? $processList : new \BO\Zmsentities\Collection\ProcessList();
         $conflicts = $availabilityList->getConflicts();

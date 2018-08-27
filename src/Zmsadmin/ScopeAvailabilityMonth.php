@@ -35,16 +35,15 @@ class ScopeAvailabilityMonth extends BaseController
             $availabilityList = \App::$http->readGetResult(
                 '/scope/'. $scopeId .'/availability/',
                 ['resolveReferences' => 0]
-            )->getCollection();
+            )
+            ->getCollection();
         } catch (\BO\Zmsclient\Exception $exception) {
             if ($exception->template != 'BO\Zmsapi\Exception\Availability\AvailabilityNotFound') {
                 throw $exception;
             }
             $availabilityList = new \BO\Zmsentities\Collection\AvailabilityList();
         }
-        foreach ($availabilityList as $availability) {
-            $availability->scope = $scope;
-        }
+        $availabilityList = $availabilityList->withScope($scope);
         $calendar = new Calendar();
         $calendar->firstDay->setDateTime($dateTime->modify('first day of this month'));
         $calendar->lastDay->setDateTime($dateTime->modify('last day of this month'));
