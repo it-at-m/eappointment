@@ -43,10 +43,15 @@ class AppointmentFormBase
         $input = $request->getParsedBody();
         $scopeId = (isset($input['scope'])) ? $input['scope'] : 0;
         $scope = static::readPreferedScope($request, $scopeId, $workstation);
+        if ($scope->getResolveLevel() < 1) {
+            $scope =  \App::$http->readGetResult('/scope/'. $scope->getId() .'/', ['resolveReferences' => 1])
+                ->getEntity();
+        }
         try {
             $isOpened = \App::$http
-                ->readGetResult('/scope/'. $scope->id .'/availability/', ['resolveReferences' => 2])
+                ->readGetResult('/scope/'. $scope->id .'/availability/', ['resolveReferences' => 0])
                 ->getCollection()
+                ->withScope($scope)
                 ->isOpened(\App::$now);
         } catch (\BO\Zmsclient\Exception $exception) {
             if ($exception->template == 'BO\\Zmsapi\\Exception\\Availability\\AvailabilityNotFound') {
