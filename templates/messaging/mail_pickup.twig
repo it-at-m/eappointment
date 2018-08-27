@@ -1,8 +1,10 @@
 {% block german %}
     Sehr geehrte/r Frau oder Herr {{ client.familyName }},
     <br /><br />
-    Ihr Dokument ({{ process.requests|first.name }}) ist fertig und liegt zur Abholung bereit.,
-    <br /><br />
+    {% for request in process.requests %}
+    Ihr Dokument ({{ request.name }}) ist fertig und liegt zur Abholung bereit.<br />
+    {% endfor %}
+    <br />
     Die Adresse lautet: {{ process.scope.provider.name ~ " " ~ process.scope.provider.contact.street ~", " ~ process.scope.provider.contact.postalCode ~ " " ~ process.scope.provider.contact.city }}.
     <br />
     Bitte beachten Sie, dass Antworten auf diese eMail nicht möglich sind.
