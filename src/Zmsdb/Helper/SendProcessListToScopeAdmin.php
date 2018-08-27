@@ -13,14 +13,19 @@ class SendProcessListToScopeAdmin
 
     protected $verbose = false;
 
-    public function __construct($verbose = false)
+    public function __construct($verbose = false, $scopeId = false)
     {
         $this->dateTime = new \DateTimeImmutable();
         if ($verbose) {
             error_log("INFO: Send process list of current day to scope admin");
             $this->verbose = true;
         }
-        $this->scopeList = (new \BO\Zmsdb\Scope)->readListWithScopeAdminEmail(1);
+        if ($scopeId) {
+            $scope = (new \BO\Zmsdb\Scope())->readEntity($scopeId);
+            $this->scopeList = (new \BO\Zmsentities\Collection\ScopeList())->addEntity($scope);
+        } else {
+            $this->scopeList = (new \BO\Zmsdb\Scope)->readListWithScopeAdminEmail(1);
+        }
     }
 
     public function startProcessing($commit)
