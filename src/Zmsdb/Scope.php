@@ -364,12 +364,14 @@ class Scope extends Base
 
     public function replacePreferences(\BO\Zmsentities\Scope $entity)
     {
-        $preferenceQuery = new Preferences();
-        $entityName = 'scope';
-        $entityId = $entity['id'];
-        foreach ($entity['preferences'] as $groupName => $groupValues) {
-            foreach ($groupValues as $name => $value) {
-                $preferenceQuery->replaceProperty($entityName, $entityId, $groupName, $name, $value);
+        if (isset($entity['preferences'])) {
+            $preferenceQuery = new Preferences();
+            $entityName = 'scope';
+            $entityId = $entity['id'];
+            foreach ($entity['preferences'] as $groupName => $groupValues) {
+                foreach ($groupValues as $name => $value) {
+                    $preferenceQuery->replaceProperty($entityName, $entityId, $groupName, $name, $value);
+                }
             }
         }
     }
