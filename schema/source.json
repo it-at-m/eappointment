@@ -1,0 +1,48 @@
+{
+    "type": "object",
+    "description": "An source represents an import from a data source providing data for providers and requests as well as their relations.\n",
+    "example": {
+        "contact": {
+            "name": "M. Muster",
+            "email": "m.muster@verwalt-berlin.de"
+        },
+        "source": "dldb",
+        "label": "Dienstleistungsdatenbank",
+        "lastChange": 1234556789
+    },
+    "additionalProperties": false,
+    "required": [
+        "source"
+    ],
+    "properties": {
+        "contact": {
+            "$ref": "contact.json"
+        },
+        "source": {
+            "type": "string"
+        },
+        "editable": {
+            "description": "if this is true, a user might upload an update of the source, on false, this source is updated via automated scripts",
+            "type": "boolean"
+        },
+        "label": {
+            "type": "string"
+        },
+        "lastChange": {
+            "type": "number",
+            "description": "unix timestamp of the last import"
+        },
+        "providers": {
+            "type": "array",
+            "items": {
+                "$ref": "provider.json"
+            }
+        },
+        "requests": {
+            "type": "array",
+            "items": {
+                "$ref": "request.json"
+            }
+        }
+    }
+}
