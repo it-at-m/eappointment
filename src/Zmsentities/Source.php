@@ -38,8 +38,7 @@ class Source extends Schema\Entity
     public function getProviderList()
     {
         $providerList = new Collection\ProviderList();
-        foreach($this->toProperty()->providers->get() as $provider)
-        {
+        foreach ($this->toProperty()->providers->get() as $provider) {
             if (! $provider instanceof Provider) {
                 $provider = new Provider($provider);
             }
@@ -51,8 +50,7 @@ class Source extends Schema\Entity
     public function getRequestList()
     {
         $requestList = new Collection\RequestList();
-        foreach($this->toProperty()->requests->get() as $request)
-        {
+        foreach ($this->toProperty()->requests->get() as $request) {
             if (! $request instanceof Request) {
                 $request = new Request($request);
             }
