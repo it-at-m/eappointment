@@ -8,12 +8,12 @@ class Request extends Base
 {
     public function readEntity($source, $requestId, $resolveReferences = 0)
     {
-        self::testSource($source);
         $query = new Query\Request(Query\Base::SELECT);
         $query
             ->setResolveLevel($resolveReferences)
             ->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
+            ->addConditionRequestSource($source)
             ->addConditionRequestId($requestId);
         $request = $this->fetchOne($query, new Entity());
         if (!$request->hasId()) {
@@ -37,13 +37,6 @@ class Request extends Base
             'provider_id' => $providerId
         ]);
         return $requestSlotCount;
-    }
-
-    protected static function testSource($source)
-    {
-        if ('dldb' !== $source) {
-            throw new Exception\UnknownDataSource("Unknown source ". htmlspecialchars($source));
-        }
     }
 
     /**
@@ -89,15 +82,25 @@ class Request extends Base
 
     public function readListByProvider($source, $providerId, $resolveReferences = 0)
     {
-        self::testSource($source);
         $query = new Query\Request(Query\Base::SELECT);
         $query->setResolveLevel($resolveReferences);
         $query->addConditionProviderId($providerId);
+        $query->addConditionRequestSource($source);
         $query->addEntityMapping();
         $requestList = $this->readCollection($query, $resolveReferences);
         foreach ($requestList as $request) {
             $request['timeSlotCount'] = $this->readSlotsOnEntityByProvider($request['id'], $providerId);
         }
+        return $requestList;
+    }
+
+    public function readListBySource($source, $resolveReferences = 0)
+    {
+        $query = new Query\Request(Query\Base::SELECT);
+        $query->setResolveLevel($resolveReferences);
+        $query->addConditionRequestSource($source);
+        $query->addEntityMapping();
+        $requestList = $this->readCollection($query, $resolveReferences - 1);
         return $requestList;
     }
 

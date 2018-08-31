@@ -14,13 +14,6 @@ class ProviderTest extends Base
         $this->assertEquals(true, array_key_exists('data', $entity));
     }
 
-    public function testUnknownSource()
-    {
-        $this->expectException("\\BO\\Zmsdb\\Exception\\UnknownDataSource");
-        $entity = (new Query())->readEntity('test', 122280, 1);
-        $this->assertEntity("\\BO\\Zmsentities\\Provider", $entity);
-    }
-
     public function testEmptyDldbData()
     {
         $entity = (new Query())->readEntity('dldb', 122280, 0);

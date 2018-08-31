@@ -98,7 +98,6 @@ class Scope extends Base implements MappingInterface
             'provider.id'
         );
         $providerQuery = new Provider($this, $this->getPrefixed('provider__'));
-
         return [$providerQuery];
     }
 
@@ -124,9 +123,7 @@ class Scope extends Base implements MappingInterface
         );
         $this->leftJoin(
             new Alias(Provider::getTablename(), 'scopeprovider'),
-            'scope.InfoDienstleisterID',
-            '=',
-            'scopeprovider.id'
+            self::expression('scope.InfoDienstleisterID = scopeprovider.id && scope.source = scopeprovider.source')
         );
     }
 
@@ -196,17 +193,9 @@ class Scope extends Base implements MappingInterface
             'status__queue__lastGivenNumber' => 'scope.letztewartenr',
             'status__queue__lastGivenNumberTimestamp' => 'scope.wartenrdatum',
             'status__ticketprinter__deactivated' => 'scope.wartenrsperre',
-            'provider__id' => 'scope.InfoDienstleisterID',
-            'provider__source' => self::expression('"dldb"'),
-            //'department__id' => 'scope.BehoerdenID'
-        ];
-    }
-
-    public function getReferenceMapping()
-    {
-        return [
-            //'department__$ref' => self::expression('CONCAT("/department/", `scope`.`BehoerdenID`, "/")'),
-            'provider__$ref' => self::expression('CONCAT("/provider/dldb/", `scope`.`InfoDienstleisterID`, "/")'),
+            'provider__id' => 'scopeprovider.id',
+            'provider__source' => 'scopeprovider.source',
+            'source' => 'scope.source'
         ];
     }
 
@@ -322,6 +311,7 @@ class Scope extends Base implements MappingInterface
         $lastGivenTimestamp = $entity->getStatus('queue', 'lastGivenNumberTimestamp');
         $data['wartenrdatum'] = ($lastGivenTimestamp) ? date('Y-m-d', $lastGivenTimestamp) : null;
         $data['wartenrsperre'] = $entity->getStatus('ticketprinter', 'deactivated');
+        $data['source'] = $entity->getProvider()->source;
 
         $data = array_filter($data, function ($value) {
             return ($value !== null && $value !== false);
