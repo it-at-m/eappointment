@@ -35,14 +35,6 @@ class RequestTest extends Base
         (new Query())->readEntity('dldb', 999999);
     }
 
-    public function testExceptionUnknownDataSource()
-    {
-        $this->expectException("\\BO\\Zmsdb\\Exception\\UnknownDataSource");
-        //source not dldb
-        $entity = (new Query())->readEntity('test', 122280, 1);
-        $this->assertEntity("\\BO\\Zmsentities\\Request", $entity);
-    }
-
     public function testListByProvider()
     {
         //Dienstleister Bürgeramt I in Köpenick

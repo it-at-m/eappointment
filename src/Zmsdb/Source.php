@@ -60,8 +60,8 @@ class Source extends Base
         $resolveReferences
     ) {
         if (0 < $resolveReferences) {
-            $entity['providers'] = (new ProviderList())->readBySource($entity->source, $resolveReferences);
-            $entity['requests'] = (new RequestList())->readBySource($entity->source, $resolveReferences);
+            $entity['providers'] = (new Provider())->readListBySource($entity->source, $resolveReferences - 1);
+            $entity['requests'] = (new Request())->readListBySource($entity->source, $resolveReferences - 1);
         }
         return $entity;
     }

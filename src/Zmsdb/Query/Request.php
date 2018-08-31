@@ -93,6 +93,12 @@ class Request extends Base
         $this->query->where('xrequest.provider__id', '=', $providerId);
     }
 
+    public function addConditionRequestSource($source)
+    {
+        $this->query->where('request.source', '=', $source);
+        return $this;
+    }
+
     public function postProcess($data)
     {
         if (isset($data[$this->getPrefixed('data')]) && $data[$this->getPrefixed('data')]) {

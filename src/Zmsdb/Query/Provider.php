@@ -27,10 +27,10 @@ class Provider extends Base
             'contact__region' => 'provider.contact__region',
             'contact__street' => 'provider.contact__street',
             'contact__streetNumber' => 'provider.contact__streetNumber',
-            'source' => 'provider.source',
             'id' => 'provider.id',
             'link' => 'provider.link',
             'name' => 'provider.name',
+            'source' => 'provider.source'
         ];
         if ($this->getResolveLevel() > 0) {
             $mapping['data'] = 'provider.data';
@@ -60,13 +60,11 @@ class Provider extends Base
         return $this;
     }
 
-    /* unused 2017-06-13 TK
     public function addConditionProviderSource($source)
     {
         $this->query->where('provider.source', '=', $source);
         return $this;
     }
-    */
 
     public function addConditionRequestCsv($requestIdCsv)
     {

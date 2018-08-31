@@ -25,7 +25,6 @@ class LoginTest extends Base
         $workstation->name = 12; //Arbeitsplatznummer
 
         $userAccount->addDepartment((new \BO\Zmsdb\Department())->readEntity('72')); //Bürgeramt Egon-Erwin-Kisch-Str.
-
         $workstation->useraccount = $userAccount;
 
         $workstation = $query->updateEntity($workstation);
