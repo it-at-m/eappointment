@@ -276,7 +276,7 @@ class Scope extends Base implements MappingInterface
         $data['reservierungsdauer'] = $entity->getPreference('appointment', 'reservationDuration');
         $data['qtv_url'] = $entity->getPreference('client', 'alternateAppointmentUrl');
         $data['anmerkungPflichtfeld'] = $entity->getPreference('client', 'amendmentActivated', true);
-        $data['anmerkungLabel'] = $entity->getPreference('client', 'amendmentLabel', true);
+        $data['anmerkungLabel'] = $entity->getPreference('client', 'amendmentLabel');
         $data['emailPflichtfeld'] = $entity->getPreference('client', 'emailRequired', true);
         $data['telefonaktiviert'] = $entity->getPreference('client', 'telephoneActivated', true);
         $data['telefonPflichtfeld'] = $entity->getPreference('client', 'telephoneRequired', true);
