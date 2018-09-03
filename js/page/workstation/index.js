@@ -155,9 +155,10 @@ class View extends BaseView {
         sendData.push({name: 'selectedprocess', value: this.selectedProcess});
         sendData.push({name: 'initiator', value: this.initiator});
         this.loadContent(`${this.includeUrl}/appointmentForm/`, 'POST', sendData, $container).then((response) => {
+            this.loadAppointmentForm(true, true, $container);
             if (false === response.toLowerCase().includes('has-error')) {
                 this.selectedProcess = null;
-                this.loadAppointmentForm(true, true, $container);
+           //     this.loadAppointmentForm(true, true, $container);
                 this.loadQueueInfo();
                 this.loadQueueTable();
                 this.loadCalendar();
