@@ -48,4 +48,11 @@ class ProviderTest extends EntityCommonTests
         $uniqueCollection = $collection->withUniqueProvider();
         $this->assertEquals(1, $uniqueCollection->count());
     }
+
+    public function testRequestRelation()
+    {
+        $entity = $this->getExample();
+        $this->assertTrue($entity->getRequestRelationList()->hasRequest(120335));
+        $this->assertFalse($entity->getRequestRelationList()->hasRequest(123456));
+    }
 }

@@ -22,14 +22,14 @@ class SourceTest extends EntityCommonTests
     public function testProvider()
     {
         $entity = (new $this->entityclass())->getExample();
-        $entity->providers = array((new \BO\Zmsentities\Provider())->getExample());
+        $entity->providers = array((new \BO\Zmsentities\Provider())->getExample()->getArrayCopy());
         $this->assertTrue($entity->hasProvider('21334'), 'ProviderId does not exists');
     }
 
     public function testRequest()
     {
         $entity = (new $this->entityclass())->getExample();
-        $entity->requests = array((new \BO\Zmsentities\Request())->getExample());
+        $entity->requests = array((new \BO\Zmsentities\Request())->getExample()->getArrayCopy());
         $this->assertTrue($entity->hasRequest('120335'), 'RequestId does not exists');
     }
 }
