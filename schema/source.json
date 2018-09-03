@@ -6,6 +6,7 @@
             "name": "M. Muster",
             "email": "m.muster@verwalt-berlin.de"
         },
+        "editable": false,
         "source": "dldb",
         "label": "Dienstleistungsdatenbank",
         "lastChange": 1234556789
