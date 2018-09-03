@@ -2,13 +2,12 @@ DROP TABLE IF EXISTS `source`;
 CREATE TABLE `source` (
     `source` VARCHAR(50) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
     `label` VARCHAR(100) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
-    `editable` BIT(1) DEFAULT 0,
+    `editable` TINYINT(1) NOT NULL DEFAULT 0,
     `contact__name` VARCHAR(50) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
     `contact__email` VARCHAR(50) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
     `lastChange` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-    PRIMARY KEY (`source`),
-    INDEX (`lastChange`)
+    INDEX (`source`, `lastChange`)
 )
 ENGINE = InnoDB
 CHARACTER SET utf8

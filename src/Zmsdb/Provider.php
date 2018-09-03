@@ -16,6 +16,38 @@ class Provider extends Base
             ->addConditionProviderSource($source)
             ->addConditionProviderId($providerId);
         $provider = $this->fetchOne($query, new Entity());
+        $provider = $this->readResolvedReferences($provider, $resolveReferences);
+        return $provider;
+    }
+
+    public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $provider, $resolveReferences)
+    {
+        if (0 < $resolveReferences) {
+            $provider = $this->readWithRequestRelation($provider, $resolveReferences - 1);
+        }
+        return $provider;
+    }
+
+    public function readWithRequestRelation(\BO\Zmsentities\Schema\Entity $provider, $resolveReferences)
+    {
+        if ($provider->hasId()) {
+            $requestRelationList = new \BO\Zmsentities\Collection\RequestRelationList();
+            foreach ($this->readSlotCountById($provider->getId()) as $item) {
+                $request = new \BO\Zmsentities\Request([
+                    'id' => $item['request__id'],
+                    '$ref' => '/request/'. $provider->source .'/'. $item['request__id'] .'/'
+                ]);
+                if (1 <= $resolveReferences) {
+                    $request = (new Request)->readEntity($provider->source, $request->getId(), $resolveReferences - 1);
+                }
+                $entity = new \BO\Zmsentities\RequestRelation([
+                    'request' => $request,
+                    'slots' => $item['slots']
+                ]);
+                $requestRelationList->addEntity($entity);
+            }
+            $provider['requestrelation'] = $requestRelationList;
+        }
         return $provider;
     }
 

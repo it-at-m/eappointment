@@ -14,6 +14,16 @@ class ProviderTest extends Base
         $this->assertEquals(true, array_key_exists('data', $entity));
     }
 
+    public function testWithRequestRelations()
+    {
+        $entity = (new Query())->readEntity('dldb', 122280, 1);
+        $this->assertEquals(58, $entity->getRequestRelationList()->getRequestList()->count());
+        $this->assertArrayHasKey('$ref', $entity->getRequestRelationList()->getFirst()->request);
+
+        $entity2 = (new Query())->readEntity('dldb', 122280, 2);
+        $this->assertArrayHasKey('name', $entity2->getRequestRelationList()->getFirst()->request);
+    }
+
     public function testEmptyDldbData()
     {
         $entity = (new Query())->readEntity('dldb', 122280, 0);
