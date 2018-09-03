@@ -11,11 +11,14 @@ class Source extends Schema\Entity
     public function getDefaults()
     {
         return [
-            'source' => 'dldb',
-            'contact' => new Contact(),
-            'label' => 'Dienstleistungsdatenbank',
+            'source' => '',
+            'contact' => new Contact([
+                'name' => '',
+                'email' => ''
+            ]),
             'providers' => [],
             'requests' => [],
+            'label' => '',
             'editable' => false
         ];
     }
@@ -83,6 +86,6 @@ class Source extends Schema\Entity
 
     public function isEditable()
     {
-        return $this->toProperty()->editable->get();
+        return ($this->toProperty()->editable->get()) ? true : false;
     }
 }
