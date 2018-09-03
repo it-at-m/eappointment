@@ -4,6 +4,8 @@ namespace BO\Zmsdb;
 
 use \BO\Zmsentities\Source as Entity;
 
+use \BO\Zmsentities\Collection\SourceList as Collection;
+
 use \BO\Zmsentities\Collection\ProviderList;
 
 use \BO\Zmsentities\Collection\RequestList;
@@ -23,6 +25,9 @@ class Source extends Base
             ->addResolvedReferences($resolveReferences)
             ->addConditionSource($sourceName);
         $entity = $this->fetchOne($query, new Entity());
+        if (! $entity->hasId()) {
+            return null;
+        }
         $entity = $this->readResolvedReferences($entity, $resolveReferences);
         return $entity;
     }
@@ -72,7 +77,7 @@ class Source extends Base
      *
      * @return \BO\Zmsentities\Source
      */
-    public function writeEntity(Entity $entity)
+    public function writeEntity(Entity $entity, $resolveReferences = 0)
     {
         $query = new Query\Source(Query\Base::INSERT);
         $query->addValues(
@@ -85,8 +90,7 @@ class Source extends Base
             )
         );
         $this->writeItem($query);
-        $lastInsertId = $this->getWriter()->lastInsertId();
-        return $this->readEntity($lastInsertId);
+        return $this->readEntity($entity->getSource(), $resolveReferences);
     }
 
     /**
