@@ -1,0 +1,22 @@
+{
+    "type": "object",
+    "description": "information of a request relation to a provider",
+    "example": {
+        "request": {
+            "id": "120335",
+            "name": "Abmeldung einer Wohnung",
+            "source": "dldb"
+        },
+        "slots": 1
+    },
+    "additionalProperties": false,
+    "properties": {
+        "request": {
+            "$ref": "request.json"
+        },
+        "slots": {
+            "type": "number",
+            "description": "Number of slots required to fullfill request on provider"
+        }
+    }
+}
