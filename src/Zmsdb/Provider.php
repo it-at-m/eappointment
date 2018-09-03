@@ -68,7 +68,7 @@ class Provider extends Base
 
     public function readSlotCountById($providerId)
     {
-        $query = Query\Provider::getQuerySlots();
+        $query = Query\RequestProvider::getQuerySlotsByProviderId();
         $slotCounts = $this->getReader()->fetchAll($query, ['provider_id' => $providerId]);
         return $slotCounts;
     }
@@ -103,5 +103,43 @@ class Provider extends Base
         $query->addEntityMapping();
         $query->addConditionProviderSource($source);
         return $this->readCollection($query, $resolveReferences);
+    }
+
+    public function writeList($providerList, $source = 'dldb', $returnList = false)
+    {
+        foreach ($providerList as $provider) {
+            $this->writeEntity($provider, $source);
+        }
+        if ($returnList) {
+            return $this->readListBySource($source);
+        }
+    }
+
+    public function writeEntity($provider, $source = 'dldb', $returnEntity = false)
+    {
+        if ($provider['address']['postal_code']) {
+            $query = new Query\Provider(Query\Base::REPLACE);
+            $query->addValues([
+                'source' => $source,
+                'id' => $provider['id'],
+                'name' => $provider['name'],
+                'contact__city' => $provider['address']['city'],
+                'contact__country' => $provider['address']['city'],
+                'contact__lat' => $provider['geo']['lat'],
+                'contact__lon' => $provider['geo']['lon'],
+                'contact__postalCode' => intval($provider['address']['postal_code']),
+                'contact__region' => $provider['address']['city'],
+                'contact__street' => $provider['address']['street'],
+                'contact__streetNumber' => $provider['address']['house_number'],
+                'link' => ('dldb' == $source)
+                    ? 'https://service.berlin.de/standort/'. $provider['id'] .'/'
+                    : ((isset($provider['link'])) ? $provider['link'] : ''),
+                'data' => json_encode($provider)
+            ]);
+            $this->writeItem($query);
+            if ($returnEntity) {
+                return $this->readEntity($source, $provider['id']);
+            }
+        }
     }
 }

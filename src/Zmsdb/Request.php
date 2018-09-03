@@ -24,14 +24,14 @@ class Request extends Base
 
     public function readSlotsOnEntity(\BO\Zmsentities\Request $entity)
     {
-        $query = Query\Request::getQuerySlots();
+        $query = Query\RequestProvider::getQuerySlotsByRequestId();
         $providerSlots = $this->getReader()->fetchAll($query, ['request_id' => $entity->id]);
         return $providerSlots;
     }
 
     public function readSlotsOnEntityByProvider($requestId, $providerId)
     {
-        $query = Query\Request::getQueryRequestSlotCount();
+        $query = Query\RequestProvider::getQueryRequestSlotCount();
         $requestSlotCount = $this->getReader()->fetchValue($query, [
             'request_id' => $requestId,
             'provider_id' => $providerId
@@ -123,5 +123,24 @@ class Request extends Base
         }
         $requestList = new Collection($intersectList);
         return $requestList;
+    }
+
+    public function writeEntity($request, $topic = null, $source = 'dldb', $returnEntity = false)
+    {
+        $query = new Query\Request(Query\Base::REPLACE);
+        $query->addValues([
+            'source' => $source,
+            'id' => $request['id'],
+            'name' => $request['name'],
+            'group' => (isset($topic['name'])) ? $topic['name'] : 'Sonstiges',
+            'link' => ('dldb' == $source)
+                ? 'https://service.berlin.de/dienstleistung/'. $request['id'] .'/'
+                : ((isset($request['link'])) ? $request['link'] : ''),
+            'data' => json_encode($request)
+        ]);
+        $this->writeItem($query);
+        if ($returnEntity) {
+            return $this->readEntity($source, $request['id']);
+        }
     }
 }

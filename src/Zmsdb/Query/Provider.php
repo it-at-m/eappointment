@@ -6,17 +6,6 @@ class Provider extends Base
 {
     const TABLE = 'provider';
 
-    public static function getQuerySlots()
-    {
-        return 'SELECT
-            `request__id`,
-            `slots`
-        FROM `request_provider`
-        WHERE
-            `provider__id` = :provider_id
-            ';
-    }
-
     public function getEntityMapping()
     {
         $mapping = [

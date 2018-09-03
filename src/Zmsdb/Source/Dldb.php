@@ -9,6 +9,7 @@ class Dldb extends \BO\Zmsdb\Base
 {
     public static $importPath = '';
     public static $repository = null;
+    public static $verbose = false;
 
     public function startImport($verbose = true)
     {
@@ -16,146 +17,63 @@ class Dldb extends \BO\Zmsdb\Base
             throw new \Exception('No data path given');
         }
         if ($verbose) {
+            self::$verbose = $verbose;
             echo "Use source-path for dldb: ". static::$importPath . "\n";
         }
         self::$repository = new \BO\Dldb\FileAccess();
         self::$repository->loadFromPath(static::$importPath);
-        $repo = self::$repository;
 
         \BO\Zmsdb\Connection\Select::setTransaction();
 
-        $startTime = microtime(true);
-        $this->replaceRequests($repo->fromService()->fetchList());
-        $time = round(microtime(true) - $startTime, 3);
-        if ($verbose) {
-            echo "Requests: Took $time seconds\n";
-        }
-
-        $startTime = microtime(true);
-        $this->replaceProvider($repo->fromLocation()->fetchList());
-        $time = round(microtime(true) - $startTime, 3);
-        if ($verbose) {
-            echo "Provider: Took $time seconds\n";
-        }
-
-        $startTime = microtime(true);
-        $this->replaceRequestProvider($repo->fromLocation()->fetchList());
-        $time = round(microtime(true) - $startTime, 3);
-        if ($verbose) {
-            echo "RequestProvider: Took $time seconds\n";
-        }
-
-        $startTime = microtime(true);
-        $this->writeDldbImportTime();
-        $time = round(microtime(true) - $startTime, 3);
-        if ($verbose) {
-            echo "LastImportTimeToConfig: Took $time seconds\n";
-        }
+        $this->writeRequestList();
+        $this->writeProviderList();
+        $this->writeRequestProviderList();
+        $this->writeLastUpdate($verbose);
 
         \BO\Zmsdb\Connection\Select::writeCommit();
     }
 
-    public function writeDldbImportTime()
+    protected function writeRequestList()
     {
-        $sql = 'REPLACE INTO `config` SET
-            `name`=:name,
-            `value`=:last_import_date;
-        ';
-        $query = $this->getWriter()->prepare($sql);
-        $query->bindValue('name', 'sources_dldb_last');
-        $query->bindValue('last_import_date', date('c'));
-        $query->execute();
-    }
-
-    public function replaceRequestProvider($providerList)
-    {
-        $this->getWriter()->exec('DELETE FROM `request_provider`;');
-        $sql = 'REPLACE INTO `request_provider` SET
-            `source`=:source,
-            `request__id`=:request__id,
-            `provider__id`=:provider__id,
-            `slots`=:slots;
-        ';
-        $query = $this->getWriter()->prepare($sql);
-        foreach ($providerList as $provider) {
-            // Do not import locations without address
-            if ($provider['address']['postal_code']) {
-                foreach ($provider['services'] as $reference) {
-                    $query->bindValue('source', 'dldb');
-                    $query->bindValue('provider__id', $provider['id']);
-                    $query->bindValue('request__id', $reference['service']);
-                    $query->bindValue('slots', $reference['appointment']['slots']);
-                    $query->execute();
-                }
-            }
+        $startTime = microtime(true);
+        $requestQuery = (new \BO\Zmsdb\Request());
+        foreach (self::$repository->fromService()->fetchList() as $request) {
+            $topic = self::$repository->fromTopic()->fetchId($request['relation']['root_topic']);
+            $requestQuery->writeEntity($request, $topic);
+        }
+        $time = round(microtime(true) - $startTime, 3);
+        if (self::$verbose) {
+            echo "Requests: Took $time seconds\n";
         }
     }
 
-    public function replaceProvider($providerList)
+    protected function writeProviderList()
     {
-        $this->getWriter()->exec('DELETE FROM `provider`;');
-        $sql = 'REPLACE INTO `provider` SET
-            `source`=:source,
-            `id`=:id,
-            `name`=:name,
-            `contact__city`=:contact__city,
-            `contact__country`=:contact__country,
-            `contact__lat`=:contact__lat,
-            `contact__lon`=:contact__lon,
-            `contact__postalCode`=:contact__postalCode,
-            `contact__region`=:contact__region,
-            `contact__street`=:contact__street,
-            `contact__streetNumber`=:contact__streetNumber,
-            `link`=:link,
-            `data`=:data;
-        ';
-        $query = $this->getWriter()->prepare($sql);
-        foreach ($providerList as $provider) {
-            // Do not import locations without address
-            if ($provider['address']['postal_code']) {
-                $query->bindValue('source', 'dldb');
-                $query->bindValue('id', $provider['id']);
-                $query->bindValue('name', $provider['name']);
-                $query->bindValue('contact__city', $provider['address']['city']);
-                $query->bindValue('contact__country', $provider['address']['city']);
-                $query->bindValue('contact__lat', $provider['geo']['lat']);
-                $query->bindValue('contact__lon', $provider['geo']['lon']);
-                $query->bindValue('contact__postalCode', intval($provider['address']['postal_code']));
-                $query->bindValue('contact__region', $provider['address']['city']);
-                $query->bindValue('contact__street', $provider['address']['street']);
-                $query->bindValue('contact__streetNumber', $provider['address']['house_number']);
-                //$query->bindValue('link', $provider['meta']['url']);
-                $query->bindValue('link', "https://service.berlin.de/standort/${provider['id']}/");
-                $query->bindValue('data', json_encode($provider));
-                $query->execute();
-            }
+        $startTime = microtime(true);
+        (new \BO\Zmsdb\Provider())->writeList(self::$repository->fromLocation()->fetchList());
+        $time = round(microtime(true) - $startTime, 3);
+        if (self::$verbose) {
+            echo "Provider: Took $time seconds\n";
         }
     }
 
-    //@codeCoverageIgnoreStart
-    public function replaceRequests($serviceList)
+    protected function writeRequestProviderList()
     {
-        $this->getWriter()->exec('DELETE FROM `request`;');
-        $sql = 'REPLACE INTO `request` SET
-            `source`=:source,
-            `id`=:id,
-            `name`=:name,
-            `link`=:link,
-            `group`=:group,
-            `data`=:data;
-        ';
-        $query = $this->getWriter()->prepare($sql);
-        foreach ($serviceList as $service) {
-            $topic = self::$repository->fromTopic()->fetchId($service['relation']['root_topic']);
-            $query->bindValue('source', 'dldb');
-            $query->bindValue('id', $service['id']);
-            $query->bindValue('name', $service['name']);
-            //$query->bindValue('link', $service['meta']['url']);
-            $query->bindValue('link', "https://service.berlin.de/dienstleistung/${service['id']}/");
-            $query->bindValue('group', $topic['name'] ? $topic['name'] : 'Sonstiges');
-            $query->bindValue('data', json_encode($service));
-            $query->execute();
+        $startTime = microtime(true);
+        (new \BO\Zmsdb\RequestProvider())->writeList(self::$repository->fromLocation()->fetchList());
+        $time = round(microtime(true) - $startTime, 3);
+        if (self::$verbose) {
+            echo "RequestProvider: Took $time seconds\n";
         }
     }
-    //@codeCoverageIgnoreEnd
+
+    protected function writeLastUpdate()
+    {
+        $startTime = microtime(true);
+        (new \BO\Zmsdb\Config())->replaceProperty('sources_dldb_last', date('c'));
+        $time = round(microtime(true) - $startTime, 3);
+        if (self::$verbose) {
+            echo "LastImportTimeToConfig: Took $time seconds\n";
+        }
+    }
 }

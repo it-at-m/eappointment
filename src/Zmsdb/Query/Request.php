@@ -8,28 +8,6 @@ class Request extends Base
 
     const BATABLE = 'buergeranliegen';
 
-    public static function getQuerySlots()
-    {
-        return 'SELECT
-            `provider__id`,
-            `slots`
-        FROM request_provider
-        WHERE
-            `request__id` = :request_id
-            ';
-    }
-
-    public static function getQueryRequestSlotCount()
-    {
-        return 'SELECT
-            `slots`
-        FROM request_provider
-        WHERE
-            `request__id` = :request_id AND
-            `provider__id` = :provider_id
-        ';
-    }
-
     const QUERY_BY_PROCESSID = 'SELECT
             ba.`AnliegenID` AS id
         FROM `zmsbo`.`buergeranliegen` ba
