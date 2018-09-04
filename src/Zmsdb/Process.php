@@ -513,6 +513,7 @@ class Process extends Base implements Interfaces\ResolveReferences
             ->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
             ->addConditionProcessMailReminder($dateTime, $reminderInSeconds)
+            ->addConditionAssigned()
             ->addConditionIgnoreSlots()
             ->addLimit($limit);
         $statement = $this->fetchStatement($selectQuery);
