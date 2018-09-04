@@ -31,22 +31,12 @@ class Provider extends Base
     public function readWithRequestRelation(\BO\Zmsentities\Schema\Entity $provider, $resolveReferences)
     {
         if ($provider->hasId()) {
-            $requestRelationList = new \BO\Zmsentities\Collection\RequestRelationList();
-            foreach ($this->readSlotCountById($provider->getId()) as $item) {
-                $request = new \BO\Zmsentities\Request([
-                    'id' => $item['request__id'],
-                    '$ref' => '/request/'. $provider->source .'/'. $item['request__id'] .'/'
-                ]);
-                if (1 <= $resolveReferences) {
-                    $request = (new Request)->readEntity($provider->source, $request->getId(), $resolveReferences - 1);
-                }
-                $entity = new \BO\Zmsentities\RequestRelation([
-                    'request' => $request,
-                    'slots' => $item['slots']
-                ]);
-                $requestRelationList->addEntity($entity);
+            $requestRelationList = new \BO\Zmsentities\Collection\RequestProviderList();
+            $requestProviderList = (new RequestProvider)->readListByProviderId($provider->getId(), $resolveReferences);
+            foreach ($requestProviderList as $requestProvider) {
+                $requestRelationList->addEntity($requestProvider);
             }
-            $provider['requestrelation'] = $requestRelationList;
+            $provider['requestrelation'] = $requestRelationList->toRequestRelation();
         }
         return $provider;
     }
@@ -64,13 +54,6 @@ class Provider extends Base
             $providerList->addEntity($provider);
         }
         return $providerList;
-    }
-
-    public function readSlotCountById($providerId)
-    {
-        $query = Query\RequestProvider::getQuerySlotsByProviderId();
-        $slotCounts = $this->getReader()->fetchAll($query, ['provider_id' => $providerId]);
-        return $slotCounts;
     }
 
     public function readList($source, $resolveReferences = 0, $isAssigned = null)
@@ -105,17 +88,17 @@ class Provider extends Base
         return $this->readCollection($query, $resolveReferences);
     }
 
-    public function writeList($providerList, $source = 'dldb', $returnList = false)
+    public function writeImportList($providerList, $source = 'dldb', $returnList = false)
     {
         foreach ($providerList as $provider) {
-            $this->writeEntity($provider, $source);
+            $this->writeImportEntity($provider, $source);
         }
         if ($returnList) {
             return $this->readListBySource($source);
         }
     }
 
-    public function writeEntity($provider, $source = 'dldb', $returnEntity = false)
+    public function writeImportEntity($provider, $source = 'dldb', $returnEntity = false)
     {
         if ($provider['address']['postal_code']) {
             $query = new Query\Provider(Query\Base::REPLACE);
