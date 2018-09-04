@@ -56,4 +56,15 @@ class RequestTest extends Base
         $this->expectException('\Exception');
         (new Query)->readEntity('dldb', 120335, null);
     }
+
+    public function testWriteImport()
+    {
+        $query = new Query();
+        $repository = (new \BO\Dldb\FileAccess())->loadFromPath(\BO\Zmsdb\Source\Dldb::$importPath);
+        $importInput = $repository->fromService()->fetchId(120335);
+        $entity = $query->writeImportEntity($importInput, ['name' => 'test'], 'dldb', true); //return written entity by true
+        $this->assertEquals('dldb', $entity->getSource());
+        $this->assertEquals(120335, $entity->getId());
+        $this->assertEquals('test', $entity->group);
+    }
 }

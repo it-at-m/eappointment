@@ -60,4 +60,27 @@ class ProviderTest extends Base
         $this->assertEntityList("\\BO\\Zmsentities\\Provider", $collection);
         $this->assertFalse($collection->hasEntity('122286')); // Bürgeramt Sonnenallee
     }
+
+    public function testWriteImport()
+    {
+        $query = new Query();
+        $repository = (new \BO\Dldb\FileAccess())->loadFromPath(\BO\Zmsdb\Source\Dldb::$importPath);
+        $importInput = $repository->fromLocation()->fetchList();
+        $collection = $query->writeImportList($importInput, 'dldb', true); //return written entity by true
+        $this->assertEquals('dldb', $collection->getFirst()->getSource());
+        $this->assertEquals(121362, $collection->getFirst()->getId());
+    }
+
+    public function testWriteRequestProviderImport()
+    {
+        $query = new \BO\Zmsdb\RequestProvider();
+        $repository = (new \BO\Dldb\FileAccess())->loadFromPath(\BO\Zmsdb\Source\Dldb::$importPath);
+        $importInput = $repository->fromLocation()->fetchList();
+        $collection = $query->writeImportList($importInput, 'dldb', true); //return written entity by true
+        $this->assertEquals('dldb', $collection->getFirst()->getSource());
+        $this->assertEquals('0', $collection->getFirst()->getSlotCount());
+        $this->assertEquals(122208, $collection->getFirst()->getProvider()->getId());
+        $this->assertEquals(120335, $collection->getFirst()->getRequest()->getId());
+
+    }
 }

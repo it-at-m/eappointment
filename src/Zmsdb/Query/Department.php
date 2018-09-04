@@ -4,11 +4,6 @@ namespace BO\Zmsdb\Query;
 
 class Department extends Base implements MappingInterface
 {
-
-    /**
-     *
-     * @var String TABLE mysql table reference
-     */
     const TABLE = 'behoerde';
 
     const QUERY_MAIL_UPDATE = '

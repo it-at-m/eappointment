@@ -62,18 +62,24 @@ class Calendar extends Base
     protected function readResolvedRequests(Entity $calendar)
     {
         $requestReader = new Request();
+        $requestProviderReader = new RequestProvider();
         //if (! isset($calendar['processing']['slotinfo'])) {
         //    $calendar['processing']['slotinfo'] = [];
         //}
         foreach ($calendar['requests'] as $key => $request) {
-            $request = $requestReader->readEntity('dldb', $request['id']);
+            $request = new \BO\Zmsentities\Request($request);
+            $request = $requestReader->readEntity($request->getSource(), $request->getId());
             $calendar['requests'][$key] = $request;
-            foreach ($requestReader->readSlotsOnEntity($request) as $slotinfo) {
+            foreach ($requestProviderReader->readListByRequestId($request->getId()) as $requestProviderItem) {
                 //if (! isset($calendar['processing']['slotinfo'][$slotinfo['provider__id']])) {
                 //    $calendar['processing']['slotinfo'][$slotinfo['provider__id']] = 0;
                 //}
                 //$calendar['processing']['slotinfo'][$slotinfo['provider__id']] += $slotinfo['slots'];
-                $calendar->scopes->addRequiredSlots('dldb', $slotinfo['provider__id'], $slotinfo['slots']);
+                $calendar->scopes->addRequiredSlots(
+                    $requestProviderItem->getSource(),
+                    $requestProviderItem->getProvider()->getId(),
+                    $requestProviderItem->getSlotCount()
+                );
             }
         }
         return $calendar;
@@ -83,9 +89,10 @@ class Calendar extends Base
     {
         $scopeReader = new Scope();
         foreach ($calendar['clusters'] as $cluster) {
-            $scopeList = $scopeReader->readByClusterId($cluster['id'], 1);
+            $cluster = new \BO\Zmsentities\Cluster($cluster);
+            $scopeList = $scopeReader->readByClusterId($cluster->getId(), 1);
             foreach ($scopeList as $scope) {
-                if (! $calendar['scopes']->hasEntity($scope->id)) {
+                if (! $calendar['scopes']->hasEntity($scope->getId())) {
                     $calendar['scopes']->addEntity($scope);
                 }
             }
@@ -98,10 +105,12 @@ class Calendar extends Base
         $scopeReader = new Scope();
         $providerReader = new Provider();
         foreach ($calendar['providers'] as $key => $provider) {
-            $calendar['providers'][$key] = $providerReader->readEntity('dldb', $provider['id']);
-            $scopeList = $scopeReader->readByProviderId($provider['id'], 2);
+            $provider = new \BO\Zmsentities\Provider($provider);
+            $calendar['providers'][$key] = $providerReader->readEntity($provider->getSource(), $provider->getId());
+            $scopeList = $scopeReader->readByProviderId($provider->getId(), 2);
             foreach ($scopeList as $scope) {
-                if (! $calendar['scopes']->hasEntity($scope->id)) {
+                $scope = new \BO\Zmsentities\Scope($scope);
+                if (! $calendar['scopes']->hasEntity($scope->getId())) {
                     $calendar['scopes']->addEntity($scope);
                 }
             }

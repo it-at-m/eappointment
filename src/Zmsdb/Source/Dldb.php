@@ -39,7 +39,7 @@ class Dldb extends \BO\Zmsdb\Base
         $requestQuery = (new \BO\Zmsdb\Request());
         foreach (self::$repository->fromService()->fetchList() as $request) {
             $topic = self::$repository->fromTopic()->fetchId($request['relation']['root_topic']);
-            $requestQuery->writeEntity($request, $topic);
+            $requestQuery->writeImportEntity($request, $topic);
         }
         $time = round(microtime(true) - $startTime, 3);
         if (self::$verbose) {
@@ -50,7 +50,7 @@ class Dldb extends \BO\Zmsdb\Base
     protected function writeProviderList()
     {
         $startTime = microtime(true);
-        (new \BO\Zmsdb\Provider())->writeList(self::$repository->fromLocation()->fetchList());
+        (new \BO\Zmsdb\Provider())->writeImportList(self::$repository->fromLocation()->fetchList());
         $time = round(microtime(true) - $startTime, 3);
         if (self::$verbose) {
             echo "Provider: Took $time seconds\n";
@@ -60,7 +60,7 @@ class Dldb extends \BO\Zmsdb\Base
     protected function writeRequestProviderList()
     {
         $startTime = microtime(true);
-        (new \BO\Zmsdb\RequestProvider())->writeList(self::$repository->fromLocation()->fetchList());
+        (new \BO\Zmsdb\RequestProvider())->writeImportList(self::$repository->fromLocation()->fetchList());
         $time = round(microtime(true) - $startTime, 3);
         if (self::$verbose) {
             echo "RequestProvider: Took $time seconds\n";

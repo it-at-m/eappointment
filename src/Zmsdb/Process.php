@@ -82,13 +82,13 @@ class Process extends Base implements Interfaces\ResolveReferences
     public function readSlotCount(\BO\Zmsentities\Process $process)
     {
         $scope = new \BO\Zmsentities\Scope($process->scope);
-        $slotCountList = (new Provider())->readSlotCountById($scope->getProviderId());
+        $requestProviderList = (new RequestProvider())->readListByProviderId($scope->getProviderId());
         $appointment = $process->getAppointments()->getFirst();
         $appointment->slotCount = 0;
         foreach ($process->requests as $request) {
-            foreach ($slotCountList as $slotCount) {
-                if ($slotCount['request__id'] == $request['id']) {
-                    $appointment->slotCount += $slotCount['slots'];
+            foreach ($requestProviderList as $requestProvider) {
+                if ($requestProvider->getRequest()->getId() == $request->getId()) {
+                    $appointment->slotCount += $requestProvider->getSlotCount();
                 }
             }
         }

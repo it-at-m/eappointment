@@ -22,23 +22,6 @@ class Request extends Base
         return ($request->hasId()) ? $request : null;
     }
 
-    public function readSlotsOnEntity(\BO\Zmsentities\Request $entity)
-    {
-        $query = Query\RequestProvider::getQuerySlotsByRequestId();
-        $providerSlots = $this->getReader()->fetchAll($query, ['request_id' => $entity->id]);
-        return $providerSlots;
-    }
-
-    public function readSlotsOnEntityByProvider($requestId, $providerId)
-    {
-        $query = Query\RequestProvider::getQueryRequestSlotCount();
-        $requestSlotCount = $this->getReader()->fetchValue($query, [
-            'request_id' => $requestId,
-            'provider_id' => $providerId
-        ]);
-        return $requestSlotCount;
-    }
-
     /**
      * @SuppressWarnings(Param)
      *
@@ -83,13 +66,15 @@ class Request extends Base
     public function readListByProvider($source, $providerId, $resolveReferences = 0)
     {
         $query = new Query\Request(Query\Base::SELECT);
+        $requestProviderQuery = new RequestProvider();
         $query->setResolveLevel($resolveReferences);
         $query->addConditionProviderId($providerId);
         $query->addConditionRequestSource($source);
         $query->addEntityMapping();
         $requestList = $this->readCollection($query, $resolveReferences);
         foreach ($requestList as $request) {
-            $request['timeSlotCount'] = $this->readSlotsOnEntityByProvider($request['id'], $providerId);
+            $requestProvider = $requestProviderQuery->readEntity($request->getId(), $providerId);
+            $request['timeSlotCount'] = $requestProvider->getSlotCount();
         }
         return $requestList;
     }
@@ -125,7 +110,7 @@ class Request extends Base
         return $requestList;
     }
 
-    public function writeEntity($request, $topic = null, $source = 'dldb', $returnEntity = false)
+    public function writeImportEntity($request, $topic = null, $source = 'dldb', $returnEntity = false)
     {
         $query = new Query\Request(Query\Base::REPLACE);
         $query->addValues([
