@@ -26,4 +26,9 @@ class Request extends Schema\Entity
         }
         return false;
     }
+
+    public function getSource()
+    {
+        return $this->toProperty()->source->get();
+    }
 }

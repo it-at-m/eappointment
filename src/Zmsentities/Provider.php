@@ -49,15 +49,20 @@ class Provider extends Schema\Entity
 
     public function getRequestRelationList()
     {
-        $requestRelationList = new \BO\Zmsentities\Collection\RequestRelationList();
+        $requestProviderList = new \BO\Zmsentities\Collection\RequestProviderList();
         if (isset($this['requestrelation'])) {
             foreach ($this['requestrelation'] as $entity) {
-                if (! $entity instanceof RequestRelation) {
-                    $entity = new RequestRelation($entity);
+                if (! $entity instanceof RequestProvider) {
+                    $entity = new RequestProvider($entity);
                 }
-                $requestRelationList->addEntity($entity);
+                $requestProviderList->addEntity($entity);
             }
         }
-        return $requestRelationList;
+        return $requestProviderList;
+    }
+
+    public function getSource()
+    {
+        return $this->toProperty()->source->get();
     }
 }
