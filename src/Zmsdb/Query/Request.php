@@ -63,7 +63,7 @@ class Request extends Base
     public function addConditionProviderId($providerId)
     {
         $this->leftJoin(
-            new Alias("request_provider", 'xrequest'),
+            new Alias("request_relation", 'xrequest'),
             'request.id',
             '=',
             'xrequest.request__id'

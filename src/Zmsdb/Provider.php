@@ -31,8 +31,8 @@ class Provider extends Base
     public function readWithRequestRelation(\BO\Zmsentities\Schema\Entity $provider, $resolveReferences)
     {
         if ($provider->hasId()) {
-            $requestProviderList = (new RequestProvider)->readListByProviderId($provider->getId(), $resolveReferences);
-            $provider->requestrelation = $requestProviderList->toRequestRelation();
+            $requestRelationList = (new RequestRelation)->readListByProviderId($provider->getId(), $resolveReferences);
+            $provider->requestrelation = $requestRelationList->toRequestRelation();
         }
         return $provider;
     }

@@ -2,19 +2,19 @@
 
 namespace BO\Zmsdb\Query;
 
-class RequestProvider extends Base implements MappingInterface
+class RequestRelation extends Base implements MappingInterface
 {
-    const TABLE = 'request_provider';
+    const TABLE = 'request_relation';
 
-    const ALIAS = 'requestprovider';
+    const ALIAS = 'request_relation';
 
     public function getEntityMapping()
     {
         return [
-            'request__id' => 'requestprovider.request__id',
-            'provider__id' => 'requestprovider.provider__id',
-            'source' => 'requestprovider.source',
-            'slots' => 'requestprovider.slots'
+            'request__id' => self::TABLE .'.request__id',
+            'provider__id' => self::TABLE .'.provider__id',
+            'source' => self::TABLE .'.source',
+            'slots' => self::TABLE .'.slots'
         ];
     }
 
@@ -22,10 +22,10 @@ class RequestProvider extends Base implements MappingInterface
     {
         return [
             'request__$ref' => self::expression(
-                'CONCAT("/request/", `requestprovider`.`source`, "/", `requestprovider`.`request__id`, "/")'
+                'CONCAT("/request/", `'. self::TABLE .'`.`source`, "/", `'. self::TABLE .'`.`request__id`, "/")'
             ),
             'provider__$ref' => self::expression(
-                'CONCAT("/provider/", `requestprovider`.`source`, "/", `requestprovider`.`provider__id`, "/")'
+                'CONCAT("/provider/", `'. self::TABLE .'`.`source`, "/", `'. self::TABLE .'`.`provider__id`, "/")'
             )
         ];
     }
@@ -42,7 +42,7 @@ class RequestProvider extends Base implements MappingInterface
     {
         $this->leftJoin(
             new Alias(Request::TABLE, 'request'),
-            'requestprovider.request__id',
+            self::TABLE .'.request__id',
             '=',
             'request.id'
         );
@@ -53,7 +53,7 @@ class RequestProvider extends Base implements MappingInterface
     {
         $this->leftJoin(
             new Alias(Provider::TABLE, 'provider'),
-            'requestprovider.provider__id',
+            self::TABLE .'.provider__id',
             '=',
             'provider.id'
         );
@@ -62,19 +62,19 @@ class RequestProvider extends Base implements MappingInterface
 
     public function addConditionRequestId($requestId)
     {
-        $this->query->where('requestprovider.request__id', '=', $requestId);
+        $this->query->where(self::TABLE .'.request__id', '=', $requestId);
         return $this;
     }
 
     public function addConditionProviderId($providerId)
     {
-        $this->query->where('requestprovider.provider__id', '=', $providerId);
+        $this->query->where(self::TABLE .'.provider__id', '=', $providerId);
         return $this;
     }
 
     public function addConditionSource($sourceName)
     {
-        $this->query->where('requestprovider.source', '=', $sourceName);
+        $this->query->where(self::TABLE .'.source', '=', $sourceName);
         return $this;
     }
 }

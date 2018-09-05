@@ -66,15 +66,15 @@ class Request extends Base
     public function readListByProvider($source, $providerId, $resolveReferences = 0)
     {
         $query = new Query\Request(Query\Base::SELECT);
-        $requestProviderQuery = new RequestProvider();
+        $requestRelationQuery = new RequestRelation();
         $query->setResolveLevel($resolveReferences);
         $query->addConditionProviderId($providerId);
         $query->addConditionRequestSource($source);
         $query->addEntityMapping();
         $requestList = $this->readCollection($query, $resolveReferences);
         foreach ($requestList as $request) {
-            $requestProvider = $requestProviderQuery->readEntity($request->getId(), $providerId);
-            $request['timeSlotCount'] = $requestProvider->getSlotCount();
+            $requestRelation = $requestRelationQuery->readEntity($request->getId(), $providerId);
+            $request['timeSlotCount'] = $requestRelation->getSlotCount();
         }
         return $requestList;
     }

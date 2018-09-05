@@ -62,7 +62,7 @@ class Calendar extends Base
     protected function readResolvedRequests(Entity $calendar)
     {
         $requestReader = new Request();
-        $requestProviderQuery = new RequestProvider();
+        $requestRelationQuery = new RequestRelation();
         //if (! isset($calendar['processing']['slotinfo'])) {
         //    $calendar['processing']['slotinfo'] = [];
         //}
@@ -70,15 +70,15 @@ class Calendar extends Base
             $request = new \BO\Zmsentities\Request($request);
             $request = $requestReader->readEntity($request->getSource(), $request->getId());
             $calendar['requests'][$key] = $request;
-            foreach ($requestProviderQuery->readListByRequestId($request->getId()) as $requestProviderItem) {
+            foreach ($requestRelationQuery->readListByRequestId($request->getId()) as $requestRelationItem) {
                 //if (! isset($calendar['processing']['slotinfo'][$slotinfo['provider__id']])) {
                 //    $calendar['processing']['slotinfo'][$slotinfo['provider__id']] = 0;
                 //}
                 //$calendar['processing']['slotinfo'][$slotinfo['provider__id']] += $slotinfo['slots'];
                 $calendar->scopes->addRequiredSlots(
-                    $requestProviderItem->getSource(),
-                    $requestProviderItem->getProvider()->getId(),
-                    $requestProviderItem->getSlotCount()
+                    $requestRelationItem->getSource(),
+                    $requestRelationItem->getProvider()->getId(),
+                    $requestRelationItem->getSlotCount()
                 );
             }
         }
