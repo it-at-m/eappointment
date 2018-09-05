@@ -31,12 +31,8 @@ class Provider extends Base
     public function readWithRequestRelation(\BO\Zmsentities\Schema\Entity $provider, $resolveReferences)
     {
         if ($provider->hasId()) {
-            $requestRelationList = new \BO\Zmsentities\Collection\RequestProviderList();
             $requestProviderList = (new RequestProvider)->readListByProviderId($provider->getId(), $resolveReferences);
-            foreach ($requestProviderList as $requestProvider) {
-                $requestRelationList->addEntity($requestProvider);
-            }
-            $provider['requestrelation'] = $requestRelationList->toRequestRelation();
+            $provider->requestrelation = $requestProviderList->toRequestRelation();
         }
         return $provider;
     }
@@ -50,8 +46,9 @@ class Provider extends Base
         $providerList = new Collection();
         $statement = $this->fetchStatement($query);
         while ($providerData = $statement->fetch(\PDO::FETCH_ASSOC)) {
-            $provider = new Entity($query->postProcessJoins($providerData));
-            $providerList->addEntity($provider);
+            $entity = new Entity($query->postProcessJoins($providerData));
+            $entity = $this->readResolvedReferences($entity, $resolveReferences);
+            $providerList->addEntity($entity);
         }
         return $providerList;
     }

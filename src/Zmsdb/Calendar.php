@@ -62,7 +62,7 @@ class Calendar extends Base
     protected function readResolvedRequests(Entity $calendar)
     {
         $requestReader = new Request();
-        $requestProviderReader = new RequestProvider();
+        $requestProviderQuery = new RequestProvider();
         //if (! isset($calendar['processing']['slotinfo'])) {
         //    $calendar['processing']['slotinfo'] = [];
         //}
@@ -70,7 +70,7 @@ class Calendar extends Base
             $request = new \BO\Zmsentities\Request($request);
             $request = $requestReader->readEntity($request->getSource(), $request->getId());
             $calendar['requests'][$key] = $request;
-            foreach ($requestProviderReader->readListByRequestId($request->getId()) as $requestProviderItem) {
+            foreach ($requestProviderQuery->readListByRequestId($request->getId()) as $requestProviderItem) {
                 //if (! isset($calendar['processing']['slotinfo'][$slotinfo['provider__id']])) {
                 //    $calendar['processing']['slotinfo'][$slotinfo['provider__id']] = 0;
                 //}
