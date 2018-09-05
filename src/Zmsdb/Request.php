@@ -110,22 +110,20 @@ class Request extends Base
         return $requestList;
     }
 
-    public function writeImportEntity($request, $topic = null, $source = 'dldb', $returnEntity = false)
+    public function writeImportEntity($request, $source = 'dldb')
     {
         $query = new Query\Request(Query\Base::REPLACE);
         $query->addValues([
             'source' => $source,
             'id' => $request['id'],
             'name' => $request['name'],
-            'group' => (isset($topic['name'])) ? $topic['name'] : 'Sonstiges',
+            'group' => (isset($request['group'])) ? $request['group'] : 'Sonstiges',
             'link' => ('dldb' == $source)
                 ? 'https://service.berlin.de/dienstleistung/'. $request['id'] .'/'
                 : ((isset($request['link'])) ? $request['link'] : ''),
             'data' => json_encode($request)
         ]);
         $this->writeItem($query);
-        if ($returnEntity) {
-            return $this->readEntity($source, $request['id']);
-        }
+        return $this->readEntity($source, $request['id']);
     }
 }

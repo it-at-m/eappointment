@@ -55,7 +55,7 @@ class RequestRelation extends Base
         return $this->readList($statement);
     }
 
-    public function writeImportList($providerList, $source = 'dldb', $returnList = false)
+    public function writeImportList($providerList, $source = 'dldb')
     {
         foreach ($providerList as $provider) {
             if ($provider['address']['postal_code']) {
@@ -71,9 +71,7 @@ class RequestRelation extends Base
                 }
             }
         }
-        if ($returnList) {
-            return $this->readListBySource($source);
-        }
+        return $this->readListBySource($source);
     }
 
     protected function readList($statement)

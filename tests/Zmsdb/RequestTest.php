@@ -62,7 +62,8 @@ class RequestTest extends Base
         $query = new Query();
         $repository = (new \BO\Dldb\FileAccess())->loadFromPath(\BO\Zmsdb\Source\Dldb::$importPath);
         $importInput = $repository->fromService()->fetchId(120335);
-        $entity = $query->writeImportEntity($importInput, ['name' => 'test'], 'dldb', true); //return written entity by true
+        $importInput['group'] = 'test';
+        $entity = $query->writeImportEntity($importInput, 'dldb'); //return written entity by true
         $this->assertEquals('dldb', $entity->getSource());
         $this->assertEquals(120335, $entity->getId());
         $this->assertEquals('test', $entity->group);

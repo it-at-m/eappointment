@@ -85,17 +85,15 @@ class Provider extends Base
         return $this->readCollection($query, $resolveReferences);
     }
 
-    public function writeImportList($providerList, $source = 'dldb', $returnList = false)
+    public function writeImportList($providerList, $source = 'dldb')
     {
         foreach ($providerList as $provider) {
             $this->writeImportEntity($provider, $source);
         }
-        if ($returnList) {
-            return $this->readListBySource($source);
-        }
+        return $this->readListBySource($source);
     }
 
-    public function writeImportEntity($provider, $source = 'dldb', $returnEntity = false)
+    public function writeImportEntity($provider, $source = 'dldb')
     {
         if ($provider['address']['postal_code']) {
             $query = new Query\Provider(Query\Base::REPLACE);
@@ -117,9 +115,7 @@ class Provider extends Base
                 'data' => json_encode($provider)
             ]);
             $this->writeItem($query);
-            if ($returnEntity) {
-                return $this->readEntity($source, $provider['id']);
-            }
+            return $this->readEntity($source, $provider['id']);
         }
     }
 }
