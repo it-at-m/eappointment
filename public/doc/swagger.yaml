@@ -16,7 +16,7 @@ info:
        * ticketprinter support for customers without appointments (authenticated, lockable, timeable)
        * calldisplay support
        * collecting statistics like waiting time or served clients per day
-       
+
        This documentation covers the API-level access to these features.
   termsOfService: 'http://service.berlin.de/terminvereinbarung/'
   contact:
@@ -93,12 +93,16 @@ definitions:
     $ref: "schema/queue.json"
   request:
     $ref: "schema/request.json"
+  requestrelation:
+    $ref: "schema/requestrelation.json"
   scope:
     $ref: "schema/scope.json"
   session:
     $ref: "schema/session.json"
   slot:
     $ref: "schema/slot.json"
+  source:
+    $ref: "schema/source.json"
   status:
     $ref: "schema/status.json"
   ticketprinter:
