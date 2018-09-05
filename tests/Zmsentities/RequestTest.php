@@ -78,4 +78,10 @@ class RequestTest extends EntityCommonTests
         $collection->addEntity($entity);
         $this->assertFalse($collection->hasAppointmentFromProviderData());
     }
+
+    public function testSource()
+    {
+        $entity = $this->getExample();
+        $this->assertEquals('dldb', $entity->getSource());
+    }
 }
