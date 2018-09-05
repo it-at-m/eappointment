@@ -55,4 +55,10 @@ class ProviderTest extends EntityCommonTests
         $this->assertTrue($entity->getRequestRelationList()->hasRequest(120335));
         $this->assertFalse($entity->getRequestRelationList()->hasRequest(123456));
     }
+
+    public function testSource()
+    {
+        $entity = $this->getExample();
+        $this->assertEquals('dldb', $entity->getSource());
+    }
 }
