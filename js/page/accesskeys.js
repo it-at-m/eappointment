@@ -48,9 +48,13 @@ class View extends BaseView {
             var key = keyEvent.key;
             var targetIsInputElement = $(keyEvent.target).is('input, textarea, select');
             var isReturnKey = key === 13;
+
             // Only if key isn't a modifier, not enter, not inside an input element and exists as a keyboard shortcut
             if (!targetIsInputElement && !isModifierKey && !isReturnKey && keySelectorMap[key]) {
                 if (focusKey(key)) {
+                    if (key === 'm') {
+                        $('#process_date').click();
+                    }   
                     console.log('default prevented');
                     keyEvent.preventDefault();
                 }
