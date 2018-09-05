@@ -1,15 +1,15 @@
 <?php
 namespace BO\Zmsdb;
 
-use \BO\Zmsentities\RequestProvider as Entity;
+use \BO\Zmsentities\RequestRelation as Entity;
 
-use \BO\Zmsentities\Collection\RequestProviderList as Collection;
+use \BO\Zmsentities\Collection\RequestRelationList as Collection;
 
-class RequestProvider extends Base
+class RequestRelation extends Base
 {
     public function readEntity($requestId, $providerId, $resolveReferences = 0)
     {
-        $query = new Query\RequestProvider(Query\Base::SELECT);
+        $query = new Query\RequestRelation(Query\Base::SELECT);
         $query
             ->setResolveLevel(0)
             ->addEntityMapping()
@@ -21,7 +21,7 @@ class RequestProvider extends Base
 
     public function readListBySource($source, $resolveReferences = 0)
     {
-        $query = new Query\RequestProvider(Query\Base::SELECT);
+        $query = new Query\RequestRelation(Query\Base::SELECT);
         $query
             ->setResolveLevel(0)
             ->addEntityMapping()
@@ -33,7 +33,7 @@ class RequestProvider extends Base
 
     public function readListByRequestId($requestId, $resolveReferences = 0)
     {
-        $query = new Query\RequestProvider(Query\Base::SELECT);
+        $query = new Query\RequestRelation(Query\Base::SELECT);
         $query
             ->setResolveLevel(0)
             ->addEntityMapping()
@@ -45,7 +45,7 @@ class RequestProvider extends Base
 
     public function readListByProviderId($providerId, $resolveReferences = 0)
     {
-        $query = new Query\RequestProvider(Query\Base::SELECT);
+        $query = new Query\RequestRelation(Query\Base::SELECT);
         $query
             ->setResolveLevel(0)
             ->addEntityMapping()
@@ -60,7 +60,7 @@ class RequestProvider extends Base
         foreach ($providerList as $provider) {
             if ($provider['address']['postal_code']) {
                 foreach ($provider['services'] as $reference) {
-                    $query = new Query\RequestProvider(Query\Base::REPLACE);
+                    $query = new Query\RequestRelation(Query\Base::REPLACE);
                     $query->addValues([
                         'source' => $source,
                         'provider__id' => $provider['id'],
@@ -79,8 +79,8 @@ class RequestProvider extends Base
     protected function readList($statement)
     {
         $collection = new Collection();
-        while ($requestProviderData = $statement->fetch(\PDO::FETCH_ASSOC)) {
-            $entity = new Entity($requestProviderData);
+        while ($requestRelationData = $statement->fetch(\PDO::FETCH_ASSOC)) {
+            $entity = new Entity($requestRelationData);
             $collection->addEntity($entity);
         }
         return $collection;

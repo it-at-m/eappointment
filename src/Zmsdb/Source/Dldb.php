@@ -27,7 +27,7 @@ class Dldb extends \BO\Zmsdb\Base
 
         $this->writeRequestList();
         $this->writeProviderList();
-        $this->writeRequestProviderList();
+        $this->writeRequestRelationList();
         $this->writeLastUpdate($verbose);
 
         \BO\Zmsdb\Connection\Select::writeCommit();
@@ -57,13 +57,13 @@ class Dldb extends \BO\Zmsdb\Base
         }
     }
 
-    protected function writeRequestProviderList()
+    protected function writeRequestRelationList()
     {
         $startTime = microtime(true);
-        (new \BO\Zmsdb\RequestProvider())->writeImportList(self::$repository->fromLocation()->fetchList());
+        (new \BO\Zmsdb\RequestRelation())->writeImportList(self::$repository->fromLocation()->fetchList());
         $time = round(microtime(true) - $startTime, 3);
         if (self::$verbose) {
-            echo "RequestProvider: Took $time seconds\n";
+            echo "RequestRelation: Took $time seconds\n";
         }
     }
 
