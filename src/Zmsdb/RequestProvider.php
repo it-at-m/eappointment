@@ -21,17 +21,14 @@ class RequestProvider extends Base
 
     public function readListBySource($source, $resolveReferences = 0)
     {
-        $collection = new Collection();
         $query = new Query\RequestProvider(Query\Base::SELECT);
         $query
             ->setResolveLevel(0)
             ->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
             ->addConditionSource($source);
-        foreach ($this->fetchList($query, new Entity()) as $entity) {
-            $collection->addEntity($entity);
-        }
-        return $collection;
+        $statement = $this->fetchStatement($query);
+        return $this->readList($statement);
     }
 
     public function readListByRequestId($requestId, $resolveReferences = 0)
@@ -42,7 +39,8 @@ class RequestProvider extends Base
             ->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
             ->addConditionRequestId($requestId);
-        return $this->fetchList($query, new Entity());
+        $statement = $this->fetchStatement($query);
+        return $this->readList($statement);
     }
 
     public function readListByProviderId($providerId, $resolveReferences = 0)
@@ -53,7 +51,8 @@ class RequestProvider extends Base
             ->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
             ->addConditionProviderId($providerId);
-        return $this->fetchList($query, new Entity());
+        $statement = $this->fetchStatement($query);
+        return $this->readList($statement);
     }
 
     public function writeImportList($providerList, $source = 'dldb', $returnList = false)
@@ -75,5 +74,15 @@ class RequestProvider extends Base
         if ($returnList) {
             return $this->readListBySource($source);
         }
+    }
+
+    protected function readList($statement)
+    {
+        $collection = new Collection();
+        while ($requestProviderData = $statement->fetch(\PDO::FETCH_ASSOC)) {
+            $entity = new Entity($requestProviderData);
+            $collection->addEntity($entity);
+        }
+        return $collection;
     }
 }
