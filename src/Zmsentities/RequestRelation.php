@@ -2,10 +2,10 @@
 
 namespace BO\Zmsentities;
 
-class RequestProvider extends Schema\Entity
+class RequestRelation extends Schema\Entity
 {
 
-    public static $schema = "requestprovider.json";
+    public static $schema = "RequestRelation.json";
 
     public function getDefaults()
     {

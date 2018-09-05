@@ -1,9 +1,9 @@
 <?php
 namespace BO\Zmsentities\Collection;
 
-class RequestProviderList extends Base
+class RequestRelationList extends Base
 {
-    const ENTITY_CLASS = '\BO\Zmsentities\RequestProvider';
+    const ENTITY_CLASS = '\BO\Zmsentities\RequestRelation';
 
     public function hasRequest($requestIdCsv)
     {
