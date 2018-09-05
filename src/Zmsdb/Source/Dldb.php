@@ -39,7 +39,8 @@ class Dldb extends \BO\Zmsdb\Base
         $requestQuery = (new \BO\Zmsdb\Request());
         foreach (self::$repository->fromService()->fetchList() as $request) {
             $topic = self::$repository->fromTopic()->fetchId($request['relation']['root_topic']);
-            $requestQuery->writeImportEntity($request, $topic);
+            $request['group'] = $topic['name'];
+            $requestQuery->writeImportEntity($request);
         }
         $time = round(microtime(true) - $startTime, 3);
         if (self::$verbose) {

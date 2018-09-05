@@ -66,7 +66,7 @@ class ProviderTest extends Base
         $query = new Query();
         $repository = (new \BO\Dldb\FileAccess())->loadFromPath(\BO\Zmsdb\Source\Dldb::$importPath);
         $importInput = $repository->fromLocation()->fetchList();
-        $collection = $query->writeImportList($importInput, 'dldb', true); //return written entity by true
+        $collection = $query->writeImportList($importInput, 'dldb'); //return written entity by true
         $this->assertEquals('dldb', $collection->getFirst()->getSource());
         $this->assertEquals(121362, $collection->getFirst()->getId());
     }
@@ -76,7 +76,7 @@ class ProviderTest extends Base
         $query = new \BO\Zmsdb\RequestRelation();
         $repository = (new \BO\Dldb\FileAccess())->loadFromPath(\BO\Zmsdb\Source\Dldb::$importPath);
         $importInput = $repository->fromLocation()->fetchList();
-        $collection = $query->writeImportList($importInput, 'dldb', true); //return written entity by true
+        $collection = $query->writeImportList($importInput, 'dldb'); //return written entity by true
         $this->assertEquals('dldb', $collection->getFirst()->getSource());
         $this->assertEquals('0', $collection->getFirst()->getSlotCount());
         $this->assertEquals(122208, $collection->getFirst()->getProvider()->getId());
