@@ -94,7 +94,8 @@ class Slot extends Base
         // First check if the bookable end date on current time is already calculated on last slot change
         // Second check if between last slot change and current time could be a bookable slot
         // Be aware, that last slot change and current time might differ serval days if the rebuild fails in some way
-        if (!$availability->hasDate($availability->getBookableEnd($now), $slotLastChange)
+        if ($availability->getBookableEnd($slotLastChange) != $availability->getBookableEnd($now)
+            && !$availability->hasDate($availability->getBookableEnd($now), $slotLastChange)
             && $availability->hasDateBetween(
                 $availability->getBookableEnd($slotLastChange),
                 $availability->getBookableEnd($now),
@@ -104,7 +105,21 @@ class Slot extends Base
             $availability['processingNote'][] = 'outdated: new slots required';
             return true;
         }
+        // First check, if bookable start from lastChange is not included in bookable time from now
+        // Second check, if availability had a bookable time on lastChange before bookable start from now
+        if ($availability->getBookableStart($slotLastChange) != $availability->getBookableStart($now)
+            && !$availability->hasDate($availability->getBookableStart($slotLastChange), $now)
+            && $availability->hasDateBetween(
+                $availability->getBookableStart($slotLastChange),
+                $availability->getBookableStart($now),
+                $slotLastChange
+            )
+        ) {
+            $availability['processingNote'][] = 'outdated: slots invalidated by bookable start';
+            return true;
+        }
         //error_log("Not outdated: $availability");
+        $availability['processingNote'][] = 'not outdated';
         return false;
     }
 
