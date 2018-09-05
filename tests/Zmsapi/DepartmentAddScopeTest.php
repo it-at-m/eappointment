@@ -16,7 +16,8 @@ class DepartmentAddScopeTest extends Base
             '__body' => '{
                   "shortName": "Test Scope",
                   "provider": {
-                      "id": 122217
+                      "id": 122217,
+                      "source" : "dldb"
                   }
               }'
         ], []);

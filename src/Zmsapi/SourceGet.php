@@ -3,15 +3,15 @@
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
-
 namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
-use \BO\Zmsdb\Provider;
+use \BO\Zmsdb\Source;
 
-class ProviderList extends BaseController
+class SourceGet extends BaseController
 {
+
     /**
      * @SuppressWarnings(Param)
      * @return String
@@ -21,11 +21,13 @@ class ProviderList extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
-        $isAssigned = Validator::param('isAssigned')->isBool()->getValue();
-
         $message = Response\Message::create($request);
-        $message->data = (new Provider)->readListBySource($args['source'], $resolveReferences, $isAssigned);
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
+        $source = (new Source)->readEntity($args['source'], $resolveReferences);
+        if (! $source) {
+            throw new Exception\Source\SourceNotFound();
+        }
+        $message->data = $source;
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());

@@ -4333,6 +4333,37 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/source/{source}/":
+ *      get:
+ *          summary: Get source by name
+ *          tags:
+ *              - source
+ *          parameters:
+ *              -   source: source
+ *                  description: "name from source like dldb for example (3 - 20 letters)"
+ *                  in: path
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      $ref: "schema/source.json"
+ *              404:
+ *                  description: "Could not find any available source"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/source.json"
+ */
+\App::$slim->get('/source/{source:[a-zA-Z]{3,20}}/',
+    '\BO\Zmsapi\SourceGet')
+    ->setName("SourceGet");
+
+/**
+ *  @swagger
  *  "/status/":
  *      get:
  *          summary: Get status of api
