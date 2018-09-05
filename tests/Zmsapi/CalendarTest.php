@@ -29,7 +29,8 @@ class CalendarTest extends Base
                 ],
                 "providers": [
                     {
-                      "id": 122217
+                      "id": 122217,
+                      "source": "dldb"
                     }
                 ],
                 "scopes": [
@@ -97,7 +98,8 @@ class CalendarTest extends Base
                 ],
                 "providers": [
                     {
-                      "id": 122217
+                      "id": 122217,
+                      "source": "dldb"
                     }
                 ],
                 "scopes": [

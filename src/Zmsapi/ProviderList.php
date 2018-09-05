@@ -25,7 +25,7 @@ class ProviderList extends BaseController
         $isAssigned = Validator::param('isAssigned')->isBool()->getValue();
 
         $message = Response\Message::create($request);
-        $message->data = (new Provider)->readList($args['source'], $resolveReferences, $isAssigned);
+        $message->data = (new Provider)->readListBySource($args['source'], $resolveReferences, $isAssigned);
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());

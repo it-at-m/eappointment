@@ -21,7 +21,7 @@ class ProviderByRequestListTest extends Base
 
     public function testSourceFailed()
     {
-        $this->expectException('BO\\Zmsdb\\Exception\\UnknownDataSource');
+        $this->expectException('\BO\Zmsdb\Exception\UnknownDataSource');
         $this->expectExceptionCode(404);
         $this->render(['source' => 'test', 'csv' => '120335'], [], []);
     }
