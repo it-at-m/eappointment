@@ -38,7 +38,7 @@ class Notification extends BaseController
                     if (isset($item['process']) && isset($item['process']['id'])) {
                         \App::$http->readPostResult('/log/process/'. $item['process']['id'] .'/', $log, ['error' => 1]);
                     }
-                    \App::$log->warning($log->content);
+                    \App::$log->error($log->content);
                 }
             }
         } else {
