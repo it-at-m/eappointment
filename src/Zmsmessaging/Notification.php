@@ -30,28 +30,15 @@ class Notification extends BaseController
         $resultList = [];
         if (count($this->messagesQueue)) {
             foreach ($this->messagesQueue as $item) {
-                $entity = new \BO\Zmsentities\Notification($item);
-                $mailer = $this->getValidMailer($entity);
-                if (! $mailer) {
-                    continue;
-                }
-                $result = $this->sendMailer($entity, $mailer, $action);
-                if ($result instanceof \PHPMailer) {
-                    $resultList[] = array(
-                        'id' => ($result->getLastMessageID()) ? $result->getLastMessageID() : $entity->id,
-                        'recipients' => $result->getAllRecipientAddresses(),
-                        'mime' => $result->getMailMIME(),
-                        'customHeaders' => $result->getCustomHeaders(),
-                    );
-                    if ($action) {
-                        $this->deleteEntityFromQueue($entity);
+                try {
+                    $resultList[] = $this->sendQueueItem($action, $item);
+                } catch (\Exception $exception) {
+                    $log = new Mimepart(['mime' => 'text/plain']);
+                    $log->content = $exception->getMessage();
+                    if (isset($item['process']) && isset($item['process']['id'])) {
+                        \App::$http->readPostResult('/log/process/'. $item['process']['id'] .'/', $log, ['error' => 1]);
                     }
-                } else {
-                    // @codeCoverageIgnoreStart
-                    $resultList[] = array(
-                        'errorInfo' => $result->ErrorInfo
-                    );
-                    // @codeCoverageIgnoreEnd
+                    \App::$log->warning($log->content);
                 }
             }
         } else {
@@ -60,6 +47,35 @@ class Notification extends BaseController
             );
         }
         return $resultList;
+    }
+
+    public function sendQueueItem($action, $item)
+    {
+        $result = [];
+        $entity = new \BO\Zmsentities\Notification($item);
+        $mailer = $this->getValidMailer($entity);
+        if (! $mailer) {
+            throw new \Exception("No valid mailer");
+        }
+        $result = $this->sendMailer($entity, $mailer, $action);
+        if ($result instanceof \PHPMailer) {
+            $result = array(
+                'id' => ($result->getLastMessageID()) ? $result->getLastMessageID() : $entity->id,
+                'recipients' => $result->getAllRecipientAddresses(),
+                'mime' => $result->getMailMIME(),
+                'customHeaders' => $result->getCustomHeaders(),
+            );
+            if ($action) {
+                $this->deleteEntityFromQueue($entity);
+            }
+        } else {
+            // @codeCoverageIgnoreStart
+            $result = array(
+                'errorInfo' => $result->ErrorInfo
+            );
+            // @codeCoverageIgnoreEnd
+        }
+        return $result;
     }
 
     protected function getValidMailer(\BO\Zmsentities\Notification $entity)
