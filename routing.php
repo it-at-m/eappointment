@@ -4364,6 +4364,35 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/source/":
+ *      post:
+ *          summary: Update a source
+ *          tags:
+ *              - source
+ *          parameters:
+ *              -   name: source
+ *                  description: source content
+ *                  in: body
+ *                  required: true
+ *                  schema:
+ *                      $ref: "schema/source.json"
+ *          responses:
+ *              200:
+ *                  description: get an updated or new created source object
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/source.json"
+ */
+\App::$slim->post('/source/',
+    '\BO\Zmsapi\SourceUpdate')
+    ->setName("SourceUpdate");
+
+/**
+ *  @swagger
  *  "/status/":
  *      get:
  *          summary: Get status of api
