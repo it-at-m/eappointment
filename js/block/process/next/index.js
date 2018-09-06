@@ -38,38 +38,38 @@ class View extends BaseView {
     loadClientNext() {
         this.cleanInstance();
         const url = `${this.includeUrl}/workstation/process/next/?exclude=` + this.exclude
-        return this.loadInto(url).then(this.setTimeSinceCall);
+        return this.loadInto(url).then(() => this.onNextProcess()).then(this.setTimeSinceCall);
     }
 
     loadCall() {
         this.cleanInstance();
         const url = `${this.includeUrl}/workstation/call/${this.processId}/?direct=1`
-        return this.loadInto(url).then(this.setTimeSinceCall).then(() => this.onNextProcess());
+        return this.loadInto(url).then(() => this.onNextProcess()).then(this.setTimeSinceCall);
     }
 
     loadCalled() {
         this.cleanInstance();
         const url = `${this.includeUrl}/workstation/process/${this.processId}/called/`
-        return this.loadInto(url);
+        return this.loadInto(url).then(() => this.onNextProcess()).then(this.setTimeSinceCall);
     }
 
     loadCancel() {
         this.cleanInstance();
         const url = `${this.includeUrl}/workstation/process/cancel/`
-        return this.loadInto(url);
+        return this.loadInto(url).then(() => this.onNextProcess());
     }
 
     // if process is called and button "nein, nächster Kunde bitte" is clicked, delete process from workstation and call next
     loadCancelClientNext() {
         this.cleanInstance();
         const url = `${this.includeUrl}/workstation/process/cancel/next/?exclude=` + this.exclude
-        return this.loadInto(url).then(this.setTimeSinceCall);
+        return this.loadInto(url).then(() => this.onNextProcess()).then(this.setTimeSinceCall);
     }
 
     loadProcessing() {
         this.cleanInstance();
         const url = `${this.includeUrl}/workstation/process/processing/`
-        return this.loadInto(url);
+        return this.loadInto(url).then(() => this.onNextProcess());
     }
 
     loadInto(url) {
@@ -90,12 +90,12 @@ class View extends BaseView {
             ev.preventDefault();
             ev.stopPropagation();
             this.exclude = $(ev.target).data('exclude');
-            this.loadClientNext().then(() => this.onNextProcess());
+            this.loadClientNext();
         }).on('click', '.client-called_button-skip', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
             this.exclude = $(ev.target).data('exclude');
-            this.loadCancelClientNext().then(() => this.onNextProcess());
+            this.loadCancelClientNext();
         }).on('click', '.client-called_button-success', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
@@ -104,7 +104,7 @@ class View extends BaseView {
             ev.preventDefault();
             ev.stopPropagation();
             this.exclude = '';
-            this.loadCancel().then(() => this.onNextProcess());
+            this.loadCancel();
         })
     }
 

@@ -237,7 +237,7 @@ class View extends BaseView {
     }
 
     onNextProcess() {
-        this.calledProcess = null;
+        //this.calledProcess = null;
         this.loadQueueTable();
     }
 
