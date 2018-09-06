@@ -9,6 +9,7 @@ class Provider extends Base
 {
     public function readEntity($source, $providerId, $resolveReferences = 0)
     {
+        $this->testSource($source);
         $query = new Query\Provider(Query\Base::SELECT);
         $query
             ->setResolveLevel($resolveReferences)
@@ -53,21 +54,9 @@ class Provider extends Base
         return $providerList;
     }
 
-    public function readList($source, $resolveReferences = 0, $isAssigned = null)
-    {
-        $query = new Query\Provider(Query\Base::SELECT);
-        $query
-            ->setResolveLevel($resolveReferences)
-            ->addConditionProviderSource($source)
-            ->addEntityMapping();
-        if (null !== $isAssigned) {
-            $query->addConditionIsAssigned($isAssigned);
-        }
-        return $this->readCollection($query, $resolveReferences);
-    }
-
     public function readListByRequest($source, $requestIdCsv, $resolveReferences = 0)
     {
+        $this->testSource($source);
         $query = new Query\Provider(Query\Base::SELECT);
         $query->setResolveLevel($resolveReferences);
         $query->addEntityMapping();
@@ -76,12 +65,16 @@ class Provider extends Base
         return $this->readCollection($query, $resolveReferences);
     }
 
-    public function readListBySource($source, $resolveReferences = 0)
+    public function readListBySource($source, $resolveReferences = 0, $isAssigned = null)
     {
+        $this->testSource($source);
         $query = new Query\Provider(Query\Base::SELECT);
         $query->setResolveLevel($resolveReferences);
         $query->addEntityMapping();
         $query->addConditionProviderSource($source);
+        if (null !== $isAssigned) {
+            $query->addConditionIsAssigned($isAssigned);
+        }
         return $this->readCollection($query, $resolveReferences);
     }
 
@@ -116,6 +109,13 @@ class Provider extends Base
             ]);
             $this->writeItem($query);
             return $this->readEntity($source, $provider['id']);
+        }
+    }
+
+    protected function testSource($source)
+    {
+        if (! (new Source())->readEntity($source)) {
+            throw new Exception\UnknownDataSource();
         }
     }
 }
