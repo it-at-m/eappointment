@@ -10,4 +10,5 @@ INSERT INTO `config` SET `name` = "cron__resetWorkstations", `value` = "prod,sta
 INSERT INTO `config` SET `name` = "cron__deleteDayoffData", `value` = "prod,stage,dev";
 INSERT INTO `config` SET `name` = "cron__deleteAppointmentData", `value` = "stage,dev";
 INSERT INTO `config` SET `name` = "cron__sendProcessListToScopeAdmin", `value` = "none";
+INSERT INTO `config` SET `name` = "cron__sendNotificationReminder", `value` = "none";
 INSERT INTO `config` SET `name` = "cron__migrate", `value` = "stage,dev";
