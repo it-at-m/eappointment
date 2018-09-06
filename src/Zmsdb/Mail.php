@@ -31,13 +31,15 @@ class Mail extends Base
         return $mail;
     }
 
-    public function readList($resolveReferences = 1)
+    public function readList($resolveReferences = 1, $limit = 300)
     {
         $mailList = new Collection();
         $query = new Query\MailQueue(Query\Base::SELECT);
         $query
             ->addEntityMapping()
-            ->addResolvedReferences($resolveReferences);
+            ->addResolvedReferences($resolveReferences)
+            ->addLimit($limit)
+            ;
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
             foreach ($result as $item) {
