@@ -19,7 +19,7 @@ class Ticketprinter
         $_COOKIE[self::HASH_COOKIE_NAME] = $hash;
         // @codeCoverageIgnoreStart
         if (!headers_sent()) {
-            setcookie(self::HASH_COOKIE_NAME, $hash, 0, '/', null, true);
+            setcookie(self::HASH_COOKIE_NAME, $hash, 0, '/terminvereinbarung/ticketprinter/', null, true);
         }
         // @codeCoverageIgnoreEnd
     }
@@ -47,7 +47,7 @@ class Ticketprinter
         $_COOKIE[self::HOME_URL_COOKIE_NAME] = $url;
         // @codeCoverageIgnoreStart
         if (!headers_sent()) {
-            setcookie(self::HOME_URL_COOKIE_NAME, $url, 0, '/', null, true, true);
+            setcookie(self::HOME_URL_COOKIE_NAME, $url, 0, '/terminvereinbarung/ticketprinter/', null, true, true);
         }
         // @codeCoverageIgnoreEnd
     }
