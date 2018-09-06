@@ -1,6 +1,7 @@
 #!/bin/bash
 DIR=$(dirname ${BASH_SOURCE[0]})
 BIN=$DIR/../vendor/bin
+API=$DIR/../bin/api
 EXPORT=$DIR/../data/
 set -a
 [ -z "$ZMS_ENV" ] && [ -e /etc/sysconfig/zms ] && source /etc/sysconfig/zms
@@ -10,7 +11,9 @@ if [[ $ZMS_CRONROOT =~ ^1|on|true|yes$ ]]; then
     $BIN/deleteSessionData Zmsappointment 30 --commit
     if [[ $ZMS_ENV =~ ^dev|stage$ ]]; then
         $BIN/deleteReservedData --commit
-        $BIN/sendMailReminder 2 --commit
+    fi
+    if [[ $ZMS_ENV =~ ^prod|dev|stage$ ]]; then
+        $API config cron sendMailReminder|grep -q "$ZMS_ENV" && $BIN/sendMailReminder 2 --commit
     fi
     #$BIN/sendNotificationReminder --commit
     $BIN/calculateSlots --commit
