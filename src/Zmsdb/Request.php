@@ -8,6 +8,7 @@ class Request extends Base
 {
     public function readEntity($source, $requestId, $resolveReferences = 0)
     {
+        $this->testSource($source);
         $query = new Query\Request(Query\Base::SELECT);
         $query
             ->setResolveLevel($resolveReferences)
@@ -65,6 +66,7 @@ class Request extends Base
 
     public function readListByProvider($source, $providerId, $resolveReferences = 0)
     {
+        $this->testSource($source);
         $query = new Query\Request(Query\Base::SELECT);
         $requestRelationQuery = new RequestRelation();
         $query->setResolveLevel($resolveReferences);
@@ -81,6 +83,7 @@ class Request extends Base
 
     public function readListBySource($source, $resolveReferences = 0)
     {
+        $this->testSource($source);
         $query = new Query\Request(Query\Base::SELECT);
         $query->setResolveLevel($resolveReferences);
         $query->addConditionRequestSource($source);
@@ -125,5 +128,12 @@ class Request extends Base
         ]);
         $this->writeItem($query);
         return $this->readEntity($source, $request['id']);
+    }
+
+    protected function testSource($source)
+    {
+        if (! (new Source())->readEntity($source)) {
+            throw new Exception\UnknownDataSource();
+        }
     }
 }
