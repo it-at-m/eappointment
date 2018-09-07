@@ -17,6 +17,7 @@ class SourceTest extends EntityCommonTests
         $this->assertTrue($entity->getContact() instanceof \BO\Zmsentities\Contact);
         $this->assertTrue($entity->getProviderList() instanceof \BO\Zmsentities\Collection\ProviderList);
         $this->assertTrue($entity->getRequestList() instanceof \BO\Zmsentities\Collection\RequestList);
+        $this->assertFalse($entity->isCompleteAndEditable());
     }
 
     public function testProvider()
@@ -31,5 +32,21 @@ class SourceTest extends EntityCommonTests
         $entity = (new $this->entityclass())->getExample();
         $entity->requests = array((new \BO\Zmsentities\Request())->getExample()->getArrayCopy());
         $this->assertTrue($entity->hasRequest('120335'), 'RequestId does not exists');
+    }
+
+    public function testRequestRelation()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $entity->requestrelation = array((new \BO\Zmsentities\RequestRelation())->getExample()->getArrayCopy());
+        $this->assertEquals(1, $entity->getRequestRelationList()->count());
+    }
+
+    public function testIsEditable()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $entity->editable = true;
+        $entity->requests = array((new \BO\Zmsentities\Request())->getExample()->getArrayCopy());
+        $entity->providers = array((new \BO\Zmsentities\Provider())->getExample()->getArrayCopy());
+        $this->assertTrue($entity->isCompleteAndEditable());
     }
 }
