@@ -14,10 +14,20 @@ use \BO\Zmsentities\Mimepart;
 class BaseController
 {
     protected $workstation = null;
+    protected $startTime;
+    protected $maxRunTime = 50;
 
-    public function __construct()
+    public function __construct($maxRunTime = 50)
     {
         \App::$http->setUserInfo('_system_messenger', 'zmsmessaging');
+        $this->startTime = microtime(true);
+        $this->maxRunTime = $maxRunTime;
+    }
+
+    protected function getSpendTime()
+    {
+        $time = round(microtime(true) - $this->startTime, 3);
+        return $time;
     }
 
     protected function sendMailer(\BO\Zmsentities\Schema\Entity $entity, $mailer = null, $action = false)

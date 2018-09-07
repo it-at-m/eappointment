@@ -16,9 +16,9 @@ class Notification extends BaseController
 {
     protected $messagesQueue = null;
 
-    public function __construct()
+    public function __construct($maxRunTime = 50)
     {
-        parent::__construct();
+        parent::__construct($maxRunTime);
         $queueList = \App::$http->readGetResult('/notification/')->getCollection();
         if (null !== $queueList) {
             $this->messagesQueue = $queueList->sortByCustomKey('createTimestamp');
@@ -30,6 +30,9 @@ class Notification extends BaseController
         $resultList = [];
         if (count($this->messagesQueue)) {
             foreach ($this->messagesQueue as $item) {
+                if ($this->maxRunTime < $this->getSpendTime()) {
+                    break;
+                }
                 try {
                     $resultList[] = $this->sendQueueItem($action, $item);
                 } catch (\Exception $exception) {
