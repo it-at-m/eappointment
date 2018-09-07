@@ -55,6 +55,27 @@ class RequestRelation extends Base
         return $this->readList($statement);
     }
 
+    public function writeListBySource(\BO\Zmsentities\Source $source)
+    {
+        foreach ($source->getRequestRelationList() as $entity) {
+            $this->writeEntity($entity);
+        }
+        return $this->readListBySource($source->getSource());
+    }
+
+    public function writeEntity(Entity $entity)
+    {
+        $query = new Query\RequestRelation(Query\Base::REPLACE);
+        $query->addValues([
+            'source' => $entity->getSource(),
+            'provider__id' => $entity->getProvider()->getId(),
+            'request__id' => $entity->getRequest()->getId(),
+            'slots' => $entity->getSlotCount()
+        ]);
+        $this->writeItem($query);
+        return $this->readEntity($entity->getRequest()->getId(), $entity->getProvider()->getId());
+    }
+
     public function writeImportList($providerList, $source = 'dldb')
     {
         foreach ($providerList as $provider) {
@@ -82,5 +103,15 @@ class RequestRelation extends Base
             $collection->addEntity($entity);
         }
         return $collection;
+    }
+
+    public function writeDeleteListBySource($source)
+    {
+        $query = new Query\RequestRelation(Query\Base::DELETE);
+        $query
+            ->setResolveLevel(0)
+            ->addEntityMapping()
+            ->addConditionSource($source);
+        return $this->perform($query->getSql());
     }
 }

@@ -78,6 +78,37 @@ class Provider extends Base
         return $this->readCollection($query, $resolveReferences);
     }
 
+    public function writeEntity(Entity $entity)
+    {
+        $query = new Query\Provider(Query\Base::INSERT);
+        $query->addValues([
+            'source' => $entity->getSource(),
+            'id' => $entity->getId(),
+            'name' => $entity->getName(),
+            'contact__city' => $entity->getContact()->getProperty('city'),
+            'contact__country' => $entity->getContact()->getProperty('country'),
+            'contact__lat' => $entity->getContact()->getProperty('lat'),
+            'contact__lon' => $entity->getContact()->getProperty('lon'),
+            'contact__postalCode' => intval($entity->getContact()->getProperty('postalCode')),
+            'contact__region' => $entity->getContact()->getProperty('region'),
+            'contact__street' => $entity->getContact()->getProperty('street'),
+            'contact__streetNumber' => $entity->getContact()->getProperty('streetNumber'),
+            'link' =>  $entity->getLink(),
+            'data' => json_encode($entity)
+        ]);
+        $this->writeItem($query);
+        $lastInsertId = $this->getWriter()->lastInsertId();
+        return $this->readEntity($entity->getSource(), $lastInsertId);
+    }
+
+    public function writeListBySource(\BO\Zmsentities\Source $source)
+    {
+        foreach ($source->getProviderList() as $provider) {
+            $this->writeEntity($provider);
+        }
+        return $this->readListBySource($source->getSource());
+    }
+
     public function writeImportList($providerList, $source = 'dldb')
     {
         foreach ($providerList as $provider) {
@@ -110,6 +141,16 @@ class Provider extends Base
             $this->writeItem($query);
             return $this->readEntity($source, $provider['id']);
         }
+    }
+
+    public function writeDeleteListBySource($source)
+    {
+        $query = new Query\Provider(Query\Base::DELETE);
+        $query
+            ->setResolveLevel(0)
+            ->addEntityMapping()
+            ->addConditionSource($source);
+        return $this->perform($query->getSql());
     }
 
     protected function testSource($source)
