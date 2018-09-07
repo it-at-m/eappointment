@@ -113,6 +113,30 @@ class Request extends Base
         return $requestList;
     }
 
+    public function writeEntity(Entity $entity)
+    {
+        $query = new Query\Request(Query\Base::INSERT);
+        $query->addValues([
+            'source' => $entity->getSource(),
+            'id' => $entity->getId(),
+            'name' => $entity->getName(),
+            'group' => $entity->getGroup(),
+            'link' =>  $entity->getLink(),
+            'data' => json_encode($entity)
+        ]);
+        $this->writeItem($query);
+        $lastInsertId = $this->getWriter()->lastInsertId();
+        return $this->readEntity($entity->getSource(), $lastInsertId);
+    }
+
+    public function writeListBySource(\BO\Zmsentities\Source $source)
+    {
+        foreach ($source->getRequestList() as $request) {
+            $this->writeEntity($request);
+        }
+        return $this->readListBySource($source->getSource());
+    }
+
     public function writeImportEntity($request, $source = 'dldb')
     {
         $query = new Query\Request(Query\Base::REPLACE);
@@ -128,6 +152,16 @@ class Request extends Base
         ]);
         $this->writeItem($query);
         return $this->readEntity($source, $request['id']);
+    }
+
+    public function writeDeleteListBySource($source)
+    {
+        $query = new Query\Request(Query\Base::DELETE);
+        $query
+            ->setResolveLevel(0)
+            ->addEntityMapping()
+            ->addConditionSource($source);
+        return $this->perform($query->getSql());
     }
 
     protected function testSource($source)

@@ -73,12 +73,16 @@ class Source extends Base
 
 
     /**
-     * write a source
+     * write or update a source
      *
      * @return \BO\Zmsentities\Source
      */
     public function writeEntity(Entity $entity, $resolveReferences = 0)
     {
+        if (! $entity->isCompleteAndEditable()) {
+            throw new Excpetion\Source\SourceInvalidInput();
+        }
+        $this->writeDeleteBySource($entity->getSource());
         $query = new Query\Source(Query\Base::INSERT);
         $query->addValues(
             array(
@@ -94,24 +98,38 @@ class Source extends Base
     }
 
     /**
-     * update a source
+     * delete provider and request relations of source
      *
+     */
+    public function writeInsertRelations(\BO\Zmsentities\Source $entity)
+    {
+        (new Provider())->writeListBySource($entity);
+        (new Request())->writeListBySource($entity);
+        (new RequestRelation())->writeListBySource($entity);
+    }
+
+    /**
+     * delete by sourcename
      *
      * @return \BO\Zmsentities\Source
      */
-    public function updateEntity(Entity $entity, $resolveReferences = 0)
+    public function writeDeleteBySource($sourceName)
     {
-        $query = new Query\Source(Query\Base::UPDATE);
-        $query->addConditionSource($entity->getSource());
-        $query->addValues(
-            array(
-                'label' => $entity->getLabel(),
-                'editable' => ($entity->isEditable()) ? 1 : 0,
-                'contact__name' => $entity->contact['name'],
-                'contact__email' => $entity->contact['email']
-            )
-        );
-        $this->writeItem($query);
-        return $this->readEntity($entity->getSource(), $resolveReferences);
+        $entity = $this->readEntity($sourceName);
+        $query = new Query\Source(Query\Base::DELETE);
+        $query->addConditionSource($sourceName);
+        $this->writeDeleteRelations($sourceName);
+        return ($this->deleteItem($query)) ? $entity : null;
+    }
+
+    /**
+     * delete provider and request relations of source
+     *
+     */
+    public function writeDeleteRelations($sourceName)
+    {
+        (new Provider())->writeDeleteListBySource($sourceName);
+        (new Request())->writeDeleteListBySource($sourceName);
+        (new RequestRelation())->writeDeleteListBySource($sourceName);
     }
 }
