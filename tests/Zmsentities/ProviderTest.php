@@ -14,6 +14,9 @@ class ProviderTest extends EntityCommonTests
         $this->assertFalse($entity->hasRequest('1234'), 'Request should not be existing');
         $entity['data']['services'] = array(array('service' => '1234'));
         $this->assertTrue($entity->hasRequest('1234'), 'Request should be existing');
+        $this->assertEquals('Bürgeramt Mitte', $entity->getName());
+        $this->assertEquals('Germany', $entity->getContact()->getProperty('country'));
+        $this->assertEquals('https://service.berlin.de/standort/122280/', $entity->getLink());
     }
 
     public function testCollection()

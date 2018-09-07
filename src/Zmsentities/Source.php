@@ -19,7 +19,8 @@ class Source extends Schema\Entity
             'providers' => [],
             'requests' => [],
             'label' => '',
-            'editable' => false
+            'editable' => false,
+            'requestrelation' => []
         ];
     }
 
@@ -73,6 +74,18 @@ class Source extends Schema\Entity
         return true;
     }
 
+    public function getRequestRelationList()
+    {
+        $requestRelationList = new Collection\RequestRelationList();
+        foreach ($this->toProperty()->requestrelation->get() as $entity) {
+            if (! $entity instanceof RequestRelation) {
+                $entity = new RequestRelation($entity);
+            }
+            $requestRelationList->addEntity($entity);
+        }
+        return $requestRelationList;
+    }
+
     public function hasRequest($requestIdCsv)
     {
         $requestIds = explode(',', $requestIdCsv);
@@ -87,5 +100,10 @@ class Source extends Schema\Entity
     public function isEditable()
     {
         return ($this->toProperty()->editable->get()) ? true : false;
+    }
+
+    public function isCompleteAndEditable()
+    {
+        return ($this->isEditable() && 0 < $this->getProviderList()->count() && $this->getRequestList()->count());
     }
 }
