@@ -186,6 +186,7 @@ class Slot extends Base
         AvailabilityEntity $availability
     ) {
         $ancestors = [];
+        $hasAddedSlots = false;
         foreach ($slotlist as $slot) {
             $slot = clone $slot;
             $slotID = $this->readByAvailability($slot, $availability, $time);
@@ -194,6 +195,7 @@ class Slot extends Base
                 $query->addConditionSlotId($slotID);
             } else {
                 $query = new Query\Slot(Query\Base::INSERT);
+                $hasAddedSlots = true;
             }
             $slot->status = 'free';
             $values = $query->reverseEntityMapping($slot, $availability, $time);
@@ -204,8 +206,12 @@ class Slot extends Base
                 $slotID = $this->getWriter()->lastInsertId();
             }
             $ancestors[] = $slotID;
+            // TODO: Check if slot changed before writing ancestor IDs
             $this->writeAncestorIDs($slotID, $ancestors);
             $status = $writeStatus ? $writeStatus : $status;
+        }
+        if ($hasAddedSlots) {
+            $availability['processingNote'][] = 'Added '.$time->format('Y-m-d');
         }
         return $status;
     }

@@ -209,15 +209,23 @@ class SlotTest extends Base
         $availability->scope = (new \BO\Zmsdb\Scope())->updateEntity($availability->scope->id, $availability->scope, 1);
         $now = (new Slot())->readLastChangedTimeByAvailability($availability);
         $status = (new Slot())->writeByAvailability($availability, $now);
+        //$this->debugOutdated($availability, $now, $now->modify('-1 hour'));
         $this->assertFalse(!$status, "Availability should rebuild slots on changed scope");
     }
 
     public function testChangeByTimeIntegration()
     {
         $availability = $this->readTestAvailability();
-        $now = (new Slot())->readLastChangedTimeByAvailability($availability);
-        $now = $now->modify('+2 day');
+        $lastChange = (new Slot())->readLastChangedTimeByAvailability($availability);
+        $now = new \DateTimeImmutable();
         $status = (new Slot())->writeByAvailability($availability, $now);
+        //$this->debugOutdated($availability, $now, $lastChange);
+        $availability = $this->readTestAvailability();
+        $now = (new Slot())->readLastChangedTimeByAvailability($availability);
+        $lastChange = $now;
+        $now = $now->modify('+1 day');
+        $status = (new Slot())->writeByAvailability($availability, $now);
+        //$this->debugOutdated($availability, $now, $lastChange);
         $this->assertFalse(!$status, "Availability should rebuild slots if time allows new slots");
     }
 
