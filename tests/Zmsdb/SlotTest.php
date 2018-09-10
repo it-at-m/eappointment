@@ -152,6 +152,33 @@ class SlotTest extends Base
         $this->assertFalse($status, "Should not rebuild in case 5");
     }
 
+    /**
+     * New slots should be calculated only if the daytime is after the opening start time
+     */
+    public function testChangeByDayTime()
+    {
+        $availability = $this->readTestAvailability();
+        $availability['bookable']['startInDays'] = 4;
+        $availability['bookable']['endInDays'] = 8;
+        $now = (new Slot())->readLastChangedTimeByAvailability($availability);
+        $now = $now->modify('+1 day');
+        $now = $now->modify('06:00:00');
+        $lastChange = $now;
+        $now = $now->modify('07:00:00');
+        $status = (new Slot())->isAvailabilityOutdated($availability, $now, $lastChange);
+        //$this->debugOutdated($availability, $now, $lastChange);
+        $this->assertFalse($status, "Availability should not rebuild slots if time is before start time");
+        $now = $now->modify('08:00:00');
+        $status = (new Slot())->isAvailabilityOutdated($availability, $now, $lastChange);
+        //$this->debugOutdated($availability, $now, $lastChange);
+        $this->assertTrue($status, "Availability should rebuild slots at right time");
+        $lastChange = $now;
+        $now = $now->modify('09:00:00');
+        $status = (new Slot())->isAvailabilityOutdated($availability, $now, $lastChange);
+        //$this->debugOutdated($availability, $now, $lastChange);
+        $this->assertFalse($status, "Availability should not rebuild slots if it already happened the day");
+    }
+
     public function testChangeByTime()
     {
         $availability = $this->readTestAvailability();
@@ -200,8 +227,11 @@ class SlotTest extends Base
         $values = "\t%s\r\t\t\t= %s\n";
         $debug .= sprintf($values, 'now', $now->format('c'));
         $debug .= sprintf($values, 'lastChange', $lastChange->format('c'));
+        $debug .= sprintf($values, 'BookableStart(now)', $availability->getBookableStart($now));
+        $debug .= sprintf($values, 'BookableStart(las)', $availability->getBookableStart($lastChange));
         $debug .= sprintf($values, 'BookableEnd(now)', $availability->getBookableEnd($now));
         $debug .= sprintf($values, 'BookableEnd(las)', $availability->getBookableEnd($lastChange));
+        $debug .= sprintf($values, 'BookEndTime', $availability->getBookableEnd($now)->modify($now->format('H:i:s')));
         $debug .= sprintf(
             $values,
             'processingNote',
