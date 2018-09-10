@@ -88,7 +88,8 @@ class DayOff extends Base implements MappingInterface
     {
         $data[$this->getPrefixed("date")] = (new \DateTime($data[$this->getPrefixed("date")]))->getTimestamp();
         $data[$this->getPrefixed("lastChange")] =
-            (new \DateTime($data[$this->getPrefixed("lastChange")] . ' UTC'))->getTimestamp();
+            (new \DateTime($data[$this->getPrefixed("lastChange")] . \BO\Zmsdb\Connection\Select::$connectionTimezone))
+            ->getTimestamp();
         return $data;
     }
 }

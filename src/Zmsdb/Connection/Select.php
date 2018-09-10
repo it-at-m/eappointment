@@ -46,6 +46,13 @@ class Select
     public static $pdoOptions = [];
 
     /**
+     * @var String $connectionTimezone
+     *
+     */
+    public static $connectionTimezone = ' UTC';
+
+
+    /**
      * @var PdoInterface $readConnection for read only requests
      */
     protected static $readConnection = null;

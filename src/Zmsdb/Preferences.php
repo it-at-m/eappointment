@@ -31,7 +31,7 @@ class Preferences extends Base
             "groupName" => $groupName,
             "name" => $name,
         ]);
-        return new \DateTimeImmutable($timeString . " UTC");
+        return new \DateTimeImmutable($timeString . \BO\Zmsdb\Connection\Select::$connectionTimezone);
     }
 
     public function replaceProperty($entityName, $entityId, $groupName, $name, $value)

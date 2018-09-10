@@ -653,7 +653,8 @@ class Process extends Base implements MappingInterface
             }
         }
         $data[$this->getPrefixed("lastChange")] =
-            (new \DateTime($data[$this->getPrefixed("lastChange")] . ' UTC'))->getTimestamp();
+            (new \DateTime($data[$this->getPrefixed("lastChange")] . \BO\Zmsdb\Connection\Select::$connectionTimezone))
+            ->getTimestamp();
         return $data;
     }
 
