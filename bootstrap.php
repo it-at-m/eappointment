@@ -22,6 +22,7 @@ require_once(APP_PATH . '/config.php');
 \BO\Zmsdb\Connection\Select::$pdoOptions = [
     \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
 ];
+\BO\Zmsdb\Connection\Select::$connectionTimezone = ' ' . \App::$now->getTimezone()->getName();
 
 \App::$slim->add(new \BO\Zmsapi\Helper\TransactionMiddleware());
 \App::$slim->add(new \BO\Zmsapi\Helper\LogOperatorMiddleware());
