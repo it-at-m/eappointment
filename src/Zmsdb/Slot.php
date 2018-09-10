@@ -137,6 +137,7 @@ class Slot extends Base
         if (!$slotLastChange) {
             $slotLastChange = $this->readLastChangedTimeByAvailability($availability);
         }
+        $availability['processingNote'][] = 'lastchange='.$slotLastChange->format('c');
         if (!$this->isAvailabilityOutdated($availability, $now, $slotLastChange)) {
             return false;
         }
@@ -242,7 +243,7 @@ class Slot extends Base
         if (!$last['dateString']) {
             $last['dateString'] = '1970-01-01 12:00';
         }
-        return new \DateTimeImmutable($last['dateString'] . ' UTC');
+        return new \DateTimeImmutable($last['dateString'] . \BO\Zmsdb\Connection\Select::$connectionTimezone);
     }
 
     public function readLastChangedTimeByScope(ScopeEntity $scope)
@@ -256,7 +257,7 @@ class Slot extends Base
         if (!$last['dateString']) {
             $last['dateString'] = '1970-01-01 12:00';
         }
-        return new \DateTimeImmutable($last['dateString'] . ' UTC');
+        return new \DateTimeImmutable($last['dateString'] . \BO\Zmsdb\Connection\Select::$connectionTimezone);
     }
 
     public function readLastChangedTimeByAvailability(AvailabilityEntity $availabiliy)
@@ -270,7 +271,7 @@ class Slot extends Base
         if (!$last['dateString']) {
             $last['dateString'] = '1970-01-01 12:00';
         }
-        return new \DateTimeImmutable($last['dateString'] . ' UTC');
+        return new \DateTimeImmutable($last['dateString'] . \BO\Zmsdb\Connection\Select::$connectionTimezone);
     }
 
     public function updateSlotProcessMapping($scopeID = null)
