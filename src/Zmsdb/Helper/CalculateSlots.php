@@ -106,7 +106,6 @@ class CalculateSlots
                 $this->log("Calculated slots $key/$scopeLength for $scope");
             }
         }
-        $this->log("Finished slot calculation");
 
         $slotQuery = new \BO\Zmsdb\Slot();
         if ($slotsProcessed = $slotQuery->deleteSlotProcessOnProcess()) {
