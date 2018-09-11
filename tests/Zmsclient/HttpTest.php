@@ -18,10 +18,14 @@ class HttpTest extends Base
         $this->assertInstanceOf('\Psr\Http\Message\RequestInterface', $result->getRequest());
     }
 
-    public function testScopes()
+    public function testCollection()
     {
         $http = $this->createHttpClient();
-        $result = $http->readGetResult('/scope/');
+        $calendar = new \BO\Zmsentities\Calendar();
+        $calendar->setFirstDayTime(new \DateTime('2016-05-30'));
+        $calendar->setLastDayTime(new \DateTime('2016-05-30'));
+        $calendar->addScope("141");
+        $result = $http->readPostResult('/process/status/free/', $calendar);
         $collection = $result->getCollection();
         $this->assertTrue($collection instanceof \BO\Zmsentities\Collection\Base);
     }
