@@ -91,16 +91,33 @@ class Slot extends Base
             $availability['processingNote'][] = 'outdated: dayoff change';
             return true;
         }
+        // Be aware, that last slot change and current time might differ serval days
+        //  if the rebuild fails in some way
         if (1
             // First check if the bookable end date on current time was already calculated on last slot change
             && !$availability->hasDate($availability->getBookableEnd($now), $slotLastChange)
             // Second check if between last slot change and current time could be a bookable slot
-            // Be aware, that last slot change and current time might differ serval days
-            //  if the rebuild fails in some way
-            && $availability->hasDateBetween(
-                $availability->getBookableEnd($slotLastChange),
-                $availability->getBookableEnd($now),
-                $now
+            && (
+                (!$availability->isOpenedOnDate($availability->getBookableEnd($slotLastChange))
+                    && $availability->hasDateBetween(
+                        $availability->getBookableEnd($slotLastChange),
+                        $availability->getBookableEnd($now),
+                        $now
+                    )
+                )
+                // if calculation already happened the day before, check if lastChange time was before opening
+                || ($availability->isOpenedOnDate($availability->getBookableEnd($slotLastChange))
+                && (!$availability
+                    ->isOpened(
+                        $availability->getBookableEnd($slotLastChange)->modify($slotLastChange->format('H:i:s'))
+                    )
+                        || $availability->hasDateBetween(
+                            $availability->getBookableEnd($slotLastChange->modify('+1day')),
+                            $availability->getBookableEnd($now),
+                            $now
+                        )
+                    )
+                )
             )
             // Check if daytime is after booking start time if bookable end of now is calculated
             && (!$availability->isOpenedOnDate($availability->getBookableEnd($now))

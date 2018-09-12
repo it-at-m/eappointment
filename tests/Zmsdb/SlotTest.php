@@ -159,24 +159,57 @@ class SlotTest extends Base
     {
         $availability = $this->readTestAvailability();
         $availability['bookable']['startInDays'] = 4;
-        $availability['bookable']['endInDays'] = 8;
+        $availability['bookable']['endInDays'] = 7;
+        $availability->weekday = [
+            'sunday' => 0,
+            'monday' => 1,
+            'tuesday' => 0,
+            'wednesday' => 0,
+            'thursday' => 0,
+            'friday' => 0,
+            'saturday' => 0
+        ];
+
         $now = (new Slot())->readLastChangedTimeByAvailability($availability);
-        $now = $now->modify('+1 day');
+        $now = $now->modify('next monday');
         $now = $now->modify('06:00:00');
         $lastChange = $now;
         $now = $now->modify('07:00:00');
         $status = (new Slot())->isAvailabilityOutdated($availability, $now, $lastChange);
         //$this->debugOutdated($availability, $now, $lastChange);
         $this->assertFalse($status, "Availability should not rebuild slots if time is before start time");
+
         $now = $now->modify('08:00:00');
         $status = (new Slot())->isAvailabilityOutdated($availability, $now, $lastChange);
         //$this->debugOutdated($availability, $now, $lastChange);
         $this->assertTrue($status, "Availability should rebuild slots at right time");
+
         $lastChange = $now;
         $now = $now->modify('09:00:00');
         $status = (new Slot())->isAvailabilityOutdated($availability, $now, $lastChange);
         //$this->debugOutdated($availability, $now, $lastChange);
         $this->assertFalse($status, "Availability should not rebuild slots if it already happened the day");
+
+        $now = $now->modify('+1 day 00:00:00');
+        $status = (new Slot())->isAvailabilityOutdated($availability, $now, $lastChange);
+        //$this->debugOutdated($availability, $now, $lastChange);
+        $this->assertFalse($status, "Availability should not rebuild slots at midnight the following day");
+
+        $now = $now->modify('09:00:00');
+        $status = (new Slot())->isAvailabilityOutdated($availability, $now, $lastChange);
+        //$this->debugOutdated($availability, $now, $lastChange);
+        $this->assertFalse($status, "Availability should not rebuild slots at the following day");
+
+        $lastChange = $lastChange->modify('07:00:00');
+        $status = (new Slot())->isAvailabilityOutdated($availability, $now, $lastChange);
+        //$this->debugOutdated($availability, $now, $lastChange);
+        $this->assertTrue($status, "Availability should rebuild slots if lastChange was before opening");
+
+        $lastChange = $lastChange->modify('08:00:00');
+        $lastChange = $lastChange->modify('-2day');
+        $status = (new Slot())->isAvailabilityOutdated($availability, $now, $lastChange);
+        //$this->debugOutdated($availability, $now, $lastChange);
+        $this->assertTrue($status, "Availability should rebuild slots if lastChange was multiple days before");
     }
 
     public function testChangeByTime()
