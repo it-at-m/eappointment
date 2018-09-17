@@ -12,6 +12,9 @@
 {% endblock %}
 
 {% block pageheader_right %}
+    {% if workstation %}
+        {{ parent() }}
+    {% endif %}
 {% endblock %}
 
 {% block content %}

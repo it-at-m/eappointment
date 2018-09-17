@@ -54,6 +54,6 @@ class OverviewTest extends Base
             (string) $response->getBody()
         );
         $this->assertContains('Charlottenburg-Wilmersdorf', (string) $response->getBody());
-        $this->assertContains('<a href="/warehouse/">» Zu den Rohdaten</a>', (string) $response->getBody());
+        $this->assertContains('<a href="/warehouse/">» Zu den Kategorien</a>', (string) $response->getBody());
     }
 }

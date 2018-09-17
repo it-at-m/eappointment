@@ -2,7 +2,7 @@
 {% block content %}
 <div class="counter-view" data-includeurl="{{ includeUrl() }}">
         <div class="report-index">
-            <h1>{% trans %}Übersicht verfügbarer Statistik{% endtrans %}</h1>
+            <h1>{% trans %}Übersicht verfügbarer Statistiken{% endtrans %}</h1>
             <p>{% trans %}Im folgenden werden Links zu den Auswertungen zusammengefasst{% endtrans %}:</p>
             <h2>{% trans %}Auswertungen{% endtrans %}</h2>
 
@@ -53,7 +53,7 @@
 
             <h2>Rohdaten</h2>
             <p>Hier sind weitere Daten als Download verfügbar. Diese Daten müssen selbst aufbereitet werden, möchte man diese auswerten.</p>
-            <p><a href="{{ urlGet('WarehouseIndex', {}, {}) }}">» Zu den Rohdaten</a></p>
+            <p><a href="{{ urlGet('WarehouseIndex', {}, {}) }}">» Zu den Kategorien</a></p>
         </div>
     </div>
 {% endblock %}
