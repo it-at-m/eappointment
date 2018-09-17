@@ -33,7 +33,7 @@ class WorkstationSelectTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('Standort und Arbeitsplatz auswählen', (string)$response->getBody());
+        $this->assertContains('Standort auswählen', (string)$response->getBody());
         $this->assertContains('Bürgeramt Heerstraße', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }

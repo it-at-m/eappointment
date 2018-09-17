@@ -44,7 +44,7 @@ class WorkstationSelect extends BaseController
             $response,
             'page/workstationSelect.twig',
             array(
-                'title' => 'Standort und Arbeitsplatz auswählen',
+                'title' => 'Standort auswählen',
                 'advancedData' => $formData,
                 'workstation' => $this->workstation,
                 'menuActive' => 'select',
