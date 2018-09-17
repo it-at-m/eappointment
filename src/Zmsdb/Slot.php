@@ -167,6 +167,7 @@ class Slot extends Base
             $availability['processingNote'][] = 'cancelled: not bookable';
             return false;
         }
+        (new Availability())->readLock($availability->id);
         $stopDate = $availability->getBookableEnd($now);
         $slotlist = $availability->getSlotList();
         $time = $now;

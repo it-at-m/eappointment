@@ -14,6 +14,10 @@ class Availability extends Base implements MappingInterface
 
     const TEMPORARY_DELETE = 'DELETE FROM oeffnungszeit WHERE kommentar = "--temporary--"';
 
+    const QUERY_GET_LOCK = '
+        SELECT OeffnungszeitID FROM oeffnungszeit WHERE OeffnungszeitID = :availabilityId FOR UPDATE
+    ';
+
     public function addRequiredJoins()
     {
          $this->leftJoin(
