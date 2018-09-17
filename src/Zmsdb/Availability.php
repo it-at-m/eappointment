@@ -37,6 +37,11 @@ class Availability extends Base implements Interfaces\ResolveReferences
         return $entity;
     }
 
+    public function readLock($availabilityId)
+    {
+        return $this->perform(Query\Availability::QUERY_GET_LOCK, ['availabilityId' => $availabilityId]);
+    }
+
     public function readList($scopeId, $resolveReferences = 0, $reserveEntityIds = false)
     {
         $scope = new \BO\Zmsentities\Scope(['id' => $scopeId]);
