@@ -285,6 +285,23 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/search/', '\BO\Zmsadmin\Search')
     ->setName("search");
 
+/*
+ * ---------------------------------------------------------------------------
+ * Source
+ * -------------------------------------------------------------------------
+ */
+\App::$slim->get('/source/', '\BO\Zmsadmin\SourceIndex')
+    ->setName("sourceindex");
+
+\App::$slim->map(['GET', 'POST'], '/source/', '\BO\Zmsadmin\SourceAdd')
+    ->setName("sourceAdd");
+
+\App::$slim->map(['GET','POST'], '/source/{name}/', '\BO\Zmsadmin\SourceEdit')
+    ->setName("sourceEdit");
+
+\App::$slim->map(['POST'], '/source/delete/{loginname}/', '\BO\Zmsadmin\SourceDelete')
+    ->setName("sourceDelete");
+
 
 /*
  * ---------------------------------------------------------------------------
