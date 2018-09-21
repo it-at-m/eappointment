@@ -21,7 +21,9 @@
                             <td><a href="{{ urlGet('WarehousePeriod', {'subject': category, 'subjectid': entry.subject }, {}) }}">{{ entry.subject }}</a></td>
                             <td>{{ entry.periodstart|date("d.m.Y") }}</td>
                             <td>{{ entry.periodend|date("d.m.Y") }}</td>
+                            {% if entry.organisationname is defined %}
                             <td>{{ entry.organisationname }}</td>
+                            {% endif %}
                             <td>{{ entry.description }}</td>
                         </tr>
                     {% endfor %}
