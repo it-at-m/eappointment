@@ -56,22 +56,22 @@ class Warehouse extends Base
         [
             'subject' => 'requestscope',
             'description' => 'Dienstleistungsstatistik Standort',
-            'right' => 'useraccount.rights.scope'
+            'right' => 'scope'
         ],
         [
             'subject' => 'requestdepartment',
             'description' => 'Dienstleistungsstatistik Behörde',
-            'right' => 'useraccount.rights.department'
+            'right' => 'department'
         ],
         [
             'subject' => 'requestorganisation',
             'description' => 'Dienstleistungsstatistik Organisation',
-            'right' => 'useraccount.rights.organisation'
+            'right' => 'organisation'
         ],
         [
             'subject' => 'useraccount',
             'description' => 'Nutzerdaten mit E-Mail-Adresse und Rechten',
-            'right' => 'useraccount.rights.superuser'
+            'right' => 'superuser'
         ],
     ];
 
