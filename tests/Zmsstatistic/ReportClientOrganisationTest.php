@@ -48,7 +48,7 @@ class ReportClientOrganisationTest extends Base
             (string) $response->getBody()
         );
         $this->assertContains('Charlottenburg-Wilmersdorf', (string) $response->getBody());
-        $this->assertContains('Bitte wählen Sie eine Zeit aus.', (string) $response->getBody());
+        $this->assertContains('Bitte wählen Sie einen Zeitraum aus.', (string) $response->getBody());
     }
 
     public function testWithPeriod()

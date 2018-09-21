@@ -45,7 +45,7 @@ class ReportClientDepartmentTest extends Base
         );
         $this->assertContains('<a href="/report/client/department/2016-04/">April</a>', (string) $response->getBody());
         $this->assertContains('Charlottenburg-Wilmersdorf', (string) $response->getBody());
-        $this->assertContains('Bitte wählen Sie eine Zeit aus.', (string) $response->getBody());
+        $this->assertContains('Bitte wählen Sie einen Zeitraum aus.', (string) $response->getBody());
     }
 
     public function testWithPeriod()
