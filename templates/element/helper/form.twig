@@ -339,6 +339,7 @@
         value="{{ args.value }}"
         {% if args.id %} id="{{ args.id }}"{% endif %}
         {% if args.disabled %} disabled="disabled"{% endif %}
+        {% if args.accesskey %} accesskey="{{ args.accesskey }}" {% endif %}
     >{{ args.label}}</button>
 {% endmacro %}
 
