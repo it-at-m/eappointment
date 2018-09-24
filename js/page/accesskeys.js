@@ -12,12 +12,12 @@ class View extends BaseView {
     }
 
     bindKeyEvents() {
-        console.log('key event');
         const $main = this.$main;
         const keySelectorMap = {
             'a': 'input[name=email], .button-login',
             'b': 'input[name=sendConfirmation]',
-            'd': '.service-checkbox:first, [data-button-print]',
+            'g': '.service-checkbox:first',
+            'd': '[data-button-print]',
             'e': '[data-button-download], select[name=headsUpTime]',
             'h': '.process-queue',
             'i': 'input[name=sendMailConfirmation]',
@@ -43,23 +43,23 @@ class View extends BaseView {
             return focus(keySelectorMap[key]);
         };
 
-        $main.off().on('keypress', ':not(input, textarea, select)', (keyEvent) => {
-            var isModifierKey = !!keyEvent.metaKey || !!keyEvent.altKey || !!keyEvent.ctrlKey || !!keyEvent.shiftKey;
-            var key = keyEvent.key;
-            var targetIsInputElement = $(keyEvent.target).is('input, textarea, select');
-            var isReturnKey = key === 13;
+		$main.off().on('keydown', ':not(input, textarea, select)', (keyEvent) => {
+			var isModifierKey = !!keyEvent.metaKey || !!keyEvent.ctrlKey || !!keyEvent.shiftKey;
+			var key = keyEvent.key;
+			var targetIsInputElement = $(keyEvent.target).is('input, textarea, select');
+			var isReturnKey = key === 13;
 
-            // Only if key isn't a modifier, not enter, not inside an input element and exists as a keyboard shortcut
-            if (!targetIsInputElement && !isModifierKey && !isReturnKey && keySelectorMap[key]) {
-                if (focusKey(key)) {
-                    if (key === 'm') {
-                        $('#process_date').click();
-                    }   
-                    console.log('default prevented');
-                    keyEvent.preventDefault();
-                }
-            }
-        })
+			// Only if key isn't a modifier, not enter, not inside an input element and exists as a keyboard shortcut
+			if (!targetIsInputElement && !isModifierKey && !isReturnKey && keySelectorMap[key]) {
+				if (focusKey(key)) {
+					if (key === 'm') {
+						$('#process_date').click();
+					}   
+					console.log('default prevented');
+					keyEvent.preventDefault();
+				}
+			}
+		})
     }
 }
 
