@@ -116,6 +116,8 @@ class View extends RequestView {
             this.onChangeSlotCount(event);
         }).on('click', '.add-date-picker', () => {
             this.onSelectDateWithOverlay();
+        }).on('focus', '.add-date-picker', () => {
+            this.onSelectDateWithOverlay();
         }).on('change', '.appointment-form .switchcluster select', (event) => {
             this.onChangeScope(event);
         }).on('change', 'select#process_time', (event) => {
