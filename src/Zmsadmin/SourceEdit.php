@@ -8,7 +8,7 @@
  */
 namespace BO\Zmsadmin;
 
-class SourceIndex extends BaseController
+class SourceEdit extends BaseController
 {
 
     /**
@@ -27,9 +27,9 @@ class SourceIndex extends BaseController
 
         return \BO\Slim\Render::withHtml(
             $response,
-            'page/sourceindex.twig',
+            'page/sourceedit.twig',
             array(
-                'title' => 'Mandanten',
+                'title' => 'Mandanten bearbeiten',
                 'menuActive' => 'source',
                 'workstation' => $workstation
             )
