@@ -293,7 +293,7 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/source/', '\BO\Zmsadmin\SourceIndex')
     ->setName("sourceindex");
 
-\App::$slim->map(['GET', 'POST'], '/source/', '\BO\Zmsadmin\SourceAdd')
+\App::$slim->map(['POST'], '/source/', '\BO\Zmsadmin\SourceAdd')
     ->setName("sourceAdd");
 
 \App::$slim->map(['GET','POST'], '/source/{name}/', '\BO\Zmsadmin\SourceEdit')
