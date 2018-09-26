@@ -40,7 +40,7 @@ class Ticketprinter
                 '/organisation/'. self::$organisation->id . '/hash/',
                 ['name' => $parameters['name']]
             )->getEntity();
-            \BO\Zmsclient\Ticketprinter::setHash($entity->hash);
+            \BO\Zmsclient\Ticketprinter::setHash($entity->hash, $request);
         } else {
             $entity = \App::$http->readGetResult('/ticketprinter/'. $ticketprinterHash . '/')->getEntity();
         }

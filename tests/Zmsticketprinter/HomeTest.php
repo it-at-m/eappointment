@@ -13,7 +13,9 @@ class HomeTest extends Base
 
     public function testRendering()
     {
-        \BO\Zmsclient\Ticketprinter::setHomeUrl("http://service.berlin.de/terminvereinbarung/ticketprinter/scope/141/");
+        $request = static::createBasicRequest('GET', '/');
+        $url = 'http://service.berlin.de/terminvereinbarung/ticketprinter/scope/141/';
+        \BO\Zmsclient\Ticketprinter::setHomeUrl($url, $request);
         $response = $this->render([ ], [ ], [ ]);
         $homeUrl = \BO\Zmsclient\Ticketprinter::getHomeUrl();
         $this->assertEquals($homeUrl, 'http://service.berlin.de/terminvereinbarung/ticketprinter/scope/141/');
@@ -21,7 +23,8 @@ class HomeTest extends Base
 
     public function testFailed()
     {
-        \BO\Zmsclient\Ticketprinter::setHomeUrl("");
+        $request = static::createBasicRequest('GET', '/');
+        \BO\Zmsclient\Ticketprinter::setHomeUrl('', $request);
         $this->expectException('\BO\Zmsticketprinter\Exception\HomeNotFound');
         $response = $this->render([ ], [ ], [ ]);
     }

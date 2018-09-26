@@ -29,7 +29,7 @@ class HomeUrl
             $homeUrl = $request->getRequestTarget();
         }
         //\App::$log->debug("HOMEURL", [$homeUrl, $request->getRequestTarget()]);
-        \BO\Zmsclient\Ticketprinter::setHomeUrl($homeUrl);
+        \BO\Zmsclient\Ticketprinter::setHomeUrl($homeUrl, $request);
         return $homeUrl;
     }
 }
