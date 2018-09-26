@@ -16,12 +16,13 @@ class TicketprinterTest extends Base
 
     public function testBasic()
     {
+        $request = new \BO\Zmsclient\Psr7\Request('GET', '/');
         $this->assertFalse(\BO\Zmsclient\Ticketprinter::getHash());
-        \BO\Zmsclient\Ticketprinter::setHash(self::HASH_TEST);
+        \BO\Zmsclient\Ticketprinter::setHash(self::HASH_TEST, $request);
         $this->assertEquals(self::HASH_TEST, \BO\Zmsclient\Ticketprinter::getHash());
 
         $this->assertFalse(\BO\Zmsclient\Ticketprinter::getHomeUrl());
-        \BO\Zmsclient\Ticketprinter::setHomeUrl(self::HOMEURL_TEST);
+        \BO\Zmsclient\Ticketprinter::setHomeUrl(self::HOMEURL_TEST, $request);
         $this->assertEquals(self::HOMEURL_TEST, \BO\Zmsclient\Ticketprinter::getHomeUrl());
     }
 }
