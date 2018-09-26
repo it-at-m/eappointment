@@ -39,7 +39,8 @@ class HomeUrlTest extends Base
                 ]
             ]
         );
-        \BO\Zmsclient\Ticketprinter::setHomeUrl("");
+        $request = static::createBasicRequest('GET', '/');
+        \BO\Zmsclient\Ticketprinter::setHomeUrl("", $request);
         $this->render([ ], [
             '__cookie' => [
                 'Ticketprinter' => '71ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2',
@@ -83,8 +84,8 @@ class HomeUrlTest extends Base
                 ]
             ]
         );
-
-        \BO\Zmsclient\Ticketprinter::setHomeUrl("");
+        $request = static::createBasicRequest('GET', '/');
+        \BO\Zmsclient\Ticketprinter::setHomeUrl("", $request);
         $response = $this->render([ ], [
             '__cookie' => [
                 'Ticketprinter' => '71ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2',
