@@ -11,8 +11,28 @@ class SourceUpdateTest extends Base
         $this->setWorkstation()->getUseraccount()->setRights('superuser');
         $response = $this->render([], [
             '__body' => $this->readFixture('GetSource.json'),
+            'resolveReferences' => 1
         ], []);
+        $entity = new \BO\Zmsentities\Source(json_decode((string)$response->getBody(),1));
         $this->assertContains('source.json', (string)$response->getBody());
+        $this->assertContains('"source":"unittest"', (string)$response->getBody());
+        $this->assertContains('providers', (string)$response->getBody());
+        $this->assertContains('requests', (string)$response->getBody());
+        $this->assertEquals(1, $entity['data']['requestrelation'][0]['slots']);
+        $this->assertTrue(200 == $response->getStatusCode());
+    }
+
+    public function testWithRequestRelation()
+    {
+        $this->setWorkstation()->getUseraccount()->setRights('superuser');
+        $response = $this->render([], [
+            '__body' => $this->readFixture('GetSourceWithRequestRelation.json'),
+            'resolveReferences' => 1
+        ], []);
+        $entity = new \BO\Zmsentities\Source(json_decode((string)$response->getBody(),1));
+        $this->assertEquals(21334, $entity['data']['providers'][0]['id']);
+        $this->assertEquals(120335, $entity['data']['requests'][0]['id']);
+        $this->assertEquals(3, $entity['data']['requestrelation'][0]['slots']);
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
