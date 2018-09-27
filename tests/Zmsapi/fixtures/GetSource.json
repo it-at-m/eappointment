@@ -1,0 +1,22 @@
+{
+    "$schema": "https://schema.berlin.de/queuemanagement/source.json",
+    "source": "unittest",
+    "label": "unittest label",
+    "editable": true,
+    "providers": [
+        {
+            "id": 21334,
+            "name": "Bürgeramt Mitte",
+            "source": "dldb"
+        }
+    ],
+    "requests": [
+        {
+            "id": "120335",
+            "link": "http://service.berlin.de/dienstleistung/120335/",
+            "name": "Abmeldung einer Wohnung",
+            "source": "dldb",
+            "group": "Meldewesen und Ordnung"
+        }
+    ]
+}
