@@ -80,7 +80,7 @@ class Source extends Base
     public function writeEntity(Entity $entity, $resolveReferences = 0)
     {
         if (! $entity->isCompleteAndEditable()) {
-            throw new Excpetion\Source\SourceInvalidInput();
+            throw new Exception\Source\SourceInvalidInput();
         }
         $this->writeDeleteBySource($entity->getSource());
         $query = new Query\Source(Query\Base::INSERT);

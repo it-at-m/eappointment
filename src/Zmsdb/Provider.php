@@ -146,17 +146,14 @@ class Provider extends Base
     public function writeDeleteListBySource($source)
     {
         $query = new Query\Provider(Query\Base::DELETE);
-        $query
-            ->setResolveLevel(0)
-            ->addEntityMapping()
-            ->addConditionSource($source);
-        return $this->perform($query->getSql());
+        $query->addConditionProviderSource($source);
+        return $this->deleteItem($query);
     }
 
     protected function testSource($source)
     {
         if (! (new Source())->readEntity($source)) {
-            throw new Exception\UnknownDataSource();
+            throw new Exception\Source\UnknownDataSource();
         }
     }
 }
