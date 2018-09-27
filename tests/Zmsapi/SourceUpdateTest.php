@@ -25,7 +25,7 @@ class SourceUpdateTest extends Base
         ], []);
     }
 
-    public function testUnvalidInput()
+    public function testUnvalidSchema()
     {
         $this->setWorkstation()->getUseraccount()->setRights('superuser');
         $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');

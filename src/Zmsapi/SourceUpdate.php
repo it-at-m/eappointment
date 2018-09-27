@@ -39,9 +39,6 @@ class SourceUpdate extends BaseController
 
     protected function testEntity($entity, $input)
     {
-        if (0 == count($input)) {
-            throw new Exception\Source\SourceInvalidInput();
-        }
         try {
             $entity->testValid('de_DE', 1);
         } catch (\Exception $exception) {
