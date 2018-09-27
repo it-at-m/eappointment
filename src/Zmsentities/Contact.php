@@ -10,4 +10,9 @@ class Contact extends Schema\Entity
     {
         return $this->toProperty()->{$propertyName}->get();
     }
+
+    public function hasProperty($propertyName)
+    {
+        return $this->toProperty()->{$propertyName}->isAvailable();
+    }
 }
