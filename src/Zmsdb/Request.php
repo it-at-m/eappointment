@@ -125,8 +125,7 @@ class Request extends Base
             'data' => json_encode($entity)
         ]);
         $this->writeItem($query);
-        $lastInsertId = $this->getWriter()->lastInsertId();
-        return $this->readEntity($entity->getSource(), $lastInsertId);
+        return $this->readEntity($entity->getSource(), $entity->getId());
     }
 
     public function writeListBySource(\BO\Zmsentities\Source $source)
