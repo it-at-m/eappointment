@@ -28,7 +28,7 @@ class ProviderGetTest extends Base
 
     public function testSourceFailed()
     {
-        $this->expectException('\BO\Zmsdb\Exception\UnknownDataSource');
+        $this->expectException('\BO\Zmsdb\Exception\Source\UnknownDataSource');
         $this->expectExceptionCode(404);
         $this->render(['source' => 'test', 'id' => 123456], [], []);
     }
