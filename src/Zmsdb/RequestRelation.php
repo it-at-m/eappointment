@@ -108,10 +108,7 @@ class RequestRelation extends Base
     public function writeDeleteListBySource($source)
     {
         $query = new Query\RequestRelation(Query\Base::DELETE);
-        $query
-            ->setResolveLevel(0)
-            ->addEntityMapping()
-            ->addConditionSource($source);
-        return $this->perform($query->getSql());
+        $query->addConditionSource($source);
+        return $this->deleteItem($query);
     }
 }
