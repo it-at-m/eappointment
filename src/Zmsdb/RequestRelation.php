@@ -57,9 +57,24 @@ class RequestRelation extends Base
 
     public function writeListBySource(\BO\Zmsentities\Source $source)
     {
-        foreach ($source->getRequestRelationList() as $entity) {
-            $this->writeEntity($entity);
+        if ($source->getRequestRelationList()->count()) {
+            foreach ($source->getRequestRelationList() as $entity) {
+                $this->writeEntity($entity);
+            }
+        } else if ($source->isCompleteAndEditable()) {
+            foreach($source->getProviderList() as $provider) {
+                foreach($source->getRequestList() as $request) {
+                    $entity = new Entity([
+                        'source' => $source->getSource(),
+                        'provider' => $provider,
+                        'request' => $request,
+                        'slots' => 1
+                    ]);
+                    $this->writeEntity($entity);
+                }
+            }
         }
+
         return $this->readListBySource($source->getSource());
     }
 

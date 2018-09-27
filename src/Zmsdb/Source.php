@@ -67,6 +67,8 @@ class Source extends Base
         if (0 < $resolveReferences) {
             $entity['providers'] = (new Provider())->readListBySource($entity->source, $resolveReferences - 1);
             $entity['requests'] = (new Request())->readListBySource($entity->source, $resolveReferences - 1);
+            $entity['requestrelation'] = (new RequestRelation())
+                ->readListBySource($entity->source, $resolveReferences - 1);
         }
         return $entity;
     }
@@ -93,7 +95,9 @@ class Source extends Base
                 'contact__email' => $entity->contact['email']
             )
         );
-        $this->writeItem($query);
+        if ($this->writeItem($query)) {
+            $this->writeInsertRelations($entity);
+        }
         return $this->readEntity($entity->getSource(), $resolveReferences);
     }
 

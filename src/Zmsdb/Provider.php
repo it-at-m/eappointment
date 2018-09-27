@@ -80,20 +80,28 @@ class Provider extends Base
 
     public function writeEntity(Entity $entity)
     {
+        $contact =  $entity->getContact();
+        if (! $contact->count()) {
+            throw new Exception\Provider\ProviderContactMissed();
+        }
         $query = new Query\Provider(Query\Base::INSERT);
         $query->addValues([
             'source' => $entity->getSource(),
             'id' => $entity->getId(),
             'name' => $entity->getName(),
-            'contact__city' => $entity->getContact()->getProperty('city'),
-            'contact__country' => $entity->getContact()->getProperty('country'),
-            'contact__lat' => $entity->getContact()->getProperty('lat'),
-            'contact__lon' => $entity->getContact()->getProperty('lon'),
-            'contact__postalCode' => intval($entity->getContact()->getProperty('postalCode')),
-            'contact__region' => $entity->getContact()->getProperty('region'),
-            'contact__street' => $entity->getContact()->getProperty('street'),
-            'contact__streetNumber' => $entity->getContact()->getProperty('streetNumber'),
-            'link' =>  $entity->getLink(),
+            'contact__city' => ($contact->hasProperty('city')) ? $contact->getProperty('city') : '',
+            'contact__country' => ($contact->hasProperty('country')) ? $contact->getProperty('country') : '',
+            'contact__lat' => ($contact->hasProperty('lat')) ? $contact->getProperty('lat') : 0,
+            'contact__lon' => ($contact->hasProperty('lon')) ? $contact->getProperty('lon') : 0,
+            'contact__postalCode' => $contact->hasProperty('postalCode')
+                ? intval($contact->getProperty('postalCode'))
+                : '',
+            'contact__region' => $contact->hasProperty('region') ? $contact->getProperty('region') : '',
+            'contact__street' => $contact->hasProperty('street') ? $contact->getProperty('street') : '',
+            'contact__streetNumber' => $contact->hasProperty('streetNumber')
+                ? $contact->getProperty('streetNumber')
+                : '-',
+            'link' =>  ($entity->getLink()) ? $entity->getLink() : '',
             'data' => json_encode($entity)
         ]);
         $this->writeItem($query);
