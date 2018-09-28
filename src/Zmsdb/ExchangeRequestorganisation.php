@@ -53,7 +53,7 @@ class ExchangeRequestorganisation extends Base
         $entity->addDictionaryEntry('subject', 'string', 'Behoerden ID', 'organisation.id');
         $entity->addDictionaryEntry('periodstart', 'string', 'Datum von');
         $entity->addDictionaryEntry('periodend', 'string', 'Datum bis');
-        $entity->addDictionaryEntry('description', 'string', 'Beschreibung des Standortes');
+        $entity->addDictionaryEntry('description', 'string', 'Beschreibung der Organisation');
         foreach ($raw as $entry) {
             $entity->addDataSet(array_values($entry));
         }
