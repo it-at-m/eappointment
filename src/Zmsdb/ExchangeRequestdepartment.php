@@ -54,7 +54,7 @@ class ExchangeRequestdepartment extends Base
         $entity->addDictionaryEntry('periodstart', 'string', 'Datum von');
         $entity->addDictionaryEntry('periodend', 'string', 'Datum bis');
         $entity->addDictionaryEntry('organisationname', 'string', 'Name der Organisation');
-        $entity->addDictionaryEntry('description', 'string', 'Beschreibung des Standortes');
+        $entity->addDictionaryEntry('description', 'string', 'Beschreibung der Behörde');
         foreach ($raw as $entry) {
             $entity->addDataSet(array_values($entry));
         }
