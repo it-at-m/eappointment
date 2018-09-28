@@ -19,8 +19,7 @@ class Source extends Schema\Entity
             'providers' => [],
             'requests' => [],
             'label' => '',
-            'editable' => false,
-            'requestrelation' => []
+            'editable' => false
         ];
     }
 
@@ -77,7 +76,7 @@ class Source extends Schema\Entity
     public function getRequestRelationList()
     {
         $requestRelationList = new Collection\RequestRelationList();
-        foreach ($this->toProperty()->requestrelation->get() as $entity) {
+        foreach ($this->getProviderList()->getRequestRelationList() as $entity) {
             if (! $entity instanceof RequestRelation) {
                 $entity = new RequestRelation($entity);
             }
