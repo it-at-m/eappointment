@@ -20,6 +20,11 @@
                 </ul>
                 {% endblock %}
             {% endembed %}
+            <div class="report-period">
+                <p class="report-period--link-more">
+                <a href="{{ urlGet('ReportClientIndex', {}, {}) }}">Übersicht Kundenstatistik</a>
+                </p>
+            </div>
 
             <h3>{% trans %}Dienstleistungsstatistik{% endtrans %}</h3>
             {% embed "block/report/period.twig" with {"source":{"entity":"RequestIndex"}, "items": requestperiod} %}
@@ -35,6 +40,11 @@
                 </ul>
                 {% endblock %}
             {% endembed %}
+            <div class="report-period">
+                <p class="report-period--link-more">
+                <a href="{{ urlGet('ReportRequestIndex', {}, {}) }}">Übersicht Dienstleistungsstatistik</a>
+                </p>
+            </div>
 
             <h3>{% trans %}Wartestatistik{% endtrans %}</h3>
             {% embed "block/report/period.twig" with {"source":{"entity":"WaitingIndex"}, "items": waitingperiod} %}
@@ -50,10 +60,19 @@
                 </ul>
                 {% endblock %}
             {% endembed %}
+            <div class="report-period">
+                <p class="report-period--link-more">
+                <a href="{{ urlGet('ReportWaitingIndex', {}, {}) }}">Übersicht Wartestatistik</a>
+                </p>
+            </div>
 
             <h2>Rohdaten</h2>
             <p>Hier sind weitere Daten als Download verfügbar. Diese Daten müssen selbst aufbereitet werden, möchte man diese auswerten.</p>
-            <p><a href="{{ urlGet('WarehouseIndex', {}, {}) }}">» Zu den Kategorien</a></p>
+            <div class="report-period">
+                <p class="report-period--link-more">
+                <a href="{{ urlGet('WarehouseIndex', {}, {}) }}">Übersicht Kategorien</a>
+                </p>
+            </div>
         </div>
     </div>
 {% endblock %}
