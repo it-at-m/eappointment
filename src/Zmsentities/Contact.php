@@ -6,13 +6,8 @@ class Contact extends Schema\Entity
 {
     public static $schema = "contact.json";
 
-    public function getProperty($propertyName)
+    public function getProperty($propertyName, $default = '')
     {
-        return $this->toProperty()->{$propertyName}->get();
-    }
-
-    public function hasProperty($propertyName)
-    {
-        return $this->toProperty()->{$propertyName}->isAvailable();
+        return ($this->hasProperty($propertyName)) ? $this->toProperty()->{$propertyName}->get() : $default;
     }
 }
