@@ -126,9 +126,19 @@
 
     }
 
-    .report-period--show-all {
+    .report-period--show-all{
         text-align: right;
         padding-right: 1em;
+
+        &:before {
+            content: "» ";
+        }
+    }
+
+    .report-period--link-more {
+        text-align: left;
+        padding-left: 1em;
+        padding-bottom: 0.6em;
 
         &:before {
             content: "» ";
