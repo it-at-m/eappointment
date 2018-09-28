@@ -263,6 +263,11 @@ class Process extends Schema\Entity
         return $scopeId;
     }
 
+    public function getCurrentScope()
+    {
+        return $this->getProperty('scope');
+    }
+
     public function getAmendment()
     {
         return $this->toProperty()->amendment->get();
