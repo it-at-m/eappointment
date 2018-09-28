@@ -29,6 +29,12 @@ class RequestTest extends Base
         $this->assertEquals('request', $class->getAlias());
     }
 
+    public function testUnknowSource()
+    {
+        $this->expectException('BO\Zmsdb\Exception\Source\UnknownDataSource');
+        (new Query())->readEntity('unittest', 122280, 1);
+    }
+
     public function testExceptionRequestNotFound()
     {
         $this->expectException("\\BO\\Zmsdb\\Exception\\RequestNotFound");

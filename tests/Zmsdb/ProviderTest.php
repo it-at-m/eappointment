@@ -14,6 +14,12 @@ class ProviderTest extends Base
         $this->assertEquals(true, array_key_exists('data', $entity));
     }
 
+    public function testUnknowSource()
+    {
+        $this->expectException('BO\Zmsdb\Exception\Source\UnknownDataSource');
+        (new Query())->readEntity('unittest', 122280, 1);
+    }
+
     public function testWithRequestRelations()
     {
         $entity = (new Query())->readEntity('dldb', 122280, 1);
@@ -59,6 +65,24 @@ class ProviderTest extends Base
         $collection = $query->readListByRequest('dldb', '99999999999999999'); // unknown request
         $this->assertEntityList("\\BO\\Zmsentities\\Provider", $collection);
         $this->assertFalse($collection->hasEntity('122286')); // Bürgeramt Sonnenallee
+    }
+
+    public function testWriteEntity()
+    {
+        $query = new Query();
+        $entity = (new \BO\Zmsentities\Provider())->getExample();
+        $entity = $query->writeEntity($entity);
+        $this->assertEquals('dldb', $entity->getSource());
+        $this->assertEquals(21334, $entity->getId());
+    }
+
+    public function testWriteEntityFailed()
+    {
+        $this->expectException('\BO\Zmsdb\Exception\Provider\ProviderContactMissed');
+        $query = new Query();
+        $entity = (new \BO\Zmsentities\Provider())->getExample();
+        unset($entity['contact']);
+        $query->writeEntity($entity);
     }
 
     public function testWriteImport()
