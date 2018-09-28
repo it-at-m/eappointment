@@ -18,6 +18,11 @@
         "source": "dldb",
         "requestrelation": [
             {
+                "provider": {
+                    "id": 21334,
+                    "name": "Bürgeramt Mitte",
+                    "source": "dldb"
+                },
                 "request": {
                     "id": "120335",
                     "link": "http://service.berlin.de/dienstleistung/120335/",
@@ -25,7 +30,8 @@
                     "source": "dldb",
                     "group": "Meldewesen und Ordnung"
                 },
-                "slots": 2
+                "slots": 2,
+                "source": "dldb"
             }
         ],
         "link": "https://service.berlin.de/standort/122280/"

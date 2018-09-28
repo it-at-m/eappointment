@@ -44,12 +44,6 @@
             "items": {
                 "$ref": "request.json"
             }
-        },
-        "requestrelation": {
-            "type": "array",
-            "items": {
-                "$ref": "requestrelation.json"
-            }
         }
     }
 }
