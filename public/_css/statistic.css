@@ -5346,6 +5346,13 @@ hr {
   .report-period .report-period--show-all:before {
     content: "» "; }
 
+.report-period .report-period--link-more {
+  text-align: left;
+  padding-left: 1em;
+  padding-bottom: 0.6em; }
+  .report-period .report-period--link-more:before {
+    content: "» "; }
+
 .report-board > .body {
   padding: 1px; }
 
