@@ -89,18 +89,14 @@ class Provider extends Base
             'source' => $entity->getSource(),
             'id' => $entity->getId(),
             'name' => $entity->getName(),
-            'contact__city' => ($contact->hasProperty('city')) ? $contact->getProperty('city') : '',
-            'contact__country' => ($contact->hasProperty('country')) ? $contact->getProperty('country') : '',
-            'contact__lat' => ($contact->hasProperty('lat')) ? $contact->getProperty('lat') : 0,
-            'contact__lon' => ($contact->hasProperty('lon')) ? $contact->getProperty('lon') : 0,
-            'contact__postalCode' => $contact->hasProperty('postalCode')
-                ? intval($contact->getProperty('postalCode'))
-                : '',
-            'contact__region' => $contact->hasProperty('region') ? $contact->getProperty('region') : '',
-            'contact__street' => $contact->hasProperty('street') ? $contact->getProperty('street') : '',
-            'contact__streetNumber' => $contact->hasProperty('streetNumber')
-                ? $contact->getProperty('streetNumber')
-                : '-',
+            'contact__city' => $contact->getProperty('city'),
+            'contact__country' => $contact->getProperty('country'),
+            'contact__lat' => $contact->getProperty('lat', 0),
+            'contact__lon' => $contact->getProperty('lon', 0),
+            'contact__postalCode' => intval($contact->getProperty('postalCode')),
+            'contact__region' => $contact->getProperty('region'),
+            'contact__street' => $contact->getProperty('street'),
+            'contact__streetNumber' => $contact->getProperty('streetNumber', '-'),
             'link' =>  ($entity->getLink()) ? $entity->getLink() : '',
             'data' => json_encode($entity)
         ]);
