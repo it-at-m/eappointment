@@ -24,12 +24,11 @@ class DepartmentAddScope extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
-        $providerAssigned = \App::$http->readGetResult(
-            '/provider/dldb/',
-            array(
-                'isAssigned' => true
-            )
-        )->getCollection()->withUniqueProvider()->sortByName();
+        $providerAssigned = \App::$http
+            ->readGetResult('/provider/'. $workstation->getScope()->getSource() .'/', ['isAssigned' => true])
+            ->getCollection()
+            ->withUniqueProvider()
+            ->sortByName();
 
         $providerNotAssigned = \App::$http->readGetResult(
             '/provider/dldb/',
