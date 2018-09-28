@@ -38,15 +38,43 @@ class SourceTest extends Base
     public function testWriteEntity()
     {
         $query = new Query();
-        $input = $this->getTestEntity();
-        $entity = $query->writeEntity($input, 1);
-        $this->assertEquals('dldb', $entity->getSource());
-        $this->assertEquals('Dienstleistungsdatenbank', $entity->getLabel());
+        $entity = $this->getTestEntity();
         $entity->label = 'Dienstleistungsdatenbank Update';
         $entity->editable = true;
-        $entity = $query->updateEntity($entity, 1);
+
+        $entity->providers = new \BO\Zmsentities\Collection\ProviderList();
+        $entity->providers->addEntity((new \BO\Zmsentities\Provider())->getExample());
+        $entity->requests = new \BO\Zmsentities\Collection\RequestList();
+        $entity->requests->addEntity((new \BO\Zmsentities\Request())->getExample());
+
+        $entity = $query->writeEntity($entity, 2);
+
+        $this->assertEquals('dldb', $entity->getSource());
         $this->assertEquals('Dienstleistungsdatenbank Update', $entity->getLabel());
         $this->assertTrue($entity->isEditable());
+        $this->assertEquals(2, $entity->getProviderList()->getFirst()->getRequestRelationList()->getFirst()->getSlotCount());
+    }
+
+    public function testWriteWithoutRequestRelations()
+    {
+        $query = new Query();
+        $entity = $this->getTestEntity();
+        $entity->label = 'Dienstleistungsdatenbank Update';
+        $entity->editable = true;
+
+        $provider = (new \BO\Zmsentities\Provider())->getExample();
+        unset($provider['requestrelation']);
+        $entity->providers = new \BO\Zmsentities\Collection\ProviderList();
+        $entity->providers->addEntity($provider);
+        $entity->requests = new \BO\Zmsentities\Collection\RequestList();
+        $entity->requests->addEntity((new \BO\Zmsentities\Request())->getExample());
+
+        $entity = $query->writeEntity($entity, 2);
+
+        $this->assertEquals('dldb', $entity->getSource());
+        $this->assertEquals('Dienstleistungsdatenbank Update', $entity->getLabel());
+        $this->assertTrue($entity->isEditable());
+        $this->assertEquals(1, $entity->getProviderList()->getFirst()->getRequestRelationList()->getFirst()->getSlotCount());
     }
 
     protected function getTestEntity()
