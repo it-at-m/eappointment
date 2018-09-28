@@ -25,14 +25,14 @@ class Scope extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         $providerAssigned = \App::$http->readGetResult(
-            '/provider/dldb/',
+            '/provider/'. $workstation->getScope()->getSource() .'/',
             array(
                 'isAssigned' => true
             )
         )->getCollection()->withUniqueProvider()->sortByName();
 
         $providerNotAssigned = \App::$http->readGetResult(
-            '/provider/dldb/',
+            '/provider/'. $workstation->getScope()->getSource() .'/',
             array(
                 'isAssigned' => false
             )

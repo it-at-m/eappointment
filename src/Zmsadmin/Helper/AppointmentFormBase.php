@@ -26,7 +26,10 @@ class AppointmentFormBase
 
     public static function writeUpdateQueuedProcess($input, Entity $process, $initiator)
     {
-        $process->updateRequests('dldb', isset($input['requests']) ? implode(',', $input['requests']) : 0);
+        $process->updateRequests(
+            $process->getCurrentScope()->getSource(),
+            isset($input['requests']) ? implode(',', $input['requests']) : 0
+        );
         $process->addAmendment($input);
         $process->addClientFromForm($input);
         $process = \App::$http->readPostResult(
@@ -60,7 +63,7 @@ class AppointmentFormBase
         }
         $notice = (! $isOpened) ? 'Außerhalb der Öffnungszeiten gebucht! ' : '';
         $process = (new Entity)->createFromScope($scope, $dateTime);
-        $process->updateRequests('dldb', isset($input['requests']) ? implode(',', $input['requests']) : 0);
+        $process->updateRequests($scope->getSource(), isset($input['requests']) ? implode(',', $input['requests']) : 0);
         $process->addClientFromForm($input);
         $process->addReminderTimestamp($input, $dateTime);
         $process->addAmendment($input, $notice);
