@@ -225,6 +225,11 @@ class Entity extends \ArrayObject implements \JsonSerializable
         return $this;
     }
 
+    public function hasProperty($propertyName)
+    {
+        return $this->toProperty()->{$propertyName}->isAvailable();
+    }
+
     public function hasId()
     {
         return (false !== $this->getId()) ? true : false;
