@@ -20,6 +20,11 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
         ];
     }
 
+    public function getSource()
+    {
+        return $this->toProperty()->source->get();
+    }
+
     public function getProvider()
     {
         if (!$this->provider instanceof Provider) {
