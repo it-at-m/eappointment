@@ -5,6 +5,7 @@ namespace BO\Zmsentities\Schema;
 /**
  * @SuppressWarnings(NumberOfChildren)
  * @SuppressWarnings(PublicMethod)
+ * @SuppressWarnings(Complexity)
  */
 class Entity extends \ArrayObject implements \JsonSerializable
 {
@@ -225,11 +226,6 @@ class Entity extends \ArrayObject implements \JsonSerializable
         return $this;
     }
 
-    public function hasProperty($propertyName)
-    {
-        return $this->toProperty()->{$propertyName}->isAvailable();
-    }
-
     public function hasId()
     {
         return (false !== $this->getId()) ? true : false;
@@ -249,6 +245,16 @@ class Entity extends \ArrayObject implements \JsonSerializable
     public function toProperty()
     {
         return new \BO\Zmsentities\Helper\Property($this);
+    }
+
+    public function hasProperty($propertyName)
+    {
+        return $this->toProperty()->{$propertyName}->isAvailable();
+    }
+
+    public function getProperty($propertyName, $default = '')
+    {
+        return $this->toProperty()->{$propertyName}->get($default);
     }
 
     /**
