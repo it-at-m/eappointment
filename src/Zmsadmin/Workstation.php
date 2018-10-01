@@ -29,10 +29,6 @@ class Workstation extends BaseController
                 )
             );
         }
-        $provider = \App::$http->readGetResult(
-            '/provider/dldb/'. $workstation->getProviderOfGivenScope() .'/'
-        )->getEntity();
-        $requestList = \App::$http->readGetResult('/provider/dldb/'. $provider->id .'/request/')->getCollection();
 
         $validator = $request->getAttribute('validator');
         $selectedDate = $validator->getParameter('date')->isString()->getValue();
@@ -53,7 +49,6 @@ class Workstation extends BaseController
                 'selectedTime' => $selectedTime,
                 'selectedProcess' => $selectedProcessId,
                 'calledProcess' => $calledProcessId,
-                'requestList' => $requestList->sortByName()
             )
         );
     }

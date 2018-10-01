@@ -20,16 +20,6 @@ class WorkstationTest extends Base
                     'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/provider/dldb/122217/',
-                    'response' => $this->readFixture("GET_provider_122217.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/provider/dldb/122217/request/',
-                    'response' => $this->readFixture("GET_provider_122217_requestlist.json")
-                ]
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
