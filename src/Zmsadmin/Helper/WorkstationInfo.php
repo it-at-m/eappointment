@@ -27,9 +27,12 @@ class WorkstationInfo
             $infoData['workstationGhostCount'] = $scope->status['queue']['ghostWorkstationCount'];
             $infoData['workstationList'] = static::getWorkstationsByScope($scope->id);
         }
-        if ($queueList) {
+        if ($queueList->count() > 0) {
             $infoData['waitingTime'] = $queueList->getLast()->waitingTimeEstimate;
             $infoData['queueCount'] = $queueList->count();
+        } else {
+            $infoData['waitingTime'] = 0;
+            $infoData['queueCount'] = 0;
         }
         return $infoData;
     }
