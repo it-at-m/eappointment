@@ -59,7 +59,7 @@ class Provider extends Base
     {
         $requestIdList = explode(',', $requestIdCsv);
         $this->leftJoin(
-            new Alias("request_relation", 'xprovider'),
+            new Alias("request_provider", 'xprovider'),
             'provider.id',
             '=',
             'xprovider.provider__id'

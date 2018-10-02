@@ -4,9 +4,9 @@ namespace BO\Zmsdb\Query;
 
 class RequestRelation extends Base implements MappingInterface
 {
-    const TABLE = 'request_relation';
+    const TABLE = 'request_provider';
 
-    const ALIAS = 'request_relation';
+    const ALIAS = 'request_provider';
 
     public function getEntityMapping()
     {
