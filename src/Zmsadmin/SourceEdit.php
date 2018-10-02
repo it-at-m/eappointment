@@ -24,6 +24,7 @@ class SourceEdit extends BaseController
         if (!$workstation->hasSuperUseraccount()) {
             throw new Exception\NotAllowed();
         }
+        $source = \App::$http->readGetResult('/source/'. $args['name'] .'/', ['resolveReferences' => 1])->getEntity();
 
         return \BO\Slim\Render::withHtml(
             $response,
@@ -31,7 +32,8 @@ class SourceEdit extends BaseController
             array(
                 'title' => 'Mandanten bearbeiten',
                 'menuActive' => 'source',
-                'workstation' => $workstation
+                'workstation' => $workstation,
+                'source' => $source
             )
         );
     }
