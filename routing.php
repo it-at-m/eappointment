@@ -4335,12 +4335,12 @@ use \Psr\Http\Message\ResponseInterface;
  *  @swagger
  *  "/source/{source}/":
  *      get:
- *          summary: Get source by name
+ *          summary: Get source by name or list of sources if name not given
  *          tags:
  *              - source
  *          parameters:
  *              -   source: source
- *                  description: "name from source like dldb for example (3 - 20 letters)"
+ *                  description: "optional name from source like dldb for example (3 - 20 letters)"
  *                  in: path
  *                  type: string
  *          responses:
@@ -4358,7 +4358,7 @@ use \Psr\Http\Message\ResponseInterface;
  *                          data:
  *                              $ref: "schema/source.json"
  */
-\App::$slim->get('/source/{source:[a-zA-Z]{3,20}}/',
+\App::$slim->get('/source/[{source:[a-zA-Z]{3,20}}/]',
     '\BO\Zmsapi\SourceGet')
     ->setName("SourceGet");
 

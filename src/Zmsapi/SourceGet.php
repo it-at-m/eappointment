@@ -23,11 +23,13 @@ class SourceGet extends BaseController
     ) {
         $message = Response\Message::create($request);
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
-        $source = (new Source)->readEntity($args['source'], $resolveReferences);
-        if (! $source) {
+        $sourceData = (isset($args['source']))
+            ? (new Source)->readEntity($args['source'], $resolveReferences)
+            : (new Source)->readList($resolveReferences);
+        if (! $sourceData) {
             throw new Exception\Source\SourceNotFound();
         }
-        $message->data = $source;
+        $message->data = $sourceData;
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
