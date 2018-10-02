@@ -23,9 +23,9 @@ class SourceGet extends BaseController
     ) {
         $message = Response\Message::create($request);
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
-        $sourceData = (isset($args['source']))
+        $sourceData = (isset($args['source']) && $args['source'])
             ? (new Source)->readEntity($args['source'], $resolveReferences)
-            : (new Source)->readList($resolveReferences);
+            : false;
         if (! $sourceData) {
             throw new Exception\Source\SourceNotFound();
         }

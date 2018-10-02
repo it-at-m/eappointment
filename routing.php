@@ -4333,9 +4333,35 @@ use \Psr\Http\Message\ResponseInterface;
 
 /**
  *  @swagger
+ *  "/source/":
+ *      get:
+ *          summary: Get ist of sources
+ *          tags:
+ *              - source
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/source.json"
+ *              404:
+ *                  description: "Could not find any available source"
+ */
+\App::$slim->get('/source/',
+    '\BO\Zmsapi\SourceGet')
+    ->setName("SourceGet");
+
+/**
+ *  @swagger
  *  "/source/{source}/":
  *      get:
- *          summary: Get source by name or list of sources if name not given
+ *          summary: Get source by name
  *          tags:
  *              - source
  *          parameters:
@@ -4347,16 +4373,13 @@ use \Psr\Http\Message\ResponseInterface;
  *              200:
  *                  description: "success"
  *                  schema:
- *                      $ref: "schema/source.json"
- *              404:
- *                  description: "Could not find any available source"
- *                  schema:
- *                      type: object
  *                      properties:
  *                          meta:
  *                              $ref: "schema/metaresult.json"
  *                          data:
  *                              $ref: "schema/source.json"
+ *              404:
+ *                  description: "Could not find any available source"
  */
 \App::$slim->get('/source/[{source:[a-zA-Z]{3,20}}/]',
     '\BO\Zmsapi\SourceGet')

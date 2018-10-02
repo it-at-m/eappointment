@@ -19,7 +19,7 @@ class SourceGetTest extends Base
 
     public function testEmpty()
     {
-        $this->expectException('\ErrorException');
+        $this->expectException('\BO\Zmsapi\Exception\Source\SourceNotFound');
         $this->render([], [], []);
     }
 
