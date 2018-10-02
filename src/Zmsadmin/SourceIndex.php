@@ -24,6 +24,7 @@ class SourceIndex extends BaseController
         if (!$workstation->hasSuperUseraccount()) {
             throw new Exception\NotAllowed();
         }
+        $sourceList = \App::$http->readGetResult('/source/', ['resolveReferences' => 1])->getCollection();
 
         return \BO\Slim\Render::withHtml(
             $response,
@@ -31,7 +32,8 @@ class SourceIndex extends BaseController
             array(
                 'title' => 'Mandanten',
                 'menuActive' => 'source',
-                'workstation' => $workstation
+                'workstation' => $workstation,
+                'sourceList' => $sourceList
             )
         );
     }
