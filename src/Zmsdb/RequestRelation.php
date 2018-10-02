@@ -61,9 +61,9 @@ class RequestRelation extends Base
             foreach ($source->getRequestRelationList() as $entity) {
                 $this->writeEntity($entity);
             }
-        } else if ($source->isCompleteAndEditable()) {
-            foreach($source->getProviderList() as $provider) {
-                foreach($source->getRequestList() as $request) {
+        } elseif ($source->isCompleteAndEditable()) {
+            foreach ($source->getProviderList() as $provider) {
+                foreach ($source->getRequestList() as $request) {
                     $entity = new Entity([
                         'source' => $source->getSource(),
                         'provider' => $provider,
