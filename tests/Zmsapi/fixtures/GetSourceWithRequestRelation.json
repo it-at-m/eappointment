@@ -15,7 +15,23 @@
                 "region": "Berlin",
                 "street": "Musterstraße",
                 "streetNumber": 123
-            }
+            },
+            "requestrelation": [
+                {
+                    "provider": {
+                        "id": 21334
+                    },
+                    "source": "unittest",
+                    "request": {
+                        "id": "120335",
+                        "link": "http://service.berlin.de/dienstleistung/120335/",
+                        "name": "Abmeldung einer Wohnung",
+                        "source": "unittest",
+                        "group": "Meldewesen und Ordnung"
+                    },
+                    "slots": 3
+                }
+            ]
         }
     ],
     "requests": [
@@ -25,32 +41,6 @@
             "name": "Abmeldung einer Wohnung",
             "source": "unittest",
             "group": "Meldewesen und Ordnung"
-        }
-    ],
-    "requestrelation": [
-        {
-            "source": "unittest",
-            "provider": {
-                "id": 21334,
-                "name": "Bürgeramt Unittest",
-                "source": "unittest",
-                "contact": {
-                    "city": "Berlin",
-                    "country": "Germany",
-                    "postalCode": "12345",
-                    "region": "Berlin",
-                    "street": "Musterstraße",
-                    "streetNumber": 123
-                }
-            },
-            "request": {
-                "id": "120335",
-                "link": "http://service.berlin.de/dienstleistung/120335/",
-                "name": "Abmeldung einer Wohnung",
-                "source": "unittest",
-                "group": "Meldewesen und Ordnung"
-            },
-            "slots": 3
         }
     ]
 }
