@@ -57,9 +57,9 @@ class View extends BaseView {
         }).on('click', 'a.process-delete', (ev) => {
             this.onConfirm(ev, "confirm_delete", () => {this.onDeleteProcess(null, ev)});
         }).on('click', '.queue-table .calendar-navigation .pagedaylink', (ev) => {
-            this.onDatePick($(ev.target).attr('data-date'), this);
+            this.onDatePick(this.$main, ev);
         }).on('click', '.queue-table .calendar-navigation .today', (ev) => {
-            this.onDateToday($(ev.target).attr('data-date'), this)
+            this.onDateToday(this.$main, ev)
         }).on('click', '.queue-table .process-notification-send', (ev) => {
             this.onConfirm(ev, "confirm_notification_reminder", () => {this.onSendNotificationReminder(this.$main, ev)});
         }).on('click', '.process-custom-mail-send', (ev) => {
