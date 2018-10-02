@@ -13,7 +13,10 @@ class WorkstationInfo
 {
     public static function getInfoBoxData(\BO\Zmsentities\Workstation $workstation)
     {
-        $infoData = array();
+        $infoData = array(
+            'waitingTime' => 0,
+            'queueCount' => 0
+        );
         $scope = new \BO\Zmsentities\Scope($workstation->scope);
         if (1 == $workstation->queue['clusterEnabled']) {
             $cluster = \App::$http->readGetResult('/scope/'. $scope->id .'/cluster/')->getEntity();
@@ -30,9 +33,6 @@ class WorkstationInfo
         if ($queueList->count() > 0) {
             $infoData['waitingTime'] = $queueList->getLast()->waitingTimeEstimate;
             $infoData['queueCount'] = $queueList->count();
-        } else {
-            $infoData['waitingTime'] = 0;
-            $infoData['queueCount'] = 0;
         }
         return $infoData;
     }
