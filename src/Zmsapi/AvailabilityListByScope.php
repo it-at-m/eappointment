@@ -25,15 +25,17 @@ class AvailabilityListByScope extends BaseController
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
         $reserveEntityIds = Validator::param('reserveEntityIds')->isNumber()->setDefault(0)->getValue();
 
-        $scope = (new \BO\Zmsdb\Scope)->readEntity($args['id']);
+        $scope = (new \BO\Zmsdb\Scope)->readEntity($args['id'], $resolveReferences - 1);
         if (! $scope) {
             throw new Exception\Scope\ScopeNotFound();
         }
-        $availabilities = (new Query())->readList($scope->id, $resolveReferences, $reserveEntityIds);
+        $availabilities = (new Query())->readList($scope->id, 0, $reserveEntityIds);
         if (0 == $availabilities->count()) {
             throw new Exception\Availability\AvailabilityNotFound();
         }
-
+        if ($resolveReferences > 0) {
+            $availabilities = $availabilities->withScope($scope);
+        }
         $message = Response\Message::create($request);
         $message->data = $availabilities;
 
