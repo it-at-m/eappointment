@@ -29,6 +29,15 @@ class Workstation extends BaseController
                 )
             );
         }
+<<<<<<< HEAD
+=======
+        $provider = \App::$http->readGetResult(
+            '/provider/'. $workstation->getScope()->getSource() .'/'. $workstation->getProviderOfGivenScope() .'/'
+        )->getEntity();
+        $requestList = \App::$http->readGetResult(
+            '/provider/'. $workstation->getScope()->getSource() .'/'. $provider->id .'/request/'
+        )->getCollection();
+>>>>>>> source from workstation scope
 
         $validator = $request->getAttribute('validator');
         $selectedDate = $validator->getParameter('date')->isString()->getValue();

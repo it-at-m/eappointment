@@ -30,12 +30,11 @@ class DepartmentAddScope extends BaseController
             ->withUniqueProvider()
             ->sortByName();
 
-        $providerNotAssigned = \App::$http->readGetResult(
-            '/provider/dldb/',
-            array(
-                'isAssigned' => false
-            )
-        )->getCollection()->withUniqueProvider()->sortByName();
+        $providerNotAssigned = \App::$http
+            ->readGetResult('/provider/'. $workstation->getScope()->getSource() .'/', ['isAssigned' => false])
+            ->getCollection()
+            ->withUniqueProvider()
+            ->sortByName();
 
         $departmentId = Validator::value($args['id'])->isNumber()->getValue();
         $department = \App::$http

@@ -86,7 +86,7 @@ class WorkstationProcessFinished extends BaseController
             $process->requests = new \BO\Zmsentities\Collection\RequestList();
             $request = new \BO\Zmsentities\Request([
                 'id' => -1,
-                'source' => 'dldb',
+                'source' => $workstation->getScope()->getSource(),
                 'name' =>  "Ohne Erfassung",
             ]);
             $process->requests[] = $request;
@@ -94,7 +94,7 @@ class WorkstationProcessFinished extends BaseController
             $process->requests = new \BO\Zmsentities\Collection\RequestList();
             $request = new \BO\Zmsentities\Request([
                 'id' => 0,
-                'source' => 'dldb',
+                'source' => $workstation->getScope()->getSource(),
                 'name' =>  "Dienstleistung konnte nicht erbracht werden",
             ]);
             $process->requests[] = $request;
