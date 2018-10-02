@@ -31,8 +31,8 @@ ENGINE = InnoDB
 CHARACTER SET utf8
 COLLATE utf8_unicode_ci;
 
-DROP TABLE IF EXISTS `request_relation`;
-CREATE TABLE `request_relation` ( 
+DROP TABLE IF EXISTS `request_provider`;
+CREATE TABLE `request_provider` ( 
 	`source` VARCHAR(10) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
 	`request__id` VARCHAR(20) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
 	`provider__id` VARCHAR(20) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
