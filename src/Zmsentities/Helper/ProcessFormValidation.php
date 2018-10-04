@@ -205,10 +205,10 @@ class ProcessFormValidation
         }
 
         // requests
-        /*
-        $collection['requests'] = Validator::param('requests')
-            ->isArray("Es muss mindestens eine Dienstleistung ausgewählt werden!");
-        */
+        if (!Validator::param('requests')->isDeclared()->hasFailed()) {
+            $collection['requests'] = Validator::param('requests')
+                ->isArray("Es muss mindestens eine Dienstleistung ausgewählt werden!");
+        }
         return $collection;
     }
 
