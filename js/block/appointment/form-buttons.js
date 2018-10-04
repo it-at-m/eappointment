@@ -3,29 +3,28 @@ import $ from "jquery"
 
 class View extends BaseView {
 
-    constructor (element, options) {
+    constructor(element, options) {
         super(element);
         this.$main = $(element);
         this.includeUrl = options.includeUrl || "";
         this.selectedDate = options.selectedDate;
-        this.selectedFreeProcessTime = options.selectedFreeProcessTime || "00-00";
+        this.selectedTime = options.selectedTime || "00-00";
         this.selectedProcess = options.selectedProcess || 0;
-
         this.bindPublicMethods('loadButtons');
         $.ajaxSetup({ cache: false });
     }
 
     loadButtons() {
-        const url = `${this.includeUrl}/appointmentForm/buttons/?selecteddate=${this.selectedDate}&selectedprocess=${this.selectedProcess}&selectedTime=${this.selectedFreeProcessTime}`
+        const url = `${this.includeUrl}/appointmentForm/buttons/?selecteddate=${this.selectedDate}&selectedprocess=${this.selectedProcess}&selectedTime=${this.selectedTime}`
         return this.loadContent(url, 'GET', null, null, false)
-          .then(() => {this.toggleButtonDisabled()})
-          .catch(err => this.loadErrorCallback(err.source, err.url)
-        );
+            .then(() => { this.toggleButtonDisabled() })
+            .catch(err => this.loadErrorCallback(err.source, err.url)
+            );
     }
 
     toggleButtonDisabled() {
         if (0 == this.freeProcessListLength) {
-            this.$main.find('button').not('.process-abort, .process-queue').prop("disabled",true);
+            this.$main.find('button').not('.process-abort, .process-queue').prop("disabled", true);
         }
     }
 

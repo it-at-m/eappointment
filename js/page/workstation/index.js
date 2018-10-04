@@ -12,12 +12,12 @@ import AppointmentTimesView from '../../block/appointment/times'
 
 
 class View extends BaseView {
-    constructor (element, options) {
+    constructor(element, options) {
         super(element);
         this.element = $(element).focus();
         this.includeUrl = options.includeurl;
-        this.selectedDate = options['selected-date'];
         this.selectedTime = options['selected-time'];
+        this.selectedDate = options['selected-date'];
         this.selectedProcess = options['selected-process'];
         this.selectedScope = options['selected-scope'] || 0;
         this.calledProcess = options['called-process'];
@@ -137,7 +137,7 @@ class View extends BaseView {
         this.loadAppointmentForm();
     }
 
-    onChangeTableView ($container, event, $element) {
+    onChangeTableView($container, event, $element) {
         const pathName = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/')).split('/').pop();
         $element.val(pathName);
         $(event.target).closest('form').submit();
@@ -147,18 +147,18 @@ class View extends BaseView {
         this.onDatePick($container, event)
     }
 
-    onSaveProcess ($container, event, action = 'update') {
+    onSaveProcess($container, event, action = 'update') {
         stopEvent(event);
         this.selectedProcess = $(event.target).data('id');
         const sendData = $container.find('form').serializeArray();
-        sendData.push({name: action, value: 1});
-        sendData.push({name: 'selectedprocess', value: this.selectedProcess});
-        sendData.push({name: 'initiator', value: this.initiator});
+        sendData.push({ name: action, value: 1 });
+        sendData.push({ name: 'selectedprocess', value: this.selectedProcess });
+        sendData.push({ name: 'initiator', value: this.initiator });
         this.loadContent(`${this.includeUrl}/appointmentForm/`, 'POST', sendData, $container).then((response) => {
             this.loadAppointmentForm(true, true, $container);
             if (false === response.toLowerCase().includes('has-error')) {
                 this.selectedProcess = null;
-           //     this.loadAppointmentForm(true, true, $container);
+                //     this.loadAppointmentForm(true, true, $container);
                 this.loadQueueInfo();
                 this.loadQueueTable();
                 this.loadCalendar();
@@ -172,24 +172,23 @@ class View extends BaseView {
         this.loadAppointmentForm(true, false, $container);
     }
 
-    onAbortMessage(event)
-    {
+    onAbortMessage(event) {
         stopEvent(event);
         $(event.target).closest('.message').fadeOut().remove();
     }
 
-    onDeleteProcess ($container, event) {
-        const processId  = $(event.target).data('id');
+    onDeleteProcess($container, event) {
+        const processId = $(event.target).data('id');
         if ($container) {
-            return this.loadContent(`${this.includeUrl}/appointmentForm/`, 'POST', {'delete': 1, 'processId': processId, 'initiator': this.initiator}, $container).then(() => {
-                  this.loadAppointmentForm(true, true, $container);
-                  this.loadQueueInfo();
-                  this.loadQueueTable();
-                  this.loadCalendar();
+            return this.loadContent(`${this.includeUrl}/appointmentForm/`, 'POST', { 'delete': 1, 'processId': processId, 'initiator': this.initiator }, $container).then(() => {
+                this.loadAppointmentForm(true, true, $container);
+                this.loadQueueInfo();
+                this.loadQueueTable();
+                this.loadCalendar();
             });
         } else {
-          showSpinner();
-          return this.loadCall(`${this.includeUrl}/appointmentForm/`, 'POST', {'delete': 1, 'processId': processId, 'initiator': this.initiator}).then((response) => {
+            showSpinner();
+            return this.loadCall(`${this.includeUrl}/appointmentForm/`, 'POST', { 'delete': 1, 'processId': processId, 'initiator': this.initiator }).then((response) => {
                 this.loadMessage(response, () => {
                     this.loadAppointmentForm(true, true);
                     this.loadQueueInfo();
@@ -197,27 +196,26 @@ class View extends BaseView {
                     this.loadCalendar();
                     hideSpinner();
                 });
-          });
+            });
         }
 
     }
 
-    onConfirm(event, template, callback)
-    {
-      stopEvent(event);
-      this.selectedProcess = null;
-      const processId  = $(event.target).data('id');
-      const name  = $(event.target).data('name');
-      this.loadCall(`${this.includeUrl}/dialog/?template=${template}&parameter[id]=${processId}&parameter[name]=${name}`).then((response) => {
-          this.loadDialog(response, callback);
-      });
+    onConfirm(event, template, callback) {
+        stopEvent(event);
+        this.selectedProcess = null;
+        const processId = $(event.target).data('id');
+        const name = $(event.target).data('name');
+        this.loadCall(`${this.includeUrl}/dialog/?template=${template}&parameter[id]=${processId}&parameter[name]=${name}`).then((response) => {
+            this.loadDialog(response, callback);
+        });
     }
 
-    onQueueProcess ($container, event) {
+    onQueueProcess($container, event) {
         stopEvent(event);
         showSpinner($container);
         const sendData = $container.find('form').serializeArray();
-        sendData.push({name: 'queue', value: 1});
+        sendData.push({ name: 'queue', value: 1 });
         this.loadContent(`${this.includeUrl}/appointmentForm/`, 'POST', sendData, $container).then(() => {
             this.loadAppointmentForm(true, true, $container);
             this.loadQueueInfo();
@@ -226,12 +224,12 @@ class View extends BaseView {
         });
     }
 
-    onResetProcess ($container, event) {
+    onResetProcess($container, event) {
         let selectedProcess = $(event.target).data('id');
         this.loadContent(`${this.includeUrl}/process/queue/reset/?selectedprocess=${selectedProcess}&selecteddate=${this.selectedDate}`, 'GET', null, $container);
     }
 
-    onEditProcess (event) {
+    onEditProcess(event) {
         this.selectedProcess = $(event.target).data('id');
         this.loadAppointmentForm();
     }
@@ -257,14 +255,14 @@ class View extends BaseView {
         this.loadQueueTable();
     }
 
-    onPrintWaitingNumber (event) {
+    onPrintWaitingNumber(event) {
         stopEvent(event);
-        const processId  = $(event.target).data('id');
+        const processId = $(event.target).data('id');
         $(event.target).closest('.message').fadeOut().remove();
         window.open(`${this.includeUrl}/process/queue/?print=1&selectedprocess=${processId}`)
     }
 
-    onSendCustomMail ($container, event) {
+    onSendCustomMail($container, event) {
         stopEvent(event);
         const processId = $(event.target).data('process');
         const sendStatus = $(event.target).data('status');
@@ -273,8 +271,8 @@ class View extends BaseView {
                 showSpinner($container);
                 const sendData = $('.dialog form').serializeArray();
                 sendData.push(
-                    {'name': 'submit', 'value':'form'},
-                    {'name': 'dialog', 'value':1}
+                    { 'name': 'submit', 'value': 'form' },
+                    { 'name': 'dialog', 'value': 1 }
                 );
                 this.loadCall(`${this.includeUrl}/mail/`, 'POST', $.param(sendData)).then(
                     (response) => this.loadMessage(response, () => {
@@ -285,7 +283,7 @@ class View extends BaseView {
         });
     }
 
-    onSendCustomNotification ($container, event) {
+    onSendCustomNotification($container, event) {
         stopEvent(event);
         const processId = $(event.target).data('process');
         const sendStatus = $(event.target).data('status');
@@ -294,8 +292,8 @@ class View extends BaseView {
                 showSpinner($container);
                 const sendData = $('.dialog form').serializeArray();
                 sendData.push(
-                    {'name': 'submit', 'value':'form'},
-                    {'name': 'dialog', 'value':1}
+                    { 'name': 'submit', 'value': 'form' },
+                    { 'name': 'dialog', 'value': 1 }
                 );
                 this.loadCall(`${this.includeUrl}/notification/`, 'POST', $.param(sendData)).then(
                     (response) => this.loadMessage(response, () => {
@@ -306,7 +304,7 @@ class View extends BaseView {
         });
     }
 
-    onSendNotificationReminder ($container, event) {
+    onSendNotificationReminder($container, event) {
         stopEvent(event);
         showSpinner($container);
         const processId = $(event.target).data('process');
@@ -345,7 +343,7 @@ class View extends BaseView {
             this.loadQueueTable(false);
     }
 
-    loadCalendar (showLoader = true) {
+    loadCalendar(showLoader = true) {
         return new CalendarView($.find('[data-calendar]'), {
             selectedDate: this.selectedDate,
             selectedScope: this.selectedScope,
@@ -360,7 +358,7 @@ class View extends BaseView {
         })
     }
 
-    loadClientNext (showLoader = true) {
+    loadClientNext(showLoader = true) {
         return new ClientNextView($.find('[data-client-next]'), {
             selectedDate: this.selectedDate,
             includeUrl: this.includeUrl,
@@ -401,7 +399,7 @@ class View extends BaseView {
         });
     }
 
-    loadQueueTable (showLoader = true) {
+    loadQueueTable(showLoader = true) {
         return new QueueView($.find('[data-queue-table]'), {
             selectedDate: this.selectedDate,
             includeUrl: this.includeUrl,
@@ -424,7 +422,7 @@ class View extends BaseView {
         })
     }
 
-    loadQueueInfo (showLoader = true) {
+    loadQueueInfo(showLoader = true) {
         return new QueueInfoView($.find('[data-queue-info]'), {
             selectedDate: this.selectedDate,
             includeUrl: this.includeUrl,
@@ -433,7 +431,7 @@ class View extends BaseView {
         })
     }
 
-    loadAppointmentTimes (showLoader = true) {
+    loadAppointmentTimes(showLoader = true) {
         return new AppointmentTimesView($.find('[data-appointment-times]'), {
             selectedDate: this.selectedDate,
             includeUrl: this.includeUrl,
