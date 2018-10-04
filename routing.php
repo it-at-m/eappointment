@@ -4381,7 +4381,7 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "Could not find any available source"
  */
-\App::$slim->get('/source/[{source:[a-zA-Z]{3,20}}/]',
+\App::$slim->get('/source/{source:[a-zA-Z]{3,20}}/',
     '\BO\Zmsapi\SourceGet')
     ->setName("SourceGet");
 
