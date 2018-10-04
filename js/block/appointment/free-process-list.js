@@ -3,7 +3,7 @@ import $ from "jquery"
 
 class View extends BaseView {
 
-    constructor (element, options) {
+    constructor(element, options) {
         super(element);
         this.$main = $(element);
         this.selectedDate = options.selectedDate;
@@ -19,7 +19,9 @@ class View extends BaseView {
 
     loadList() {
         const url = `${this.includeUrl}/appointmentForm/processlist/free/?selecteddate=${this.selectedDate}&selectedtime=${this.selectedTime}&slotType=${this.slotType}&slotsRequired=${this.slotsRequired}&selectedscope=${this.selectedScope}&selectedprocess=${this.selectedProcess}`
-        return this.loadContent(url, 'GET', null, null, false);
+        return this.loadContent(url, 'GET', null, null, false).then(() => {
+            this.$main.find('select#process_time').trigger('change');
+        });
     }
 }
 

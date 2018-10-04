@@ -3,17 +3,18 @@ import $ from "jquery"
 
 class View extends BaseView {
 
-    constructor (element, options) {
+    constructor(element, options) {
         super(element, options);
         this.$main = $(element);
         this.selectedProcess = options.selectedProcess;
+        this.selectedTime = options.selectedTime;
         this.slotsRequired = options.slotsRequired;
         this.serviceList = [];
         this.serviceListSelected = [];
         //console.log('Component: RequestList actions', this, options);
     }
 
-    initRequestView (keepSelected = false) {
+    initRequestView(keepSelected = false) {
         if (this.selectedProcess || keepSelected === true)
             this.readList()
         else
@@ -23,7 +24,7 @@ class View extends BaseView {
     /**
      * update events after replacing list
      */
-    updateLists () {
+    updateLists() {
         this.$main.find('.checkboxdeselect input:checkbox').each((index, element) => {
             $(element).prop("checked", false);
             $(element).closest('label').hide();
@@ -43,42 +44,40 @@ class View extends BaseView {
         this.calculateSlotCount();
     }
 
-    readList ()
-    {
+    readList() {
         this.$main.find('.checkboxselect input:checked, .checkboxselect input:hidden').each((index, element) => {
             if ($.inArray($(element).val(), this.serviceListSelected) === -1)
-                this.addServiceToList ($(element), 'serviceListSelected')
+                this.addServiceToList($(element), 'serviceListSelected')
         });
         this.$main.find('.checkboxdeselect input:not(:checked)').each((index, element) => {
             if ($.inArray($(element).val(), this.serviceList) === -1)
-                this.addServiceToList ($(element), 'serviceList')
+                this.addServiceToList($(element), 'serviceList')
         });
         this.updateLists();
     }
 
-    addServiceToList (element, list) {
+    addServiceToList(element, list) {
         return this[list].push(element.val());
     }
 
-    removeServiceFromList (element, list) {
+    removeServiceFromList(element, list) {
         for (var i = 0; i < this[list].length; i++)
             if (this[list][i] === element.val()) {
-                return this[list].splice(i,1);
+                return this[list].splice(i, 1);
             }
     }
 
-    cleanLists ()
-    {
-        this.serviceList = this.$main.find('.checkboxselect input:checkbox').map(function() {
+    cleanLists() {
+        this.serviceList = this.$main.find('.checkboxselect input:checkbox').map(function () {
             return $(this).val();
         }).toArray();
         this.serviceListSelected = [];
         this.updateLists();
     }
 
-    calculateSlotCount () {
+    calculateSlotCount() {
         var slotCount = 1;
-        var selectedSlots = this.$main.find('.checkboxdeselect label:visible input:checkbox').map(function() {
+        var selectedSlots = this.$main.find('.checkboxdeselect label:visible input:checkbox').map(function () {
             return $(this).data('slots');
         }).toArray();
         for (var i = 1; i < selectedSlots.length; i++)

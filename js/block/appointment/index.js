@@ -19,7 +19,8 @@ class View extends RequestView {
         } else {
             this.loadPartials();
         }
-
+        $('textarea.maxchars').each(function () { maxChars(this) });
+        this.$main.find('[name="familyName"]').focus();
     }
 
     setOptions() {
@@ -55,7 +56,6 @@ class View extends RequestView {
             this.loadPromise.then(() => {
                 this.initRequestView();
                 this.bindEvents();
-                this.$main.find('select#process_time').trigger('change');
             });
         });
     }
@@ -64,10 +64,11 @@ class View extends RequestView {
         this.assigneMainFormValues();
         this.loadPromise.then(() => {
             this.initRequestView(true);
+            this.bindEvents();
+            this.$main.find('select#process_time').trigger('change');
+        }).then(() => {
             this.loadFreeProcessList().loadList().then(() => {
                 this.bindEvents();
-                this.selectedFreeProcessTime = this.$main.find('[data-free-process-list] option').val();
-                this.$main.find('select#process_time').trigger('change');
             });
         });
     }
@@ -81,15 +82,6 @@ class View extends RequestView {
             maxChars(this);
         })
         this.$main.find('[name="familyName"]').focus();
-    }
-
-    loadFormButtons() {
-        return new FormButtons(this.$main.find('[data-form-buttons]'), {
-            includeUrl: this.includeUrl,
-            selectedDate: this.selectedDate,
-            selectedFreeProcessTime: this.selectedFreeProcessTime,
-            selectedProcess: this.selectedProcess
-        });
     }
 
     loadFreeProcessList() {
@@ -157,17 +149,25 @@ class View extends RequestView {
     }
 
     onChangeSlotCount(event) {
-        this.slotsRequired = $(event.target).val();
+        // if human event, not triggered
+        if (event.originalEvent !== undefined) {
+            this.slotsRequired = $(event.target).val();
+        }
         this.loadFreeProcessList().loadList().then(() => {
             this.bindEvents();
-            this.$main.find('select#process_time').trigger('change');
         });
         this.onChangeSlotCountCallback(event);
     }
 
     onChangeProcessTime(event) {
-        this.selectedFreeProcessTime = $(event.target).val();
-        this.loadFormButtons().loadButtons().then(() => {
+        this.selectedTime = $(event.target).val();
+        this.$main.data('selected-time', this.selectedTime);
+        new FormButtons(this.$main.find('[data-form-buttons]'), {
+            includeUrl: this.includeUrl,
+            selectedDate: this.selectedDate,
+            selectedProcess: this.selectedProcess,
+            selectedTime: this.selectedTime
+        }).loadButtons().then(() => {
             this.bindEvents();
         });
     }
