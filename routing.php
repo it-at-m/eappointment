@@ -417,17 +417,21 @@ use \Psr\Http\Message\ResponseInterface;
     ->setName("healthcheck");
 
 \App::$slim->getContainer()
-    ->offsetSet('notFoundHandler',
+    ->offsetSet(
+        'notFoundHandler',
     function ($container) {
         return function (RequestInterface $request, ResponseInterface $response) {
             return \BO\Slim\Render::withHtml($response, 'page/404.twig');
         };
-    });
+    }
+    );
 
 \App::$slim->getContainer()
-    ->offsetSet('errorHandler',
+    ->offsetSet(
+        'errorHandler',
     function ($container) {
         return function (RequestInterface $request, ResponseInterface $response, \Exception $exception) {
             return \BO\Zmsadmin\Helper\TwigExceptionHandler::withHtml($request, $response, $exception);
         };
-    });
+    }
+    );

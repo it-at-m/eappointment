@@ -34,18 +34,19 @@ class BaseView extends ErrorHandler {
             ajaxSettings.data = data;
         }
 
-        this.loadPromise = new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => {
             $.ajax(url, ajaxSettings).done(responseData => {
                 this.$main.html(responseData);
                 DialogHandler.hideMessages();
                 resolve(responseData);
-            }).fail(err => {
+            }).fail((err) => {
+                console.log(err);
                 let isException = err.responseText.toLowerCase().includes('exception');
                 if (err.status >= 400 && isException) {
                     new ExceptionHandler(this.$main, {
                         code: err.status,
                         message: err.responseText,
-                        parent:  this
+                        parent: this
                     });
                     hideSpinner(this.$main);
                 } else {
@@ -54,7 +55,6 @@ class BaseView extends ErrorHandler {
                 }
             })
         });
-        return this.loadPromise;
     }
 
     loadCall(url, method = 'GET', data = null, spinner = false) {
@@ -96,22 +96,22 @@ class BaseView extends ErrorHandler {
         this.$main = null;
     }
 
-    get $ () {
+    get $() {
         return this.$main;
     }
 
-    cleanReload () {
+    cleanReload() {
         window.setTimeout(() => {
             console.log("Clean reload %o", window.location.href);
             window.location.assign(window.location.href)
         }, 400);
     }
 
-    locationLoad (url) {
+    locationLoad(url) {
         window.location.href = url;
     }
 
-    loadMessage (response, callback) {
+    loadMessage(response, callback) {
         this.$main.find('.form-actions').hide();
         const { lightboxContentElement, destroyLightbox } = lightbox(this.$main, () => {
             destroyLightbox();
@@ -131,7 +131,7 @@ class BaseView extends ErrorHandler {
         BaseView.loadDialogStatic(response, callback, this);
     }
 
-    static loadDialogStatic (response, callback, parent, callbackAsBackgroundAction = false) {
+    static loadDialogStatic(response, callback, parent, callbackAsBackgroundAction = false) {
         var $container = null;
         var $loader = null;
         if (parent) {
@@ -141,7 +141,7 @@ class BaseView extends ErrorHandler {
 
         const { lightboxContentElement, destroyLightbox } = lightbox($container, () => {
             destroyLightbox(),
-            (callbackAsBackgroundAction) ? callback() : () => {}
+                (callbackAsBackgroundAction) ? callback() : () => { }
         });
         new DialogHandler(lightboxContentElement, {
             response: response,
