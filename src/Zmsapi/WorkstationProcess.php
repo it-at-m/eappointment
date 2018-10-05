@@ -25,6 +25,7 @@ class WorkstationProcess extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        \BO\Zmsdb\Connection\Select::getWriteConnection();
         $workstation = (new Helper\User($request, 1))->checkRights();
         $process = $workstation->process;
         $input = Validator::input()->isJson()->assertValid()->getValue();

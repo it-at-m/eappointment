@@ -21,6 +21,7 @@ class ScopeCalldisplayImageDataUpdate extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        \BO\Zmsdb\Connection\Select::getWriteConnection();
         $scope = (new Query)->readEntity($args['id']);
         if (! $scope) {
             throw new Exception\Scope\ScopeNotFound();

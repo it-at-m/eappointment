@@ -29,6 +29,7 @@ class ProcessConfirmationMail extends BaseController
         $process->testValid();
         $this->testProcessData($process);
 
+        \BO\Zmsdb\Connection\Select::getWriteConnection();
         $config = (new \BO\Zmsdb\Config)->readEntity();
         $mail = (new \BO\Zmsentities\Mail)->toResolvedEntity($process, $config);
 

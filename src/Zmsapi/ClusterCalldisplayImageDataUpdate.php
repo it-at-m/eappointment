@@ -22,6 +22,7 @@ class ClusterCalldisplayImageDataUpdate extends BaseController
         array $args
     ) {
         (new Helper\User($request))->checkRights('cluster');
+        \BO\Zmsdb\Connection\Select::getWriteConnection();
         $cluster = (new Query)->readEntity($args['id']);
         if (! $cluster) {
             throw new Exception\Cluster\ClusterNotFound();

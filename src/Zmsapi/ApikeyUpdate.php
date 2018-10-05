@@ -25,6 +25,7 @@ class ApikeyUpdate extends BaseController
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Apikey($input);
 
+        \BO\Zmsdb\Connection\Select::getWriteConnection();
         $apiKey = (new Query())->readEntity($entity->key);
         if (! $apiKey->hasId()) {
             $entity = (new Query())->writeEntity($entity);

@@ -21,6 +21,7 @@ class OwnerAddOrganisation extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        \BO\Zmsdb\Connection\Select::getWriteConnection();
         $owner = (new \BO\Zmsdb\Owner)->readEntity($args['id'], 2);
         (new Helper\User($request, 2))->checkRights(
             new \BO\Zmsentities\Useraccount\EntityAccess($owner)

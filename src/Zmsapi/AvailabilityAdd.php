@@ -29,6 +29,7 @@ class AvailabilityAdd extends BaseController
             throw new Exception\Availability\AvailabilityNotFound();
         }
         $collection = new \BO\Zmsentities\Collection\AvailabilityList();
+        \BO\Zmsdb\Connection\Select::getWriteConnection();
         foreach ($input as $availability) {
             $entity = new \BO\Zmsentities\Availability($availability);
             $entity->testValid();
