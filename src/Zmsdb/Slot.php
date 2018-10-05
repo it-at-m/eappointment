@@ -185,8 +185,9 @@ class Slot extends Base
 
     public function writeByScope(\BO\Zmsentities\Scope $scope, \DateTimeInterface $now)
     {
+        $slotLastChange = $this->readLastChangedTimeByScope($scope);
         $availabilityList = (new \BO\Zmsdb\Availability)
-            ->readAvailabilityListByScope($scope, 0, $now->modify('-1 day'))
+            ->readAvailabilityListByScope($scope, 0, $slotLastChange->modify('-1 day'))
             ;
         $updatedList = new \BO\Zmsentities\Collection\AvailabilityList();
         foreach ($availabilityList as $availability) {
