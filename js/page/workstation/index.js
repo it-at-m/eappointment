@@ -42,6 +42,7 @@ class View extends BaseView {
             'onConfirm',
             'onEditProcess',
             'onSaveProcess',
+            'onCopyProcess',
             'onQueueProcess',
             'onResetProcess',
             'onSendCustomMail',
@@ -155,14 +156,38 @@ class View extends BaseView {
         sendData.push({ name: 'selectedprocess', value: this.selectedProcess });
         sendData.push({ name: 'initiator', value: this.initiator });
         this.loadContent(`${this.includeUrl}/appointmentForm/`, 'POST', sendData, $container).then((response) => {
-            this.loadAppointmentForm(true, true, $container);
             if (false === response.toLowerCase().includes('has-error')) {
                 this.selectedProcess = null;
-                //     this.loadAppointmentForm(true, true, $container);
                 this.loadQueueInfo();
                 this.loadQueueTable();
                 this.loadCalendar();
             }
+        }).then(() => {
+            this.loadAppointmentForm(true, true, $container);
+        });
+    }
+
+    onCopyProcess($container, event) {
+        stopEvent(event);
+        const sendData = $container.find('form').serializeArray();
+        if (0 == $('select#process_time').find(':selected').data('free')) {
+            var selectedTime = $('select#process_time').val();
+            this.loadCall(`${this.includeUrl}/dialog/?template=copy_failed_time_unvalid&parameter[selectedtime]=${selectedTime}`).then((response) => {
+                this.loadDialog(response, () => { this.onAbortProcess($container, event) });
+            });
+            return false;
+        }
+        sendData.push({ name: 'reserve', value: 1 });
+        sendData.push({ name: 'initiator', value: this.initiator });
+        this.loadContent(`${this.includeUrl}/appointmentForm/`, 'POST', sendData, $container).then((response) => {
+            if (false === response.toLowerCase().includes('has-error')) {
+                this.selectedProcess = null;
+                this.loadQueueInfo();
+                this.loadQueueTable();
+                this.loadCalendar();
+            }
+        }).then(() => {
+            this.loadAppointmentForm(true, true, $container);
         });
     }
 
@@ -179,9 +204,10 @@ class View extends BaseView {
 
     onDeleteProcess($container, event) {
         stopEvent(event);
+        this.selectedProcess = null;
         const processId = $(event.target).data('id');
         if ($container) {
-            return this.loadContent(`${this.includeUrl}/appointmentForm/`, 'POST', { 'delete': 1, 'processId': processId, 'initiator': this.initiator }, $container).then(() => {
+            this.loadContent(`${this.includeUrl}/appointmentForm/`, 'POST', { 'delete': 1, 'processId': processId, 'initiator': this.initiator }, $container).then(() => {
                 this.loadAppointmentForm(true, true, $container);
                 this.loadQueueInfo();
                 this.loadQueueTable();
@@ -189,7 +215,7 @@ class View extends BaseView {
             });
         } else {
             showSpinner();
-            return this.loadCall(`${this.includeUrl}/appointmentForm/`, 'POST', { 'delete': 1, 'processId': processId, 'initiator': this.initiator }).then((response) => {
+            this.loadCall(`${this.includeUrl}/appointmentForm/`, 'POST', { 'delete': 1, 'processId': processId, 'initiator': this.initiator }).then((response) => {
                 this.loadMessage(response, () => {
                     this.loadAppointmentForm(true, true);
                     this.loadQueueInfo();
@@ -199,7 +225,6 @@ class View extends BaseView {
                 });
             });
         }
-
     }
 
     onConfirm(event, template, callback) {
@@ -389,6 +414,7 @@ class View extends BaseView {
             onEditProcess: this.onEditProcess,
             onQueueProcess: this.onQueueProcess,
             onSaveProcess: this.onSaveProcess,
+            onCopyProcess: this.onCopyProcess,
             onChangeScope: this.onChangeScope,
             onAbortProcess: this.onAbortProcess,
             onPrintWaitingNumber: this.onPrintWaitingNumber,

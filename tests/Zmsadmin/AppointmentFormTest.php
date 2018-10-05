@@ -535,8 +535,8 @@ class AppointmentFormTest extends Base
         $this->assertRedirect($response, '/process/reserve/', 307);
         $this->assertEquals(307, $response->getStatusCode());
     }
-
-    public function testWithSaveSubmit()
+    
+    public function testWithCopySubmit()
     {
         $this->setApiCalls(
             [
@@ -572,9 +572,9 @@ class AppointmentFormTest extends Base
             'selectedtime' => '11-55',
             'selectedprocess' => 100044,
             'familyName' => 'Unittest',
-            'update' => 1
+            'reserve' => 1
         ], [], 'POST');
-        $this->assertRedirect($response, '/process/100044/save/', 307);
+        $this->assertRedirect($response, '/process/reserve/', 307);
         $this->assertEquals(307, $response->getStatusCode());
     }
 
@@ -749,7 +749,7 @@ class AppointmentFormTest extends Base
             ]
         );
         $response = $this->render([], ['selecteddate' => '2016-05-27', 'selectedprocess' => 100044], []);
-        $this->assertContains('17:00 (noch 1 frei)', (string)$response->getBody());
+        $this->assertContains('17:00 (noch 0 frei)', (string)$response->getBody());
         $this->assertNotContains('title="Spontankunde"', (string)$response->getBody());
     }
 
@@ -804,7 +804,7 @@ class AppointmentFormTest extends Base
             ]
         );
         $response = $this->render([], ['selecteddate' => '2016-05-27', 'selectedprocess' => 100044], []);
-        $this->assertContains('17:00 (noch 1 frei)', (string)$response->getBody());
+        $this->assertContains('17:00 (noch 0 frei)', (string)$response->getBody());
         $this->assertNotContains('title="Spontankunde"', (string)$response->getBody());
     }
 }
