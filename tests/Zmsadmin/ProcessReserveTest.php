@@ -59,6 +59,48 @@ class ProcessReserveTest extends Base
         $this->assertEquals(302, $response->getStatusCode());
     }
 
+    public function testReserveCopy()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/process/status/reserved/',
+                    'parameters' => ['slotType' => 'intern', 'slotsRequired' => 0],
+                    'response' => $this->readFixture("GET_process_82252_12a2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_scope_141.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/cluster/',
+                    'response' => $this->readFixture("GET_cluster_109.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/process/status/confirmed/',
+                    'response' => $this->readFixture("GET_process_82252_12a2.json")
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, $this->parameters, [], 'POST');
+        $this->assertRedirect(
+            $response,
+            '/appointmentForm/?selectedprocess=82252&selectedscope=141&success=process_reserved'
+        );
+        $this->assertEquals(302, $response->getStatusCode());
+    }
+
     public function testWithConfirmations()
     {
         $this->setApiCalls(

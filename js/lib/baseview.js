@@ -40,7 +40,6 @@ class BaseView extends ErrorHandler {
                 DialogHandler.hideMessages();
                 resolve(responseData);
             }).fail((err) => {
-                console.log(err);
                 let isException = err.responseText.toLowerCase().includes('exception');
                 if (err.status >= 400 && isException) {
                     new ExceptionHandler(this.$main, {
