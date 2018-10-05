@@ -25,6 +25,7 @@ class ProcessDeleteQuick extends ProcessDelete
         array $args
     ) {
         $workstation = (new Helper\User($request))->checkRights('basic');
+        \BO\Zmsdb\Connection\Select::getWriteConnection();
         $process = (new Process)->readEntity($args['id'], new \BO\Zmsdb\Helper\NoAuth(), 1);
         if (!$process->hasId()) {
             throw new Exception\Process\ProcessNotFound();

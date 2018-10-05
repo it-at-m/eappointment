@@ -21,6 +21,7 @@ class NotificationDelete extends BaseController
         array $args
     ) {
         (new Helper\User($request))->checkRights('superuser');
+        \BO\Zmsdb\Connection\Select::getWriteConnection();
         $query = new Query();
         $notification = $query->readEntity($args['id']);
         if ($notification && ! $notification->hasId()) {

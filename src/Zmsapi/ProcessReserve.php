@@ -30,6 +30,7 @@ class ProcessReserve extends BaseController
             throw new Exception\Process\ProcessReserveFailed();
         }
 
+        \BO\Zmsdb\Connection\Select::getWriteConnection();
         if ($slotType || $slotsRequired) {
             (new Helper\User($request))->checkRights();
         } else {

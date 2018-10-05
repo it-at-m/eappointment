@@ -23,6 +23,7 @@ class OrganisationHash extends BaseController
         array $args
     ) {
         $ticketprinterName = Validator::param('name')->isString()->setDefault('')->getValue();
+        \BO\Zmsdb\Connection\Select::getWriteConnection();
         $organisation = (new Query())->readEntity($args['id']);
         if (! $organisation) {
             throw new Exception\Organisation\OrganisationNotFound();

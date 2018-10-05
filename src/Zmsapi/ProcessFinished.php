@@ -33,6 +33,7 @@ class ProcessFinished extends BaseController
         $this->testProcessData($process);
         $this->testProcessInWorkstation($process, $workstation);
 
+        \BO\Zmsdb\Connection\Select::getWriteConnection();
         $query = new Query();
         $clients = $query->readEntity($process->id, new \BO\Zmsdb\Helper\NoAuth())->getClients();
         if ('pending' == $process['status']) {

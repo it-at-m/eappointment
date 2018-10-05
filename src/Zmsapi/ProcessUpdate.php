@@ -32,6 +32,7 @@ class ProcessUpdate extends BaseController
         $entity = new \BO\Zmsentities\Process($input);
         $entity->testValid();
         $this->testProcessData($entity);
+        \BO\Zmsdb\Connection\Select::getWriteConnection();
         $process = (new Process)->readEntity($args['id'], $args['authKey'], 1);
         $initiator = Validator::param('initiator')->isString()->getValue();
         if ($initiator && $process->hasScopeAdmin()) {

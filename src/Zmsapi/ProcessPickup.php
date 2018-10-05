@@ -28,6 +28,7 @@ class ProcessPickup extends BaseController
         $workstation = (new Helper\User($request))->checkRights();
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Process($input);
+        \BO\Zmsdb\Connection\Select::getWriteConnection();
         $cluster = (new \BO\Zmsdb\Cluster)->readByScopeId($workstation->scope['id'], 1);
 
         if ($entity->hasProcessCredentials()) {

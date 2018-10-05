@@ -32,6 +32,7 @@ class ProcessConfirmationNotification extends BaseController
         $process->testValid();
         $this->testProcessData($process);
 
+        \BO\Zmsdb\Connection\Select::getWriteConnection();
         $department = (new Department())->readByScopeId($process->scope['id']);
         $config = (new Config())->readEntity();
         $notification = (new \BO\Zmsentities\Notification())->toResolvedEntity($process, $config, $department);

@@ -22,6 +22,7 @@ class WorkstationDelete extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
+        \BO\Zmsdb\Connection\Select::getWriteConnection();
         $workstation = (new Helper\User($request, 1))->checkRights();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(2)->getValue();
         if (! (new Useraccount)->readIsUserExisting($args['loginname'])) {
