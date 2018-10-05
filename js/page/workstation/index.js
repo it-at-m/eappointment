@@ -178,6 +178,7 @@ class View extends BaseView {
     }
 
     onDeleteProcess($container, event) {
+        stopEvent(event);
         const processId = $(event.target).data('id');
         if ($container) {
             return this.loadContent(`${this.includeUrl}/appointmentForm/`, 'POST', { 'delete': 1, 'processId': processId, 'initiator': this.initiator }, $container).then(() => {

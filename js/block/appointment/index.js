@@ -56,6 +56,7 @@ class View extends RequestView {
             this.loadPromise.then(() => {
                 this.initRequestView();
                 this.bindEvents();
+                this.$main.find('select#process_time').trigger('change');
             });
         });
     }
