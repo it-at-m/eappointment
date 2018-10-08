@@ -121,7 +121,10 @@ class Notification extends BaseController
         $mailer->Subject = "=?UTF-8?B?".$mailer->base64EncodeWrapMB(trim($entity->getMessage()))."?=";
         $mailer->Body = '';
         $mailer->AllowEmpty = true;
-        $mailer->SetFrom($entity['department']['email']);
+        $from = isset($entity['preferences']['notifications']['identification']) ?
+            $entity['preferences']['notifications']['identification'] : null;
+        $from = $from ? $from : $entity['department']['email'];
+        $mailer->SetFrom($from);
         $mailer->FromName = $sender;
         $mailer->CharSet = 'UTF-8';
         $mailer->SetLanguage("de");
