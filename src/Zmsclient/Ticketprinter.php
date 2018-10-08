@@ -12,6 +12,7 @@ class Ticketprinter
     /**
      *
      * @SuppressWarnings(Superglobals)
+     * @getBasePath() see https://www.slimframework.com/docs/v3/objects/request.html#the-request-method
      *
      */
     public static function setHash($hash, $request)
@@ -40,6 +41,7 @@ class Ticketprinter
     /**
      *
      * @SuppressWarnings(Superglobals)
+     * @getBasePath() see https://www.slimframework.com/docs/v3/objects/request.html#the-request-method
      *
      */
     public static function setHomeUrl($url, $request)
