@@ -19,6 +19,7 @@ class OwnerOverview extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $ownerList = \App::$http->readGetResult('/owner/', array('resolveReferences' => 4))->getCollection();
+        $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         return \BO\Slim\Render::withHtml(
 
             $response,
@@ -28,6 +29,7 @@ class OwnerOverview extends BaseController
                 'menuActive' => 'owner',
                 'workstation' => $workstation,
                 'ownerList' => $ownerList,
+                'success' => $success
             )
         );
     }
