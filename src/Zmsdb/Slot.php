@@ -163,12 +163,12 @@ class Slot extends Base
         }
         // Order is import, the following cancels all slots
         // and should only happen, if rebuild is triggered
-        $this->perform(Query\Slot::QUERY_CANCEL_AVAILABILITY, [
+        $cancelledSlots = $this->fetchAffected(Query\Slot::QUERY_CANCEL_AVAILABILITY, [
             'availabilityID' => $availability->id,
         ]);
         if (!$availability->hasBookableDates($now)) {
-            $availability['processingNote'][] = 'cancelled: not bookable ';
-            return ($slotLastChange->getTimestamp() > 86401) ? true : false;
+            $availability['processingNote'][] = "cancelled $cancelledSlots slots: availability not bookable ";
+            return ($cancelledSlots > 0) ? true : false;
         }
         (new Availability())->readLock($availability->id);
         $stopDate = $availability->getBookableEnd($now);
@@ -183,7 +183,7 @@ class Slot extends Base
             $time = $time->modify('+1day');
         } while ($time->getTimestamp() <= $stopDate->getTimestamp());
 
-        return true;
+        return $status || ($cancelledSlots > 0);
     }
 
     public function writeByScope(\BO\Zmsentities\Scope $scope, \DateTimeInterface $now)
