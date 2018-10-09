@@ -45,6 +45,16 @@ class LoginForm
         return $collection;
     }
 
+    public static function fromQuickLogin()
+    {
+        $loginData = static::fromLoginParameters();
+        $additionalData = static::fromAdditionalParameters();
+        $collection = array_merge($loginData->getValues(), $additionalData->getValues());
+        $collection['redirectUrl'] = Validator::param('url')->isString();
+        $collection = Validator::collection($collection);
+        return $collection;
+    }
+
     public static function writeWorkstationUpdate($data, $workstation)
     {
         if (isset($workstation->useraccount)) {
