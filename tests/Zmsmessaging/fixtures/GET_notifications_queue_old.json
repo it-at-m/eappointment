@@ -17,7 +17,7 @@
         "preferences": {
           "notifications": {
             "enabled": true,
-            "identification": "terminvereinbarung@mitte.berlin.de",
+            "identification": "terminvereinbarung(at)mitte.berlin.de",
             "sendConfirmationEnabled": true,
             "sendReminderEnabled": true
           }
