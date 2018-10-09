@@ -76,8 +76,9 @@ input[type="radio"] {
     margin-top:             1px \9; // IE8-9
     line-height:            normal;
     &:focus {
-        outline:            thin dotted;
-        outline-offset:     -2px;
+        box-shadow: 0 0 12px rgba(102, 175, 233, 0.6);
+        outline: 2px solid rgba(102, 175, 233, 1);
+        outline-offset: -2px;
     }
 }
 
