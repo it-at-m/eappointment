@@ -145,6 +145,9 @@ class Slot extends Base
         return false;
     }
 
+    /**
+     * @return bool TRUE if there were changes on slots
+     */
     public function writeByAvailability(
         \BO\Zmsentities\Availability $availability,
         \DateTimeInterface $now,
@@ -164,8 +167,8 @@ class Slot extends Base
             'availabilityID' => $availability->id,
         ]);
         if (!$availability->hasBookableDates($now)) {
-            $availability['processingNote'][] = 'cancelled: not bookable';
-            return false;
+            $availability['processingNote'][] = 'cancelled: not bookable ';
+            return ($slotLastChange->getTimestamp() > 86401) ? true : false;
         }
         (new Availability())->readLock($availability->id);
         $stopDate = $availability->getBookableEnd($now);
@@ -180,7 +183,7 @@ class Slot extends Base
             $time = $time->modify('+1day');
         } while ($time->getTimestamp() <= $stopDate->getTimestamp());
 
-        return $status;
+        return true;
     }
 
     public function writeByScope(\BO\Zmsentities\Scope $scope, \DateTimeInterface $now)
