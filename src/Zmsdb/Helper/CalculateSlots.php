@@ -84,7 +84,7 @@ class CalculateSlots
     }
 
 
-    public function writeCalculations(\DateTimeInterface $now, $repair = false)
+    public function writeCalculations(\DateTimeInterface $now, $delete = false)
     {
         \BO\Zmsdb\Connection\Select::setTransaction();
         \BO\Zmsdb\Connection\Select::getWriteConnection();
@@ -103,10 +103,10 @@ class CalculateSlots
         (new \BO\Zmsdb\Config)->replaceProperty('status__calculateSlotsLastStart', $now->format('Y-m-d H:i:s'));
         \BO\Zmsdb\Connection\Select::writeCommit();
         $updateTimestamp = $this->readLastRun();
-        if ($repair) {
-            $updateTimestamp = '';
-        }
         $this->log("Last Run on time=" . $updateTimestamp);
+        if ($delete) {
+            $this->deleteOldSlots($now);
+        }
         $scopeList = (new \BO\Zmsdb\Scope())->readList(1);
         $scopeLength = count($scopeList) - 1;
         foreach ($scopeList as $key => $scope) {
@@ -132,6 +132,8 @@ class CalculateSlots
 
         \BO\Zmsdb\Connection\Select::writeCommit();
         $this->log("Slot calculation finished");
+        $this->writeCanceledSlots($now);
+        $this->writeMaintenanceQueries();
     }
 
     protected function writeCalculatedScope(\BO\Zmsentities\Scope $scope, \DateTimeInterface $now)
