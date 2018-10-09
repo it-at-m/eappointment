@@ -20,6 +20,9 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/overview/', '\BO\Zmsstatistic\Overview')
     ->setName("Overview");
 
+\App::$slim->get('/workstation/quicklogin/', '\BO\Zmsstatistic\QuickLogin')
+    ->setName("quickLogin");
+
 /*
  * ---------------------------------------------------------------------------
  * Result views
