@@ -140,6 +140,32 @@ class Availability extends Base implements MappingInterface
         return $this;
     }
 
+    /**
+     * Used to identify availabilities whose End Date was more than 4 weeks ago
+     *
+     */
+    public function addConditionOnlyOld(\DateTimeInterface $dateTime)
+    {
+        $date = $dateTime->format('Y-m-d');
+        $this->query
+            ->where('availability.Endedatum', '<=', $date);
+        return $this;
+    }
+
+   /**
+     * Identify availabilities between two dates
+     *
+     */
+    public function addConditionTimeFrame(\DateTimeInterface $start, DateTimeInterface $end)
+    {
+        $start = $start->format('Y-m-d');
+        $end = $end->format('Y-m-d');
+        $this->query
+            ->where('availability.Startdatum', '<=', $start)
+            ->where('availability.Endedatum', '>=', $end);
+        return $this;
+    }
+
     public function addConditionDate(\DateTimeInterface $dateTime)
     {
         $date = $dateTime->format('Y-m-d');
