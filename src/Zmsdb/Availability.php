@@ -144,6 +144,32 @@ class Availability extends Base implements Interfaces\ResolveReferences
     }
     */
 
+    /*
+    ** Returns a list of availabilities with end date older than 4 weeks
+    */
+    public function readOldAvailabilityList($resolveReferences = 0)
+    {
+        $now = new \DateTimeImmutable('now');
+        $datetime = $now->modify('- 4 weeks');
+        $collection = new Collection();
+        $query = new Query\Availability(Query\Base::SELECT);
+        $query
+            ->addEntityMapping()
+            ->addResolvedReferences($resolveReferences)
+            ->addConditionAppointmentHours()
+            ->addConditionOnlyOld($datetime);
+        $result = $this->fetchList($query, new Entity());
+        if (count($result)) {
+            foreach ($result as $entity) {
+                if ($entity instanceof Entity) {
+                    $entity = $this->readResolvedReferences($entity, $resolveReferences);
+                    $collection->addEntity($entity);
+                }
+            }
+        }
+        return $collection;
+    }
+
     public function readOpeningHoursListByDate($scopeId, \DateTimeInterface $now, $resolveReferences = 0)
     {
         $collection = new Collection();
