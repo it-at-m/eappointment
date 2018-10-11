@@ -161,6 +161,7 @@ class Slot extends Base
         if (!$this->isAvailabilityOutdated($availability, $now, $slotLastChange)) {
             return false;
         }
+        (new Availability())->readLock($availability->id);
         // Order is import, the following cancels all slots
         // and should only happen, if rebuild is triggered
         $cancelledSlots = $this->fetchAffected(Query\Slot::QUERY_CANCEL_AVAILABILITY, [
@@ -170,7 +171,7 @@ class Slot extends Base
             $availability['processingNote'][] = "cancelled $cancelledSlots slots: availability not bookable ";
             return ($cancelledSlots > 0) ? true : false;
         }
-        (new Availability())->readLock($availability->id);
+        $availability['processingNote'][] = "cancelled $cancelledSlots slots";
         $stopDate = $availability->getBookableEnd($now);
         $slotlist = $availability->getSlotList();
         $time = $now;
