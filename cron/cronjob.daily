@@ -14,6 +14,9 @@ if [[ $ZMS_CRONROOT =~ ^1|on|true|yes$ ]]; then
         $BIN/deleteAppointmentData 1 --commit
         #$BIN/sendProcessListToScopeAdmin --commit 141
     fi
+    if [[ $ZMS_ENV =~ ^prod|dev|stage$ ]]; then
+        $API config cron deleteOldAvailabilityData|grep -q "$ZMS_ENV" && $BIN/deleteOldAvailabilityData 2 --commit
+    fi
     $BIN/calculateSlots --commit --delete
     if [[ $ZMS_ENV =~ ^dev|stage$ ]]; then
         $BIN/migrate --update
