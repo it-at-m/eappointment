@@ -28,8 +28,10 @@ $verbose = (preg_grep('#^--?v(erbose)?$#', $argv)) ? true : false;
 $commit = preg_grep('#^--commit$#', $argv);
 
 if ($commit) {
+    $now = new \DateTimeImmutable('now');
+    $datetime = $now->modify('- 4 weeks');
     $job = new \BO\Zmsdb\Helper\AvailabilityDeleteByCron($verbose);
-    $job->startProcessing($commit);
+    $job->startProcessing($now, $datetime, $commit);
 }
 if (!$commit) {
     error_log("Use with --commit to delete entries.");

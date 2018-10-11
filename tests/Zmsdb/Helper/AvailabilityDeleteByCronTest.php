@@ -20,12 +20,14 @@ class AvailabilityDeleteByCronTest extends Base
     {
         $availabilityDelete = new AvailabilityDeleteByCron($verbose = true); // verbose
         $entity = new Availability();
-        $availabilityUnits = count($entity->readOldAvailabilityList());
-        $availabilityDelete->startProcessing();
-        $this->assertEquals(771, $availabilityUnits);
+        $now = new \DateTimeImmutable('2016-05-01 11:55');
+        $datetime = $now->modify('- 4 weeks');
+        $availabilityUnits = count($entity->readOldAvailabilityList($now, $datetime));
+        $availabilityDelete->startProcessing($now, $datetime);
+        $this->assertEquals(33, $availabilityUnits);
      
-        $availabilityDelete->startProcessing($commit = true);
-        $availabilityUnits = count($entity->readOldAvailabilityList());
+        $availabilityDelete->startProcessing($now, $datetime, $commit = true);
+        $availabilityUnits = count($entity->readOldAvailabilityList($now, $datetime));
         $this->assertEquals(0, $availabilityUnits);
     }
 }
