@@ -7,57 +7,77 @@ namespace BO\Zmsdb\Helper;
  */
 class AppointmentDeleteByCron
 {
-    protected $processList;
     protected $verbose = false;
+    
+    protected $limit = 10000;
+    
+    protected $loopCount = 500;
+
+    protected $time;
+    
+    protected $statuslist = [
+        "reserved",
+        "deleted",
+        "blocked",
+        "confirmed",
+        "queued",
+        "called",
+        "missed",
+        "processing",
+        "free",
+    ];
+
+    protected $archivelist = [
+        "confirmed",
+        "queued",
+        "called",
+        "missed",
+        "processing",
+        "pending"
+    ];
 
     public function __construct($timeIntervalDays, $verbose = false)
     {
         $deleteInSeconds = (24 * 60 * 60) * $timeIntervalDays;
-        $query = new \BO\Zmsdb\Process();
         $time = new \DateTimeImmutable();
-        $time = $time->setTimestamp(time() - $deleteInSeconds);
+        $this->time = $time->setTimestamp($time->getTimestamp() - $deleteInSeconds);
         if ($verbose) {
-            error_log("INFO: Deleting appointments older than $timeIntervalDays days of date " . $time->format('c'));
+            error_log(
+                "INFO: Deleting appointments older than $timeIntervalDays days of date " . $this->time->format('c')
+            );
             $this->verbose = true;
         }
-        $this->processList = $query->readExpiredProcessList($time, 10000);
     }
 
-    public function startProcessing($commit, $pending)
+    public function startProcessing($commit, $pending = false)
+    {
+        $query = new \BO\Zmsdb\Process();
+        if ($pending) {
+            $this->statuslist[] = "pending";
+        }
+        $processCount = $this->loopCount;
+        while ($processCount < $this->limit) {
+            $processList = $query->readExpiredProcessList($this->time, $this->loopCount);
+            if (0 == $processList->count()) {
+                break;
+            }
+            foreach ($processList as $process) {
+                if ($this->verbose) {
+                    error_log("INFO: Processing $process");
+                }
+                if ($commit) {
+                    $this->removeProcess($process);
+                }
+                $processCount++;
+            }
+        }
+    }
+
+    protected function removeProcess(\BO\Zmsentities\Process $process)
     {
         $verbose = $this->verbose;
-        $statuslist = [
-            "reserved",
-            "deleted",
-            "blocked",
-            "confirmed",
-            "queued",
-            "called",
-            "missed",
-            "processing",
-            "free",
-        ];
-        if ($pending) {
-            $statuslist[] = "pending";
-        }
-        foreach ($this->processList as $process) {
-            if ($verbose) {
-                error_log("INFO: Processing $process");
-            }
-            if ($commit) {
-                $this->removeProcess($process, $statuslist);
-            }
-        }
-    }
-
-    protected function removeProcess(
-        \BO\Zmsentities\Process $process,
-        array $statuslist,
-        array $archivelist = ["confirmed", "queued", "called", "missed", "processing", "pending"]
-    ) {
-        $verbose = $this->verbose;
-        if (in_array($process->status, $statuslist)) {
-            if (in_array($process->status, $archivelist)) {
+        if (in_array($process->status, $this->statuslist)) {
+            if (in_array($process->status, $this->archivelist)) {
                 $process = $this->updateProcessStatus($process);
                 $this->archiveProcess($process);
             }
