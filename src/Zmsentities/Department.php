@@ -19,6 +19,11 @@ class Department extends Schema\Entity implements Useraccount\AccessInterface
         ];
     }
 
+    public function hasMail()
+    {
+        return ($this->toProperty()->email->isAvailable() && $this->toProperty()->email->get());
+    }
+
     public function hasNotificationEnabled()
     {
         $prefs = $this->getNotificationPreferences();
