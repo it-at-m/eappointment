@@ -18,6 +18,7 @@ class CounterQueueInfo extends BaseController
         array $args
     ) {
         $validator = $request->getAttribute('validator');
+        $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
         $ghostWorkstation = $validator->getParameter('ghostworkstationcount')->isNumber()->getValue();
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
 
@@ -27,7 +28,7 @@ class CounterQueueInfo extends BaseController
             $workstation->scope = \App::$http
                 ->readPostResult("/scope/$scope->id/ghostworkstation/", $scope)->getEntity();
         }
-        $workstationInfo = Helper\WorkstationInfo::getInfoBoxData($workstation);
+        $workstationInfo = Helper\WorkstationInfo::getInfoBoxData($workstation, $selectedDate);
 
         return \BO\Slim\Render::withHtml(
             $response,

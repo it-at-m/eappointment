@@ -252,7 +252,9 @@ class View extends BaseView {
 
     onResetProcess($container, event) {
         let selectedProcess = $(event.target).data('id');
-        this.loadContent(`${this.includeUrl}/process/queue/reset/?selectedprocess=${selectedProcess}&selecteddate=${this.selectedDate}`, 'GET', null, $container);
+        this.loadContent(`${this.includeUrl}/process/queue/reset/?selectedprocess=${selectedProcess}&selecteddate=${this.selectedDate}`, 'GET', null, $container).then(() => {
+            this.loadQueueInfo();
+        });
     }
 
     onEditProcess(event) {
