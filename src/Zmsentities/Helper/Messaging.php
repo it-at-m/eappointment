@@ -62,6 +62,7 @@ class Messaging
         ));
         $twig->addExtension(new TwigExtension());
         $twig->addExtension(new \Twig_Extensions_Extension_I18n());
+        $twig->addExtension(new \Twig_Extensions_Extension_Intl());
         return $twig;
     }
 
