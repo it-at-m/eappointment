@@ -30,6 +30,12 @@ class WarehouseSubject extends BaseController
             $args['organisation'] = $this->organisation;
             return (new Download(\App::$slim->getContainer()))->readResponse($request, $response, $args);
         }
+        if (count($subjectList['data']) == 1) {
+            return \BO\Slim\Render::redirect("WarehousePeriod", [
+                'subject' => $args['subject'],
+                'subjectid' => $subjectList['data'][0][0],
+            ]);
+        }
 
         return \BO\Slim\Render::withHtml(
             $response,

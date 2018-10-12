@@ -22,6 +22,13 @@ class WarehousePeriod extends BaseController
         $periodList = \App::$http
           ->readGetResult('/warehouse/'. $args['subject'] .'/'. $args['subjectid'] .'/')
           ->getEntity();
+        if (count($periodList['data']) == 1) {
+            return \BO\Slim\Render::redirect("WarehouseReport", [
+                'subject' => $args['subject'],
+                'subjectid' => $args['subjectid'],
+                'period' => $periodList['data'][0][0],
+            ]);
+        }
 
         return \BO\Slim\Render::withHtml(
             $response,
