@@ -28,7 +28,11 @@ $verbose = (preg_grep('#^--?v(erbose)?$#', $argv)) ? true : false;
 $commit = preg_grep('#^--commit$#', $argv);
 
 if ($commit) {
-    $now = new \DateTimeImmutable('now');
+    if (class_exists('\App') && isset(\App::$now)) {
+        $now = \App::$now;
+    } else {
+        $now = new \DateTimeImmutable('now');
+    }
     $datetime = $now->modify('- 4 weeks');
     $job = new \BO\Zmsdb\Helper\AvailabilityDeleteByCron($verbose);
     $job->startProcessing($now, $datetime, $commit);
