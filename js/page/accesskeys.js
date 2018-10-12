@@ -17,16 +17,16 @@ class View extends BaseView {
             'a': 'input[name=email], .button-login',
             'b': 'input[name=sendConfirmation]',
             'g': '.service-checkbox:first',
-            'd': '[data-button-print]',
-            'e': '[data-button-download], select[name=headsUpTime]',
             'h': '.process-queue',
             'i': 'input[name=sendMailConfirmation]',
             'm': 'input[id=process_date]',
             'n': 'input[name=loginName], input[name=familyName]',
             'p': 'input[name=workstation], input[name=password]',
+            'r': '[data-button-download], select[name=headsUpTime]',
             's': 'select[name=scope]',
             't': 'input[name=telephone]',
             'w': 'textarea[name=amendment]',
+            'y': '[data-button-print]',
             'z': '[name=hint], select[name=selectedtime]'
         };
 
@@ -35,7 +35,7 @@ class View extends BaseView {
             console.log($elms);
             if ($elms.length) {
                 $elms.first().focus();
-                return true;
+                return true; 
             }
             return false;
         };
