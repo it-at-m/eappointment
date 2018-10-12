@@ -5384,7 +5384,7 @@ hr {
       white-space: normal;
       line-height: 1.4em; }
   .report-board .report-board--table tbody tr td {
-    text-align: right;
+    text-align: left;
     border-left: 0 none;
     border-top: 0 none; }
     .report-board .report-board--table tbody tr td.report-board--summary {
