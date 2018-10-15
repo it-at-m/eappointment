@@ -28,6 +28,7 @@ gulp.task('js', ['lint'], function () {
            .pipe(source(filename))
            .pipe(buffer())
            .pipe(plumber())
+           .pipe(rename({dirname:''}))
            .pipe(sourcemaps.init({
                'loadMaps': true,
                'identityMap': true,
@@ -35,7 +36,6 @@ gulp.task('js', ['lint'], function () {
            }))
            .pipe(plumber())
            .pipe(uglify())
-           .pipe(rename({dirname:''}))
            .pipe(sourcemaps.write('./', {
                sourceMappingURL: function (file) {
                    //gutil.log('[sourcemaps] Rewrite path ' +  gutil.colors.green(file.relative));
