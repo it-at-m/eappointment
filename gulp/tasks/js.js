@@ -26,7 +26,6 @@ gulp.task('js', ['lint'], function () {
                 });
             })
            .pipe(source(filename))
-           .pipe(rename({dirname:''}))
            .pipe(buffer())
            .pipe(plumber())
            .pipe(sourcemaps.init({
@@ -44,6 +43,7 @@ gulp.task('js', ['lint'], function () {
                },
                'debug': true
            }))
+           .pipe(rename({dirname:''}))
            .pipe(gulp.dest('./public/_js/'))
            //.on('end', cb)
     })
