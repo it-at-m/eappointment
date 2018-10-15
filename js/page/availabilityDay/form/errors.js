@@ -3,13 +3,10 @@ import React, { PropTypes } from 'react'
 const renderErrors = errors => errors.map(err => {
     return (
         <div className="message-error">
-            <h3 className="title">Error</h3>
             <p>{err.errorMessage}</p>
         </div>
     )
-
 })
-
 
 const Errors = (props) => {
     const errors = Object.keys(props.errors).map(key => {

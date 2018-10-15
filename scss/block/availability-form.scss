@@ -11,4 +11,18 @@
   input[type=text][name=description] {
     width: 100%;
   }
+  
 }
+
+.message-error {
+  background-color: #fadcdc;
+  border: 1px solid #f4afaf;
+  line-height: 1em; 
+  padding-left: 1em;
+  margin: 10px;
+}
+
+.message-error>p {
+  margin: 0.7em;
+} 
+
