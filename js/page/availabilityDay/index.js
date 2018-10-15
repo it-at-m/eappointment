@@ -4,7 +4,7 @@
 import React, { Component, PropTypes } from 'react'
 import $ from 'jquery'
 import moment from 'moment'
-
+import validate from './form/validate'
 import AvailabilityForm from './form'
 import Conflicts from './conflicts'
 import TimeTable from './timetable'
@@ -107,27 +107,32 @@ class AvailabilityPage extends Component {
 
             return sendAvailability
         }).map(cleanupAvailabilityForSave)
-
+        
+        let {valid, errors} = validate(sendData) 
         console.log('Saving updates', sendData)
+        console.log(errors)
 
-        $.ajax(`${this.props.links.includeurl}/availability/`, {
-            method: 'POST',
-            data: JSON.stringify(sendData)
-        }).done((success) => {
-            console.log('save success', success)
-            this.setState({
-                lastSave: new Date()
-            })
-            this.refreshData()
-        }).fail((err) => {
-            if (err.status === 404) {
-                console.log('404 error, ignored')
+        if (valid) {
+            $.ajax(`${this.props.links.includeurl}/availability/`, {
+                method: 'POST',
+                data: JSON.stringify(sendData)
+            }).done((success) => {
+                console.log('save success', success)
+                this.setState({
+                    lastSave: new Date()
+                })
                 this.refreshData()
-            } else {
-                console.log('save error', err)
-            }
-        })
+            }).fail((err) => {
+                if (err.status === 404) {
+                    console.log('404 error, ignored')
+                    this.refreshData()
+                } else {
+                    console.log('save error', err)
+                }
+            })
+        } 
     }
+
 
     onRevertUpdates() {
         this.setState(getInitialState(this.props))
