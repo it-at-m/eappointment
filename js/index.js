@@ -14,6 +14,7 @@ import { getDataAttributes } from './lib/utils'
 import { forceHttps } from './lib/utils'
 
 import PeriodListView from './block/periodlist'
+import WarehouseReportView from './block/warehousereport'
 
 // Bind jQuery on $ for testing
 window.$ = $;
@@ -24,8 +25,12 @@ moment.locale('de')
 forceHttps();
 
 // Say hello
-console.log("Welcome to the ZMS statistic interface...");
+console.log("Welcome to the ZMS statistics interface...");
 
 $('.report-period').each(function() {
     new PeriodListView(this, getDataAttributes(this));
+})
+
+$('.warehouse-report').each(function() {
+    new WarehouseReportView(this, getDataAttributes(this));
 })

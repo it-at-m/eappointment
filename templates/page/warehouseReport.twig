@@ -1,7 +1,7 @@
 {% extends "layout/main.twig" %}
 {% block content %}
 <div class="counter-view" data-includeurl="{{ includeUrl() }}">
-        <div class="report-index">
+        <div class="report-index warehouse-report">
             <h1>{% trans %}Report Rohdaten{% endtrans %}</h1>
 
             {% embed "block/report/board.twig" with {'class': 'report-board', 'download': 'raw'} %}
@@ -9,6 +9,9 @@
                 {% trans %}Kategorie{% endtrans %}: {{ categoryName|trans }}
             {% endblock %}
             {% block board_body %}
+                {% if report.visualization %}
+                    <div class="chartist" data-chartist="{{ report|json_encode }}">(loading chart...)</div>
+                {% endif %}
                 <table class="report-board--table report-board--text">
                     <thead>
                         {% for key, entry in report.dictionary|first|keys if key < 4 %}
