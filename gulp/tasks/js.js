@@ -35,6 +35,7 @@ gulp.task('js', ['lint'], function () {
            }))
            .pipe(plumber())
            .pipe(uglify())
+           .pipe(rename({dirname:''}))
            .pipe(sourcemaps.write('./', {
                sourceMappingURL: function (file) {
                    //gutil.log('[sourcemaps] Rewrite path ' +  gutil.colors.green(file.relative));
@@ -43,7 +44,6 @@ gulp.task('js', ['lint'], function () {
                },
                'debug': true
            }))
-           .pipe(rename({dirname:''}))
            .pipe(gulp.dest('./public/_js/'))
            //.on('end', cb)
     })
