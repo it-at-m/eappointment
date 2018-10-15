@@ -10,6 +10,7 @@ var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
 var crypto = require('crypto');
 var rename = require('gulp-rename');
+var notifier = require('node-notifier');
 
 // Rerun the task when a file changes
 gulp.task('watch', function() {
@@ -33,8 +34,14 @@ gulp.task('watch', function() {
             gutil.log("[browserify] Updating JS");
             bundlerInstance
                 .bundle()
+                .on('error', function (message) {
+                    gutil.log('[browserify] ' +  gutil.colors.red(message));
+                    notifier.notify({
+                        "title": "zmsbot-Build-Error",
+                        "message" : "Error: " + message
+                    });
+                })
                 .pipe(source(filename))
-                .pipe(rename({dirname:''}))
                 .pipe(buffer())
                 .pipe(plumber())
                 .pipe(sourcemaps.init({
@@ -52,6 +59,7 @@ gulp.task('watch', function() {
                     }
                 }))
                 .on('end', function() {gutil.log(gutil.colors.magenta("ATTENTION: Fast build, remember to do a full build before commit!"))})
+                .pipe(rename({dirname:''}))
                 .pipe(gulp.dest('./public/_js/'));
 
         }
