@@ -73,6 +73,11 @@ class Warehouse extends Base
             'description' => 'Nutzerdaten mit E-Mail-Adresse und Rechten',
             'right' => 'superuser'
         ],
+        [
+            'subject' => 'slotscope',
+            'description' => 'Gebuchte Zeitschlitze eines Standortes gruppiert nach Datum',
+            'right' => 'superuser'
+        ],
     ];
 
     public function readSubjectsList()
