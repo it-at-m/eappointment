@@ -50,6 +50,7 @@ gulp.task('watch', function() {
                     'largeFile': true
                 }))
                 .pipe(plumber())
+                .pipe(rename({dirname:''}))
                 .pipe(sourcemaps.write('./', {
                     sourceMappingURL: function (file) {
                         //gutil.log('[sourcemaps] Rewrite path ' +  gutil.colors.green(file.relative));
@@ -59,7 +60,6 @@ gulp.task('watch', function() {
                     }
                 }))
                 .on('end', function() {gutil.log(gutil.colors.magenta("ATTENTION: Fast build, remember to do a full build before commit!"))})
-                .pipe(rename({dirname:''}))
                 .pipe(gulp.dest('./public/_js/'));
 
         }
