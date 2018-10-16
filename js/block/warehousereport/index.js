@@ -46,8 +46,8 @@ class View extends BaseView {
     }
 
     renderChartjs() {
-        console.log(this.data);
-        console.log(this.data.visualization.ylabel);
+        //console.log(this.data);
+        //console.log(this.data.visualization.ylabel);
         const labels = this.getListByLabel(this.data.visualization.xlabel[0]);
         const datasets = [];
         const colorlist = [
@@ -74,7 +74,7 @@ class View extends BaseView {
         });
         const $canvas = this.$.find(".chartist canvas");
         const canvascontext = $canvas[0].getContext('2d');
-        console.log(datasets);
+        //console.log(datasets);
         new Chartjs(canvascontext, {
             type: 'line',
             data: {
@@ -82,6 +82,11 @@ class View extends BaseView {
                 datasets: datasets
             },
             options: {
+                elements: {
+                    line: {
+                        tension: 0.25 // bezier error
+                    }
+                },
                 legend: {
                     display: true,
                     labels: {
