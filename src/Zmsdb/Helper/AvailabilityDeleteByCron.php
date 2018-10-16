@@ -18,9 +18,9 @@ class AvailabilityDeleteByCron
         }
     }
 
-    public function startProcessing(\DateTimeImmutable $now, \DateTimeImmutable $datetime, $commit = false)
+    public function startProcessing(\DateTimeImmutable $datetime, $commit = false)
     {
-        $availabilityList = $this->query->readOldAvailabilityList($now, $datetime);
+        $availabilityList = $this->query->readAvailabilityListBefore($datetime);
         if ($this->verbose) {
             error_log("INFO: Reading availability list");
         }

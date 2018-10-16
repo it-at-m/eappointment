@@ -147,7 +147,7 @@ class Availability extends Base implements Interfaces\ResolveReferences
     /*
     ** Returns a list of availabilities with end date older than 4 weeks
     */
-    public function readOldAvailabilityList(\DateTimeImmutable $now, \DateTimeImmutable $datetime, $resolveReferences = 0)
+    public function readAvailabilityListBefore(\DateTimeImmutable $datetime, $resolveReferences = 0)
     {
         $collection = new Collection();
         $query = new Query\Availability(Query\Base::SELECT);
