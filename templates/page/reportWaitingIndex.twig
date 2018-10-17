@@ -29,7 +29,7 @@
                     {% if exchangeWaiting.period == "day" %}
                         {% set startDate = "%s-%s-%s"|format(exchangeWaiting.firstDay.year, exchangeWaiting.firstDay.month, exchangeWaiting.firstDay.day) %}
                         {% set endDate = "%s-%s-%s"|format(exchangeWaiting.lastDay.year, exchangeWaiting.lastDay.month, exchangeWaiting.lastDay.day) %}
-                        {% set dateRange = range(startDate|date('U'), endDate|date('U'), 86400 ) %}
+                        {% set dateRange = range(startDate|date('j'), endDate|date('j'), 1 ) %}
                     {% elseif exchangeWaiting.period == "month" %}
                         {% set startDate = "%s-%s"|format(exchangeWaiting.firstDay.year, exchangeWaiting.firstDay.month) %}
                         {% set endDate = "%s-%s"|format(exchangeWaiting.lastDay.year, exchangeWaiting.lastDay.month) %}
@@ -49,7 +49,7 @@
                                 {% endif %}
                                 {% for date in dateRange %}
                                     {% if exchangeWaiting.period == "day" %}
-                                        <th class="statistik">&nbsp;{{ date|date('d') }}</th>
+                                        <th class="statistik">&nbsp;{{ "%'02s"|format(date) }}</th>
                                     {% elseif exchangeWaiting.period == "month" %}
                                         <th class="statistik">&nbsp;{{ (startDate|date('Y') ~"-"~ "%02d"|format(date))|localizeddate("medium","none",NULL,NULL,"LLL") }}</th>
                                     {% endif %}
