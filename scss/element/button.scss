@@ -1,5 +1,6 @@
 $buttonSuccessColor:        $blue !default;
 $buttonAlertColor:          $red !default;
+$buttonAbortColor:          $white !default;
 $buttonInactiveFontColor:   $fontInactiveColor !default;
 $buttonMargin:              0.5em;
 
@@ -45,6 +46,12 @@ button.link  {
         .btn--success;
 }
 
+.button-abort {
+    @extend
+    .btn,
+    .btn--abort;
+}
+
 .button-reload {
     @extend
         .btn;
@@ -58,7 +65,7 @@ button.link  {
 .button-logout {
     @extend
         .btn;
-    margin:                 0;
+    margin:   0;
 }
 
 .button-save {
@@ -207,6 +214,16 @@ button.link  {
     color:                  $white;
 }
 
+.btn--abort,
+.btn--abort:hover,
+.btn--abort:active,
+.btn--abort:focus{
+    background-color:       $buttonAbortColor;
+    border-color:           $buttonAbortColor;
+    color:                  $blue;
+}
+
+
 .btn--success,
 .btn--success:hover,
 .btn--success:active,
@@ -215,6 +232,7 @@ button.link  {
     border-color:           $buttonSuccessColor;
     color:                  $white;
 }
+
 .btn--success:focus{
     outline-color:          $white;
     outline-offset:         -4px;
