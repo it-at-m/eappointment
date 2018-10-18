@@ -21,8 +21,8 @@ class ExchangeRequestscopeTest extends Base
         $query = new Query();
         $entity = $query->readSubjectList();
         $this->assertEntity("\\BO\\Zmsentities\\Exchange", $entity);
-        $this->assertEquals(1, count($entity->data));
-        $this->assertEquals(141, $entity->data[0][0]);
+        $this->assertEquals(2, count($entity->data));
+        $this->assertEquals(140, $entity->data[0][0]);
     }
 
     public function testPeriod()
@@ -30,6 +30,6 @@ class ExchangeRequestscopeTest extends Base
         $query = new Query();
         $entity = $query->readPeriodList(141);
         $this->assertEntity("\\BO\\Zmsentities\\Exchange", $entity);
-        $this->assertEquals(2, count($entity->data));
+        $this->assertEquals(3, count($entity->data));
     }
 }

@@ -27,9 +27,9 @@ class ExchangeNotificationscopeTest extends Base
         $query = new Query();
         $entity = $query->readSubjectList();
         $this->assertEntity("\\BO\\Zmsentities\\Exchange", $entity);
-        $this->assertEquals(1, count($entity->data));
-        $this->assertEquals(141, $entity->data[0][0]); // scope id
-        $this->assertContains('Heerstraße', $entity->data[0][3]); //scope name
+        $this->assertEquals(2, count($entity->data));
+        $this->assertEquals(140, $entity->data[0][0]); // scope id
+        $this->assertContains('Hohenzollerndamm', $entity->data[0][3]); //scope name
     }
 
     public function testPeriodList()
@@ -37,6 +37,6 @@ class ExchangeNotificationscopeTest extends Base
         $query = new Query();
         $entity = $query->readPeriodList(141);
         $this->assertEntity("\\BO\\Zmsentities\\Exchange", $entity);
-        $this->assertEquals(2, count($entity->data));
+        $this->assertEquals(3, count($entity->data));
     }
 }
