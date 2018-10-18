@@ -13,7 +13,7 @@ class ExchangeRequestdepartmentTest extends Base
         $query = new Query();
         $entity = $query->readEntity(74, new DateTime('2016-04-01'), new DateTime('2016-04-31'));
         $this->assertEntity("\\BO\\Zmsentities\\Exchange", $entity);
-        $this->assertEquals(17, count($entity->data));
+        $this->assertEquals(20, count($entity->data));
     }
 
     public function testMultipleIds()
@@ -21,7 +21,7 @@ class ExchangeRequestdepartmentTest extends Base
         $query = new Query();
         $entity = $query->readEntity('74,75', new DateTime('2016-04-01'), new DateTime('2016-04-31'));
         $this->assertEntity("\\BO\\Zmsentities\\Exchange", $entity);
-        $this->assertEquals(17, count($entity->data));
+        $this->assertEquals(20, count($entity->data));
     }
 
     public function testSubjectList()
@@ -40,6 +40,6 @@ class ExchangeRequestdepartmentTest extends Base
         $query = new Query();
         $entity = $query->readPeriodList(74);
         $this->assertEntity("\\BO\\Zmsentities\\Exchange", $entity);
-        $this->assertEquals(2, count($entity->data));
+        $this->assertEquals(3, count($entity->data));
     }
 }

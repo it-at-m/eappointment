@@ -13,7 +13,7 @@ class ExchangeRequestorganisationTest extends Base
         $query = new Query();
         $entity = $query->readEntity(71, new DateTime('2016-04-01'), new DateTime('2016-04-31'));
         $this->assertEntity("\\BO\\Zmsentities\\Exchange", $entity);
-        $this->assertEquals(17, count($entity->data));
+        $this->assertEquals(20, count($entity->data));
     }
 
     public function testSubject()
@@ -30,6 +30,6 @@ class ExchangeRequestorganisationTest extends Base
         $query = new Query();
         $entity = $query->readPeriodList(71);
         $this->assertEntity("\\BO\\Zmsentities\\Exchange", $entity);
-        $this->assertEquals(2, count($entity->data));
+        $this->assertEquals(3, count($entity->data));
     }
 }
