@@ -24,7 +24,7 @@ class ExchangeNotificationdepartment extends Base
                 '. self::TABLE .' n ON s.`StandortID` = n.`StandortID` AND n.`Datum` BETWEEN :datestart AND :dateend
         WHERE
             s.`BehoerdenID` = :departmentid AND n.`Datum` IS NOT NULL
-        GROUP BY date, scopename
+        GROUP BY scopename
         ORDER BY date, scopename
     ';
 

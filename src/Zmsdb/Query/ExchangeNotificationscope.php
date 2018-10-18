@@ -22,7 +22,7 @@ class ExchangeNotificationscope extends Base
           LEFT JOIN '. Department::TABLE .' d ON d.BehoerdenID = s.BehoerdenID
           LEFT JOIN '. Organisation::TABLE .' o ON o.OrganisationsID = d.OrganisationsID
       WHERE n.`StandortID` = :scopeid AND n.`Datum` BETWEEN :datestart AND :dateend
-      GROUP BY DATE_FORMAT(n.`Datum`, :groupby)
+      GROUP BY subjectid
     ';
 
     const QUERY_SUBJECTS = '
