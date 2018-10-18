@@ -25,7 +25,7 @@ class ExchangeNotificationorganisation extends Base
                 n.`Datum` BETWEEN :datestart AND :dateend
         WHERE
             o.`OrganisationsID` = :organisationid AND n.`Datum` IS NOT NULL
-        GROUP BY date
+        GROUP BY d.`BehoerdenID`
         ORDER BY date, departmentname, scopename
     ';
 
