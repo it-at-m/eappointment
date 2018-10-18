@@ -21,6 +21,9 @@
                 </ul>
                 </ul>
                 {% endblock %}
+              
+
+
             {% endembed %}
             {% embed "block/report/board.twig" with {'source':source, 'class': 'report-board', "selected": period} %}
                 {% block board_body %}
@@ -38,13 +41,18 @@
                                     <tr>
                                         <td colspan="2">{{ item.organisationname }}</td>
                                         <td colspan="2">{{ item.departmentname }}</td>
-                                        <td colspan="2">{{ item.scopename }}</td>
+                                        {% if source.entity == "ClientOrganisation" %}
+                                            <td colspan="2">*</td>
+                                        {% else %}
+                                            <td colspan="2">{{ item.scopename }}</td>
+                                        {% endif %}
                                         <td>{{ item.notificationscount }}</td>
                                     </tr>
                                 {% endfor %}
                             {% else %}
                             <tr>
-                                <td colspan="7">{% trans %}Es wurden keine Daten gefunden{% endtrans %}</td>
+                                <td colspan="6">{% trans %}Es wurden keine Daten gefunden{% endtrans %}</td>
+                                <td colspan="2">0</td>
                             </tr>
                             {% endif %}
                             <tr class="report-board--empty"><td colspan="7"></td></tr>
