@@ -15,52 +15,63 @@ class ExchangeClientscope extends Base
 
     const QUERY_READ_REPORT = '
     SELECT
-        #subjectid
-        s.`standortid` as subjectid,
-        #date
-        DATE_FORMAT(s.`datum`, :groupby) as date,
-        IF(MIN(notification.total), MIN(notification.total), 0) as notificationscount,
+        MIN(subjectid) as subjectid,
+        date,
+        notificationscount,
         0 as notificationscost,
-        IF(MIN(clientscount.total),MIN(clientscount.total),0) as clientscount,
-        IF(MIN(clientscount.missed),MIN(clientscount.missed),0) as missed,
-        IF(MIN(clientscount.withappointment),MIN(clientscount.withappointment),0) as withappointment,
-        IF(MIN(clientscount.missedwithappointment),MIN(clientscount.missedwithappointment),0) as missedwithappointment,
-        IF(MIN(requestscount.total),MIN(requestscount.total),0) as requestcount
+        SUM(clientscount) as clientscount,
+        SUM(missed) as missed,
+        SUM(withappointment) as withappointment,
+        SUM(missedwithappointment) as missedwithappointment,
+        SUM(requestcount) as requestcount
 
-    FROM '. self::TABLE .' AS s
-        LEFT JOIN (
+    FROM (
           SELECT
-            DATE_FORMAT(`Datum`, :groupby) as date,
-            IFNULL(SUM(gesendet), 0) as total
+            StandortID as subjectid,        
+            IFNULL(DATE_FORMAT(`Datum`, :groupby), 0) as date,
+            IFNULL(SUM(gesendet), 0) as notificationscount,
+            0 as notificationscost,
+            0 AS clientscount,
+            0 AS missed,
+            0 AS withappointment,
+            0 AS missedwithappointment,
+            0 AS requestcount
           FROM '. self::NOTIFICATIONSTABLE .'
           WHERE `StandortID` = :scopeid AND `Datum` BETWEEN :datestart AND :dateend
           GROUP BY date
-        ) as notification ON notification.date =  DATE_FORMAT(s.`datum`, :groupby)
 
-        LEFT JOIN (
+      UNION ALL
           SELECT
-            DATE_FORMAT(`Datum`, :groupby) as date,
-                SUM(IF(`nicht_erschienen`=0,AnzahlPersonen,0)) as total,
-                SUM(IF(`nicht_erschienen`=1,AnzahlPersonen,0)) as missed,
-                SUM(IF(`nicht_erschienen`=0 AND mitTermin=1,AnzahlPersonen,0)) as withappointment,
-                SUM(IF(`nicht_erschienen`=1 AND mitTermin=1,AnzahlPersonen,0)) as missedwithappointment
+            StandortID as subjectid,          
+            IFNULL(DATE_FORMAT(`Datum`, :groupby), 0) as date,
+            0 AS notificationscount,
+            0 as notificationscost,
+            SUM(IF(`nicht_erschienen`=0,AnzahlPersonen,0)) as clientscount,
+            SUM(IF(`nicht_erschienen`=1,AnzahlPersonen,0)) as missed,
+            SUM(IF(`nicht_erschienen`=0 AND mitTermin=1,AnzahlPersonen,0)) as withappointment,
+            SUM(IF(`nicht_erschienen`=1 AND mitTermin=1,AnzahlPersonen,0)) as missedwithappointment,
+            0 AS requestcount
             FROM '. ProcessStatusArchived::TABLE .'
             WHERE `StandortID` = :scopeid AND `Datum` BETWEEN :datestart AND :dateend
               GROUP BY date
-          ) as clientscount ON clientscount.date = DATE_FORMAT(s.`datum`, :groupby)
 
-          LEFT JOIN (
-            SELECT
-              DATE_FORMAT(`Datum`, :groupby) as date,
-                COUNT(IF(ba.AnliegenID > 0, ba.AnliegenID, null)) as total
+      UNION ALL
+          SELECT
+            StandortID as subjectid,
+            IFNULL(DATE_FORMAT(`Datum`, :groupby), 0) as date,
+            0 AS notificationscount,
+            0 as notificationscost,
+            0 AS clientscount,
+            0 AS missed,
+            0 AS withappointment,
+            0 AS missedwithappointment,
+            COUNT(IF(ba.AnliegenID > 0, ba.AnliegenID, null)) as requestcount
             FROM '. ProcessStatusArchived::TABLE .' a
               LEFT JOIN '. self::BATABLE .' as ba ON a.BuergerarchivID = ba.BuergerarchivID
             WHERE `StandortID` = :scopeid AND `Datum` BETWEEN :datestart AND :dateend AND nicht_erschienen=0
             GROUP BY date
-          ) as requestscount ON requestscount.date = DATE_FORMAT(s.`datum`, :groupby)
-
-    WHERE s.`standortid` = :scopeid AND s.`Datum` BETWEEN :datestart AND :dateend
-    GROUP BY DATE_FORMAT(s.`datum`, :groupby)
+      ) as unionresult
+      GROUP BY date;  
     ';
 
     const QUERY_SUBJECTS = '
