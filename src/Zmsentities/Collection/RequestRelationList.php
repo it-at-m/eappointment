@@ -25,24 +25,18 @@ class RequestRelationList extends Base
                 $requestList->addEntity($entity);
             }
         }
-        return $requestList;
+        return $requestList->withUniqueRequests();
     }
 
-    public function toRequestRelation()
+    public function getProviderList()
     {
-        $collection = new self();
-        foreach ($this as $entity) {
-            $collection->addEntity($entity->toRequestRelation());
+        $providerList = new ProviderList();
+        foreach ($this as $item) {
+            if (isset($item['provider'])) {
+                $entity = new \BO\Zmsentities\Provider($item['provider']);
+                $providerList->addEntity($entity);
+            }
         }
-        return $collection;
-    }
-
-    public function toProviderRelation()
-    {
-        $collection = new self();
-        foreach ($this as $entity) {
-            $collection->addEntity($entity->toProviderRelation());
-        }
-        return $collection;
+        return $providerList->withUniqueProvider();
     }
 }

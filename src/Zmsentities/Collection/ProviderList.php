@@ -39,13 +39,4 @@ class ProviderList extends Base
         }
         return $list;
     }
-
-    public function getRequestRelationList()
-    {
-        $requestRelationList = new \BO\Zmsentities\Collection\RequestRelationList();
-        foreach ($this as $entity) {
-            $requestRelationList->addList($entity->getRequestRelationList());
-        }
-        return $requestRelationList;
-    }
 }
