@@ -11,7 +11,7 @@ class Scope extends Base implements MappingInterface
 
     const QUERY_BY_DEPARTMENTID = 'SELECT
             scope.`StandortID` AS id
-        FROM `zmsbo`.`standort` scope
+        FROM `standort` scope
         WHERE
             scope.`BehoerdenID` = :department_id
     ';
