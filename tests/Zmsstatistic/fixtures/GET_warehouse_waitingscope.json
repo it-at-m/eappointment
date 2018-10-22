@@ -8,6 +8,7 @@
   },
   "data": {
     "$schema": "https://schema.berlin.de/queuemanagement/exchange.json",
+    "title": "Wartestatistik",
     "dictionary": [
       {
         "position": 0,

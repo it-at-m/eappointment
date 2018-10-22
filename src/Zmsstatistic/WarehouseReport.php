@@ -39,7 +39,6 @@ class WarehouseReport extends BaseController
               'menuActive' => 'warehouse',
               'report' => $report,
               'category' => $args['subject'],
-              'categoryName' => Download::$subjectTranslations[$args['subject']],
               'subjectid' => $args['subjectid'],
               'period' => $args['period'],
               'workstation' => $this->workstation->getArrayCopy()

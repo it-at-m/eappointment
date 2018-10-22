@@ -46,7 +46,7 @@ class WarehouseSubject extends BaseController
                 'dictionary' => $subjectList->dictionary,
                 'subjectList' => $subjectList->toHashed(),
                 'category' => $args['subject'],
-                'categoryName' => Download::$subjectTranslations[$args['subject']],
+                'categoryName' => $subjectList['title'],
                 'workstation' => $this->workstation->getArrayCopy()
             )
         );
