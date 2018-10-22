@@ -16,7 +16,7 @@ class RequestRelationTest extends EntityCommonTests
         $entity->request = (new \BO\Zmsentities\Request())->getExample();
         $this->assertEntity($this->entityclass, $entity);
         $this->assertEquals('dldb', $entity->getSource());
-        $this->assertEquals(1, $entity->getSlotCount());
+        $this->assertEquals(2, $entity->getSlotCount());
         $this->assertEquals(21334, $entity->getProvider()->getId());
         $this->assertEquals(120335, $entity->getRequest()->getId());
     }
@@ -30,10 +30,5 @@ class RequestRelationTest extends EntityCommonTests
         $entity->request = (new \BO\Zmsentities\Request())->getExample();
         $collection->addEntity($entity);
         $this->assertEntityList($this->entityclass, $collection);
-        $requestRelationList = $collection->toRequestRelation();
-        $providerRelationList = $collection->toProviderRelation();
-
-        $this->assertArrayNotHasKey('provider', $requestRelationList->getFirst());
-        $this->assertArrayNotHasKey('request', $providerRelationList->getFirst());
     }
 }

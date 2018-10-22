@@ -75,9 +75,14 @@ class Source extends Schema\Entity
 
     public function getRequestRelationList()
     {
-        $requestRelationList = new Collection\RequestRelationList();
-        foreach ($this->getProviderList()->getRequestRelationList() as $entity) {
-            $requestRelationList->addEntity($entity);
+        $requestRelationList = new \BO\Zmsentities\Collection\RequestRelationList();
+        if (isset($this['requestrelation'])) {
+            foreach ($this['requestrelation'] as $entity) {
+                if (! $entity instanceof RequestRelation) {
+                    $entity = new RequestRelation($entity);
+                }
+                $requestRelationList->addEntity($entity);
+            }
         }
         return $requestRelationList;
     }
