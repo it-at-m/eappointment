@@ -18,7 +18,9 @@ class ExchangeRequestorganisation extends Base
         \DateTimeInterface $dateend,
         $period = 'day'
     ) {
+        $organisation = (new Organisation())->readEntity($subjectid);
         $entity = new Exchange();
+        $entity['title'] = "Dienstleistungsstatistik $organisation->name";
         $entity->setPeriod($datestart, $dateend, $period);
         $entity->addDictionaryEntry('subjectid', 'string', 'ID of a organisation', 'organisation.id');
         $entity->addDictionaryEntry('date', 'string', 'Date of entry');
@@ -49,6 +51,7 @@ class ExchangeRequestorganisation extends Base
     {
         $raw = $this->getReader()->fetchAll(Query\ExchangeRequestorganisation::QUERY_SUBJECTS, []);
         $entity = new Exchange();
+        $entity['title'] = "Dienstleistungsstatistik";
         $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable());
         $entity->addDictionaryEntry('subject', 'string', 'Behoerden ID', 'organisation.id');
         $entity->addDictionaryEntry('periodstart', 'string', 'Datum von');
@@ -62,7 +65,9 @@ class ExchangeRequestorganisation extends Base
 
     public function readPeriodList($subjectid, $period = 'day')
     {
+        $organisation = (new Organisation())->readEntity($subjectid);
         $entity = new Exchange();
+        $entity['title'] = "Dienstleistungsstatistik $organisation->name";
         $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable(), $period);
         $entity->addDictionaryEntry('period');
 

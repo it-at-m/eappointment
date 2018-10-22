@@ -10,6 +10,7 @@ class ExchangeUseraccount extends Base
     public function readEntity()
     {
         $entity = new Exchange();
+        $entity['title'] = "Nutzerliste";
         $entity->addDictionaryEntry('Organisation', 'string', 'Name der Organisation');
         $entity->addDictionaryEntry('Behoerde', 'string', 'Name der Berhoerde');
         $entity->addDictionaryEntry('Name', 'string', 'Name des Nutzers');
@@ -37,6 +38,7 @@ class ExchangeUseraccount extends Base
     public function readSubjectList()
     {
         $entity = new Exchange();
+        $entity['title'] = "Nutzerliste";
         $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable());
         $entity->addDictionaryEntry('subject', 'string', 'ID');
         $entity->addDictionaryEntry('periodstart', 'string', 'Datum von');
@@ -52,6 +54,7 @@ class ExchangeUseraccount extends Base
     public function readPeriodList()
     {
         $entity = new Exchange();
+        $entity['title'] = "Nutzerliste";
         $entity->addDictionaryEntry('id', 'string', 'Organisation', 'useraccount.rights.superuser');
         $entity->addDataSet(["_"]);
         return $entity;

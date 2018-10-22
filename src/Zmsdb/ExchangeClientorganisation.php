@@ -21,7 +21,9 @@ class ExchangeClientorganisation extends Base
         $config = (new Config)->readEntity();
         $costs = $config->getNotificationPreferences()['costs'];
 
+        $organisation = (new Organisation())->readEntity($subjectid);
         $entity = new Exchange();
+        $entity['title'] = "Kundenstatistik $organisation->name";
         $entity->setPeriod($datestart, $dateend, $period);
         $entity->addDictionaryEntry('subjectid', 'string', 'ID of a organisation', 'organisation.id');
         $entity->addDictionaryEntry('date');
@@ -71,7 +73,9 @@ class ExchangeClientorganisation extends Base
 
     public function readPeriodList($subjectid, $period = 'day')
     {
+        $organisation = (new Organisation())->readEntity($subjectid);
         $entity = new Exchange();
+        $entity['title'] = "Kundenstatistik $organisation->name";
         $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable(), $period);
         $entity->addDictionaryEntry('period');
 
