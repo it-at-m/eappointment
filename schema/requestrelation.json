@@ -2,12 +2,20 @@
     "type": "object",
     "description": "information of a request relation to a provider",
     "example": {
-        "request": {
-            "id": "120335",
-            "name": "Abmeldung einer Wohnung",
+        "provider": {
+            "id": 21334,
+            "name": "Bürgeramt Mitte",
             "source": "dldb"
         },
-        "slots": 1
+        "request": {
+            "id": "120335",
+            "link": "http://service.berlin.de/dienstleistung/120335/",
+            "name": "Abmeldung einer Wohnung",
+            "source": "dldb",
+            "group": "Meldewesen und Ordnung"
+        },
+        "slots": 2,
+        "source": "dldb"
     },
     "additionalProperties": false,
     "properties": {

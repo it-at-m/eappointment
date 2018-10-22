@@ -9,7 +9,41 @@
         "editable": false,
         "source": "dldb",
         "label": "Dienstleistungsdatenbank",
-        "lastChange": 1234556789
+        "lastChange": 1234556789,
+        "providers": [
+            {
+                "id": 21334,
+                "name": "Bürgeramt Mitte",
+                "source": "dldb"
+            }
+        ],
+        "requests": [
+            {
+                "id": "120335",
+                "link": "http://service.berlin.de/dienstleistung/120335/",
+                "name": "Abmeldung einer Wohnung",
+                "source": "dldb",
+                "group": "Meldewesen und Ordnung"
+            }
+        ],
+        "requestrelation": [
+            {
+                "provider": {
+                    "id": 21334,
+                    "name": "Bürgeramt Mitte",
+                    "source": "dldb"
+                },
+                "request": {
+                    "id": "120335",
+                    "link": "http://service.berlin.de/dienstleistung/120335/",
+                    "name": "Abmeldung einer Wohnung",
+                    "source": "dldb",
+                    "group": "Meldewesen und Ordnung"
+                },
+                "slots": 2,
+                "source": "dldb"
+            }
+        ]
     },
     "additionalProperties": false,
     "required": [
@@ -43,6 +77,12 @@
             "type": "array",
             "items": {
                 "$ref": "request.json"
+            }
+        },
+        "requestrelation": {
+            "type": "array",
+            "items": {
+                "$ref": "requestrelation.json"
             }
         }
     }

@@ -36,9 +36,9 @@ class SourceTest extends EntityCommonTests
 
     public function testRequestRelation()
     {
-        $entity = (new $this->entityclass())->getExample();
-        $entity->providers = array((new \BO\Zmsentities\Provider())->getExample()->getArrayCopy());
-        $this->assertEquals(1, $entity->getRequestRelationList()->count());
+        $entity = $this->getExample();
+        $this->assertTrue($entity->getRequestRelationList()->hasRequest(120335));
+        $this->assertFalse($entity->getRequestRelationList()->hasRequest(123456));
     }
 
     public function testIsEditable()
