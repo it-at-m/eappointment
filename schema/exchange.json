@@ -112,6 +112,23 @@
           "description": "For a description on the values, see the 'dictionary'. Non existing "
         }
       }
+    },
+    "visualization": {
+        "type:": "object",
+        "properties": {
+            "xlabel": {
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            },
+            "ylabel": {
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            }
+        }
     }
   }
 }
