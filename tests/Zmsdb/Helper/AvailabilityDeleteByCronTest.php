@@ -7,14 +7,17 @@ use \BO\Zmsentities\Apikey as Entity;
 use \BO\Zmsdb\Helper\AvailabilityDeleteByCron;
 use \BO\Zmsdb\Availability;
 
-class AvailabilityDeleteByCronTest extends Base {
+class AvailabilityDeleteByCronTest extends Base
+{
 
-    public function testConstructor() {
+    public function testConstructor()
+    {
         $availabilityObject = new AvailabilityDeleteByCron();
         $this->assertInstanceOf(AvailabilityDeleteByCron::class, $availabilityObject);
     }
 
-    public function testStartProcessingNoCommit() {
+    public function testStartProcessingNoCommit()
+    {
         $availabilityDelete = new AvailabilityDeleteByCron($verbose = true); // verbose
         $entity = new Availability();
         $availabilityUnits = count($entity->readOldAvailabilityList());
@@ -26,5 +29,3 @@ class AvailabilityDeleteByCronTest extends Base {
         $this->assertEquals(0, $availabilityUnits);
     }
 }
-
-

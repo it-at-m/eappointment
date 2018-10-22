@@ -108,7 +108,7 @@ class SlotTest extends Base
      *
      * @codingStandardsIgnoreStart
      *                timeline   ╠═bookable time═╣
-     *                day: -2 . 0 1 2 3 4 5 6 7 8 9 
+     *                day: -2 . 0 1 2 3 4 5 6 7 8 9
      * now            ├─────────╳─╎───╎─╠═══════╣─╎─────────╼
      * lastchange     ├─────╳─────╎─╠═══════╣─╎───╎─────────╼
      * availability1  ├───────────╳───╎───╎───╎───╎─────────╼ no change
