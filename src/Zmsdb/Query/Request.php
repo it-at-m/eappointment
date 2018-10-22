@@ -10,7 +10,7 @@ class Request extends Base
 
     const QUERY_BY_PROCESSID = 'SELECT
             ba.`AnliegenID` AS id
-        FROM `zmsbo`.`buergeranliegen` ba
+        FROM `buergeranliegen` ba
         WHERE
             ba.`BuergerID` = :process_id
     ';
