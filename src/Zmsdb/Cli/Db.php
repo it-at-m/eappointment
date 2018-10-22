@@ -56,14 +56,14 @@ class Db
         return $pdo;
     }
 
-    public static function startTestDataImport($fixtures)
+    public static function startTestDataImport($fixtures, $filename = 'mysql_zmsbo.sql.gz')
     {
         $dbname_zms =& \BO\Zmsdb\Connection\Select::$dbname_zms;
 
         $pdo = self::startUsingDatabase('information_schema');
         $pdo->exec("CREATE DATABASE IF NOT EXISTS `$dbname_zms`;");
 
-        self::startExecuteSqlFile($fixtures . '/mysql_zmsbo.sql.gz');
+        self::startExecuteSqlFile($fixtures .'/'. $filename);
     }
 
     public static function startConfigDataImport()
