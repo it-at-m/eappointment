@@ -29,6 +29,8 @@
                 {% if exchangeRequest.period == "day" %}
                     {% set startDate = "%s-%s-%s"|format(exchangeRequest.firstDay.year, exchangeRequest.firstDay.month, exchangeRequest.firstDay.day) %}
                     {% set endDate = "%s-%s-%s"|format(exchangeRequest.lastDay.year, exchangeRequest.lastDay.month, exchangeRequest.lastDay.day) %}
+                    {% set month = exchangeRequest.firstDay.month %} 
+                    {% set year = exchangeRequest.firstDay.year %}
                     {% set dateRange = range(startDate|date('j'), endDate|date('j'), 1 ) %}
                 {% elseif exchangeRequest.period == "month" %}
                     {% set startDate = "%s-%s"|format(exchangeRequest.firstDay.year, exchangeRequest.firstDay.month) %}
@@ -64,12 +66,12 @@
                             </td>
                             {% for date in dateRange %}
                                 {% if exchangeRequest.period == "day" %}
-                                    {% set date = date|date("Y-m-d") %}
+                                    {% set date = "#{year}-#{month}-#{date}"|date("Y-m-d") %}
                                 {% elseif exchangeRequest.period == "month" %}
                                     {% set date = startDate|date('Y') ~"-"~ "%02d"|format(date) %}
                                 {% endif %}
                                 <td>
-                                    {{ entry[date].requestscount|default(0) }}
+                                    <span class="{% if not entry[date].requestscount %}ausgegraut{% endif %}">{{ entry[date].requestscount|default("-") }}</span><br>
                                 </td>
                             {% endfor %}
                         </tr>

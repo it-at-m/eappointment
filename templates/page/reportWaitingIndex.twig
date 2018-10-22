@@ -29,6 +29,8 @@
                     {% if exchangeWaiting.period == "day" %}
                         {% set startDate = "%s-%s-%s"|format(exchangeWaiting.firstDay.year, exchangeWaiting.firstDay.month, exchangeWaiting.firstDay.day) %}
                         {% set endDate = "%s-%s-%s"|format(exchangeWaiting.lastDay.year, exchangeWaiting.lastDay.month, exchangeWaiting.lastDay.day) %}
+                        {% set month = exchangeWaiting.firstDay.month %} 
+                        {% set year = exchangeWaiting.firstDay.year %}
                         {% set dateRange = range(startDate|date('j'), endDate|date('j'), 1 ) %}
                     {% elseif exchangeWaiting.period == "month" %}
                         {% set startDate = "%s-%s"|format(exchangeWaiting.firstDay.year, exchangeWaiting.firstDay.month) %}
@@ -70,7 +72,7 @@
                                 </td>
                                 {% for date in dateRange %}
                                     {% if exchangeWaiting.period == "day" %}
-                                        {% set date = date|date("Y-m-d") %}
+                                            {% set date = "#{year}-#{month}-#{date}"|date('Y-m-d')  %}
                                     {% elseif exchangeWaiting.period == "month" %}
                                         {% set date = startDate|date('Y') ~"-"~ "%02d"|format(date) %}
                                     {% endif %}
@@ -97,7 +99,7 @@
                                     </td>
                                     {% for date in dateRange %}
                                         {% if exchangeWaiting.period == "day" %}
-                                            {% set date = date|date("Y-m-d") %}
+                                            {% set date = "#{year}-#{month}-#{date}"|date('Y-m-d')  %}
                                         {% elseif exchangeWaiting.period == "month" %}
                                             {% set date = startDate|date('Y') ~"-"~ "%02d"|format(date) %}
                                         {% endif %}
