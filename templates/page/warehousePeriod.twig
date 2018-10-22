@@ -6,7 +6,7 @@
 
             {% embed "block/report/board.twig" with {'class': 'report-board'} %}
             {% block board_title %}
-                {% trans %}Kategorie{% endtrans %}: {{ categoryName|trans }}
+                {% trans %}Kategorie{% endtrans %}: {{ periodList.title }}
             {% endblock %}
             {% block board_header_right %}
             {% endblock %}

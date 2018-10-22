@@ -38,7 +38,6 @@ class WarehousePeriod extends BaseController
                 'menuActive' => 'warehouse',
                 'periodList' => $periodList,
                 'category' => $args['subject'],
-                'categoryName' => Base::$subjectTranslations[$args['subject']],
                 'subjectId' => $args['subjectid'],
                 'workstation' => $this->workstation->getArrayCopy()
             )

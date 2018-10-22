@@ -8,6 +8,7 @@
   },
   "data": {
     "$schema": "https://schema.berlin.de/queuemanagement/exchange.json",
+    "title": "Wartestatistik",
     "firstDay": {
       "year": "2016",
       "month": "03",
