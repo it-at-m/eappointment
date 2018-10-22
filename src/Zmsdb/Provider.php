@@ -14,27 +14,10 @@ class Provider extends Base
         $query
             ->setResolveLevel($resolveReferences)
             ->addEntityMapping()
+            ->addResolvedReferences($resolveReferences)
             ->addConditionProviderSource($source)
             ->addConditionProviderId($providerId);
         $provider = $this->fetchOne($query, new Entity());
-        $provider = $this->readResolvedReferences($provider, $resolveReferences);
-        return $provider;
-    }
-
-    public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $provider, $resolveReferences)
-    {
-        if (0 < $resolveReferences) {
-            $provider = $this->readWithRequestRelation($provider, $resolveReferences - 1);
-        }
-        return $provider;
-    }
-
-    public function readWithRequestRelation(\BO\Zmsentities\Schema\Entity $provider, $resolveReferences)
-    {
-        if ($provider->hasId()) {
-            $requestRelationList = (new RequestRelation)->readListByProviderId($provider->getId(), $resolveReferences);
-            $provider->requestrelation = $requestRelationList->toRequestRelation();
-        }
         return $provider;
     }
 

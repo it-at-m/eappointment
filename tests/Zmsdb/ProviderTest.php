@@ -6,7 +6,6 @@ use \BO\Zmsdb\Provider as Query;
 
 class ProviderTest extends Base
 {
-
     public function testBasic()
     {
         $entity = (new Query())->readEntity('dldb', 122280, 1);
@@ -20,16 +19,6 @@ class ProviderTest extends Base
         (new Query())->readEntity('unittest', 122280, 1);
     }
 
-    public function testWithRequestRelations()
-    {
-        $entity = (new Query())->readEntity('dldb', 122280, 1);
-        $this->assertEquals(58, $entity->getRequestRelationList()->getRequestList()->count());
-        $this->assertArrayHasKey('$ref', $entity->getRequestRelationList()->getFirst()->request);
-
-        $entity2 = (new Query())->readEntity('dldb', 122280, 2);
-        $this->assertArrayHasKey('name', $entity2->getRequestRelationList()->getFirst()->request);
-    }
-
     public function testEmptyDldbData()
     {
         $entity = (new Query())->readEntity('dldb', 122280, 0);
@@ -39,7 +28,8 @@ class ProviderTest extends Base
     public function testReadAssignedList()
     {
         $query = new Query();
-        $collection = $query->readListBySource('dldb', 1, true); // resolveReferences = 1 and addConditionIsAssigned = true
+        // resolveReferences = 1 and addConditionIsAssigned = true
+        $collection = $query->readListBySource('dldb', 1, true);
         $this->assertEntityList("\\BO\\Zmsentities\\Provider", $collection);
         $this->assertTrue($collection->hasEntity('122251')); // Bürgeramt Schöneberg has assigned department
         $this->assertFalse($collection->hasEntity('121364')); // Kfz-Zulassungsbehörde-Friedr.-Kreuzberg without
@@ -49,7 +39,8 @@ class ProviderTest extends Base
     public function testReadNotAssignedList()
     {
         $query = new Query();
-        $collection = $query->readListBySource('dldb', 1, false); // resolveReferences = 1 and addConditionIsAssigned = false
+        // resolveReferences = 1 and addConditionIsAssigned = false
+        $collection = $query->readListBySource('dldb', 1, false);
         $this->assertEntityList("\\BO\\Zmsentities\\Provider", $collection);
         $this->assertFalse($collection->hasEntity('122251')); // Bürgeramt Schöneberg without assigned department
         $this->assertTrue($collection->hasEntity('121364')); // Kfz-Zulassungsbehörde-Friedr.-Kreuzberg has

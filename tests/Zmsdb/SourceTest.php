@@ -35,6 +35,14 @@ class SourceTest extends Base
         $this->assertEntityList("\\BO\\Zmsentities\\Source", $collection);
     }
 
+    public function testWithRequestRelations()
+    {
+        $entity = (new Query())->readEntity('dldb', 1);
+        $this->assertEquals(710, $entity->getRequestRelationList()->getRequestList()->count());
+        $this->assertEquals(460, $entity->getRequestRelationList()->getProviderList()->count());
+        $this->assertArrayHasKey('$ref', $entity->getRequestRelationList()->getFirst()->request);
+    }
+
     public function testWriteEntity()
     {
         $query = new Query();
@@ -52,7 +60,7 @@ class SourceTest extends Base
         $this->assertEquals('dldb', $entity->getSource());
         $this->assertEquals('Dienstleistungsdatenbank Update', $entity->getLabel());
         $this->assertTrue($entity->isEditable());
-        $this->assertEquals(2, $entity->getProviderList()->getFirst()->getRequestRelationList()->getFirst()->getSlotCount());
+        $this->assertEquals(2, $entity->getRequestRelationList()->getFirst()->getSlotCount());
     }
 
     public function testWriteWithoutRequestRelations()
@@ -61,9 +69,9 @@ class SourceTest extends Base
         $entity = $this->getTestEntity();
         $entity->label = 'Dienstleistungsdatenbank Update';
         $entity->editable = true;
+        unset($entity['requestrelation']);
 
         $provider = (new \BO\Zmsentities\Provider())->getExample();
-        unset($provider['requestrelation']);
         $entity->providers = new \BO\Zmsentities\Collection\ProviderList();
         $entity->providers->addEntity($provider);
         $entity->requests = new \BO\Zmsentities\Collection\RequestList();
@@ -74,7 +82,7 @@ class SourceTest extends Base
         $this->assertEquals('dldb', $entity->getSource());
         $this->assertEquals('Dienstleistungsdatenbank Update', $entity->getLabel());
         $this->assertTrue($entity->isEditable());
-        $this->assertEquals(1, $entity->getProviderList()->getFirst()->getRequestRelationList()->getFirst()->getSlotCount());
+        $this->assertEquals(1, $entity->getRequestRelationList()->getFirst()->getSlotCount());
     }
 
     protected function getTestEntity()
