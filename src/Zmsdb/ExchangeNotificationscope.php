@@ -18,7 +18,9 @@ class ExchangeNotificationscope extends Base
         \DateTimeInterface $dateend,
         $period = 'day'
     ) {
+        $scope = (new Scope())->readEntity($subjectid);
         $entity = new Exchange();
+        $entity['title'] = "SMS-Statistik " . $scope->contact->name . " " . $scope->shortName;
         $entity->setPeriod($datestart, $dateend, $period);
         $entity->addDictionaryEntry('subjectid', 'string', 'ID of a scope', 'scope.id');
         $entity->addDictionaryEntry('date', 'string', 'Date of entry');
@@ -51,6 +53,7 @@ class ExchangeNotificationscope extends Base
     {
         $raw = $this->getReader()->fetchAll(Query\ExchangeNotificationscope::QUERY_SUBJECTS, []);
         $entity = new Exchange();
+        $entity['title'] = "SMS-Statistik";
         $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable());
         $entity->addDictionaryEntry('subject', 'string', 'Standort ID', 'scope.id');
         $entity->addDictionaryEntry('periodstart', 'string', 'Datum von');
@@ -64,7 +67,9 @@ class ExchangeNotificationscope extends Base
 
     public function readPeriodList($subjectid, $period = 'day')
     {
+        $scope = (new Scope())->readEntity($subjectid);
         $entity = new Exchange();
+        $entity['title'] = "SMS-Statistik " . $scope->contact->name . " " . $scope->shortName;
         $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable(), $period);
         $entity->addDictionaryEntry('period');
 

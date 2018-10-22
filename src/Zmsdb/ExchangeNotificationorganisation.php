@@ -18,7 +18,9 @@ class ExchangeNotificationorganisation extends Base
         \DateTimeInterface $dateend,
         $period = 'day'
     ) {
+        $organisation = (new Organisation())->readEntity($subjectid);
         $entity = new Exchange();
+        $entity['title'] = "SMS-Statistik $organisation->name";
         $entity->setPeriod($datestart, $dateend, $period);
         $entity->addDictionaryEntry('subjectid', 'string', 'ID of a organisation', 'organisation.id');
         $entity->addDictionaryEntry('date', 'string', 'Date of entry');
@@ -51,6 +53,7 @@ class ExchangeNotificationorganisation extends Base
     {
         $raw = $this->getReader()->fetchAll(Query\ExchangeNotificationorganisation::QUERY_SUBJECTS, []);
         $entity = new Exchange();
+        $entity['title'] = "SMS-Statistik";
         $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable());
         $entity->addDictionaryEntry('subject', 'string', 'Organisation ID', 'organisation.id');
         $entity->addDictionaryEntry('periodstart', 'string', 'Datum von');
@@ -64,7 +67,9 @@ class ExchangeNotificationorganisation extends Base
 
     public function readPeriodList($subjectid, $period = 'day')
     {
+        $organisation = (new Organisation())->readEntity($subjectid);
         $entity = new Exchange();
+        $entity['title'] = "SMS-Statistik $organisation->name";
         $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable(), $period);
         $entity->addDictionaryEntry('period');
 

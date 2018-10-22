@@ -12,7 +12,9 @@ class ExchangeWaitingorganisation extends Base implements Interfaces\ExchangeSub
         \DateTimeInterface $dateend,
         $period = 'day'
     ) {
+        $organisation = (new Organisation())->readEntity($subjectid);
         $entity = new Exchange();
+        $entity['title'] = "Wartestatistik $organisation->name";
         $entity->setPeriod($datestart, $dateend, $period);
         $entity->addDictionaryEntry('subjectid', 'string', 'ID of an organisation', 'organisation.id');
         $entity->addDictionaryEntry('date', 'string', 'date of report entry');
@@ -56,6 +58,7 @@ class ExchangeWaitingorganisation extends Base implements Interfaces\ExchangeSub
     {
         $raw = $this->getReader()->fetchAll(Query\ExchangeWaitingorganisation::QUERY_SUBJECTS, []);
         $entity = new Exchange();
+        $entity['title'] = "Wartestatistik";
         $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable());
         $entity->addDictionaryEntry('subject', 'string', 'Organisation ID', 'organisation.id');
         $entity->addDictionaryEntry('periodstart', 'string', 'Datum von');
@@ -70,7 +73,9 @@ class ExchangeWaitingorganisation extends Base implements Interfaces\ExchangeSub
 
     public function readPeriodList($subjectid, $period = 'day')
     {
+        $organisation = (new Organisation())->readEntity($subjectid);
         $entity = new Exchange();
+        $entity['title'] = "Wartestatistik $organisation->name";
         $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable(), $period);
         $entity->addDictionaryEntry('period');
 

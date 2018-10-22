@@ -12,7 +12,9 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
         \DateTimeInterface $dateend,
         $period = 'day'
     ) {
+        $scope = (new Scope())->readEntity($subjectid);
         $entity = new Exchange();
+        $entity['title'] = "Wartestatistik " . $scope->contact->name . " " . $scope->shortName;
         $entity->setPeriod($datestart, $dateend, $period);
         $entity->addDictionaryEntry('subjectid', 'string', 'ID of a scope', 'scope.id');
         $entity->addDictionaryEntry('date', 'string', 'date of report entry');
@@ -57,6 +59,7 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
     {
         $raw = $this->getReader()->fetchAll(Query\ExchangeWaitingscope::QUERY_SUBJECTS, []);
         $entity = new Exchange();
+        $entity['title'] = "Wartestatistik";
         $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable());
         $entity->addDictionaryEntry('subject', 'string', 'Standort ID', 'scope.id');
         $entity->addDictionaryEntry('periodstart', 'string', 'Datum von');
@@ -70,7 +73,9 @@ class ExchangeWaitingscope extends Base implements Interfaces\ExchangeSubject
 
     public function readPeriodList($subjectid, $period = 'day')
     {
+        $scope = (new Scope())->readEntity($subjectid);
         $entity = new Exchange();
+        $entity['title'] = "Wartestatistik " . $scope->contact->name . " " . $scope->shortName;
         $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable(), $period);
         $entity->addDictionaryEntry('period');
 

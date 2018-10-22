@@ -21,7 +21,10 @@ class ExchangeClientdepartment extends Base
         $config = (new Config)->readEntity();
         $costs = $config->getNotificationPreferences()['costs'];
 
+        $department = (new Department())->readEntity($subjectid);
+        $organisation = (new Organisation())->readByDepartmentId($subjectid);
         $entity = new Exchange();
+        $entity['title'] = "Kundenstatistik $organisation->name -> $department->name";
         $entity->setPeriod($datestart, $dateend, $period);
         $entity->addDictionaryEntry('subjectid', 'string', 'ID of a department', 'department.id');
         $entity->addDictionaryEntry('date');
@@ -58,6 +61,7 @@ class ExchangeClientdepartment extends Base
     {
         $raw = $this->getReader()->fetchAll(Query\ExchangeClientdepartment::QUERY_SUBJECTS, []);
         $entity = new Exchange();
+        $entity['title'] = "Kundenstatistik";
         $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable());
         $entity->addDictionaryEntry('subject', 'string', 'Behörden ID', 'department.id');
         $entity->addDictionaryEntry('periodstart', 'string', 'Datum von');
@@ -72,7 +76,10 @@ class ExchangeClientdepartment extends Base
 
     public function readPeriodList($subjectid, $period = 'day')
     {
+        $department = (new Department())->readEntity($subjectid);
+        $organisation = (new Organisation())->readByDepartmentId($subjectid);
         $entity = new Exchange();
+        $entity['title'] = "Kundenstatistik $organisation->name -> $department->name";
         $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable(), $period);
         $entity->addDictionaryEntry('period');
 
