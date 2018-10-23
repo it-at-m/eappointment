@@ -22,6 +22,7 @@ import CounterView from './page/counter'
 import WorkstationView from './page/workstation'
 import UseraccountView from './page/useraccount'
 import PickupView from './page/pickup'
+import SourceEditView from './page/sourceEdit'
 import PickupHandheldView from './page/pickup/handheld'
 import PickupKeyboardHandheldView from "./page/pickup/keyboard-handheld"
 import StatisticView from './page/statistic'
@@ -52,59 +53,64 @@ forceHttps();
 // Init Views
 new AccessKeyView(document);
 
-$('.emergency').each(function() {
+$('.emergency').each(function () {
     new EmergencyView(this, getDataAttributes(this));
 })
 
-$('.metalinks').each(function() {
+$('.metalinks').each(function () {
     //new MetaLinksView(this, getDataAttributes(this));
 })
 
-$('.counter-view').each(function() {
+$('.counter-view').each(function () {
     new CounterView(this, getDataAttributes(this));
 })
 
-$('.workstation-view').each(function() {
+$('.workstation-view').each(function () {
     new WorkstationView(this, getDataAttributes(this));
 })
 
-$('.useraccount-edit-view').each(function() {
+$('.useraccount-edit-view').each(function () {
     new UseraccountView(this, getDataAttributes(this));
 })
 
-$('.calendar-weektable').each(function() {
+$('.calendar-weektable').each(function () {
     new WeekCalendarPage(this, getDataAttributes(this));
 })
 
-$('[data-scope-select-form]').each(function() {
+$('[data-scope-select-form]').each(function () {
     new ScopeSelectView(this, getDataAttributes(this));
 })
 
-$('.pickup-view').each(function() {
+$('.pickup-view').each(function () {
     new PickupView(this, getDataAttributes(this));
 })
 
-$('.pickup-handheld-view').each(function() {
+$('.pickup-handheld-view').each(function () {
     new PickupHandheldView(this, getDataAttributes(this));
 })
 
-$('.pickup-keyboard-handheld').each(function() {
+$('.pickup-keyboard-handheld').each(function () {
     new PickupKeyboardHandheldView(this);
 });
 
-$('.client-processed').each(function() {
+$('.client-processed').each(function () {
     new StatisticView(this, getDataAttributes(this));
 })
 
-$('form').each(function() {
+$('.source-form').each(function () {
+    new SourceEditView(this, getDataAttributes(this));
+})
+
+$('form').each(function () {
     preventFormResubmit(this);
 })
 
-$('textarea.maxchars').each(function() {
+$('textarea.maxchars').each(function () {
     maxChars(this);
 })
 
-$('.scope-form-update').each(function() {
+
+$('.scope-form-update').each(function () {
     scopeChangeProvider(this);
 });
 

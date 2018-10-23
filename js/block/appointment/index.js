@@ -2,30 +2,27 @@ import RequestView from "./requests"
 import FreeProcessView from './free-process-list'
 import FormButtons from './form-buttons'
 import $ from "jquery"
-import maxChars from '../../element/form/maxChars'
 import moment from 'moment'
+import maxChars from '../../element/form/maxChars'
 
 class View extends RequestView {
 
-    constructor (element, options) {
+    constructor(element, options) {
         super(element, options);
         this.$main = $(element);
         this.options = options;
         this.setOptions();
         this.setCallbacks();
         $.ajaxSetup({ cache: false });
-        if (! this.constructOnly) {
-          this.load();
+        if (!this.constructOnly) {
+            this.load();
         } else {
-          this.loadPartials();
+            this.loadPartials();
         }
 
-        $('textarea.maxchars').each(function() {maxChars(this)});
-        this.$main.find('[name="familyName"]').focus();
     }
 
-    setOptions()
-    {
+    setOptions() {
         this.selectedDate = this.options.selectedDate;
         this.selectedTime = this.options.selectedTime;
         this.includeUrl = this.options.includeUrl || "";
@@ -37,8 +34,7 @@ class View extends RequestView {
         this.constructOnly = this.options.constructOnly;
     }
 
-    setCallbacks()
-    {
+    setCallbacks() {
         this.onChangeScope = this.options.onChangeScope;
         this.onAbortProcess = this.options.onAbortProcess;
         this.onDeleteProcess = this.options.onDeleteProcess;
@@ -76,11 +72,14 @@ class View extends RequestView {
         });
     }
 
-    assigneMainFormValues()
-    {
+    assigneMainFormValues() {
         this.$main.find('.add-date-picker input#process_date').val(moment(this.selectedDate, 'YYYY-MM-DD').format('DD.MM.YYYY'));
         this.$main.find('input#process_selected_date').val(moment(this.selectedDate, 'YYYY-MM-DD').format('YYYY-MM-DD'));
         //this.$main.find('.appointment-form .switchcluster select').val(this.selectedScope);
+        this.$main.find('[name="familyName"]').focus();
+        this.$main.find('textarea.maxchars').each(function () {
+            maxChars(this);
+        })
         this.$main.find('[name="familyName"]').focus();
     }
 
