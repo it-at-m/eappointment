@@ -27,7 +27,7 @@ class SourceList extends BaseController
         $message->data = $sourceList;
 
         $response = Render::withLastModified($response, time(), '0');
-        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+        $response = Render::withJson($response, $message->setUpdatedMetaData(), 200);
         return $response;
     }
 }
