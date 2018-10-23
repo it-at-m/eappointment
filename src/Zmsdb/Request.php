@@ -27,7 +27,7 @@ class Request extends Base
      * @SuppressWarnings(Param)
      *
      */
-    protected function readCollection($query, $resolveReferences)
+    protected function readCollection($query)
     {
         $requestList = new Collection();
         $statement = $this->fetchStatement($query);
@@ -46,7 +46,7 @@ class Request extends Base
             $query->setResolveLevel($resolveReferences);
             $query->addConditionProcessId($processId);
             $query->addEntityMapping();
-            $collection = $this->readCollection($query, $resolveReferences);
+            $collection = $this->readCollection($query);
         }
         return $collection;
     }
@@ -59,7 +59,7 @@ class Request extends Base
             $query->setResolveLevel($resolveReferences);
             $query->addConditionArchiveId($archiveId);
             $query->addEntityMapping();
-            $collection = $this->readCollection($query, $resolveReferences);
+            $collection = $this->readCollection($query);
         }
         return $collection;
     }
@@ -73,7 +73,7 @@ class Request extends Base
         $query->addConditionProviderId($providerId);
         $query->addConditionRequestSource($source);
         $query->addEntityMapping();
-        $requestList = $this->readCollection($query, $resolveReferences);
+        $requestList = $this->readCollection($query);
         foreach ($requestList as $request) {
             $requestRelation = $requestRelationQuery->readEntity($request->getId(), $providerId);
             $request['timeSlotCount'] = $requestRelation->getSlotCount();
@@ -88,7 +88,7 @@ class Request extends Base
         $query->setResolveLevel($resolveReferences);
         $query->addConditionRequestSource($source);
         $query->addEntityMapping();
-        $requestList = $this->readCollection($query, $resolveReferences - 1);
+        $requestList = $this->readCollection($query);
         return $requestList;
     }
 
