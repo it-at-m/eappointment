@@ -25,13 +25,12 @@ class Provider extends Base
      * @SuppressWarnings(Param)
      *
      */
-    protected function readCollection($query, $resolveReferences)
+    protected function readCollection($query)
     {
         $providerList = new Collection();
         $statement = $this->fetchStatement($query);
         while ($providerData = $statement->fetch(\PDO::FETCH_ASSOC)) {
             $entity = new Entity($query->postProcessJoins($providerData));
-            $entity = $this->readResolvedReferences($entity, $resolveReferences);
             $providerList->addEntity($entity);
         }
         return $providerList;
@@ -45,7 +44,7 @@ class Provider extends Base
         $query->addEntityMapping();
         $query->addConditionProviderSource($source);
         $query->addConditionRequestCsv($requestIdCsv);
-        return $this->readCollection($query, $resolveReferences);
+        return $this->readCollection($query);
     }
 
     public function readListBySource($source, $resolveReferences = 0, $isAssigned = null)
@@ -58,7 +57,7 @@ class Provider extends Base
         if (null !== $isAssigned) {
             $query->addConditionIsAssigned($isAssigned);
         }
-        return $this->readCollection($query, $resolveReferences);
+        return $this->readCollection($query);
     }
 
     public function writeEntity(Entity $entity)

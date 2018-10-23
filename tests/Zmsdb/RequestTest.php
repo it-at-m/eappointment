@@ -32,7 +32,7 @@ class RequestTest extends Base
     public function testUnknowSource()
     {
         $this->expectException('BO\Zmsdb\Exception\Source\UnknownDataSource');
-        (new Query())->readEntity('unittest', 122280, 1);
+        (new Query())->readEntity('xxx', 122280, 1);
     }
 
     public function testExceptionRequestNotFound()
