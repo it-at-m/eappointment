@@ -4354,8 +4354,8 @@ use \Psr\Http\Message\ResponseInterface;
  *                  description: "Could not find any available source"
  */
 \App::$slim->get('/source/',
-    '\BO\Zmsapi\SourceGet')
-    ->setName("SourceGet");
+    '\BO\Zmsapi\SourceList')
+    ->setName("SourceList");
 
 /**
  *  @swagger
