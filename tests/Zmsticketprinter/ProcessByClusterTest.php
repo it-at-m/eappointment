@@ -20,6 +20,11 @@ class ProcessByClusterTest extends Base
             ],
             [
                 'function' => 'readGetResult',
+                'url' => '/scope/141/department/',
+                'response' => $this->readFixture("GET_department_74.json"),
+            ],
+            [
+                'function' => 'readGetResult',
                 'url' => '/cluster/110/waitingnumber/71ac9df1f2983c3f94aebc1a9bd121bfecf5b374f2/',
                 'response' => $this->readFixture("GET_process_100044_57c2.json"),
             ],
