@@ -182,7 +182,9 @@ class CalculateSlots
         $pdo->exec('SET SESSION innodb_lock_wait_timeout=120');
         if ($slotQuery->deleteSlotsOlderThan($now)) {
             \BO\Zmsdb\Connection\Select::writeCommit();
-            $this->log("Deleted slots successfully");
+            $this->log("Deleted old slots successfully");
+            $slotQuery->writeOptimizedSlotTables();
+            $this->log("Optimized tables successfully");
         }
     }
 }

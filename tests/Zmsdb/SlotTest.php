@@ -9,6 +9,13 @@ class SlotTest extends Base
 {
     const TEST_AVAILABILITY_ID = 68985;
 
+    public function testWriteOptimizedSlotTables()
+    {
+        //Attention, rollback does not work here!
+        $status = (new Slot())->writeOptimizedSlotTables();
+        $this->assertEquals(true, $status, "Optimization for tables should return true");
+    }
+
     public function testChanged()
     {
         $changed = (new Slot())->readLastChangedTime();
@@ -260,6 +267,50 @@ class SlotTest extends Base
         $status = (new Slot())->writeByAvailability($availability, $now);
         //$this->debugOutdated($availability, $now, $lastChange);
         $this->assertFalse(!$status, "Availability should rebuild slots if time allows new slots");
+    }
+
+    public function testWriteCanceledByTime()
+    {
+        $scope = new \BO\Zmsentities\Scope(['id' => 141]);
+        $dateTime = new \DateTimeImmutable('2016-04-01 11:55:00');
+        $slotList = (new Slot())->readRowsByScopeAndDate($scope, $dateTime->modify('+7days'));
+        $this->assertEquals($slotList[0]['status'], 'free');
+        (new Slot())->writeCanceledByTime($dateTime->modify('+8days'));
+        $slotList = (new Slot())->readRowsByScopeAndDate($scope, $dateTime->modify('+7days'));
+        $this->assertEquals($slotList[0]['status'], 'cancelled');
+        $slotList = (new Slot())->readRowsByScopeAndDate($scope, $dateTime->modify('+14days'));
+        $this->assertEquals($slotList[0]['status'], 'free');
+
+        // Test change of month
+        $slotList = (new Slot())->readRowsByScopeAndDate($scope, $dateTime->modify('+28days'));
+        $this->assertEquals($slotList[0]['status'], 'free');
+        (new Slot())->writeCanceledByTime($dateTime->modify('+32days'));
+        $slotList = (new Slot())->readRowsByScopeAndDate($scope, $dateTime->modify('+28days'));
+        $this->assertEquals($slotList[0]['status'], 'cancelled');
+        $slotList = (new Slot())->readRowsByScopeAndDate($scope, $dateTime->modify('+35days'));
+        $this->assertEquals($slotList[0]['status'], 'free');
+    }
+
+    public function testDeleteSlotsOlderThan()
+    {
+        $scope = new \BO\Zmsentities\Scope(['id' => 141]);
+        $dateTime = new \DateTimeImmutable('2016-04-01 11:55:00');
+        $slotList = (new Slot())->readRowsByScopeAndDate($scope, $dateTime->modify('+7days'));
+        $this->assertEquals($slotList[0]['status'], 'free');
+        (new Slot())->deleteSlotsOlderThan($dateTime->modify('+8days'));
+        $slotList = (new Slot())->readRowsByScopeAndDate($scope, $dateTime->modify('+7days'));
+        $this->assertEquals(count($slotList), 0);
+        $slotList = (new Slot())->readRowsByScopeAndDate($scope, $dateTime->modify('+14days'));
+        $this->assertEquals($slotList[0]['status'], 'free');
+
+        // Test change of month
+        $slotList = (new Slot())->readRowsByScopeAndDate($scope, $dateTime->modify('+28days'));
+        $this->assertEquals($slotList[0]['status'], 'free');
+        (new Slot())->deleteSlotsOlderThan($dateTime->modify('+32days'));
+        $slotList = (new Slot())->readRowsByScopeAndDate($scope, $dateTime->modify('+28days'));
+        $this->assertEquals(count($slotList), 0);
+        $slotList = (new Slot())->readRowsByScopeAndDate($scope, $dateTime->modify('+35days'));
+        $this->assertEquals($slotList[0]['status'], 'free');
     }
 
     protected function debugOutdated($availability, $now, $lastChange)
