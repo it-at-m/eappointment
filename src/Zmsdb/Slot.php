@@ -382,8 +382,23 @@ class Slot extends Base
             'day' => $dateTime->format('d'),
         ]);
         $status = ($status && $this->perform(Query\Slot::QUERY_DELETE_SLOT_HIERA));
-        $status = ($status && $this->writeOptimizedSlotTables());
         return $status;
+    }
+
+    /**
+     * This function is for debugging
+     */
+    public function readRowsByScopeAndDate(
+        \BO\Zmsentities\Scope $scope,
+        \DateTimeInterface $dateTime
+    ) {
+        $list = $this->fetchAll(Query\Slot::QUERY_SELECT_BY_SCOPE_AND_DAY, [
+            'year' => $dateTime->format('Y'),
+            'month' => $dateTime->format('m'),
+            'day' => $dateTime->format('d'),
+            'scopeID' => $scope->id,
+        ]);
+        return $list;
     }
 
     public function writeOptimizedSlotTables()

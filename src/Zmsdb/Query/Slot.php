@@ -28,6 +28,17 @@ class Slot extends Base implements MappingInterface
         VALUES(?,?,?) 
     ';
 
+    const QUERY_SELECT_BY_SCOPE_AND_DAY = '
+        SELECT
+            s.*
+        FROM slot s
+        WHERE
+            s.scopeID = :scopeID
+            AND s.year = :year
+            AND s.month = :month
+            AND s.day = :day
+    ';
+
     const QUERY_SELECT_MISSING_PROCESS = '
         SELECT 
           s.slotID,
@@ -126,19 +137,6 @@ class Slot extends Base implements MappingInterface
         WHERE slot.status != calc.newstatus
 ";
 
-    const QUERY_SELECT_MULTIPLE_SLOTS = '
-SELECT s.*, COUNT(r.processID)
-FROM slot s JOIN slot_process r 
-  ON r.scopeID = s.scopeID 
-     AND r.year = s.year 
-     AND r.month = s.month 
-     AND r.day = s.day
-     AND r.time BETWEEN s.time AND SEC_TO_TIME(TIME_TO_SEC(s.time) + (s.slotTimeInMinutes * 60) - 1)
-WHERE s.scopeID = 141
-GROUP BY s.scopeID, s.year, s.month, s.day, s.time
-
-';
-
     const QUERY_SELECT_SLOT = '
     SELECT slotID FROM slot WHERE
       scopeID = :scopeID
@@ -163,11 +161,17 @@ GROUP BY s.scopeID, s.year, s.month, s.day, s.time
 ';
 
     const QUERY_CANCEL_SLOT_OLD = '
-    UPDATE slot SET status =  "cancelled" WHERE year <= :year AND  month <= :month AND  day <= :day AND time < :time
+    UPDATE slot SET status =  "cancelled" 
+        WHERE (year < :year)
+            OR (year = :year AND  month < :month) 
+            OR (year = :year AND  month = :month AND  day <= :day AND time < :time)
 ';
 
     const QUERY_DELETE_SLOT_OLD = '
-    DELETE FROM slot WHERE year <= :year AND  month <= :month AND  day < :day
+    DELETE FROM slot 
+        WHERE (year < :year) 
+            OR (year = :year AND  month < :month) 
+            OR (year = :year AND  month = :month AND  day < :day)
 ';
 
     const QUERY_DELETE_SLOT_HIERA = '
