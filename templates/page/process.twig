@@ -73,12 +73,11 @@
 
     	{% else %}
 		<p>Ihre Wartenummer wird gedruckt.</p>
-		<form action="{{ urlGet('TicketprinterByScope', {'scopeId': process.scope.id}, {}) }}" method="post" id="postSuccess">
         {{ hiddenfield({ "name": "scopeId", "value": process.scope.id }) }}
         {{ hiddenfield({ "name": "status", "value": "process_success" }) }}
         </form>
         {% set label = "OK" %}
-        {{ formbutton({ "type":"submit", "name": "submit_ok", "formTarget":"postSuccess", "class": "button ja_nein", "label":label|trans, "value": label|trans }) }}
+			{{ custombutton({ "type":"submit", "href":urlGet('Home', {}, {}), "class": "button ja_nein", "name": "submit_ok", "label":label|trans, "value": label|trans }) }}
     	{% endif %}
     </div>
 </div>
