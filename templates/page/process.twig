@@ -39,9 +39,10 @@
     	{% else %}
     	    {% trans %}keine{% endtrans %}
     	{% endif %}
+		
     	{% if
     	    estimatedData.waitingTimeEstimate > (scope.preferences.ticketprinter.notificationsDelay)|round() and
-    	    process.scope.preferences.ticketprinter.notificationsEnabled
+    	    process.scope.preferences.ticketprinter.notificationsEnabled and department.preferences.notifications.enabled
     	%}
 		{% set headsUpTime = config.notifications.erinnerungsvorlauf %}
 		{% if process.scope.preferences.notifications.headsUpTime %}

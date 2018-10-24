@@ -27,6 +27,7 @@ class Process extends BaseController
         $clusterId = $validator->getParameter('clusterId')->isNumber()->getValue();
         $ticketprinter = Helper\Ticketprinter::readWithHash($request);
 
+
         if ($scopeId) {
             $process = \App::$http->readGetResult(
                 '/scope/'. $scopeId .'/waitingnumber/'. $ticketprinter->hash .'/'
@@ -39,7 +40,8 @@ class Process extends BaseController
         }
 
         $scope = new \BO\Zmsentities\Scope($process->scope);
-        $queueList = \App::$http->readGetResult('/scope/'. $scope->id . '/queue/')->getCollection();
+        $queueList = \App::$http->readGetResult('/scope/'. $scope->getId() . '/queue/')->getCollection();
+        $department = \App::$http->readGetResult('/scope/'. $scope->getId() . '/department/')->getEntity();
         $estimatedData = ($queueList) ? $scope->getWaitingTimeFromQueueList($queueList, \App::$now) : null;
 
         return \BO\Slim\Render::withHtml(
@@ -56,7 +58,8 @@ class Process extends BaseController
                 'process' => $process,
                 'queueList' => $queueList,
                 'estimatedData' => $estimatedData,
-                'config' => $config
+                'config' => $config,
+                'department' => $department
             )
         );
     }
