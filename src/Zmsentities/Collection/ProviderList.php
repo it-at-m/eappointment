@@ -39,4 +39,14 @@ class ProviderList extends Base
         }
         return $list;
     }
+
+    public function withDataAsObject()
+    {
+        $list = new self();
+        foreach ($this as $provider) {
+            $provider->data = json_decode($provider->data);
+            $list->addEntity($provider);
+        }
+        return $list;
+    }
 }

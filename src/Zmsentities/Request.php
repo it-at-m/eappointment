@@ -46,4 +46,9 @@ class Request extends Schema\Entity
     {
         return $this->toProperty()->name->get();
     }
+
+    public function getAdditionalJsonData()
+    {
+        return json_encode($this->toProperty()->data->get());
+    }
 }
