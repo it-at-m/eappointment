@@ -122,7 +122,7 @@ class Request extends Base
             'name' => $entity->getName(),
             'group' => $entity->getGroup(),
             'link' =>  $entity->getLink(),
-            'data' => json_encode($entity)
+            'data' => $entity->getAdditionalJsonData()
         ]);
         $this->writeItem($query);
         return $this->readEntity($entity->getSource(), $entity->getId());
