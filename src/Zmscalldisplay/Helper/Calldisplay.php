@@ -15,7 +15,7 @@ class Calldisplay
     protected $entity;
     protected $isEntityResolved = false;
 
-    const DEFAULT_STATUS = ['called', 'pickup'];
+    const DEFAULT_STATUS = ['called', 'pickup', 'processing'];
 
     public function __construct($request)
     {
