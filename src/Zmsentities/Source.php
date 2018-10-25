@@ -107,4 +107,14 @@ class Source extends Schema\Entity
     {
         return ($this->isEditable() && 0 < $this->getProviderList()->count() && $this->getRequestList()->count());
     }
+
+    public function withCleanedUpFormData()
+    {
+        $entity = parent::withCleanedUpFormData();
+        $providerList = $entity->getProviderList();
+        $requestList = $entity->getRequestList();
+        $entity->providers = $providerList->withDataAsObject();
+        $entity->requests = $requestList->withDataAsObject();
+        return $entity;
+    }
 }

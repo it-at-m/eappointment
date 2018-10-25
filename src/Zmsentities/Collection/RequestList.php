@@ -72,4 +72,14 @@ class RequestList extends Base
         }
         return $requestList;
     }
+
+    public function withDataAsObject()
+    {
+        $list = new self();
+        foreach ($this as $request) {
+            $request->data = json_decode($request->data);
+            $list->addEntity($request);
+        }
+        return $list;
+    }
 }

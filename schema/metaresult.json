@@ -25,6 +25,18 @@
             "type": "string",
             "description": "contains additional information if property error is true"
         },
+        "retryAfter": {
+            "type": "string",
+            "description": "contains retry after information on status code 429"
+        },
+        "status": {
+            "type": "string",
+            "description": "current status code"
+        },
+        "route": {
+            "type": "string",
+            "description": "current route"
+        },
         "reducedData": {
             "type": "boolean",
             "description": "has reduced data, do not use for saving data"
@@ -34,7 +46,7 @@
             "description": "identifier for the responding server"
         },
         "exception": {
-        	"type": "string",
+            "type": "string",
             "description": "name of thrown exception"
         }
     }
