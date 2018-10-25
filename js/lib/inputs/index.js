@@ -5,18 +5,32 @@ export * from './checkbox'
 export * from './time'
 export * from './date'
 
-const noOp = () => {}
+const noOp = () => { }
 
-export const Text = ({name, value, onChange = noOp, width = false, attributes = {}}) => {
+export const Text = ({ name, value, onChange = noOp, placeholder = "", width = false, attributes = {} }) => {
     const widthClassName = width ? `input--size-${width}` : ''
     const className = `form-input ${attributes.className || ''} ${widthClassName}`
 
     const onInput = (ev) => onChange(name, ev.target.value)
 
-    return <input type="text" onChange={onInput} {...{ name, value}} {...attributes} {...{ className }} />
+    return <input placeholder={placeholder} type="text" onChange={onInput} {...{ name, value }} {...attributes} {...{ className }} />
 }
 
-export const Label = ({children}) => <label className="label">{children}</label>
+export const Hidden = ({ name, value }) => {
+    return <input type="hidden" {...{ name, value }} />
+}
+
+export const Textarea = ({ name, value, onChange = noOp, placeholder = "", width = false, attributes = {} }) => {
+    const widthClassName = width ? `input--size-${width}` : ''
+    const className = `form-input ${attributes.className || ''} ${widthClassName}`
+    const onInput = (ev) => onChange(name, ev.target.value)
+
+    return <textarea placeholder={placeholder} onChange={onInput} {...{ name }} {...attributes} {...{ className }} >
+        {value}
+    </textarea>
+}
+
+export const Label = ({ children }) => <label className="label">{children}</label>
 
 export const FormGroup = (props) => {
     const className = `form-group ${props.error ? "has-error" : ""} ${props.className || ""}`

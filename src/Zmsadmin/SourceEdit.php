@@ -24,7 +24,7 @@ class SourceEdit extends BaseController
         if (!$workstation->hasSuperUseraccount()) {
             throw new Exception\NotAllowed();
         }
-        $source = \App::$http->readGetResult('/source/'. $args['name'] .'/', ['resolveReferences' => 1])->getEntity();
+        $source = \App::$http->readGetResult('/source/'. $args['name'] .'/', ['resolveReferences' => 2])->getEntity();
 
         return \BO\Slim\Render::withHtml(
             $response,
