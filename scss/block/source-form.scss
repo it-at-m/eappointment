@@ -4,3 +4,11 @@
         @extend .form--horizontal;
     }
 }
+
+.requestrelation-item__delete {
+    width: 20%;
+  }
+  
+  .requestrelation__delete-button {
+    cursor: pointer;
+  }
