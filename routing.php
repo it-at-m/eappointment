@@ -4337,7 +4337,12 @@ use \Psr\Http\Message\ResponseInterface;
  *      get:
  *          summary: Get ist of sources
  *          tags:
- *              - source
+ *              -   source
+ *          parameters:
+ *              -   name: resolveReferences
+ *                  description: "Resolve references"
+ *                  in: query
+ *                  type: integer
  *          responses:
  *              200:
  *                  description: "success"
@@ -4365,10 +4370,15 @@ use \Psr\Http\Message\ResponseInterface;
  *          tags:
  *              - source
  *          parameters:
- *              -   source: source
- *                  description: "optional name from source like dldb for example (3 - 20 letters)"
+ *              -   name: source
+ *                  description: optional name from source like dldb for example (3 - 20 letters)
+ *                  required: true
  *                  in: path
  *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references"
+ *                  in: query
+ *                  type: integer
  *          responses:
  *              200:
  *                  description: "success"
@@ -4391,7 +4401,7 @@ use \Psr\Http\Message\ResponseInterface;
  *      post:
  *          summary: Update a source
  *          tags:
- *              - source
+ *              -   source
  *          parameters:
  *              -   name: source
  *                  description: source content
@@ -4399,6 +4409,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                  required: true
  *                  schema:
  *                      $ref: "schema/source.json"
+ *              -   name: resolveReferences
+ *                  description: "Resolve references"
+ *                  in: query
+ *                  type: integer
  *          responses:
  *              200:
  *                  description: get an updated or new created source object
