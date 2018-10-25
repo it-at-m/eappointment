@@ -25,6 +25,12 @@
         	{{ message|trans }}
         	</p>
         {% endif %}
+		 {% if helptext %}
+        	<p>
+        	{{ helptext|trans }}
+        	</p>
+        {% endif %}
+
         {% if showlinks %}
         <ul>
         	{% for link, name in showlinks %}

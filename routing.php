@@ -44,6 +44,8 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/dialog/', '\BO\Zmsticketprinter\Helper\DialogHandler')
     ->setName("dialogHandler");
 
+\App::$slim->get('/reset/', '\BO\Zmsticketprinter\Reset')
+->setName("reset");
 /*
  * ---------------------------------------------------------------------------
  * redirects from old to new
