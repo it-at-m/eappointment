@@ -4,6 +4,10 @@ namespace BO\Zmsdb;
 use \BO\Zmsentities\Request as Entity;
 use \BO\Zmsentities\Collection\RequestList as Collection;
 
+/**
+ *
+ * @SuppressWarnings(TooManyPublicMethods)
+ */
 class Request extends Base
 {
     public function readEntity($source, $requestId, $resolveReferences = 0)
@@ -18,7 +22,7 @@ class Request extends Base
             ->addConditionRequestId($requestId);
         $request = $this->fetchOne($query, new Entity());
         if (!$request->hasId()) {
-            throw new Exception\RequestNotFound("Could not find request with ID $source/$requestId");
+            throw new Exception\Request\RequestNotFound("Could not find request with ID $source/$requestId");
         }
         return ($request->hasId()) ? $request : null;
     }
@@ -116,6 +120,11 @@ class Request extends Base
     public function writeEntity(Entity $entity)
     {
         $query = new Query\Request(Query\Base::INSERT);
+        if ($entity->hasId()) {
+            $query = new Query\Request(Query\Base::UPDATE);
+            $query->addConditionRequestId($entity->getId());
+            $query->addConditionRequestSource($entity->getSource());
+        }
         $query->addValues([
             'source' => $entity->getSource(),
             'id' => $entity->getId(),
