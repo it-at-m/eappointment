@@ -8,6 +8,9 @@
  */
 namespace BO\Zmsadmin;
 
+use BO\Zmsentities\Source as Entity;
+use BO\Mellon\Validator;
+
 class SourceEdit extends BaseController
 {
 
@@ -21,10 +24,21 @@ class SourceEdit extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         if (!$workstation->hasSuperUseraccount()) {
             throw new Exception\NotAllowed();
         }
         $source = \App::$http->readGetResult('/source/'. $args['name'] .'/', ['resolveReferences' => 2])->getEntity();
+
+        $input = $request->getParsedBody();
+        if (is_array($input) && array_key_exists('save', $input)) {
+            $result = $this->testUpdateEntity($input);
+            if ($result instanceof Entity) {
+                return \BO\Slim\Render::redirect('sourceEdit', ['name' => $result->getSource()], [
+                    'success' => 'source_saved'
+                ]);
+            }
+        }
 
         return \BO\Slim\Render::withHtml(
             $response,
@@ -33,8 +47,27 @@ class SourceEdit extends BaseController
                 'title' => 'Mandanten bearbeiten',
                 'menuActive' => 'source',
                 'workstation' => $workstation,
-                'source' => $source
+                'source' => $source,
+                'success' => $success,
+                'exception' => (isset($result)) ? $result : null
             )
         );
+    }
+
+    protected function testUpdateEntity($input)
+    {
+        $entity = (new Entity($input))->withCleanedUpFormData();
+        try {
+            $entity = \App::$http->readPostResult('/source/', $entity)->getEntity();
+        } catch (\BO\Zmsclient\Exception $exception) {
+            if ('' != $exception->template) {
+                return [
+                  'template' => strtolower($exception->template),
+                  'data' => $exception->data
+                ];
+            }
+            throw $exception;
+        }
+        return $entity;
     }
 }
