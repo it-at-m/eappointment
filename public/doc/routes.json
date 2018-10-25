@@ -5181,6 +5181,12 @@
 					"required": true,
 					"in": "path",
 					"type": "string"
+				},
+				{
+					"name": "sync",
+					"description": "Set this to 1 if you want synchronous read for the session data. If session data is written shortly before reading, replication might not be up to date. Using this parameter solves this problem but might result in slower responses. Use this parameter only if necessary, for example after HTTP-redirect which write session data and a read requests follows much less than a second after. Usually, two requests do not follow on each other so that this parameter is necessary.",
+					"in": "query",
+					"type": "integer"
 				}
 			],
 			"responses": {
@@ -5298,6 +5304,124 @@
 							}
 						}
 					}
+				}
+			}
+		}
+	},
+	"/source/": {
+		"get": {
+			"summary": "Get ist of sources",
+			"tags": [
+				"source"
+			],
+			"parameters": [
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/source.json"
+								}
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "Could not find any available source"
+				}
+			}
+		},
+		"post": {
+			"summary": "Update a source",
+			"tags": [
+				"source"
+			],
+			"parameters": [
+				{
+					"name": "source",
+					"description": "source content",
+					"in": "body",
+					"required": true,
+					"schema": {
+						"$ref": "schema/source.json"
+					}
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "get an updated or new created source object",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/source.json"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"/source/{source}/": {
+		"get": {
+			"summary": "Get source by name",
+			"tags": [
+				"source"
+			],
+			"parameters": [
+				{
+					"name": "source",
+					"description": "optional name from source like dldb for example (3 - 20 letters)",
+					"required": true,
+					"in": "path",
+					"type": "string"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references",
+					"in": "query",
+					"type": "integer"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success",
+					"schema": {
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"$ref": "schema/source.json"
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "Could not find any available source"
 				}
 			}
 		}
