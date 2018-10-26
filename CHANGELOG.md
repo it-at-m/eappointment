@@ -1,0 +1,48 @@
+
+## v2.19.00
+
+* #34135 - script zum Löschen alter Öffnungszeiten
+* Statistik-Export für gebuchte/geplante Termine (ExchangeSlotscope)
+* #34808 - Bugfix: Statistik listete für Organisationen Standorte statt Behörden
+* #34979 - Bugfix: Kundenstatistik lieferte unterschiedliche Summen für SMS pro Monat
+
+
+## v2.18.02
+
+* Slot-Berechnung: Warte mindestens 15 Minuten, wenn der vorherige Job noch nicht beendet sein sollte (führt config.status.calculateSlotsLastStart ein).
+* Handbuch-Review: Falsche Rechte für Dienstleistungsstatistik korrigiert, diese waren vorher nur als Superuser abrufbar
+* Handbuch-Review: Labels für Dienstleistungsstatistik korrigiert
+* Error-Log: Bugfix für Meldung "Only variables should be passed by reference"
+* #34781 - Sperre Öffnungszeit-Objekt während der Slot-Berechnung, so dass in der Zeit nicht gespeichert werden kann (verhindert, dass eine Änderung nicht in die Neuberechnung aufgenommen wird)
+* #31586 - Bugfix Terminerinnerung nur versenden, wenn in der Behörde eine Absender-Adresse eingetragen ist (zur Zeit nicht produktiv, noch beim ZMS1)
+
+
+## v2.18.00
+
+* #33756 API-Proxy ApiKey Zugriffe
+* #31527 Versenden von Mails ohne Zuordnung einer Vorgangsnummer
+* #34154 Bugfix, so dass auch Terminzuordnungen zu Öffnungszeiten gelöscht werden, bei denen der Termin bereits endgültig aus der DB entfernt wurde (Inkonsistenz beim ZMS1)
+* Bugfix, so dass man den Query-Cache wieder deaktivieren kann
+* #34308 Export der E-Mail-Adressen der Nutzerkonten
+* #34054 Korrektur der Standortbezeichnung, so dass immer der Standortname aus der DLDB verwendet wird
+* #34458 Bugfix: Statistik-Flag für Standorte wurde zurückgesetzt 
+* #34516 Bugfix: Jede Transaktion in der Vorberechnung der Termine ist jetzt in sich logisch abgeschlossen, die Berechnungszeit erhöht sich leicht
+* #31425 Bugfix: Anmerkungsfeld im Standort wurde nicht gespeichert
+* #34692 Bugfix: Korrektur doppelter Neu-Berechnung und fehlender Neuberechnung bei Invalidierung durch verschobenen Buchungsstartzeitraum (minimale Tage im voraus)
+* Bugfix: Neuberechnung aller neuen Slots des Vortages um Mitternacht unterbinden
+
+
+## v2.17.03
+
+* Eine Berechnung wird jetzt nicht mehr nach 10 Sekunden gestoppt
+* Wenn zwei Cronjobs parallel berechnen wollen, kommt es zu einem Lock-Timeout des späteren Jobs.
+* Ist eine Berechnung der Slots mehr als 10 Minuten her, wird eine Warnung im Healthcheck ausgegeben
+* Per Config-Tabelle in der Datenbank lässt sich die Berchnung deaktivieren, ein Logging dazu einschalten sowie im Notfall auch ein Maintenance-SQL-Skript hinterlegen, falls Auffälligkeiten bekannt werden
+* Bugfix #34210
+* Bugfix Slot-Mapping bei einer Änderung eines Termins unter Beibehaltung der Vorgangsnummer
+
+
+## v2.17.02
+
+* Bugfix aus #34126 (Locking von mehr als einer Vorgangsnummer beim Buchen)
+* Bugfix aus #34129 (Überbuchung durch Erstellung von neuen Öffnungszeiten für bestehende Öffnungszeiten)
