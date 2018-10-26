@@ -1,7 +1,8 @@
 ## v2.19.00
 
-* exchange-Entity mit property visualization
-
+* exchange-Entity mit mit neuen Eigenschaften "title" und "visualization"
+* #34628 - Source-Entity erstellt für Mandantenfähigkeit
+* getProperty() und hasProperty() für alle Entity-Klassen in die Basis-Klasse verlegt
 
 ## v2.18.02
 
