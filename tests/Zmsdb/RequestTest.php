@@ -37,7 +37,7 @@ class RequestTest extends Base
 
     public function testExceptionRequestNotFound()
     {
-        $this->expectException("\\BO\\Zmsdb\\Exception\\RequestNotFound");
+        $this->expectException("\\BO\\Zmsdb\\Exception\\Request\\RequestNotFound");
         (new Query())->readEntity('dldb', 999999);
     }
 
@@ -61,6 +61,24 @@ class RequestTest extends Base
     {
         $this->expectException('\Exception');
         (new Query)->readEntity('dldb', 120335, null);
+    }
+
+    public function testWriteEntity()
+    {
+        $query = new Query();
+        $entity = (new \BO\Zmsentities\Request())->getExample();
+        $entity = $query->writeEntity($entity);
+        $this->assertEquals('dldb', $entity->getSource());
+        $this->assertEquals(120335, $entity->getId());
+    }
+
+    public function testWriteEntityFailed()
+    {
+        $this->expectException('BO\Zmsdb\Exception\Request\RequestNotFound');
+        $query = new Query();
+        $entity = (new \BO\Zmsentities\Request())->getExample();
+        unset($entity['id']);
+        $query->writeEntity($entity);
     }
 
     public function testWriteImport()
