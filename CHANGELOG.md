@@ -1,4 +1,8 @@
 
+## v2.19.00
+
+* Ticketprinter: Behalte Cookie für 10 Jahre
+
 ## v2.18.02
 
 * Bugfix zu Cookie-Pfaden (betrifft nur ticketprinter)
