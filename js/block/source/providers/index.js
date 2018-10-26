@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react'
-
+import $ from "jquery"
 import * as Inputs from '../../../lib/inputs'
 
 const renderProvider = (provider, index, onChange, onDeleteClick, labels, descriptions, source) => {

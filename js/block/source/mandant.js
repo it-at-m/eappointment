@@ -93,7 +93,8 @@ class MandantView extends Component {
 MandantView.propTypes = {
     labelsmandant: PropTypes.array.isRequired,
     source: PropTypes.array.isRequired,
-    handler: PropTypes.handler
+    handler: PropTypes.handler,
+    descriptions: PropTypes.array
 }
 
 export default MandantView
