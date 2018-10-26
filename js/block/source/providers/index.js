@@ -2,15 +2,16 @@ import React, { Component, PropTypes } from 'react'
 
 import * as Inputs from '../../../lib/inputs'
 
-const renderProvider = (provider, index, onChange, labels, descriptions) => {
+const renderProvider = (provider, index, onChange, onDeleteClick, labels, descriptions, source) => {
     const formName = `providers[${index}]`
+
 
     const onChangeName = (_, value) => onChange(index, 'name', value)
     const onChangeLink = (_, value) => onChange(index, 'link', value)
-    const onChangeStreet = (_, value) => onChange(index, 'street', value)
-    const onChangeStreetNumber = (_, value) => onChange(index, 'streetNumber', value)
-    const onChangePostalCode = (_, value) => onChange(index, 'postalCode', value)
-    const onChangeCity = (_, value) => onChange(index, 'city', value)
+    const onChangeStreet = (_, value) => onChange(index, 'contact[street]', value)
+    const onChangeStreetNumber = (_, value) => onChange(index, '[contact][streetNumber]', value)
+    const onChangePostalCode = (_, value) => onChange(index, '[contact][postalCode]', value)
+    const onChangeCity = (_, value) => onChange(index, '[contact][city]', value)
     const onChangeData = (_, value) => onChange(index, 'data', value)
 
     return (
@@ -51,7 +52,7 @@ const renderProvider = (provider, index, onChange, labels, descriptions) => {
                     />
                     <Inputs.Controls>
                         <Inputs.Text
-                            name={`${formName}[street]`}
+                            name={`${formName}[contact][street]`}
                             placeholder={labels.street}
                             value={provider.contact.street}
                             onChange={onChangeStreet}
@@ -64,7 +65,7 @@ const renderProvider = (provider, index, onChange, labels, descriptions) => {
                     />
                     <Inputs.Controls>
                         <Inputs.Text
-                            name={`${formName}[streetNumber]`}
+                            name={`${formName}[contact][streetNumber]`}
                             placeholder={labels.streetNumber}
                             value={provider.contact.streetNumber}
                             onChange={onChangeStreetNumber}
@@ -77,7 +78,7 @@ const renderProvider = (provider, index, onChange, labels, descriptions) => {
                     />
                     <Inputs.Controls>
                         <Inputs.Text
-                            name={`${formName}[postalCode]`}
+                            name={`${formName}[contact][postalCode]`}
                             placeholder={labels.postalCode}
                             value={provider.contact.postalCode}
                             onChange={onChangePostalCode}
@@ -90,7 +91,7 @@ const renderProvider = (provider, index, onChange, labels, descriptions) => {
                     />
                     <Inputs.Controls>
                         <Inputs.Text
-                            name={`${formName}[city]`}
+                            name={`${formName}[contact][city]`}
                             placeholder={labels.city}
                             value={provider.contact.city}
                             onChange={onChangeCity}
@@ -104,7 +105,7 @@ const renderProvider = (provider, index, onChange, labels, descriptions) => {
                     <Inputs.Controls>
                         <Inputs.Textarea
                             name={`${formName}[data]`}
-                            value={JSON.stringify(provider.data)}
+                            value={(provider.data) ? JSON.stringify(provider.data) : ''}
                             placeholder="{}"
                             onChange={onChangeData}
                         />
@@ -115,8 +116,13 @@ const renderProvider = (provider, index, onChange, labels, descriptions) => {
                 </Inputs.FormGroup>
                 <Inputs.Hidden
                     name={`${formName}[source]`}
-                    value={provider.source}
+                    value={source}
                 />
+            </td>
+            <td className="provider-item__delete">
+                <label className="checkboxdeselect provider__delete-button">
+                    <input type="checkbox" checked={true} onClick={() => onDeleteClick(index)} /><span></span>
+                </label>
             </td>
         </tr >
     )
@@ -129,8 +135,8 @@ class ProvidersView extends Component {
             providers: props.providers.length > 0
                 ? props.providers
                 : [{
-                    source: '',
-                    id: '',
+                    source: props.source.source ? props.source.source : '',
+                    id: 1,
                     name: '',
                     link: '',
                     contact: {
@@ -139,27 +145,41 @@ class ProvidersView extends Component {
                         postalCode: '',
                         city: '',
                     },
-                    data: '{}'
+                    data: ''
                 }],
-            labels: props.labels,
-            descriptions: props.descriptions
+            labels: props.labelsproviders,
+            descriptions: props.descriptions,
+            source: props.source
         }
     }
 
     changeItemField(index, field, value) {
-        //console.log('change item field', index, field, value)
+        let newstate = { [field]: value };
+        if (field.match(/.\[/)) {
+            const firstPart = field.split('[')[0];
+            const secondPart = field.split('[')[1].replace(']', '');
+            newstate = { [firstPart]: { [secondPart]: value } };
+        }
+        console.log('change item field', index, field, value, newstate)
+
         this.setState({
             providers: this.state.providers.map((provider, requestIndex) => {
-                return index === requestIndex ? Object.assign({}, provider, { [field]: value }) : provider
+                return index === requestIndex ? Object.assign({}, provider, newstate) : provider
             })
         })
+    }
+
+    getNextId() {
+        let nextId = Number(this.state.providers[this.state.providers.length - 1].id) + 1
+        return nextId;
+        //return this.state.requests.pop().id;
     }
 
     addNewItem() {
         this.setState({
             providers: this.state.providers.concat([{
-                source: '',
-                id: '',
+                source: this.state.source.source,
+                id: this.getNextId(),
                 name: '',
                 link: '',
                 contact: {
@@ -168,7 +188,7 @@ class ProvidersView extends Component {
                     postalCode: '',
                     city: '',
                 },
-                data: {}
+                data: ''
             }])
         })
     }
@@ -181,8 +201,33 @@ class ProvidersView extends Component {
         })
     }
 
-    getProvidersWithLabels(onChange) {
-        return this.state.providers.map((provider, index) => renderProvider(provider, index, onChange, this.state.labels, this.state.descriptions))
+    getProvidersWithLabels(onChange, onDeleteClick) {
+        return this.state.providers.map((provider, index) => renderProvider(provider, index, onChange, onDeleteClick, this.state.labels, this.state.descriptions, this.state.source.source))
+    }
+
+    hideDeleteButton() {
+        $('.provider-item').each((index, item) => {
+            if ($(item).find('.provider-item__id input').val()) {
+                $(item).find('.provider__delete-button').css("visibility", "hidden");
+            }
+        })
+    }
+
+    componentDidMount() {
+        console.log("mounted provider component")
+        this.hideDeleteButton()
+    }
+
+    componentDidUpdate() {
+        console.log("updated provider component")
+    }
+
+    componentWillReceiveProps(nextProps) {
+        // You don't have to do this check first, but it can help prevent an unneeded render
+        if (nextProps.source.source !== this.state.source) {
+            this.setState({ source: nextProps.source })
+            this.render()
+        }
     }
 
     render() {
@@ -191,6 +236,10 @@ class ProvidersView extends Component {
         const onNewClick = ev => {
             ev.preventDefault()
             this.addNewItem()
+        }
+
+        const onDeleteClick = index => {
+            this.deleteItem(index)
         }
 
         const onChange = (index, field, value) => {
@@ -206,7 +255,7 @@ class ProvidersView extends Component {
                         <th>Link und weitere Daten</th>
                     </thead>
                     <tbody>
-                        {this.getProvidersWithLabels(onChange)}
+                        {this.getProvidersWithLabels(onChange, onDeleteClick)}
                         <tr>
                             <td colSpan="4">
                                 <button className="button-default" onClick={onNewClick}>Neuer Dienstleister</button>
@@ -224,8 +273,9 @@ class ProvidersView extends Component {
 
 ProvidersView.propTypes = {
     providers: PropTypes.array,
-    labels: PropTypes.array.isRequired,
+    labelsproviders: PropTypes.array.isRequired,
     descriptions: PropTypes.array.isRequired,
+    source: PropTypes.array.isRequired,
 }
 
 export default ProvidersView
