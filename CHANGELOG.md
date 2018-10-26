@@ -1,16 +1,15 @@
-
-## 2.19.00
+## v2.19.00
 
 * exchange-Entity mit property visualization
 
 
-## 2.18.02
+## v2.18.02
 
 * #31392 - Bugfix bei der Validierung des Formulars zur Terminbuchung (Es muss mindestens eine Dienstleistung ausgewählt sein) 
 * #31586 - Bugfix Terminerinnerung mit falschem Datumsformat (zur Zeit nicht produktiv, noch beim ZMS1)
 
 
-## 2.18.00
+## v2.18.00
 
 * #33756 API-Proxy-Entität (ApiKey)
 * #31527 Template für HTML-Mail an Admins
