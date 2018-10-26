@@ -21,10 +21,10 @@ class Request extends Base
             ->addConditionRequestSource($source)
             ->addConditionRequestId($requestId);
         $request = $this->fetchOne($query, new Entity());
-        if (!$request->hasId()) {
+        if (! $request->hasId()) {
             throw new Exception\Request\RequestNotFound("Could not find request with ID $source/$requestId");
         }
-        return ($request->hasId()) ? $request : null;
+        return $request;
     }
 
     /**
@@ -120,18 +120,13 @@ class Request extends Base
     public function writeEntity(Entity $entity)
     {
         $query = new Query\Request(Query\Base::INSERT);
-        if ($entity->hasId()) {
-            $query = new Query\Request(Query\Base::UPDATE);
-            $query->addConditionRequestId($entity->getId());
-            $query->addConditionRequestSource($entity->getSource());
-        }
         $query->addValues([
             'source' => $entity->getSource(),
             'id' => $entity->getId(),
             'name' => $entity->getName(),
             'group' => $entity->getGroup(),
             'link' =>  $entity->getLink(),
-            'data' => $entity->getAdditionalJsonData()
+            'data' => ($entity->getAdditionalData()) ? json_encode($entity->getAdditionalData()) : json_encode($entity)
         ]);
         $this->writeItem($query);
         return $this->readEntity($entity->getSource(), $entity->getId());
@@ -139,6 +134,7 @@ class Request extends Base
 
     public function writeListBySource(\BO\Zmsentities\Source $source)
     {
+        $this->writeDeleteListBySource($source->getSource());
         foreach ($source->getRequestList() as $request) {
             $this->writeEntity($request);
         }
@@ -160,6 +156,14 @@ class Request extends Base
         ]);
         $this->writeItem($query);
         return $this->readEntity($source, $request['id']);
+    }
+
+    public function writeDeleteEntity($requestId, $source)
+    {
+        $query = new Query\Request(Query\Base::DELETE);
+        $query->addConditionRequestId($requestId);
+        $query->addConditionRequestSource($source);
+        return $this->deleteItem($query);
     }
 
     public function writeDeleteListBySource($source)

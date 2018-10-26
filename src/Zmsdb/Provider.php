@@ -80,7 +80,7 @@ class Provider extends Base
             'contact__street' => $contact->getProperty('street'),
             'contact__streetNumber' => $contact->getProperty('streetNumber', '-'),
             'link' =>  ($entity->getLink()) ? $entity->getLink() : '',
-            'data' => $entity->getAdditionalJsonData()
+            'data' => ($entity->getAdditionalData()) ? json_encode($entity->getAdditionalData()) : json_encode($entity)
         ]);
         $this->writeItem($query);
         return $this->readEntity($entity->getSource(), $entity->getId());
@@ -88,6 +88,7 @@ class Provider extends Base
 
     public function writeListBySource(\BO\Zmsentities\Source $source)
     {
+        $this->writeDeleteListBySource($source->getSource());
         foreach ($source->getProviderList() as $provider) {
             $this->writeEntity($provider);
         }
@@ -127,6 +128,14 @@ class Provider extends Base
             $provider = $this->readEntity($source, $provider['id']);
         }
         return $provider;
+    }
+
+    public function writeDeleteEntity($providerId, $source)
+    {
+        $query = new Query\Provider(Query\Base::DELETE);
+        $query->addConditionRequestId($providerId);
+        $query->addConditionRequestSource($source);
+        return $this->deleteItem($query);
     }
 
     public function writeDeleteListBySource($source)
