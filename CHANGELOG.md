@@ -1,11 +1,13 @@
 
 ## v2.19.00
 
-* #34135 - script zum Löschen alter Öffnungszeiten
+* #34135 script zum Löschen alter Öffnungszeiten
 * Statistik-Export für gebuchte/geplante Termine (ExchangeSlotscope)
-* #34808 - Bugfix: Statistik listete für Organisationen Standorte statt Behörden
-* #34979 - Bugfix: Kundenstatistik lieferte unterschiedliche Summen für SMS pro Monat
-
+* #34808 Bugfix: Statistik listete für Organisationen Standorte statt Behörden
+* #34979 Bugfix: Kundenstatistik lieferte unterschiedliche Summen für SMS pro Monat
+* #34628 DB-Zugriffs-Funktionen für neue Source-Entity sowie Migrationen um Source-Eigenschaft z.B. zum Standort hinzuzufügen
+* Exchange-Klassen setzen jetzt title-Attribut in Exchange-Entities
+* Bugfix: Löschen vom letzten Tag beim Monatswechsel in der Slotberechnung
 
 ## v2.18.02
 
@@ -13,8 +15,8 @@
 * Handbuch-Review: Falsche Rechte für Dienstleistungsstatistik korrigiert, diese waren vorher nur als Superuser abrufbar
 * Handbuch-Review: Labels für Dienstleistungsstatistik korrigiert
 * Error-Log: Bugfix für Meldung "Only variables should be passed by reference"
-* #34781 - Sperre Öffnungszeit-Objekt während der Slot-Berechnung, so dass in der Zeit nicht gespeichert werden kann (verhindert, dass eine Änderung nicht in die Neuberechnung aufgenommen wird)
-* #31586 - Bugfix Terminerinnerung nur versenden, wenn in der Behörde eine Absender-Adresse eingetragen ist (zur Zeit nicht produktiv, noch beim ZMS1)
+* #34781 Sperre Öffnungszeit-Objekt während der Slot-Berechnung, so dass in der Zeit nicht gespeichert werden kann (verhindert, dass eine Änderung nicht in die Neuberechnung aufgenommen wird)
+* #31586 Bugfix Terminerinnerung nur versenden, wenn in der Behörde eine Absender-Adresse eingetragen ist (zur Zeit nicht produktiv, noch beim ZMS1)
 
 
 ## v2.18.00
