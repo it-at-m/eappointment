@@ -48,7 +48,7 @@ class CounterQueueInfoTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertContains('2 (1)</strong> Arbeitsplatz besetzt', (string)$response->getBody());
+        $this->assertContains('2 (1)</strong> Arbeitsplätze besetzt', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
