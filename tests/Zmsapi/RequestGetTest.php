@@ -21,7 +21,7 @@ class RequestGetTest extends Base
 
     public function testNotFound()
     {
-        $this->expectException('\BO\Zmsdb\Exception\RequestNotFound');
+        $this->expectException('\BO\Zmsdb\Exception\Request\RequestNotFound');
         $this->expectExceptionCode(404);
         $this->render(['source' => 'dldb', 'id' => 999], [], []);
     }
