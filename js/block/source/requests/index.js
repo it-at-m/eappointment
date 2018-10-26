@@ -1,8 +1,8 @@
 import React, { Component, PropTypes } from 'react'
-
+import $ from "jquery"
 import * as Inputs from '../../../lib/inputs'
 
-const renderRequest = (request, index, onChange, labels, descriptions) => {
+const renderRequest = (request, index, onChange, onDeleteClick, labels, descriptions, source) => {
     const formName = `requests[${index}]`
 
     const onChangeName = (_, value) => onChange(index, 'name', value)
@@ -62,7 +62,7 @@ const renderRequest = (request, index, onChange, labels, descriptions) => {
                     <Inputs.Controls>
                         <Inputs.Textarea
                             name={`${formName}[data]`}
-                            value={JSON.stringify(request.data)}
+                            value={(request.data) ? JSON.stringify(request.data) : ''}
                             placeholder="{}"
                             onChange={onChangeData}
                         />
@@ -73,8 +73,13 @@ const renderRequest = (request, index, onChange, labels, descriptions) => {
                 </Inputs.FormGroup>
                 <Inputs.Hidden
                     name={`${formName}[source]`}
-                    value={request.source}
+                    value={source}
                 />
+            </td>
+            <td className="request-item__delete">
+                <label className="checkboxdeselect request__delete-button">
+                    <input type="checkbox" checked={true} onClick={() => onDeleteClick(index)} /><span></span>
+                </label>
             </td>
         </tr >
     )
@@ -87,15 +92,16 @@ class RequestsView extends Component {
             requests: props.requests.length > 0
                 ? props.requests
                 : [{
-                    source: '',
-                    id: '',
+                    source: props.source.source ? props.source.source : '',
+                    id: 1,
                     name: '',
                     link: '',
                     group: '',
-                    data: '{}'
+                    data: ''
                 }],
-            labels: props.labels,
-            descriptions: props.descriptions
+            labels: props.labelsrequests,
+            descriptions: props.descriptions,
+            source: props.source
         }
     }
 
@@ -108,15 +114,21 @@ class RequestsView extends Component {
         })
     }
 
+    getNextId() {
+        let nextId = Number(this.state.requests[this.state.requests.length - 1].id) + 1
+        return nextId;
+        //return this.state.requests.pop().id;
+    }
+
     addNewItem() {
         this.setState({
             requests: this.state.requests.concat([{
-                source: '',
-                id: '',
+                source: this.state.source,
+                id: this.getNextId(),
                 name: '',
                 link: '',
                 group: '',
-                data: {}
+                data: ''
             }])
         })
     }
@@ -129,8 +141,32 @@ class RequestsView extends Component {
         })
     }
 
-    getRequestsWithLabels(onChange) {
-        return this.state.requests.map((request, index) => renderRequest(request, index, onChange, this.state.labels, this.state.descriptions))
+    getRequestsWithLabels(onChange, onDeleteClick) {
+        return this.state.requests.map((request, index) => renderRequest(request, index, onChange, onDeleteClick, this.state.labels, this.state.descriptions, this.state.source.source))
+    }
+
+    hideDeleteButton() {
+        $('.request-item').each((index, item) => {
+            if ($(item).find('.request-item__id input').val()) {
+                $(item).find('.request__delete-button').css("visibility", "hidden");
+            }
+        })
+    }
+
+    componentDidMount() {
+        console.log("mounted request component")
+        this.hideDeleteButton()
+    }
+
+    componentDidUpdate() {
+        console.log("updated request component")
+    }
+
+    componentWillReceiveProps(nextProps) {
+        // You don't have to do this check first, but it can help prevent an unneeded render
+        if (nextProps.source.source !== this.state.source) {
+            this.setState({ source: nextProps.source })
+        }
     }
 
     render() {
@@ -139,6 +175,10 @@ class RequestsView extends Component {
         const onNewClick = ev => {
             ev.preventDefault()
             this.addNewItem()
+        }
+
+        const onDeleteClick = index => {
+            this.deleteItem(index)
         }
 
         const onChange = (index, field, value) => {
@@ -154,7 +194,7 @@ class RequestsView extends Component {
                         <th>Link und weitere Daten</th>
                     </thead>
                     <tbody>
-                        {this.getRequestsWithLabels(onChange)}
+                        {this.getRequestsWithLabels(onChange, onDeleteClick)}
                         <tr>
                             <td colSpan="4">
                                 <button className="button-default" onClick={onNewClick}>Neue Dienstleistung</button>
@@ -172,8 +212,9 @@ class RequestsView extends Component {
 
 RequestsView.propTypes = {
     requests: PropTypes.array,
-    labels: PropTypes.array.isRequired,
+    labelsrequests: PropTypes.array.isRequired,
     descriptions: PropTypes.array.isRequired,
+    source: PropTypes.array.isRequired
 }
 
 export default RequestsView

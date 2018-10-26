@@ -7,7 +7,8 @@ class CounterQueueInfoTest extends Base
     protected $arguments = [];
 
     protected $parameters = [
-        'ghostworkstationcount' => 2
+        'ghostworkstationcount' => 2,
+        'selecteddate' => '2016-05-27'
     ];
 
     protected $classname = "CounterQueueInfo";
@@ -34,8 +35,9 @@ class CounterQueueInfoTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/scope/141/queue/',
-                    'response' => $this->readFixture("GET_scope_141_queuelist.json")
+                    'url' => '/scope/141/process/2016-05-27/',
+                    'parameters' => ['resolveReferences' => 0],
+                    'response' => $this->readFixture("GET_scope_141_freeProcessList.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -72,8 +74,9 @@ class CounterQueueInfoTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/cluster/109/queue/',
-                    'response' => $this->readFixture("GET_cluster_109_queuelist.json")
+                    'url' => '/cluster/109/process/2016-05-27/',
+                    'parameters' => ['resolveReferences' => 1],
+                    'response' => $this->readFixture("GET_scope_141_freeProcessList.json")
                 ],
                 [
                     'function' => 'readGetResult',

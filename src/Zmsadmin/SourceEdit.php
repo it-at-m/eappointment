@@ -28,8 +28,20 @@ class SourceEdit extends BaseController
         if (!$workstation->hasSuperUseraccount()) {
             throw new Exception\NotAllowed();
         }
-        $source = \App::$http->readGetResult('/source/'. $args['name'] .'/', ['resolveReferences' => 2])->getEntity();
 
+        $requestList = null;
+        $providerList = null;
+        $requestRelationList = null;
+        $source = null;
+        if ('add' != $args['name']) {
+            $source = \App::$http
+                ->readGetResult('/source/'. $args['name'] .'/', ['resolveReferences' => 2])
+                ->getEntity();
+            $requestList = $source->getRequestList()->sortByCustomKey('id')->getArrayCopy();
+            $providerList = $source->getProviderList()->sortByCustomKey('id')->getArrayCopy();
+            $requestRelationList = $source->getRequestRelationList()->getArrayCopy();
+        }
+        
         $input = $request->getParsedBody();
         if (is_array($input) && array_key_exists('save', $input)) {
             $result = $this->testUpdateEntity($input);
@@ -48,6 +60,9 @@ class SourceEdit extends BaseController
                 'menuActive' => 'source',
                 'workstation' => $workstation,
                 'source' => $source,
+                'requestList' => $requestList,
+                'providerList' => $providerList,
+                'requestRelationList' => $requestRelationList,
                 'success' => $success,
                 'exception' => (isset($result)) ? $result : null
             )
