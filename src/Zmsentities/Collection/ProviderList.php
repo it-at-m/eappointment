@@ -44,7 +44,7 @@ class ProviderList extends Base
     {
         $list = new self();
         foreach ($this as $provider) {
-            $provider->data = json_decode($provider->data);
+            $provider->data = ($provider->data) ? json_decode($provider->data) : null;
             $list->addEntity($provider);
         }
         return $list;

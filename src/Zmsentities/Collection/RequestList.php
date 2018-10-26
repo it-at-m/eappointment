@@ -77,7 +77,7 @@ class RequestList extends Base
     {
         $list = new self();
         foreach ($this as $request) {
-            $request->data = json_decode($request->data);
+            $request->data = ($request->data) ? json_decode($request->data) : null;
             $list->addEntity($request);
         }
         return $list;
