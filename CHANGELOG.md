@@ -1,0 +1,22 @@
+
+## v2.19.00
+
+* Rohdaten für gebuchte/geplante Termine inkl. Visualisierung
+* #34808 - Bugfix: Spalte Standorte in Organisation wird jetzt zusammengefasst und als "alle" angezeigt
+* #34809 - Bugfix: Doppelte Tage auf Grund von Sommer-/Winterzeit korrigiert (März und Oktober)
+
+
+## v2.18.02
+
+* #33865 - Fehlende Access Keys noch ergänzt
+* Handbuch-Review: Mehrere kleine Anpassungen zu Formulierungen und nicht einheitlichem Layout
+
+
+## v2.18.00
+
+* #34447 Bugfix Doppelte Jahreszahlen entfernt
+* #34447 Bugfix Exception, wenn keine SMS-Statistik gefunden wurde
+* #34448 Bugfix Links zum Handbuch
+* #34027 HTTPS-Redirect bei HTTP-Aufruf
+* #34054 Korrektur der Standortbezeichnung, so dass immer der Standortname aus der DLDB verwendet wird
+* #34660 Template Anpassung zum Öffnen des Handbuchs im neuen Fenster
