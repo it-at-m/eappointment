@@ -1,6 +1,16 @@
 
 ## v2.19.00
 
+* #31592 Admin-Oberfläche für neue Mandanten zur Pflege von Dienstleistungen und Standorten
+* #34875 Rückmeldungs-Dialoge beim Löschen von Standorten, Behörden und Organisationen
+* #33865 Checkboxen und Buttons werden im Fokus jetzt besser hervorgehoben + Anpassungen Access-Keys
+* #34481 Bugfix: Wartezeitberechnung ohne nicht erschienene Kunden  
+* Fehlendes Template für den Fehler eines nicht vorhandenen freien Tages hinzugefügt
+* #33874 Fehlermeldung, wenn bei Öffnungszeiten die Zeit-Einstellungen fehlerhaft sind
+* #34942 Zurück-Pfeil an Datumangaben ausblenden, wenn dieser in die Vergangenheit führen würde
+* #34943 Benennung Spontankunde und Terminkunde besser trennen
+* #34889 OK-Button bei SMS-Erfolgsmeldung ergänzt
+* #34941 Mehrzahl/Einzahl Unterscheidung bei Arbeitsplatz/Arbeitsplätze
 
 
 
