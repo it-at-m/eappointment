@@ -62,6 +62,7 @@ class Provider extends Base
 
     public function writeEntity(Entity $entity)
     {
+        $this->writeDeleteEntity($entity->getId(), $entity->getSource());
         $contact =  $entity->getContact();
         if (! $contact->count()) {
             throw new Exception\Provider\ProviderContactMissed();
@@ -133,8 +134,8 @@ class Provider extends Base
     public function writeDeleteEntity($providerId, $source)
     {
         $query = new Query\Provider(Query\Base::DELETE);
-        $query->addConditionRequestId($providerId);
-        $query->addConditionRequestSource($source);
+        $query->addConditionProviderId($providerId);
+        $query->addConditionProviderSource($source);
         return $this->deleteItem($query);
     }
 

@@ -119,6 +119,7 @@ class Request extends Base
 
     public function writeEntity(Entity $entity)
     {
+        $this->writeDeleteEntity($entity->getId(), $entity->getSource());
         $query = new Query\Request(Query\Base::INSERT);
         $query->addValues([
             'source' => $entity->getSource(),
