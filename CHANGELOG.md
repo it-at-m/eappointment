@@ -2,6 +2,9 @@
 ## v2.19.00
 
 * #34135 - Cronjob um alte Öffnungszeiten zu löschen
+* Neue Routen für Mandantenfähigkeit unter /source/*
+* Performanceoptimierung AvailabilityListByScope
+* Bugfix: Umbenennung der Klasse Exception\RequestNotFound in Exception\Request\RequestNotFound
 
 
 ## v2.18.02
