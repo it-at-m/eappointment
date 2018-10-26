@@ -68,8 +68,8 @@ class Provider extends Schema\Entity
         return $this->toProperty()->link->get();
     }
 
-    public function getAdditionalJsonData()
+    public function getAdditionalData()
     {
-        return json_encode($this->toProperty()->data->get());
+        return $this->toProperty()->data->get();
     }
 }
