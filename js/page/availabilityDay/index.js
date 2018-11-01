@@ -4,7 +4,6 @@
 import React, { Component, PropTypes } from 'react'
 import $ from 'jquery'
 import moment from 'moment'
-import validate from './form/validate'
 import AvailabilityForm from './form'
 import Conflicts from './conflicts'
 import TimeTable from './timetable'
@@ -109,10 +108,6 @@ class AvailabilityPage extends Component {
 
             return sendAvailability
         }).map(cleanupAvailabilityForSave)
-
-        let {valid, errors} = validate(sendData[0]) 
-        console.log('onSaveUpdates', sendData)
-        console.log(errors)
 
         console.log('Saving updates', sendData)
 
