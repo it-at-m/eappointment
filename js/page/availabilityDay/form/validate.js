@@ -1,3 +1,4 @@
+
 const validate = data => {
     let valid = true
     const errors = {}
@@ -14,7 +15,8 @@ const validate = data => {
     var endMinute = data.endTime.split(':')[1]
     var slotTime = data.slotTimeInMinutes
 
-    if (startHour >= endHour) {
+    
+    if (startHour >= endHour) {      
         errors.startTime = 'Endzeit muss nach Startzeit stattfinden'
         valid = false
     }

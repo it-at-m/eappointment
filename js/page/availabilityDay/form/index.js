@@ -140,16 +140,18 @@ class AvailabilityForm extends Component {
     }
 
     render() {
+
+
         const { data, errors } = this.state
         const onChange = (name, value) => {
             this.handleChange(name, value)
         }
 
+
         const onSave = (ev) => {
             ev.preventDefault()
             console.log("form index", data)
             const validationResult = validate(data)
-
             if (!data.__modified || validationResult.valid) {
                 this.props.onSave(getDataValuesFromForm(data, this.props.data.scope))
             } else {
@@ -159,9 +161,8 @@ class AvailabilityForm extends Component {
         }
 
         const onPublish = (ev) => {
-            ev.preventDefault()
+            ev.preventDefault()       
             const validationResult = validate(data)
-
             if (!data.__modified || validationResult.valid) {
                 this.props.onPublish(getDataValuesFromForm(data, this.props.data.scope))
             } else {

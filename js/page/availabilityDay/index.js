@@ -110,6 +110,10 @@ class AvailabilityPage extends Component {
             return sendAvailability
         }).map(cleanupAvailabilityForSave)
 
+        let {valid, errors} = validate(sendData[0]) 
+        console.log('onSaveUpdates', sendData)
+        console.log(errors)
+
         console.log('Saving updates', sendData)
 
         $.ajax(`${this.props.links.includeurl}/availability/`, {
