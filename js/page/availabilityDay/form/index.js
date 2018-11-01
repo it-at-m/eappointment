@@ -89,7 +89,7 @@ const getDataValuesFromForm = (form, scope) => {
             "public": form.workstationCount_public
         },
         weekday: form.weekday.reduce((carry, current) => {
-            return Object.assign({}, carry, {[current]: 1})
+            return Object.assign({}, carry, { [current]: 1 })
         }, {}),
         repeat: {
             weekOfMonth: form.repeat > 0 ? form.repeat : 0,
@@ -147,6 +147,7 @@ class AvailabilityForm extends Component {
 
         const onSave = (ev) => {
             ev.preventDefault()
+            console.log("form index", data)
             const validationResult = validate(data)
 
             if (!data.__modified || validationResult.valid) {
@@ -190,22 +191,22 @@ class AvailabilityForm extends Component {
         }
 
         return <Board title={this.props.title || "Öffnungszeit bearbeiten"}
-                   headerRight={<HeaderButtons {...{ onCopy, onException, onEditInFuture}} />}
-                   body={renderBody(data, errors, onChange, onSave, onPublish, onDelete)}
-                   footer=""
-                   className="availability-form" />
+            headerRight={<HeaderButtons {...{ onCopy, onException, onEditInFuture }} />}
+            body={renderBody(data, errors, onChange, onSave, onPublish, onDelete)}
+            footer=""
+            className="availability-form" />
     }
 }
 
 AvailabilityForm.defaultProps = {
     data: {},
-    onSave: () => {},
-    onPublish: () => {},
-    onChange: () => {},
-    onDelete: () => {},
-    onCopy: () => {},
-    onException: () => {},
-    onEditInFuture: () => {}
+    onSave: () => { },
+    onPublish: () => { },
+    onChange: () => { },
+    onDelete: () => { },
+    onCopy: () => { },
+    onException: () => { },
+    onEditInFuture: () => { }
 }
 
 AvailabilityForm.propTypes = {

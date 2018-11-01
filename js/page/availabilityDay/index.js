@@ -13,13 +13,15 @@ import SaveBar from './saveBar'
 
 import PageLayout from './layouts/page'
 
-import { getInitialState,
-         getStateFromProps,
-         getNewAvailability,
-         mergeAvailabilityListIntoState,
-         updateAvailabilityInState,
-         cleanupAvailabilityForSave,
-         deleteAvailabilityInState } from "./helpers"
+import {
+    getInitialState,
+    getStateFromProps,
+    getNewAvailability,
+    mergeAvailabilityListIntoState,
+    updateAvailabilityInState,
+    cleanupAvailabilityForSave,
+    deleteAvailabilityInState
+} from "./helpers"
 
 const tempId = (() => {
     let lastId = -1
@@ -41,10 +43,10 @@ class AvailabilityPage extends Component {
     componentWillMount() {
         this.unloadHandler = ev => {
             const confirmMessage = "Es wurden nicht alle Änderungen gespeichert. Diese gehen beim schließen verloren."
-                if (this.state.stateChanged) {
-                    ev.returnValue = confirmMessage
-                    return confirmMessage
-                }
+            if (this.state.stateChanged) {
+                ev.returnValue = confirmMessage
+                return confirmMessage
+            }
         }
 
         window.addEventListener('beforeunload', this.unloadHandler)
@@ -77,7 +79,7 @@ class AvailabilityPage extends Component {
         const currentDate = formatTimestampDate(this.props.timestamp)
         const url = `${this.props.links.includeurl}/scope/${this.props.scope.id}/availability/day/${currentDate}/conflicts/`
         $.ajax(url, {
-            method:'GET'
+            method: 'GET'
         }).done(data => {
             const newProps = {
                 conflicts: data.conflicts,
@@ -87,7 +89,7 @@ class AvailabilityPage extends Component {
                 maxslots: data.maxSlotsForAvailabilities
             }
 
-            this.setState(Object.assign({}, getStateFromProps(Object.assign({}, this.props, newProps )), {
+            this.setState(Object.assign({}, getStateFromProps(Object.assign({}, this.props, newProps)), {
                 stateChanged: false,
                 selectedAvailability: null
             }))
@@ -107,30 +109,26 @@ class AvailabilityPage extends Component {
 
             return sendAvailability
         }).map(cleanupAvailabilityForSave)
-        
-        let {valid, errors} = validate(sendData) 
-        console.log('Saving updates', sendData)
-        console.log(errors)
 
-        if (valid) {
-            $.ajax(`${this.props.links.includeurl}/availability/`, {
-                method: 'POST',
-                data: JSON.stringify(sendData)
-            }).done((success) => {
-                console.log('save success', success)
-                this.setState({
-                    lastSave: new Date()
-                })
-                this.refreshData()
-            }).fail((err) => {
-                if (err.status === 404) {
-                    console.log('404 error, ignored')
-                    this.refreshData()
-                } else {
-                    console.log('save error', err)
-                }
+        console.log('Saving updates', sendData)
+
+        $.ajax(`${this.props.links.includeurl}/availability/`, {
+            method: 'POST',
+            data: JSON.stringify(sendData)
+        }).done((success) => {
+            console.log('save success', success)
+            this.setState({
+                lastSave: new Date()
             })
-        } 
+            this.refreshData()
+        }).fail((err) => {
+            if (err.status === 404) {
+                console.log('404 error, ignored')
+                this.refreshData()
+            } else {
+                console.log('save error', err)
+            }
+        })
     }
 
 
@@ -214,7 +212,7 @@ class AvailabilityPage extends Component {
                 pastAvailability,
                 exceptionAvailability,
                 futureAvailability
-            ] ),
+            ]),
             { selectedAvailability: exceptionAvailability, formTitle: "Ausnahme-Öffnungszeit" }
         ))
     }
@@ -246,8 +244,8 @@ class AvailabilityPage extends Component {
             mergeAvailabilityListIntoState(this.state, [
                 pastAvailability,
                 futureAvailability
-            ] ),
-            { selectedAvailability: futureAvailability, formTitle: "Neue Öffnungszeit ab Datum"}
+            ]),
+            { selectedAvailability: futureAvailability, formTitle: "Neue Öffnungszeit ab Datum" }
         ))
     }
 
@@ -257,7 +255,8 @@ class AvailabilityPage extends Component {
 
         this.setState(Object.assign({}, {
             selectedAvailability: newAvailability,
-            formTitle: "Neue Öffnungszeit" }))
+            formTitle: "Neue Öffnungszeit"
+        }))
     }
 
     onConflictedIdSelect(id) {
@@ -286,34 +285,34 @@ class AvailabilityPage extends Component {
 
 
         return <TimeTable
-                   timestamp={this.props.timestamp}
-                   conflicts={this.state.conflicts}
-                   availabilities={todaysAvailabilities}
-                   availabilityListSlices={this.state.availabilitylistslices}
-                   maxWorkstationCount={this.props.maxworkstationcount}
-                   links={this.props.links}
-                   onSelect={onSelect}
-                   onNewAvailability={this.onNewAvailability.bind(this)}
-               />
+            timestamp={this.props.timestamp}
+            conflicts={this.state.conflicts}
+            availabilities={todaysAvailabilities}
+            availabilityListSlices={this.state.availabilitylistslices}
+            maxWorkstationCount={this.props.maxworkstationcount}
+            links={this.props.links}
+            onSelect={onSelect}
+            onNewAvailability={this.onNewAvailability.bind(this)}
+        />
     }
 
     renderForm() {
         if (this.state.selectedAvailability) {
             return <AvailabilityForm data={this.state.selectedAvailability}
-                       title={this.state.formTitle}
-                       onSave={this.onUpdateAvailability.bind(this)}
-                       onPublish={this.onPublishAvailability.bind(this)}
-                       onDelete={this.onDeleteAvailability.bind(this)}
-                       onCopy={this.onCopyAvailability.bind(this)}
-                       onException={this.onCreateExceptionForAvailability.bind(this)}
-                       onEditInFuture={this.onEditAvailabilityInFuture.bind(this)}
-                   />
+                title={this.state.formTitle}
+                onSave={this.onUpdateAvailability.bind(this)}
+                onPublish={this.onPublishAvailability.bind(this)}
+                onDelete={this.onDeleteAvailability.bind(this)}
+                onCopy={this.onCopyAvailability.bind(this)}
+                onException={this.onCreateExceptionForAvailability.bind(this)}
+                onEditInFuture={this.onEditAvailabilityInFuture.bind(this)}
+            />
         }
     }
 
     renderUpdateBar() {
-        if (this.state.stateChanged) {
-            return <UpdateBar onSave={this.onSaveUpdates.bind(this)} onRevert={this.onRevertUpdates.bind(this)}/>
+        if (this.state.stateChanged && !this.state.selectedAvailability) {
+            return <UpdateBar onSave={this.onSaveUpdates.bind(this)} onRevert={this.onRevertUpdates.bind(this)} />
         }
     }
 

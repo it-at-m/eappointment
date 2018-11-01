@@ -14,14 +14,14 @@ const validate = data => {
     var endMinute = data.endTime.split(':')[1]
     var slotTime = data.slotTimeInMinutes
 
-    if (startHour >= endHour) {      
+    if (startHour >= endHour) {
         errors.startTime = 'Endzeit muss nach Startzeit stattfinden'
-        valid = false      
+        valid = false
     }
 
     if ((endMinute - startMinute) % slotTime > 0) {
         errors.type = 'Öffnungszeit kann nicht in Zeitschlitze verteilt werden.'
-        valid = false      
+        valid = false
     }
 
     return {
