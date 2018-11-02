@@ -23,6 +23,7 @@ class ScopeGet extends BaseController
     ) {
         $message = Response\Message::create($request);
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
+        $keepLessData = Validator::param('keepLessData')->isArray()->setDefault([])->getValue();
         $getIsOpened = Validator::param('getIsOpened')->isNumber()->setDefault(0)->getValue();
         $scope = (new Scope)->readEntity($args['id'], $resolveReferences);
         if (! $scope) {
@@ -32,7 +33,7 @@ class ScopeGet extends BaseController
         if ((new Helper\User($request))->hasRights()) {
             (new Helper\User($request))->checkRights('basic');
         } else {
-            $scope = $scope->withLessData();
+            $scope = $scope->withLessData($keepLessData);
             $message->meta->reducedData = true;
         }
 
