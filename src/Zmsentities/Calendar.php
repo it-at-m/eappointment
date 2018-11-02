@@ -279,11 +279,15 @@ class Calendar extends Schema\Entity
     public function withDayListByScopesBookableEnd(\DateTimeInterface $now)
     {
         if (1 == $this->getScopeList()->count()) {
+            $bookableStartDate = $now->modify('+'. $this->getScopeList()->getFirst()->getPreference(
+                'appointment',
+                'startInDaysDefault'
+            ) .' days')->modify('00:00:00');
             $bookableEndDate = $now->modify('+'. $this->getScopeList()->getFirst()->getPreference(
                 'appointment',
                 'endInDaysDefault'
             ) .' days')->modify('23:59:59');
-            $this->days = $this->days->withDaysInDateRange($this->getFirstDay(), $bookableEndDate);
+            $this->days = $this->days->withDaysInDateRange($bookableStartDate, $bookableEndDate);
         }
         return $this;
     }

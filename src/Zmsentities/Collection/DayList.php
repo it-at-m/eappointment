@@ -57,27 +57,13 @@ class DayList extends Base implements JsonUnindexed
         return ($day === null) ? false : true;
     }
 
-    public function getMonthIndex()
-    {
-        $daysByMonth = array();
-        foreach ($this as $day) {
-            $day = new Day($day);
-            $daysByMonth[$day->toDateTime()->format('m')][] = $day;
-        }
-        return array_keys($daysByMonth);
-    }
-
     public function withAssociatedDays($currentDate)
     {
         $dayList = new self();
-        foreach ($this->getMonthIndex() as $monthIndex) {
-            if ($currentDate->format('m') == $monthIndex) {
-                for ($dayNumber = 1; $dayNumber <= $currentDate->format('t'); $dayNumber ++) {
-                    $day = str_pad($dayNumber, 2, '0', STR_PAD_LEFT);
-                    $entity = $this->getDay($currentDate->format('Y'), $currentDate->format('m'), $day);
-                    $dayList->addEntity($entity);
-                }
-            }
+        for ($dayNumber = 1; $dayNumber <= $currentDate->format('t'); $dayNumber ++) {
+            $day = str_pad($dayNumber, 2, '0', STR_PAD_LEFT);
+            $entity = $this->getDay($currentDate->format('Y'), $currentDate->format('m'), $day);
+            $dayList->addEntity($entity);
         }
         return $dayList->sortByCustomKey('day');
     }
