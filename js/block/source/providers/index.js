@@ -153,8 +153,7 @@ class ProvidersView extends Component {
     componentWillReceiveProps(nextProps) {
         // You don't have to do this check first, but it can help prevent an unneeded render
         if (nextProps.source.source !== this.props.source) {
-            this.setState({ source: nextProps.source })
-            this.render()
+            //console.log("props changed", nextProps)
         }
     }
 
