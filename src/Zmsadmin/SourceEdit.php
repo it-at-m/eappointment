@@ -29,17 +29,10 @@ class SourceEdit extends BaseController
             throw new Exception\NotAllowed();
         }
 
-        $requestList = null;
-        $providerList = null;
-        $requestRelationList = null;
-        $source = null;
         if ('add' != $args['name']) {
             $source = \App::$http
                 ->readGetResult('/source/'. $args['name'] .'/', ['resolveReferences' => 2])
                 ->getEntity();
-            $requestList = $source->getRequestList()->sortByCustomKey('id')->getArrayCopy();
-            $providerList = $source->getProviderList()->sortByCustomKey('id')->getArrayCopy();
-            $requestRelationList = $source->getRequestRelationList()->getArrayCopy();
         }
         
         $input = $request->getParsedBody();
@@ -59,10 +52,7 @@ class SourceEdit extends BaseController
                 'title' => 'Mandanten bearbeiten',
                 'menuActive' => 'source',
                 'workstation' => $workstation,
-                'source' => $source,
-                'requestList' => $requestList,
-                'providerList' => $providerList,
-                'requestRelationList' => $requestRelationList,
+                'source' => ($source) ? $source : null,
                 'success' => $success,
                 'exception' => (isset($result)) ? $result : null
             )

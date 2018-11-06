@@ -5,15 +5,6 @@ import * as Inputs from '../../../lib/inputs'
 const renderProvider = (provider, index, onChange, onDeleteClick, labels, descriptions, source) => {
     const formName = `providers[${index}]`
 
-
-    const onChangeName = (_, value) => onChange(index, 'name', value)
-    const onChangeLink = (_, value) => onChange(index, 'link', value)
-    const onChangeStreet = (_, value) => onChange(index, 'contact[street]', value)
-    const onChangeStreetNumber = (_, value) => onChange(index, '[contact][streetNumber]', value)
-    const onChangePostalCode = (_, value) => onChange(index, '[contact][postalCode]', value)
-    const onChangeCity = (_, value) => onChange(index, '[contact][city]', value)
-    const onChangeData = (_, value) => onChange(index, 'data', value)
-
     return (
         <tr className="provider-item">
             <td className="provider-item__id" width="12%">
@@ -29,7 +20,7 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
                     name={`${formName}[name]`}
                     placeholder={labels.name}
                     value={provider.name}
-                    onChange={onChangeName}
+                    onChange={onChange}
                 />
             </td>
             <td className="provider-item__link">
@@ -42,7 +33,7 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
                             name={`${formName}[link]`}
                             placeholder={labels.url}
                             value={provider.link}
-                            onChange={onChangeLink}
+                            onChange={onChange}
                         />
                     </Inputs.Controls>
                 </Inputs.FormGroup>
@@ -55,7 +46,7 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
                             name={`${formName}[contact][street]`}
                             placeholder={labels.street}
                             value={provider.contact.street}
-                            onChange={onChangeStreet}
+                            onChange={onChange}
                         />
                     </Inputs.Controls>
                 </Inputs.FormGroup>
@@ -68,7 +59,7 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
                             name={`${formName}[contact][streetNumber]`}
                             placeholder={labels.streetNumber}
                             value={provider.contact.streetNumber}
-                            onChange={onChangeStreetNumber}
+                            onChange={onChange}
                         />
                     </Inputs.Controls>
                 </Inputs.FormGroup>
@@ -81,7 +72,7 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
                             name={`${formName}[contact][postalCode]`}
                             placeholder={labels.postalCode}
                             value={provider.contact.postalCode}
-                            onChange={onChangePostalCode}
+                            onChange={onChange}
                         />
                     </Inputs.Controls>
                 </Inputs.FormGroup>
@@ -94,7 +85,7 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
                             name={`${formName}[contact][city]`}
                             placeholder={labels.city}
                             value={provider.contact.city}
-                            onChange={onChangeCity}
+                            onChange={onChange}
                         />
                     </Inputs.Controls>
                 </Inputs.FormGroup>
@@ -107,7 +98,7 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
                             name={`${formName}[data]`}
                             value={(provider.data) ? JSON.stringify(provider.data) : ''}
                             placeholder="{}"
-                            onChange={onChangeData}
+                            onChange={onChange}
                         />
                         <Inputs.Description
                             children={descriptions.data}
@@ -131,78 +122,15 @@ const renderProvider = (provider, index, onChange, onDeleteClick, labels, descri
 class ProvidersView extends Component {
     constructor(props) {
         super(props)
-        this.state = {
-            providers: props.providers.length > 0
-                ? props.providers
-                : [{
-                    source: props.source.source ? props.source.source : '',
-                    id: 1,
-                    name: '',
-                    link: '',
-                    contact: {
-                        street: '',
-                        streetNumber: '',
-                        postalCode: '',
-                        city: '',
-                    },
-                    data: ''
-                }],
-            labels: props.labelsproviders,
-            descriptions: props.descriptions,
-            source: props.source
-        }
-    }
-
-    changeItemField(index, field, value) {
-        let newstate = { [field]: value };
-        if (field.match(/.\[/)) {
-            const firstPart = field.split('[')[0];
-            const secondPart = field.split('[')[1].replace(']', '');
-            newstate = { [firstPart]: { [secondPart]: value } };
-        }
-        console.log('change item field', index, field, value, newstate)
-
-        this.setState({
-            providers: this.state.providers.map((provider, requestIndex) => {
-                return index === requestIndex ? Object.assign({}, provider, newstate) : provider
-            })
-        })
     }
 
     getNextId() {
-        let nextId = Number(this.state.providers[this.state.providers.length - 1].id) + 1
+        let nextId = Number(this.props.source.providers[this.props.source.providers.length - 1].id) + 1
         return nextId;
-        //return this.state.requests.pop().id;
-    }
-
-    addNewItem() {
-        this.setState({
-            providers: this.state.providers.concat([{
-                source: this.state.source.source,
-                id: this.getNextId(),
-                name: '',
-                link: '',
-                contact: {
-                    street: '',
-                    streetNumber: '',
-                    postalCode: '',
-                    city: '',
-                },
-                data: ''
-            }])
-        })
-    }
-
-    deleteItem(deleteIndex) {
-        this.setState({
-            providers: this.state.providers.filter((provider, index) => {
-                return index !== deleteIndex
-            })
-        })
     }
 
     getProvidersWithLabels(onChange, onDeleteClick) {
-        return this.state.providers.map((provider, index) => renderProvider(provider, index, onChange, onDeleteClick, this.state.labels, this.state.descriptions, this.state.source.source))
+        return this.props.source.providers.map((provider, index) => renderProvider(provider, index, onChange, onDeleteClick, this.props.labelsproviders, this.props.descriptions, this.props.source.source))
     }
 
     hideDeleteButton() {
@@ -219,31 +147,41 @@ class ProvidersView extends Component {
     }
 
     componentDidUpdate() {
-        console.log("updated provider component")
+        //console.log("updated provider component")
     }
 
     componentWillReceiveProps(nextProps) {
         // You don't have to do this check first, but it can help prevent an unneeded render
-        if (nextProps.source.source !== this.state.source) {
+        if (nextProps.source.source !== this.props.source) {
             this.setState({ source: nextProps.source })
             this.render()
         }
     }
 
     render() {
-        //console.log('providersView::render', this.state)
-
         const onNewClick = ev => {
             ev.preventDefault()
-            this.addNewItem()
+            this.props.addNewHandler('providers', [{
+                source: this.props.source.source,
+                id: this.getNextId(),
+                name: '',
+                link: '',
+                contact: {
+                    street: '',
+                    streetNumber: '',
+                    postalCode: '',
+                    city: '',
+                },
+                data: ''
+            }])
         }
 
         const onDeleteClick = index => {
-            this.deleteItem(index)
+            this.props.deleteHandler('providers', index)
         }
 
-        const onChange = (index, field, value) => {
-            this.changeItemField(index, field, value)
+        const onChange = (field, value) => {
+            this.props.changeHandler(field, value)
         }
 
         return (
@@ -260,7 +198,7 @@ class ProvidersView extends Component {
                             <td colSpan="4">
                                 <button className="button-default" onClick={onNewClick}>Neuer Dienstleister</button>
                                 <Inputs.Description
-                                    children={this.state.descriptions.delete}
+                                    children={this.props.descriptions.delete}
                                 />
                             </td>
                         </tr>
@@ -272,10 +210,12 @@ class ProvidersView extends Component {
 }
 
 ProvidersView.propTypes = {
-    providers: PropTypes.array,
     labelsproviders: PropTypes.array.isRequired,
     descriptions: PropTypes.array.isRequired,
     source: PropTypes.array.isRequired,
+    changeHandler: PropTypes.changeHandler,
+    addNewHandler: PropTypes.addNewHandler,
+    deleteHandler: PropTypes.deleteHandler
 }
 
 export default ProvidersView

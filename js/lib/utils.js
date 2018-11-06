@@ -26,6 +26,51 @@ export const range = (start, end, step = 1) => {
 
 export const deepGet = (obj, path = []) => path.reduce((carry, current) => carry ? carry[current] : undefined, obj)
 
+export const deepMerge = (target, ...sources) => {
+    if (!sources.length) return target;
+    target = toObject(target)
+    const source = toObject(sources.shift())
+
+    for (const key in source) {
+        if (isObject(source[key])) {
+            if (!target[key]) Object.assign(target, { [key]: {} });
+            deepMerge(target[key], source[key]);
+        } else {
+            Object.assign(target, { [key]: source[key] });
+        }
+    }
+
+
+    return deepMerge(target, ...sources);
+}
+
+export const isObject = (item) => {
+    return (item && typeof item === 'object' && !Array.isArray(item));
+}
+
+export const toObject = (arr) => {
+    let newObj = arr;
+    if (!isObject(newObj)) {
+        newObj = Object.assign({}, arr)
+    }
+    return newObj;
+}
+
+export const getFieldList = (field) => {
+    let fieldList = [];
+    let match;
+    let reg = RegExp('([^[]+)', 'g');
+    while ((match = reg.exec(field))) {
+        fieldList.push(match.pop().replace(']', ''))
+    }
+    return fieldList;
+}
+
+export const makeNestedObj = (arr, value) => {
+    const reducer = (acc, item) => ({ [item]: acc });
+    return arr.reduceRight(reducer, value);
+}
+
 const attributesToArray = attributes => Array.prototype.slice.call(attributes, 0)
 
 export const getDataAttributes = (element) => {
@@ -91,7 +136,7 @@ export const lightbox = (parentElement, onBackgroundClick) => {
     }
 }
 
-export const noOp = () => {}
+export const noOp = () => { }
 
 export const stopEvent = (ev) => {
     if (ev) {
@@ -102,15 +147,15 @@ export const stopEvent = (ev) => {
 
 export const getUrlParameters = () => {
     return document.location.search.replace(/^\?/, "")
-                   .split("&")
-                   .reduce((carry, current) => {
-                       const [key, value] = current.split('=')
-                       if (key) {
-                           return Object.assign({}, carry, {[key]: value})
-                       } else {
-                           return carry
-                       }
-                   }, {})
+        .split("&")
+        .reduce((carry, current) => {
+            const [key, value] = current.split('=')
+            if (key) {
+                return Object.assign({}, carry, { [key]: value })
+            } else {
+                return carry
+            }
+        }, {})
 }
 
 export const forceHttps = () => {
@@ -142,7 +187,7 @@ export const hideSpinner = ($container = null) => {
         loaderContainer = $container.find('.body').first();
         loaderContainer.find('.loader').detach();
     } else {
-      loaderContainer.find('.loader').first().detach();
+        loaderContainer.find('.loader').first().detach();
     }
 
 }
