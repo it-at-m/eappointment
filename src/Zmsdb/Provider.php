@@ -81,7 +81,7 @@ class Provider extends Base
             'contact__street' => $contact->getProperty('street'),
             'contact__streetNumber' => $contact->getProperty('streetNumber', '-'),
             'link' =>  ($entity->getLink()) ? $entity->getLink() : '',
-            'data' => ($entity->getAdditionalData()) ? json_encode($entity->getAdditionalData()) : json_encode($entity)
+            'data' => ($entity->getAdditionalData()) ? json_encode($entity->getAdditionalData()) : '{}'
         ]);
         $this->writeItem($query);
         return $this->readEntity($entity->getSource(), $entity->getId());
