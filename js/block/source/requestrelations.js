@@ -14,7 +14,7 @@ class RequestRelationView extends Component {
         return this.props.source.requestrelation.map((item, index) => this.renderItem(item, index, onChange, onDeleteClick, this.props.source))
     }
 
-    renderOption(item, index) {
+    renderOption(item) {
         return {
             name: item.name ? item.name : this.props.labelsrequestrelation.noName, value: item.id
         }
@@ -35,7 +35,7 @@ class RequestRelationView extends Component {
                         name={`${formName}[request][id]`}
                         {...{ onChange }}
                         options={
-                            this.props.source.requests.map((request, index) => this.renderOption(request, index))
+                            this.props.source.requests.map((request) => this.renderOption(request))
                         } {...{ onChange }}
                     />
                 </td>
@@ -43,9 +43,10 @@ class RequestRelationView extends Component {
                     <Inputs.Select
                         value={item.provider.id}
                         name={`${formName}[provider][id]`}
+                        {...{ onChange }}
                         options={
-                            this.props.source.providers.map((provider, index) => this.renderOption(provider, index))
-                        }
+                            this.props.source.providers.map((provider) => this.renderOption(provider))
+                        } {...{ onChange }}
                     />
                 </td>
                 <td className="requestrelation-item__slots">
