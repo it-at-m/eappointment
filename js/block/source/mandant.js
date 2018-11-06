@@ -4,38 +4,29 @@ import * as Inputs from '../../lib/inputs'
 class MandantView extends Component {
     constructor(props) {
         super(props)
-        this.state = {
-            source: props.source,
-            descriptions: props.descriptions,
-            labels: props.labelsmandant
-        }
     }
 
     componentDidUpdate() {
-        console.log("updated mandant component")
+        //console.log("updated mandant component")
     }
 
     render() {
         const onChange = (field, value) => {
-            this.props.handler(field, value)
+            this.props.changeHandler(field, value)
         }
 
-        const onChangeLabel = (_, value) => onChange('label', value)
-        const onChangeSource = (_, value) => onChange('source', value)
-        const onChangeName = (_, value) => onChange('contact[name]', value)
-        const onChangeMail = (_, value) => onChange('contact[email]', value)
         return (
             <fieldset>
                 <div>
                     <Inputs.FormGroup>
                         <Inputs.Label
-                            children={this.state.labels.label}
+                            children={this.props.labelsmandant.label}
                         />
                         <Inputs.Controls>
                             <Inputs.Text
                                 name="label"
-                                value={(this.state.source) ? this.state.source.label : ''}
-                                onChange={onChangeLabel}
+                                value={(this.props.source) ? this.props.source.label : ''}
+                                onChange={onChange}
                             />
                         </Inputs.Controls>
                     </Inputs.FormGroup>
@@ -43,16 +34,16 @@ class MandantView extends Component {
                 <div>
                     <Inputs.FormGroup>
                         <Inputs.Label
-                            children={this.state.labels.source}
+                            children={this.props.labelsmandant.source}
                         />
                         <Inputs.Controls>
                             <Inputs.Text
                                 name="source"
-                                value={(this.state.source) ? this.state.source.source : ''}
-                                onChange={onChangeSource}
+                                value={(this.props.source) ? this.props.source.source : ''}
+                                onChange={onChange}
                             />
                             <Inputs.Description
-                                children={this.state.labels.description}
+                                children={this.props.descriptions.mandantlabel}
                             />
                         </Inputs.Controls>
                     </Inputs.FormGroup>
@@ -60,13 +51,13 @@ class MandantView extends Component {
                 <div>
                     <Inputs.FormGroup>
                         <Inputs.Label
-                            children={this.state.labels.name}
+                            children={this.props.labelsmandant.name}
                         />
                         <Inputs.Controls>
                             <Inputs.Text
                                 name="contact[name]"
-                                value={(this.state.source.contact) ? this.state.source.contact.name : ''}
-                                onChange={onChangeName}
+                                value={(this.props.source.contact) ? this.props.source.contact.name : ''}
+                                onChange={onChange}
                             />
                         </Inputs.Controls>
                     </Inputs.FormGroup>
@@ -74,13 +65,13 @@ class MandantView extends Component {
                 <div>
                     <Inputs.FormGroup>
                         <Inputs.Label
-                            children={this.state.labels.email}
+                            children={this.props.labelsmandant.email}
                         />
                         <Inputs.Controls>
                             <Inputs.Text
                                 name="contact[email]"
-                                value={(this.state.source.contact) ? this.state.source.contact.email : ''}
-                                onChange={onChangeMail}
+                                value={(this.props.source.contact) ? this.props.source.contact.email : ''}
+                                onChange={onChange}
                             />
                         </Inputs.Controls>
                     </Inputs.FormGroup>
@@ -93,7 +84,7 @@ class MandantView extends Component {
 MandantView.propTypes = {
     labelsmandant: PropTypes.array.isRequired,
     source: PropTypes.array.isRequired,
-    handler: PropTypes.handler,
+    changeHandler: PropTypes.handler,
     descriptions: PropTypes.array
 }
 

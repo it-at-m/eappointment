@@ -1,51 +1,89 @@
 import React, { Component, PropTypes } from 'react'
+import { deepMerge, makeNestedObj, getFieldList, toObject } from '../../lib/utils'
 import MandantView from './mandant'
 import RequestsView from './requests'
 import ProvidersView from './providers'
+import RequestRelationView from './requestrelations'
 
 class SourceView extends Component {
     constructor(props) {
         super(props)
-        this.handler = this.handler.bind(this)
-        this.state = {
-            labels: props.labels,
-            descriptions: props.descriptions,
-            source: props.source
-        }
+        this.changeHandler = this.changeHandler.bind(this)
+        this.addNewHandler = this.addNewHandler.bind(this)
+        this.deleteHandler = this.deleteHandler.bind(this)
+        this.state = this.props
     }
 
-    handler(field, value) {
-        let newstate = this.state.source;
-        if (field.match(/.\[/)) {
-            const firstPart = field.split('[')[0];
-            const secondPart = field.split('[')[1].replace(']', '');
-            newstate[firstPart] = { [secondPart]: value }
-        }
-        else {
-            newstate[field] = value;
+    changeHandler(field, value) {
+        let newstate = this.state.source
+        const fieldList = getFieldList(field)
+        if (fieldList.length === 1) {
+            newstate[fieldList.pop()] = value
+        } else {
+            newstate = deepMerge(newstate, makeNestedObj(fieldList, value))
         }
         this.setState({ source: newstate });
     }
 
+    addNewHandler(field, props) {
+        let newstate = this.state.source
+        newstate[field] = this.state.source[field].concat(props)
+        this.setState({ source: newstate })
+    }
+
+    deleteHandler(field, deleteIndex) {
+        let newstate = this.state.source
+        newstate[field] = this.state.source[field].filter((item, index) => {
+            return index !== deleteIndex
+        })
+        this.setState({ source: newstate })
+    }
+
     componentDidMount() {
-        console.log("mounted component")
+        console.log("mounted source component")
     }
 
     componentDidUpdate() {
-        console.log("updated component")
+        //console.log("updated source component")
     }
 
     render() {
         return (
             <div>
-                <MandantView {...this.props} handler={this.handler} />
+                <MandantView
+                    {...this.props}
+                    source={this.state.source}
+                    changeHandler={this.changeHandler}
+                />
                 <fieldset>
                     <legend>Dienstleistungen</legend>
-                    <RequestsView {...this.props} source={this.state.source} />
+                    <RequestsView
+                        {...this.props}
+                        source={this.state.source}
+                        changeHandler={this.changeHandler}
+                        addNewHandler={this.addNewHandler}
+                        deleteHandler={this.deleteHandler}
+                    />
                 </fieldset>
                 <fieldset>
                     <legend>Dienstleister</legend>
-                    <ProvidersView {...this.props} source={this.state.source} />
+                    <ProvidersView
+                        {...this.props}
+                        source={this.state.source}
+                        changeHandler={this.changeHandler}
+                        addNewHandler={this.addNewHandler}
+                        deleteHandler={this.deleteHandler}
+                    />
+                </fieldset>
+                <fieldset>
+                    <legend>Zeitslots</legend>
+                    <RequestRelationView
+                        {...this.props}
+                        source={this.state.source}
+                        changeHandler={this.changeHandler}
+                        addNewHandler={this.addNewHandler}
+                        deleteHandler={this.deleteHandler}
+                    />
                 </fieldset>
             </div>
         );
