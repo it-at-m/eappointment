@@ -18,6 +18,27 @@ class SessionUpdateTest extends Base
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
+    public function testIsDifferent()
+    {
+        $response = $this->render([], [
+            '__body' => '{
+                "id": "unittest",
+                "name": "unittest",
+                "content": {
+                    "basket": {
+                        "providers" : "999999999"
+                    },
+                    "entry": {
+                        "providers": "122222"
+                    },
+                    "error": "isDifferent"
+                }
+            }',
+        ], []);
+        $this->assertContains('session.json', (string)$response->getBody());
+        $this->assertTrue(200 == $response->getStatusCode());
+    }
+
     public function testEmpty()
     {
         $this->expectException('BO\Mellon\Failure\Exception');
