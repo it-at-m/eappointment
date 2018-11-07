@@ -349,10 +349,11 @@ class View extends BaseView {
     }
 
     onGhostWorkstationChange($container, event) {
+        let selectedDate = this.selectedDate
         let ghostWorkstationCount = "-1";
         if (event.target.value > -1)
             ghostWorkstationCount = event.target.value;
-        this.loadContent(`${this.includeUrl}/counter/queueInfo/?ghostworkstationcount=${ghostWorkstationCount}`, null, null, $container).then(() => {
+        this.loadContent(`${this.includeUrl}/counter/queueInfo/?ghostworkstationcount=${ghostWorkstationCount}&selecteddate=${selectedDate}`, null, null, $container).then(() => {
             this.loadAllPartials();
         });
     }
