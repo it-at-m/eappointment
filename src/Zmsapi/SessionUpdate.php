@@ -24,7 +24,9 @@ class SessionUpdate extends BaseController
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $session = new \BO\Zmsentities\Session($input);
         $session->testValid();
-        $this->testMatching($session);
+        if ('isDifferent' != $session->getContent()['error']) {
+            $this->testMatching($session);
+        }
 
         $message = Response\Message::create($request);
         $message->data = (new Session())->updateEntity($session);
