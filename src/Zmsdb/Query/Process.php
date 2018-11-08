@@ -56,6 +56,11 @@ class Process extends Base implements MappingInterface
             OR istFolgeterminvon = ?
         ";
 
+    const QUERY_UPDATE_FOLLOWING_PROCESS = "UPDATE buerger 
+        SET vorlaeufigeBuchung = :reserved 
+        WHERE istFolgeterminvon = :processID
+        ";
+
     public function getQueryNewProcessId()
     {
         $random = rand(20, 100);
@@ -287,6 +292,16 @@ class Process extends Base implements MappingInterface
             $condition
                 ->andWith('process.istFolgeterminvon', 'IS', null)
                 ->orWith('process.istFolgeterminvon', '=', 0);
+        });
+        return $this;
+    }
+
+    public function addConditionProcessIdFollow($processId)
+    {
+        $this->query->where(function (\Solution10\SQL\ConditionBuilder $condition) use ($processId) {
+            $condition
+                ->andWith('process.BuergerID', '=', $processId)
+                ->orWith('process.istFolgeterminvon', '=', $processId);
         });
         return $this;
     }

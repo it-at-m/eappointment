@@ -109,6 +109,7 @@ class ProcessTest extends Base
         $now = new \DateTimeImmutable("2016-04-01 11:55");
         $query = new ProcessStatusFree();
         $input = $this->getTestProcessEntity();
+        $input->getFirstAppointment()->slotCount = 3;
         $input->queue['callTime'] = 0;
         $process = $query->writeEntityReserved($input, $now);
         $process->amendment = 'Test amendment';
@@ -125,6 +126,13 @@ class ProcessTest extends Base
         $this->assertEquals(1464339600, $process->queue['arrivalTime']);
         $this->assertEquals(2, $process->clients->count());
         $this->assertEquals('Unbekannt', $process->getClients()->getLast()->familyName);
+
+        $processList = $query->readEntityList($process->id);
+        foreach ($processList as $processItem) {
+            $this->assertNotEquals('reserved', $processItem->status);
+        }
+
+        $process = $query->deleteEntity($process->id, $process->authKey);
 
         $json = $this->readFixture("ProcessReserved01.json");
         $data = json_decode($json, true);

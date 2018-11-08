@@ -61,6 +61,10 @@ class Process extends Base implements Interfaces\ResolveReferences
         if (!$process->getId()) {
             throw new Exception\Process\ProcessUpdateFailed();
         }
+        $this->perform(Query\Process::QUERY_UPDATE_FOLLOWING_PROCESS, [
+            'reserved' => ($process->status == 'reserved') ? 1 : 0,
+            'processID' => $process->getId(),
+        ]);
         (new Slot())->deleteSlotProcessMappingFor($process->id);
         (new Slot())->writeSlotProcessMappingFor($process->id);
         Log::writeLogEntry("UPDATE (Process::updateEntity) $process ", $process->getId());
@@ -173,6 +177,22 @@ class Process extends Base implements Interfaces\ResolveReferences
             $processList->addEntity($entity);
         }
         return $processList;
+    }
+
+    /**
+     * Read list with following processes in DB
+     * DEBUG ONLY
+     */
+    public function readEntityList($processId, $resolveReferences = 0)
+    {
+        $query = new Query\Process(Query\Base::SELECT);
+        $query
+            ->addResolvedReferences($resolveReferences)
+            ->addEntityMapping()
+            ->addConditionProcessIdFollow($processId)
+        ;
+        $statement = $this->fetchStatement($query);
+        return $this->readList($statement, $resolveReferences);
     }
 
     public function readByWorkstation(\BO\Zmsentities\Workstation $workstation, $resolveReferences = 0)
