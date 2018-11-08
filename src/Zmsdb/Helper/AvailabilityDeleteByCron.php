@@ -34,7 +34,9 @@ class AvailabilityDeleteByCron
     protected function deleteAvailability(string $availabilityId)
     {
         if ($this->query->deleteEntity($availabilityId) && $this->verbose) {
-            error_log("INFO: Availability $availabilityId successfully removed");
+            if ($this->verbose) {
+                error_log("INFO: Availability $availabilityId successfully removed");
+            }
         } else {
             error_log("WARN: Could not remove availability {$availabilityId}!");
         }
