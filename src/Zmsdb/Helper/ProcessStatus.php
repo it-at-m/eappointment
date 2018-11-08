@@ -29,6 +29,10 @@ class ProcessStatus extends \BO\Zmsdb\Process
         $query->addValuesUpdateProcess($entity, $dateTime);
 
         $this->writeItem($query, 'process', $query::TABLE);
+        $this->perform(\BO\Zmsdb\Query\Process::QUERY_UPDATE_FOLLOWING_PROCESS, [
+            'reserved' => ($process->status == 'reserved') ? 1 : 0,
+            'processID' => $process->getId(),
+        ]);
         $process = $this->readEntity($process['id'], $process['authKey'], $resolveReferences);
         $process['status'] = $this->readProcessStatus($process['id'], $process['authKey']);
         return $process;
