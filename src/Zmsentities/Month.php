@@ -42,7 +42,7 @@ class Month extends Schema\Entity
         return $this;
     }
 
-    public function getFromDateWithDays(
+    public static function createForDateFromDayList(
         \DateTimeInterface $currentDate,
         \BO\Zmsentities\Collection\DayList $dayList
     ) {

@@ -310,7 +310,7 @@ class Calendar extends Schema\Entity
         }
         $monthList = new Collection\MonthList();
         do {
-            $monthList->addEntity((new Month())->getFromDateWithDays($currentDate, $this->days));
+            $monthList->addEntity(Month::createForDateFromDayList($currentDate, $this->days));
             $currentDate = $currentDate->modify('+1 month');
         } while ($currentDate->getTimestamp() < $lastDay->getTimestamp());
         return $monthList;
