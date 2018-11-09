@@ -15,7 +15,7 @@ class ExchangeUseraccount extends Base
         $entity->addDictionaryEntry('Behoerde', 'string', 'Name der Berhoerde');
         $entity->addDictionaryEntry('Name', 'string', 'Name des Nutzers');
         $entity->addDictionaryEntry('Email', 'string', 'E-Mail Addresse des Nutzers');
-        $entity->addDictionaryEntry('lastUpdate', 'string', 'Wurde letztens aktualisiert');
+        $entity->addDictionaryEntry('lastUpdate', 'string', 'Letzte Aktivität des Nutzers oder Änderung durch Admin');
         $entity->addDictionaryEntry('rightsnotification', 'string', 'Nutzung SMS-Versands');
         $entity->addDictionaryEntry('rightsticketprinter', 'string', 'Ein- und Ausschlaten vom Kiosk');
         $entity->addDictionaryEntry('rightsavailability', 'string', 'Administration von Öffnungszeiten');
