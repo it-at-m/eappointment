@@ -127,7 +127,7 @@ class ProcessFormValidation
                 ->isMail("Die E-Mail Adresse muss im Format max@mustermann.de eingeben werden.")
                 ->hasDNS(
                     "Zu der angegebenen E-Mail-Adresse können keine Mails verschickt werden. ".
-                    "Der Host zur Domain nach dem '@' ist nicht erreichbar (DNS fehlt). ".
+                    "Der Host zur Domain nach dem '@' ist nicht erreichbar. ".
                     ""
                 );
             if (array_key_exists('emailRequired', $scopePrefs['client']) &&
