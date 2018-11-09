@@ -60,7 +60,8 @@ class DayList extends Base implements JsonUnindexed
     public function withAssociatedDays($currentDate)
     {
         $dayList = new self();
-        for ($dayNumber = 1; $dayNumber <= $currentDate->format('t'); $dayNumber ++) {
+        $lastDay = $currentDate->format('t');
+        for ($dayNumber = 1; $dayNumber <= $lastDay; $dayNumber ++) {
             $day = str_pad($dayNumber, 2, '0', STR_PAD_LEFT);
             $entity = $this->getDay($currentDate->format('Y'), $currentDate->format('m'), $day);
             $dayList->addEntity($entity);
