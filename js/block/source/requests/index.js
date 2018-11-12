@@ -86,7 +86,7 @@ class RequestsView extends Component {
     }
 
     getNextId() {
-        let nextId = Number(this.props.source.requests[this.props.source.requests.length - 1].id) + 1
+        let nextId = Number(this.props.source.requests.length  ? this.props.source.requests[this.props.source.requests.length - 1].id : 0) + 1
         return nextId;
     }
 

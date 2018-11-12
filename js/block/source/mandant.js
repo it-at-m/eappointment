@@ -40,6 +40,7 @@ class MandantView extends Component {
                             <Inputs.Text
                                 name="source"
                                 value={(this.props.source) ? this.props.source.source : ''}
+                                attributes={ {readOnly: this.props.source.lastChange} }
                                 onChange={onChange}
                             />
                             <Inputs.Description

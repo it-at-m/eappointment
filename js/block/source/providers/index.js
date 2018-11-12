@@ -125,7 +125,7 @@ class ProvidersView extends Component {
     }
 
     getNextId() {
-        let nextId = Number(this.props.source.providers[this.props.source.providers.length - 1].id) + 1
+        let nextId = Number(this.props.source.providers.length  ? this.props.source.providers[this.props.source.providers.length - 1].id : 0) + 1
         return nextId;
     }
 
