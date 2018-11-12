@@ -23,7 +23,7 @@ class ExchangeNotificationdepartment extends Base
             LEFT JOIN
                 '. self::TABLE .' n ON s.`StandortID` = n.`StandortID` AND n.`Datum` BETWEEN :datestart AND :dateend
         WHERE
-            s.`BehoerdenID` = :departmentid AND n.`Datum` IS NOT NULL
+            s.`BehoerdenID` = :departmentid 
         GROUP BY scopename
         ORDER BY date, scopename
     ';
