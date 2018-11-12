@@ -19,7 +19,7 @@ class ExchangeNotificationscopeTest extends Base
         $this->assertEquals("Charlottenburg-Wilmersdorf", $entity->data[0][2]); // organisation name
         $this->assertEquals("Bürgeramt", $entity->data[0][3]); // department name
         $this->assertEquals("Bürgeramt Heerstraße ", $entity->data[0][4]); // scope name
-        $this->assertEquals(14, $entity->data[0][5]); // notifications COUNT
+        $this->assertEquals(13, $entity->data[0][5]); // notifications COUNT
     }
 
     public function testSubjectList()
