@@ -17,6 +17,7 @@ class Source extends Base
             'editable' => 'source.editable',
             'contact__name' => 'source.contact__name',
             'contact__email' => 'source.contact__email',
+            'lastChange' => 'source.lastChange',
         ];
     }
 
