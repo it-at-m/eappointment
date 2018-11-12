@@ -30,6 +30,7 @@
             "type": "number"
         },
         "appointmentExists": {
+            "description": "true if a bookable or full day is present. This is false, if no potential bookable day is available in this month.",
             "type": "boolean"
         },
         "calHeadline": {
