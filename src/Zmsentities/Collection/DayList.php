@@ -115,7 +115,7 @@ class DayList extends Base implements JsonUnindexed
         foreach ($this as $hash => $day) {
             $hash = null;
             $day = new Day($day);
-            if ($day->isBookable()) {
+            if ($day->hasAppointments()) {
                 return true;
             }
         }
