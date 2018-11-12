@@ -276,6 +276,9 @@ class Calendar extends Schema\Entity
         return $this;
     }
 
+    /**
+     * TODO: Remove, wrong place to implement startInDaysDefault and endInDaysDefault
+     */
     public function withDayListByScopesBookableEnd(\DateTimeInterface $now)
     {
         if (1 == $this->getScopeList()->count()) {
