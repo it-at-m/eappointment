@@ -79,7 +79,6 @@ class Source extends Base
      */
     public function writeEntity(Entity $entity, $resolveReferences = 0)
     {
-        error_log(json_encode($entity, 1));
         if (! $entity->isCompleteAndEditable()) {
             throw new Exception\Source\SourceInvalidInput();
         }

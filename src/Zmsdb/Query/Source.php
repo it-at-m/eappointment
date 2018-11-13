@@ -2,7 +2,7 @@
 
 namespace BO\Zmsdb\Query;
 
-class Source extends Base
+class Source extends Base implements MappingInterface
 {
     /**
      * @var String TABLE mysql table reference
@@ -25,5 +25,13 @@ class Source extends Base
     {
         $this->query->where('source.source', '=', $source);
         return $this;
+    }
+
+    public function postProcess($data)
+    {
+        $data[$this->getPrefixed("lastChange")] =
+            (new \DateTime($data[$this->getPrefixed("lastChange")] . \BO\Zmsdb\Connection\Select::$connectionTimezone))
+            ->getTimestamp();
+        return $data;
     }
 }
