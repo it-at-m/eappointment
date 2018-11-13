@@ -5,6 +5,8 @@
 * Neue Routen für Mandantenfähigkeit unter /source/*
 * Performanceoptimierung AvailabilityListByScope
 * Bugfix: Umbenennung der Klasse Exception\RequestNotFound in Exception\Request\RequestNotFound
+* #35041 Option für scopes mit keepLessData auch Einstellungen zurückzugeben
+* Bugfix: Option für Session-Update keine Exception für Änderungen an Dienstleistungen/Standorten auszugeben
 
 
 ## v2.18.02
