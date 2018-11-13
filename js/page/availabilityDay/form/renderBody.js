@@ -5,7 +5,7 @@ import Errors from './errors'
 const { Label, FormGroup, Controls, Description } = Inputs
 import { range } from '../../../lib/utils'
 
-const renderBody = (data, errors, onChange, onSave, onPublish, onDelete) => {
+const renderBody = (data, errors, onChange, onSave, onPublish, onDelete, onAbort) => {
     return (
         <div>
             <Errors {...{ errors }} />
@@ -184,7 +184,7 @@ const renderBody = (data, errors, onChange, onSave, onPublish, onDelete) => {
                 </fieldset>
                 <div className="form-actions">
                     {data.id ? <button className="button-delete" type="delete" value="delete" onClick={onDelete}>Löschen</button> :
-                        <button className="button-abort" id="availability-abort" value="abort">Abbrechen</button>}
+                        <button className="button-abort" type="abort" id="availability-abort" onClick={onAbort}>Abbrechen</button>}
                     <div className="right">
                         <button className={data.__modified ? "button-new btn--b3igicon" : "btn"}
                             type="save"

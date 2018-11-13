@@ -161,7 +161,7 @@ class AvailabilityForm extends Component {
         }
 
         const onPublish = (ev) => {
-            ev.preventDefault()       
+            ev.preventDefault()
             const validationResult = validate(data)
             if (!data.__modified || validationResult.valid) {
                 this.props.onPublish(getDataValuesFromForm(data, this.props.data.scope))
@@ -174,6 +174,11 @@ class AvailabilityForm extends Component {
         const onDelete = ev => {
             ev.preventDefault()
             this.props.onDelete(getDataValuesFromForm(data, this.props.data.scope))
+        }
+
+        const onAbort = (ev) => {
+            ev.preventDefault()
+            this.props.onAbort()
         }
 
         const onCopy = ev => {
@@ -193,7 +198,7 @@ class AvailabilityForm extends Component {
 
         return <Board title={this.props.title || "Öffnungszeit bearbeiten"}
             headerRight={<HeaderButtons {...{ onCopy, onException, onEditInFuture }} />}
-            body={renderBody(data, errors, onChange, onSave, onPublish, onDelete)}
+            body={renderBody(data, errors, onChange, onSave, onPublish, onDelete, onAbort)}
             footer=""
             className="availability-form" />
     }
@@ -214,6 +219,7 @@ AvailabilityForm.propTypes = {
     data: PropTypes.object,
     title: PropTypes.string,
     onSave: PropTypes.func,
+    onAbort: PropTypes.func,
     onPublish: PropTypes.func,
     onDelete: PropTypes.func,
     onChange: PropTypes.func,
