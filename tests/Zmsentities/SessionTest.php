@@ -12,10 +12,12 @@ class SessionTest extends EntityCommonTests
         $content = $entity->getContent();
         $basket = $entity->getBasket();
         $human = $entity->getHuman();
+        $source = $entity->getSource();
 
         $this->assertTrue(is_array($content), 'session content missed');
         $this->assertTrue(is_array($basket), 'basket conten not unserialized');
         $this->assertTrue(is_array($human), 'human content not unserialized');
+        $this->assertEquals('dldb', $source, 'session source missed');
         $this->assertTrue('kck6Qz' == $human['captcha_text'], 'human not accessible');
         $this->assertTrue($entity->hasRequests(), 'requests not accessible');
         $this->assertTrue($entity->hasProvider(), 'providers not accessible');

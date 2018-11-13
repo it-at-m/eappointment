@@ -46,4 +46,30 @@ class Provider extends Schema\Entity
         }
         return $requestList;
     }
+
+    public function getSource()
+    {
+        return $this->toProperty()->source->get();
+    }
+
+    public function getName()
+    {
+        return $this->toProperty()->name->get();
+    }
+
+    public function getContact()
+    {
+        $contact = $this->toProperty()->contact->get();
+        return new Contact($contact);
+    }
+
+    public function getLink()
+    {
+        return $this->toProperty()->link->get();
+    }
+
+    public function getAdditionalData()
+    {
+        return $this->toProperty()->data->get();
+    }
 }

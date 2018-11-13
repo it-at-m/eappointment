@@ -113,22 +113,27 @@
         }
       }
     },
+    "title": {
+      "type": "string",
+      "description": "Title for the data, might include hints for the data"
+    },
     "visualization": {
-        "type:": "object",
-        "properties": {
-            "xlabel": {
-                "type": "array",
-                "items": {
-                    "type": "string"
-                }
-            },
-            "ylabel": {
-                "type": "array",
-                "items": {
-                    "type": "string"
-                }
-            }
+      "type": "object",
+      "description": "Hints for visualization of the data",
+      "properties": {
+        "xlabel": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "ylabel": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
+      }
     }
   }
 }

@@ -510,6 +510,20 @@ class AvailabilityTest extends EntityCommonTests
         $this->assertTrue($entityOH->isOpened($time));
     }
 
+    public function testWithScope()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $scope = (new \BO\Zmsentities\Scope())->getExample();
+        $entity = $entity->withScope($scope);
+        $this->assertEquals(123, $entity->scope->id);
+
+        $collection = new $this->collectionclass();
+        $entity2 = (new $this->entityclass())->getExample();
+        $collection->addEntity($entity2);
+        $collection = $collection->withScope($scope);
+        $this->assertEquals(123, $collection->getFirst()->scope->id);
+    }
+
     /**
      * @SuppressWarnings(Length)
      *

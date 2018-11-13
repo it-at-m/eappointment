@@ -45,6 +45,7 @@ class Session extends Schema\Entity
                       'summary' => 0
                     )
                 ],
+                'source' => 'dldb',
                 'status' => 'start',
                 'X-Authkey' => '',
                 'error' => ''
@@ -80,6 +81,11 @@ class Session extends Schema\Entity
     public function getProcess()
     {
         return $this->toProperty()->content->basket->process->get();
+    }
+
+    public function getSource()
+    {
+        return $this->toProperty()->content->source->get();
     }
 
     public function getScope()
