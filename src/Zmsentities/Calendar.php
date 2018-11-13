@@ -277,25 +277,6 @@ class Calendar extends Schema\Entity
     }
 
     /**
-     * TODO: Remove, wrong place to implement startInDaysDefault and endInDaysDefault
-     */
-    public function withDayListByScopesBookableEnd(\DateTimeInterface $now)
-    {
-        if (1 == $this->getScopeList()->count()) {
-            $bookableStartDate = $now->modify('+'. $this->getScopeList()->getFirst()->getPreference(
-                'appointment',
-                'startInDaysDefault'
-            ) .' days')->modify('00:00:00');
-            $bookableEndDate = $now->modify('+'. $this->getScopeList()->getFirst()->getPreference(
-                'appointment',
-                'endInDaysDefault'
-            ) .' days')->modify('23:59:59');
-            $this->days = $this->days->withDaysInDateRange($bookableStartDate, $bookableEndDate);
-        }
-        return $this;
-    }
-
-    /**
      * Returns a list of contained month given by firstDay and lastDay
      * The return value is a month entity object for the first day of the month
      *
