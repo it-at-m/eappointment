@@ -10,8 +10,8 @@ class Request extends Schema\Entity
 
     public function withReference($additionalData = [])
     {
-        $additionalData['id'] = $this['id'];
-        $additionalData['name'] = $this['name'];
+        $additionalData['id'] = $this->getId();
+        $additionalData['name'] = $this->getName();
         return parent::withReference($additionalData);
     }
 
@@ -25,5 +25,30 @@ class Request extends Schema\Entity
             }
         }
         return false;
+    }
+
+    public function getSource()
+    {
+        return $this->toProperty()->source->get();
+    }
+
+    public function getGroup()
+    {
+        return $this->toProperty()->group->get();
+    }
+
+    public function getLink()
+    {
+        return $this->toProperty()->link->get();
+    }
+
+    public function getName()
+    {
+        return $this->toProperty()->name->get();
+    }
+
+    public function getAdditionalData()
+    {
+        return $this->toProperty()->data->get();
     }
 }

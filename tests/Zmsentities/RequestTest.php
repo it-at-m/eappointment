@@ -8,6 +8,15 @@ class RequestTest extends EntityCommonTests
 
     public $collectionclass = '\BO\Zmsentities\Collection\RequestList';
 
+    public function testBasic()
+    {
+        $entity = $this->getExample();
+        $this->assertEntity($this->entityclass, $entity);
+        $this->assertEquals('Abmeldung einer Wohnung', $entity->getName());
+        $this->assertEquals('Meldewesen und Ordnung', $entity->getGroup());
+        $this->assertEquals('http://service.berlin.de/dienstleistung/120335/', $entity->getLink());
+    }
+
     public function testCollection()
     {
         $collection = new $this->collectionclass();
@@ -77,5 +86,11 @@ class RequestTest extends EntityCommonTests
         $collection = new $this->collectionclass();
         $collection->addEntity($entity);
         $this->assertFalse($collection->hasAppointmentFromProviderData());
+    }
+
+    public function testSource()
+    {
+        $entity = $this->getExample();
+        $this->assertEquals('dldb', $entity->getSource());
     }
 }

@@ -14,9 +14,15 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
     {
         return [
             'id' => 0,
+            'source' => 'dldb',
             'contact' => new Contact(),
             'provider' => new Provider(),
         ];
+    }
+
+    public function getSource()
+    {
+        return $this->toProperty()->source->get();
     }
 
     public function getProvider()

@@ -55,7 +55,12 @@ class Day extends Schema\Entity
 
     public function isBookable()
     {
-        return ($this->status == 'bookable');
+        return ($this->status == self::BOOKABLE);
+    }
+
+    public function hasAppointments()
+    {
+        return ($this->status == self::BOOKABLE || $this->status == self::FULL);
     }
 
     /**

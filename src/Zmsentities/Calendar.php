@@ -292,23 +292,9 @@ class Calendar extends Schema\Entity
             $currentDate = $lastDay;
             $lastDay = $firstDay;
         }
-        //$this->getDay($firstDay->format('Y'), $firstDay->format('m'), $firstDay->format('d'));
-        //$this->getDay($lastDay->format('Y'), $lastDay->format('m'), $lastDay->format('d'));
         $monthList = new Collection\MonthList();
-        $dayList = new Collection\DayList($this->days);
         do {
-            $startDow = date('w', mktime(0, 0, 0, $currentDate->format('m'), 1, $currentDate->format('Y')));
-            $month = (new Month(
-                array(
-                    'year' => $currentDate->format('Y'),
-                    'month' => $currentDate->format('m'),
-                    'calHeadline' => strftime('%B %Y', $currentDate->getTimestamp()),
-                    'startDow' => ($startDow == 0) ? 6 : $startDow - 1, // change for week start with monday on 0,
-                    'days' => $dayList->withAssociatedDays($currentDate),
-                    'appointmentExists' => $dayList->hasDayWithAppointments()
-                )
-            ));
-            $monthList->addEntity($month);
+            $monthList->addEntity(Month::createForDateFromDayList($currentDate, $this->days));
             $currentDate = $currentDate->modify('+1 month');
         } while ($currentDate->getTimestamp() < $lastDay->getTimestamp());
         return $monthList;

@@ -55,20 +55,21 @@
         },
         "requests": [
             {
-            "id": "120703",
-            "name": "Personalausweis beantragen",
-            "source": "dldb"
+                "id": "120703",
+                "name": "Personalausweis beantragen",
+                "source": "dldb"
             }
         ],
         "providers": [
-        	{
-        		"id": 122217
-        	}
+            {
+                "id": 122217,
+                "source": "dldb"
+            }
         ],
         "clusters": [
-        	{
-        		"id": 109
-        	}
+            {
+                "id": 109
+            }
         ],
         "scopes": [
             {
@@ -76,9 +77,9 @@
             }
         ],
         "freeProcesses": [
-        	{
-        		"id": 123
-        	}
+            {
+                "id": 123
+            }
         ]
     },
     "required": [
