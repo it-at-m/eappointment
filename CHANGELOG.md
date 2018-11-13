@@ -11,6 +11,11 @@
 * #34943 Benennung Spontankunde und Terminkunde besser trennen
 * #34889 OK-Button bei SMS-Erfolgsmeldung ergänzt
 * #34941 Mehrzahl/Einzahl Unterscheidung bei Arbeitsplatz/Arbeitsplätze
+* #35041 Bugfix: Im Standort waren nur maximal 2 stellige Buchungszeiträume möglich. Wir haben dies auf 3 Stellen erhöht, so dass man z.B. "180" Tage im voraus einstellen kann
+* Standort-Formular: SMS-Einstellungen wurden nach oben verschoben um inhaltlich näher an den Einstellungen zur Online-Terminvereinbarung zu sein
+* Standort-Formular: Erklärungs-Text für Mehrfachtermine angepasst
+* #35102 Bugfix: Der Jahreswechsel im Wochenkalender funktionierte nicht
+* #33875 Bugfix: Löschen-Button bei neuen Öffnungszeiten führte zu einem 404-Fehler, daher wurde dieser bei neuen Öffnungszeiten entfernt, stattdessen wurde ein Abbrechen-Button eingebaut
 
 
 
