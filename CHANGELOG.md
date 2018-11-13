@@ -3,6 +3,8 @@
 * exchange-Entity mit mit neuen Eigenschaften "title" und "visualization"
 * #34628 - Source-Entity erstellt für Mandantenfähigkeit
 * getProperty() und hasProperty() für alle Entity-Klassen in die Basis-Klasse verlegt
+* #35041 Bugfix: Prüfung, ob ein Monat noch Termine enthält sowie Erstellung eines Monats anhand eines Datum (Refactoring: Funktion von zmsappointment zu zmsentities verschoben)
+* Wording: DNS-Fehlermeldung angepasst bei Validierung von E-Mail-Adressen
 
 ## v2.18.02
 
