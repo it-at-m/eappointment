@@ -8,6 +8,9 @@
 * #34628 DB-Zugriffs-Funktionen für neue Source-Entity sowie Migrationen um Source-Eigenschaft z.B. zum Standort hinzuzufügen
 * Exchange-Klassen setzen jetzt title-Attribut in Exchange-Entities
 * Bugfix: Löschen vom letzten Tag beim Monatswechsel in der Slotberechnung
+* #35085 Bugfix: Reservierung auch für Folge-Slots aufheben
+* Wording: Beschreibung zum Feld lastUpdate in ExchangeUseraccount angepasst
+* #34808 Bugfix: Statistik - Standorte, die keine SMS verschickten tauchen jetzt als Eintrag mit 0 SMS auf
 
 ## v2.18.02
 
