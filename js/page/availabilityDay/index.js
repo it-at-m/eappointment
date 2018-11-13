@@ -302,6 +302,7 @@ class AvailabilityPage extends Component {
                 onSave={this.onUpdateAvailability.bind(this)}
                 onPublish={this.onPublishAvailability.bind(this)}
                 onDelete={this.onDeleteAvailability.bind(this)}
+                onAbort={this.onRevertUpdates.bind(this)}
                 onCopy={this.onCopyAvailability.bind(this)}
                 onException={this.onCreateExceptionForAvailability.bind(this)}
                 onEditInFuture={this.onEditAvailabilityInFuture.bind(this)}
