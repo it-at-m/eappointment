@@ -182,9 +182,10 @@ const renderBody = (data, errors, onChange, onSave, onPublish, onDelete) => {
                         </Controls>
                     </FormGroup> : null }
                 </fieldset>
-
+                {console.log(data)}
                 <div className="form-actions">
-                    <button className="button-delete" type="delete" value="delete" onClick={onDelete}>Löschen</button>
+                  {data.id ?  <button className="button-delete" type="delete" value="delete" onClick={onDelete}>Löschen</button> :
+                   <button className="button-abort" id="availability-abort" value="abort">Abbrechen</button>}         
                     <div className="right">
                         <button className={data.__modified ? "button-new btn--b3igicon" : "btn"}
                             type="save"
