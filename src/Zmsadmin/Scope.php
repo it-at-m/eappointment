@@ -23,6 +23,7 @@ class Scope extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        $sourceList = \App::$http->readGetResult('/source/')->getCollection();
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         $providerAssigned = \App::$http->readGetResult(
             '/provider/'. $workstation->getScope()->getSource() .'/',
@@ -68,6 +69,7 @@ class Scope extends BaseController
                     'notAssigned' => $providerNotAssigned,
                     'assigned' => $providerAssigned
                 ),
+                'sourceList' => $sourceList,
                 'callDisplayImage' => $callDisplayImage,
                 'success' => $success,
                 'exception' => (isset($result)) ? $result : null
