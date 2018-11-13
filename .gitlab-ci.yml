@@ -1,0 +1,21 @@
+image: registry.gitlab.berlinonline.net/land-intranet/zmsbase/dev:latest
+
+# Select what we should cache
+cache:
+    key: "mellon-$CI_BUILD_REF_NAME"
+    paths:
+        - /root/.composer
+        - /root/.npm
+
+test:
+    tags:
+        - docker
+    script:
+        - echo "[url \"https://gitlab-ci-token:"$CI_JOB_TOKEN"@gitlab.berlinonline.net/\"]" > /root/.gitconfig
+        - echo "    insteadOf = ssh://git@gitlab.berlinonline.net:22/" >> /root/.gitconfig
+        - echo "    insteadOf = https://gitlab.berlinonline.net/" >> /root/.gitconfig
+        - echo $HOME
+        - test "$CI_COMMIT_REF_NAME" = "master" && composer.phar install --no-progress || composer.phar update --no-progress
+        - vendor/bin/phpcs --standard=psr2 src/
+        - vendor/bin/phpmd src/ text phpmd.rules.xml
+        - php -dzend_extension=xdebug.so vendor/bin/phpunit -v --colors=never --coverage-text --coverage-html public/_tests/coverage/
