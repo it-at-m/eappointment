@@ -67,7 +67,9 @@ class Index extends BaseController
             } elseif ('BO\Zmsapi\Exception\Useraccount\UserAlreadyLoggedIn' == $exception->template) {
                 \BO\Zmsclient\Auth::setKey($exception->data['authkey']);
                 throw $exception;
-            } elseif ('' != $exception->template) {
+            } elseif ('' != $exception->template
+                && \App::$slim->getContainer()->view->getLoader()->exists($exception->template)
+            ) {
                 $exceptionData = [
                   'template' => strtolower($exception->template),
                   'data' => $exception->data
