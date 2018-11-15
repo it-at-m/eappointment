@@ -370,6 +370,7 @@ class Process extends Schema\Entity
                 if ($appointment->toProperty()->scope->isAvailable()) {
                     $scopeId = $appointment['scope']['id'];
                     unset($appointment['scope']);
+                    $appointment['scope'] = ['id' => $entity->toProperty()->scope->id->get()];
                     if ($scopeId != $entity->toProperty()->scope->id->get()) {
                         $appointment['scope'] = ['id' => $scopeId];
                     }
