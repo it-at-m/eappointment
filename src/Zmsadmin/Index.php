@@ -57,9 +57,10 @@ class Index extends BaseController
                 return \BO\Slim\Render::redirect('workstationSelect', array(), array());
             }
         } catch (\BO\Zmsclient\Exception $exception) {
+            $template = Helper\TwigExceptionHandler::getExceptionTemplate($exception);
             if ('BO\Zmsentities\Exception\SchemaValidation' == $exception->template) {
                 $exceptionData = [
-                  'template' => 'bo\zmsapi\exception\useraccount\invalidcredentials'
+                  'template' => 'exception/bo/zmsapi/exception/useraccount/invalidcredentials.twig'
                 ];
                 $exceptionData['data']['password']['messages'] = [
                     'Der Nutzername oder das Passwort wurden falsch eingegeben'
@@ -68,10 +69,10 @@ class Index extends BaseController
                 \BO\Zmsclient\Auth::setKey($exception->data['authkey']);
                 throw $exception;
             } elseif ('' != $exception->template
-                && \App::$slim->getContainer()->view->getLoader()->exists($exception->template)
+                && \App::$slim->getContainer()->view->getLoader()->exists($template)
             ) {
                 $exceptionData = [
-                  'template' => strtolower($exception->template),
+                  'template' => $template,
                   'data' => $exception->data
                 ];
             } else {

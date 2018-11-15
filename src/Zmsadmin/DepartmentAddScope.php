@@ -13,7 +13,7 @@ use BO\Mellon\Validator;
   * Handle requests concerning services
   *
   */
-class DepartmentAddScope extends BaseController
+class DepartmentAddScope extends Scope
 {
     /**
      * @return String
@@ -24,38 +24,24 @@ class DepartmentAddScope extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
-        $providerAssigned = \App::$http
-            ->readGetResult('/provider/'. $workstation->getScope()->getSource() .'/', ['isAssigned' => true])
-            ->getCollection()
-            ->withUniqueProvider()
-            ->sortByName();
-
-        $providerNotAssigned = \App::$http
-            ->readGetResult('/provider/'. $workstation->getScope()->getSource() .'/', ['isAssigned' => false])
-            ->getCollection()
-            ->withUniqueProvider()
-            ->sortByName();
+        $sourceList = $this->readSourceList();
+        $providerAssigned = $this->readProviderAssigned($workstation->getScope()->getSource());
+        $providerNotAssigned = $this->readProviderNotAssigned($workstation->getScope()->getSource());
 
         $departmentId = Validator::value($args['id'])->isNumber()->getValue();
         $department = \App::$http
-            ->readGetResult('/department/'. $departmentId .'/', ['resolveReferences' => 2])->getEntity();
+            ->readGetResult('/department/'. $departmentId .'/', ['resolveReferences' => 0])->getEntity();
         $organisation = \App::$http->readGetResult('/department/' . $departmentId . '/organisation/')->getEntity();
         $input = $request->getParsedBody();
 
         if (is_array($input) && array_key_exists('save', $input)) {
-            $entity = (new Entity($input))->withCleanedUpFormData();
-            $entity = \App::$http->readPostResult('/department/'. $department->id .'/scope/', $entity)
-                ->getEntity();
-            (new Helper\FileUploader($request, 'uploadCallDisplayImage'))->writeUploadToScope($entity->id);
-            return \BO\Slim\Render::redirect(
-                'scope',
-                array(
-                    'id' => $entity->id
-                ),
-                array(
+            $result = $this->testUpdateEntity($input, $department->id);
+            if ($result instanceof Entity) {
+                $this->writeUploadedImage($request, $result->id, $input);
+                return \BO\Slim\Render::redirect('scope', ['id' => $result->id], [
                     'success' => 'scope_created'
-                )
-            );
+                ]);
+            }
         }
 
         return \BO\Slim\Render::withHtml($response, 'page/scope.twig', array(
@@ -65,6 +51,8 @@ class DepartmentAddScope extends BaseController
             'workstation' => $workstation,
             'organisation' => $organisation,
             'department' => $department,
+            'sourceList' => $sourceList,
+            'exception' => (isset($result)) ? $result : null,
             'providerList' => array(
                 'notAssigned' => $providerNotAssigned,
                 'assigned' => $providerAssigned

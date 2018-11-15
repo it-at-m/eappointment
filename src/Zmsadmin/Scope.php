@@ -22,25 +22,17 @@ class Scope extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
-        $sourceList = \App::$http->readGetResult('/source/')->getCollection();
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
-        $providerAssigned = \App::$http->readGetResult(
-            '/provider/'. $workstation->getScope()->getSource() .'/',
-            array(
-                'isAssigned' => true
-            )
-        )->getCollection()->withUniqueProvider()->sortByName();
 
-        $providerNotAssigned = \App::$http->readGetResult(
-            '/provider/'. $workstation->getScope()->getSource() .'/',
-            array(
-                'isAssigned' => false
-            )
-        )->getCollection()->withUniqueProvider()->sortByName();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
 
         $entityId = Validator::value($args['id'])->isNumber()->getValue();
         $entity = \App::$http->readGetResult('/scope/' . $entityId . '/', ['resolveReferences' => 1])->getEntity();
+
+        $sourceList = $this->readSourceList();
+        $providerAssigned = $this->readProviderAssigned($entity->getSource());
+        $providerNotAssigned = $this->readProviderNotAssigned($entity->getSource());
+
         $organisation = \App::$http->readGetResult('/scope/' . $entityId . '/organisation/')->getEntity();
         $department = \App::$http->readGetResult('/scope/' . $entityId . '/department/')->getEntity();
         $callDisplayImage = \App::$http->readGetResult('/scope/'. $entityId .'/imagedata/calldisplay/')->getEntity();
@@ -77,17 +69,57 @@ class Scope extends BaseController
         );
     }
 
-    protected function testUpdateEntity($input, $entityId)
+    protected function readProviderAssigned($source)
+    {
+        $providerAssigned = \App::$http->readGetResult(
+            '/provider/'. $source .'/',
+            array(
+                'isAssigned' => true
+            )
+        )->getCollection()->withUniqueProvider()->sortByName();
+        return $providerAssigned;
+    }
+
+    protected function readProviderNotAssigned($source)
+    {
+        $providerNotAssigned = \App::$http->readGetResult(
+            '/provider/'. $source .'/',
+            array(
+                'isAssigned' => false
+            )
+        )->getCollection()->withUniqueProvider()->sortByName();
+        return $providerNotAssigned;
+    }
+
+    protected function readSourceList()
+    {
+        $sourceList = \App::$http->readGetResult('/source/')->getCollection();
+        return $sourceList;
+    }
+
+    /**
+     * @param \BO\Zmsentities\Scope $input scope entity, if used without ID, a new scope is created
+     * @param Number $entityId Might be the entity scope or department if called from DepartmentAddScope
+     */
+    protected function testUpdateEntity($input, $entityId = null)
     {
         $entity = (new Entity($input))->withCleanedUpFormData();
-        $entity->id = $entityId;
         try {
-            $entity = \App::$http->readPostResult('/scope/' . $entity->id . '/', $entity)->getEntity();
+            if ($entity->id) {
+                $entity->id = $entityId;
+                $entity = \App::$http->readPostResult('/scope/' . $entity->id . '/', $entity)->getEntity();
+            } else {
+                $entity = \App::$http->readPostResult('/department/'. $entityId .'/scope/', $entity)
+                                     ->getEntity();
+            }
         } catch (\BO\Zmsclient\Exception $exception) {
-            if ('' != $exception->template) {
+            $template = Helper\TwigExceptionHandler::getExceptionTemplate($exception);
+            if ('' != $exception->template
+                && \App::$slim->getContainer()->view->getLoader()->exists($template)
+            ) {
                 return [
-                  'template' => strtolower($exception->template),
-                  'data' => $exception->data
+                    'template' => $template,
+                    'data' => $exception->data
                 ];
             }
             throw $exception;

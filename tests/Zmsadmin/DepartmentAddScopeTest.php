@@ -24,6 +24,11 @@ class DepartmentAddScopeTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
+                    'url' => '/source/',
+                    'response' => $this->readFixture("GET_sourcelist.json")
+                ],
+                [
+                    'function' => 'readGetResult',
                     'url' => '/provider/dldb/',
                     'parameters' => ['isAssigned' => true],
                     'response' => $this->readFixture("GET_providerlist_assigned.json")
@@ -37,7 +42,7 @@ class DepartmentAddScopeTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/department/74/',
-                    'parameters' => ['resolveReferences' => 2],
+                    'parameters' => ['resolveReferences' => 0],
                     'response' => $this->readFixture("GET_department_74.json")
                 ],
                 [
@@ -64,6 +69,11 @@ class DepartmentAddScopeTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
+                    'url' => '/source/',
+                    'response' => $this->readFixture("GET_sourcelist.json")
+                ],
+                [
+                    'function' => 'readGetResult',
                     'url' => '/provider/dldb/',
                     'parameters' => ['isAssigned' => true],
                     'response' => $this->readFixture("GET_providerlist_assigned.json")
@@ -77,7 +87,7 @@ class DepartmentAddScopeTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/department/74/',
-                    'parameters' => ['resolveReferences' => 2],
+                    'parameters' => ['resolveReferences' => 0],
                     'response' => $this->readFixture("GET_department_74.json")
                 ],
                 [
