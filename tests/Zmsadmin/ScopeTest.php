@@ -133,6 +133,7 @@ class ScopeTest extends Base
                 'source' => 'dldb',
                 'id' => '122217',
             ],
+            'id' => 141,
             'contact' => [
                 'name' => 'Bürgeramt Heerstraße',
                 'street' => 'Heerstr. 12',
@@ -224,6 +225,7 @@ class ScopeTest extends Base
                 'street' => 'Heerstr. 12',
                 'email' => '',
             ],
+            'id' => 141,
             'hint' => [
                 'Nr. wird zum Termin aufgerufen ',
                 ' Nr. wird zum Termin aufgerufen'
@@ -311,6 +313,7 @@ class ScopeTest extends Base
                 'street' => 'Heerstr. 12',
                 'email' => '',
             ],
+            'id' => 141,
             'hint' => [
                 'Nr. wird zum Termin aufgerufen ',
                 ' Nr. wird zum Termin aufgerufen'
@@ -452,6 +455,7 @@ class ScopeTest extends Base
                 'street' => 'Heerstr. 12',
                 'email' => '',
             ],
+            'id' => 141,
             'hint' => [
                 'Nr. wird zum Termin aufgerufen ',
                 ' Nr. wird zum Termin aufgerufen'
@@ -476,7 +480,7 @@ class ScopeTest extends Base
     public function testUnknownException()
     {
         $this->expectException('BO\Zmsclient\Exception');
-        $exception = new \BO\Zmsclient\Exception();
+        $exception = new \BO\Zmsclient\Exception("TestUnknownException");
         $exception->template = '';
 
         $this->setApiCalls(
@@ -533,6 +537,7 @@ class ScopeTest extends Base
             ]
         );
         $this->render($this->arguments, [
+            'id' => 141,
             'provider' => [
                 'source' => 'dldb',
                 'id' => '122217',

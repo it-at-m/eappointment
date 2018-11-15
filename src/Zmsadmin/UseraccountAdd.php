@@ -66,11 +66,14 @@ class UseraccountAdd extends BaseController
         try {
             $entity = \App::$http->readPostResult('/useraccount/', $entity)->getEntity();
         } catch (\BO\Zmsclient\Exception $exception) {
-            if ('' != $exception->template) {
+            $template = Helper\TwigExceptionHandler::getExceptionTemplate($exception);
+            if ('' != $exception->template
+                && \App::$slim->getContainer()->view->getLoader()->exists($template)
+            ) {
                 return [
-                  'template' => strtolower($exception->template),
-                  'include' => true,
-                  'data' => $exception->data
+                    'template' => $template,
+                    'include' => true,
+                    'data' => $exception->data
                 ];
             }
             throw $exception;

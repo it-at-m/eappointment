@@ -65,10 +65,13 @@ class SourceEdit extends BaseController
         try {
             $entity = \App::$http->readPostResult('/source/', $entity)->getEntity();
         } catch (\BO\Zmsclient\Exception $exception) {
-            if ('' != $exception->template) {
+            $template = Helper\TwigExceptionHandler::getExceptionTemplate($exception);
+            if ('' != $exception->template
+                && \App::$slim->getContainer()->view->getLoader()->exists($template)
+            ) {
                 return [
-                  'template' => strtolower($exception->template),
-                  'data' => $exception->data
+                    'template' => $template,
+                    'data' => $exception->data
                 ];
             }
             throw $exception;
