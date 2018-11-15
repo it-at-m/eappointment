@@ -73,7 +73,7 @@ class Render
         \BO\Slim\Profiler::add("Controller");
         $response = $response->withStatus($status);
         $response = $response->withHeader('Content-Type', 'application/json');
-        $response->getBody()->write(json_encode($data));
+        $response->getBody()->write(json_encode($data, JSON_UNESCAPED_SLASHES));
         \BO\Slim\Profiler::add("Rendering");
         return $response;
     }
