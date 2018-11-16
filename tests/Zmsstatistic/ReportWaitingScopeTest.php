@@ -14,27 +14,27 @@ class ReportWaitingScopeTest extends Base
     {
         $this->setApiCalls(
             [
-              [
-                  'function' => 'readGetResult',
-                  'url' => '/workstation/',
-                  'parameters' => ['resolveReferences' => 2],
-                  'response' => $this->readFixture("GET_Workstation_Resolved2.json")
-              ],
-              [
-                  'function' => 'readGetResult',
-                  'url' => '/scope/141/department/',
-                  'response' => $this->readFixture("GET_department_74.json")
-              ],
-              [
-                  'function' => 'readGetResult',
-                  'url' => '/department/74/organisation/',
-                  'response' => $this->readFixture("GET_organisation_71_resolved3.json")
-              ],
-              [
-                  'function' => 'readGetResult',
-                  'url' => '/warehouse/waitingscope/141/',
-                  'response' => $this->readFixture("GET_waitingscope_141.json")
-              ]
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/department/',
+                    'response' => $this->readFixture("GET_department_74.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/department/74/organisation/',
+                    'response' => $this->readFixture("GET_organisation_71_resolved3.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/waitingscope/141/',
+                    'response' => $this->readFixture("GET_waitingscope_141.json")
+                ]
             ]
         );
         $response = $this->render([ ], ['__uri' => '/report/client/scope/'], [ ]);
@@ -88,6 +88,46 @@ class ReportWaitingScopeTest extends Base
         );
         $this->assertContains('532', (string) $response->getBody());
         $this->assertContains('294', (string) $response->getBody());
+    }
+
+    public function testYearChange()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/department/',
+                    'response' => $this->readFixture("GET_department_74.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/department/74/organisation/',
+                    'response' => $this->readFixture("GET_organisation_71_resolved3.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/waitingscope/141/',
+                    'response' => $this->readFixture("GET_waitingscope_141.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/warehouse/waitingscope/141/2016-01/',
+                    'response' => $this->readFixture("GET_waitingscope_141_012016.json")
+                ]
+            ]
+        );
+        $response = $this->render(['period' => '2016-01'], [], []);
+        $this->assertContains('<th class="statistik">Jan</th>', (string) $response->getBody());
+        $this->assertContains(
+            'Auswertung für Bürgeramt Heerstraße im Zeitraum Januar 2016',
+            (string) $response->getBody()
+        );
     }
 
     public function testWithDownloadXLSX()
