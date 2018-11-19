@@ -29,6 +29,8 @@ class DepartmentAddScope extends Scope
         $department = \App::$http
             ->readGetResult('/department/'. $departmentId .'/', ['resolveReferences' => 0])->getEntity();
         $organisation = \App::$http->readGetResult('/department/' . $departmentId . '/organisation/')->getEntity();
+        $providerList = Helper\ProviderHandler::readProviderList($workstation->getScope()->getSource());
+        $sourceList = $this->readSourceList();
         $input = $request->getParsedBody();
 
         if (is_array($input) && array_key_exists('save', $input)) {
@@ -48,11 +50,11 @@ class DepartmentAddScope extends Scope
             'workstation' => $workstation,
             'organisation' => $organisation,
             'department' => $department,
-            'sourceList' => $this->readSourceList(),
+            'sourceList' => $sourceList,
             'source' => $currentSource,
             'exception' => (isset($result)) ? $result : null,
             'provider' => $workstation->getScope()->provider,
-            'providerList' => Helper\ProviderHandler::readProviderList($workstation->getScope()->getSource())
+            'providerList' => $providerList
         ));
     }
 }
