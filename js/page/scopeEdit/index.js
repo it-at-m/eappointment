@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, PropTypes } from 'react'
 import { deepMerge, makeNestedObj, getFieldList } from '../../lib/utils'
 import SourceView from '../../block/scope/sourcesselectform'
 import $ from "jquery"
@@ -39,11 +39,11 @@ class ScopeView extends Component {
     }
 
     componentDidMount() {
-        console.log("mounted scopeEdit component")
+        console.log("mounted scopeEdit component", this.state)
     }
 
     componentDidUpdate() {
-        console.log("updated source component", this.state)
+        //console.log("updated source component", this.state)
     }
 
     render() {
@@ -57,6 +57,10 @@ class ScopeView extends Component {
             </fieldset>
         );
     }
+}
+
+ScopeView.propTypes = {
+    includeurl: PropTypes.string.isRequired
 }
 
 export default ScopeView

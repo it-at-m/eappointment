@@ -23,11 +23,8 @@ class DepartmentAddScope extends Scope
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
-        $sourceList = $this->readSourceList();
-        $providerAssigned = $this->readProviderAssigned($workstation->getScope()->getSource());
-        $providerNotAssigned = $this->readProviderNotAssigned($workstation->getScope()->getSource());
-
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        $currentSource = $this->readCurrentSource($workstation->getScope()->getSource());
         $departmentId = Validator::value($args['id'])->isNumber()->getValue();
         $department = \App::$http
             ->readGetResult('/department/'. $departmentId .'/', ['resolveReferences' => 0])->getEntity();
@@ -51,12 +48,11 @@ class DepartmentAddScope extends Scope
             'workstation' => $workstation,
             'organisation' => $organisation,
             'department' => $department,
-            'sourceList' => $sourceList,
+            'sourceList' => $this->readSourceList(),
+            'source' => $currentSource,
             'exception' => (isset($result)) ? $result : null,
-            'providerList' => array(
-                'notAssigned' => $providerNotAssigned,
-                'assigned' => $providerAssigned
-            )
+            'provider' => $workstation->getScope()->provider,
+            'providerList' => Helper\ProviderHandler::readProviderList($workstation->getScope()->getSource())
         ));
     }
 }

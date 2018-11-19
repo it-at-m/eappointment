@@ -31,7 +31,7 @@ class Scope extends BaseController
 
         $sourceList = $this->readSourceList();
         $currentSource = $this->readCurrentSource($entity->getSource());
-
+        
         $organisation = \App::$http->readGetResult('/scope/' . $entityId . '/organisation/')->getEntity();
         $department = \App::$http->readGetResult('/scope/' . $entityId . '/department/')->getEntity();
         $callDisplayImage = \App::$http->readGetResult('/scope/'. $entityId .'/imagedata/calldisplay/')->getEntity();

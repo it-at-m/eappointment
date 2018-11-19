@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react'
-import { toArray } from '../../lib/utils'
 import * as Inputs from '../../lib/inputs'
+import { loopWithCallback } from '../../lib/utils'
+import { sortByName } from '../../lib/sort'
 
 class SourceSelectView extends Component {
     constructor(props) {
@@ -8,26 +9,42 @@ class SourceSelectView extends Component {
     }
 
     componentDidUpdate() {
-        console.log("updated component", this.props.scopestate.provider)
+        //console.log("updated component", this.props.scopestate.provider)
     }
 
     render() {
         const providerList = Object.values(this.props.scopestate.providerList)
+
         const sourceList = Object.values(this.props.scopestate.sourcelist)
-        const providerGroups = providerList.map((group) => {
+
+        const sourceOptions = [{
+            "value": 0,
+            "name": this.props.labels.selectPlease
+        }].concat(sourceList.map((item) => {
+            return {
+                name: item.label, value: item.source
+            }
+        })).sort(sortByName)
+
+        const providerGroups = [{
+            'label': this.props.labels.selectPlease,
+            'options': [
+                { "value": 0, "name": this.props.labels.selectPlease }
+            ]
+        }].concat(providerList.map((group) => {
             return {
                 label: this.props.labels[group.name],
                 options: Object.values(group.items).map(item => {
                     return {
                         name: item.name, value: item.id
                     }
-                })
+                }).sort(sortByName)
             }
-        });
+        }))
 
         const onChangeProvider = (field, selectedProviderId) => {
-            this.props.changeHandler('provider', providerList.reduce((group) => {
-                if (selectedProviderId) {
+            this.props.changeHandler('provider', loopWithCallback(providerList, (group) => {
+                if (selectedProviderId != 0) {
                     return Object.values(group.items).find(provider => provider.id === selectedProviderId)
                 }
                 return Object.values(group.items).find(provider => provider.id === this.props.scopestate.provider.id)
@@ -35,12 +52,9 @@ class SourceSelectView extends Component {
         }
 
         const onChangeSource = (field, selectedSource) => {
-            if (selectedSource) {
+            if (selectedSource != 0) {
                 this.props.onChangeSourceHandler('providerList', selectedSource)
                 this.props.changeHandler('source', sourceList.find(source => source.source === selectedSource))
-            } else {
-                this.props.onChangeSourceHandler('providerList', this.props.scopestate.source.source)
-                this.props.changeHandler('source', sourceList.find(source => source.source === source.source))
             }
         }
 
@@ -59,13 +73,7 @@ class SourceSelectView extends Component {
                             <Inputs.Select
                                 value={this.props.scopestate.source.source}
                                 name="provider[source]"
-                                options={
-                                    sourceList.map((item) => {
-                                        return {
-                                            name: item.label, value: item.source
-                                        }
-                                    })
-                                }
+                                options={sourceOptions}
                                 onChange={onChangeSource}
                             />
                         </Inputs.Controls>
@@ -129,8 +137,7 @@ SourceSelectView.propTypes = {
     scopestate: PropTypes.array.isRequired,
     changeHandler: PropTypes.handler,
     onChangeSourceHandler: PropTypes.handler,
-    descriptions: PropTypes.array,
-    includeUrl: PropTypes.string.isRequired
+    descriptions: PropTypes.array
 }
 
 export default SourceSelectView
