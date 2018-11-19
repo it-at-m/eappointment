@@ -8,4 +8,5 @@ ROOT=$($REALPATH $DIR/..)
 echo "Configuring application"
 echo $ROOT
 
+mkdir -p $ROOT/.git/hooks
 ln -sf $ROOT/bin/test $ROOT/.git/hooks/pre-commit
