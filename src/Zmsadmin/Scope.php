@@ -30,6 +30,7 @@ class Scope extends BaseController
         $entity = \App::$http->readGetResult('/scope/' . $entityId . '/', ['resolveReferences' => 1])->getEntity();
 
         $sourceList = $this->readSourceList();
+        $providerList = Helper\ProviderHandler::readProviderList($entity->getSource());
         $currentSource = $this->readCurrentSource($entity->getSource());
         
         $organisation = \App::$http->readGetResult('/scope/' . $entityId . '/organisation/')->getEntity();
@@ -57,7 +58,7 @@ class Scope extends BaseController
                 'provider' => $entity->provider,
                 'organisation' => $organisation,
                 'department' => $department,
-                'providerList' => Helper\ProviderHandler::readProviderList($entity->getSource()),
+                'providerList' => $providerList,
                 'sourceList' => $sourceList,
                 'source' => $currentSource,
                 'callDisplayImage' => $callDisplayImage,

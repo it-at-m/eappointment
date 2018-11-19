@@ -29,6 +29,11 @@ class ScopeTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
+                    'url' => '/source/dldb/',
+                    'response' => $this->readFixture("GET_source.json")
+                ],
+                [
+                    'function' => 'readGetResult',
                     'url' => '/provider/dldb/',
                     'parameters' => ['isAssigned' => true],
                     'response' => $this->readFixture("GET_providerlist_assigned.json")
@@ -82,6 +87,11 @@ class ScopeTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/source/',
                     'response' => $this->readFixture("GET_sourcelist.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/source/dldb/',
+                    'response' => $this->readFixture("GET_source.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -177,6 +187,11 @@ class ScopeTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
+                    'url' => '/source/dldb/',
+                    'response' => $this->readFixture("GET_source.json")
+                ],
+                [
+                    'function' => 'readGetResult',
                     'url' => '/provider/dldb/',
                     'parameters' => ['isAssigned' => true],
                     'response' => $this->readFixture("GET_providerlist_assigned.json")
@@ -257,6 +272,11 @@ class ScopeTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/source/',
                     'response' => $this->readFixture("GET_sourcelist.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/source/dldb/',
+                    'response' => $this->readFixture("GET_source.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -343,6 +363,11 @@ class ScopeTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
+                    'url' => '/source/dldb/',
+                    'response' => $this->readFixture("GET_source.json")
+                ],
+                [
+                    'function' => 'readGetResult',
                     'url' => '/provider/dldb/',
                     'parameters' => ['isAssigned' => true],
                     'response' => $this->readFixture("GET_providerlist_assigned.json")
@@ -404,6 +429,11 @@ class ScopeTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/source/',
                     'response' => $this->readFixture("GET_sourcelist.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/source/dldb/',
+                    'response' => $this->readFixture("GET_source.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -495,6 +525,11 @@ class ScopeTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/source/',
                     'response' => $this->readFixture("GET_sourcelist.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/source/dldb/',
+                    'response' => $this->readFixture("GET_source.json")
                 ],
                 [
                     'function' => 'readGetResult',

@@ -19,13 +19,18 @@ class DepartmentAddScopeTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 1],
+                    'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/source/',
                     'response' => $this->readFixture("GET_sourcelist.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/source/dldb/',
+                    'response' => $this->readFixture("GET_source.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -64,13 +69,18 @@ class DepartmentAddScopeTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 1],
+                    'parameters' => ['resolveReferences' => 2],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
                 ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/source/',
                     'response' => $this->readFixture("GET_sourcelist.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/source/dldb/',
+                    'response' => $this->readFixture("GET_source.json")
                 ],
                 [
                     'function' => 'readGetResult',
