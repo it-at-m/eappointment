@@ -9,6 +9,7 @@ namespace BO\Mellon;
 /**
   * Validation of uploaded files
   *
+  * @SuppressWarnings(Superglobals)
   */
 class ValidFile extends Valid
 {
