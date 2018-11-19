@@ -24,6 +24,13 @@ export const range = (start, end, step = 1) => {
     return result
 }
 
+export const loopWithCallback = (array, callback) => {
+    for (var i = 0; i < array.length; i++) {
+        let result = callback(array[i])
+        if (result) { return result }
+    }
+}
+
 export const deepGet = (obj, path = []) => path.reduce((carry, current) => carry ? carry[current] : undefined, obj)
 
 export const deepMerge = (target, ...sources) => {
