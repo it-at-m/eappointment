@@ -17,7 +17,7 @@ class ApikeyGetTest extends Base
 
         $response = $this->render(['key' => 'wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs'], [], []);
         $this->assertContains('apikey.json', (string)$response->getBody());
-        $this->assertContains('"route":"\/calendar\/"', (string)$response->getBody());
+        $this->assertContains('"route":"/calendar/"', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
