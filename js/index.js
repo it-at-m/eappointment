@@ -22,12 +22,11 @@ import CounterView from './page/counter'
 import WorkstationView from './page/workstation'
 import UseraccountView from './page/useraccount'
 import PickupView from './page/pickup'
-import SourceEditView from './page/sourceEdit'
 import PickupHandheldView from './page/pickup/handheld'
 import PickupKeyboardHandheldView from "./page/pickup/keyboard-handheld"
 import StatisticView from './page/statistic'
 
-import ScopeSelectView from './block/scopeselectform'
+import LoginScopeSelectView from './block/scope/loginselectform'
 //import AvailabilityDayPage from './page/availabilityDay'
 import WeekCalendarPage from './page/weekCalendar'
 import printScopeAppointmentsByDay from './page/scopeAppointmentsByDay/print'
@@ -36,7 +35,6 @@ import printWaitingNumber from './page/waitingnumber/print'
 import { getDataAttributes } from './lib/utils'
 import { forceHttps } from './lib/utils'
 
-import scopeChangeProvider from './element/form/scope'
 import preventFormResubmit from './element/form/preventFormResubmit'
 import maxChars from './element/form/maxChars'
 import DialogHandler from './lib/dialogHandler'
@@ -78,7 +76,7 @@ $('.calendar-weektable').each(function () {
 })
 
 $('[data-scope-select-form]').each(function () {
-    new ScopeSelectView(this, getDataAttributes(this));
+    new LoginScopeSelectView(this, getDataAttributes(this));
 })
 
 $('.pickup-view').each(function () {
@@ -97,10 +95,6 @@ $('.client-processed').each(function () {
     new StatisticView(this, getDataAttributes(this));
 })
 
-$('.source-form').each(function () {
-    new SourceEditView(this, getDataAttributes(this));
-})
-
 $('form').each(function () {
     preventFormResubmit(this);
 })
@@ -108,12 +102,6 @@ $('form').each(function () {
 $('textarea.maxchars').each(function () {
     maxChars(this);
 })
-
-
-$('.scope-form-update').each(function () {
-    scopeChangeProvider(this);
-});
-
 
 printScopeAppointmentsByDay();
 printWaitingNumber();

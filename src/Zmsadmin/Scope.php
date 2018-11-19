@@ -30,8 +30,7 @@ class Scope extends BaseController
         $entity = \App::$http->readGetResult('/scope/' . $entityId . '/', ['resolveReferences' => 1])->getEntity();
 
         $sourceList = $this->readSourceList();
-        $providerAssigned = $this->readProviderAssigned($entity->getSource());
-        $providerNotAssigned = $this->readProviderNotAssigned($entity->getSource());
+        $currentSource = $this->readCurrentSource($entity->getSource());
 
         $organisation = \App::$http->readGetResult('/scope/' . $entityId . '/organisation/')->getEntity();
         $department = \App::$http->readGetResult('/scope/' . $entityId . '/department/')->getEntity();
@@ -55,13 +54,12 @@ class Scope extends BaseController
                 'menuActive' => 'owner',
                 'workstation' => $workstation,
                 'scope' => $entity,
+                'provider' => $entity->provider,
                 'organisation' => $organisation,
                 'department' => $department,
-                'providerList' => array(
-                    'notAssigned' => $providerNotAssigned,
-                    'assigned' => $providerAssigned
-                ),
+                'providerList' => Helper\ProviderHandler::readProviderList($entity->getSource()),
                 'sourceList' => $sourceList,
+                'source' => $currentSource,
                 'callDisplayImage' => $callDisplayImage,
                 'success' => $success,
                 'exception' => (isset($result)) ? $result : null
@@ -69,32 +67,16 @@ class Scope extends BaseController
         );
     }
 
-    protected function readProviderAssigned($source)
-    {
-        $providerAssigned = \App::$http->readGetResult(
-            '/provider/'. $source .'/',
-            array(
-                'isAssigned' => true
-            )
-        )->getCollection()->withUniqueProvider()->sortByName();
-        return $providerAssigned;
-    }
-
-    protected function readProviderNotAssigned($source)
-    {
-        $providerNotAssigned = \App::$http->readGetResult(
-            '/provider/'. $source .'/',
-            array(
-                'isAssigned' => false
-            )
-        )->getCollection()->withUniqueProvider()->sortByName();
-        return $providerNotAssigned;
-    }
-
     protected function readSourceList()
     {
         $sourceList = \App::$http->readGetResult('/source/')->getCollection();
         return $sourceList;
+    }
+
+    protected function readCurrentSource($source)
+    {
+        $source = \App::$http->readGetResult('/source/'. $source .'/')->getEntity();
+        return $source;
     }
 
     /**

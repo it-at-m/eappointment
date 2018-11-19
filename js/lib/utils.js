@@ -73,6 +73,10 @@ export const makeNestedObj = (arr, value) => {
 
 const attributesToArray = attributes => Array.prototype.slice.call(attributes, 0)
 
+export const toArray = (data) => {
+    return Object.keys(data).map(key => ({ [key]: data[key] }));
+}
+
 export const getDataAttributes = (element) => {
     const attributes = attributesToArray(element.attributes)
     const dataRegex = /^data-/i
