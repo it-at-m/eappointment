@@ -129,7 +129,8 @@ SourceSelectView.propTypes = {
     scopestate: PropTypes.array.isRequired,
     changeHandler: PropTypes.handler,
     onChangeSourceHandler: PropTypes.handler,
-    descriptions: PropTypes.array
+    descriptions: PropTypes.array,
+    includeUrl: PropTypes.string.isRequired
 }
 
 export default SourceSelectView
