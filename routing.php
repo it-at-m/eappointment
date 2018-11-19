@@ -385,6 +385,9 @@ use \Psr\Http\Message\ResponseInterface;
 \App::$slim->get('/dialog/', '\BO\Zmsadmin\Helper\DialogHandler')
     ->setName("dialogHandler");
 
+\App::$slim->get('/provider/{source}/', '\BO\Zmsadmin\Helper\ProviderHandler')
+->setName("providerHandler");
+
 /*
  * ---------------------------------------------------------------------------
  * externals

@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import $ from "jquery"
-import * as Inputs from '../../../lib/inputs'
+import * as Inputs from '../../lib/inputs'
 
 const renderProvider = (provider, index, onChange, onDeleteClick, labels, descriptions, source) => {
     const formName = `providers[${index}]`
@@ -125,7 +125,7 @@ class ProvidersView extends Component {
     }
 
     getNextId() {
-        let nextId = Number(this.props.source.providers.length  ? this.props.source.providers[this.props.source.providers.length - 1].id : 0) + 1
+        let nextId = Number(this.props.source.providers.length ? this.props.source.providers[this.props.source.providers.length - 1].id : 0) + 1
         return nextId;
     }
 

@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import $ from "jquery"
-import * as Inputs from '../../../lib/inputs'
+import * as Inputs from '../../lib/inputs'
 
 const renderRequest = (request, index, onChange, onDeleteClick, labels, descriptions, source) => {
     const formName = `requests[${index}]`
@@ -86,7 +86,7 @@ class RequestsView extends Component {
     }
 
     getNextId() {
-        let nextId = Number(this.props.source.requests.length  ? this.props.source.requests[this.props.source.requests.length - 1].id : 0) + 1
+        let nextId = Number(this.props.source.requests.length ? this.props.source.requests[this.props.source.requests.length - 1].id : 0) + 1
         return nextId;
     }
 
