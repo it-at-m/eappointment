@@ -160,6 +160,11 @@ abstract class Base
         return $this;
     }
 
+    public function setDistinctSelect()
+    {
+        $this->query->queryBaseStatement('SELECT DISTINCT');
+    }
+
     public function setResolveLevel($resolveLevel)
     {
         if ($resolveLevel !== null) {
