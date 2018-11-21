@@ -3684,6 +3684,16 @@
 					"description": "get a list of provider that are already assigned to a scope",
 					"in": "query",
 					"type": "boolean"
+				},
+				{
+					"name": "requestList",
+					"description": "get a list of provider filtered by given requests (csv-string)",
+					"in": "query",
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"collectionFormat": "csv"
 				}
 			],
 			"responses": {
@@ -3709,7 +3719,7 @@
 	},
 	"/provider/{source}/request/{csv}/": {
 		"get": {
-			"summary": "Get a list of provider by request numbers",
+			"summary": "DEPRECATED - use provider/{source}/ with requestList as paramter instead to get a list of provider by request numbers",
 			"tags": [
 				"provider"
 			],
