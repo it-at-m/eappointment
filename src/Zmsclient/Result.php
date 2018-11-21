@@ -26,6 +26,11 @@ class Result
     protected $data = null;
 
     /**
+    * @var Array $meta Type \BO\Zmsentities\Meta
+    */
+    protected $meta = null;
+
+    /**
      * @param \Psr\Http\Message\ResponseInterface $response
      * @param \Psr\Http\Message\RequestInterface $request (optional) reference for better error messages
      */
@@ -78,6 +83,7 @@ class Result
             );
         }
         $entity = Factory::create($result['meta'])->getEntity();
+        $this->meta = $entity;
         if ($entity->error == true) {
             $message = $entity->message ? $entity->message : $entity->exception;
             $exception = new Exception(
@@ -162,6 +168,19 @@ class Result
             $this->setResponse($this->response);
         }
         return $this->data;
+    }
+
+    /**
+     * Description
+     *
+     * @return Array (\BO\Zmsentities\Meta)
+     */
+    public function getMeta()
+    {
+        if (null === $this->meta) {
+            $this->setResponse($this->response);
+        }
+        return $this->meta;
     }
 
     /**
