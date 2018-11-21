@@ -11,8 +11,10 @@ use \Psr\Http\Message\ResponseInterface;
  * html, basic routes
  * -------------------------------------------------------------------------*/
 
-\App::$slim->get('/',
-    '\BO\Zmsapi\Index')
+\App::$slim->get(
+    '/',
+    '\BO\Zmsapi\Index'
+)
     ->setName("index");
 
 
@@ -46,8 +48,10 @@ use \Psr\Http\Message\ResponseInterface;
   *              404:
   *                  description: "access failed"
   */
- \App::$slim->get('/apikey/{key}/',
-     '\BO\Zmsapi\ApikeyGet')
+ \App::$slim->get(
+     '/apikey/{key}/',
+     '\BO\Zmsapi\ApikeyGet'
+ )
      ->setName("ApikeyGet");
 
  /**
@@ -76,8 +80,10 @@ use \Psr\Http\Message\ResponseInterface;
   *              404:
   *                  description: "access failed"
   */
- \App::$slim->post('/apikey/',
-     '\BO\Zmsapi\ApikeyUpdate')
+ \App::$slim->post(
+     '/apikey/',
+     '\BO\Zmsapi\ApikeyUpdate'
+ )
      ->setName("ApikeyUpdate");
 
  /**
@@ -104,8 +110,10 @@ use \Psr\Http\Message\ResponseInterface;
   *                          data:
   *                              $ref: "schema/apikey.json"
   */
- \App::$slim->delete('/apikey/{key}/',
-     '\BO\Zmsapi\ApikeyDelete')
+ \App::$slim->delete(
+     '/apikey/{key}/',
+     '\BO\Zmsapi\ApikeyDelete'
+ )
      ->setName("ApikeyDelete");
 
 /**
@@ -143,8 +151,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "availability id does not exists"
  */
-\App::$slim->get('/availability/{id:\d{1,11}}/',
-    '\BO\Zmsapi\AvailabilityGet')
+\App::$slim->get(
+    '/availability/{id:\d{1,11}}/',
+    '\BO\Zmsapi\AvailabilityGet'
+)
     ->setName("AvailabilityGet");
 
 /**
@@ -180,8 +190,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "availability id does not exists"
  */
-\App::$slim->post('/availability/',
-    '\BO\Zmsapi\AvailabilityAdd')
+\App::$slim->post(
+    '/availability/',
+    '\BO\Zmsapi\AvailabilityAdd'
+)
     ->setName("AvailabilityAdd");
 
 /**
@@ -220,8 +232,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "availability id does not exists"
  */
-\App::$slim->post('/availability/{id:\d{1,11}}/',
-    '\BO\Zmsapi\AvailabilityUpdate')
+\App::$slim->post(
+    '/availability/{id:\d{1,11}}/',
+    '\BO\Zmsapi\AvailabilityUpdate'
+)
     ->setName("AvailabilityUpdate");
 
 /**
@@ -253,8 +267,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                          data:
  *                              $ref: "schema/availability.json"
  */
-\App::$slim->delete('/availability/{id:\d{1,11}}/',
-    '\BO\Zmsapi\AvailabilityDelete')
+\App::$slim->delete(
+    '/availability/{id:\d{1,11}}/',
+    '\BO\Zmsapi\AvailabilityDelete'
+)
     ->setName("AvailabilityDelete");
 
 /**
@@ -295,8 +311,10 @@ use \Psr\Http\Message\ResponseInterface;
 *                          data:
 *                              $ref: "schema/calendar.json"
 */
-\App::$slim->post('/calendar/',
-    '\BO\Zmsapi\CalendarGet')
+\App::$slim->post(
+    '/calendar/',
+    '\BO\Zmsapi\CalendarGet'
+)
     ->setName("CalendarGet");
 
 /**
@@ -335,8 +353,10 @@ use \Psr\Http\Message\ResponseInterface;
 *                          meta:
 *                              $ref: "schema/metaresult.json"
 */
-\App::$slim->post('/calldisplay/',
-    '\BO\Zmsapi\CalldisplayGet')
+\App::$slim->post(
+    '/calldisplay/',
+    '\BO\Zmsapi\CalldisplayGet'
+)
     ->setName("CalldisplayGet");
 
 /**
@@ -378,8 +398,10 @@ use \Psr\Http\Message\ResponseInterface;
 *                          meta:
 *                              $ref: "schema/metaresult.json"
 */
-\App::$slim->post('/calldisplay/queue/',
-    '\BO\Zmsapi\CalldisplayQueue')
+\App::$slim->post(
+    '/calldisplay/queue/',
+    '\BO\Zmsapi\CalldisplayQueue'
+)
     ->setName("CalldisplayQueue");
 
 /**
@@ -417,8 +439,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "cluster id does not exists"
  */
-\App::$slim->get('/cluster/{id:\d{1,11}}/',
-    '\BO\Zmsapi\ClusterGet')
+\App::$slim->get(
+    '/cluster/{id:\d{1,11}}/',
+    '\BO\Zmsapi\ClusterGet'
+)
     ->setName("ClusterGet");
 
 /**
@@ -458,8 +482,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "cluster id does not exists"
  */
-\App::$slim->post('/cluster/{id:\d{1,11}}/',
-    '\BO\Zmsapi\ClusterUpdate')
+\App::$slim->post(
+    '/cluster/{id:\d{1,11}}/',
+    '\BO\Zmsapi\ClusterUpdate'
+)
     ->setName("ClusterUpdate");
 
 /**
@@ -486,8 +512,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "cluster id does not exists"
  */
-\App::$slim->delete('/cluster/{id:\d{1,11}}/',
-    '\BO\Zmsapi\ClusterDelete')
+\App::$slim->delete(
+    '/cluster/{id:\d{1,11}}/',
+    '\BO\Zmsapi\ClusterDelete'
+)
     ->setName("ClusterDelete");
 
 /**
@@ -526,8 +554,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "Could not find a process or cluster not found"
  */
-\App::$slim->get('/cluster/{id:\d{1,4}}/queue/next/',
-    '\BO\Zmsapi\ProcessNextByCluster')
+\App::$slim->get(
+    '/cluster/{id:\d{1,4}}/queue/next/',
+    '\BO\Zmsapi\ProcessNextByCluster'
+)
     ->setName("ProcessNextByCluster");
 
 /**
@@ -569,8 +599,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "cluster id does not exists"
  */
-\App::$slim->get('/cluster/{id:\d{1,11}}/queue/',
-    '\BO\Zmsapi\ClusterQueue')
+\App::$slim->get(
+    '/cluster/{id:\d{1,11}}/queue/',
+    '\BO\Zmsapi\ClusterQueue'
+)
     ->setName("ClusterQueue");
 
 /**
@@ -610,8 +642,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "cluster id does not exists"
  */
-\App::$slim->get('/cluster/{id:\d{1,11}}/request/',
-    '\BO\Zmsapi\RequestListByCluster')
+\App::$slim->get(
+    '/cluster/{id:\d{1,11}}/request/',
+    '\BO\Zmsapi\RequestListByCluster'
+)
     ->setName("RequestListByCluster");
 
 /**
@@ -652,8 +686,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "cluster id does not exists"
  */
-\App::$slim->get('/cluster/{id:\d{1,11}}/workstation/',
-    '\BO\Zmsapi\WorkstationListByCluster')
+\App::$slim->get(
+    '/cluster/{id:\d{1,11}}/workstation/',
+    '\BO\Zmsapi\WorkstationListByCluster'
+)
     ->setName("WorkstationListByCluster");
 
 /**
@@ -695,8 +731,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "cluster id does not exists, reserve process failed"
  */
-\App::$slim->get('/cluster/{id:\d{1,11}}/waitingnumber/{hash}/',
-    '\BO\Zmsapi\TicketprinterWaitingnumberByCluster')
+\App::$slim->get(
+    '/cluster/{id:\d{1,11}}/waitingnumber/{hash}/',
+    '\BO\Zmsapi\TicketprinterWaitingnumberByCluster'
+)
     ->setName("TicketprinterWaitingnumberByCluster");
 
 /**
@@ -733,8 +771,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "cluster id does not exists"
  */
-\App::$slim->get('/cluster/{id:\d{1,4}}/workstationcount/',
-    '\BO\Zmsapi\ClusterWithWorkstationCount')
+\App::$slim->get(
+    '/cluster/{id:\d{1,4}}/workstationcount/',
+    '\BO\Zmsapi\ClusterWithWorkstationCount'
+)
     ->setName("ClusterWithWorkstationCount");
 
 /**
@@ -765,8 +805,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "Could not find given cluster"
  */
-\App::$slim->get('/cluster/{id:\d{1,4}}/imagedata/calldisplay/',
-    '\BO\Zmsapi\ClusterCalldisplayImageDataGet')
+\App::$slim->get(
+    '/cluster/{id:\d{1,4}}/imagedata/calldisplay/',
+    '\BO\Zmsapi\ClusterCalldisplayImageDataGet'
+)
     ->setName("ClusterCalldisplayImageDataGet");
 
 /**
@@ -803,8 +845,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "Could not find given cluster"
  */
-\App::$slim->post('/cluster/{id:\d{1,4}}/imagedata/calldisplay/',
-    '\BO\Zmsapi\ClusterCalldisplayImageDataUpdate')
+\App::$slim->post(
+    '/cluster/{id:\d{1,4}}/imagedata/calldisplay/',
+    '\BO\Zmsapi\ClusterCalldisplayImageDataUpdate'
+)
     ->setName("ClusterCalldisplayImageDataUpdate");
 
 /**
@@ -833,8 +877,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "cluster id does not exists"
  */
-\App::$slim->delete('/cluster/{id:\d{1,4}}/imagedata/calldisplay/',
-    '\BO\Zmsapi\ClusterCalldisplayImageDataDelete')
+\App::$slim->delete(
+    '/cluster/{id:\d{1,4}}/imagedata/calldisplay/',
+    '\BO\Zmsapi\ClusterCalldisplayImageDataDelete'
+)
     ->setName("ClusterCalldisplayImageDataDelete");
 
 /**
@@ -870,8 +916,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "organisation or cluster id does not exists"
  */
-\App::$slim->get('/cluster/{id:\d{1,4}}/organisation/',
-    '\BO\Zmsapi\OrganisationByCluster')
+\App::$slim->get(
+    '/cluster/{id:\d{1,4}}/organisation/',
+    '\BO\Zmsapi\OrganisationByCluster'
+)
     ->setName("OrganisationByCluster");
 
 /**
@@ -918,8 +966,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "cluster id does not exists"
  */
-\App::$slim->get('/cluster/{id:\d{1,11}}/process/{date:\d\d\d\d-\d\d-\d\d}/',
-    '\BO\Zmsapi\ProcessListByClusterAndDate')
+\App::$slim->get(
+    '/cluster/{id:\d{1,11}}/process/{date:\d\d\d\d-\d\d-\d\d}/',
+    '\BO\Zmsapi\ProcessListByClusterAndDate'
+)
     ->setName("ProcessListByClusterAndDate");
 
 /**
@@ -950,8 +1000,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              401:
  *                  description: "authentification failed"
  */
-\App::$slim->get('/config/',
-    '\BO\Zmsapi\ConfigGet')
+\App::$slim->get(
+    '/config/',
+    '\BO\Zmsapi\ConfigGet'
+)
     ->setName("ConfigGet");
 
 /**
@@ -987,8 +1039,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "year out of range"
  */
-\App::$slim->get('/dayoff/{year:2\d{3,3}}/',
-    '\BO\Zmsapi\DayoffList')
+\App::$slim->get(
+    '/dayoff/{year:2\d{3,3}}/',
+    '\BO\Zmsapi\DayoffList'
+)
     ->setName("DayoffList");
 
 /**
@@ -1031,8 +1085,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "year out of range"
  */
-\App::$slim->post('/dayoff/{year:2\d{3,3}}/',
-    '\BO\Zmsapi\DayoffUpdate')
+\App::$slim->post(
+    '/dayoff/{year:2\d{3,3}}/',
+    '\BO\Zmsapi\DayoffUpdate'
+)
     ->setName("DayoffUpdate");
 
 /**
@@ -1068,8 +1124,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                  x-since: 2.12
  *                  description: "missing or wrong access rights"
  */
-\App::$slim->get('/department/',
-    '\BO\Zmsapi\DepartmentList')
+\App::$slim->get(
+    '/department/',
+    '\BO\Zmsapi\DepartmentList'
+)
     ->setName("DepartmentList");
 
 /**
@@ -1107,8 +1165,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "department id does not exists"
  */
-\App::$slim->get('/department/{id:\d{1,11}}/',
-    '\BO\Zmsapi\DepartmentGet')
+\App::$slim->get(
+    '/department/{id:\d{1,11}}/',
+    '\BO\Zmsapi\DepartmentGet'
+)
     ->setName("DepartmentGet");
 
 /**
@@ -1148,8 +1208,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "department id does not exists"
  */
-\App::$slim->post('/department/{id:\d{1,11}}/',
-    '\BO\Zmsapi\DepartmentUpdate')
+\App::$slim->post(
+    '/department/{id:\d{1,11}}/',
+    '\BO\Zmsapi\DepartmentUpdate'
+)
     ->setName("DepartmentUpdate");
 
 /**
@@ -1179,8 +1241,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                  x-since: 2.12
  *                  description: "department has still assigned scopes or clusters"
  */
-\App::$slim->delete('/department/{id:\d{1,11}}/',
-    '\BO\Zmsapi\DepartmentDelete')
+\App::$slim->delete(
+    '/department/{id:\d{1,11}}/',
+    '\BO\Zmsapi\DepartmentDelete'
+)
     ->setName("DepartmentDelete");
 
 /**
@@ -1221,8 +1285,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "Missing required properties in the scope"
  */
-\App::$slim->post('/department/{id:\d{1,11}}/scope/',
-    '\BO\Zmsapi\DepartmentAddScope')
+\App::$slim->post(
+    '/department/{id:\d{1,11}}/scope/',
+    '\BO\Zmsapi\DepartmentAddScope'
+)
     ->setName("DepartmentAddScope");
 
 /**
@@ -1264,8 +1330,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "Missing required properties in the cluster"
  */
-\App::$slim->post('/department/{id:\d{1,11}}/cluster/',
-                  '\BO\Zmsapi\DepartmentAddCluster')
+\App::$slim->post(
+    '/department/{id:\d{1,11}}/cluster/',
+                  '\BO\Zmsapi\DepartmentAddCluster'
+)
     ->setName("DepartmentAddCluster");
 
 /**
@@ -1310,8 +1378,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                  x-since: 2.12
  *                  description: "department does not exist"
  */
-\App::$slim->get('/department/{id:\d{1,11}}/organisation/',
-    '\BO\Zmsapi\OrganisationByDepartment')
+\App::$slim->get(
+    '/department/{id:\d{1,11}}/organisation/',
+    '\BO\Zmsapi\OrganisationByDepartment'
+)
     ->setName("OrganisationByDepartment");
 
 /**
@@ -1357,8 +1427,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                  x-since: 2.12
  *                  description: "department does not exist"
  */
-\App::$slim->get('/department/{id:\d{1,11}}/useraccount/',
-    '\BO\Zmsapi\DepartmentUseraccountList')
+\App::$slim->get(
+    '/department/{id:\d{1,11}}/useraccount/',
+    '\BO\Zmsapi\DepartmentUseraccountList'
+)
     ->setName("DepartmentUseraccountList");
 
 /**
@@ -1404,8 +1476,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                  x-since: 2.12
  *                  description: "department does not exist"
  */
-\App::$slim->get('/department/{id:\d{1,11}}/workstation/',
-    '\BO\Zmsapi\DepartmentWorkstationList')
+\App::$slim->get(
+    '/department/{id:\d{1,11}}/workstation/',
+    '\BO\Zmsapi\DepartmentWorkstationList'
+)
     ->setName("DepartmentWorkstationList");
 
 /**
@@ -1441,8 +1515,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                              items:
  *                                  $ref: "schema/log.json"
  */
-\App::$slim->get('/log/process/{id:\d{1,11}}/',
-    '\BO\Zmsapi\ProcessLog')
+\App::$slim->get(
+    '/log/process/{id:\d{1,11}}/',
+    '\BO\Zmsapi\ProcessLog'
+)
     ->setName("ProcessLog");
 
 /**
@@ -1487,8 +1563,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              403:
  *                  description: "Missing access rights, unvalid process id"
  */
-\App::$slim->post('/log/process/{id:\d{1,11}}/',
-    '\BO\Zmsapi\ProcessAddLog')
+\App::$slim->post(
+    '/log/process/{id:\d{1,11}}/',
+    '\BO\Zmsapi\ProcessAddLog'
+)
     ->setName("ProcessAddLog");
 
 /**
@@ -1522,8 +1600,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                              items:
  *                                  $ref: "schema/mail.json"
  */
-\App::$slim->get('/mails/',
-    '\BO\Zmsapi\MailList')
+\App::$slim->get(
+    '/mails/',
+    '\BO\Zmsapi\MailList'
+)
     ->setName("MailList");
 
 
@@ -1561,8 +1641,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              400:
  *                  description: "Missing required properties in the notification"
  */
-\App::$slim->post('/mails/',
-    '\BO\Zmsapi\MailAdd')
+\App::$slim->post(
+    '/mails/',
+    '\BO\Zmsapi\MailAdd'
+)
     ->setName("MailAdd");
 
 /**
@@ -1589,8 +1671,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "could not find mail or mail already sent"
  */
-\App::$slim->delete('/mails/{id:\d{1,11}}/',
-    '\BO\Zmsapi\MailDelete')
+\App::$slim->delete(
+    '/mails/{id:\d{1,11}}/',
+    '\BO\Zmsapi\MailDelete'
+)
     ->setName("MailDelete");
 
 
@@ -1624,8 +1708,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                              items:
  *                                  $ref: "schema/notification.json"
  */
-\App::$slim->get('/notification/',
-    '\BO\Zmsapi\NotificationList')
+\App::$slim->get(
+    '/notification/',
+    '\BO\Zmsapi\NotificationList'
+)
     ->setName("NotificationList");
 
 
@@ -1655,8 +1741,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              400:
  *                  description: "Missing required properties in the notification"
  */
-\App::$slim->post('/notification/',
-    '\BO\Zmsapi\NotificationAdd')
+\App::$slim->post(
+    '/notification/',
+    '\BO\Zmsapi\NotificationAdd'
+)
     ->setName("NotificationAdd");
 
 /**
@@ -1683,8 +1771,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "could not find notification or notification already sent"
  */
-\App::$slim->delete('/notification/{id:\d{1,11}}/',
-    '\BO\Zmsapi\NotificationDelete')
+\App::$slim->delete(
+    '/notification/{id:\d{1,11}}/',
+    '\BO\Zmsapi\NotificationDelete'
+)
     ->setName("NotificationDelete");
 
 
@@ -1718,8 +1808,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                              items:
  *                                  $ref: "schema/owner.json"
  */
-\App::$slim->get('/owner/',
-    '\BO\Zmsapi\OwnerList')
+\App::$slim->get(
+    '/owner/',
+    '\BO\Zmsapi\OwnerList'
+)
     ->setName("OwnerList");
 
 /**
@@ -1757,8 +1849,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "owner id does not exists"
  */
-\App::$slim->get('/owner/{id:\d{1,11}}/',
-    '\BO\Zmsapi\OwnerGet')
+\App::$slim->get(
+    '/owner/{id:\d{1,11}}/',
+    '\BO\Zmsapi\OwnerGet'
+)
     ->setName("OwnerGet");
 
 /**
@@ -1801,8 +1895,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "owner id does not exists"
  */
-\App::$slim->post('/owner/{id:\d{1,11}}/',
-    '\BO\Zmsapi\OwnerUpdate')
+\App::$slim->post(
+    '/owner/{id:\d{1,11}}/',
+    '\BO\Zmsapi\OwnerUpdate'
+)
     ->setName("OwnerUpdate");
 
 /**
@@ -1837,8 +1933,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "Missing required properties in the owner"
  */
-\App::$slim->post('/owner/',
-    '\BO\Zmsapi\OwnerAdd')
+\App::$slim->post(
+    '/owner/',
+    '\BO\Zmsapi\OwnerAdd'
+)
     ->setName("OwnerAdd");
 
 
@@ -1866,8 +1964,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "owner id does not exists"
  */
-\App::$slim->delete('/owner/{id:\d{1,11}}/',
-    '\BO\Zmsapi\OwnerDelete')
+\App::$slim->delete(
+    '/owner/{id:\d{1,11}}/',
+    '\BO\Zmsapi\OwnerDelete'
+)
     ->setName("OwnerDelete");
 
 /**
@@ -1910,8 +2010,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                  x-since: 2.12
  *                  description: "Invalid input"
  */
-\App::$slim->post('/owner/{id:\d{1,11}}/organisation/',
-    '\BO\Zmsapi\OwnerAddOrganisation')
+\App::$slim->post(
+    '/owner/{id:\d{1,11}}/organisation/',
+    '\BO\Zmsapi\OwnerAddOrganisation'
+)
     ->setName("OwnerAddOrganisation");
 
 
@@ -1945,8 +2047,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                              items:
  *                                  $ref: "schema/organisation.json"
  */
-\App::$slim->get('/organisation/',
-    '\BO\Zmsapi\OrganisationList')
+\App::$slim->get(
+    '/organisation/',
+    '\BO\Zmsapi\OrganisationList'
+)
     ->setName("OrganisationList");
 
 /**
@@ -1984,8 +2088,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "organisation id does not exists"
  */
-\App::$slim->get('/organisation/{id:\d{1,11}}/',
-    '\BO\Zmsapi\OrganisationGet')
+\App::$slim->get(
+    '/organisation/{id:\d{1,11}}/',
+    '\BO\Zmsapi\OrganisationGet'
+)
     ->setName("OrganisationGet");
 
 /**
@@ -2025,8 +2131,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "organisation id does not exists"
  */
-\App::$slim->post('/organisation/{id:\d{1,11}}/',
-    '\BO\Zmsapi\OrganisationUpdate')
+\App::$slim->post(
+    '/organisation/{id:\d{1,11}}/',
+    '\BO\Zmsapi\OrganisationUpdate'
+)
     ->setName("OrganisationUpdate");
 
 /**
@@ -2053,8 +2161,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "organisation id does not exists"
  */
-\App::$slim->delete('/organisation/{id:\d{1,11}}/',
-    '\BO\Zmsapi\OrganisationDelete')
+\App::$slim->delete(
+    '/organisation/{id:\d{1,11}}/',
+    '\BO\Zmsapi\OrganisationDelete'
+)
     ->setName("OrganisationDelete");
 
 /**
@@ -2084,8 +2194,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "organisation id does not exists"
  */
-\App::$slim->get('/organisation/{id:\d{1,11}}/hash/',
-    '\BO\Zmsapi\OrganisationHash')
+\App::$slim->get(
+    '/organisation/{id:\d{1,11}}/hash/',
+    '\BO\Zmsapi\OrganisationHash'
+)
     ->setName("OrganisationHash");
 
 /**
@@ -2126,8 +2238,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "Missing required properties in the department"
  */
-\App::$slim->post('/organisation/{id:\d{1,11}}/department/',
-    '\BO\Zmsapi\OrganisationAddDepartment')
+\App::$slim->post(
+    '/organisation/{id:\d{1,11}}/department/',
+    '\BO\Zmsapi\OrganisationAddDepartment'
+)
     ->setName("OrganisationAddDepartment");
 
 /**
@@ -2167,8 +2281,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "process id does not exists"
  */
-\App::$slim->get('/process/{id:\d{1,11}}/{authKey}/',
-    '\BO\Zmsapi\ProcessGet')
+\App::$slim->get(
+    '/process/{id:\d{1,11}}/{authKey}/',
+    '\BO\Zmsapi\ProcessGet'
+)
     ->setName("ProcessGet");
 
 
@@ -2209,8 +2325,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "process id does not exists"
  */
-\App::$slim->get('/process/{id:\d{1,11}}/{authKey}/ics/',
-    '\BO\Zmsapi\ProcessIcs')
+\App::$slim->get(
+    '/process/{id:\d{1,11}}/{authKey}/ics/',
+    '\BO\Zmsapi\ProcessIcs'
+)
     ->setName("ProcessIcs");
 
 
@@ -2261,8 +2379,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "process id does not exists"
  */
-\App::$slim->post('/process/{id:\d{1,11}}/{authKey}/',
-    '\BO\Zmsapi\ProcessUpdate')
+\App::$slim->post(
+    '/process/{id:\d{1,11}}/{authKey}/',
+    '\BO\Zmsapi\ProcessUpdate'
+)
     ->setName("ProcessUpdate");
 
 /**
@@ -2307,8 +2427,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "process id does not exists"
  */
-\App::$slim->post('/process/{id:\d{1,11}}/{authKey}/confirmation/mail/',
-    '\BO\Zmsapi\ProcessConfirmationMail')
+\App::$slim->post(
+    '/process/{id:\d{1,11}}/{authKey}/confirmation/mail/',
+    '\BO\Zmsapi\ProcessConfirmationMail'
+)
     ->setName("ProcessConfirmationMail");
 
 /**
@@ -2354,8 +2476,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "process id does not exists"
  */
-\App::$slim->post('/process/{id:\d{1,11}}/{authKey}/delete/mail/',
-    '\BO\Zmsapi\ProcessDeleteMail')
+\App::$slim->post(
+    '/process/{id:\d{1,11}}/{authKey}/delete/mail/',
+    '\BO\Zmsapi\ProcessDeleteMail'
+)
     ->setName("ProcessDeleteMail");
 
 /**
@@ -2400,8 +2524,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "process id does not exists"
  */
-\App::$slim->post('/process/{id:\d{1,11}}/{authKey}/confirmation/notification/',
-    '\BO\Zmsapi\ProcessConfirmationNotification')
+\App::$slim->post(
+    '/process/{id:\d{1,11}}/{authKey}/confirmation/notification/',
+    '\BO\Zmsapi\ProcessConfirmationNotification'
+)
     ->setName("ProcessConfirmationNotification");
 
 /**
@@ -2447,8 +2573,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "process id does not exists"
  */
-\App::$slim->post('/process/{id:\d{1,11}}/{authKey}/delete/notification/',
-    '\BO\Zmsapi\ProcessDeleteNotification')
+\App::$slim->post(
+    '/process/{id:\d{1,11}}/{authKey}/delete/notification/',
+    '\BO\Zmsapi\ProcessDeleteNotification'
+)
     ->setName("ProcessDeleteNotification");
 
 /**
@@ -2489,8 +2617,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "process id does not exists"
  */
-\App::$slim->delete('/process/{id:\d{1,11}}/{authKey}/',
-    '\BO\Zmsapi\ProcessDelete')
+\App::$slim->delete(
+    '/process/{id:\d{1,11}}/{authKey}/',
+    '\BO\Zmsapi\ProcessDelete'
+)
     ->setName("ProcessDelete");
 
 /**
@@ -2532,8 +2662,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "process id does not exists"
  */
-\App::$slim->delete('/process/{id:\d{1,11}}/',
-    '\BO\Zmsapi\ProcessDeleteQuick')
+\App::$slim->delete(
+    '/process/{id:\d{1,11}}/',
+    '\BO\Zmsapi\ProcessDeleteQuick'
+)
     ->setName("ProcessDeleteQuick");
 
 /**
@@ -2571,8 +2703,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                              items:
  *                                  $ref: "schema/process.json"
  */
-\App::$slim->get('/process/search/',
-    '\BO\Zmsapi\ProcessSearch')
+\App::$slim->get(
+    '/process/search/',
+    '\BO\Zmsapi\ProcessSearch'
+)
     ->setName("ProcessSearch");
 
 
@@ -2618,8 +2752,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                              items:
  *                                  $ref: "schema/process.json"
  */
-\App::$slim->post('/process/status/free/',
-    '\BO\Zmsapi\ProcessFree')
+\App::$slim->post(
+    '/process/status/free/',
+    '\BO\Zmsapi\ProcessFree'
+)
     ->setName("ProcessFree");
 
 /**
@@ -2652,8 +2788,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                              items:
  *                                  $ref: "schema/process.json"
  */
-\App::$slim->get('/process/status/reserved/',
-    '\BO\Zmsapi\ProcessReservedList')
+\App::$slim->get(
+    '/process/status/reserved/',
+    '\BO\Zmsapi\ProcessReservedList'
+)
     ->setName("ProcessReservedList");
 
 /**
@@ -2700,8 +2838,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "Failed to reserve a process"
  */
-\App::$slim->post('/process/status/reserved/',
-    '\BO\Zmsapi\ProcessReserve')
+\App::$slim->post(
+    '/process/status/reserved/',
+    '\BO\Zmsapi\ProcessReserve'
+)
     ->setName("ProcessReserve");
 
 /**
@@ -2738,8 +2878,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                  x-since: 2.12
  *                  description: "given process is not reserved anymore"
  */
-\App::$slim->post('/process/status/confirmed/',
-    '\BO\Zmsapi\ProcessConfirm')
+\App::$slim->post(
+    '/process/status/confirmed/',
+    '\BO\Zmsapi\ProcessConfirm'
+)
     ->setName("ProcessConfirm");
 
 /**
@@ -2779,8 +2921,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              403:
  *                  description: "authkey does not match or process scope does not match with workstation scope"
  */
-\App::$slim->post('/process/status/finished/',
-    '\BO\Zmsapi\ProcessFinished')
+\App::$slim->post(
+    '/process/status/finished/',
+    '\BO\Zmsapi\ProcessFinished'
+)
     ->setName("ProcessFinished");
 
 /**
@@ -2821,8 +2965,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              403:
  *                  description: "authkey does not match"
  */
-\App::$slim->post('/process/status/pickup/',
-    '\BO\Zmsapi\ProcessPickup')
+\App::$slim->post(
+    '/process/status/pickup/',
+    '\BO\Zmsapi\ProcessPickup'
+)
     ->setName("ProcessPickup");
 
 /**
@@ -2862,8 +3008,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              403:
  *                  description: "authkey does not match"
  */
-\App::$slim->post('/process/status/queued/',
-    '\BO\Zmsapi\ProcessQueued')
+\App::$slim->post(
+    '/process/status/queued/',
+    '\BO\Zmsapi\ProcessQueued'
+)
     ->setName("ProcessQueued");
 
 /**
@@ -2905,8 +3053,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "process not found"
  */
-\App::$slim->get('/process/{id}/',
-    '\BO\Zmsapi\WorkstationProcessGet')
+\App::$slim->get(
+    '/process/{id}/',
+    '\BO\Zmsapi\WorkstationProcessGet'
+)
     ->setName("WorkstationProcessGet");
 
 /**
@@ -2944,8 +3094,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "provider id for source does not exists"
  */
-\App::$slim->get('/provider/{source}/{id:\d{1,11}}/',
-    '\BO\Zmsapi\ProviderGet')
+\App::$slim->get(
+    '/provider/{source}/{id:\d{1,11}}/',
+    '\BO\Zmsapi\ProviderGet'
+)
     ->setName("ProviderGet");
 
 /**
@@ -2992,8 +3144,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "provider id does not exists"
  */
-\App::$slim->get('/provider/{source}/{id:\d{1,11}}/scopes/',
-    '\BO\Zmsapi\ScopeListByProvider')
+\App::$slim->get(
+    '/provider/{source}/{id:\d{1,11}}/scopes/',
+    '\BO\Zmsapi\ScopeListByProvider'
+)
     ->setName("ScopeListByProvider");
 
 /**
@@ -3017,6 +3171,13 @@ use \Psr\Http\Message\ResponseInterface;
  *                  description: "get a list of provider that are already assigned to a scope"
  *                  in: query
  *                  type: boolean
+ *              -   name: requestList
+ *                  description: "get a list of provider filtered by given requests (csv-string)"
+ *                  in: query
+ *                  type: array
+ *                  items:
+ *                     type: string
+ *                  collectionFormat: csv
  *          responses:
  *              200:
  *                  description: "success"
@@ -3030,15 +3191,17 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "provider id for source does not exists"
  */
-\App::$slim->get('/provider/{source}/',
-    '\BO\Zmsapi\ProviderList')
+\App::$slim->get(
+    '/provider/{source}/',
+    '\BO\Zmsapi\ProviderList'
+)
     ->setName("ProviderList");
 
 /**
  *  @swagger
  *  "/provider/{source}/request/{csv}/":
  *      get:
- *          summary: Get a list of provider by request numbers
+ *          summary: DEPRECATED - use provider/{source}/ with requestList as paramter instead to get a list of provider by request numbers
  *          tags:
  *              - provider
  *          parameters:
@@ -3074,8 +3237,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "request id for source does not exists"
  */
-\App::$slim->get('/provider/{source}/request/{csv:[0-9,]{3,}}/',
-    '\BO\Zmsapi\ProviderByRequestList')
+\App::$slim->get(
+    '/provider/{source}/request/{csv:[0-9,]{3,}}/',
+    '\BO\Zmsapi\ProviderByRequestList'
+)
     ->setName("ProviderByRequestList");
 
 /**
@@ -3113,8 +3278,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "request id for source does not exists"
  */
-\App::$slim->get('/request/{source}/{id:\d{1,11}}/',
-    '\BO\Zmsapi\RequestGet')
+\App::$slim->get(
+    '/request/{source}/{id:\d{1,11}}/',
+    '\BO\Zmsapi\RequestGet'
+)
     ->setName("RequestGet");
 
 /**
@@ -3152,8 +3319,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "provider id does not exists"
  */
-\App::$slim->get('/provider/{source}/{id:\d{1,11}}/request/',
-    '\BO\Zmsapi\RequestListByProvider')
+\App::$slim->get(
+    '/provider/{source}/{id:\d{1,11}}/request/',
+    '\BO\Zmsapi\RequestListByProvider'
+)
     ->setName("RequestListByProvider");
 
 /**
@@ -3187,8 +3356,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "scope id does not exists"
  */
-\App::$slim->get('/scope/{id:\d{1,11}}/request/',
-    '\BO\Zmsapi\RequestListByScope')
+\App::$slim->get(
+    '/scope/{id:\d{1,11}}/request/',
+    '\BO\Zmsapi\RequestListByScope'
+)
     ->setName("RequestListByScope");
 
 /**
@@ -3223,8 +3394,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "scope id does not exists"
  */
-\App::$slim->get('/scope/{id:\d{1,11}}/workstation/',
-    '\BO\Zmsapi\WorkstationListByScope')
+\App::$slim->get(
+    '/scope/{id:\d{1,11}}/workstation/',
+    '\BO\Zmsapi\WorkstationListByScope'
+)
     ->setName("WorkstationListByScope");
 
 /**
@@ -3259,8 +3432,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "no scopes defined yet"
  */
-\App::$slim->get('/scope/',
-    '\BO\Zmsapi\ScopeList')
+\App::$slim->get(
+    '/scope/',
+    '\BO\Zmsapi\ScopeList'
+)
     ->setName("ScopeList");
 
 /**
@@ -3298,8 +3473,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "scope id does not exists"
  */
-\App::$slim->get('/scope/{id:\d{1,11}}/',
-    '\BO\Zmsapi\ScopeGet')
+\App::$slim->get(
+    '/scope/{id:\d{1,11}}/',
+    '\BO\Zmsapi\ScopeGet'
+)
     ->setName("ScopeGet");
 
 /**
@@ -3339,8 +3516,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "could not find a department"
  */
-\App::$slim->get('/scope/{id:\d{1,11}}/department/',
-    '\BO\Zmsapi\DepartmentByScopeId')
+\App::$slim->get(
+    '/scope/{id:\d{1,11}}/department/',
+    '\BO\Zmsapi\DepartmentByScopeId'
+)
     ->setName("DepartmentByScopeId");
 
 /**
@@ -3378,8 +3557,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                          data:
  *                              $ref: "schema/cluster.json"
  */
-\App::$slim->get('/scope/{id:\d{1,11}}/cluster/',
-    '\BO\Zmsapi\ClusterByScopeId')
+\App::$slim->get(
+    '/scope/{id:\d{1,11}}/cluster/',
+    '\BO\Zmsapi\ClusterByScopeId'
+)
     ->setName("ClusterByScopeId");
 
 /**
@@ -3420,8 +3601,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "cluster id does not exists"
  */
-\App::$slim->get('/scope/cluster/{id:\d{1,11}}/',
-    '\BO\Zmsapi\ScopeListByCluster')
+\App::$slim->get(
+    '/scope/cluster/{id:\d{1,11}}/',
+    '\BO\Zmsapi\ScopeListByCluster'
+)
     ->setName("ScopeListByCluster");
 
 /**
@@ -3463,8 +3646,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "cluster id does not exists"
  */
-\App::$slim->get('/scope/prefered/cluster/{id:\d{1,11}}/',
-    '\BO\Zmsapi\ScopePreferedByCluster')
+\App::$slim->get(
+    '/scope/prefered/cluster/{id:\d{1,11}}/',
+    '\BO\Zmsapi\ScopePreferedByCluster'
+)
     ->setName("ScopePreferedByCluster");
 
 /**
@@ -3506,8 +3691,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "scope id does not exists"
  */
-\App::$slim->get('/scope/{id:\d{1,11}}/availability/',
-    '\BO\Zmsapi\AvailabilityListByScope')
+\App::$slim->get(
+    '/scope/{id:\d{1,11}}/availability/',
+    '\BO\Zmsapi\AvailabilityListByScope'
+)
     ->setName("AvailabilityListByScope");
 
 /**
@@ -3554,8 +3741,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "scope id does not exists"
  */
-\App::$slim->get('/scope/{id:\d{1,11}}/process/{date:\d\d\d\d-\d\d-\d\d}/',
-    '\BO\Zmsapi\ProcessListByScopeAndDate')
+\App::$slim->get(
+    '/scope/{id:\d{1,11}}/process/{date:\d\d\d\d-\d\d-\d\d}/',
+    '\BO\Zmsapi\ProcessListByScopeAndDate'
+)
     ->setName("ProcessListByScopeAndDate");
 
 /**
@@ -3602,8 +3791,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "scope id does not exists"
  */
-\App::$slim->get('/scope/{id:\d{1,11}}/process/status/{status}/',
-    '\BO\Zmsapi\ProcessListByScopeAndStatus')
+\App::$slim->get(
+    '/scope/{id:\d{1,11}}/process/status/{status}/',
+    '\BO\Zmsapi\ProcessListByScopeAndStatus'
+)
     ->setName("ProcessListByScopeAndStatus");
 
 /**
@@ -3638,8 +3829,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "scope id does not exists"
  */
-\App::$slim->post('/scope/{id}/emergency/',
-    '\BO\Zmsapi\ScopeEmergency')
+\App::$slim->post(
+    '/scope/{id}/emergency/',
+    '\BO\Zmsapi\ScopeEmergency'
+)
     ->setName("ScopeEmergency");
 
 /**
@@ -3674,8 +3867,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "scope id does not exists"
  */
-\App::$slim->delete('/scope/{id}/emergency/',
-    '\BO\Zmsapi\ScopeEmergencyStop')
+\App::$slim->delete(
+    '/scope/{id}/emergency/',
+    '\BO\Zmsapi\ScopeEmergencyStop'
+)
     ->setName("ScopeEmergencyStop");
 
 /**
@@ -3710,8 +3905,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "scope id does not exists"
  */
-\App::$slim->post('/scope/{id}/emergency/respond/',
-    '\BO\Zmsapi\ScopeEmergencyRespond')
+\App::$slim->post(
+    '/scope/{id}/emergency/respond/',
+    '\BO\Zmsapi\ScopeEmergencyRespond'
+)
     ->setName("ScopeEmergencyRespond");
 
 /**
@@ -3760,8 +3957,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "Could not find a process or scope not found"
  */
-\App::$slim->get('/scope/{id:\d{1,4}}/queue/next/',
-    '\BO\Zmsapi\ProcessNextByScope')
+\App::$slim->get(
+    '/scope/{id:\d{1,4}}/queue/next/',
+    '\BO\Zmsapi\ProcessNextByScope'
+)
     ->setName("ProcessNextByScope");
 
 /**
@@ -3805,8 +4004,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "Could not find a process or scope not found"
  */
-\App::$slim->get('/scope/{id:\d{1,4}}/queue/{number:\d{1,10}}/',
-    '\BO\Zmsapi\ProcessByQueueNumber')
+\App::$slim->get(
+    '/scope/{id:\d{1,4}}/queue/{number:\d{1,10}}/',
+    '\BO\Zmsapi\ProcessByQueueNumber'
+)
     ->setName("ProcessByQueueNumber");
 
 /**
@@ -3837,8 +4038,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "Could not find given scope"
  */
-\App::$slim->get('/scope/{id:\d{1,4}}/imagedata/calldisplay/',
-    '\BO\Zmsapi\ScopeCalldisplayImageDataGet')
+\App::$slim->get(
+    '/scope/{id:\d{1,4}}/imagedata/calldisplay/',
+    '\BO\Zmsapi\ScopeCalldisplayImageDataGet'
+)
     ->setName("ScopeCalldisplayImageDataGet");
 
 /**
@@ -3875,8 +4078,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "Could not find given scope"
  */
-\App::$slim->post('/scope/{id:\d{1,4}}/imagedata/calldisplay/',
-    '\BO\Zmsapi\ScopeCalldisplayImageDataUpdate')
+\App::$slim->post(
+    '/scope/{id:\d{1,4}}/imagedata/calldisplay/',
+    '\BO\Zmsapi\ScopeCalldisplayImageDataUpdate'
+)
     ->setName("ScopeCalldisplayImageDataUpdate");
 
 /**
@@ -3903,8 +4108,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "scope id does not exists"
  */
-\App::$slim->delete('/scope/{id:\d{1,4}}/imagedata/calldisplay/',
-    '\BO\Zmsapi\ScopeCalldisplayImageDataDelete')
+\App::$slim->delete(
+    '/scope/{id:\d{1,4}}/imagedata/calldisplay/',
+    '\BO\Zmsapi\ScopeCalldisplayImageDataDelete'
+)
     ->setName("ScopeCalldisplayImageDataDelete");
 
 /**
@@ -3943,8 +4150,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "organisation or scope id does not exists"
  */
-\App::$slim->get('/scope/{id:\d{1,4}}/organisation/',
-    '\BO\Zmsapi\OrganisationByScope')
+\App::$slim->get(
+    '/scope/{id:\d{1,4}}/organisation/',
+    '\BO\Zmsapi\OrganisationByScope'
+)
     ->setName("OrganisationByScope");
 
 /**
@@ -3987,8 +4196,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "scope id does not exists"
  */
-\App::$slim->get('/scope/{id:\d{1,11}}/queue/',
-    '\BO\Zmsapi\ScopeQueue')
+\App::$slim->get(
+    '/scope/{id:\d{1,11}}/queue/',
+    '\BO\Zmsapi\ScopeQueue'
+)
     ->setName("ScopeQueue");
 
 /**
@@ -4024,8 +4235,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "Could not find workstation scope"
  */
-\App::$slim->post('/scope/{id:\d{1,4}}/ghostworkstation/',
-    '\BO\Zmsapi\CounterGhostWorkstation')
+\App::$slim->post(
+    '/scope/{id:\d{1,4}}/ghostworkstation/',
+    '\BO\Zmsapi\CounterGhostWorkstation'
+)
     ->setName("CounterGhostWorkstation");
 
 /**
@@ -4056,8 +4269,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "scope id does not exists"
  */
-\App::$slim->get('/scope/{id:\d{1,4}}/workstationcount/',
-    '\BO\Zmsapi\ScopeWithWorkstationCount')
+\App::$slim->get(
+    '/scope/{id:\d{1,4}}/workstationcount/',
+    '\BO\Zmsapi\ScopeWithWorkstationCount'
+)
     ->setName("ScopeWithWorkstationCount");
 
 /**
@@ -4099,8 +4314,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "process id does not exists"
  */
-\App::$slim->post('/scope/{id:\d{1,11}}/',
-    '\BO\Zmsapi\ScopeUpdate')
+\App::$slim->post(
+    '/scope/{id:\d{1,11}}/',
+    '\BO\Zmsapi\ScopeUpdate'
+)
     ->setName("ScopeUpdate");
 
 /**
@@ -4127,8 +4344,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "scope id does not exists"
  */
-\App::$slim->delete('/scope/{id:\d{1,11}}/',
-    '\BO\Zmsapi\ScopeDelete')
+\App::$slim->delete(
+    '/scope/{id:\d{1,11}}/',
+    '\BO\Zmsapi\ScopeDelete'
+)
     ->setName("ScopeDelete");
 
 /**
@@ -4170,8 +4389,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "scope id does not exists"
  */
-\App::$slim->get('/scope/{id:\d{1,11}}/waitingnumber/{hash}/',
-    '\BO\Zmsapi\TicketprinterWaitingnumberByScope')
+\App::$slim->get(
+    '/scope/{id:\d{1,11}}/waitingnumber/{hash}/',
+    '\BO\Zmsapi\TicketprinterWaitingnumberByScope'
+)
     ->setName("TicketprinterWaitingnumberByScope");
 
 /**
@@ -4210,8 +4431,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "no ticketprinter found"
  */
-\App::$slim->get('/scope/{ids}/ticketprinter/',
-    '\BO\Zmsapi\TicketprinterListByScopeList')
+\App::$slim->get(
+    '/scope/{ids}/ticketprinter/',
+    '\BO\Zmsapi\TicketprinterListByScopeList'
+)
     ->setName("TicketprinterListByScopeList");
 
 /**
@@ -4256,8 +4479,10 @@ use \Psr\Http\Message\ResponseInterface;
 *                          data:
 *                              $ref: "schema/session.json"
 */
-\App::$slim->get('/session/{name:[a-zA-Z]{3,20}}/{id:[a-z0-9]{8,40}}/',
-    '\BO\Zmsapi\SessionGet')
+\App::$slim->get(
+    '/session/{name:[a-zA-Z]{3,20}}/{id:[a-z0-9]{8,40}}/',
+    '\BO\Zmsapi\SessionGet'
+)
     ->setName("SessionGet");
 
 /**
@@ -4285,8 +4510,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                          data:
  *                              $ref: "schema/session.json"
  */
-\App::$slim->post('/session/',
-    '\BO\Zmsapi\SessionUpdate')
+\App::$slim->post(
+    '/session/',
+    '\BO\Zmsapi\SessionUpdate'
+)
     ->setName("SessionUpdate");
 
 /**
@@ -4327,8 +4554,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                          data:
  *                              $ref: "schema/session.json"
  */
-\App::$slim->delete('/session/{name:[a-zA-Z]{3,20}}/{id:[a-z0-9]{20,40}}/',
-    '\BO\Zmsapi\SessionDelete')
+\App::$slim->delete(
+    '/session/{name:[a-zA-Z]{3,20}}/{id:[a-z0-9]{20,40}}/',
+    '\BO\Zmsapi\SessionDelete'
+)
     ->setName("SessionDelete");
 
 /**
@@ -4358,8 +4587,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "Could not find any available source"
  */
-\App::$slim->get('/source/',
-    '\BO\Zmsapi\SourceList')
+\App::$slim->get(
+    '/source/',
+    '\BO\Zmsapi\SourceList'
+)
     ->setName("SourceList");
 
 /**
@@ -4391,8 +4622,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "Could not find any available source"
  */
-\App::$slim->get('/source/{source:[a-zA-Z0-9]{3,20}}/',
-    '\BO\Zmsapi\SourceGet')
+\App::$slim->get(
+    '/source/{source:[a-zA-Z0-9]{3,20}}/',
+    '\BO\Zmsapi\SourceGet'
+)
     ->setName("SourceGet");
 
 /**
@@ -4424,8 +4657,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                          data:
  *                              $ref: "schema/source.json"
  */
-\App::$slim->post('/source/',
-    '\BO\Zmsapi\SourceUpdate')
+\App::$slim->post(
+    '/source/',
+    '\BO\Zmsapi\SourceUpdate'
+)
     ->setName("SourceUpdate");
 
 /**
@@ -4446,8 +4681,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                  schema:
  *                      $ref: "schema/status.json"
  */
-\App::$slim->get('/status/',
-    '\BO\Zmsapi\StatusGet')
+\App::$slim->get(
+    '/status/',
+    '\BO\Zmsapi\StatusGet'
+)
     ->setName("StatusGet");
 
 /**
@@ -4464,8 +4701,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                  schema:
  *                      $ref: "schema/status.json"
  */
-\App::$slim->get('/status/deadlock/',
-    '\BO\Zmsapi\StatusDeadlock')
+\App::$slim->get(
+    '/status/deadlock/',
+    '\BO\Zmsapi\StatusDeadlock'
+)
     ->setName("StatusDeadlock");
 
 /**
@@ -4482,8 +4721,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                  schema:
  *                      $ref: "schema/status.json"
  */
-\App::$slim->get('/status/locktimeout/',
-    '\BO\Zmsapi\StatusLocktimeout')
+\App::$slim->get(
+    '/status/locktimeout/',
+    '\BO\Zmsapi\StatusLocktimeout'
+)
     ->setName("StatusLocktimeout");
 
 /**
@@ -4519,8 +4760,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                          data:
  *                              $ref: "schema/ticketprinter.json"
  */
-\App::$slim->get('/ticketprinter/{hash:[a-z0-9]{20,40}}/',
-    '\BO\Zmsapi\TicketprinterGet')
+\App::$slim->get(
+    '/ticketprinter/{hash:[a-z0-9]{20,40}}/',
+    '\BO\Zmsapi\TicketprinterGet'
+)
     ->setName("TicketprinterGet");
 
 /**
@@ -4561,8 +4804,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                          data:
  *                              $ref: "schema/ticketprinter.json"
  */
-\App::$slim->post('/ticketprinter/',
-    '\BO\Zmsapi\Ticketprinter')
+\App::$slim->post(
+    '/ticketprinter/',
+    '\BO\Zmsapi\Ticketprinter'
+)
     ->setName("Ticketprinter");
 
 /**
@@ -4606,8 +4851,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                  description: "missing or wrong access rights"
  *                  x-since: 2.12
  */
-\App::$slim->get('/useraccount/',
-    '\BO\Zmsapi\UseraccountList')
+\App::$slim->get(
+    '/useraccount/',
+    '\BO\Zmsapi\UseraccountList'
+)
     ->setName("UseraccountList");
 
 /**
@@ -4645,8 +4892,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "useraccount loginname does not exists"
  */
-\App::$slim->get('/useraccount/{loginname}/',
-    '\BO\Zmsapi\UseraccountGet')
+\App::$slim->get(
+    '/useraccount/{loginname}/',
+    '\BO\Zmsapi\UseraccountGet'
+)
     ->setName("UseraccountGet");
 
 /**
@@ -4681,8 +4930,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "Missing required properties in the useraccount"
  */
-\App::$slim->post('/useraccount/',
-    '\BO\Zmsapi\UseraccountAdd')
+\App::$slim->post(
+    '/useraccount/',
+    '\BO\Zmsapi\UseraccountAdd'
+)
     ->setName("UseraccounAdd");
 
 /**
@@ -4722,8 +4973,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "useraccount loginname does not exists"
  */
-\App::$slim->post('/useraccount/{loginname}/',
-    '\BO\Zmsapi\UseraccountUpdate')
+\App::$slim->post(
+    '/useraccount/{loginname}/',
+    '\BO\Zmsapi\UseraccountUpdate'
+)
     ->setName("UseraccountUpdate");
 
 /**
@@ -4750,8 +5003,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "useraccount loginname does not exists"
  */
-\App::$slim->delete('/useraccount/{loginname}/',
-    '\BO\Zmsapi\UseraccountDelete')
+\App::$slim->delete(
+    '/useraccount/{loginname}/',
+    '\BO\Zmsapi\UseraccountDelete'
+)
     ->setName("UseraccountDelete");
 
 /**
@@ -4781,8 +5036,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "report does not exists"
  */
-\App::$slim->get('/warehouse/',
-    '\BO\Zmsapi\WarehouseSubjectListGet')
+\App::$slim->get(
+    '/warehouse/',
+    '\BO\Zmsapi\WarehouseSubjectListGet'
+)
     ->setName("WarehouseSubjectListGet");
 
 /**
@@ -4817,8 +5074,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "report does not exists"
  */
-\App::$slim->get('/warehouse/{subject}/',
-    '\BO\Zmsapi\WarehouseSubjectGet')
+\App::$slim->get(
+    '/warehouse/{subject}/',
+    '\BO\Zmsapi\WarehouseSubjectGet'
+)
     ->setName("WarehouseSubjectGet");
 
 /**
@@ -4858,8 +5117,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "report does not exists"
  */
-\App::$slim->get('/warehouse/{subject}/{subjectId}/',
-    '\BO\Zmsapi\WarehousePeriodListGet')
+\App::$slim->get(
+    '/warehouse/{subject}/{subjectId}/',
+    '\BO\Zmsapi\WarehousePeriodListGet'
+)
     ->setName("WarehousePeriodListGet");
 
 /**
@@ -4904,8 +5165,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "report does not exists"
  */
-\App::$slim->get('/warehouse/{subject}/{subjectId}/{period}/',
-    '\BO\Zmsapi\WarehousePeriodGet')
+\App::$slim->get(
+    '/warehouse/{subject}/{subjectId}/{period}/',
+    '\BO\Zmsapi\WarehousePeriodGet'
+)
     ->setName("WarehousePeriodGet");
 
 /**
@@ -4938,8 +5201,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              401:
  *                  description: "login required"
  */
-\App::$slim->get('/workstation/',
-    '\BO\Zmsapi\WorkstationGet')
+\App::$slim->get(
+    '/workstation/',
+    '\BO\Zmsapi\WorkstationGet'
+)
     ->setName("WorkstationGet");
 
 /**
@@ -4977,8 +5242,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                  description: "useraccount loginname does not exists"
  *                  x-since: 2.12
  */
-\App::$slim->post('/workstation/',
-    '\BO\Zmsapi\WorkstationUpdate')
+\App::$slim->post(
+    '/workstation/',
+    '\BO\Zmsapi\WorkstationUpdate'
+)
     ->setName("WorkstationUpdate");
 
 /**
@@ -5013,8 +5280,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "useraccount loginname does not exists"
  */
-\App::$slim->post('/workstation/password/',
-                  '\BO\Zmsapi\WorkstationPassword')
+\App::$slim->post(
+    '/workstation/password/',
+                  '\BO\Zmsapi\WorkstationPassword'
+)
     ->setName('WorkstationPassword');
 
 /**
@@ -5044,8 +5313,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "useraccount loginname does not exists"
  */
-\App::$slim->post('/workstation/login/',
-    '\BO\Zmsapi\WorkstationLogin')
+\App::$slim->post(
+    '/workstation/login/',
+    '\BO\Zmsapi\WorkstationLogin'
+)
     ->setName("WorkstationLogin");
 
 /**
@@ -5080,8 +5351,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "useraccount loginname does not exists"
  */
-\App::$slim->delete('/workstation/login/{loginname}/',
-    '\BO\Zmsapi\WorkstationDelete')
+\App::$slim->delete(
+    '/workstation/login/{loginname}/',
+    '\BO\Zmsapi\WorkstationDelete'
+)
     ->setName("WorkstationDelete");
 
 /**
@@ -5114,8 +5387,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "process does not exists"
  */
-\App::$slim->post('/workstation/process/called/',
-    '\BO\Zmsapi\WorkstationProcess')
+\App::$slim->post(
+    '/workstation/process/called/',
+    '\BO\Zmsapi\WorkstationProcess'
+)
     ->setName("WorkstationProcess");
 
 /**
@@ -5154,8 +5429,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "scope or cluster id does not exists"
  */
-\App::$slim->get('/workstation/process/pickup/',
-    '\BO\Zmsapi\Pickup')
+\App::$slim->get(
+    '/workstation/process/pickup/',
+    '\BO\Zmsapi\Pickup'
+)
     ->setName("Pickup");
 
 /**
@@ -5190,8 +5467,10 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "scope or cluster not found"
  */
-\App::$slim->post('/workstation/process/waitingnumber/',
-    '\BO\Zmsapi\WorkstationProcessWaitingnumber')
+\App::$slim->post(
+    '/workstation/process/waitingnumber/',
+    '\BO\Zmsapi\WorkstationProcessWaitingnumber'
+)
     ->setName("WorkstationProcessWaitingnumber");
 
 /**
@@ -5215,16 +5494,20 @@ use \Psr\Http\Message\ResponseInterface;
  *              404:
  *                  description: "process does not exists"
  */
-\App::$slim->delete('/workstation/process/',
-    '\BO\Zmsapi\WorkstationProcessDelete')
+\App::$slim->delete(
+    '/workstation/process/',
+    '\BO\Zmsapi\WorkstationProcessDelete'
+)
     ->setName("WorkstationProcessDelete");
 
 /* ---------------------------------------------------------------------------
  * maintenance
  * -------------------------------------------------------------------------*/
 
-\App::$slim->get('/healthcheck/',
-                 '\BO\Zmsapi\Healthcheck')
+\App::$slim->get(
+    '/healthcheck/',
+                 '\BO\Zmsapi\Healthcheck'
+)
     ->setName("healthcheck");
 
 \App::$slim->getContainer()->offsetSet('notFoundHandler', function ($container) {
