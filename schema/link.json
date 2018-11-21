@@ -2,7 +2,7 @@
     "type": "object",
     "description": "Representation of a link.",
     "example": {
-        "id" : 1234,
+        "id": 1234,
         "name": "Zuständigkeitsverzeichnis",
         "url": "http://www.berlin.de/ba-mitte/zustaendigkeiten/",
         "target": true
@@ -14,17 +14,24 @@
     "additionalProperties": false,
     "properties": {
         "id": {
-            "type": "number"
+            "type": "number",
+            "default": 0
         },
         "name": {
-            "type": "string"
+            "type": "string",
+            "default": ""
         },
         "url": {
-            "type": "string"
+            "type": "string",
+            "default": ""
         },
         "target": {
-            "type": ["number","boolean"],
-            "description": "true if url should open in a new window"
+            "type": [
+                "number",
+                "boolean"
+            ],
+            "description": "true if url should open in a new window",
+            "default": 0
         }
     }
 }

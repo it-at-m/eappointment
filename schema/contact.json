@@ -15,33 +15,42 @@
   "additionalProperties": false,
   "properties": {
     "city": {
+      "default": "",
       "type": "string"
     },
     "country": {
+      "default": "",
       "description": "Name of the country or the ISO 3166-1 country code like 'de'.",
       "type": "string"
     },
     "lat": {
+      "default": "",
       "description": "Latitute of a geo coordinate as wgs84 or etrs89",
       "type": "number"
     },
     "lon": {
+      "default": "",
       "description": "Longitude of a geo coordinate as wgs84 or etrs89",
       "type": "number"
     },
     "name": {
+      "default": "",
       "type": "string"
     },
     "postalCode": {
+      "default": "",
       "type": "string"
     },
     "region": {
+      "default": "",
       "type": "string"
     },
     "street": {
+      "default": "",
       "type": "string"
     },
     "streetNumber": {
+      "default": "",
       "type": "string"
     },
     "email": {
@@ -58,6 +67,7 @@
       }
     },
     "telephone": {
+      "default": "",
       "type": "string"
     }
   }

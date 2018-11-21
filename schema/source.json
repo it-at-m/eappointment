@@ -54,18 +54,22 @@
             "$ref": "contact.json"
         },
         "source": {
-            "type": "string"
+            "type": "string",
+            "default": ""
         },
         "editable": {
             "description": "if this is true, a user might upload an update of the source, on false, this source is updated via automated scripts",
-            "type": "boolean"
+            "type": "boolean",
+            "default": true
         },
         "label": {
-            "type": "string"
+            "type": "string",
+            "default": ""
         },
         "lastChange": {
             "type": "number",
-            "description": "unix timestamp of the last import"
+            "description": "unix timestamp of the last import",
+            "default": 0
         },
         "providers": {
             "type": "array",
