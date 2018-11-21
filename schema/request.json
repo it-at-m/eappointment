@@ -139,11 +139,13 @@
     "properties": {
         "id": {
             "type": "string",
-            "description": "reference to a service"
+            "description": "reference to a service",
+            "default": ""
         },
         "link": {
             "type": "string",
-            "description": "URI with detailed information for the request"
+            "description": "URI with detailed information for the request",
+            "default": ""
         },
         "data": {
             "type": "object",
@@ -152,19 +154,23 @@
         },
         "group": {
             "type": "string",
-            "description": "name of a group for grouping requests"
+            "description": "name of a group for grouping requests",
+            "default": ""
         },
         "name": {
             "type": "string",
-            "description": "name of the referenced service (explicit redundant)"
+            "description": "name of the referenced service (explicit redundant)",
+            "default": ""
         },
         "source": {
             "type": "string",
-            "description": "source of the service to resolve reference id"
+            "description": "source of the service to resolve reference id",
+            "default": ""
         },
         "timeSlotCount": {
             "type": "number",
-            "description": "number of time slots assumend for the request"
+            "description": "number of time slots assumend for the request",
+            "default": 1
         }
     }
 }

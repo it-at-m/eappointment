@@ -27,11 +27,13 @@
         },
         "slots": {
             "type": "number",
-            "description": "Number of slots required to fullfill request on provider"
+            "description": "Number of slots required to fullfill request on provider",
+            "default": 1
         },
         "source": {
             "type": "string",
-            "description": "source of the requestrelation"
+            "description": "source of the requestrelation",
+            "default": ""
         }
     }
 }

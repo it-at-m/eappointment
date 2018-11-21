@@ -29,10 +29,12 @@
             "$ref": "contact.json"
         },
         "id": {
+            "default": "",
             "type": "number",
             "description": "reference to an id"
         },
         "link": {
+            "default": "",
             "type": "string",
             "description": "URI with detailed information for the provider"
         },
@@ -42,10 +44,12 @@
             "additionalProperties": true
         },
         "name": {
+            "default": "",
             "type": "string",
             "description": "name of the referenced service (explicit redundant)"
         },
         "source": {
+            "default": "",
             "type": "string",
             "description": "source of provider to resolve reference id"
         }
