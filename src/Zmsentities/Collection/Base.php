@@ -14,7 +14,7 @@ use \BO\Zmsentities\Schema\Entity;
  * @SuppressWarnings(Public)
  *
  */
-class Base extends \ArrayObject
+class Base extends \ArrayObject implements \JsonSerializable
 {
     const ENTITY_CLASS = '';
 
@@ -172,6 +172,11 @@ class Base extends \ArrayObject
             $list[$key] = $item->withLessData($keepArray);
         }
         return $list;
+    }
+
+    public function jsonSerialize()
+    {
+        return $this->getArrayCopy();
     }
 
     public function __toString()
