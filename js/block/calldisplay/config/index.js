@@ -34,10 +34,10 @@ class CallDisplayConfigView extends Component {
             departments: props.departments.map(department => {
                 const { name, id, scopes = [], clusters = [] } = department
                 return {
-                    id,
                     name,
-                    clusters: clusters.map(readPropsCluster),
-                    scopes: scopes.map(readPropsScope)
+                    id,
+                    scopes: scopes.map(readPropsScope),
+                    clusters: clusters.map(readPropsCluster)
                 }
             }),
             queueStatus: 'all',
@@ -58,9 +58,9 @@ class CallDisplayConfigView extends Component {
 
             return carry
         }, {
-            scopelist: [],
-            clusterlist: []
-        })
+                scopelist: [],
+                clusterlist: []
+            })
 
         let parameters = []
 
@@ -87,7 +87,7 @@ class CallDisplayConfigView extends Component {
         const onChange = () => onShowChange(!enabled)
 
         return (
-            <Inputs.Checkbox checked={enabled} {...{ onChange}} />
+            <Inputs.Checkbox checked={enabled} {...{ onChange }} />
         )
     }
 
@@ -120,9 +120,9 @@ class CallDisplayConfigView extends Component {
         }, false)
         return (
             <div className="ticketprinter-config__item">
-              <label>{prefix}{text}</label>
-              <span>
-                {this.renderCheckbox(itemEnabled, onChange)}
+                <label>{prefix}{text}</label>
+                <span>
+                    {this.renderCheckbox(itemEnabled, onChange)}
                 </span>
             </div>
         )
@@ -132,9 +132,9 @@ class CallDisplayConfigView extends Component {
         if (scopes.length > 0) {
             return (
                 <div className="form-group">
-                  <Label>Standorte</Label>
-                  <Controls>
-                    {scopes.map(this.renderItem.bind(this))}
+                    <Label>Standorte</Label>
+                    <Controls>
+                        {scopes.map(this.renderItem.bind(this))}
                     </Controls>
                 </div>
             )
@@ -145,9 +145,9 @@ class CallDisplayConfigView extends Component {
         if (clusters.length > 0) {
             return (
                 <div className="form-group">
-                  <Label>Standort­gruppe</Label>
-                  <Controls>
-                    {clusters.map(this.renderItem.bind(this))}
+                    <Label>Standort­gruppe</Label>
+                    <Controls>
+                        {clusters.map(this.renderItem.bind(this))}
                     </Controls>
                 </div>
             )
@@ -157,9 +157,9 @@ class CallDisplayConfigView extends Component {
     renderDepartment(department) {
         return (
             <div>
-              <h2>{department.name}</h2>
-              {this.renderScopes(department.scopes)}
-              {this.renderClusters(department.clusters)}
+                <h2>{department.name}</h2>
+                {this.renderScopes(department.scopes)}
+                {this.renderClusters(department.clusters)}
             </div>
         )
     }
@@ -181,43 +181,43 @@ class CallDisplayConfigView extends Component {
 
         return (
             <form className="form-group calldisplay-config">
-              {this.state.departments.map(this.renderDepartment.bind(this))}
-              <fieldset>
-                <FormGroup>
-                  <Label>Angezeigte Aufrufe</Label>
-                  <Controls>
-                    <Select
-                      options={[{name: 'Alle', value: 'all'}, {name: "Nur Abholer", value: 'pickup'}, {name: "Spontan- und Terminkunden", value: 'called'}]}
-                      value={this.state.queueStatus}
-                      onChange={onQueueStatusChange} />
-                  </Controls>
-                </FormGroup>
-                <FormGroup>
-                  <Label>Layout</Label>
-                  <Controls>
-                    <Select
-                      options={[
-                        {name: 'Uhrzeit, 6-12 Aufrufe | Platz', value: 'defaultplatz'},
-                        {name: 'Uhrzeit, 6-12 Aufrufe | Raum', value: 'defaultraum'},
-                        {name: 'Uhrzeit, 6 Aufrufe | Platz', value: 'clock5platz'},
-                        {name: 'Uhrzeit, Anzahl Wartende, 6-12 Aufrufe | Platz', value: 'clocknrplatz'},
-                        {name: 'Uhrzeit, Anzahl Wartende, 6-12 Aufrufe | Raum', value: 'clocknrraum'},
-                        {name: 'Uhrzeit, Anzahl Wartende, Wartezeit, 6-12 Aufrufe | Platz', value: 'clocknrwaitplatz'},
-                        {name: 'Uhrzeit, Anzahl Wartende, Wartezeit, 6-12 Aufrufe | Raum', value: 'clocknrwaitraum'},
-                        {name: '6-18 Aufrufe | Platz', value: 'raw18platz'}
-                      ]}
-                      value={this.state.template}
-                      onChange={onTemplateStatusChange} />
-                  </Controls>
-                </FormGroup>
-                <FormGroup>
-                  <Label>URL</Label>
-                  <Controls>
-                    <Inputs.Text value={generatedUrl} attributes={{readOnly: true}}/>
-                    <a href={generatedUrl} target="_blank" className="btn button-submit">Aktuelle Kiosk-Konfiguration in einem neuen Fenster öffnen</a>
-                  </Controls>
-                </FormGroup>
-              </fieldset>
+                {this.state.departments.map(this.renderDepartment.bind(this))}
+                <fieldset>
+                    <FormGroup>
+                        <Label>Angezeigte Aufrufe</Label>
+                        <Controls>
+                            <Select
+                                options={[{ name: 'Alle', value: 'all' }, { name: "Nur Abholer", value: 'pickup' }, { name: "Spontan- und Terminkunden", value: 'called' }]}
+                                value={this.state.queueStatus}
+                                onChange={onQueueStatusChange} />
+                        </Controls>
+                    </FormGroup>
+                    <FormGroup>
+                        <Label>Layout</Label>
+                        <Controls>
+                            <Select
+                                options={[
+                                    { name: 'Uhrzeit, 6-12 Aufrufe | Platz', value: 'defaultplatz' },
+                                    { name: 'Uhrzeit, 6-12 Aufrufe | Raum', value: 'defaultraum' },
+                                    { name: 'Uhrzeit, 6 Aufrufe | Platz', value: 'clock5platz' },
+                                    { name: 'Uhrzeit, Anzahl Wartende, 6-12 Aufrufe | Platz', value: 'clocknrplatz' },
+                                    { name: 'Uhrzeit, Anzahl Wartende, 6-12 Aufrufe | Raum', value: 'clocknrraum' },
+                                    { name: 'Uhrzeit, Anzahl Wartende, Wartezeit, 6-12 Aufrufe | Platz', value: 'clocknrwaitplatz' },
+                                    { name: 'Uhrzeit, Anzahl Wartende, Wartezeit, 6-12 Aufrufe | Raum', value: 'clocknrwaitraum' },
+                                    { name: '6-18 Aufrufe | Platz', value: 'raw18platz' }
+                                ]}
+                                value={this.state.template}
+                                onChange={onTemplateStatusChange} />
+                        </Controls>
+                    </FormGroup>
+                    <FormGroup>
+                        <Label>URL</Label>
+                        <Controls>
+                            <Inputs.Text value={generatedUrl} attributes={{ readOnly: true }} />
+                            <a href={generatedUrl} target="_blank" className="btn button-submit">Aktuelle Kiosk-Konfiguration in einem neuen Fenster öffnen</a>
+                        </Controls>
+                    </FormGroup>
+                </fieldset>
             </form>
         )
     }

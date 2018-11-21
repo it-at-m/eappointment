@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react'
 import $ from "jquery"
 import * as Inputs from '../../lib/inputs'
+import { getEntity } from '../../lib/schema'
 
 const renderProvider = (provider, index, onChange, onDeleteClick, labels, descriptions, source) => {
     const formName = `providers[${index}]`
@@ -160,19 +161,11 @@ class ProvidersView extends Component {
     render() {
         const onNewClick = ev => {
             ev.preventDefault()
-            this.props.addNewHandler('providers', [{
-                source: this.props.source.source,
-                id: this.getNextId(),
-                name: '',
-                link: '',
-                contact: {
-                    street: '',
-                    streetNumber: '',
-                    postalCode: '',
-                    city: '',
-                },
-                data: ''
-            }])
+            getEntity('provider').then((entity) => {
+                entity.id = this.getNextId()
+                entity.source = this.props.source.source
+                this.props.addNewHandler('providers', [entity])
+            })
         }
 
         const onDeleteClick = index => {

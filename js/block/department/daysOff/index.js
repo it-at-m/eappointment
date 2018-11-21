@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react'
-
+import { getEntity } from '../../../lib/schema'
 import * as Inputs from '../../../lib/inputs'
 
 const renderDay = (day, index, onChange, onDeleteClick) => {
@@ -38,10 +38,16 @@ const renderDay = (day, index, onChange, onDeleteClick) => {
 class DaysOffView extends Component {
     constructor(props) {
         super(props)
+        this.state = { days: [] }
+    }
 
-        this.state = {
-            days: props.days.length > 0 ? props.days : [{ name: '', date: Date.now() / 1000}]
-        }
+    componentDidMount() {
+        getEntity('day').then((entity) => {
+            entity.date = Date.now() / 1000
+            this.setState({
+                days: this.props.days.length > 0 ? this.props.days : [entity]
+            })
+        })
     }
 
     changeItemField(index, field, value) {
@@ -62,7 +68,7 @@ class DaysOffView extends Component {
 
     deleteItem(deleteIndex) {
         this.setState({
-            days: this.state.days.filter( (day, index) => {
+            days: this.state.days.filter((day, index) => {
                 return index !== deleteIndex
             })
         })
@@ -93,12 +99,12 @@ class DaysOffView extends Component {
                         <th>Löschen</th>
                     </thead>
                     <tbody>
-                    {this.state.days.map((day, index) => renderDay(day, index, onChange, onDeleteClick))}
-                    <tr><td colSpan="3">
-                        <button className="button-default" onClick={onNewClick} >Neuer freier Tag</button>
-                    </td></tr>
-                    <tr><td colSpan="3">
-                        &nbsp;
+                        {this.state.days.map((day, index) => renderDay(day, index, onChange, onDeleteClick))}
+                        <tr><td colSpan="3">
+                            <button className="button-default" onClick={onNewClick} >Neuer freier Tag</button>
+                        </td></tr>
+                        <tr><td colSpan="3">
+                            &nbsp;
                     </td></tr>
                     </tbody>
                 </table>

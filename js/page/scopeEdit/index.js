@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import { deepMerge, makeNestedObj, getFieldList } from '../../lib/utils'
+import { getEntity } from '../../lib/schema'
 import SourceView from '../../block/scope/sourcesselectform'
 import $ from "jquery"
 
@@ -27,8 +28,9 @@ class ScopeView extends Component {
             method: 'GET'
         }).done((success) => {
             this.changeHandler(field, success)
-            this.changeHandler('provider', success.find(group => group.name === 'assigned').items[0])
-
+            getEntity('provider').then((response) => {
+                this.changeHandler('provider', response)
+            })
         }).fail((err) => {
             if (err.status === 404) {
                 console.log('404 error, ignored')
@@ -39,7 +41,7 @@ class ScopeView extends Component {
     }
 
     componentDidMount() {
-        console.log("mounted scopeEdit component", this.state)
+        //console.log("mounted scopeEdit component", this.state)
     }
 
     componentDidUpdate() {

@@ -40,7 +40,7 @@ class SourceView extends Component {
     }
 
     componentDidMount() {
-        console.log("mounted source component")
+        //console.log("mounted source component")
     }
 
     componentDidUpdate() {

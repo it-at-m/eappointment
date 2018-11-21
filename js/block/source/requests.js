@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react'
 import $ from "jquery"
 import * as Inputs from '../../lib/inputs'
+import { getEntity } from '../../lib/schema'
 
 const renderRequest = (request, index, onChange, onDeleteClick, labels, descriptions, source) => {
     const formName = `requests[${index}]`
@@ -120,14 +121,11 @@ class RequestsView extends Component {
     render() {
         const onNewClick = ev => {
             ev.preventDefault()
-            this.props.addNewHandler('requests', [{
-                source: this.props.source.source,
-                id: this.getNextId(),
-                name: '',
-                link: '',
-                group: '',
-                data: ''
-            }])
+            getEntity('request').then((entity) => {
+                entity.id = this.getNextId()
+                entity.source = this.props.source.source
+                this.props.addNewHandler('requests', [entity])
+            })
         }
 
         const onDeleteClick = index => {
