@@ -104,12 +104,12 @@ class SourceSelectView extends Component {
                             <Inputs.Text
                                 attributes={{ "readOnly": true, "maxLength": 40 }}
                                 name="contact[name]"
-                                value={(this.props.scopestate.provider.contact) ? this.props.scopestate.provider.contact.name : ''}
+                                value={(this.props.scopestate.provider.contact.name) ? this.props.scopestate.provider.contact.name : this.props.labels.notDeclared}
                             />
                         </Inputs.Controls>
                         <Inputs.Hidden
                             name="provider[name]"
-                            value={(this.props.scopestate.provider) ? this.props.scopestate.provider.name : ''}
+                            value={(this.props.scopestate.provider.name) ? this.props.scopestate.provider.name : this.props.labels.notDeclared}
                         />
                     </Inputs.FormGroup>
                 </div>
@@ -122,7 +122,7 @@ class SourceSelectView extends Component {
                             <Inputs.Text
                                 attributes={{ "readOnly": true, "maxLength": 70 }}
                                 name="contact[street]"
-                                value={(this.props.scopestate.provider.contact) ? this.props.scopestate.provider.contact.street + " " + this.props.scopestate.provider.contact.streetNumber : ''}
+                                value={(this.props.scopestate.provider.contact.street) ? this.props.scopestate.provider.contact.street + " " + this.props.scopestate.provider.contact.streetNumber : this.props.labels.notDeclared}
                             />
                         </Inputs.Controls>
                     </Inputs.FormGroup>

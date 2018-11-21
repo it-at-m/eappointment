@@ -6,6 +6,8 @@
  */
 namespace BO\Zmsadmin\Helper;
 
+use \BO\Zmsentities\Collection\ProviderList as Collection;
+
 class ProviderHandler extends \BO\Zmsadmin\BaseController
 {
 
@@ -39,8 +41,10 @@ class ProviderHandler extends \BO\Zmsadmin\BaseController
             array(
                 'isAssigned' => true
             )
-        )->getCollection()->withUniqueProvider()->sortByName();
-        return $providerAssigned;
+        )->getCollection();
+        return ($providerAssigned) ?
+            $providerAssigned->withUniqueProvider()->sortByName() :
+            new Collection();
     }
 
     protected static function readProviderNotAssigned($source)
@@ -50,7 +54,9 @@ class ProviderHandler extends \BO\Zmsadmin\BaseController
             array(
                 'isAssigned' => false
             )
-        )->getCollection()->withUniqueProvider()->sortByName();
-        return $providerNotAssigned;
+        )->getCollection();
+        return ($providerNotAssigned) ?
+            $providerNotAssigned->withUniqueProvider()->sortByName() :
+            new Collection();
     }
 }

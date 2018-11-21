@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react'
-
+import { getEntity } from '../../../lib/schema'
 import * as Inputs from '../../../lib/inputs'
 
 const renderLink = (link, index, onChange, onDeleteClick) => {
@@ -36,7 +36,7 @@ const renderLink = (link, index, onChange, onDeleteClick) => {
                         value={link.target}
                         checked={1 == link.target}
                     />
-                    
+
                 </label>
             </td>
             <td className="link-item__delete">
@@ -51,9 +51,15 @@ const renderLink = (link, index, onChange, onDeleteClick) => {
 class LinksView extends Component {
     constructor(props) {
         super(props)
-        this.state = {
-            links: props.links.length > 0 ? props.links : [{ name: '', url: '', target: 0}]
-        }
+        this.state = { links: [] }
+    }
+
+    componentDidMount() {
+        getEntity('link').then((entity) => {
+            this.setState({
+                links: this.props.links.length > 0 ? this.props.links : [entity]
+            })
+        })
     }
 
     changeItemField(index, field, value) {
@@ -66,14 +72,17 @@ class LinksView extends Component {
     }
 
     addNewItem() {
-        this.setState({
-            links: this.state.links.concat([{ name: '', url: '', target: 0 }])
+        getEntity('link').then((entity) => {
+            this.setState({
+                links: this.state.links.concat([entity])
+            })
         })
+
     }
 
     deleteItem(deleteIndex) {
         this.setState({
-            links: this.state.links.filter( (link, index) => {
+            links: this.state.links.filter((link, index) => {
                 return index !== deleteIndex
             })
         })
@@ -105,12 +114,12 @@ class LinksView extends Component {
                         <th>Löschen</th>
                     </thead>
                     <tbody>
-                    {this.state.links.map((link, index) => renderLink(link, index, onChange, onDeleteClick))}
-                    <tr><td colSpan="4">
-                        <button className="button-default" onClick={onNewClick} >Neuer Link</button>
-                    </td></tr>
-                    <tr><td colSpan="4">
-                        &nbsp;
+                        {this.state.links.map((link, index) => renderLink(link, index, onChange, onDeleteClick))}
+                        <tr><td colSpan="4">
+                            <button className="button-default" onClick={onNewClick} >Neuer Link</button>
+                        </td></tr>
+                        <tr><td colSpan="4">
+                            &nbsp;
                     </td></tr>
                     </tbody>
                 </table>

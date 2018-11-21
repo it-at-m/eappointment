@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import * as Inputs from '../../lib/inputs'
+import { getEntity } from '../../lib/schema'
 
 class RequestRelationView extends Component {
     constructor(props) {
@@ -72,12 +73,11 @@ class RequestRelationView extends Component {
 
         const onNewClick = ev => {
             ev.preventDefault()
-            this.props.addNewHandler('requestrelation', [{
-                source: this.props.source.source,
-                request: '',
-                provider: '',
-                slots: 1
-            }])
+            getEntity('requestrelation').then((entity) => {
+                entity.source = this.props.source.source
+                console.log(entity)
+                this.props.addNewHandler('requestrelation', [entity])
+            })
         }
 
         const onDeleteClick = index => {
