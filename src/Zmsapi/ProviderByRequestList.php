@@ -25,7 +25,8 @@ class ProviderByRequestList extends BaseController
         if (! $args['csv']) {
             throw new Exception\Provider\RequestsMissed();
         }
-        $providerList = (new Provider)->readListByRequest($args['source'], $args['csv'], $resolveReferences);
+        $providerList = (new Provider)->readListBySource($args['source'], $resolveReferences, null, $args['csv']);
+        
         if (0 == $providerList->count()) {
             throw new Exception\Provider\ProviderNotFound();
         }

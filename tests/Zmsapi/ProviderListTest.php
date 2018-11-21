@@ -28,7 +28,7 @@ class ProviderListTest extends Base
     {
         $response = $this->render(
             ['source' => 'unittest'],
-            ['isAssigned' => true, 'requestList' => '9999998,9999999'],
+            ['requestList' => '9999998,9999999'],
             []
         );
         $this->assertContains('provider.json', (string)$response->getBody());

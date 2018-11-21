@@ -25,9 +25,12 @@ class ProviderList extends BaseController
         $isAssigned = Validator::param('isAssigned')->isBool()->getValue();
         $requestList = Validator::param('requestList')->isString()->getValue();
 
-        $providerList = ($requestList)
-            ? (new Provider)->readListByRequest($args['source'], $requestList, $resolveReferences)
-            : (new Provider)->readListBySource($args['source'], $resolveReferences, $isAssigned);
+        $providerList = (new Provider)->readListBySource(
+            $args['source'],
+            $resolveReferences,
+            $isAssigned,
+            $requestList
+        );
         
         $message = Response\Message::create($request);
         $message->data = $providerList;
