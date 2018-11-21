@@ -68,7 +68,7 @@ class Property implements \ArrayAccess
 
     public function __get($property)
     {
-        if ((is_array($this->access) || $this->access instanceof ArrayAccess) &&
+        if ((is_array($this->access) || $this->access instanceof \ArrayAccess) &&
              array_key_exists($property, $this->access)) {
             return new self($this->access[$property]);
         }

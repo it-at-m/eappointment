@@ -47,7 +47,7 @@ class Exchange extends Schema\Entity
 
     public function addDataSet($values)
     {
-        if (!is_array($values) && !$values instanceof Traversable) {
+        if (!is_array($values) && !$values instanceof \Traversable) {
             throw new \Exception("Values have to be of type array");
         }
         if (count($this->dictionary) != count($values)) {
