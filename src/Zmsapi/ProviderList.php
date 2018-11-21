@@ -23,12 +23,13 @@ class ProviderList extends BaseController
     ) {
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
         $isAssigned = Validator::param('isAssigned')->isBool()->getValue();
-
+        $providerList = (new Provider)->readListBySource($args['source'], $resolveReferences, $isAssigned);
+        
         $message = Response\Message::create($request);
-        $message->data = (new Provider)->readListBySource($args['source'], $resolveReferences, $isAssigned);
+        $message->data = $providerList;
 
         $response = Render::withLastModified($response, time(), '0');
-        $response = Render::withJson($response, $message->setUpdatedMetaData(), $message->getStatuscode());
+        $response = Render::withJson($response, $message, 200);
         return $response;
     }
 }
