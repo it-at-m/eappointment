@@ -11,9 +11,11 @@ export const getEntity = (name) => {
     });
 }
 
-var jsonFileResolver = {
+const jsonFileResolver = {
     order: 1,
-    canRead: true,
+    canRead: function (file) {
+        return file.url.indexOf(".json") !== -1;
+    },
     read: function (file) {
         return getResolvedFile(file.url)
     }
