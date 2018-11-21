@@ -47,13 +47,13 @@ class ProviderTest extends Base
                                                              // assigned department
     }
 
-    public function testReadListByRequest()
+    public function testReadListFilteredByRequest()
     {
         $query = new Query();
-        $collection = $query->readListByRequest('dldb', '120335');
+        $collection = $query->readListBySource('dldb', 1, true, '120335');
         $this->assertEntityList("\\BO\\Zmsentities\\Provider", $collection);
         $this->assertTrue($collection->hasEntity('122286')); // Bürgeramt Sonnenallee
-        $collection = $query->readListByRequest('dldb', '99999999999999999'); // unknown request
+        $collection = $query->readListBySource('dldb', 1, true, '99999999999999999'); // unknown request
         $this->assertEntityList("\\BO\\Zmsentities\\Provider", $collection);
         $this->assertFalse($collection->hasEntity('122286')); // Bürgeramt Sonnenallee
     }

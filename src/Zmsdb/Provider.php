@@ -36,26 +36,19 @@ class Provider extends Base
         return $providerList;
     }
 
-    public function readListByRequest($source, $requestIdCsv, $resolveReferences = 0)
+    public function readListBySource($source, $resolveReferences = 0, $isAssigned = null, $requestIdCsv = null)
     {
         $this->testSource($source);
         $query = new Query\Provider(Query\Base::SELECT);
-        $query->setResolveLevel($resolveReferences);
-        $query->addEntityMapping();
-        $query->addConditionProviderSource($source);
-        $query->addConditionRequestCsv($requestIdCsv);
-        return $this->readCollection($query);
-    }
-
-    public function readListBySource($source, $resolveReferences = 0, $isAssigned = null)
-    {
-        $this->testSource($source);
-        $query = new Query\Provider(Query\Base::SELECT);
+        $query->setDistinctSelect();
         $query->setResolveLevel($resolveReferences);
         $query->addEntityMapping();
         $query->addConditionProviderSource($source);
         if (null !== $isAssigned) {
             $query->addConditionIsAssigned($isAssigned);
+        }
+        if (null !== $requestIdCsv) {
+            $query->addConditionRequestCsv($requestIdCsv);
         }
         return $this->readCollection($query);
     }
