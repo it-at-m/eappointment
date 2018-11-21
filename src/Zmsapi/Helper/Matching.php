@@ -15,7 +15,7 @@ class Matching
     {
         $result = true;
         $requestIdCsv = $session->getRequests();
-        $providerList = (new Provider())->readListByRequest($session->getSource(), $requestIdCsv);
+        $providerList = (new Provider())->readListBySource($session->getSource(), 0, null, $requestIdCsv);
         if ($session->hasProvider()) {
             $providerIdCsv = $session->getProviders();
             $result = $providerList->hasProvider($providerIdCsv);
@@ -42,7 +42,7 @@ class Matching
         $result = true;
         if ($session->hasRequests()) {
             $requestIdCsv = $session->getRequests();
-            $providerList = (new Provider())->readListByRequest($session->getSource(), $requestIdCsv, 1);
+            $providerList = (new Provider())->readListBySource($session->getSource(), 1, null, $requestIdCsv);
             $result = (count($providerList)) ? true : false;
         }
         return $result;
