@@ -73,6 +73,7 @@ class Mail extends Schema\Entity
     public function toCustomMessageEntity(Process $process, $collection)
     {
         $entity = new self();
+        $message = '';
         if (array_key_exists('message', $collection) && '' != $collection['message']->getValue()) {
             $message = $collection['message']->getValue();
         }

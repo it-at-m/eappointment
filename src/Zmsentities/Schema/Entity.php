@@ -26,7 +26,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
     public static $schemaRefPrefix = '';
 
     /**
-     * @var ArrayObject $jsonSchema JSON-Schema definition to validate data
+     * @var \ArrayObject $jsonSchema JSON-Schema definition to validate data
      */
     protected $jsonSchema = null;
 
@@ -82,7 +82,7 @@ class Entity extends \ArrayObject implements \JsonSerializable
      */
     private function getValidator($locale = 'de_DE', $resolveLevel = 0)
     {
-        $jsonSchema = self::readJsonSchema($resolveLevel)->withResolvedReferences($resolveLevel);
+        $jsonSchema = self::readJsonSchema()->withResolvedReferences($resolveLevel);
         $data = (new Schema($this))->withoutRefs();
         if (array_key_exists('$schema', $data)) {
             unset($data['$schema']);
