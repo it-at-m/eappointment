@@ -4,20 +4,30 @@
 // Allow configuration by ENVIRONMENT variables
 
 // MYSQL_USER with access to DB
-if (!defined('MYSQL_USER')) define('MYSQL_USER', getenv('MYSQL_USER') ? getenv('MYSQL_USER') : 'root');
+if (!defined('MYSQL_USER')) {
+    define('MYSQL_USER', getenv('MYSQL_USER') ? getenv('MYSQL_USER') : 'root');
+}
 // MYSQL_PASSWORD
-if (!defined('MYSQL_PASSWORD')) define('MYSQL_PASSWORD', getenv('MYSQL_PASSWORD') ? getenv('MYSQL_PASSWORD') :'zmsapi');
+if (!defined('MYSQL_PASSWORD')) {
+    define('MYSQL_PASSWORD', getenv('MYSQL_PASSWORD') ? getenv('MYSQL_PASSWORD') :'zmsapi');
+}
 // MYSQL_DATABASE is the database name containing the tables
-if (!defined('MYSQL_DATABASE')) define('MYSQL_DATABASE', getenv('MYSQL_DATABASE') ? getenv('MYSQL_DATABASE') : 'zmsbo');
+if (!defined('MYSQL_DATABASE')) {
+    define('MYSQL_DATABASE', getenv('MYSQL_DATABASE') ? getenv('MYSQL_DATABASE') : 'zmsbo');
+}
 // MYSQL_PORT of type "tcp://127.0.0.1:3306"
 if (getenv('MYSQL_PORT')) {
     $dsn = "mysql:dbname=" . MYSQL_DATABASE . ";host=";
     $dsn .= parse_url(getenv('MYSQL_PORT'), PHP_URL_HOST);
     $dsn .= ';port=';
     $dsn .= parse_url(getenv('MYSQL_PORT'), PHP_URL_PORT);
-    if (!defined('DSN_RW')) define('DSN_RW', $dsn);
+    if (!defined('DSN_RW')) {
+        define('DSN_RW', $dsn);
+    }
 } else {
-    if (!defined('DSN_RW')) define('DSN_RW', 'mysql:dbname=' . MYSQL_DATABASE . ';host=127.0.0.1');
+    if (!defined('DSN_RW')) {
+        define('DSN_RW', 'mysql:dbname=' . MYSQL_DATABASE . ';host=127.0.0.1');
+    }
 }
 // MYSQL_PORT_RO for readonly access of type "tcp://127.0.0.1:3306"
 if (getenv('MYSQL_PORT_RO')) {
@@ -25,9 +35,13 @@ if (getenv('MYSQL_PORT_RO')) {
     $dsn .= parse_url(getenv('MYSQL_PORT_RO'), PHP_URL_HOST);
     $dsn .= ';port=';
     $dsn .= parse_url(getenv('MYSQL_PORT_RO'), PHP_URL_PORT);
-    if (!defined('DSN_RO')) define('DSN_RO', $dsn);
+    if (!defined('DSN_RO')) {
+        define('DSN_RO', $dsn);
+    }
 } else {
-    if (!defined('DSN_RO')) define('DSN_RO', DSN_RW);
+    if (!defined('DSN_RO')) {
+        define('DSN_RO', DSN_RW);
+    }
 }
 
 class App extends \BO\Zmsapi\Application
@@ -35,6 +49,7 @@ class App extends \BO\Zmsapi\Application
     const APP_PATH = APP_PATH;
     const IDENTIFIER = 'Zmsapi-ENV';
     const DEBUG = false;
+    const DB_ENABLE_WSREPSYNCWAIT = true;
 
     /**
      * @var String DB_DSN_READONLY

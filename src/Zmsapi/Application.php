@@ -19,6 +19,11 @@ class Application extends \BO\Slim\Application
     const DEBUG = false;
 
     /**
+     * @var Bool DB_ENABLE_WSREPSYNCWAIT
+     */
+    const DB_ENABLE_WSREPSYNCWAIT = false;
+
+    /**
      * @var Bool RIGHTSCHECK_ENABLED
      */
     const RIGHTSCHECK_ENABLED = true;
