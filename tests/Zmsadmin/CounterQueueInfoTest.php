@@ -30,8 +30,8 @@ class CounterQueueInfoTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/scope/141/',
-                    'response' => $this->readFixture("GET_scope_141.json")
+                    'url' => '/scope/141/cluster/',
+                    'response' => $this->readFixture("GET_cluster_109.json")
                 ],
                 [
                     'function' => 'readGetResult',
