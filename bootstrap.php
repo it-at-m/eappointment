@@ -2,7 +2,9 @@
 // @codingStandardsIgnoreFile
 
 // define the application path as single global constant
-if (!defined('APP_PATH')) define('APP_PATH', realpath(__DIR__));
+if (!defined('APP_PATH')) {
+    define('APP_PATH', realpath(__DIR__));
+}
 
 // use autoloading offered by composer, see composer.json for path settings
 require_once(APP_PATH . '/vendor/autoload.php');
@@ -15,6 +17,7 @@ require_once(APP_PATH . '/config.php');
 
 // Set option for environment, routing, logging and templating
 \BO\Zmsdb\Connection\Select::$enableProfiling = \App::DEBUG;
+\BO\Zmsdb\Connection\Select::$enableWsrepSyncWait = \App::DB_ENABLE_WSREPSYNCWAIT;
 \BO\Zmsdb\Connection\Select::$readSourceName = \App::DB_DSN_READONLY;
 \BO\Zmsdb\Connection\Select::$writeSourceName = \App::DB_DSN_READWRITE;
 \BO\Zmsdb\Connection\Select::$username = \App::DB_USERNAME;
