@@ -31,7 +31,7 @@ class ProcessListByScopeAndDate extends BaseController
         if (! $scope) {
             throw new Exception\Scope\ScopeNotFound();
         }
-        $queueList = $query->readQueueListWithWaitingTime($scope, $dateTime, $resolveReferences?$resolveReferences:1);
+        $queueList = $query->readQueueList($scope->getId(), $dateTime, $resolveReferences?$resolveReferences:1);
 
         $message = Response\Message::create($request);
         $message->data = $queueList->toProcessList()->withResolveLevel($resolveReferences);
