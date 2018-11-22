@@ -1,7 +1,7 @@
-
 ## v2.19.01
 
 * Bugfix: Standort-Admin mit Auswahl der Quelle für die Dienstleister-Liste
+* #34481 Bugfix: Wartezeit in der Tresen-Infobox wird nun ohne nicht erschienende Kunden berechnet
 
 ## v2.19.00
 
