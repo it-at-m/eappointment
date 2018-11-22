@@ -8,8 +8,6 @@ namespace BO\Zmsadmin;
 
 use \BO\Zmsentities\Scope;
 
-use \BO\Zmsentities\Collection\ProcessList;
-
 use \BO\Zmsentities\Collection\QueueList;
 
 class QueueTable extends BaseController
@@ -26,19 +24,18 @@ class QueueTable extends BaseController
         array $args
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
-        $department = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/department/')->getEntity();
+        $scope = new Scope($workstation->scope);
+        $department = \App::$http->readGetResult('/scope/'. $scope->getId() .'/department/')->getEntity();
         $validator = $request->getAttribute('validator');
         $success = $validator->getParameter('success')->isString()->getValue();
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
         $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
         $clusterHelper = (new Helper\ClusterHelper($workstation));
-        $processList = $clusterHelper->getProcessList($selectedDate);
-        $queueList = new QueueList();
-        $queueListMissed = new QueueList();
-        if ($processList) {
-            $queueList = $this->toProcessListByStatus($processList, $selectedDate, $this->processStatusList);
-            $queueListMissed = $this->toProcessListByStatus($processList, $selectedDate, ['missed']);
-        }
+
+        $queueListHelper = (new Helper\QueueListHelper($clusterHelper, $scope, $selectedDate));
+        $queueList = $queueListHelper->getList();
+        $queueListMissed = $queueListHelper->getMissedList();
+        
         $changedProcess = ($selectedProcessId)
           ? \App::$http->readGetResult('/process/'. $selectedProcessId .'/')->getEntity()
           : null;
@@ -53,23 +50,12 @@ class QueueTable extends BaseController
                 'selectedDate' => ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d'),
                 'cluster' => $clusterHelper->getEntity(),
                 'clusterEnabled' => $clusterHelper->isClusterEnabled(),
-                'processList' => $queueList,
-                'processListMissed' => $queueListMissed,
+                'processList' => $queueList->toProcessList(),
+                'processListMissed' => $queueListMissed->toProcessList(),
                 'changedProcess' => $changedProcess,
                 'success' => $success
                 //'debug' => \App::DEBUG
             )
         );
-    }
-
-    protected function toProcessListByStatus($processList, $selectedDate, $status)
-    {
-        $selectedDateTime = new \DateTimeImmutable($selectedDate);
-        return $processList
-            ->toQueueList($selectedDateTime)
-            ->withStatus($status)
-            ->toProcessList()
-            ->sortByArrivalTime()
-            ->sortByEstimatedWaitingTime();
     }
 }

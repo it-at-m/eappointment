@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @package 115Mandant
+ * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  *
  */
@@ -15,29 +15,21 @@ class WorkstationInfo
     {
         $infoData = array('waitingTime' => 0, 'queueCount' => 0);
         $scope = new \BO\Zmsentities\Scope($workstation->scope);
-        $dateTime = new \DateTimeImmutable($selectedDate);
-        if (1 == $workstation->queue['clusterEnabled']) {
-            $cluster = \App::$http->readGetResult('/scope/'. $scope->getId() .'/cluster/')->getEntity();
-            $queueList = \App::$http->readGetResult(
-                '/cluster/'. $cluster->getId() .'/process/'. $selectedDate .'/',
-                ['resolveReferences' => 1]
-            )->getCollection()->toQueueList($dateTime);
-            $infoData['workstationList'] = static::getWorkstationsByCluster($cluster->getId());
-        } else {
-            $scope = \App::$http->readGetResult('/scope/'. $scope->getId() . '/')->getEntity();
-            $queueList = \App::$http->readGetResult(
-                '/scope/'. $scope->getId() .'/process/'. $selectedDate .'/',
-                ['resolveReferences' => 0]
-            )->getCollection()->toQueueList($dateTime);
-            $infoData['workstationGhostCount'] = $scope->status['queue']['ghostWorkstationCount'];
-            $infoData['workstationList'] = static::getWorkstationsByScope($scope->getId());
-        }
-        if ($queueList->count() > 0) {
+        $clusterHelper = (new ClusterHelper($workstation));
+       
+        $infoData['workstationGhostCount'] = $scope->status['queue']['ghostWorkstationCount'];
+        $infoData['workstationList'] = ($clusterHelper->isClusterEnabled()) ?
+            static::getWorkstationsByCluster($clusterHelper->getEntity()->getId()) :
+            static::getWorkstationsByScope($scope->getId());
+
+        $queueList = (new QueueListHelper($clusterHelper, $scope, $selectedDate))->getList();
+        if ($queueList->count()) {
             $infoData['waitingTime'] = $queueList->getLast()->waitingTimeEstimate;
-            $infoData['queueCount'] = $queueList->withStatus(['confirmed', 'queued', 'reserved', 'deleted'])->count();
+            $infoData['queueCount'] = $queueList->count();
         }
         return $infoData;
     }
+
 
     public static function getWorkstationsByScope($scopeId)
     {

@@ -60,7 +60,7 @@ class ClusterHelper
                 )
                 ->getCollection();
         }
-        return $processList;
+        return ($processList) ? $processList : new \BO\Zmsentities\Collection\ProcessList();
     }
 
     public static function getNextProcess($excludedIds)
