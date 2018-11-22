@@ -36,11 +36,18 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         return $this->workstationCount ? $this->workstationCount : 1;
     }
 
-    public function withEstimatedWaitingTime($processTimeAverage, $workstationCount, \DateTimeInterface $dateTime)
-    {
+    public function withEstimatedWaitingTime(
+        $processTimeAverage,
+        $workstationCount,
+        \DateTimeInterface $dateTime,
+        $createFake = true
+    ) {
         $this->setWaitingTimePreferences($processTimeAverage, $workstationCount);
         $queueWithWaitingTime = new self();
-        $queueFull = $this->withWaitingTime($dateTime)->withFakeWaitingnumber($dateTime);
+        $queueFull = $this->withWaitingTime($dateTime);
+        if ($createFake) {
+            $queueFull = $queueFull->withFakeWaitingnumber($dateTime);
+        }
         $listWithAppointment = $queueFull->withAppointment()->withSortedArrival()->getArrayCopy();
         $listNoAppointment = $queueFull->withOutAppointment()->withSortedArrival()->getArrayCopy();
         $nextWithAppointment = array_shift($listWithAppointment);
