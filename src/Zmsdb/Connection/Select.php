@@ -6,6 +6,7 @@ namespace BO\Zmsdb\Connection;
  *
  * @codeCoverageIgnore
  *
+ * @SuppressWarnings(TooManyFields)
  * Handle read and write connections
  */
 class Select
@@ -89,6 +90,12 @@ class Select
      *
      */
     protected static $useQueryCache = true;
+
+    /**
+    * @var Bool $useQueryCache
+    *
+    */
+    protected static $useWsrepSyncWait = false;
 
     /**
      * Create a PDO compatible object
@@ -210,6 +217,9 @@ class Select
             if (self::$useProfiling) {
                 self::$writeConnection->exec('SET profiling = 1;');
             }
+            if (self::$useWsrepSyncWait) {
+                self::$writeConnection->exec('SET SESSION wsrep_sync_wait = 6;');
+            }
             // On writing, use the same host to avoid racing/transcation conditions
             self::$readConnection = self::$writeConnection;
         }
@@ -254,6 +264,18 @@ class Select
     public static function setProfiling($useProfiling = true)
     {
         static::$useProfiling = $useProfiling;
+    }
+
+    /**
+     * Set cluster wide causality checks
+     * 6 - UPDATE, DELETE, INSERT and REPLACE
+     *
+     * @param Bool $useProfiling
+     *
+     */
+    public static function setClusterWideCausalityChecks($useWsrepSyncWait = true)
+    {
+        static::$useWsrepSyncWait = $useWsrepSyncWait;
     }
 
     /**
