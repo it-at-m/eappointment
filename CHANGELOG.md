@@ -1,4 +1,8 @@
 
+## v2.19.01
+
+* Bugfix: Standort-Admin mit Auswahl der Quelle für die Dienstleister-Liste
+
 ## v2.19.00
 
 * #31592 Admin-Oberfläche für neue Mandanten zur Pflege von Dienstleistungen und Standorten
