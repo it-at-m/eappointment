@@ -68,6 +68,17 @@ class ProcessList extends Base
         return $this;
     }
 
+    public function toProcessListByStatus($selectedDate, array $status)
+    {
+        $selectedDateTime = new \DateTimeImmutable($selectedDate);
+        return $this
+            ->toQueueList($selectedDateTime)
+            ->withStatus($status)
+            ->toProcessList()
+            ->sortByArrivalTime()
+            ->sortByEstimatedWaitingTime();
+    }
+
     public function toProcessListByStatusAndTime()
     {
         $list = $this->getWithHoursByDay();
