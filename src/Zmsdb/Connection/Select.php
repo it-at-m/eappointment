@@ -52,6 +52,11 @@ class Select
      */
     public static $connectionTimezone = ' UTC';
 
+    /**
+     * @var Bool $enableWsrepSyncWait
+     */
+    public static $enableWsrepSyncWait = true;
+
 
     /**
      * @var PdoInterface $readConnection for read only requests
@@ -95,7 +100,7 @@ class Select
     * @var Bool $useQueryCache
     *
     */
-    protected static $useWsrepSyncWait = false;
+    protected static $wsrepSyncWaitIndex = null;
 
     /**
      * Create a PDO compatible object
@@ -217,8 +222,8 @@ class Select
             if (self::$useProfiling) {
                 self::$writeConnection->exec('SET profiling = 1;');
             }
-            if (self::$useWsrepSyncWait) {
-                self::$writeConnection->exec('SET SESSION wsrep_sync_wait = 6;');
+            if (self::$enableWsrepSyncWait && self::$wsrepSyncWaitIndex) {
+                self::$writeConnection->exec('SET SESSION wsrep_sync_wait = '. self::$wsrepSyncWaitIndex .';');
             }
             // On writing, use the same host to avoid racing/transcation conditions
             self::$readConnection = self::$writeConnection;
@@ -273,9 +278,9 @@ class Select
      * @param Bool $useProfiling
      *
      */
-    public static function setClusterWideCausalityChecks($useWsrepSyncWait = true)
+    public static function setClusterWideCausalityChecks($wsrepSyncWaitIndex = 6)
     {
-        static::$useWsrepSyncWait = $useWsrepSyncWait;
+        static::$wsrepSyncWaitIndex = $wsrepSyncWaitIndex;
     }
 
     /**
