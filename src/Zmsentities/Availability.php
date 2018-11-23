@@ -436,7 +436,7 @@ class Availability extends Schema\Entity
                 return true;
             }
             $startTime = $startTime->modify('+1 day');
-        } while ($startTime->getTimestamp() < $stopTime->getTimestamp());
+        } while ($startTime->getTimestamp() <= $stopTime->getTimestamp());
         return false;
     }
 

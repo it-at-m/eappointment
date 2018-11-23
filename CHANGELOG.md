@@ -1,3 +1,8 @@
+## v2.19.01
+
+* #35158 Bugfix: Berechnung, ob eine Öffnungzeit einen Tag in einer gegebenen Zeitspanne enthält beachtet jetzt auch den letzten Tag der Zeitspanne
+
+
 ## v2.19.00
 
 * exchange-Entity mit mit neuen Eigenschaften "title" und "visualization"
