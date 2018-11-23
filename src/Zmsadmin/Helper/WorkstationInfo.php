@@ -14,7 +14,8 @@ class WorkstationInfo
     public static function getInfoBoxData(\BO\Zmsentities\Workstation $workstation, $selectedDate)
     {
         $infoData = array('waitingTime' => 0, 'queueCount' => 0);
-        $scope = new \BO\Zmsentities\Scope($workstation->scope);
+        $scope = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/workstationcount/')->getEntity();
+
         $clusterHelper = (new ClusterHelper($workstation));
        
         $infoData['workstationGhostCount'] = $scope->status['queue']['ghostWorkstationCount'];
