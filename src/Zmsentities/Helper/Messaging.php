@@ -27,7 +27,8 @@ class Messaging
         'notification' => array(
             'appointment' => 'notification_appointment.twig',
             'confirmed' => 'notification_confirmation.twig',
-            'queued' => 'notification_headsup.twig',
+            'queued' => 'notification_confirmation.twig',
+            'called' => 'notification_headsup.twig',
             'pickup' => 'notification_pickup.twig',
             'deleted' => 'notification_deleted.twig'
         ),
