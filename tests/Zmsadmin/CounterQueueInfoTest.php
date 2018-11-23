@@ -35,6 +35,11 @@ class CounterQueueInfoTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
+                    'url' => '/scope/141/workstationcount/',
+                    'response' => $this->readFixture("GET_scope_141.json")
+                ],
+                [
+                    'function' => 'readGetResult',
                     'url' => '/scope/141/process/2016-05-27/',
                     'parameters' => ['resolveReferences' => 0],
                     'response' => $this->readFixture("GET_scope_141_freeProcessList.json")
@@ -70,6 +75,11 @@ class CounterQueueInfoTest extends Base
                 [
                     'function' => 'readPostResult',
                     'url' => '/scope/141/ghostworkstation/',
+                    'response' => $this->readFixture("GET_scope_141.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/workstationcount/',
                     'response' => $this->readFixture("GET_scope_141.json")
                 ],
                 [
