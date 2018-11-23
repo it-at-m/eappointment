@@ -224,4 +224,31 @@ class WorkstationProcessFinishedTest extends Base
         $this->assertRedirect($response, '/workstation/');
         $this->assertEquals(302, $response->getStatusCode());
     }
+
+    public function testRenderingStatisticEnabledWithoutPickup()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_workstation_statistic_enabled.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/request/',
+                    'response' => $this->readFixture("GET_scope_141_requestlist.json")
+                ],
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/process/status/finished/',
+                    'response' => $this->readFixture("GET_process_82252_12a3.json")
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, [], [], 'POST');
+        $this->assertRedirect($response, '/workstation/');
+        $this->assertEquals(302, $response->getStatusCode());
+    }
 }

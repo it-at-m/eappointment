@@ -25,6 +25,7 @@ class WorkstationProcessFinished extends BaseController
 
         $statisticEnabled = $workstation->getScope()->getPreference('queue', 'statisticsEnabled');
         $isDefaultPickup = $workstation->getScope()->getPreference('pickup', 'isDefault');
+
         $workstation->process['status'] = (! $statisticEnabled && $isDefaultPickup) ? 'pending' : 'finished';
         $process = clone $workstation->process;
         $input = $request->getParsedBody();
@@ -76,7 +77,13 @@ class WorkstationProcessFinished extends BaseController
         \BO\Zmsentities\Workstation $workstation,
         \BO\Zmsentities\Collection\RequestList $requestList
     ) {
+
+        $firstClient = $process->getFirstClient();
         $process->addData($input['process']);
+        if (array_key_exists('clients', $input['process']) && count($input['process']['clients']) > 0) {
+            $firstClient->addData($input['process']['clients'][0]);
+            $process->clients[0] = $firstClient;
+        }
         //pickup
         if (array_key_exists('pickupScope', $input) && 0 != $input['pickupScope']) {
             $process->status = 'pending';
