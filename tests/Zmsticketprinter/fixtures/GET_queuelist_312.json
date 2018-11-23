@@ -14,7 +14,8 @@
       "callTime": 0,
       "number": "79142",
       "withAppointment": true,
-      "waitingTimeEstimate": 0
+      "waitingTimeEstimate": 0,
+      "status": "queued"
     },
     "1": {
       "$schema": "https://schema.berlin.de/queuemanagement/queue.json",
@@ -23,7 +24,8 @@
       "callTime": 0,
       "number": "150666",
       "withAppointment": true,
-      "waitingTimeEstimate": 12
+      "waitingTimeEstimate": 12,
+      "status": "queued"
     },
     "2": {
       "$schema": "https://schema.berlin.de/queuemanagement/queue.json",

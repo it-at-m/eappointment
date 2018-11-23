@@ -40,9 +40,9 @@ class Process extends BaseController
         }
 
         $scope = new \BO\Zmsentities\Scope($process->scope);
-        $queueList = \App::$http->readGetResult('/scope/'. $scope->getId() . '/queue/')->getCollection();
         $department = \App::$http->readGetResult('/scope/'. $scope->getId() . '/department/')->getEntity();
-        $estimatedData = ($queueList) ? $scope->getWaitingTimeFromQueueList($queueList, \App::$now) : null;
+
+        $queueListHelper = (new Helper\QueueListHelper($scope, \App::$now));
 
         return \BO\Slim\Render::withHtml(
             $response,
@@ -56,8 +56,9 @@ class Process extends BaseController
                     ['resolveReferences' => 2]
                 )->getEntity(),
                 'process' => $process,
-                'queueList' => $queueList,
-                'estimatedData' => $estimatedData,
+                'queueList' => $queueListHelper->getList(),
+                'waitingTime' => $queueListHelper->getEstimatedWaitingTime(),
+                'waitingClients' => $queueListHelper->getList()->getQueuePositionByNumber($process->queue->number),
                 'config' => $config,
                 'department' => $department
             )
