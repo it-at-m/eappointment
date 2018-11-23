@@ -29,13 +29,11 @@ class TicketprinterByScope extends BaseController
         $ticketprinterHelper = (new Helper\Ticketprinter($args, $request));
         $ticketprinter = $ticketprinterHelper->getEntity();
         $scope = $ticketprinter->getScopeList()->getFirst();
-
         $department = \App::$http->readGetResult('/scope/'. $scope->id . '/department/')->getEntity();
-        $queueList = \App::$http->readGetResult('/scope/'. $scope->id . '/queue/')->getCollection();
-
-        $estimatedData = ($queueList) ? $scope->getWaitingTimeFromQueueList($queueList, \App::$now) : null;
         $organisation = $ticketprinterHelper::$organisation;
-
+        
+        $queueListHelper = (new Helper\QueueListHelper($scope, \App::$now));
+        
         $template = (new Helper\TemplateFinder($defaultTemplate))->setCustomizedTemplate($ticketprinter, $organisation);
 
         return \BO\Slim\Render::withHtml(
@@ -47,10 +45,10 @@ class TicketprinterByScope extends BaseController
                 'ticketprinter' => $ticketprinter,
                 'organisation' => $organisation,
                 'department' => $department,
-                'queueList' => $queueList,
                 'scope' => $scope,
-                'waitingClients' => $estimatedData['amountBefore'],
-                'waitingTime' => $estimatedData['waitingTimeEstimate'],
+                'queueList' => $queueListHelper->getList(),
+                'waitingTime' => $queueListHelper->getEstimatedWaitingTime(),
+                'waitingClients' => $queueListHelper->getList()->count(),
                 'buttonDisplay' => $template->getButtonTemplateType($ticketprinter),
                 'config' => $config
             )

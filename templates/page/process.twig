@@ -20,7 +20,7 @@
 				{% if queueList|length == 2 %}
 					Es wartet 1 Kunde vor Ihnen.
 				{% else %}
-					Es warten {{ estimatedData.amountBefore }} Kunden vor Ihnen.
+					Es warten {{ waitingClients }} Kunden vor Ihnen.
 				{% endif %}
 
         	{% else %}
@@ -30,18 +30,18 @@
     	<br />
 
         {% trans %}Vorraussichtliche Wartezeit{% endtrans %}:
-    	{% if estimatedData.waitingTimeEstimate %}
-    		{% if estimatedData.waitingTimeEstimate < 120 %}
-    	        {{ estimatedData.waitingTimeEstimate }} {% trans %}Minuten{% endtrans %}
+    	{% if waitingTime %}
+    		{% if waitingTime < 120 %}
+    	        {{ waitingTime }} {% trans %}Minuten{% endtrans %}
     	    {% else %}
-    	    	{{ (estimatedData.waitingTimeEstimate / 60)|round(0, 'floor') }} {% trans %}Stunden{% endtrans %}
+    	    	{{ (waitingTime / 60)|round(0, 'floor') }} {% trans %}Stunden{% endtrans %}
     	    {% endif %}
     	{% else %}
     	    {% trans %}keine{% endtrans %}
     	{% endif %}
 		
     	{% if
-    	    estimatedData.waitingTimeEstimate > (scope.preferences.ticketprinter.notificationsDelay)|round() and
+    	    waitingTime > (scope.preferences.ticketprinter.notificationsDelay)|round() and
     	    process.scope.preferences.ticketprinter.notificationsEnabled and department.preferences.notifications.enabled
     	%}
 		{% set headsUpTime = config.notifications.erinnerungsvorlauf %}
