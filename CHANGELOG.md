@@ -1,3 +1,8 @@
+## v2.20.00
+
+* #31487 - Prüfung, ob ein Template vorhanden ist vor dem Routing und neue Exception für den Fall von fehlendem Template.
+
+
 ## v2.19.05
 
 * #35764 Deploy Tokens eingebaut
