@@ -1,3 +1,6 @@
+## v2.19.01
+
+* #35158 Bugfix: Fehlender Tag wird nun auch bei einer Änderung der Öffnungszeit innerhalb der letzten 7 Tage berechnet
 
 ## v2.19.00
 

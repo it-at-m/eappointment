@@ -77,17 +77,20 @@ class Slot extends Base
         \DateTimeInterface $now,
         \DateTimeInterface $slotLastChange = null
     ) {
-        if ($availability->isNewerThan($slotLastChange)) {
+        $proposedChange = new Helper\AvailabilitySnapShot($availability, $now);
+        $formerChange = new Helper\AvailabilitySnapShot($availability, $slotLastChange);
+
+        if ($formerChange->hasOutdatedAvailability()) {
             $availability['processingNote'][] = 'outdated: availability change';
             return true;
         }
-        if ($availability->scope->isNewerThan($slotLastChange)
+        if ($formerChange->hasOutdatedScope()
             && $this->hasScopeRelevantChanges($availability->scope, $slotLastChange)
         ) {
             $availability['processingNote'][] = 'outdated: scope change';
             return true;
         }
-        if ($availability->scope->dayoff->isNewerThan($slotLastChange, $availability, $now)) {
+        if ($formerChange->hasOutdatedDayoff()) {
             $availability['processingNote'][] = 'outdated: dayoff change';
             return true;
         }
@@ -95,33 +98,24 @@ class Slot extends Base
         //  if the rebuild fails in some way
         if (1
             // First check if the bookable end date on current time was already calculated on last slot change
-            && !$availability->hasDate($availability->getBookableEnd($now), $slotLastChange)
+            && !$formerChange->hasBookableDateTime($proposedChange->getLastBookableDateTime())
             // Second check if between last slot change and current time could be a bookable slot
             && (
-                (!$availability->isOpenedOnDate($availability->getBookableEnd($slotLastChange))
-                    && $availability->hasDateBetween(
-                        $availability->getBookableEnd($slotLastChange),
-                        $availability->getBookableEnd($now),
-                        $now
-                    )
+                (!$formerChange->isOpenedOnLastBookableDay()
+                    && $proposedChange->hasBookableDateTimeAfter($formerChange->getLastBookableDateTime())
                 )
                 // if calculation already happened the day before, check if lastChange time was before opening
-                || ($availability->isOpenedOnDate($availability->getBookableEnd($slotLastChange))
-                && (!$availability
-                    ->isOpened(
-                        $availability->getBookableEnd($slotLastChange)->modify($slotLastChange->format('H:i:s'))
-                    )
-                        || $availability->hasDateBetween(
-                            $availability->getBookableEnd($slotLastChange->modify('+1day')),
-                            $availability->getBookableEnd($now),
-                            $now
+                || ($formerChange->isOpenedOnLastBookableDay()
+                    && (!$formerChange->isTimeOpenedOnLastBookableDay()
+                        || $proposedChange->hasBookableDateTimeAfter(
+                            $formerChange->getLastBookableDateTime()->modify('+1day 00:00:00')
                         )
                     )
                 )
             )
             // Check if daytime is after booking start time if bookable end of now is calculated
-            && (!$availability->isOpenedOnDate($availability->getBookableEnd($now))
-                || $availability->isOpened($availability->getBookableEnd($now)->modify($now->format('H:i:s')))
+            && (!$proposedChange->isOpenedOnLastBookableDay()
+                || $proposedChange->isTimeOpenedOnLastBookableDay()
             )
         ) {
             $availability['processingNote'][] = 'outdated: new slots required';
