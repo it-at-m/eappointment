@@ -25,9 +25,9 @@ class Queue extends BaseController
         $validator = $request->getAttribute('validator');
 
         $calldisplay = new Helper\Calldisplay($request);
-        $queueListFull = \App::$http->readPostResult('/calldisplay/queue/', $calldisplay->getEntity(false))
+        $queueListFull = \App::$http
+            ->readPostResult('/calldisplay/queue/', $calldisplay->getEntity(false))
             ->getCollection();
-        $lastItem = $queueListFull->getFakeOrLastWaitingnumber();
         $queueList = ($queueListFull) ?
             $queueListFull->withStatus($calldisplay::getRequestedQueueStatus($request)) :
             new \BO\Zmsentities\Collection\QueueList();
@@ -38,9 +38,9 @@ class Queue extends BaseController
                 'tableSettings' => $validator->getParameter('tableLayout')->isArray()->getValue(),
                 'calldisplay' => $calldisplay->getEntity(false),
                 'queueList' => $queueList,
-                'waitingClients' => $queueListFull->getQueuePositionByNumber($lastItem->number),
-                'waitingTime' => $lastItem->waitingTimeEstimate,
-                'waitingTimeOptimistic' => $lastItem->waitingTimeOptimistic,
+                'waitingClients' => $queueListFull->withoutStatus(['called'])->count(),
+                'waitingTime' => $queueListFull->getLast()->waitingTimeEstimate,
+                'waitingTimeOptimistic' => $queueListFull->getLast()->waitingTimeOptimistic,
             )
         );
     }

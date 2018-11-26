@@ -31,17 +31,20 @@
 }
 
 /* ----------------------------------------------
-    Wartende
+    Wartende & Wartezeit
 ---------------------------------------------- */
+
+.waitingColumn {
+    position: absolute;
+    left: 40px; 
+    top: 470px; 
+}
 .aufrufanzeige .wartende_aktuell
 {
     font-size:2.4em;
     font-family: Arial, sans-serif;
     font-weight:bold;
-    left:40px;
-    position: absolute;
     text-align:center;
-    top:560px;
     width:275px;
 }
 .aufrufanzeige .wartende_text {
@@ -57,18 +60,12 @@
     background:#E0E9F2;
 }
 
-/* ----------------------------------------------
-    Wartezeit
----------------------------------------------- */
 .aufrufanzeige .wartezeit_aktuell
 {
     font-size:2.4em;
     font-family: Arial, sans-serif;
     font-weight:bold;
-    left:40px;
-    position: absolute;
     text-align:center;
-    top:470px;
     width:275px;
 }
 .aufrufanzeige .wartezeit_text {
