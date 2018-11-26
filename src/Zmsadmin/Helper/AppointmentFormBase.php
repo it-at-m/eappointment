@@ -149,7 +149,7 @@ class AppointmentFormBase
     protected static function writeNotification($smsConfirmation, Entity $process)
     {
         if ($smsConfirmation &&
-            $process->scope->getPreference('appointment', 'notificationConfirmationEnabled') &&
+            $process->scope->hasNotifcationEnabled() &&
             $process->getFirstClient()->hasTelephone()
         ) {
             \App::$http->readPostResult(
@@ -161,7 +161,10 @@ class AppointmentFormBase
 
     protected static function writeMail($mailConfirmation, Entity $process)
     {
-        if ($mailConfirmation && $process->getFirstClient()->hasEmail()) {
+        if ($mailConfirmation &&
+            $process->getFirstClient()->hasEmail() &&
+            $process->scope->hasEmailFrom()
+        ) {
             \App::$http->readPostResult(
                 '/process/'. $process->id .'/'. $process->authKey .'/confirmation/mail/',
                 $process

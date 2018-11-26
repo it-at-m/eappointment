@@ -31,27 +31,43 @@ class ProcessDelete extends BaseController
         $process = \App::$http->readGetResult('/process/'. $processId .'/')->getEntity();
         $process->status = 'deleted';
         $workstation->testMatchingProcessScope((new Helper\ClusterHelper($workstation))->getScopeList(), $process);
-        $authKey = $process->authKey;
 
         $initiator = Validator::param('initiator')->isString()->getValue();
-        \App::$http->readDeleteResult('/process/'. $process->id .'/', ['initiator' => $initiator]);
+        \App::$http->readDeleteResult('/process/'. $process->id .'/', ['initiator' => $initiator])->getEntity();
 
-        if ($process->getFirstClient()->hasEmail()) {
-            \App::$http->readPostResult('/process/'. $process->id .'/'. $authKey .'/delete/mail/', $process);
-        }
-        if ($process->scope->getPreference('appointment', 'notificationConfirmationEnabled') &&
-            $process->getFirstClient()->hasTelephone()
-        ) {
-            \App::$http->readPostResult('/process/'. $process->id .'/'. $authKey .'/delete/notification/', $process);
-        }
+        $this->testDeleteMailNotifications($process);
 
         return \BO\Slim\Render::redirect(
             'appointment_form',
             array(),
             array(
                 'selectedprocess' => $process->getId(),
-                'success' => 'process_deleted'
+                'success' => 'process_deleted',
             )
         );
+    }
+
+    protected function testDeleteMailNotifications($process)
+    {
+        if ($process->getFirstClient()->hasEmail() &&
+            $process->isWithAppointment() &&
+            $process->scope->hasEmailFrom()
+        ) {
+            \App::$http
+                ->readPostResult(
+                    '/process/'. $process->getId() .'/'. $process->getAuthKey() .'/delete/mail/',
+                    $process
+                )->getEntity();
+        }
+        if ($process->scope->hasNotifcationEnabled() &&
+            $process->getFirstClient()->hasTelephone() &&
+            $process->isWithAppointment()
+        ) {
+            \App::$http
+                ->readPostResult(
+                    '/process/'. $process->getId() .'/'. $process->getAuthKey() .'/delete/notification/',
+                    $process
+                )->getEntity();
+        }
     }
 }
