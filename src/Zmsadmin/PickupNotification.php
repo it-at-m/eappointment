@@ -36,15 +36,17 @@ class PickupNotification extends BaseController
         $department = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/department/')->getEntity();
         $config = \App::$http->readGetResult('/config/')->getEntity();
 
-        $notification = (new Entity)->toResolvedEntity($process, $config, $department);
-        $notification = \App::$http->readPostResult('/notification/', $notification)->getEntity();
-
+        if ($process->scope->hasNotifcationEnabled()) {
+            $notification = (new Entity)->toResolvedEntity($process, $config, $department);
+            $notification = \App::$http->readPostResult('/notification/', $notification)->getEntity();
+        }
+    
         return \BO\Slim\Render::withHtml(
             $response,
             'block/pickup/notificationSent.twig',
             array(
                'process' => $process,
-               'notification' => $notification
+               'notification' => $notification ? $notification : null
             )
         );
     }

@@ -99,7 +99,7 @@ class Notification extends BaseController
     protected function getReminderNotification($process, $config, $department)
     {
         $notification = (new Entity)->toResolvedEntity($process, $config, $department);
-        return $this->writeNotification($notification);
+        return $this->writeNotification($notification, $process);
     }
 
     protected function getCustomNotification($process, $department)
@@ -110,13 +110,15 @@ class Notification extends BaseController
         $collection = Validator::collection($collection);
         if (! $collection->hasFailed()) {
             $notification = (new Entity)->toCustomMessageEntity($process, $collection->getValues(), $department);
-            return $this->writeNotification($notification);
+            return $this->writeNotification($notification, $process);
         }
         return $collection->getStatus();
     }
 
-    private function writeNotification($notification)
+    private function writeNotification($notification, $process)
     {
-        return \App::$http->readPostResult('/notification/', $notification)->getEntity();
+        if ($process->scope->hasNotifcationEnabled()) {
+            return \App::$http->readPostResult('/notification/', $notification)->getEntity();
+        }
     }
 }

@@ -82,11 +82,6 @@ class ProcessDeleteTest extends Base
                     'url' => '/process/100632/',
                     'parameters' => ['initiator' => 'admin'],
                     'response' => $this->readFixture("GET_process_spontankunde.json")
-                ],
-                [
-                    'function' => 'readPostResult',
-                    'url' => '/process/100632/ec58/delete/mail/',
-                    'response' => $this->readFixture("POST_mail.json")
                 ]
             ]
         );

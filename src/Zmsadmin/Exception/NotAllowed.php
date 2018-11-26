@@ -1,6 +1,6 @@
 <?php
 
-namespace BO\Zmsapi\Exception\Workstation;
+namespace BO\Zmsadmin\Exception;
 
 class NotAllowed extends \Exception
 {

@@ -25,6 +25,7 @@ class AppointmentForm extends BaseController
 
         $validator = $request->getAttribute('validator');
         $success = $validator->getParameter('success')->isString()->getValue();
+        $error = $validator->getParameter('error')->isString()->getValue();
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
         $selectedTime = $validator->getParameter('selectedtime')->isString()->getValue();
         $selectedScope = $this->getSelectedScope($validator, $workstation);
@@ -66,6 +67,7 @@ class AppointmentForm extends BaseController
                 'requestList' => (count($requestList)) ? $requestList->sortByName() : null,
                 'formData' => (isset($validatedForm) && $validatedForm) ? $validatedForm->getStatus(null, true) : null,
                 'success' => $success,
+                'error' => $error,
                 'freeProcessList' => $freeProcessList
             )
         );

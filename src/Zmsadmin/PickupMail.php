@@ -36,6 +36,9 @@ class PickupMail extends BaseController
         $config = \App::$http->readGetResult('/config/')->getEntity();
         $department = \App::$http->readGetResult('/scope/'. $workstation->scope['id'] .'/department/')->getEntity();
 
+        if (! $process->scope->hasEmailFrom()) {
+            throw new \BO\Zmsadmin\Exception\MailFromMissing();
+        }
         $mail = (new Entity)->toResolvedEntity($process, $config);
         $mail = \App::$http->readPostResult('/mails/', $mail->withDepartment($department))->getEntity();
 

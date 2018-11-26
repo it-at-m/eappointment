@@ -73,6 +73,9 @@ class Mail extends BaseController
 
     private function writeValidatedMail($process, $department)
     {
+        if (! $process->scope->hasEmailFrom()) {
+            throw new \BO\Zmsadmin\Exception\MailFromMissing();
+        }
         $collection = array();
         $collection['subject'] = Validator::param('subject')->isString()
             ->isBiggerThan(2, "Es muss ein aussagekräftiger Betreff eingegeben werden");
