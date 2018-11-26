@@ -51,7 +51,10 @@
                                 {% endfor %}
                             {% else %}
                             <tr>
-                                <td colspan="6">{% trans %}Es wurden keine Daten gefunden{% endtrans %}</td>
+                            <!--td colspan="6">{#% trans %}Es wurden keine Daten gefunden{% endtrans %#}</td -->
+                                <td colspan="2">{{ organisation.name }}</td>
+                                <td colspan="2">{{ department.name }}</td>
+                                <td colspan="2">{{ workstation.scope.contact.name }}</td>
                                 <td colspan="2">0</td>
                             </tr>
                             {% endif %}
