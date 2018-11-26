@@ -58,38 +58,6 @@ class ProcessDeleteNotificationTest extends Base
         ], []);
     }
 
-    public function testAuthKeyMatchFailed()
-    {
-        $this->expectException('\BO\Zmsapi\Exception\Process\AuthKeyMatchFailed');
-        $this->expectExceptionCode(403);
-        $this->render([], [
-            '__body' => '{
-                "id": '. self::PROCESS_ID .',
-                "authKey": "1234",
-                "scope": {
-                    "id": 141
-                },
-                "clients": [
-                    {
-                        "familyName": "Max Mustermann",
-                        "eNotification": "max@service.berlin.de",
-                        "telephone": "030 115"
-                    }
-                ],
-                "appointments" : [
-                    {
-                        "date": 1447869172,
-                        "scope": {
-                            "id": 141
-                        },
-                        "slotCount": 2
-                    }
-                ],
-                "status": "confirmed"
-            }'
-        ], []);
-    }
-
     public function testUnvalidInput()
     {
         $this->expectException('\BO\Zmsentities\Exception\SchemaValidation');
