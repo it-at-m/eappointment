@@ -1,7 +1,8 @@
 ## v2.19.01
 
 * #35158 Bugfix: Berechnung, ob eine Öffnungzeit einen Tag in einer gegebenen Zeitspanne enthält beachtet jetzt auch den letzten Tag der Zeitspanne
-
+* #31586 Bugfix: E-Mail Texte enthalten nun vollständige Datumsformate in deutsch
+* #31586 Bugfix: E-Mails werden nur noch versendet, wenn es eine entsprechende Absender-Adresse im Standort gibt
 
 ## v2.19.00
 
