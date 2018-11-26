@@ -302,7 +302,7 @@ class View extends BaseView {
                     { 'name': 'submit', 'value': 'form' },
                     { 'name': 'dialog', 'value': 1 }
                 );
-                this.loadCall(`${this.includeUrl}/mail/`, 'POST', $.param(sendData)).then(
+                this.loadCall(`${this.includeUrl}/mail/`, 'POST', $.param(sendData), false, $container).then(
                     (response) => this.loadMessage(response, () => {
                         this.loadQueueTable();
                     })
