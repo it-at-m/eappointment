@@ -1,16 +1,15 @@
-
 ## v2.19.01
 
 * #35151 Bugfix: Falsche Jahresangabe im Januar
 * #34808 Bugfix: Die Standorte auch auf Standorte-Ebene mit Namen anzeigen
 * #35228 Security: event-stream Version angepasst
+* #34808 - Bugfix: Standortsname wird gezeigt auch wenn keine SMS-statistiks vorhanden sind.
 
 ## v2.19.00
 
 * Rohdaten für gebuchte/geplante Termine inkl. Visualisierung
 * #34808 - Bugfix: Spalte Standorte in Organisation wird jetzt zusammengefasst und als "alle" angezeigt
 * #34809 - Bugfix: Doppelte Tage auf Grund von Sommer-/Winterzeit korrigiert (März und Oktober)
-
 
 ## v2.18.02
 
