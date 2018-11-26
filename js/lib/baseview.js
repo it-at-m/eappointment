@@ -81,7 +81,7 @@ class BaseView extends ErrorHandler {
                         message: err.responseText,
                         parent: parent
                     });
-                    hideSpinner(parent.$main);
+                    hideSpinner(parent.$main ? parent.$main : this.$main);
                 } else {
                     console.log('XHR load error', url, err);
                     reject(err);
