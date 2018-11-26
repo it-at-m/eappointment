@@ -3678,6 +3678,20 @@ use \Psr\Http\Message\ResponseInterface;
  *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
  *                  in: query
  *                  type: integer
+ *              -   name: reserveEntityIds
+ *                  description: "Deprecated"
+ *                  in: query
+ *                  type: integer
+ *              -   name: startDate
+ *                  description: "only fetch availabilities starting this date"
+ *                  in: query
+ *                  type: string
+                    example: '2016-04-01'
+ *              -   name: endDate
+ *                  description: "only fetch availabilities before this date"
+ *                  in: query
+ *                  type: string
+                    example: '2016-04-01'
  *          responses:
  *              200:
  *                  description: "success"
