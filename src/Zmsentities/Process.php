@@ -229,6 +229,15 @@ class Process extends Schema\Entity
         return $this->getAppointments()->hasDateScope($date, $scopeId);
     }
 
+    /**
+     * check if process is with appointment and not only queued
+     * return Boolean
+     */
+    public function isWithAppointment()
+    {
+        return (1 == $this->toProperty()->queue->withAppointment->get());
+    }
+
     public function hasProcessCredentials()
     {
         return (isset($this['id']) && isset($this['authKey']) && $this['id'] && $this['authKey']);
