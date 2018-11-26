@@ -77,6 +77,18 @@ class TwigExceptionHandler extends Controller
         return $template;
     }
 
+    protected static function getRequestData(RequestInterface $request)
+    {
+        $requestdata = array_merge((array)$request->getQueryParams(), (array)$request->getParsedBody());
+        $json_opt = JSON_HEX_TAG | JSON_PRETTY_PRINT | JSON_HEX_AMP;
+        if (json_decode((string)$request->getBody())) {
+            $requestdata = json_encode(json_decode((string)$request->getBody()), $json_opt);
+        } else {
+            $requestdata = json_encode($requestdata, $json_opt);
+        }
+        return $requestdata;
+    }
+
     public static function getExtendedExceptionInfo(\Exception $exception, RequestInterface $request)
     {
         $servertime = strftime("%F %T");
@@ -86,8 +98,16 @@ class TwigExceptionHandler extends Controller
         }
         $response = null;
         $responsedata = '';
-        if (\App::DEBUG && isset($exception->request)) {
-            $request = $exception->request;
+        $apirequest = null;
+        $apirequestdata = '';
+        $apirequesturi = '';
+        $apirequestmethod = '';
+        if (isset($exception->request)) {
+            $apirequest = $exception->request;
+            $apirequest = $apirequest->withUri($apirequest->getUri()->withUserInfo(''));
+            $apirequestdata = static::getRequestData($apirequest);
+            $apirequesturi = $apirequest->getUri();
+            $apirequestmethod = $apirequest->getMethod();
         }
         $request = $request->withUri($request->getUri()->withUserInfo(''));
         if (isset($exception->response)) {
@@ -99,13 +119,7 @@ class TwigExceptionHandler extends Controller
         if (isset($exception->trace)) {
             $trace = $exception->trace;
         }
-        $requestdata = array_merge((array)$request->getQueryParams(), (array)$request->getParsedBody());
-        $json_opt = JSON_HEX_TAG | JSON_PRETTY_PRINT | JSON_HEX_AMP;
-        if (json_decode((string)$request->getBody())) {
-            $requestdata = json_encode(json_decode((string)$request->getBody()), $json_opt);
-        } else {
-            $requestdata = json_encode($requestdata, $json_opt);
-        }
+        $requestdata = static::getRequestData($request);
         $uniqueId = substr(sha1($servertime . rand(1, 60)), 0, 6);
         $data = [];
         if (isset($exception->data)) {
@@ -121,6 +135,8 @@ class TwigExceptionHandler extends Controller
             "failed" => $exception->getMessage(),
             "exception" => $exception,
             "exceptionclass" => $exceptionclass,
+            "exceptioncode" => $exception->getCode(),
+            "basefile" => basename($exception->getFile(), '.php'),
             "file" => $exception->getFile(),
             "line" => $exception->getLine(),
             "trace" => $trace,
@@ -130,6 +146,10 @@ class TwigExceptionHandler extends Controller
             "requesturi" => $request->getUri(),
             "requestdata" => $requestdata,
             "requestmethod" => $request->getMethod(),
+            "apirequest" => $apirequest,
+            "apirequesturi" => $apirequesturi,
+            "apirequestdata" => $apirequestdata,
+            "apirequestmethod" => $apirequestmethod,
             "response" => $response,
             "responsedata" => $responsedata,
         ), $templatedata);
