@@ -50,15 +50,15 @@ class CalldisplayQueue extends BaseController
             throw new Exception\Calldisplay\ScopeAndClusterNotFound();
         }
         foreach ($calldisplay->getClusterList() as $cluster) {
-            $cluster = (new \BO\Zmsdb\Cluster)->readEntity($cluster->id);
+            $cluster = (new \BO\Zmsdb\Cluster)->readEntity($cluster->getId());
             if (! $cluster) {
                 throw new Exception\Cluster\ClusterNotFound();
             }
         }
         foreach ($calldisplay->getScopeList() as $scope) {
-            $scope = (new \BO\Zmsdb\Scope)->readWithWorkstationCount($scope->id, \App::$now, $resolveReferences);
-            $this->scopeCache[$scope->id] = $scope;
-            if (! $scope->id) {
+            $scope = (new \BO\Zmsdb\Scope)->readWithWorkstationCount($scope->getId(), \App::$now, $resolveReferences);
+            $this->scopeCache[$scope->getId()] = $scope;
+            if (! $scope->hasId()) {
                 throw new Exception\Scope\ScopeNotFound();
             }
         }
@@ -72,7 +72,14 @@ class CalldisplayQueue extends BaseController
 
         // TODO try to fetch only called processes
         return (new \BO\Zmsdb\Scope)
-            ->readQueueListWithWaitingTime($scope, \App::$now)
+            ->readQueueList($scope->getId(), \App::$now)
+            ->withoutStatus(['missed'])
+            ->withEstimatedWaitingTime(
+                $scope->getPreference('queue', 'processingTimeAverage'),
+                $scope->getCalculatedWorkstationCount(),
+                \App::$now,
+                false
+            )
             ->withPickupDestination($scope);
     }
 }
