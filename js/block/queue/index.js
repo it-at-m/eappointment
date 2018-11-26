@@ -3,7 +3,7 @@ import $ from "jquery"
 
 class View extends BaseView {
 
-    constructor (element, options) {
+    constructor(element, options) {
         super(element, options);
         this.setOptions(options);
         this.setCallbacks(options);
@@ -13,16 +13,14 @@ class View extends BaseView {
         this.load();
     }
 
-    setOptions(options)
-    {
+    setOptions(options) {
         this.source = options.source;
         this.selectedDate = options.selectedDate;
         this.includeUrl = options.includeUrl || "";
         this.showLoader = options.showLoader || false;
     }
 
-    setCallbacks(options)
-    {
+    setCallbacks(options) {
         this.onDatePick = options.onDatePick;
         this.onDateToday = options.onDateToday;
         this.onDeleteProcess = options.onDeleteProcess;
@@ -55,13 +53,13 @@ class View extends BaseView {
         }).on('click', 'a.process-reset', (ev) => {
             this.onResetProcess(this.$main, ev);
         }).on('click', 'a.process-delete', (ev) => {
-            this.onConfirm(ev, "confirm_delete", () => {this.onDeleteProcess(null, ev)});
+            this.onConfirm(ev, "confirm_delete", () => { this.onDeleteProcess(null, ev) });
         }).on('click', '.queue-table .calendar-navigation .pagedaylink', (ev) => {
             this.onDatePick(this.$main, ev);
         }).on('click', '.queue-table .calendar-navigation .today', (ev) => {
             this.onDateToday(this.$main, ev)
         }).on('click', '.queue-table .process-notification-send', (ev) => {
-            this.onConfirm(ev, "confirm_notification_reminder", () => {this.onSendNotificationReminder(this.$main, ev)});
+            this.onConfirm(ev, "confirm_notification_reminder", () => { this.onSendNotificationReminder(this.$main, ev) });
         }).on('click', '.process-custom-mail-send', (ev) => {
             this.onSendCustomMail(this.$main, ev);
         }).on('click', '.process-custom-notification-send', (ev) => {
