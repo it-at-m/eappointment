@@ -13,12 +13,14 @@
             {% if not skipClock %}
                 {{ block("clock") }}
             {% endif %}
+            <div class="waitingColumn">
             {% if not skipClients %}
                 {{ block("estimatedWaitingClients") }}
             {% endif %}
             {% if not skipTime %}
                 {{ block("estimatedWaitingTime") }}
             {% endif %}
+            </div>
         </div>
     {% endif %}
 <div class="aufrufanzeige_main{% if skipAll %} aufrufanzeige_full{% endif %}">
