@@ -5,6 +5,8 @@
 * #35228 Security: event-stream Version angepasst
 * #34808 - Bugfix: Standortsname wird gezeigt auch wenn keine SMS-statistiks vorhanden sind.
 
+## v2.19.01
+* #34808 - Bugfix: Standortsname wird gezeigt auch wenn keine SMS-statistiks vorhanden sind.
 ## v2.19.00
 
 * Rohdaten für gebuchte/geplante Termine inkl. Visualisierung
