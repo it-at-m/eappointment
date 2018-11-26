@@ -36,11 +36,8 @@ class ProcessDeleteNotification extends BaseController
         $config = (new Config())->readEntity();
         $department = (new Department())->readByScopeId($process->scope['id']);
         $notification = (new \BO\Zmsentities\Notification())->toResolvedEntity($process, $config, $department);
-
-        if ($process->getFirstClient()->hasTelephone()) {
-            $notification = (new Query())->writeInQueue($notification, \App::$now);
-            \App::$log->debug("Send notification", [$notification]);
-        }
+        $notification = (new Query())->writeInQueue($notification, \App::$now);
+        \App::$log->debug("Send notification", [$notification]);
 
         $message = Response\Message::create($request);
         $message->data = $notification;
@@ -55,8 +52,8 @@ class ProcessDeleteNotification extends BaseController
         $authCheck = (new Process())->readAuthKeyByProcessId($process->id);
         if (! $authCheck) {
             throw new Exception\Process\ProcessNotFound();
-        } elseif ($authCheck['authKey'] != $process->authKey && $authCheck['authName'] != $process->authKey) {
-            throw new Exception\Process\AuthKeyMatchFailed();
+        } elseif (! $process->getFirstClient()->hasTelephone()) {
+            throw new Exception\Process\TelephoneRequired();
         }
     }
 }

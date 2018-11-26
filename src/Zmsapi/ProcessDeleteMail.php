@@ -28,17 +28,15 @@ class ProcessDeleteMail extends BaseController
     ) {
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $process = new \BO\Zmsentities\Process($input);
+        
         $process->testValid();
         $this->testProcessData($process);
 
         \BO\Zmsdb\Connection\Select::getWriteConnection();
         $config = (new Config())->readEntity();
         $mail = (new \BO\Zmsentities\Mail())->toResolvedEntity($process, $config);
-
-        if ($process->getFirstClient()->hasEmail()) {
-            $mail = (new \BO\Zmsdb\Mail)->writeInQueue($mail, \App::$now);
-            \App::$log->debug("Send mail", [$mail]);
-        }
+        $mail = (new \BO\Zmsdb\Mail)->writeInQueue($mail, \App::$now);
+        \App::$log->debug("Send mail", [$mail]);
 
         $message = Response\Message::create($request);
         $message->data = $mail;
@@ -50,11 +48,9 @@ class ProcessDeleteMail extends BaseController
 
     protected function testProcessData($process)
     {
-        $authCheck = (new Process())->readAuthKeyByProcessId($process->id);
+        $authCheck = (new Process())->readAuthKeyByProcessId($process->getId());
         if (! $authCheck) {
             throw new Exception\Process\ProcessNotFound();
-        } elseif ($authCheck['authKey'] != $process->authKey && $authCheck['authName'] != $process->authKey) {
-            throw new Exception\Process\AuthKeyMatchFailed();
         } elseif ($process->toProperty()->scope->preferences->client->emailRequired->get() &&
             ! $process->getFirstClient()->hasEmail()
         ) {
