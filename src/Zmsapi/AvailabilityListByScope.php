@@ -23,12 +23,23 @@ class AvailabilityListByScope extends BaseController
     ) {
         (new Helper\User($request))->checkRights();
         $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
+        $reserveEntityIds = Validator::param('reserveEntityIds')->isNumber()->setDefault(0)->getValue();
+        $startDateFormatted = Validator::param('startDate')->isString()->getValue();
+        $endDateFormatted = Validator::param('endDate')->isString()->getValue();
 
+        $startDate = null;
+        $endDate = null;
+        if ($startDateFormatted) {
+            $startDate = new \DateTimeImmutable($startDateFormatted);
+        }
+        if ($endDateFormatted) {
+            $startDate = new \DateTimeImmutable($startDateFormatted);
+        }
         $scope = (new \BO\Zmsdb\Scope)->readEntity($args['id'], $resolveReferences - 1);
         if (! $scope) {
             throw new Exception\Scope\ScopeNotFound();
         }
-        $availabilities = (new Query())->readList($scope->id, 0);
+        $availabilities = (new Query())->readList($scope->id, 0, $reserveEntityIds, $startDate, $endDate);
         if (0 == $availabilities->count()) {
             throw new Exception\Availability\AvailabilityNotFound();
         }
