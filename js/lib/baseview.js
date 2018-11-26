@@ -56,13 +56,13 @@ class BaseView extends ErrorHandler {
         });
     }
 
-    loadCall(url, method = 'GET', data = null, spinner = false) {
-        return BaseView.loadCallStatic(url, method, data, spinner, this);
+    loadCall(url, method = 'GET', data = null, spinner = false, $container = this.$main) {
+        return BaseView.loadCallStatic(url, method, data, spinner, $container);
     }
 
     static loadCallStatic(url, method = 'GET', data = null, spinner = false, parent) {
         if (spinner) {
-            showSpinner(parent.$main);
+            showSpinner(parent);
         }
         const ajaxSettings = {
             method
@@ -76,12 +76,12 @@ class BaseView extends ErrorHandler {
             }).fail(err => {
                 let isException = err.responseText.toLowerCase().includes('exception');
                 if (err.status >= 400 && isException) {
-                    new ExceptionHandler(parent.$main, {
+                    new ExceptionHandler(parent, {
                         code: err.status,
                         message: err.responseText,
                         parent: parent
                     });
-                    hideSpinner(parent.$main ? parent.$main : this.$main);
+                    hideSpinner(parent);
                 } else {
                     console.log('XHR load error', url, err);
                     reject(err);
