@@ -58,38 +58,6 @@ class ProcessDeleteMailTest extends Base
         ], []);
     }
 
-    public function testAuthKeyMatchFailed()
-    {
-        $this->expectException('\BO\Zmsapi\Exception\Process\AuthKeyMatchFailed');
-        $this->expectExceptionCode(403);
-        $this->render([], [
-            '__body' => '{
-                "id": '. self::PROCESS_ID .',
-                "authKey": "1234",
-                "scope": {
-                    "id": 141
-                },
-                "clients": [
-                    {
-                        "familyName": "Max Mustermann",
-                        "email": "max@service.berlin.de",
-                        "telephone": "030 115"
-                    }
-                ],
-                "appointments" : [
-                    {
-                        "date": 1447869172,
-                        "scope": {
-                            "id": 141
-                        },
-                        "slotCount": 2
-                    }
-                ],
-                "status": "confirmed"
-            }'
-        ], []);
-    }
-
     public function testMissingMail()
     {
         $this->expectException('\BO\Zmsapi\Exception\Process\EmailRequired');
