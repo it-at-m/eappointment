@@ -318,6 +318,11 @@ class Calendar extends Schema\Entity
                 unset($scope['preferences']);
             }
         }
+        foreach ($entity['days'] as $day) {
+            if (isset($day['allAppointments'])) {
+                unset($day['allAppointments']);
+            }
+        }
         unset($entity['providers']);
         unset($entity['clusters']);
         unset($entity['freeProcesses']);

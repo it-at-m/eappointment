@@ -40,6 +40,9 @@
         "freeAppointments": {
             "$ref": "slot.json"
         },
+        "allAppointments": {
+            "$ref": "slot.json"
+        },
         "firstAppointmentTimestamp": {
             "$ref": "slot.json"
         },
