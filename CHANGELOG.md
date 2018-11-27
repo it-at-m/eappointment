@@ -1,6 +1,7 @@
 ## v2.19.01
 
 * #35158 Bugfix: Fehlender Tag wird nun auch bei einer Änderung der Öffnungszeit innerhalb der letzten 7 Tage berechnet
+* #35202 Bugfix: Hole für den Kalender bei den Tagen auch die insgesamt verfügbaren Termine aus der Datenbank und nicht nur die freien
 
 ## v2.19.00
 
