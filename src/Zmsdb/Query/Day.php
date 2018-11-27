@@ -34,7 +34,11 @@ class Day extends Base
                     SUM(public) AS freeAppointments__public,
                     SUM(callcenter) AS freeAppointments__callcenter,
                     SUM(intern) AS freeAppointments__intern,
+                    SUM(publicall) AS allAppointments__public,
+                    SUM(callcenterall) AS allAppointments__callcenter,
+                    SUM(internall) AS allAppointments__intern,
                     "sum" AS freeAppointments__type,
+                    "free" AS allAppointments__type,
                     "bookable" AS status
         FROM
         (
@@ -48,7 +52,10 @@ class Day extends Base
           COUNT(slotID) ancestorCount,
           MIN(IF(public > confirmed, public - confirmed, 0)) AS public,
           MIN(IF(callcenter > confirmed, callcenter - confirmed, 0)) AS callcenter,
-          MIN(CAST(intern AS SIGNED) - confirmed) AS intern
+          MIN(CAST(intern AS SIGNED) - confirmed) AS intern,
+          MIN(public) AS publicall,
+          MIN(callcenter) AS callcenterall,
+          MIN(intern) AS internall
         FROM
         (
 
