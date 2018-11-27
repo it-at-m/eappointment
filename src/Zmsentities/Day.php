@@ -48,9 +48,17 @@ class Day extends Schema\Entity
         return Helper\DateTime::create($date);
     }
 
-    public function getAppointmentsByType($slotType)
+    /**
+     * @return bool TRUE or FALSE if one or more appointments, if no appointments for $slotType were defined, than NULL
+     */
+    public function hasAppointmentsByType($slotType)
     {
-        return (0 < $this->toProperty()->freeAppointments->{$slotType}->get());
+        $freeAppointmentCount = $this->toProperty()->freeAppointments->{$slotType}->get();
+        $allAppointmentCount = $this->toProperty()->allAppointments->{$slotType}->get();
+        if (null !== $allAppointmentCount && $allAppointmentCount <= 0) {
+            return null;
+        }
+        return (0 < $freeAppointmentCount);
     }
 
     public function isBookable()
@@ -71,9 +79,11 @@ class Day extends Schema\Entity
      */
     public function getWithStatus($slotType, \DateTimeInterface $now)
     {
-        $hasAppointments = $this->getAppointmentsByType($slotType);
-        if ($this->status != self::RESTRICTED) {
+        $hasAppointments = $this->hasAppointmentsByType($slotType);
+        if ($this->status != self::RESTRICTED && $hasAppointments !== null) {
             $this->status = ($hasAppointments) ? self::BOOKABLE : self::FULL;
+        } elseif (null === $hasAppointments) {
+            $this->status = self::NOTBOOKABLE;
         }
         // if dayend < todays time + half an hour, it is restricted
         if ($this->toDateTime()->getTimestamp() + 86400 <= $now->getTimestamp() + 1800) {
