@@ -3,6 +3,7 @@
 * Bugfix: Standort-Admin mit Auswahl der Quelle für die Dienstleister-Liste
 * #34481 Bugfix: Wartezeit in der Tresen-Infobox wird nun ohne nicht erschienende Kunden berechnet
 * #35213 Anzeige von Exceptions mit mehr Informationen
+* #35117 Bugfix: Die Wartezeiten in der Tabelle werden nur für den heutigen Tag angezeigt
 
 ## v2.19.00
 
