@@ -64,17 +64,17 @@ body.noInfoColumn .aufrufanzeige table.aufrufanzeige_aufruf {
         left: 28px;
         top:699px;
     }
+    .aufrufanzeige .waitingColumn {
+        top:450px;
+        left:15px;
+    }
     .aufrufanzeige .wartende_aktuell {
         font-size:20px;
-        left:15px;
-        top:540px;
         width:275px;
     }
 
     .aufrufanzeige .wartezeit_aktuell {
         font-size:20px;
-        left:15px;
-        top:450px;
         width:275px;
     }
 
@@ -151,18 +151,18 @@ body.noInfoColumn .aufrufanzeige table.aufrufanzeige_aufruf {
         top:985px;
         width:350px;
     }
+    .aufrufanzeige .waitingColumn {
+        top:625px;
+        left:15px;
+    }
     .aufrufanzeige_text img {height:260px;}
     .aufrufanzeige .wartende_aktuell {
         font-size:26px;
-        left:15px;
-        top:715px;
         width:350px;
     }
 
     .aufrufanzeige .wartezeit_aktuell {
         font-size:26px;
-        left:15px;
-        top:625px;
         width:350px;
     }
   span.terminkundennummer.abholeranzeige.abholeranzeige
@@ -234,15 +234,17 @@ body.noInfoColumn .aufrufanzeige table.aufrufanzeige_aufruf {
         width:361px;
     }
     .aufrufanzeige_text img {height:244px;}
+
+    .aufrufanzeige .waitingColumn {
+        top:630px;
+    }
     .aufrufanzeige .wartende_aktuell {
         font-size:32px;
-        top:730px;
         width:400px;
     }
 
     .aufrufanzeige .wartezeit_aktuell {
         font-size:32px;
-        top:630px;
         width:400px;
     }
 
