@@ -1,5 +1,5 @@
+/* global require */
 var gulp = require('gulp');
-var fs   = require('fs');
 var gutil = require('gulp-util');
 var browserify = require('browserify');
 var sourcemaps = require('gulp-sourcemaps');
@@ -22,7 +22,7 @@ gulp.task('js', ['lint'], function () {
                 minify: true
             }),
             transform_babelify.configure({
-                'presets': ['es2015'],
+                'presets': ['env'],
                 'plugins': []
             }),
             transform_shim
