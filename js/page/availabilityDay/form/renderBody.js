@@ -5,10 +5,12 @@ import Errors from './errors'
 const { Label, FormGroup, Controls, Description } = Inputs
 import { range } from '../../../lib/utils'
 
-const renderBody = (data, errors, onChange, onSave, onPublish, onDelete, onAbort) => {
+const renderBody = (data, errors, onChange, onSave, onPublish, onDelete, onAbort, setErrorRef) => {
     return (
         <div>
-            <Errors {...{ errors }} />
+            <div ref={setErrorRef}>
+                <Errors {...{ errors }} />
+            </div>
             <form>
                 <fieldset>
                     <FormGroup>

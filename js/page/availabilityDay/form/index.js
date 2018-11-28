@@ -120,6 +120,11 @@ class AvailabilityForm extends Component {
             data: getFormValuesFromData(this.props.data),
             errors: {}
         }
+
+        this.errorElement = null
+        this.setErrorRef = element => {
+            this.errorElement = element
+          };
     }
 
     componentWillReceiveProps(newProps) {
@@ -139,6 +144,12 @@ class AvailabilityForm extends Component {
         })
     }
 
+    handleFocus(element) {
+        if (element) {
+            element.scrollIntoView()
+        }
+      }
+
     render() {
 
 
@@ -157,6 +168,7 @@ class AvailabilityForm extends Component {
             } else {
                 console.log('errors', validationResult.errors)
                 this.setState({ errors: validationResult.errors })
+                this.handleFocus(this.errorElement);
             }
         }
 
@@ -168,6 +180,7 @@ class AvailabilityForm extends Component {
             } else {
                 console.log('errors', validationResult.errors)
                 this.setState({ errors: validationResult.errors })
+                this.handleFocus(this.errorElement);
             }
         }
 
@@ -198,7 +211,7 @@ class AvailabilityForm extends Component {
 
         return <Board title={this.props.title || "Öffnungszeit bearbeiten"}
             headerRight={<HeaderButtons {...{ onCopy, onException, onEditInFuture }} />}
-            body={renderBody(data, errors, onChange, onSave, onPublish, onDelete, onAbort)}
+            body={renderBody(data, errors, onChange, onSave, onPublish, onDelete, onAbort, this.setErrorRef )}
             footer=""
             className="availability-form" />
     }
