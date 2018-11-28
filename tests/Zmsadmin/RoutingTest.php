@@ -54,7 +54,6 @@ class RoutingTest extends Base
         $container = \App::$slim->getContainer();
         $response = $container['errorHandler']($request, $this->getResponse(), $exception);
         $this->assertContains('Es ist ein Fehler aufgetreten', (string)$response->getBody());
-        $this->assertContains('System Failure', (string)$response->getBody());
     }
 
     public function testErrorHandlerIgnoreException()
