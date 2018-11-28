@@ -14,21 +14,27 @@ class View extends BaseView {
     }
 
     initRequest () {
-        $.post( this.getUrl('/queue/'), window.bo.zmscalldisplay)
-         .done(data => {
-             this.hideMessages(0);
-             $( '#queueImport' ).html( data );
-             this.setColorForNewCall();
-             this.setWaitingClients(data);
-             this.setWaitingTime(data);
-             var audioCheck = new RingAudio();
-             audioCheck.initSoundCheck();
-             this.getDestinationToNumber();
-         })
-         .fail(function() {
-            $( '.fatal' ).show();
-         });
-         this.setInterval();
+        const ajaxopt = {
+            type: "POST",
+            url: this.getUrl('/queue/'),
+            data: window.bo.zmscalldisplay,
+            timeout: ((window.bo.zmscalldisplay.reloadInterval * 1000) - 100)
+        };
+        $.ajax(ajaxopt)
+            .done(data => {
+                this.hideMessages(0);
+                $( '#queueImport' ).html( data );
+                this.setColorForNewCall();
+                this.setWaitingClients(data);
+                this.setWaitingTime(data);
+                var audioCheck = new RingAudio();
+                audioCheck.initSoundCheck();
+                this.getDestinationToNumber();
+            })
+            .fail(function() {
+                $( '.fatal' ).show();
+            });
+        this.setInterval();
     }
 
     setInterval () {
