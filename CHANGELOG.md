@@ -4,6 +4,7 @@
 * #34481 Bugfix: Wartezeit in der Tresen-Infobox wird nun ohne nicht erschienende Kunden berechnet
 * #35213 Anzeige von Exceptions mit mehr Informationen
 * #35117 Bugfix: Die Wartezeiten in der Tabelle werden nur für den heutigen Tag angezeigt
+* #33874 Bugfix: Tritt beim Bearbeiten einer Öffnungszeit ein Fehler auf wird dieser auf dem Bildschirm fokussiert
 
 ## v2.19.00
 
