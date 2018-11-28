@@ -2,7 +2,7 @@
 
 * #35158 Bugfix: Berechnung, ob eine Öffnungzeit einen Tag in einer gegebenen Zeitspanne enthält beachtet jetzt auch den letzten Tag der Zeitspanne
 * #31586 Bugfix: E-Mail Texte enthalten nun vollständige Datumsformate in deutsch
-* #31586 Bugfix: E-Mails werden nur noch versendet, wenn es eine entsprechende Absender-Adresse im Standort gibt
+* #31586 Bugfix: E-Mails werden nur noch versendet, wenn es eine entsprechende Absender-Adresse in der Behörde gibt
 * #35202 Bugfix: Markiere Tage als nicht buchbar, wenn für den Slot-Typ die Anzahl der insgesamt verfügbaren Termine null ist
 
 ## v2.19.00
