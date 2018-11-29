@@ -1,4 +1,10 @@
 
+## v2.19.01
+
+* #35151 Bugfix: Falsche Jahresangabe im Januar
+* #34808 Bugfix: Die Standorte auch auf Standorte-Ebene mit Namen anzeigen
+* #35228 Security: event-stream Version angepasst
+
 ## v2.19.00
 
 * Rohdaten für gebuchte/geplante Termine inkl. Visualisierung
