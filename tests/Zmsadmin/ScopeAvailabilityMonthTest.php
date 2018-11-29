@@ -15,6 +15,9 @@ class ScopeAvailabilityMonthTest extends Base
 
     public function testRendering()
     {
+        $startDate = new \DateTimeImmutable('2016-04-01');
+        $endDate =  $startDate->modify('Last day of this month');
+
         $this->setApiCalls(
             [
                 [
@@ -32,7 +35,11 @@ class ScopeAvailabilityMonthTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/availability/',
-                    'parameters' => ['resolveReferences' => 0],
+                    'parameters' => [
+                        'resolveReferences' => 0,
+                        'startDate' => $startDate,
+                        'endDate' => $endDate
+                    ],
                     'response' => $this->readFixture("GET_scope_141_availability.json")
                 ],
                 [
@@ -55,6 +62,8 @@ class ScopeAvailabilityMonthTest extends Base
         $this->expectException('\BO\Zmsclient\Exception');
         $exception = new \BO\Zmsclient\Exception();
         $exception->template = 'BO\Zmsentities\Exception\SchemaValidation';
+        $startDate = new \DateTimeImmutable('2016-04-01');
+        $endDate =  $startDate->modify('Last day of this month');
 
         $this->setApiCalls(
             [
@@ -73,7 +82,11 @@ class ScopeAvailabilityMonthTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/availability/',
-                    'parameters' => ['resolveReferences' => 0],
+                    'parameters' => [
+                        'resolveReferences' => 0,
+                        'startDate' => $startDate,
+                        'endDate' => $endDate
+                    ],
                     'response' => $this->readFixture("GET_scope_141_availability.json")
                 ],
                 [
@@ -91,6 +104,8 @@ class ScopeAvailabilityMonthTest extends Base
     {
         $exception = new \BO\Zmsclient\Exception();
         $exception->template = 'BO\Zmsapi\Exception\Availability\AvailabilityNotFound';
+        $startDate = new \DateTimeImmutable('2016-04-01');
+        $endDate =  $startDate->modify('Last day of this month');
 
         $this->setApiCalls(
             [
@@ -109,7 +124,11 @@ class ScopeAvailabilityMonthTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/availability/',
-                    'parameters' => ['resolveReferences' => 0],
+                    'parameters' => [
+                        'resolveReferences' => 0,
+                        'startDate' => $startDate,
+                        'endDate' => $endDate
+                    ],
                     'exception' => $exception
                 ],
                 [
@@ -131,6 +150,8 @@ class ScopeAvailabilityMonthTest extends Base
         $this->expectException('\BO\Zmsclient\Exception');
         $exception = new \BO\Zmsclient\Exception();
         $exception->template = '';
+        $startDate = new \DateTimeImmutable('2016-04-01');
+        $endDate =  $startDate->modify('Last day of this month');
 
         $this->setApiCalls(
             [
@@ -149,7 +170,11 @@ class ScopeAvailabilityMonthTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/availability/',
-                    'parameters' => ['resolveReferences' => 0],
+                    'parameters' => [
+                        'resolveReferences' => 0,
+                        'startDate' => $startDate,
+                        'endDate' => $endDate
+                    ],
                     'exception' => $exception
                 ]
             ]

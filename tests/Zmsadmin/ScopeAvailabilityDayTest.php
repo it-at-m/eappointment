@@ -15,6 +15,9 @@ class ScopeAvailabilityDayTest extends Base
 
     public function testRendering()
     {
+        $startDate = new \DateTimeImmutable('2016-04-01');
+        $endDate =  new \DateTimeImmutable('2016-04-01');
+
         $this->setApiCalls(
             [
                 [
@@ -32,7 +35,12 @@ class ScopeAvailabilityDayTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/availability/',
-                    'parameters' => ['reserveEntityIds' => 1, 'resolveReferences' => 0],
+                    'parameters' => [
+                        'reserveEntityIds' => 1,
+                        'resolveReferences' => 0,
+                        'startDate' => $startDate,
+                        'endDate' => $endDate
+                    ],
                     'response' => $this->readFixture("GET_scope_141_availability.json")
                 ],
                 [
@@ -52,6 +60,8 @@ class ScopeAvailabilityDayTest extends Base
     {
         $exception = new \BO\Zmsclient\Exception();
         $exception->template = 'BO\Zmsapi\Exception\Availability\AvailabilityNotFound';
+        $startDate = new \DateTimeImmutable('2016-04-01');
+        $endDate =  new \DateTimeImmutable('2016-04-01');
 
         $this->setApiCalls(
             [
@@ -70,7 +80,12 @@ class ScopeAvailabilityDayTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/availability/',
-                    'parameters' => ['reserveEntityIds' => 1, 'resolveReferences' => 0],
+                    'parameters' => [
+                        'reserveEntityIds' => 1,
+                        'resolveReferences' => 0,
+                        'startDate' => $startDate,
+                        'endDate' => $endDate
+                    ],
                     'exception' => $exception
                 ],
                 [
@@ -90,6 +105,8 @@ class ScopeAvailabilityDayTest extends Base
         $this->expectException('\BO\Zmsclient\Exception');
         $exception = new \BO\Zmsclient\Exception();
         $exception->template = '';
+        $startDate = new \DateTimeImmutable('2016-04-01');
+        $endDate =  new \DateTimeImmutable('2016-04-01');
 
         $this->setApiCalls(
             [
@@ -108,7 +125,12 @@ class ScopeAvailabilityDayTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/availability/',
-                    'parameters' => ['reserveEntityIds' => 1, 'resolveReferences' => 0],
+                    'parameters' => [
+                        'reserveEntityIds' => 1,
+                        'resolveReferences' => 0,
+                        'startDate' => $startDate,
+                        'endDate' => $endDate
+                    ],
                     'exception' => $exception
                 ]
             ]
