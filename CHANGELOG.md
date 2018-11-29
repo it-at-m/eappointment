@@ -1,3 +1,10 @@
+## v2.19.01
+
+* #34938 Bugfix: Base64-Fehler mit falschen Maskierungen in den Unit-Tests angepasst
+* #35176 Route /provider/{source}/ übernimmt per Parameter Funktion von /provider/{source}/request/{csv}/ welche als deprecated gekennzeichnet wird
+* #31457 + #34512 Test für wsrep_sync_wait Einstellung
+* #34481 + #31328 Bugfix: Vereinheitlichung der Berechnung der Warteschlange unter Ausschluss nicht wartender Kunden
+* #31586 Bugfix: Datumsformat in der Erinnerungsmail angepasst
 
 ## v2.19.00
 
