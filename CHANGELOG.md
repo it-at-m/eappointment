@@ -8,6 +8,7 @@
 * #31328 Bugfix: Hole mehr Daten vom Standort um die Wartezeit in der Info-Box am Tresen korrekt zu berechnen
 * #31586 Bugfix: Versende Mails beim Löschen durch den Tresen
 * #35213 Ergänzung fehlender Information in der Exception
+* #35228 Security: event-stream Version angepasst
 
 ## v2.19.00
 
