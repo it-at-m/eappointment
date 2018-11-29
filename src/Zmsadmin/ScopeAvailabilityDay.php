@@ -42,7 +42,9 @@ class ScopeAvailabilityDay extends BaseController
             $availabilityList = \App::$http
                 ->readGetResult('/scope/' . intval($scope->id) . '/availability/', [
                     'reserveEntityIds' => 1,
-                    'resolveReferences' => 0
+                    'resolveReferences' => 0,
+                    'startDate' => $dateTime,
+                    'endDate' => $dateTime
                 ])
                 ->getCollection();
         } catch (\BO\Zmsclient\Exception $exception) {
