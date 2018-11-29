@@ -34,7 +34,11 @@ class ScopeAvailabilityMonth extends BaseController
         try {
             $availabilityList = \App::$http->readGetResult(
                 '/scope/'. $scopeId .'/availability/',
-                ['resolveReferences' => 0]
+                [
+                    'resolveReferences' => 0,
+                    'startDate' => $dateTime,
+                    'endDate' => $dateTime->modify('last day of this month')
+                ]
             )
             ->getCollection();
         } catch (\BO\Zmsclient\Exception $exception) {
