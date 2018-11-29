@@ -5,6 +5,9 @@
 * #35213 Anzeige von Exceptions mit mehr Informationen
 * #35117 Bugfix: Die Wartezeiten in der Tabelle werden nur für den heutigen Tag angezeigt
 * #33874 Bugfix: Tritt beim Bearbeiten einer Öffnungszeit ein Fehler auf wird dieser auf dem Bildschirm fokussiert
+* #31328 Bugfix: Hole mehr Daten vom Standort um die Wartezeit in der Info-Box am Tresen korrekt zu berechnen
+* #31586 Bugfix: Versende Mails beim Löschen durch den Tresen
+* #35213 Ergänzung fehlender Information in der Exception
 
 ## v2.19.00
 
