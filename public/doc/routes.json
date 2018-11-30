@@ -3706,7 +3706,10 @@
 								"$ref": "schema/metaresult.json"
 							},
 							"data": {
-								"$ref": "schema/provider.json"
+								"type": "array",
+								"items": {
+									"$ref": "schema/provider.json"
+								}
 							}
 						}
 					}
