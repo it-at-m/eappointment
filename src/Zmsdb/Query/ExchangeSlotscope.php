@@ -19,7 +19,7 @@ class ExchangeSlotscope extends Base
         SELECT s.*, COUNT(sp.slotID) as slotcount
         FROM slot AS s
           LEFT JOIN slot_process as sp USING(slotID)
-        WHERE s.`scopeID` = :scopeid
+        WHERE s.`scopeID` = :scopeid AND status = "free"
         GROUP BY s.slotID
         ) AS innerquery
     GROUP BY year, month, day
