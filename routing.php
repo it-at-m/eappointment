@@ -3187,7 +3187,9 @@ use \Psr\Http\Message\ResponseInterface;
  *                          meta:
  *                              $ref: "schema/metaresult.json"
  *                          data:
- *                              $ref: "schema/provider.json"
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/provider.json"
  *              404:
  *                  description: "provider id for source does not exists"
  */
