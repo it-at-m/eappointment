@@ -77,37 +77,11 @@ class WorkstationProcessFinished extends BaseController
         \BO\Zmsentities\Workstation $workstation,
         \BO\Zmsentities\Collection\RequestList $requestList
     ) {
-
         $firstClient = $process->getFirstClient();
         $process->addData($input['process']);
-        if (array_key_exists('clients', $input['process']) && count($input['process']['clients']) > 0) {
-            $firstClient->addData($input['process']['clients'][0]);
-            $process->clients[0] = $firstClient;
-        }
-        //pickup
-        if (array_key_exists('pickupScope', $input) && 0 != $input['pickupScope']) {
-            $process->status = 'pending';
-            $process->scope['id'] = $input['pickupScope'];
-        }
-        if (array_key_exists('ignoreRequests', $input) && $input['ignoreRequests']) {
-            $process->requests = new \BO\Zmsentities\Collection\RequestList();
-            $request = new \BO\Zmsentities\Request([
-                'id' => -1,
-                'source' => $workstation->getScope()->getSource(),
-                'name' =>  "Ohne Erfassung",
-            ]);
-            $process->requests[] = $request;
-        } elseif (array_key_exists('noRequestsPerformed', $input) && $input['noRequestsPerformed']) {
-            $process->requests = new \BO\Zmsentities\Collection\RequestList();
-            $request = new \BO\Zmsentities\Request([
-                'id' => 0,
-                'source' => $workstation->getScope()->getSource(),
-                'name' =>  "Dienstleistung konnte nicht erbracht werden",
-            ]);
-            $process->requests[] = $request;
-        } elseif (array_key_exists('requestCountList', $input)) {
-            $process->requests = $requestList->withCountList($input['requestCountList']);
-        }
+        $process->setClientData($input, $firstClient);
+        $process->setPickupData($input);
+        $process->setRequestData($input, $requestList, $workstation);
         $process->setClientsCount($input['statistic']['clientsCount']);
         //throw new \Exception("Test");
         $process = \App::$http->readPostResult('/process/status/finished/', $process)->getEntity();
