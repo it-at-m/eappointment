@@ -314,9 +314,16 @@ class Cluster extends Base
     */
     public function deleteEntity($itemId)
     {
+        $result = false;
         $query =  new Query\Cluster(Query\Base::DELETE);
         $query->addConditionClusterId($itemId);
-        return $this->deleteItem($query);
+        if($this->deleteItem($query)) {
+            $result = $this->perform(
+                (new Query\Cluster(Query\Base::DELETE))->getQueryDeleteAssignedScopes(),
+                ['clusterId' => $itemId]
+            );
+        }
+        return $result;
     }
 
     /**
