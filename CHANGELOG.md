@@ -9,6 +9,7 @@
 * #31586 Bugfix: Versende Mails beim Löschen durch den Tresen
 * #35213 Ergänzung fehlender Information in der Exception
 * #35228 Security: event-stream Version angepasst
+* #34875 Nicht benötigte Meldung zu Bearbeitungsrechten entfernt
 
 ## v2.19.00
 
