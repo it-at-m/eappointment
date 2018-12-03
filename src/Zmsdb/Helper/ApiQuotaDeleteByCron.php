@@ -45,7 +45,9 @@ class ApiQuotaDeleteByCron
         if (! $verbose) {
             $query = new \BO\Zmsdb\Apikey();
             if ($query->writeDeletedQuota($quotaId)) {
-                error_log("INFO: Quota $quotaId successfully removed");
+                if ($verbose) {
+                    error_log("INFO: Quota $quotaId successfully removed");
+                }
             } else {
                 error_log("WARN: Could not remove quota '$quotaId'!");
             }
