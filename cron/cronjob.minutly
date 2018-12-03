@@ -8,14 +8,12 @@ set -a
 set +a
 
 if [[ $ZMS_CRONROOT =~ ^1|on|true|yes$ ]]; then
-    $BIN/deleteSessionData Zmsappointment 30 --commit
-    if [[ $ZMS_ENV =~ ^dev|stage$ ]]; then
-        $BIN/deleteReservedData --commit
-    fi
     if [[ $ZMS_ENV =~ ^prod|dev|stage$ ]]; then
+        $API config cron deleteSessionData|grep -q "$ZMS_ENV" && $BIN/deleteSessionData Zmsappointment 30 --commit
         $API config cron sendMailReminder|grep -q "$ZMS_ENV" && $BIN/sendMailReminder 2 --commit
+        $API config cron deleteReservedData|grep -q "$ZMS_ENV" && $BIN/deleteReservedData --commit
+        $API config cron calculateSlots|grep -q "$ZMS_ENV" && $BIN/calculateSlots --commit
+        $API config cron resetApiQuota|grep -q "$ZMS_ENV" && $BIN/resetApiQuota --commit
+        $API config cron sendNotificationReminder|grep -q "$ZMS_ENV" && $BIN/sendNotificationReminder --commit
     fi
-    #$BIN/sendNotificationReminder --commit
-    $BIN/calculateSlots --commit
-    $BIN/resetApiQuota --commit
 fi
