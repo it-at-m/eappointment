@@ -41,6 +41,16 @@ class ProcessStatusArchived extends Process
         return $this->readResolvedList($query, $resolveReferences);
     }
 
+    public function readListForStatistic($dateTime, $limit = 500, $resolveReferences = 0)
+    {
+        $query = new Query\ProcessStatusArchived(Query\Base::SELECT);
+        $query->addEntityMapping()
+            ->addResolvedReferences($resolveReferences)
+            ->addJoinStatisticFailed($dateTime)
+            ->addLimit($limit);
+        return $this->readResolvedList($query, $resolveReferences);
+    }
+
     public function readListIsMissed($isMissed = 1, $resolveReferences = 0)
     {
         $query = new Query\ProcessStatusArchived(Query\Base::SELECT);
@@ -92,6 +102,37 @@ class ProcessStatusArchived extends Process
             $this->writeXRequestsArchived($process->id, $archived->archiveId);
         }
         return $archived;
+    }
+
+    /**
+     * write an archived process to statistic table
+     *
+     */
+    public function writeArchivedProcessToStatistic(
+        Entity $process,
+        $requestId,
+        $clusterId,
+        $providerId,
+        $departmentId,
+        $organisationId,
+        $ownerId,
+        $dateTime
+    ) {
+        return $this->perform(
+            Query\ProcessStatusArchived::QUERY_INSERT_IN_STATISTIC,
+            [
+                'archiveId' => $process->archiveId,
+                'scopeId' => $process->scope->getId(),
+                'clusterId' => $clusterId,
+                'providerId' => $providerId,
+                'departmentId' => $departmentId,
+                'organisationId' => $organisationId,
+                'ownerId' => $ownerId,
+                'date' => $process->getFirstAppointment()->toDateTime()->format('Y-m-d'),
+                'withAppointment' => ($process->toQueue($dateTime)->withAppointment) ? 1 : 0,
+                'requestId' => $requestId
+            ]
+        );
     }
 
     /**

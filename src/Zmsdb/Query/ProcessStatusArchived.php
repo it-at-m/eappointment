@@ -15,7 +15,22 @@ class ProcessStatusArchived extends Base implements MappingInterface
      * @var String TABLE mysql table reference
      */
     const TABLE = 'buergerarchiv';
+    const STATISTIC_TABLE = 'statistik';
     const ALIAS = 'process';
+
+    const QUERY_INSERT_IN_STATISTIC = '
+        INSERT INTO '. self::STATISTIC_TABLE .' SET
+            lastbuergerarchivid = :archiveId,
+            termin = :withAppointment,
+            datum = :date,
+            anliegenid = :requestId,
+            info_dl_id = :providerId,
+            standortid = :scopeId,
+            clusterid = :clusterId,
+            behoerdenid = :departmentId,
+            organisationsid = :organisationId,
+            kundenid = :ownerId
+    ';
 
     public function getEntityMapping()
     {
@@ -71,6 +86,22 @@ class ProcessStatusArchived extends Base implements MappingInterface
     public function addConditionWithAppointment($withAppointment)
     {
         $this->query->where('process.mitTermin', '=', $withAppointment);
+        return $this;
+    }
+
+    public function addJoinStatisticFailed($dateTime)
+    {
+        $this->leftJoin(
+            new Alias(self::STATISTIC_TABLE, 'statistic'),
+            self::expression("`statistic`.`lastbuergerarchivid` = `process`.`BuergerarchivID`")
+        );
+        $this->query->where(function (\Solution10\SQL\ConditionBuilder $query) use ($dateTime) {
+            $query->andWith(
+                self::expression('`statistic`.`lastbuergerarchivid` IS NULL AND `process`.`Datum`'),
+                '<',
+                $dateTime->format('Y-m-d')
+            );
+        });
         return $this;
     }
 
