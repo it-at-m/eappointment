@@ -86,7 +86,7 @@ class ScopeList extends Base
     {
         $collection = new self();
         foreach ($this as $scope) {
-            if (! $scopeList || ! $scopeList->hasEntity($scope->id)) {
+            if (! $scopeList || ! $scopeList->hasEntity($scope->getId())) {
                 $collection->addEntity(clone $scope);
             }
         }
@@ -97,7 +97,7 @@ class ScopeList extends Base
     {
         $scopeList = new self();
         foreach ($this as $scope) {
-            if (! $scopeList->hasEntity($scope->id)) {
+            if ($scope->getId() && ! $scopeList->hasEntity($scope->getId())) {
                 $scopeList->addEntity(clone $scope);
             }
         }
