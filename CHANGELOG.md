@@ -10,6 +10,7 @@
 * #35213 Ergänzung fehlender Information in der Exception
 * #35228 Security: event-stream Version angepasst
 * #34875 Nicht benötigte Meldung zu Bearbeitungsrechten entfernt sowie Meldung mindestens 30 Sekunden einblenden
+* #35255 Bugfix: Cluster können wieder hinzugefügt werden
 
 ## v2.19.00
 
