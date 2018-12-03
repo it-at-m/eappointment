@@ -317,7 +317,7 @@ class Cluster extends Base
         $result = false;
         $query =  new Query\Cluster(Query\Base::DELETE);
         $query->addConditionClusterId($itemId);
-        if($this->deleteItem($query)) {
+        if ($this->deleteItem($query)) {
             $result = $this->perform(
                 (new Query\Cluster(Query\Base::DELETE))->getQueryDeleteAssignedScopes(),
                 ['clusterId' => $itemId]
