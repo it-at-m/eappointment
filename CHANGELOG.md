@@ -4,6 +4,7 @@
 * #35202 Bugfix: Hole für den Kalender bei den Tagen auch die insgesamt verfügbaren Termine aus der Datenbank und nicht nur die freien
 * #31457 und #34512 Test für wsrep_sync_wait Einstellung
 * Bugfix: Statistik-Daten für Überbuchungen reudzieren jetzt die Daten auf freie Slots
+* #35255 Bugfix: Cluster-Standorte werden beim Löschen eines Clusters nun auch aus der Cluster-Zuordnung entfernt
 
 ## v2.19.00
 
