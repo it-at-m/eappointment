@@ -133,24 +133,23 @@ const renderBody = (data, errors, onChange, onSave, onPublish, onDelete, onAbort
                     </FormGroup>
                 </fieldset>
 
-                <fieldset>
-                    <legend>{data.type === "appointment" ? "Terminarbeitsplätze" : "Arbeitsplätze"}</legend>
-                    <FormGroup>
-                        <Label>Insgesamt</Label>
-                        <Controls>
-                            <Inputs.Select name="workstationCount_intern"
-                                value={data.workstationCount_intern}
-                                {...{ onChange }}
-                                options={range(0, 50).map(n => {
-                                    return {
-                                        value: `${n}`,
-                                        name: `${n}`
-                                    }
-                                })} />
-                        </Controls>
-                    </FormGroup>
-
-                    {data.type !== 'openinghours' ?
+                {data.type !== 'openinghours' ?
+                    <fieldset>
+                        <legend>{data.type === "appointment" ? "Terminarbeitsplätze" : "Arbeitsplätze"}</legend>
+                        <FormGroup>
+                            <Label>Insgesamt</Label>
+                            <Controls>
+                                <Inputs.Select name="workstationCount_intern"
+                                    value={data.workstationCount_intern}
+                                    {...{ onChange }}
+                                    options={range(0, 50).map(n => {
+                                        return {
+                                            value: `${n}`,
+                                            name: `${n}`
+                                        }
+                                    })} />
+                            </Controls>
+                        </FormGroup>
                         <FormGroup>
                             <Label>Callcenter</Label>
                             <Controls>
@@ -165,9 +164,7 @@ const renderBody = (data, errors, onChange, onSave, onPublish, onDelete, onAbort
                                     })} />
                                 <Description>wieviele der insgesamt verfügbaren Terminarbeitsplätze sollen für das Callcenter zur Verfügung gestellt werden.</Description>
                             </Controls>
-                        </FormGroup> : null}
-
-                    {data.type !== 'openinghours' ?
+                        </FormGroup>
                         <FormGroup>
                             <Label>Internet</Label>
                             <Controls>
@@ -182,8 +179,9 @@ const renderBody = (data, errors, onChange, onSave, onPublish, onDelete, onAbort
                                     })} />
                                 <Description>wieviele der insgesamt verfügbaren Terminarbeitsplätze sollen für das Internet zur Verfügung gestellt werden.</Description>
                             </Controls>
-                        </FormGroup> : null}
-                </fieldset>
+                        </FormGroup>
+                    </fieldset>
+                    : null}
                 <div className="form-actions">
                     <div className="left">
                         {data.id ?

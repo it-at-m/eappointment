@@ -30,7 +30,6 @@ class ScopeAvailabilityDayConflictsTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/availability/',
                     'parameters' => [
-                        'reserveEntityIds' => 1,
                         'resolveReferences' => 0,
                         'startDate' => $startDate,
                         'endDate' => $endDate

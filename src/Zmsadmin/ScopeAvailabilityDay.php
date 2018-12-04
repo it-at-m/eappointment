@@ -41,7 +41,6 @@ class ScopeAvailabilityDay extends BaseController
         try {
             $availabilityList = \App::$http
                 ->readGetResult('/scope/' . intval($scope->id) . '/availability/', [
-                    'reserveEntityIds' => 1,
                     'resolveReferences' => 0,
                     'startDate' => $dateTime,
                     'endDate' => $dateTime
