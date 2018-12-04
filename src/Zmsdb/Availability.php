@@ -42,7 +42,7 @@ class Availability extends Base implements Interfaces\ResolveReferences
         return $this->perform(Query\Availability::QUERY_GET_LOCK, ['availabilityId' => $availabilityId]);
     }
 
-    public function readList($scopeId, $resolveReferences = 0, $reserveEntityIds = false)
+    public function readList($scopeId, $resolveReferences = 0)
     {
         $scope = new \BO\Zmsentities\Scope(['id' => $scopeId]);
         if (1 <= $resolveReferences) {
@@ -62,33 +62,15 @@ class Availability extends Base implements Interfaces\ResolveReferences
                 $entity->workstationCount['intern'] = 0;
                 $entity->workstationCount['callcenter'] = 0;
                 $entity->workstationCount['public'] = 0;
-                if ($entity['type'] == 'appointment' && $reserveEntityIds) {
-                    // TODO Remove after DB optimization when the types are seperated
-                    // reserve an ID by creating a temporary entity
-                    $tempAvailability = $this->writeEntity(new Entity([
-                        'description' => '--temporary--',
-                        'scope' => new \BO\Zmsentities\Scope([
-                            'id' => 0,
-                        ]),
-                    ]));
-                    $entity['description'] = 'Automatisch erzeugt aus Öffnungszeit für Terminkunden #'.$entity->id;
-                    $entity->id = $tempAvailability->id;
+                if ($entity['type'] == 'appointment') {
+                    $entity['description'] = '';
+                    $entity->id = 0;
                     $entity['type'] = 'openinghours';
-                    //error_log($collection->hasOverlapWith($entity). " overlaps");
-                    //if (!$collection->hasOverlapWith($entity)->count()) {
-                    //    $collection->addEntity($entity);
-                    //}
                 }
                 $entity['type'] = ($entity['type'] != 'appointment') ? 'openinghours' : $entity['type'];
                 $collection->addEntity($entity);
             }
-            if ($reserveEntityIds) {
-                // This can produce deadlocks:
-                $this->perform(Query\Availability::TEMPORARY_DELETE);
-                \BO\Zmsdb\Connection\Select::writeCommit();
-            }
         }
-        // End remove
         return $collection;
     }
 
