@@ -5,6 +5,7 @@
 * #31457 + #34512 Test für wsrep_sync_wait Einstellung
 * #34481 + #31328 Bugfix: Vereinheitlichung der Berechnung der Warteschlange unter Ausschluss nicht wartender Kunden
 * #31586 Bugfix: Datumsformat in der Erinnerungsmail angepasst
+* #34134 Anpassung des Apiabrufs für Öffnungszeiten per Standort - Parameter reserveEntityIds entfernt
 
 ## v2.19.00
 
