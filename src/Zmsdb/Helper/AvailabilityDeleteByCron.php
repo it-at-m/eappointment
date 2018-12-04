@@ -26,7 +26,7 @@ class AvailabilityDeleteByCron
         }
         foreach ($availabilityList as $availability) {
             if ($commit) {
-                //$this->deleteAvailability($availability->getId());
+                $this->deleteAvailability($availability->getId());
             } elseif ($this->verbose) {
                 error_log("INFO: Would remove $availability");
             }
@@ -35,7 +35,7 @@ class AvailabilityDeleteByCron
 
     protected function deleteAvailability(string $availabilityId)
     {
-        if ($this->query->deleteEntity($availabilityId) && $this->verbose) {
+        if ($this->query->deleteEntity($availabilityId)) {
             if ($this->verbose) {
                 error_log("INFO: Availability $availabilityId successfully removed");
             }

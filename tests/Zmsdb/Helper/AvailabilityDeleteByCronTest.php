@@ -18,12 +18,12 @@ class AvailabilityDeleteByCronTest extends Base
 
     public function testStartProcessingNoCommit()
     {
-        $availabilityDelete = new AvailabilityDeleteByCron($verbose = true); // verbose
+        $availabilityDelete = new AvailabilityDeleteByCron($verbose = false); // verbose
         $entity = new Availability();
         $now = new \DateTimeImmutable('2016-05-01 11:55');
         $datetime = $now->modify('- 4 weeks');
         $availabilityUnits = count($entity->readAvailabilityListBefore($datetime));
-        $availabilityDelete->startProcessing($datetime);
+        $availabilityDelete->startProcessing($datetime, $commit = false);
         $this->assertEquals(33, $availabilityUnits);
      
         $availabilityDelete->startProcessing($datetime, $commit = true);
