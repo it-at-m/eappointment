@@ -24,9 +24,11 @@ class AvailabilityDeleteByCron
         if ($this->verbose) {
             error_log("INFO: Reading availability list");
         }
-        if ($commit) {
-            foreach ($availabilityList as $availability) {
-                $this->deleteAvailability($availability->getId());
+        foreach ($availabilityList as $availability) {
+            if ($commit) {
+                //$this->deleteAvailability($availability->getId());
+            } elseif ($this->verbose) {
+                error_log("INFO: Would remove $availability");
             }
         }
     }
