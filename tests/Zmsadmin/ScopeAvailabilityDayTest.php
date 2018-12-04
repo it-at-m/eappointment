@@ -36,7 +36,6 @@ class ScopeAvailabilityDayTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/availability/',
                     'parameters' => [
-                        'reserveEntityIds' => 1,
                         'resolveReferences' => 0,
                         'startDate' => $startDate,
                         'endDate' => $endDate
@@ -81,7 +80,6 @@ class ScopeAvailabilityDayTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/availability/',
                     'parameters' => [
-                        'reserveEntityIds' => 1,
                         'resolveReferences' => 0,
                         'startDate' => $startDate,
                         'endDate' => $endDate
@@ -126,7 +124,6 @@ class ScopeAvailabilityDayTest extends Base
                     'function' => 'readGetResult',
                     'url' => '/scope/141/availability/',
                     'parameters' => [
-                        'reserveEntityIds' => 1,
                         'resolveReferences' => 0,
                         'startDate' => $startDate,
                         'endDate' => $endDate
