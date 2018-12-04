@@ -1,26 +1,28 @@
 <?php
 /**
- * @package Zmsadmin
- * @copyright BerlinOnline Stadtportal GmbH & Co. KG
- **/
+ * Return availability list by scope in month view.
+ *
+ * @copyright 2018 BerlinOnline Stadtportal GmbH & Co. KG
+ */
 
 namespace BO\Zmsadmin;
 
 use BO\Mellon\Validator;
-use BO\Zmsentities\Availability;
 use BO\Zmsentities\Calendar;
-use BO\Zmsentities\Month;
 use BO\Zmsentities\Collection\AvailabilityList;
 
-/**
-  * Handle requests concerning services
-  *
-  */
 class ScopeAvailabilityMonth extends BaseController
 {
     /**
+     * Return response.
+     *
      * @SuppressWarnings(Param)
-     * @return String
+     *
+     * @param \Psr\Http\Message\RequestInterface  $request  The request instance
+     * @param \Psr\Http\Message\ResponseInterface $response The response instance
+     * @param array                               $args     The path arguments
+     *
+     * @return string
      */
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
@@ -29,15 +31,17 @@ class ScopeAvailabilityMonth extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $dateTime = (isset($args['date'])) ? new \BO\Zmsentities\Helper\DateTime($args['date']) : \App::$now;
+        $firstDay = $dateTime->modify('first day of this month');
+        $lastDay = $dateTime->modify('last day of this month');
         $scopeId = Validator::value($args['id'])->isNumber()->getValue();
-        $scope = \App::$http->readGetResult('/scope/'. $scopeId .'/', ['resolveReferences' => 1])->getEntity();
+        $scope = \App::$http->readGetResult('/scope/'.$scopeId.'/', ['resolveReferences' => 1])->getEntity();
         try {
             $availabilityList = \App::$http->readGetResult(
-                '/scope/'. $scopeId .'/availability/',
+                '/scope/'.$scopeId.'/availability/',
                 [
                     'resolveReferences' => 0,
-                    'startDate' => $dateTime,
-                    'endDate' => $dateTime->modify('last day of this month')
+                    'startDate' => $firstDay,
+                    'endDate' => $lastDay,
                 ]
             )
             ->getCollection();
@@ -49,8 +53,8 @@ class ScopeAvailabilityMonth extends BaseController
         }
         $availabilityList = $availabilityList->withScope($scope);
         $calendar = new Calendar();
-        $calendar->firstDay->setDateTime($dateTime->modify('first day of this month'));
-        $calendar->lastDay->setDateTime($dateTime->modify('last day of this month'));
+        $calendar->firstDay->setDateTime($firstDay);
+        $calendar->lastDay->setDateTime($lastDay);
         $calendar->scopes[] = $scope;
         try {
             $calendar = \App::$http->readPostResult('/calendar/', $calendar, ['fillWithEmptyDays' => 1])->getEntity();
@@ -79,9 +83,9 @@ class ScopeAvailabilityMonth extends BaseController
                 //'maxWorkstationCount' => $availabilityList->getMaxWorkstationCount(),
                 'today' => $dateTime->format('Y-m-d'),
                 'workstation' => $workstation,
-                'baseMonthString' => $dateTime->modify('first day of this month')->format('m'),
-                'baseYearString' => $dateTime->modify('first day of this month')->format('Y'),
-                'baseMonth_timestamp' => $dateTime->modify('first day of this month')->getTimeStamp()
+                'baseMonthString' => $firstDay->format('m'),
+                'baseYearString' => $lastDay->format('Y'),
+                'baseMonth_timestamp' => $firstDay->getTimeStamp(),
             )
         );
     }
