@@ -10,6 +10,7 @@
 * #35213 Ergänzung fehlender Information in der Exception
 * #35228 Security: event-stream Version angepasst
 * #33497 Optimizierung von Öfnunngszeiten Abfragen nach Zeitraum Tag/Monat
+* #34134 Bugfix: Markierung (grün) für Spontankunden in Öffnungszeiten-Monatsansicht korrigiert
 
 ## v2.19.00
 
