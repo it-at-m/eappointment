@@ -1,9 +1,7 @@
 <?php
 /**
- * Return availability list by scope in month view.
- *
- * @copyright 2018 BerlinOnline Stadtportal GmbH & Co. KG
- */
+ * @copyright BerlinOnline Stadtportal GmbH & Co. KG
+ **/
 
 namespace BO\Zmsadmin;
 
@@ -17,10 +15,6 @@ class ScopeAvailabilityMonth extends BaseController
      * Return response.
      *
      * @SuppressWarnings(Param)
-     *
-     * @param \Psr\Http\Message\RequestInterface  $request  The request instance
-     * @param \Psr\Http\Message\ResponseInterface $response The response instance
-     * @param array                               $args     The path arguments
      *
      * @return string
      */
@@ -36,15 +30,16 @@ class ScopeAvailabilityMonth extends BaseController
         $scopeId = Validator::value($args['id'])->isNumber()->getValue();
         $scope = \App::$http->readGetResult('/scope/'.$scopeId.'/', ['resolveReferences' => 1])->getEntity();
         try {
-            $availabilityList = \App::$http->readGetResult(
-                '/scope/'.$scopeId.'/availability/',
-                [
-                    'resolveReferences' => 0,
-                    'startDate' => $firstDay,
-                    'endDate' => $lastDay,
-                ]
-            )
-            ->getCollection();
+            $availabilityList = \App::$http
+                ->readGetResult(
+                    '/scope/'.$scopeId.'/availability/',
+                    [
+                        'resolveReferences' => 0,
+                        'startDate' => $firstDay,
+                        'endDate' => $lastDay,
+                    ]
+                )
+                ->getCollection();
         } catch (\BO\Zmsclient\Exception $exception) {
             if ($exception->template != 'BO\Zmsapi\Exception\Availability\AvailabilityNotFound') {
                 throw $exception;
