@@ -20,9 +20,15 @@ class DepartmentTest extends Base
 
         $this->assertEquals(1, count($entity->links));
         $this->assertFalse(null === $entity->dayoff->getEntityByName('Test Feiertag'));
+   
+        $this->assertEquals(0, $entity->getNotificationPreferences()['enabled']);
+        $this->assertEquals(0, $entity->getNotificationPreferences()['sendConfirmationEnabled']);
+        $this->assertEquals(0, $entity->getNotificationPreferences()['sendReminderEnabled']);
 
+        $entity->preferences['notifications']['enabled'] = 1;
         $entity->email = "max@berlinonline.de";
         $entity = $query->updateEntity($entity->id, $entity);
+        $this->assertEquals(1, $entity->getNotificationPreferences()['enabled']);
         $this->assertEquals('max@berlinonline.de', $entity->email);
     }
 
@@ -73,7 +79,7 @@ class DepartmentTest extends Base
             'email' => 'service@berlinonline.de',
             'preferences' => [
                 'notifications' => [
-                    'enabled' => true,
+                    'enabled' => false,
                     'identification' => 'service@berlinonline.de',
                     'sendConfirmationEnabled' => false,
                     'sendReminderEnabled' => false
