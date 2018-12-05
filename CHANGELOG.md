@@ -3,10 +3,8 @@
 * #35151 Bugfix: Falsche Jahresangabe im Januar
 * #34808 Bugfix: Die Standorte auch auf Standorte-Ebene mit Namen anzeigen
 * #35228 Security: event-stream Version angepasst
-* #34808 - Bugfix: Standortsname wird gezeigt auch wenn keine SMS-statistiks vorhanden sind.
+* #34808 Bugfix: Der Standortname wird angezeigt auch wenn keine SMS-Statistiken vorhanden sind
 
-## v2.19.01
-* #34808 - Bugfix: Standortsname wird gezeigt auch wenn keine SMS-statistiks vorhanden sind.
 ## v2.19.00
 
 * Rohdaten für gebuchte/geplante Termine inkl. Visualisierung
