@@ -289,10 +289,10 @@ class Department extends Base
             Query\Department::QUERY_NOTIFICATIONS_INSERT,
             array(
                 $departmentId,
-                (isset($preferences['enabled'])) ? 1 : 0,
+                ((bool) $preferences['enabled']) ? 1 : 0,
                 $preferences['identification'],
-                (isset($preferences['sendConfirmationEnabled'])) ? 1 : 0,
-                (isset($preferences['sendReminderEnabled'])) ? 1 : 0
+                ((bool) $preferences['sendConfirmationEnabled']) ? 1 : 0,
+                ((bool) $preferences['sendReminderEnabled']) ? 1 : 0
             )
         );
         return $result;
