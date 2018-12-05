@@ -285,14 +285,15 @@ class Department extends Base
     protected function writeDepartmentNotifications($departmentId, $preferences)
     {
         self::$departmentCache = [];
+
         $result = $this->perform(
             Query\Department::QUERY_NOTIFICATIONS_INSERT,
             array(
                 $departmentId,
-                ((bool) $preferences['enabled']) ? 1 : 0,
+                (isset($preferences['enabled']) && $preferences['enabled']) ? 1 : 0,
                 $preferences['identification'],
-                ((bool) $preferences['sendConfirmationEnabled']) ? 1 : 0,
-                ((bool) $preferences['sendReminderEnabled']) ? 1 : 0
+                (isset($preferences['sendConfirmationEnabled']) && $preferences['sendConfirmationEnabled']) ? 1 : 0,
+                (isset($preferences['sendReminderEnabled']) && $preferences['sendReminderEnabled']) ? 1 : 0
             )
         );
         return $result;
