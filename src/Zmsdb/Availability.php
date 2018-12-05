@@ -42,19 +42,28 @@ class Availability extends Base implements Interfaces\ResolveReferences
         return $this->perform(Query\Availability::QUERY_GET_LOCK, ['availabilityId' => $availabilityId]);
     }
 
-    public function readList($scopeId, $resolveReferences = 0)
-    {
+    public function readList(
+        $scopeId, 
+        $resolveReferences = 0,
+        \DateTimeInterface $startDate = null,
+        \DateTimeInterface $endDate = null
+    ){
         $scope = new \BO\Zmsentities\Scope(['id' => $scopeId]);
         if (1 <= $resolveReferences) {
             $scope = (new Scope())->readEntity($scopeId, $resolveReferences - 1);
         }
-        $collection = $this->readAvailabilityListByScope($scope, $resolveReferences);
+        $collection = $this->readAvailabilityListByScope($scope, $resolveReferences, $startDate, $endDate);
         $query = new Query\Availability(Query\Base::SELECT);
         $query
             ->addEntityMapping('openinghours')
             ->addConditionOpeningHours()
             ->addResolvedReferences($resolveReferences)
             ->addConditionScopeId($scopeId);
+        if ($startDate && $endDate) {
+            $query->addConditionTimeframe($startDate, $endDate);
+        } elseif ($startDate) {
+            $query->addConditionSkipOld($startDate);
+        }
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
             foreach ($result as $entity) {
@@ -77,7 +86,9 @@ class Availability extends Base implements Interfaces\ResolveReferences
     public function readAvailabilityListByScope(
         \BO\Zmsentities\Scope $scope,
         $resolveReferences = 0,
-        $skipOlderThan = false
+        \DateTimeImmutable $startDate = null,
+        \DateTimeImmutable $endDate = null
+
     ) {
         $collection = new Collection();
         $query = new Query\Availability(Query\Base::SELECT);
@@ -86,9 +97,12 @@ class Availability extends Base implements Interfaces\ResolveReferences
             ->addResolvedReferences($resolveReferences)
             ->addConditionAppointmentHours()
             ->addConditionScopeId($scope->id);
-        if ($skipOlderThan instanceof \DateTimeInterface) {
-            $query->addConditionSkipOld($skipOlderThan);
-        }
+            if ($startDate && $endDate) {
+                $query->addConditionTimeframe($startDate, $endDate);
+            } elseif ($startDate) {
+                $query->addConditionSkipOld($startDate);
+            }
+    
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
             foreach ($result as $entity) {
