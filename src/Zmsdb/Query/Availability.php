@@ -181,7 +181,7 @@ class Availability extends Base implements MappingInterface
                             ->andWith('availability.Endedatum', '>=', $startDate->format('Y-m-d'))
                             ->andWith('availability.Endedatum', '<=', $endDate->format('Y-m-d'));
                     });
-        });
+            });
         return $this;
     }
 
