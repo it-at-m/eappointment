@@ -1,5 +1,6 @@
 ## v2.19.01
 
+* #35275 Bugfix: Fehlerhafte Aktivierung der SMS in neuangelegte Behörden behoben
 * #35158 Bugfix: Fehlender Tag wird nun auch bei einer Änderung der Öffnungszeit innerhalb der letzten 7 Tage berechnet
 * #35202 Bugfix: Hole für den Kalender bei den Tagen auch die insgesamt verfügbaren Termine aus der Datenbank und nicht nur die freien
 * #31457 und #34512 Test für wsrep_sync_wait Einstellung
