@@ -133,55 +133,60 @@ const renderBody = (data, errors, onChange, onSave, onPublish, onDelete, onAbort
                     </FormGroup>
                 </fieldset>
 
-                {data.type !== 'openinghours' ?
-                    <fieldset>
-                        <legend>{data.type === "appointment" ? "Terminarbeitsplätze" : "Arbeitsplätze"}</legend>
-                        <FormGroup>
-                            <Label>Insgesamt</Label>
-                            <Controls>
-                                <Inputs.Select name="workstationCount_intern"
-                                    value={data.workstationCount_intern}
-                                    {...{ onChange }}
-                                    options={range(0, 50).map(n => {
-                                        return {
-                                            value: `${n}`,
-                                            name: `${n}`
-                                        }
-                                    })} />
-                            </Controls>
-                        </FormGroup>
-                        <FormGroup>
-                            <Label>Callcenter</Label>
-                            <Controls>
-                                <Inputs.Select name="workstationCount_callcenter"
-                                    value={data.workstationCount_callcenter}
-                                    {...{ onChange }}
-                                    options={range(0, data.workstationCount_intern).map(n => {
-                                        return {
-                                            value: `${n}`,
-                                            name: `${n}`
-                                        }
-                                    })} />
-                                <Description>wieviele der insgesamt verfügbaren Terminarbeitsplätze sollen für das Callcenter zur Verfügung gestellt werden.</Description>
-                            </Controls>
-                        </FormGroup>
-                        <FormGroup>
-                            <Label>Internet</Label>
-                            <Controls>
-                                <Inputs.Select name="workstationCount_public"
-                                    value={data.workstationCount_public}
-                                    {...{ onChange }}
-                                    options={range(0, data.workstationCount_callcenter).map(n => {
-                                        return {
-                                            value: `${n}`,
-                                            name: `${n}`
-                                        }
-                                    })} />
-                                <Description>wieviele der insgesamt verfügbaren Terminarbeitsplätze sollen für das Internet zur Verfügung gestellt werden.</Description>
-                            </Controls>
-                        </FormGroup>
-                    </fieldset>
-                    : null}
+                <fieldset>
+                    {data.type !== 'openinghours' ? <legend>Terminarbeitsplätze</legend> : null}
+                    {data.type !== 'openinghours' ?
+                        <div>
+                            <FormGroup>
+                                <Label>Insgesamt</Label>
+                                <Controls>
+                                    <Inputs.Select name="workstationCount_intern"
+                                        value={data.workstationCount_intern}
+                                        {...{ onChange }}
+                                        options={range(0, 50).map(n => {
+                                            return {
+                                                value: `${n}`,
+                                                name: `${n}`
+                                            }
+                                        })} />
+                                </Controls>
+                            </FormGroup>
+
+                            <FormGroup>
+                                <Label>Callcenter</Label>
+                                <Controls>
+                                    <Inputs.Select name="workstationCount_callcenter"
+                                        value={data.workstationCount_callcenter}
+                                        {...{ onChange }}
+                                        options={range(0, data.workstationCount_intern).map(n => {
+                                            return {
+                                                value: `${n}`,
+                                                name: `${n}`
+                                            }
+                                        })} />
+                                    <Description>wieviele der insgesamt verfügbaren Terminarbeitsplätze sollen für das Callcenter zur Verfügung gestellt werden.</Description>
+                                </Controls>
+                            </FormGroup>
+
+                            <FormGroup>
+                                <Label>Internet</Label>
+                                <Controls>
+                                    <Inputs.Select name="workstationCount_public"
+                                        value={data.workstationCount_public}
+                                        {...{ onChange }}
+                                        options={range(0, data.workstationCount_callcenter).map(n => {
+                                            return {
+                                                value: `${n}`,
+                                                name: `${n}`
+                                            }
+                                        })} />
+                                    <Description>wieviele der insgesamt verfügbaren Terminarbeitsplätze sollen für das Internet zur Verfügung gestellt werden.</Description>
+                                </Controls>
+                            </FormGroup>
+                        </div>
+                        : null}
+                </fieldset>
+
                 <div className="form-actions">
                     <div className="left">
                         {data.id ?
