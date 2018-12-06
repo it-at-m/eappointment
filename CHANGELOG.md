@@ -1,5 +1,5 @@
 ## v2.19.01
-* #35273 Bugfix: Falsche Fehlermeldung korrigiert bei Standorten, in den Dienstleistungen fehlen
+* #35273 Bugfix: Falsche Fehlermeldung im Tresen korrigiert, wenn bei Standorten keine Dienstleistungen vorhanden sind
 * Bugfix: Standort-Admin mit Auswahl der Quelle für die Dienstleister-Liste
 * #34481 Bugfix: Wartezeit in der Tresen-Infobox wird nun ohne nicht erschienende Kunden berechnet
 * #35213 Anzeige von Exceptions mit mehr Informationen
