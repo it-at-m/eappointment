@@ -49,6 +49,12 @@ class Appointment extends Schema\Entity
         return $this;
     }
 
+    public function setDateTime(\DateTimeInterface $dateTime)
+    {
+        $this->date = $dateTime->getTimestamp();
+        return $this;
+    }
+
     public function addDate($date)
     {
         $this->date = $date;
@@ -94,9 +100,10 @@ class Appointment extends Schema\Entity
 
     public function toDateTime($timezone = 'Europe/Berlin')
     {
-        $date = \DateTime::createFromFormat("U", $this->date);
+        $date = (new \DateTimeImmutable())->setTimestamp($this->date);
+        //$date = \DateTimeImmutable::createFromFormat("U", $this->date);
         if ($date) {
-            $date->setTimeZone(new \DateTimeZone($timezone));
+            $date = $date->setTimeZone(new \DateTimeZone($timezone));
         }
         return $date;
     }
@@ -118,7 +125,7 @@ class Appointment extends Schema\Entity
 
     public function setDateByString($dateString, $format = 'Y-m-d H:i')
     {
-        $appointmentDateTime = \DateTime::createFromFormat($format, $dateString);
+        $appointmentDateTime = \DateTimeImmutable::createFromFormat($format, $dateString);
         if ($appointmentDateTime) {
             $this->date = $appointmentDateTime->format('U');
         } else {

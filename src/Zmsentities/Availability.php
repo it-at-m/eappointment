@@ -508,7 +508,7 @@ class Availability extends Schema\Entity
      *
      * @return Collection\ProcessList with processes in status "conflict"
      */
-    public function getTimeOverlaps(Availability $availability)
+    public function getTimeOverlaps(Availability $availability, \DateTimeInterface $currentDate)
     {
         $processList = new Collection\ProcessList();
         if ($availability->id != $this->id
@@ -529,20 +529,20 @@ class Availability extends Schema\Entity
                 && $availabilityStart < $thisEnd
             ) {
                 $process = clone $processTemplate;
-                $process->getFirstAppointment()->date = $availability->getStartDateTime()->getTimestamp();
+                $process->getFirstAppointment()->date = $availability->getStartDateTime()->modify($currentDate->format("Y-m-d"))->getTimestamp();
                 $processList[] = $process;
             } elseif ($availabilityEnd > $thisStart
                 && $availabilityEnd < $thisEnd
             ) {
                 $process = clone $processTemplate;
-                $process->getFirstAppointment()->date = $availability->getEndDateTime()->getTimestamp();
+                $process->getFirstAppointment()->date = $availability->getEndDateTime()->modify($currentDate->format("Y-m-d"))->getTimestamp();
                 $processList[] = $process;
             } elseif ($availabilityStart == $thisStart
                 && $availabilityEnd == $thisEnd
             ) {
                 $process = clone $processTemplate;
                 $process->amendment = "Zwei Öffnungszeiten sind gleich.";
-                $process->getFirstAppointment()->date = $availability->getStartDateTime()->getTimestamp();
+                $process->getFirstAppointment()->date = $availability->getStartDateTime()->modify($currentDate->format("Y-m-d"))->getTimestamp();
                 $processList[] = $process;
             }
         }

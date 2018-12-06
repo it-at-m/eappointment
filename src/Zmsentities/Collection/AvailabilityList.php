@@ -63,18 +63,18 @@ class AvailabilityList extends Base
         return false;
     }
 
-    public function withDateTime(\DateTimeImmutable $dateTime)
+    public function withDateTime(\DateTimeInterface $dateTime)
     {
-        $list = new static();
+        $list = new self();
         foreach ($this as $availability) {
             if ($availability->isOpenedOnDate($dateTime)) {
-                $list[] = $availability;
+                $list->addEntity($availability);
             }
         }
         return $list;
     }
 
-    public function getAvailableSecondsOnDateTime(\DateTimeImmutable $dateTime, $type = "intern")
+    public function getAvailableSecondsOnDateTime(\DateTimeInterface $dateTime, $type = "intern")
     {
         $seconds = 0;
         foreach ($this->withType('appointment')->withDateTime($dateTime) as $availability) {
@@ -86,7 +86,7 @@ class AvailabilityList extends Base
     /*
      * is opened on a day -> not specified by a time
      */
-    public function isOpenedByDate(\DateTimeImmutable $dateTime, $type = false)
+    public function isOpenedByDate(\DateTimeInterface $dateTime, $type = false)
     {
         foreach ($this as $availability) {
             if ($availability->isOpenedOnDate($dateTime, $type)) {
@@ -99,7 +99,7 @@ class AvailabilityList extends Base
     /*
      * is opened on a day with specified time
      */
-    public function isOpened(\DateTimeImmutable $dateTime, $type = "openinghours")
+    public function isOpened(\DateTimeInterface $dateTime, $type = "openinghours")
     {
         foreach ($this as $availability) {
             if ($availability->isOpened($dateTime, $type)) {
@@ -130,31 +130,42 @@ class AvailabilityList extends Base
         return $slotList;
     }
 
-    public function getConflicts()
+    public function getConflicts($startDate, $endDate)
     {
         $processList = new ProcessList();
         $availabilityList = new AvailabilityList();
         foreach ($this as $availability) {
             $conflict = $availability->getConflict();
-            if ($conflict) {
-                $processList[] = $conflict;
+            $currentDate = $startDate;
+            while ($currentDate <= $endDate) {
+                if ($availability->isOpenedOnDate($currentDate)) {
+                    if ($conflict) {
+                        $conflictOnDay = clone $conflict;
+                        $conflictOnDay->getFirstAppointment()->setDateTime($currentDate);
+                        $processList[] = $conflictOnDay;
+                    }        
+                    $overlap = $availabilityList->hasOverlapWith($availability, $currentDate);
+                    if ($overlap->count()) {
+                        $processList->addList($overlap);
+                    } else {
+                        $availabilityList[] = $availability; // Do not compare entities twice
+                    }
+                }
+                $currentDate = $currentDate->modify('+1day');        
             }
-            $overlap = $availabilityList->hasOverlapWith($availability);
-            if ($overlap->count()) {
-                $processList->addList($overlap);
-            } else {
-                $availabilityList[] = $availability; // Do not compare entities twice
-            }
+            
         }
         return $processList;
     }
 
-    public function hasOverlapWith(Availability $availability)
+    public function hasOverlapWith(Availability $availability, \DateTimeInterface $currentDate)
     {
         $processList = new ProcessList();
         foreach ($this as $availabilityCompare) {
-            $overlaps = $availability->getTimeOverlaps($availabilityCompare);
-            $processList->addList($overlaps);
+            if ($availabilityCompare->isOpenedOnDate($currentDate)) {
+                $overlaps = $availability->getTimeOverlaps($availabilityCompare, $currentDate);
+                $processList->addList($overlaps);
+            }
         }
         return $processList;
     }

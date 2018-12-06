@@ -12,12 +12,16 @@ class ProcessList extends Base
 {
     const ENTITY_CLASS = '\BO\Zmsentities\Process';
 
-    public function toProcessListByTime()
+    public function toProcessListByTime($format = null)
     {
         $list = new self();
         foreach ($this as $process) {
             $appointment = $process->getFirstAppointment();
-            $list[$appointment['date']][] = clone $process;
+            $formattedDate = $appointment['date'];
+            if ($format) {
+                $formattedDate = $appointment->toDateTime()->format($format);
+            }
+            $list[$formattedDate][] = clone $process;
         }
         return $list;
     }
@@ -79,6 +83,29 @@ class ProcessList extends Base
             ->sortByEstimatedWaitingTime();
     }
 
+    public function toConflictListByDay()
+    {
+        $list = [];
+        $oldList = clone $this;
+        foreach ($oldList as $process) {
+            $timeList = new self();
+            $appointmentList = [];
+            $list[$process->getFirstAppointment()->getStartTime()->format('Y-m-d')] = [];
+            foreach ($process->getAppointments() as $appointment) {
+                $appointmentList[] = [
+                    'startTime' => $appointment->getStartTime()->format('H:i'),
+                    'endTime' => $appointment->getEndTime()->format('H:i'),
+                    'availability' => $appointment->getAvailability()->getId()
+                ];
+            }
+            $list[$process->getFirstAppointment()->getStartTime()->format('Y-m-d')][] = [
+                'message' => $process->amendment,
+                'appointments' => $appointmentList
+            ];
+        }
+        return $list;
+    }
+
     public function toProcessListByStatusAndTime()
     {
         $list = $this->getWithHoursByDay();
@@ -88,7 +115,7 @@ class ProcessList extends Base
                 $timeList = new self();
                 $appointment = $process->getFirstAppointment();
                 if ($hour == $appointment->toDateTime()->format('H')) {
-                    if (! isset($list[$hour][intval($appointment['date'])])) {
+                    if (!isset($list[$hour][intval($appointment['date'])])) {
                         $list[$hour][intval($appointment['date'])] = $timeList;
                     }
                     $list[$hour][intval($appointment['date'])]->addEntity(clone $process);
@@ -151,12 +178,12 @@ class ProcessList extends Base
         $addedAppointment = false;
         $appointment = (new \BO\Zmsentities\Appointment)->addDate($dateTime->getTimestamp())->addScope($scopeId);
         foreach ($this as $process) {
-            if ($process->hasAppointment($dateTime->getTimestamp(), $scopeId) && ! $addedAppointment) {
+            if ($process->hasAppointment($dateTime->getTimestamp(), $scopeId) && !$addedAppointment) {
                 $process->appointments->addEntity($appointment);
                 $addedAppointment = true;
             }
         }
-        if (! $addedAppointment) {
+        if (!$addedAppointment) {
             $entity = new \BO\Zmsentities\Process();
             $entity->addAppointment($appointment);
             $this->addEntity($entity);
@@ -200,10 +227,14 @@ class ProcessList extends Base
     public function withOutAvailability(\BO\Zmsentities\Collection\AvailabilityList $availabilityList)
     {
         $processList = new static();
-        $slotList = $availabilityList->withType('appointment')->getSlotList();
-        foreach ($this as $process) {
-            if (!$slotList->removeAppointment($process->getFirstAppointment())) {
-                $processList[] = clone $process;
+        foreach ($this->toProcessListByTime('Y-m-d') as $processListByDate) {
+            $dateTime = $processListByDate[0]->getFirstAppointment()->toDateTime();
+            error_log($dateTime->format('Y-m-d H:i'));
+            $slotList = $availabilityList->withType('appointment')->withDateTime($dateTime)->getSlotList();
+            foreach ($processListByDate as $process) {
+                if (!$slotList->removeAppointment($process->getFirstAppointment())) {
+                    $processList[] = clone $process;
+                }
             }
         }
         return $processList;
