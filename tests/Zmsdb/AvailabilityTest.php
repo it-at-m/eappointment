@@ -39,8 +39,10 @@ class AvailabilityTest extends Base
 
     public function testReadList()
     {
+        $startDate = new \DateTimeImmutable("2016-05-1 00:00");
+        $endDate = new \DateTimeImmutable("2016-05-31 23:59");
         $query = new Query();
-        $collection = $query->readList(109, 1, true); //by scope Helle Mitte
+        $collection = $query->readList(109, 1, $startDate, $endDate); //by scope Helle Mitte
         $this->assertEntityList("\\BO\\Zmsentities\\Availability", $collection);
         $this->assertEquals(true, $collection->hasEntity('99755'));
         $this->assertEquals(
@@ -48,6 +50,7 @@ class AvailabilityTest extends Base
             $collection->withType('openinghours')->count(),
             'Should have the same count'
         );
+        $this->assertEquals(18, $collection->count());
     }
 
     public function testReadListSkipOld()
