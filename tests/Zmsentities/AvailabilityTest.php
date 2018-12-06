@@ -130,18 +130,18 @@ class AvailabilityTest extends EntityCommonTests
         ));
         $this->assertTrue(
             $entity->hasDayOff($dayOffTime),
-            'Time '. $time->format('Y-m-d') .' must be dayoff time'
+            'Time ' . $time->format('Y-m-d') . ' must be dayoff time'
         );
         $this->assertFalse(
             $entity->hasDayOff($time),
-            'Time '. $time->format('Y-m-d') .' is not a dayoff time'
+            'Time ' . $time->format('Y-m-d') . ' is not a dayoff time'
         );
 
         $weekDayName = self::$weekdayNameList[$dayOffTime->format('w')];
         $entity['weekday'][$weekDayName] = 1;
         $this->assertFalse(
             $entity->hasDate($dayOffTime, $now),
-            'Time '. $dayOffTime->format('Y-m-d') .' is a dayoff time'
+            'Time ' . $dayOffTime->format('Y-m-d') . ' is a dayoff time'
         );
     }
 
@@ -455,7 +455,7 @@ class AvailabilityTest extends EntityCommonTests
         $this->assertTrue(
             2 == count($collection),
             'Amount of entities in collection failed, 2 expected (' .
-            count($collection) . ' found)'
+                count($collection) . ' found)'
         );
 
         $this->assertTrue(
@@ -662,7 +662,8 @@ class AvailabilityTest extends EntityCommonTests
             $availabilityOverlap2,
             $availabilityEqual
         ]);
-        $conflicts = $availabilityList->getConflicts();
+        $startDate = new \DateTimeImmutable('2016-04-19 09:00');
+        $conflicts = $availabilityList->getConflicts($startDate, $startDate);
         //foreach ($conflicts as $conflict) { error_log("$conflict " . $conflict->amendment); }
         $iterator = $conflicts->getIterator();
         $this->assertEquals('conflict', $iterator->current()->status);
@@ -714,7 +715,7 @@ class AvailabilityTest extends EntityCommonTests
                 'startTime' => '12:00:00',
                 'endTime' => '16:00:00',
                 'multipleSlotsAllowed' => '0',
-                'scope' => array('id'=>141),
+                'scope' => array('id' => 141),
                 'type' => 'openinghours'
             ]
         );

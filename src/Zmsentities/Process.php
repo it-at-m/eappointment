@@ -349,10 +349,10 @@ class Process extends Schema\Entity
     }
 
     public function setRequestData(
-        array $input, 
+        array $input,
         \BO\Zmsentities\Collection\RequestList $requestList,
         \BO\Zmsentities\Workstation $workstation
-    ){
+    ) {
         if (array_key_exists('ignoreRequests', $input) && $input['ignoreRequests']) {
             $this->requests = new \BO\Zmsentities\Collection\RequestList();
             $request = new \BO\Zmsentities\Request([
