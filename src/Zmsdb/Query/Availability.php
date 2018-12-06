@@ -158,29 +158,10 @@ class Availability extends Base implements MappingInterface
      */
     public function addConditionTimeframe(\DateTimeInterface $startDate, \DateTimeInterface $endDate)
     {
-        $this->query
-            ->where(function (\Solution10\SQL\ConditionBuilder $condition) use ($startDate, $endDate) {
+        $this->query->where(function (\Solution10\SQL\ConditionBuilder $condition) use ($startDate, $endDate) {
                 $condition
-                    ->andWith(function (\Solution10\SQL\ConditionBuilder $condition) use ($startDate, $endDate) {
-                        $condition
-                        ->andWith('availability.Startdatum', '<=', $startDate->format('Y-m-d'))
-                        ->andWith('availability.Endedatum', '>=', $endDate->format('Y-m-d'));
-                    })
-                    ->orWith(function (\Solution10\SQL\ConditionBuilder $condition) use ($startDate, $endDate) {
-                        $condition
-                            ->andWith('availability.Startdatum', '>=', $startDate->format('Y-m-d'))
-                            ->andWith('availability.Endedatum', '<=', $endDate->format('Y-m-d'));
-                    })
-                    ->orWith(function (\Solution10\SQL\ConditionBuilder $condition) use ($startDate, $endDate) {
-                        $condition
-                            ->andWith('availability.Startdatum', '>=', $startDate->format('Y-m-d'))
-                            ->andWith('availability.Startdatum', '<=', $endDate->format('Y-m-d'));
-                    })
-                    ->orWith(function (\Solution10\SQL\ConditionBuilder $condition) use ($startDate, $endDate) {
-                        $condition
-                            ->andWith('availability.Endedatum', '>=', $startDate->format('Y-m-d'))
-                            ->andWith('availability.Endedatum', '<=', $endDate->format('Y-m-d'));
-                    });
+                    ->andWith('availability.Startdatum', '<=', $endDate->format('Y-m-d'))
+                    ->andWith('availability.Endedatum', '>=', $startDate->format('Y-m-d'));
             });
         return $this;
     }
