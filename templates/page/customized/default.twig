@@ -18,5 +18,8 @@
 	{% endif %}
 
     {{ block(buttonDisplay) }}
-	{{ block("button_append_notification") }}
+
+	{% if department.preferences.notifications.enabled %}
+		{{ block("button_append_notification") }}
+	{% endif %}
 {% endblock %}
