@@ -6,6 +6,7 @@
 * #34481 + #31328 Bugfix: Vereinheitlichung der Berechnung der Warteschlange unter Ausschluss nicht wartender Kunden
 * #31586 Bugfix: Datumsformat in der Erinnerungsmail angepasst
 * #34134 Anpassung des Apiabrufs für Öffnungszeiten per Standort - Parameter reserveEntityIds entfernt
+* #34134 Route /scope/{id}/conflict/ holt Konflikte für einen Standort nach angegebenem Zeitraum
 
 ## v2.19.00
 
