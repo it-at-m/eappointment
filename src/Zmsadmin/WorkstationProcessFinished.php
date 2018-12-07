@@ -7,6 +7,8 @@
 namespace BO\Zmsadmin;
 
 use \Psr\Http\Message\RequestInterface;
+use \BO\Zmsadmin\Helper\ProcessFinishedHelper;
+use \BO\Zmsentities\Process as Entity;
 
 class WorkstationProcessFinished extends BaseController
 {
@@ -27,7 +29,7 @@ class WorkstationProcessFinished extends BaseController
         $isDefaultPickup = $workstation->getScope()->getPreference('pickup', 'isDefault');
 
         $workstation->process['status'] = (! $statisticEnabled && $isDefaultPickup) ? 'pending' : 'finished';
-        $process = clone $workstation->process;
+        $process = new ProcessFinishedHelper(clone $workstation->process);
         $input = $request->getParsedBody();
 
         if (! $statisticEnabled && ! $isDefaultPickup) {
@@ -35,7 +37,12 @@ class WorkstationProcessFinished extends BaseController
         }
 
         if (is_array($input) && array_key_exists('id', $input['process'])) {
-            return $this->getResponseWithStatisticEnabled($input, $process, $workstation, $requestList);
+            return $this->getResponseWithStatisticEnabled(
+                $input,
+                $process,
+                $workstation,
+                $requestList
+            );
         }
 
         return \BO\Slim\Render::withHtml(
@@ -62,8 +69,7 @@ class WorkstationProcessFinished extends BaseController
 
     protected function getResponseWithStatisticDisabled($process, $workstation)
     {
-        $process = \App::$http->readPostResult('/process/status/finished/', $process)->getEntity();
-        //$workstation = \App::$http->readDeleteResult('/workstation/process/')->getEntity();
+        \App::$http->readPostResult('/process/status/finished/', new Entity($process))->getEntity();
         return \BO\Slim\Render::redirect(
             $workstation->getVariantName(),
             array(),
@@ -83,9 +89,7 @@ class WorkstationProcessFinished extends BaseController
         $process->setPickupData($input);
         $process->setRequestData($input, $requestList, $workstation);
         $process->setClientsCount($input['statistic']['clientsCount']);
-        //throw new \Exception("Test");
-        $process = \App::$http->readPostResult('/process/status/finished/', $process)->getEntity();
-        //$workstation = \App::$http->readDeleteResult('/workstation/process/')->getEntity();
+        \App::$http->readPostResult('/process/status/finished/', new Entity($process))->getEntity();
         return \BO\Slim\Render::redirect(
             $workstation->getVariantName(),
             array(),
