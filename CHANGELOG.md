@@ -11,6 +11,7 @@
 * #35228 Security: event-stream Version angepasst
 * #33497 Optimizierung von Öfnunngszeiten Abfragen nach Zeitraum Tag/Monat
 * #34134 Bugfix: Markierung (grün) für Spontankunden in Öffnungszeiten-Monatsansicht korrigiert
+* #34134 Bugfix: Markierung (rot) für Konflikte nun in Öffnungszeiten-Monats- und Tagesansicht gleich
 * Rechtschreibung: Fehlermeldungen zum Löschen von Standorten, Behörden und Organisationen korrigiert
 
 ## v2.19.00
