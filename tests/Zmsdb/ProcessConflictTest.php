@@ -11,7 +11,7 @@ use \BO\Zmsentities\Calendar;
  * @SuppressWarnings(Coupling)
  *
  */
-class ProcessTeProcessConflictTestt extends Base
+class ProcessConflictTest extends Base
 {
     public function testBasic()
     {
