@@ -8,15 +8,6 @@ namespace BO\Zmsadmin\Helper;
 
 class ProcessFinishedHelper extends \BO\Zmsentities\Process
 {
-    public function setClientsCount($count)
-    {
-        $clientList = $this->getClients();
-        while ($clientList->count() < $count) {
-            $clientList->addEntity(new Client());
-        }
-        return $this;
-    }
-
     public function setClientData(array $input, \BO\Zmsentities\Client $firstClient)
     {
         if (array_key_exists('clients', $input['process']) && count($input['process']['clients']) > 0) {
