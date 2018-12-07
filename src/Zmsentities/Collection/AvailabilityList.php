@@ -141,7 +141,10 @@ class AvailabilityList extends Base
                 if ($availability->isOpenedOnDate($currentDate)) {
                     if ($conflict) {
                         $conflictOnDay = clone $conflict;
-                        $conflictOnDay->getFirstAppointment()->setDateTime($currentDate);
+                        // to avoid overwrite time settings from availability getConflict lets modify
+                        $appointmentTime = $conflictOnDay->getFirstAppointment()->getStartTime()->format('H:i');
+                        $newDate = clone $currentDate;
+                        $conflictOnDay->getFirstAppointment()->setDateTime($newDate->modify($appointmentTime));
                         $processList[] = $conflictOnDay;
                     }
                     $overlap = $availabilityList->hasOverlapWith($availability, $currentDate);

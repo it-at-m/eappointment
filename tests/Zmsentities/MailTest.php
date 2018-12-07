@@ -57,6 +57,19 @@ class MailTest extends EntityCommonTests
         $this->assertContains('DTSTART;TZID=Europe/Berlin:20151118T185251', $resolvedEntity->getIcsPart());
     }
 
+    public function testConfirmationWithoutDataAttribute()
+    {
+        $entity = (new $this->entityclass())->getExample();
+        $process = (new \BO\Zmsentities\Process())->getExample();
+        $process->requests->getFirst()->data = null;
+        $config = (new \BO\Zmsentities\Config())->getExample();
+        $entity->addMultiPart(array());
+        $resolvedEntity = $entity->toResolvedEntity($process, $config);
+        $this->assertContains('Sehr geehrte/r Frau', $resolvedEntity->getHtmlPart());
+        $this->assertNotContains('Erforderliche Unterlagen', $resolvedEntity->getHtmlPart());
+        $this->assertContains('BEGIN:VCALENDAR', $resolvedEntity->getIcsPart());
+    }
+
     public function testMailWithInitiator()
     {
         $entity = (new $this->entityclass())->getExample();
