@@ -143,7 +143,7 @@ class AvailabilityList extends Base
                         $conflictOnDay = clone $conflict;
                         $conflictOnDay->getFirstAppointment()->setDateTime($currentDate);
                         $processList[] = $conflictOnDay;
-                    }        
+                    }
                     $overlap = $availabilityList->hasOverlapWith($availability, $currentDate);
                     if ($overlap->count()) {
                         $processList->addList($overlap);
@@ -151,9 +151,8 @@ class AvailabilityList extends Base
                         $availabilityList[] = $availability; // Do not compare entities twice
                     }
                 }
-                $currentDate = $currentDate->modify('+1day');        
+                $currentDate = $currentDate->modify('+1day');
             }
-            
         }
         return $processList;
     }

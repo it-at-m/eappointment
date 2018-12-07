@@ -529,20 +529,30 @@ class Availability extends Schema\Entity
                 && $availabilityStart < $thisEnd
             ) {
                 $process = clone $processTemplate;
-                $process->getFirstAppointment()->date = $availability->getStartDateTime()->modify($currentDate->format("Y-m-d"))->getTimestamp();
+                $process->getFirstAppointment()->date = $availability
+                    ->getStartDateTime()
+                    ->modify($currentDate
+                    ->format("Y-m-d"))
+                    ->getTimestamp();
                 $processList[] = $process;
             } elseif ($availabilityEnd > $thisStart
                 && $availabilityEnd < $thisEnd
             ) {
                 $process = clone $processTemplate;
-                $process->getFirstAppointment()->date = $availability->getEndDateTime()->modify($currentDate->format("Y-m-d"))->getTimestamp();
+                $process->getFirstAppointment()->date = $availability
+                    ->getEndDateTime()
+                    ->modify($currentDate->format("Y-m-d"))
+                    ->getTimestamp();
                 $processList[] = $process;
             } elseif ($availabilityStart == $thisStart
                 && $availabilityEnd == $thisEnd
             ) {
                 $process = clone $processTemplate;
                 $process->amendment = "Zwei Öffnungszeiten sind gleich.";
-                $process->getFirstAppointment()->date = $availability->getStartDateTime()->modify($currentDate->format("Y-m-d"))->getTimestamp();
+                $process->getFirstAppointment()->date = $availability
+                    ->getStartDateTime()
+                    ->modify($currentDate->format("Y-m-d"))
+                    ->getTimestamp();
                 $processList[] = $process;
             }
         }
