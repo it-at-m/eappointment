@@ -189,8 +189,7 @@ class Process extends Base implements Interfaces\ResolveReferences
         $query
             ->addResolvedReferences($resolveReferences)
             ->addEntityMapping()
-            ->addConditionProcessIdFollow($processId)
-        ;
+            ->addConditionProcessIdFollow($processId);
         $statement = $this->fetchStatement($query);
         return $this->readList($statement, $resolveReferences);
     }
@@ -215,8 +214,11 @@ class Process extends Base implements Interfaces\ResolveReferences
      *
      * @return Collection processList
      */
-    public function readProcessListByScopeAndTime($scopeId, \DateTimeInterface $dateTime, $resolveReferences = 0)
-    {
+    public function readProcessListByScopeAndTime(
+        $scopeId,
+        \DateTimeInterface $dateTime,
+        $resolveReferences = 0
+    ) {
         $query = new Query\Process(Query\Base::SELECT);
         $query
             ->addResolvedReferences($resolveReferences)
@@ -228,6 +230,52 @@ class Process extends Base implements Interfaces\ResolveReferences
         $statement = $this->fetchStatement($query);
         return $this->readList($statement, $resolveReferences);
     }
+
+
+    /**
+     * Read conflictList by scopeId and DateTime
+     *
+     * @param
+     * scopeId
+     * dateTime
+     *
+     * @return Collection processList
+     */
+    public function readConflictListByScopeAndTime(
+        \BO\Zmsentities\Scope $scope,
+        \DateTimeInterface $startDate = null,
+        \DateTimeInterface $endDate = null,
+        $resolveReferences = 0
+    ) {
+        $query = new Query\Process(Query\Base::SELECT);
+        $query
+            ->addResolvedReferences($resolveReferences)
+            ->addEntityMapping()
+            ->addConditionScopeId($scope->getId())
+            ->addConditionAssigned()
+            ->addConditionIgnoreSlots();
+        if ($startDate && $endDate) {
+            $query->addConditionTimeframe($startDate, $endDate);
+        } elseif ($startDate) {
+            $query->addConditionTime($startDate);
+        }
+        $statement = $this->fetchStatement($query);
+        $processList = $this->readList($statement, $resolveReferences);
+
+        $availabilityList = (new Availability())
+            ->readAvailabilityListByScope($scope, 0, $startDate, $endDate)
+            ->withScope($scope);
+
+        if (! $endDate) {
+            $availabilityList = $availabilityList->withDateTime($startDate);
+            $endDate = $startDate;
+        }
+        
+        $conflictList = $availabilityList->getConflicts($startDate, $endDate);
+        $conflictList->addList($processList->withOutAvailability($availabilityList));
+        return $conflictList;
+    }
+
 
     /**
      * Read processList by scopeId and status
@@ -425,7 +473,7 @@ class Process extends Base implements Interfaces\ResolveReferences
     public function writeBlockedEntity(\BO\Zmsentities\Process $process)
     {
         $amendment = $process->toDerefencedAmendment();
-        if (! isset($process->queue['status'])) {
+        if (!isset($process->queue['status'])) {
             $process->queue['status'] = $process->status;
         }
         $process->status = 'blocked';
@@ -464,7 +512,7 @@ class Process extends Base implements Interfaces\ResolveReferences
     {
         $status = false;
         if (0 < $processId) {
-            $query =  new Query\XRequest(Query\Base::DELETE);
+            $query = new Query\XRequest(Query\Base::DELETE);
             $query->addConditionProcessId($processId);
             $status = $this->deleteItem($query);
         }
