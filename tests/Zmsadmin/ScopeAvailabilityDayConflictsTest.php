@@ -31,10 +31,15 @@ class ScopeAvailabilityDayConflictsTest extends Base
                     'url' => '/scope/141/availability/',
                     'parameters' => [
                         'resolveReferences' => 0,
-                        'startDate' => $startDate,
-                        'endDate' => $endDate
+                        'startDate' => $startDate->format('Y-m-d')
                     ],
                     'response' => $this->readFixture("GET_scope_141_availability.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/conflict/',
+                    'parameters' => ['startDate' => $startDate->format('Y-m-d')],
+                    'response' => $this->readFixture("GET_processList_141_20160401.json")
                 ],
                 [
                     'function' => 'readGetResult',
