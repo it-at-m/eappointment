@@ -4372,6 +4372,18 @@
 					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
 					"in": "query",
 					"type": "integer"
+				},
+				{
+					"name": "startDate",
+					"description": "only fetch availabilities starting this date",
+					"in": "query",
+					"type": "string"
+				},
+				{
+					"name": "endDate",
+					"description": "only fetch availabilities before this date",
+					"in": "query",
+					"type": "string"
 				}
 			],
 			"responses": {
@@ -4387,6 +4399,72 @@
 								"type": "array",
 								"items": {
 									"$ref": "schema/availability.json"
+								}
+							}
+						}
+					}
+				},
+				"404": {
+					"description": "scope id does not exists"
+				}
+			}
+		}
+	},
+	"/scope/{id}/conflict/": {
+		"get": {
+			"summary": "Get a list of conflicts by scope and date",
+			"x-since": 2.11,
+			"tags": [
+				"scope",
+				"process"
+			],
+			"parameters": [
+				{
+					"name": "id",
+					"description": "scope number",
+					"in": "path",
+					"required": true,
+					"type": "integer"
+				},
+				{
+					"name": "X-Authkey",
+					"required": true,
+					"description": "authentication key to identify user for testing access rights",
+					"in": "header",
+					"type": "string"
+				},
+				{
+					"name": "resolveReferences",
+					"description": "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references",
+					"in": "query",
+					"type": "integer"
+				},
+				{
+					"name": "startDate",
+					"description": "only fetch availabilities starting this date",
+					"in": "query",
+					"type": "string"
+				},
+				{
+					"name": "endDate",
+					"description": "only fetch availabilities before this date",
+					"in": "query",
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "success, also if process list is empty",
+					"schema": {
+						"type": "object",
+						"properties": {
+							"meta": {
+								"$ref": "schema/metaresult.json"
+							},
+							"data": {
+								"type": "array",
+								"items": {
+									"$ref": "schema/process.json"
 								}
 							}
 						}
