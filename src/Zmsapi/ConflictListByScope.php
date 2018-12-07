@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package ZMS API
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -8,9 +9,10 @@ namespace BO\Zmsapi;
 
 use \BO\Slim\Render;
 use \BO\Mellon\Validator;
-use \BO\Zmsdb\Availability as Query;
+use \BO\Zmsdb\Process;
+use \BO\Zmsdb\Scope;
 
-class AvailabilityListByScope extends BaseController
+class ConflictListByScope extends BaseController
 {
     /**
      * @SuppressWarnings(Param)
@@ -21,31 +23,31 @@ class AvailabilityListByScope extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new Helper\User($request))->checkRights();
-        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(1)->getValue();
-        $reserveEntityIds = Validator::param('reserveEntityIds')->isNumber()->setDefault(0)->getValue();
+        (new Helper\User($request))->checkRights('basic');
+        $resolveReferences = Validator::param('resolveReferences')->isNumber()->setDefault(0)->getValue();
+
         $startDateFormatted = Validator::param('startDate')->isString()->getValue();
         $endDateFormatted = Validator::param('endDate')->isString()->getValue();
-
         $startDate = ($startDateFormatted) ? new \BO\Zmsentities\Helper\DateTime($startDateFormatted) : null;
         $endDate = ($endDateFormatted) ? new \BO\Zmsentities\Helper\DateTime($endDateFormatted) : null;
-        
-        $scope = (new \BO\Zmsdb\Scope)->readEntity($args['id'], $resolveReferences - 1);
-        if (! $scope) {
+
+        $scope = (new Scope())->readEntity($args['id'], 1);
+        if (!$scope) {
             throw new Exception\Scope\ScopeNotFound();
         }
-        $availabilities = (new Query())->readList($scope->id, 0, $reserveEntityIds, $startDate, $endDate);
-        if (0 == $availabilities->count()) {
-            throw new Exception\Availability\AvailabilityNotFound();
-        }
-        if ($resolveReferences > 0) {
-            $availabilities = $availabilities->withScope($scope);
-        }
+
+        $conflictList = (new Process())->readConflictListByScopeAndTime(
+            $scope,
+            $startDate,
+            $endDate,
+            $resolveReferences
+        );
+
         $message = Response\Message::create($request);
-        $message->data = $availabilities;
+        $message->data = $conflictList;
 
         $response = Render::withLastModified($response, time(), '0');
-        $response = Render::withJson($response, $message->setUpdatedMetaData(), 200);
+        $response = Render::withJson($response, $message, 200);
         return $response;
     }
 }

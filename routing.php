@@ -22,99 +22,99 @@ use \Psr\Http\Message\ResponseInterface;
  * json
  * -------------------------------------------------------------------------*/
 
- /**
-  *  @swagger
-  *  "/apikey/{key}/":
-  *      get:
-  *          summary: Get quotas if key is active
-  *          tags:
-  *              - apikey
-  *          parameters:
-  *              -   name: key
-  *                  description: key for public api access
-  *                  in: path
-  *                  required: true
-  *                  type: string
-  *          responses:
-  *              200:
-  *                  description: "success"
-  *                  schema:
-  *                      type: object
-  *                      properties:
-  *                          meta:
-  *                              $ref: "schema/metaresult.json"
-  *                          data:
-  *                              $ref: "schema/apikey.json"
-  *              404:
-  *                  description: "access failed"
-  */
- \App::$slim->get(
-     '/apikey/{key}/',
-     '\BO\Zmsapi\ApikeyGet'
- )
-     ->setName("ApikeyGet");
+/**
+ *  @swagger
+ *  "/apikey/{key}/":
+ *      get:
+ *          summary: Get quotas if key is active
+ *          tags:
+ *              - apikey
+ *          parameters:
+ *              -   name: key
+ *                  description: key for public api access
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/apikey.json"
+ *              404:
+ *                  description: "access failed"
+ */
+\App::$slim->get(
+    '/apikey/{key}/',
+    '\BO\Zmsapi\ApikeyGet'
+)
+    ->setName("ApikeyGet");
 
- /**
-  *  @swagger
-  *  "/apikey/":
-  *      post:
-  *          summary: Activate or update apikey
-  *          tags:
-  *             - apikey
-  *          parameters:
-  *              -   name: apikey
-  *                  description: apikey data to update
-  *                  in: body
-  *                  schema:
-  *                      $ref: "schema/apikey.json"
-  *          responses:
-  *              200:
-  *                  description: "success"
-  *                  schema:
-  *                      type: object
-  *                      properties:
-  *                          meta:
-  *                              $ref: "schema/metaresult.json"
-  *                          data:
-  *                              $ref: "schema/apikey.json"
-  *              404:
-  *                  description: "access failed"
-  */
- \App::$slim->post(
-     '/apikey/',
-     '\BO\Zmsapi\ApikeyUpdate'
- )
-     ->setName("ApikeyUpdate");
+/**
+ *  @swagger
+ *  "/apikey/":
+ *      post:
+ *          summary: Activate or update apikey
+ *          tags:
+ *             - apikey
+ *          parameters:
+ *              -   name: apikey
+ *                  description: apikey data to update
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/apikey.json"
+ *          responses:
+ *              200:
+ *                  description: "success"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/apikey.json"
+ *              404:
+ *                  description: "access failed"
+ */
+\App::$slim->post(
+    '/apikey/',
+    '\BO\Zmsapi\ApikeyUpdate'
+)
+    ->setName("ApikeyUpdate");
 
- /**
-  *  @swagger
-  *  "/apikey/{key}/":
-  *      delete:
-  *          summary: Deletes an apikey
-  *          tags:
-  *              - apikey
-  *          parameters:
-  *              -   name: key
-  *                  description: key for public api access
-  *                  in: path
-  *                  required: true
-  *                  type: string
-  *          responses:
-  *              200:
-  *                  description: "success, returns deleted object or empty if object did not exists"
-  *                  schema:
-  *                      type: object
-  *                      properties:
-  *                          meta:
-  *                              $ref: "schema/metaresult.json"
-  *                          data:
-  *                              $ref: "schema/apikey.json"
-  */
- \App::$slim->delete(
-     '/apikey/{key}/',
-     '\BO\Zmsapi\ApikeyDelete'
- )
-     ->setName("ApikeyDelete");
+/**
+ *  @swagger
+ *  "/apikey/{key}/":
+ *      delete:
+ *          summary: Deletes an apikey
+ *          tags:
+ *              - apikey
+ *          parameters:
+ *              -   name: key
+ *                  description: key for public api access
+ *                  in: path
+ *                  required: true
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success, returns deleted object or empty if object did not exists"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/apikey.json"
+ */
+\App::$slim->delete(
+    '/apikey/{key}/',
+    '\BO\Zmsapi\ApikeyDelete'
+)
+    ->setName("ApikeyDelete");
 
 /**
  *  @swagger
@@ -274,43 +274,43 @@ use \Psr\Http\Message\ResponseInterface;
     ->setName("AvailabilityDelete");
 
 /**
-*  @swagger
-*  "/calendar/":
-*      post:
-*          summary: Get a list of available days for appointments
-*          tags:
-*              - calendar
-*          parameters:
-*              -   name: calendar
-*                  description: data for finding available days
-*                  required: true
-*                  in: body
-*                  schema:
-*                      $ref: "schema/calendar.json"
+ *  @swagger
+ *  "/calendar/":
+ *      post:
+ *          summary: Get a list of available days for appointments
+ *          tags:
+ *              - calendar
+ *          parameters:
+ *              -   name: calendar
+ *                  description: data for finding available days
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/calendar.json"
  *              -   name: resolveReferences
  *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
  *                  in: query
  *                  type: integer
-*          responses:
-*              200:
-*                  description: get an updated calendar objects with updated days list
-*                  schema:
-*                      type: object
-*                      properties:
-*                          meta:
-*                              $ref: "schema/metaresult.json"
-*                          data:
-*                              $ref: "schema/calendar.json"
-*              404:
-*                  description: "Could not find any available days"
-*                  schema:
-*                      type: object
-*                      properties:
-*                          meta:
-*                              $ref: "schema/metaresult.json"
-*                          data:
-*                              $ref: "schema/calendar.json"
-*/
+ *          responses:
+ *              200:
+ *                  description: get an updated calendar objects with updated days list
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/calendar.json"
+ *              404:
+ *                  description: "Could not find any available days"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/calendar.json"
+ */
 \App::$slim->post(
     '/calendar/',
     '\BO\Zmsapi\CalendarGet'
@@ -318,41 +318,41 @@ use \Psr\Http\Message\ResponseInterface;
     ->setName("CalendarGet");
 
 /**
-*  @swagger
-*  "/calldisplay/":
-*      post:
-*          summary: Get preferences for a calldisplay
-*          tags:
-*              - calldisplay
-*          parameters:
-*              -   name: calldisplay
-*                  description: data containing scopes and clusters
-*                  required: true
-*                  in: body
-*                  schema:
-*                      $ref: "schema/calldisplay.json"
+ *  @swagger
+ *  "/calldisplay/":
+ *      post:
+ *          summary: Get preferences for a calldisplay
+ *          tags:
+ *              - calldisplay
+ *          parameters:
+ *              -   name: calldisplay
+ *                  description: data containing scopes and clusters
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/calldisplay.json"
  *              -   name: resolveReferences
  *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
  *                  in: query
  *                  type: integer
-*          responses:
-*              200:
-*                  description: get an updated calldislay object with updated scope and cluster list
-*                  schema:
-*                      type: object
-*                      properties:
-*                          meta:
-*                              $ref: "schema/metaresult.json"
-*                          data:
-*                              $ref: "schema/calldisplay.json"
-*              404:
-*                  description: "Could not find a given cluster or scope, see metaresult"
-*                  schema:
-*                      type: object
-*                      properties:
-*                          meta:
-*                              $ref: "schema/metaresult.json"
-*/
+ *          responses:
+ *              200:
+ *                  description: get an updated calldislay object with updated scope and cluster list
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/calldisplay.json"
+ *              404:
+ *                  description: "Could not find a given cluster or scope, see metaresult"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ */
 \App::$slim->post(
     '/calldisplay/',
     '\BO\Zmsapi\CalldisplayGet'
@@ -360,44 +360,44 @@ use \Psr\Http\Message\ResponseInterface;
     ->setName("CalldisplayGet");
 
 /**
-*  @swagger
-*  "/calldisplay/queue/":
-*      post:
-*          summary: Get queue for a calldisplay
-*          tags:
-*              - calldisplay
-*              - queue
-*          parameters:
-*              -   name: calldisplay
-*                  description: data containing scopes and clusters
-*                  required: true
-*                  in: body
-*                  schema:
-*                      $ref: "schema/calldisplay.json"
+ *  @swagger
+ *  "/calldisplay/queue/":
+ *      post:
+ *          summary: Get queue for a calldisplay
+ *          tags:
+ *              - calldisplay
+ *              - queue
+ *          parameters:
+ *              -   name: calldisplay
+ *                  description: data containing scopes and clusters
+ *                  required: true
+ *                  in: body
+ *                  schema:
+ *                      $ref: "schema/calldisplay.json"
  *              -   name: resolveReferences
  *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
  *                  in: query
  *                  type: integer
-*          responses:
-*              200:
-*                  description: get a list of queue entries, return empty list if no queue was found
-*                  schema:
-*                      type: object
-*                      properties:
-*                          meta:
-*                              $ref: "schema/metaresult.json"
-*                          data:
-*                              type: array
-*                              items:
-*                                  $ref: "schema/queue.json"
-*              404:
-*                  description: "Could not find a given cluster or scope or missing cluster and sopelist in entity, see metaresult"
-*                  schema:
-*                      type: object
-*                      properties:
-*                          meta:
-*                              $ref: "schema/metaresult.json"
-*/
+ *          responses:
+ *              200:
+ *                  description: get a list of queue entries, return empty list if no queue was found
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/queue.json"
+ *              404:
+ *                  description: "Could not find a given cluster or scope or missing cluster and sopelist in entity, see metaresult"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ */
 \App::$slim->post(
     '/calldisplay/queue/',
     '\BO\Zmsapi\CalldisplayQueue'
@@ -1332,7 +1332,7 @@ use \Psr\Http\Message\ResponseInterface;
  */
 \App::$slim->post(
     '/department/{id:\d{1,11}}/cluster/',
-                  '\BO\Zmsapi\DepartmentAddCluster'
+    '\BO\Zmsapi\DepartmentAddCluster'
 )
     ->setName("DepartmentAddCluster");
 
@@ -3686,12 +3686,10 @@ use \Psr\Http\Message\ResponseInterface;
  *                  description: "only fetch availabilities starting this date"
  *                  in: query
  *                  type: string
-                    example: '2016-04-01'
  *              -   name: endDate
  *                  description: "only fetch availabilities before this date"
  *                  in: query
  *                  type: string
-                    example: '2016-04-01'
  *          responses:
  *              200:
  *                  description: "success"
@@ -3712,6 +3710,60 @@ use \Psr\Http\Message\ResponseInterface;
     '\BO\Zmsapi\AvailabilityListByScope'
 )
     ->setName("AvailabilityListByScope");
+
+/**
+ *  @swagger
+ *  "/scope/{id}/conflict/":
+ *      get:
+ *          summary: Get a list of conflicts by scope and date
+ *          x-since: 2.11
+ *          tags:
+ *              - scope
+ *              - process
+ *          parameters:
+ *              -   name: id
+ *                  description: scope number
+ *                  in: path
+ *                  required: true
+ *                  type: integer
+ *              -   name: X-Authkey
+ *                  required: true
+ *                  description: authentication key to identify user for testing access rights
+ *                  in: header
+ *                  type: string
+ *              -   name: resolveReferences
+ *                  description: "Resolve references with $ref, which might be faster on the server side. The value of the parameter is the number of iterations to resolve references"
+ *                  in: query
+ *                  type: integer
+ *              -   name: startDate
+ *                  description: "only fetch availabilities starting this date"
+ *                  in: query
+ *                  type: string
+ *              -   name: endDate
+ *                  description: "only fetch availabilities before this date"
+ *                  in: query
+ *                  type: string
+ *          responses:
+ *              200:
+ *                  description: "success, also if process list is empty"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              type: array
+ *                              items:
+ *                                  $ref: "schema/process.json"
+ *              404:
+ *                  description: "scope id does not exists"
+ */
+\App::$slim->get(
+    '/scope/{id:\d{1,11}}/conflict/',
+    '\BO\Zmsapi\ConflictListByScope'
+)
+    ->setName("ConflictListByScope");
+
 
 /**
  *  @swagger
@@ -4454,47 +4506,47 @@ use \Psr\Http\Message\ResponseInterface;
     ->setName("TicketprinterListByScopeList");
 
 /**
-*  @swagger
-*  "/session/{name}/{id}/":
-*      get:
-*          summary: Get current Session
-*          tags:
-*              - session
-*          parameters:
-*              -   name: name
-*                  description: name from session (3 - 20 letters)
-*                  required: true
-*                  in: path
-*                  type: string
-*              -   name: id
-*                  description: id from session (20 - 40 chars)
-*                  required: true
-*                  in: path
-*                  type: string
-*              -   name: sync
-*                  description: "Set this to 1 if you want synchronous read for the session data. If session data is written shortly before reading, replication might not be up to date. Using this parameter solves this problem but might result in slower responses. Use this parameter only if necessary, for example after HTTP-redirect which write session data and a read requests follows much less than a second after. Usually, two requests do not follow on each other so that this parameter is necessary."
-*                  in: query
-*                  type: integer
-*          responses:
-*              200:
-*                  description: get a session by id and name
-*                  schema:
-*                      type: object
-*                      properties:
-*                          meta:
-*                              $ref: "schema/metaresult.json"
-*                          data:
-*                              $ref: "schema/session.json"
-*              404:
-*                  description: "Could not find any available session"
-*                  schema:
-*                      type: object
-*                      properties:
-*                          meta:
-*                              $ref: "schema/metaresult.json"
-*                          data:
-*                              $ref: "schema/session.json"
-*/
+ *  @swagger
+ *  "/session/{name}/{id}/":
+ *      get:
+ *          summary: Get current Session
+ *          tags:
+ *              - session
+ *          parameters:
+ *              -   name: name
+ *                  description: name from session (3 - 20 letters)
+ *                  required: true
+ *                  in: path
+ *                  type: string
+ *              -   name: id
+ *                  description: id from session (20 - 40 chars)
+ *                  required: true
+ *                  in: path
+ *                  type: string
+ *              -   name: sync
+ *                  description: "Set this to 1 if you want synchronous read for the session data. If session data is written shortly before reading, replication might not be up to date. Using this parameter solves this problem but might result in slower responses. Use this parameter only if necessary, for example after HTTP-redirect which write session data and a read requests follows much less than a second after. Usually, two requests do not follow on each other so that this parameter is necessary."
+ *                  in: query
+ *                  type: integer
+ *          responses:
+ *              200:
+ *                  description: get a session by id and name
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/session.json"
+ *              404:
+ *                  description: "Could not find any available session"
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          meta:
+ *                              $ref: "schema/metaresult.json"
+ *                          data:
+ *                              $ref: "schema/session.json"
+ */
 \App::$slim->get(
     '/session/{name:[a-zA-Z]{3,20}}/{id:[a-z0-9]{8,40}}/',
     '\BO\Zmsapi\SessionGet'
@@ -5298,7 +5350,7 @@ use \Psr\Http\Message\ResponseInterface;
  */
 \App::$slim->post(
     '/workstation/password/',
-                  '\BO\Zmsapi\WorkstationPassword'
+    '\BO\Zmsapi\WorkstationPassword'
 )
     ->setName('WorkstationPassword');
 
@@ -5522,7 +5574,7 @@ use \Psr\Http\Message\ResponseInterface;
 
 \App::$slim->get(
     '/healthcheck/',
-                 '\BO\Zmsapi\Healthcheck'
+    '\BO\Zmsapi\Healthcheck'
 )
     ->setName("healthcheck");
 
@@ -5563,9 +5615,9 @@ use \Psr\Http\Message\ResponseInterface;
         if ($exception->getCode() >= 500 || !$exception->getCode()) {
             \App::$log->critical(
                 "[API] Fatal Exception: "
-                . " in " . $exception->getFile() . " +" . $exception->getLine()
-                . " -> " . $exception->getMessage()
-                . " | Trace: ". $message->meta->trace
+                    . " in " . $exception->getFile() . " +" . $exception->getLine()
+                    . " -> " . $exception->getMessage()
+                    . " | Trace: " . $message->meta->trace
             );
         }
         return \BO\Slim\Render::withJson($response, $message, $status);
