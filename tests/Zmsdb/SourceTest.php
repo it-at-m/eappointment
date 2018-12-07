@@ -18,9 +18,12 @@ class SourceTest extends Base
     {
         $entity = (new Query())->readEntity('dldb', 1);
         $this->assertArrayNotHasKey('data', $entity->getProviderList()->getFirst());
+    }
 
-        $entity2 = (new Query())->readEntity('dldb', 2);
-        $this->assertArrayHasKey('data', $entity2->getProviderList()->getFirst());
+    public function testResolveReferences2()
+    {
+        $entity = (new Query())->readEntity('dldb', 2);
+        $this->assertArrayHasKey('data', $entity->getProviderList()->getFirst());
     }
 
     public function testSourceMissing()
