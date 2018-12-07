@@ -27,14 +27,9 @@ class AvailabilityListByScope extends BaseController
         $startDateFormatted = Validator::param('startDate')->isString()->getValue();
         $endDateFormatted = Validator::param('endDate')->isString()->getValue();
 
-        $startDate = null;
-        $endDate = null;
-        if ($startDateFormatted) {
-            $startDate = new \DateTimeImmutable($startDateFormatted);
-        }
-        if ($endDateFormatted) {
-            $startDate = new \DateTimeImmutable($startDateFormatted);
-        }
+        $startDate = ($startDateFormatted) ? new \BO\Zmsentities\Helper\DateTime($startDateFormatted) : null;
+        $endDate = ($endDateFormatted) ? new \BO\Zmsentities\Helper\DateTime($endDateFormatted) : null;
+        
         $scope = (new \BO\Zmsdb\Scope)->readEntity($args['id'], $resolveReferences - 1);
         if (! $scope) {
             throw new Exception\Scope\ScopeNotFound();
