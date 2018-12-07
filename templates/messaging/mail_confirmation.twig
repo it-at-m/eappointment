@@ -28,12 +28,14 @@ Sie haben folgende {{ requestalias }} ausgewählt:<br />
 {% if request.source == "dldb" %}
 <div style="border-left: 1em solid #ffffff; background: #ffffff;">
 <br />
+{% if request.data %}
 {% include "@dldb/detail/service_detail_prerequisites.twig" with {"service":request.data, "headerlevel":"h4"} %}
 
 {% include "@dldb/detail/service_detail_requirements.twig" with {"service":request.data, "headerlevel":"h4"} %}
 
 {% include "@dldb/detail/service_detail_fees.twig" with {"service":request.data, "headerlevel":"h4"} %}
 <br />
+{% endif %}
 </div>
 {% endif %}
 {% endfor %}
