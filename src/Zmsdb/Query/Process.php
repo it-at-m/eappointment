@@ -3,9 +3,9 @@
 namespace BO\Zmsdb\Query;
 
 /**
-*
-* @SuppressWarnings(Methods)
-* @SuppressWarnings(Complexity)
+ *
+ * @SuppressWarnings(Methods)
+ * @SuppressWarnings(Complexity)
  */
 class Process extends Base implements MappingInterface
 {
@@ -70,7 +70,7 @@ class Process extends Base implements MappingInterface
                 SELECT ps.processID FROM `process_sequence` ps LEFT JOIN `' . self::getTablename() . '` p
                     ON ps.processId = p.BuergerID
                 WHERE p.`BuergerID` IS NULL
-                LIMIT '.$random.',1)
+                LIMIT ' . $random . ',1)
             FOR UPDATE';
     }
 
@@ -214,7 +214,7 @@ class Process extends Base implements MappingInterface
     {
         $this->query->select([
             'processCount' => self::expression('COUNT(*)'),
-            ]);
+        ]);
         return $this;
     }
 
@@ -278,7 +278,7 @@ class Process extends Base implements MappingInterface
             $query->andWith(
                 'process.Uhrzeit',
                 '=',
-                $dateTime->modify('+ '. $reminderInSeconds .' Seconds')->format('H:i')
+                $dateTime->modify('+ ' . $reminderInSeconds . ' Seconds')->format('H:i')
             );
         });
         $this->query->orderBy('appointments__0__date', 'ASC');
@@ -347,6 +347,20 @@ class Process extends Base implements MappingInterface
         return $this;
     }
 
+    /**
+     * Identify processes between two dates
+     *
+     */
+    public function addConditionTimeframe(\DateTimeInterface $startDate, \DateTimeInterface $endDate)
+    {
+        $this->query->where(function (\Solution10\SQL\ConditionBuilder $condition) use ($startDate, $endDate) {
+            $condition
+                ->andWith('process.Datum', '<=', $endDate->format('Y-m-d'))
+                ->andWith('process.Datum', '>=', $startDate->format('Y-m-d'));
+        });
+        return $this;
+    }
+
     public function addConditionAuthKey($authKey)
     {
         $authKey = urldecode($authKey);
@@ -361,7 +375,7 @@ class Process extends Base implements MappingInterface
 
     public function addConditionAssigned()
     {
-        $this->query ->where('process.StandortID', '!=', "0");
+        $this->query->where('process.StandortID', '!=', "0");
         return $this;
     }
 
@@ -664,11 +678,10 @@ class Process extends Base implements MappingInterface
             $clientsCount = $data[$this->getPrefixed('__clientsCount')];
             unset($data[$this->getPrefixed('__clientsCount')]);
             while (--$clientsCount > 0) {
-                $data[$this->getPrefixed('clients__'.$clientsCount.'__familyName')] = 'Unbekannt';
+                $data[$this->getPrefixed('clients__' . $clientsCount . '__familyName')] = 'Unbekannt';
             }
         }
-        $data[$this->getPrefixed("lastChange")] =
-            (new \DateTime($data[$this->getPrefixed("lastChange")] . \BO\Zmsdb\Connection\Select::$connectionTimezone))
+        $data[$this->getPrefixed("lastChange")] = (new \DateTime($data[$this->getPrefixed("lastChange")] . \BO\Zmsdb\Connection\Select::$connectionTimezone))
             ->getTimestamp();
         return $data;
     }
