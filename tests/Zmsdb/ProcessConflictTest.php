@@ -24,10 +24,10 @@ class ProcessConflictTest extends Base
 
     public function testOverbookedOnDay()
     {
-        $startDate = new \DateTimeImmutable("2016-05-13 11:55");
-        $scope = (new \BO\Zmsdb\Scope())->readEntity(147, 1, true);
+        $startDate = new \DateTimeImmutable("2016-04-12 11:55");
+        $scope = (new \BO\Zmsdb\Scope())->readEntity(141, 1, true);
         $conflictList = (new \BO\Zmsdb\Process())->readConflictListByScopeAndTime($scope, $startDate, null, 0);
-        $this->assertEquals(21, $conflictList->count());
+        $this->assertEquals(2, $conflictList->count());
     }
 
     public function testEqual()
