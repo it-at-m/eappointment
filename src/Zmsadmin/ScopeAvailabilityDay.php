@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -42,15 +41,21 @@ class ScopeAvailabilityDay extends BaseController
         $availabilityList = static::getAvailabilityList($scope, $dateTime);
         $processList = \App::$http
             ->readGetResult('/scope/' . $scope->getId() . '/process/' . $dateTime->format('Y-m-d') . '/')
-            ->getCollection();
+                ->getCollection();
         if (!$processList) {
             $processList = new \BO\Zmsentities\Collection\ProcessList();
-        }
+            }
         $processConflictList = \App::$http
             ->readGetResult('/scope/' . $scope->getId() . '/conflict/', [
                 'startDate' => $dateTime->format('Y-m-d'),
             ])
             ->getCollection();
+        $processList = ($processList) ? $processList : new \BO\Zmsentities\Collection\ProcessList();
+        $conflicts = $availabilityList->getConflicts($dateTime, $dateTime);
+        if ($processList) {
+            $conflicts->addList($processList->withOutAvailability($availabilityList));
+        }
+
         $maxSlots = self::getMaxSlotsForAvailabilities($availabilityList);
         $busySlots = self::getBusySlotsForAvailabilities($availabilityList, $processList);
         return [
@@ -74,7 +79,7 @@ class ScopeAvailabilityDay extends BaseController
     {
         return array_reduce($availabilityList->getArrayCopy(), function ($carry, $item) {
             $itemId = $item->id;
-            $maxSlots = (int)$item->getSlotList()->getSummerizedSlot()->intern;
+            $maxSlots = (int) $item->getSlotList()->getSummerizedSlot()->intern;
             $carry[$itemId] = $maxSlots;
             return $carry;
         }, []);
