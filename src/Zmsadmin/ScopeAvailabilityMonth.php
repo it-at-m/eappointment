@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
  **/
@@ -8,6 +9,7 @@ namespace BO\Zmsadmin;
 use BO\Mellon\Validator;
 use BO\Zmsentities\Calendar;
 use BO\Zmsentities\Collection\AvailabilityList;
+use BO\Zmsentities\Collection\ProcessList;
 
 class ScopeAvailabilityMonth extends BaseController
 {
@@ -25,18 +27,57 @@ class ScopeAvailabilityMonth extends BaseController
     ) {
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
         $dateTime = (isset($args['date'])) ? new \BO\Zmsentities\Helper\DateTime($args['date']) : \App::$now;
-        $firstDay = $dateTime->modify('first day of this month');
-        $lastDay = $dateTime->modify('last day of this month');
+        $startDate = $dateTime->modify('first day of this month');
+        $endDate = $dateTime->modify('last day of this month');
+
         $scopeId = Validator::value($args['id'])->isNumber()->getValue();
-        $scope = \App::$http->readGetResult('/scope/'.$scopeId.'/', ['resolveReferences' => 1])->getEntity();
+        $scope = \App::$http->readGetResult('/scope/' . $scopeId . '/', ['resolveReferences' => 1])->getEntity();
+        $calendar = $this->getCalendar($scope, $startDate, $endDate);
+
+        $availabilityList = $this->getAvailabilityList($scope, $startDate, $endDate);
+        $processConflictList = \App::$http
+            ->readGetResult('/scope/' . $scope->getId() . '/conflict/', [
+                'startDate' => $startDate->format('Y-m-d'),
+                'endDate' => $endDate->format('Y-m-d'),
+            ])
+            ->getCollection();
+        $processConflictList = $processConflictList ?
+            $processConflictList->toConflictListByDay() :
+            new \BO\Zmsentities\Collection\ProcessList();
+        
+        return \BO\Slim\Render::withHtml(
+            $response,
+            'page/availabilityMonth.twig',
+            array(
+                'availabilityList' => $availabilityList,
+                'conflicts' => $processConflictList,
+                'calendar' => $calendar,
+                'dayoffList' => $scope->getDayoffList(),
+                'dateTime' => $dateTime,
+                'timestamp' => $dateTime->getTimeStamp(),
+                'month' => $calendar->getMonthList()->getFirst(),
+                'scope' => $scope,
+                'menuActive' => 'owner',
+                'title' => 'Behörden und Standorte - Öffnungszeiten',
+                'today' => $dateTime->format('Y-m-d'),
+                'workstation' => $workstation,
+                'baseMonthString' => $startDate->format('m'),
+                'baseYearString' => $endDate->format('Y'),
+                'baseMonth_timestamp' => $startDate->getTimeStamp(),
+            )
+        );
+    }
+
+    protected function getAvailabilityList($scope, $startDate, $endDate)
+    {
         try {
             $availabilityList = \App::$http
                 ->readGetResult(
-                    '/scope/'.$scopeId.'/availability/',
+                    '/scope/' . $scope->getId() . '/availability/',
                     [
                         'resolveReferences' => 0,
-                        'startDate' => $firstDay,
-                        'endDate' => $lastDay,
+                        'startDate' => $startDate->format('Y-m-d'),
+                        'endDate' => $endDate->format('Y-m-d'),
                     ]
                 )
                 ->getCollection();
@@ -46,10 +87,14 @@ class ScopeAvailabilityMonth extends BaseController
             }
             $availabilityList = new \BO\Zmsentities\Collection\AvailabilityList();
         }
-        $availabilityList = $availabilityList->withScope($scope);
+        return $availabilityList->withScope($scope);
+    }
+
+    protected function getCalendar($scope, $startDate, $endDate)
+    {
         $calendar = new Calendar();
-        $calendar->firstDay->setDateTime($firstDay);
-        $calendar->lastDay->setDateTime($lastDay);
+        $calendar->firstDay->setDateTime($startDate);
+        $calendar->lastDay->setDateTime($endDate);
         $calendar->scopes[] = $scope;
         try {
             $calendar = \App::$http->readPostResult('/calendar/', $calendar, ['fillWithEmptyDays' => 1])->getEntity();
@@ -58,30 +103,6 @@ class ScopeAvailabilityMonth extends BaseController
                 throw $exception;
             }
         }
-        $month = $calendar->getMonthList()->getFirst();
-
-        return \BO\Slim\Render::withHtml(
-            $response,
-            'page/availabilityMonth.twig',
-            array(
-                'availabilityList' => $availabilityList,
-                //'availabilityListSlices' => $availabilityList->withCalculatedSlots(),
-                //'conflicts' => $conflicts,
-                'calendar' => $calendar,
-                'dayoffList' => $scope->getDayoffList(),
-                'dateTime' => $dateTime,
-                'timestamp' => $dateTime->getTimeStamp(),
-                'month' => $month,
-                'scope' => $scope,
-                'menuActive' => 'owner',
-                'title' => 'Behörden und Standorte - Öffnungszeiten',
-                //'maxWorkstationCount' => $availabilityList->getMaxWorkstationCount(),
-                'today' => $dateTime->format('Y-m-d'),
-                'workstation' => $workstation,
-                'baseMonthString' => $firstDay->format('m'),
-                'baseYearString' => $lastDay->format('Y'),
-                'baseMonth_timestamp' => $firstDay->getTimeStamp(),
-            )
-        );
+        return $calendar;
     }
 }

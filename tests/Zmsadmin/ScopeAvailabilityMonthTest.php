@@ -37,10 +37,19 @@ class ScopeAvailabilityMonthTest extends Base
                     'url' => '/scope/141/availability/',
                     'parameters' => [
                         'resolveReferences' => 0,
-                        'startDate' => $startDate,
-                        'endDate' => $endDate
+                        'startDate' => $startDate->format('Y-m-d'),
+                        'endDate' => $endDate->format('Y-m-d')
                     ],
                     'response' => $this->readFixture("GET_scope_141_availability.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/conflict/',
+                    'parameters' => [
+                        'startDate' => $startDate->format('Y-m-d'),
+                        'endDate' => $endDate->format('Y-m-d')
+                    ],
+                    'response' => $this->readFixture("GET_processList_141_20160401.json")
                 ],
                 [
                     'function' => 'readPostResult',
@@ -81,16 +90,6 @@ class ScopeAvailabilityMonthTest extends Base
                     'response' => $this->readFixture("GET_scope_141.json")
                 ],
                 [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/availability/',
-                    'parameters' => [
-                        'resolveReferences' => 0,
-                        'startDate' => $startDate,
-                        'endDate' => $endDate
-                    ],
-                    'response' => $this->readFixture("GET_scope_141_availability.json")
-                ],
-                [
                     'function' => 'readPostResult',
                     'url' => '/calendar/',
                     'parameters' => ['fillWithEmptyDays' => 1],
@@ -127,10 +126,19 @@ class ScopeAvailabilityMonthTest extends Base
                     'url' => '/scope/141/availability/',
                     'parameters' => [
                         'resolveReferences' => 0,
-                        'startDate' => $startDate,
-                        'endDate' => $endDate
+                        'startDate' => $startDate->format('Y-m-d'),
+                        'endDate' => $endDate->format('Y-m-d')
                     ],
                     'exception' => $exception
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/conflict/',
+                    'parameters' => [
+                        'startDate' => $startDate->format('Y-m-d'),
+                        'endDate' => $endDate->format('Y-m-d')
+                    ],
+                    'response' => $this->readFixture("GET_processList_141_20160401.json")
                 ],
                 [
                     'function' => 'readPostResult',
@@ -169,12 +177,18 @@ class ScopeAvailabilityMonthTest extends Base
                     'response' => $this->readFixture("GET_scope_141.json")
                 ],
                 [
+                    'function' => 'readPostResult',
+                    'url' => '/calendar/',
+                    'parameters' => ['fillWithEmptyDays' => 1],
+                    'exception' => $exception
+                ],
+                [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/availability/',
                     'parameters' => [
                         'resolveReferences' => 0,
-                        'startDate' => $startDate,
-                        'endDate' => $endDate
+                        'startDate' => $startDate->format('Y-m-d'),
+                        'endDate' => $endDate->format('Y-m-d')
                     ],
                     'exception' => $exception
                 ]

@@ -16,7 +16,6 @@ class ScopeAvailabilityDayTest extends Base
     public function testRendering()
     {
         $startDate = new \DateTimeImmutable('2016-04-01');
-        $endDate =  new \DateTimeImmutable('2016-04-01');
 
         $this->setApiCalls(
             [
@@ -37,10 +36,17 @@ class ScopeAvailabilityDayTest extends Base
                     'url' => '/scope/141/availability/',
                     'parameters' => [
                         'resolveReferences' => 0,
-                        'startDate' => $startDate,
-                        'endDate' => $endDate
+                        'startDate' => $startDate->format('Y-m-d')
                     ],
                     'response' => $this->readFixture("GET_scope_141_availability.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/conflict/',
+                    'parameters' => [
+                        'startDate' => $startDate->format('Y-m-d')
+                    ],
+                    'response' => $this->readFixture("GET_processList_141_20160401.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -81,10 +87,17 @@ class ScopeAvailabilityDayTest extends Base
                     'url' => '/scope/141/availability/',
                     'parameters' => [
                         'resolveReferences' => 0,
-                        'startDate' => $startDate,
-                        'endDate' => $endDate
+                        'startDate' => $startDate->format('Y-m-d')
                     ],
                     'exception' => $exception
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/conflict/',
+                    'parameters' => [
+                        'startDate' => $startDate->format('Y-m-d')
+                    ],
+                    'response' => $this->readFixture("GET_processList_141_20160401.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -125,8 +138,7 @@ class ScopeAvailabilityDayTest extends Base
                     'url' => '/scope/141/availability/',
                     'parameters' => [
                         'resolveReferences' => 0,
-                        'startDate' => $startDate,
-                        'endDate' => $endDate
+                        'startDate' => $startDate->format('Y-m-d')
                     ],
                     'exception' => $exception
                 ]

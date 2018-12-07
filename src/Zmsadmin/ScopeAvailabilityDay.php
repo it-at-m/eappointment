@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package Zmsadmin
  * @copyright BerlinOnline Stadtportal GmbH & Co. KG
@@ -38,37 +39,23 @@ class ScopeAvailabilityDay extends BaseController
     protected static function getAvailabilityData($scope, $dateString)
     {
         $dateTime = new \BO\Zmsentities\Helper\DateTime($dateString);
-        try {
-            $availabilityList = \App::$http
-                ->readGetResult('/scope/' . intval($scope->id) . '/availability/', [
-                    'resolveReferences' => 0,
-                    'startDate' => $dateTime,
-                    'endDate' => $dateTime
-                ])
-                ->getCollection();
-        } catch (\BO\Zmsclient\Exception $exception) {
-            if ($exception->template != 'BO\Zmsapi\Exception\Availability\AvailabilityNotFound') {
-                throw $exception;
-            }
-            $availabilityList = new \BO\Zmsentities\Collection\AvailabilityList();
-        }
-        $availabilityList = $availabilityList->withScope($scope)->withDateTime($dateTime);
+        $availabilityList = static::getAvailabilityList($scope, $dateTime);
         $processList = \App::$http
-            ->readGetResult('/scope/' . intval($scope->id) . '/process/' . $dateTime->format('Y-m-d') . '/')
+            ->readGetResult('/scope/' . $scope->getId() . '/process/' . $dateTime->format('Y-m-d') . '/')
             ->getCollection();
-        $processList = ($processList) ? $processList : new \BO\Zmsentities\Collection\ProcessList();
-        $conflicts = $availabilityList->getConflicts();
-        if ($processList) {
-            $conflicts->addList($processList->withOutAvailability($availabilityList));
-        }
+        $processConflictList = \App::$http
+            ->readGetResult('/scope/' . $scope->getId() . '/conflict/', [
+                'startDate' => $dateTime->format('Y-m-d'),
+            ])
+            ->getCollection();
 
         $maxSlots = self::getMaxSlotsForAvailabilities($availabilityList);
         $busySlots = self::getBusySlotsForAvailabilities($availabilityList, $processList);
         return [
             'availabilityList' => $availabilityList->getArrayCopy(),
             'availabilityListSlices' => $availabilityList->withCalculatedSlots()->getArrayCopy(),
-            'conflicts' => $conflicts->getArrayCopy(),
-            'processList' => $processList->getArrayCopy(),
+            'conflicts' => ($processConflictList) ? $processConflictList->getArrayCopy() : [],
+            'processList' => ($processList) ? $processList->getArrayCopy() : [],
             'dateString' => $dateString,
             'timestamp' => $dateTime->getTimestamp(),
             'menuActive' => 'availability',
@@ -85,7 +72,7 @@ class ScopeAvailabilityDay extends BaseController
     {
         return array_reduce($availabilityList->getArrayCopy(), function ($carry, $item) {
             $itemId = $item->id;
-            $maxSlots = (int) $item->getSlotList()->getSummerizedSlot()->intern;
+            $maxSlots = (int)$item->getSlotList()->getSummerizedSlot()->intern;
             $carry[$itemId] = $maxSlots;
             return $carry;
         }, []);
@@ -102,5 +89,26 @@ class ScopeAvailabilityDay extends BaseController
             $carry[$itemId] = $busySlots;
             return $carry;
         }, []);
+    }
+
+    protected static function getAvailabilityList($scope, $dateTime)
+    {
+        try {
+            $availabilityList = \App::$http
+                ->readGetResult(
+                    '/scope/' . $scope->getId() . '/availability/',
+                    [
+                        'resolveReferences' => 0,
+                        'startDate' => $dateTime->format('Y-m-d')
+                    ]
+                )
+                ->getCollection();
+        } catch (\BO\Zmsclient\Exception $exception) {
+            if ($exception->template != 'BO\Zmsapi\Exception\Availability\AvailabilityNotFound') {
+                throw $exception;
+            }
+            $availabilityList = new \BO\Zmsentities\Collection\AvailabilityList();
+        }
+        return $availabilityList->withScope($scope)->withDateTime($dateTime);
     }
 }
