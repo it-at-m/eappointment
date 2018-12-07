@@ -681,8 +681,9 @@ class Process extends Base implements MappingInterface
                 $data[$this->getPrefixed('clients__' . $clientsCount . '__familyName')] = 'Unbekannt';
             }
         }
-        $data[$this->getPrefixed("lastChange")] = (new \DateTime($data[$this->getPrefixed("lastChange")] . \BO\Zmsdb\Connection\Select::$connectionTimezone))
-            ->getTimestamp();
+        $data[$this->getPrefixed("lastChange")] =
+            (new \DateTimeImmutable($data[$this->getPrefixed("lastChange")] .
+            \BO\Zmsdb\Connection\Select::$connectionTimezone))->getTimestamp();
         return $data;
     }
 

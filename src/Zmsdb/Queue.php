@@ -16,10 +16,9 @@ class Queue extends Base implements Interfaces\ResolveReferences
      * @return Collection processList
      */
     public function readListByScopeAndTime(
-        $scopeId, 
-        \DateTimeInterface $dateTime, 
-        $resolveReferences = 0, 
-        $byMonth = false
+        $scopeId,
+        \DateTimeInterface $dateTime,
+        $resolveReferences = 0
     ) {
         $query = new Query\Queue(Query\Base::SELECT);
         $query
@@ -27,7 +26,7 @@ class Queue extends Base implements Interfaces\ResolveReferences
             ->addEntityMapping()
             ->addConditionScopeId($scopeId)
             ->addConditionAssigned()
-            ->addConditionTime($dateTime, $byMonth);
+            ->addConditionTime($dateTime);
         $list = $this->fetchList($query, new Entity(), new \BO\Zmsentities\Collection\QueueList());
         return $list;
     }
