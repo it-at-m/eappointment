@@ -244,16 +244,16 @@ class Scope extends Base
      *
      * @return number
      */
-    public function readQueueList($scopeId, $dateTime, $resolveReferences = 0, $byMonth=false)
+    public function readQueueList($scopeId, $dateTime, $resolveReferences = 0)
     {
         if ($resolveReferences > 0) {
             // resolveReferences > 0 is only necessary for a resolved process
             $queueList = (new Process())
-                ->readProcessListByScopeAndTime($scopeId, $dateTime, $resolveReferences, $byMonth)
+                ->readProcessListByScopeAndTime($scopeId, $dateTime, $resolveReferences)
                 ->toQueueList($dateTime);
         } else {
             $queueList = (new Queue())
-                ->readListByScopeAndTime($scopeId, $dateTime, $resolveReferences, $byMonth);
+                ->readListByScopeAndTime($scopeId, $dateTime, $resolveReferences);
         }
         return $queueList->withSortedArrival();
     }
