@@ -5,6 +5,7 @@
 * #31586 Bugfix: E-Mails werden nur noch versendet, wenn es eine entsprechende Absender-Adresse in der Behörde gibt
 * #35202 Bugfix: Markiere Tage als nicht buchbar, wenn für den Slot-Typ die Anzahl der insgesamt verfügbaren Termine null ist
 * #35182 Bugfix: JSON-Serialisierung von Listen aus Entity-Objekten korrgiert
+* #35250 Bugfix: E-Mails werden auch erstellt, wenn zusätzliche Daten wie Zahlungsinformationen fehlen
 
 ## v2.19.00
 
